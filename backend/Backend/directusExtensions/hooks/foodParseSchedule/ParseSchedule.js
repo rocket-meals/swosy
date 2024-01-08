@@ -395,12 +395,8 @@ export class ParseSchedule {
         // Step 2: If canteen doesn't exist, create a new one
         if (!canteen) {
             canteenJSON = this.setStatusPublished(canteenJSON);
-            let createdCanteen = await itemService.createOne(canteenJSON);
-            canteen = await itemService.readByQuery({
-                filter: {
-                    id: createdCanteen.id
-                }
-            }).then(response => response[0]);
+            let createdCanteen_id = await itemService.createOne(canteenJSON);
+            canteen = await itemService.readOne(createdCanteen_id);
         }
 
         return canteen;
@@ -441,11 +437,11 @@ export class ParseSchedule {
                         let mealofferService = this.itemsServiceCreator.getItemsService(tablename);
 
                         // Create a new meal offer using the ItemsService
-                        let createdMealoffer = await mealofferService.createOne(foodOfferJSON);
+                        let createdMealoffer_id = await mealofferService.createOne(foodOfferJSON);
 
                         // Fetch the newly created meal offer
                         // You can use readOne if you just need to fetch the created item by its ID
-                        let mealoffer = await mealofferService.readOne(createdMealoffer.id);
+                        let mealoffer = await mealofferService.readOne(createdMealoffer_id);
 
                         if (!!mealoffer) {
                             let markingLabelsList = await this.parser.getMarkingLabelsFromRawMealOffer(rawFoodOffer) || [];
@@ -486,7 +482,8 @@ export class ParseSchedule {
 
             if (!marking) {
                 // If marking does not exist, create a new one
-                marking = await itemService.createOne(markingJSONCopy);
+                let marking_id = await itemService.createOne(markingJSONCopy);
+                marking_id = await itemService.readOne(marking_id);
             } else {
                 // If marking exists, update it
                 await itemService.updateOne(marking.id, markingJSONCopy);
