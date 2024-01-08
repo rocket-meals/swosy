@@ -246,7 +246,7 @@ export class TL1Parser_Web {
     }
 
     async getAliasForMealOfferFromRawMealOffer(rawMealOffer){
-        console.log("TL1Parser_Web: getAliasForMealOfferFromRawMealOffer")
+        //console.log("TL1Parser_Web: getAliasForMealOfferFromRawMealOffer")
         let parsedReportItem = rawMealOffer[TL1Parser_Web._MEALOFFERITEM_ITEM];
         return TL1Parser_Web._getMealName(parsedReportItem);
     }
