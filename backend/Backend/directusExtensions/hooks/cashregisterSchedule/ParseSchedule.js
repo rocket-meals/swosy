@@ -170,7 +170,7 @@ export class ParseSchedule {
                 }
 
 
-                console.log("Finished");
+                console.log("[CashregisterParseSchedule] Finished");
                 this.finished = true;
                 await this.setStatus(statusFinished);
             } catch (err) {
@@ -186,16 +186,25 @@ export class ParseSchedule {
     }
 
     async findOrCreateCashregisterTransaction(transaction, intern_cash_register_id) {
+
+        let transaction_id = this.parser.getIdFromTransaction(transaction);
+
+        if(!transaction_id){
+            return null;
+        }
+
+
         let obj_json = {
             date: new Date(this.parser.getDateFromTransaction(transaction)),
             name:this.parser.getNameFromTransaction(transaction),
             quantity:this.parser.getQuantityFromTransaction(transaction),
             cashregister: intern_cash_register_id,
-            id: this.parser.getIdFromTransaction(transaction),
+            id: transaction_id,
         };
 
 
-        let objs = this.cashregisters_transactions_service.readMany([obj_json.id]);
+        let obj = undefined;
+        let objs = this.cashregisters_transactions_service.readOne(obj_json?.id);
         let obj = objs[0]
         /**
          * Using readOne get this error:
@@ -218,8 +227,10 @@ export class ParseSchedule {
             try{
                 await this.cashregisters_transactions_service.createOne(obj_json);
             } catch (err){
-                console.log("Error at: await this.cashregisters_transactions_service.createOne(obj_json);");
-                console.log("obj_json?.id: "+obj_json?.id)
+                // this error should not happen. Only happend one, where we used readMany instead of readOne
+                // TODO: Check if this error still occurs
+                //console.log("Error at: await this.cashregisters_transactions_service.createOne(obj_json);");
+                //console.log("obj_json?.id: "+obj_json?.id)
             }
 
             objs = this.cashregisters_transactions_service.readMany([obj_json.id]);
