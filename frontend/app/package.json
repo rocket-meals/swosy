@@ -2,7 +2,7 @@
   "private": true,
   "name": "rocketmeals",
   "version": "1.0.0",
-  "homepageProduction": "https://rocket-meals.github.io/RocketMealsApp/",
+  "homepageProduction": "https://rocket-meals.github.io/rocket-meals/",
   "homepage": "./",
   "forLocalDevelopmentChangeHomepageTo": "./",
   "config": {
