@@ -6,7 +6,7 @@
     "pathToDbFile": "./database/data.db",
     "pathToBackups": "./backups",
     "pathToSchemes": "./schemes",
-    "configuredDirectus": "DB_CLIENT=sqlite3 DB_FILENAME=./database/data.db ./node_modules/.bin/directus"
+    "configuredDirectus": "./node_modules/.bin/directus"
   },
   "scripts": {
     "createSchemeFolder": "sudo mkdir -p $npm_package_config_pathToSchemes",
