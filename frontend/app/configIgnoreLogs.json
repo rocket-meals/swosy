@@ -1,0 +1,14 @@
+[
+  "[Violation] 'requestAnimationFrame' handler took",
+  "Tried to set property",
+  "If you do not provide children",
+  "Expected style",
+  "Compiled with warnings.\n./node_modules/@react-navigation/drawer",
+  "Possible",
+  "VirtualizedLists should never be nested",
+  "Warning: Each child in a list should have a unique \"key\" prop",
+  "export 'LogBox' was not found in 'react-native-web/dist/index'",
+  "export 'Alert' was not found in './AlertAdapter'",
+  "export 'default' (imported as 'React') was not found in 'react-native-web/dist/index",
+  "\"export 'default' (imported as 'React') was not found in 'react-native-web/dist/index"
+]

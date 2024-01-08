@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+
+  outer:
+    container_name: outer
+    env_file: .env
+    build: .
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    environment:
+      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
+      #- DEFAULT_HOST=outer.bar.com
+      - DEFAULT_HOST=${MYHOST}
+      - DHPARAM_GENERATION=false
+    logging:
+      driver: local #or "none" or "local"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
+      - ./extraVolumes/certs:/etc/nginx/certs:rw
+      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
+      - ./extraVolumes/html:/usr/share/nginx/html:rw
+    networks:
+      - reverse-proxy
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    env_file: .env
+    environment:
+    ### ToDo: Change to your e-mail address
+      - DEFAULT_EMAIL=${EMAIL}
+      - NGINX_PROXY_CONTAINER=outer
+    volumes_from:
+      - outer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./extraVolumes/certs:/etc/nginx/certs:rw
+      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
+      - ./acme:/etc/acme.sh
+    restart: always
+    networks:
+      - reverse-proxy
+
+  app:
+    container_name: outer_app
+    image: jwilder/whoami
+    env_file: .env
+    environment:
+      - VIRTUAL_HOST=${MYHOST}
+      - LETSENCRYPT_HOST=${MYHOST}
+      - VIRTUAL_PATH=/ping/
+      - VIRTUAL_DEST=/
+    networks:
+      - reverse-proxy
+
+  redirect:
+    image: morbz/docker-web-redirect
+    env_file: .env
+    restart: always
+    environment:
+      - VIRTUAL_HOST=${MYHOST}
+      - VIRTUAL_PATH=/
+      - VIRTUAL_DEST=/
+      - REDIRECT_TARGET=${MYHOST}/homepage/ # Just /homepage without ending with a / will result in infinite redirects
+      # For more see: https://serverfault.com/questions/821997/nginx-reverse-proxy-too-many-redirections
+      # Also the - VIRTUAL_PATH=/ping/ must end with a / too
+    networks:
+      - reverse-proxy
+
+  redirect_catch:
+    container_name: redirect_catch
+    image: jwilder/whoami
+    env_file: .env
+    environment:
+      - VIRTUAL_HOST=${MYHOST}
+      - LETSENCRYPT_HOST=${MYHOST}
+      - VIRTUAL_PATH=/homepage/homepage/
+      - VIRTUAL_DEST=/
+    networks:
+      - reverse-proxy
+
+networks:
+  reverse-proxy:
+    name: topDomainProxy

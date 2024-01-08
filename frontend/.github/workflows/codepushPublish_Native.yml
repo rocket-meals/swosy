@@ -1,0 +1,29 @@
+name: CodePush Publish Native
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: ./app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: setup-cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: 1.11.0
+      - run: npm --version
+      - run: npm ci
+      - run: npm run deploy:native:ci
+        env:
+          CODEPUSH_TOKEN_IOS: ${{ secrets.CODEPUSH_TOKEN_IOS }}
+          CODEPUSH_TOKEN_ANDROID: ${{ secrets.CODEPUSH_TOKEN_ANDROID }}

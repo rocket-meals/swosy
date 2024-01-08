@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+
+  app:
+    image: jwilder/whoami
+    environment:
+      - VIRTUAL_HOST=192.168.178.35
+      - VIRTUAL_PATH=/app
+    networks:
+      - topDomainProxy
+
+  api:
+    image: jwilder/whoami
+    environment:
+      - VIRTUAL_HOST=192.168.178.35
+      - VIRTUAL_PATH=/api
+    networks:
+      - topDomainProxy
+
+
+networks:
+  topDomainProxy:
+    external: true

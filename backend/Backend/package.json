@@ -1,0 +1,34 @@
+{
+  "name": "directus-db-utils",
+  "version": "1.0.0",
+  "description": "A helper to create backups and export schemes for directus",
+  "config": {
+    "pathToDbFile": "./database/data.db",
+    "pathToBackups": "./backups",
+    "pathToSchemes": "./schemes",
+    "configuredDirectus": "DB_CLIENT=sqlite3 DB_FILENAME=./database/data.db ./node_modules/.bin/directus"
+  },
+  "scripts": {
+    "createSchemeFolder": "sudo mkdir -p $npm_package_config_pathToSchemes",
+    "scheme-help": "echo Scheme stored in folder: $npm_package_config_pathToSchemes",
+    "scheme": "npm run createSchemeFolder && sudo $npm_package_config_configuredDirectus schema snapshot $npm_package_config_pathToSchemes/\"$(date \"+%F\")\"-\"$(date \"+%s\")\"-scheme.yaml && npm run scheme-help",
+    "scheme-export": "npm run scheme-export-yaml",
+    "scheme-export-yaml": "sudo $npm_package_config_configuredDirectus schema snapshot --yes ./scheme.yaml && echo 'Scheme exported to ./scheme.yaml'",
+    "scheme-export-json": "sudo $npm_package_config_configuredDirectus schema snapshot --yes --format json ./scheme.json && echo 'Scheme exported to ./scheme.json'",
+    "scheme-import": "sudo $npm_package_config_configuredDirectus schema apply --yes ./scheme.yaml",
+    "scheme-diff": "sudo $npm_package_config_configuredDirectus schema apply --dry-run ./scheme.yaml",
+    "pre:schema-apply:latest": "./scripts/get-latest-schema.sh",
+    "schema-apply:latest": "npm run pre:schema-apply:latest && sudo $npm_package_config_configuredDirectus schema apply ./schemes/$(cat ./schemes/latest.txt)",
+    "createBackupFolder": "sudo mkdir -p $npm_package_config_pathToBackups",
+    "backup-help": "echo Backup stored in folder: $npm_package_config_pathToBackups",
+    "backup-export": "sudo cp $npm_package_config_pathToDbFile ./backup.db && echo 'Backup copied to ./backup.db'",
+    "backup": "npm run createBackupFolder && sudo cp $npm_package_config_pathToDbFile $npm_package_config_pathToBackups/\"$(date \"+%F\")\"-\"$(date \"+%s\")\"-backup.db && npm run backup-help"
+  },
+  "author": "Nils Baumgartner",
+  "license": "ISC",
+  "dependencies": {
+    "directus": "^9.18.1",
+    "directus-cut": "^9.4.38",
+    "moment": "^2.29.4"
+  }
+}

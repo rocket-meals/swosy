@@ -1,0 +1,49 @@
+version: '3'
+services:
+
+  app:
+    image: jwilder/whoami
+    environment:
+      - LETSENCRYPT_HOST=${MYHOST}
+      - VIRTUAL_HOST=${MYHOST}
+      - VIRTUAL_PATH=/${DOMAIN_PATH}/ping
+    networks:
+      - topDomainProxy
+
+  frontend:
+    container_name: ${DOMAIN_PATH}frontend
+    image: node:12.18.1
+    command: >
+      sh -c "
+        cd /usr/app &&
+        npm install &&
+        npm install --loglevel verbose &&
+        npm install webpack@4.43.0 &&
+        npm install @unimodules/core &&
+        npm install file-loader &&
+        npm run deploy:web:local
+      "
+    env_file: .env
+    volumes:
+      - ./app:/usr/app
+      - /usr/app/node_modules/
+    restart: ${RESTART}
+    expose:
+      - ${FRONTEND_PORT}
+    networks:
+      - topDomainProxy
+    environment:
+      BASE_PATH: ${DOMAIN_PATH}/${FRONTEND_PATH}/
+
+      BACKEND_URL: ${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}
+      CUSTOM_BACKEND_URL: ${CUSTOM_BACKEND_URL}
+
+      LETSENCRYPT_HOST: ${MYHOST}
+      VIRTUAL_HOST: ${MYHOST}
+      VIRTUAL_PATH: /${DOMAIN_PATH}/${FRONTEND_PATH}/
+      VIRTUAL_DEST: /
+      VIRTUAL_PORT: ${FRONTEND_PORT}
+
+networks:
+  topDomainProxy:
+    external: true

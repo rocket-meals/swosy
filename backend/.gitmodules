@@ -1,0 +1,6 @@
+[submodule "Submodules/Server-Toplevel-Proxy"]
+	path = Submodules/Server-Toplevel-Proxy
+	url = git@github.com:FireboltCasters/Server-Toplevel-Proxy.git
+[submodule "Frontend/app/src/KitchenHelper"]
+	path = Frontend/app/src/KitchenHelper
+	url = https://github.com/FireboltCasters/KitchenHelper

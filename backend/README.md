@@ -1,0 +1,119 @@
+# RocketMealsBackend
+
+# Server Installtion
+
+Similar steps can be made for local testing
+
+- Create a New Repo for each customer
+- Strato Server einrichten
+    - Domain Umleiten:
+        - Domainverwaltung
+            - Subdomain anlegen
+            - DNS-Verwaltung
+                - A-Record
+                    - Eigene IP-Adresse:
+                        - Server IP eintragen
+- Debian 11
+    - Install Node.js and npm
+        - "sudo apt install nodejs npm"
+    - Install docker:
+        - `wget https://gist.githubusercontent.com/angristan/389ad925b61c663153e6f582f7ef370e/raw/02c56807863ce73b84faa582468cc2e71637067c/install_docker.sh`
+        - `chmod +x install_docker.sh`
+        - `./install_docker.sh`
+        - Alternative?
+              - docker-compose version 1.29.2, build 5becea4c
+              - `sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras` (https://docs.docker.com/engine/install/ubuntu/)
+                  - `sudo su -l $USER`
+                  - `sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
+                  - `sudo chmod +x /usr/local/bin/docker-compose`
+    - sudo apt install git
+    - `git config --global credential.helper store`
+        - Allow git to store the credentials later
+    - `git clone https://github.com/FireboltCasters/Server-Toplevel-Proxy`
+        - `cd Server-Toplevel-Proxy`
+        - `nano .env`
+        - Change MYHOST to `<subdomain.rocket-meals.de>`
+        - `docker-compose up -d`
+    - `git clone <Forked RocketMeals Backend Server>`
+        - `cd RocketMealsBackend`
+        - `nano .env`
+            - "DOMAIN_PRE=http" --> "DOMAIN_PRE=https"
+            - "MYHOST=127.0.0.1" --> "MYHOST=<subdomain>.rocket-meals.de"
+            - "DOMAIN_PATH=rocketmeals" --> "DOMAIN_PATH=backend"
+        - `./permissionDatabase.sh`
+            - An error message, data.db not found, is normal
+        - Test Server
+            - `docker-compose up`
+            - Should start and fail first time, then auto reboots after required files created
+            - `docker-compose down`
+        - Apply latest scheme
+            - "cd Backend"
+            - "npm install"
+            - "npm run schema-apply:latest"
+    - `git clone <Forked RocketMeals Frontend Server>`
+
+## Configure SSO
+
+- Check that a role for "User" exists
+  - Permissions for User configured:
+    - Permission: Delete User: Custom: Rule: ID equals $CURRENT_USER
+    - Other Permissions
+  - Copy the RoleId (in the url)
+  - 
+- open docker-compose.yaml
+- use Directus docks for adding new SSO https://docs.directus.io/configuration/config-options/#sso-oauth2-and-openid
+
+### Apple SSO
+Since the SSO for Apple is a bit more to do, read the file: "SSO_APPLE.md"
+
+
+### Email-Invites
+
+#### Email-SMTP-Setup Strato
+
+
+
+## Troublshooting
+
+### SQLITE_READONLY: attempt to write a readonly database
+
+```
+SQLITE_READONLY: attempt to write a readonly database
+```
+
+run the `./permissionDatabase.sh` script.
+
+### SQLITE_BUSY: typically after restart
+
+Server seems to be stopped during an transaction
+See for a "-journal.db" file and delete it.
+
+
+#### Tarball data for
+```
+npm WARN tarball tarball data for @directus/specs@file:directus-specs-9.8.0.tgz (null) seems to be corrupted. Trying again.
+```
+
+Run the `./cleanDocker.sh` script to remove all docker images and volumes for directus. Then run `docker-compose up` again.
+
+
+#### SSO Login error
+
+```
+{"errors":[{"message":"Route /undefinedvcl4421NN-JEZAVRZcD24tyAbRwgCb6DzCt5JkeuFFzlZTkJi3gtsZryOHZFJcjJ doesn't exist.","extensions":{"code":"ROUTE_NOT_FOUND"}}]}
+```
+
+Check if the RoleId for the SSO-User is set correctly in the `docker-compose.yaml` file. The RoleId can be found in `.env` or in the `docker-compose.yaml` file.
+
+
+## Project Settings
+
+```
+.sso-icon {
+    background: #EE581F !important;
+}
+
+.v-icon {
+    color: white !important;
+}
+```

@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    environment:
+    ### ToDo: Change to your e-mail address
+      - DEFAULT_EMAIL=nibaumgartne@uos.de
+      - NGINX_PROXY_CONTAINER=outer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./../extraVolumes/certs:/etc/nginx/certs:rw
+      - ./../extraVolumes/vhosts:/etc/nginx/vhost.d
+      - ./../extraVolumes/html:/usr/share/nginx/html
+    restart: always
+    networks:
+      - topDomainProxy
+
+networks:
+  topDomainProxy:
+    external: true
