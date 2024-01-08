@@ -26,6 +26,11 @@ Similar steps can be made for local testing
                   - `sudo su -l $USER`
                   - `sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
                   - `sudo chmod +x /usr/local/bin/docker-compose`
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      - nvm install 18
+      - nvm use 18
+    - curl -o- -L https://yarnpkg.com/install.sh | bash
+    - exit terminal and restart // no source will not help
     - sudo apt install git
     - `git config --global credential.helper store`
         - Allow git to store the credentials later
@@ -51,6 +56,20 @@ Similar steps can be made for local testing
             - "npm install"
             - "npm run schema-apply:latest"
     - `git clone <Forked RocketMeals Frontend Server>`
+
+## Configure Flows
+
+- See
+
+Create a new directus flow
+Trigger Setup --> Configure as Schedule (CRON)
+Create a operation --> Update Data
+Collection: Auto Backup Settings
+Permission: Full Access
+Emit Events: true
+Payload : { "state": "create", "latest_log": "" }
+Query : { "filter": { "_and": [] } }
+
 
 ## Configure SSO
 
