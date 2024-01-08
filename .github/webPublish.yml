@@ -5,12 +5,7 @@ on:
       - dev
       - main
       - master
-#on:
-#  workflow_run:
-#    workflows: ["Check"]
-#    branches: [master]
-#    types:
-#      - completed
+      
 jobs:
   gh-pages:
     runs-on: ubuntu-latest
@@ -20,12 +15,12 @@ jobs:
         with:
           node-version: '14.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: cd ./app/ && npm ci && npm install @unimodules/core@~7.2.0
-      - run: git config --global user.name 'Firebolt Caster'
-      - run: git config --global user.email 'nilsbaumgartner@live.de'
+      - run: cd ./frontend/app/ && npm ci && npm install @unimodules/core@~7.2.0
+      - run: git config --global user.name 'Rocket Meals'
+      - run: git config --global user.email 'nils@baumgartner-software.de'
       #https://www.npmjs.com/package/gh-pages
       - run: |
-          cd ./app
+          cd ./frontend/app
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           CI=false npm run deployghpages -- -u "github-actions-bot <support+actions@github.com>"
         env:

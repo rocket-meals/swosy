@@ -9,7 +9,7 @@ jobs:
   build:
     defaults:
       run:
-        working-directory: ./app
+        working-directory: ./frontend/app
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
