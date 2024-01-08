@@ -290,10 +290,10 @@ export class ParseSchedule {
                             ...translationFromParsing,
                             "languages_code": {"code": existingLanguageCode}
                         });
-                        console.log("existingTranslation is different from parsing")
+                        //console.log("existingTranslation is different from parsing")
                     } else {
                         //translation is the same, do nothing
-                        console.log("translation is the same, do nothing")
+                        //console.log("translation is the same, do nothing")
                     }
                 } else { //the parser dont provide a translation, we should delete it?
                     //TODO check if translation was generated or manually typed
@@ -417,8 +417,8 @@ export class ParseSchedule {
                 });
                 if (!!mealFromService && mealFromService.length > 0) {
                     let isoDateStringOfMealOffer = await this.parser.getISODateStringOfMealOffer(rawFoodOffer)
-                    console.log("get alias for meal offer")
-                    console.log(this.parser)
+                    //console.log("get alias for meal offer")
+                    //console.log(this.parser)
                     let alias = await this.parser.getAliasForMealOfferFromRawMealOffer(rawFoodOffer);
                     let date = this.parseISOStringDateToDateOnlyDate(isoDateStringOfMealOffer);
                     if (!!food_id && !!date) {
