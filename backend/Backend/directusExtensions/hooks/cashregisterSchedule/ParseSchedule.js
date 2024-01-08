@@ -215,7 +215,12 @@ export class ParseSchedule {
         if (!obj) {
             obj_json = this.setStatusPublished(obj_json);
 
-            await this.cashregisters_transactions_service.createOne(obj_json);
+            try{
+                await this.cashregisters_transactions_service.createOne(obj_json);
+            } catch (err){
+                console.log("Error at: await this.cashregisters_transactions_service.createOne(obj_json);");
+                console.log("obj_json?.id: "+obj_json?.id)
+            }
 
             objs = this.cashregisters_transactions_service.readMany([obj_json.id]);
             obj = objs[0]
