@@ -1,4 +1,15 @@
+## Running it on Web / QuickStart
+
+You can start the development by simply running:
+
+```
+yarn ci
+yarn run web
+```
+
+
 ## Configuration
+
 
 ### Web
 
@@ -94,17 +105,8 @@ legacy messaging API is enabled, you should see Server Key in that section.
 
 ## Development
 
-To start developing you can edit and adapt the example project at: ```Frontend/src/project/```. There you will have the folders ```helper``` and ```screens```. 
-All files in ```Kitchenhelper``` will be outsourced in the future in an own package.
+To start developing you can edit and adapt the example project at: ```app/src/project/```. There you will have the folders ```helper``` and ```screens```.
 More informtaion will be added in the future.
-
-## Running it on Web / QuickStart
-
-You can start the development by simply running:
-
-```
-npm run web
-```
 
 ## Running it on Android
 

@@ -23,9 +23,8 @@ jobs:
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
           version: 1.11.0
-      - run: npm --version
-      - run: npm ci
-      - run: npm run deploy:native:ci
+      - run: yarn ci
+      - run: yarn run deploy:native:ci
         env:
           CODEPUSH_TOKEN_IOS: ${{ secrets.CODEPUSH_TOKEN_IOS }}
           CODEPUSH_TOKEN_ANDROID: ${{ secrets.CODEPUSH_TOKEN_ANDROID }}
