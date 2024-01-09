@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
+      - run: npm ci && npm install @unimodules/core@~7.2.0 --force
       - run: git config --global user.name 'Rocket Meals'
       - run: git config --global user.email 'nils@baumgartner-software.de'
       #https://www.npmjs.com/package/gh-pages
