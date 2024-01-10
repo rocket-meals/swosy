@@ -8,6 +8,9 @@ node_modules/
 dist/
 web-build/
 
+# Serve
+serveDist/
+
 # Native
 *.orig.*
 *.jks

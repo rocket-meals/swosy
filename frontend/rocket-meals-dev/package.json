@@ -1,6 +1,6 @@
 {
   "name": "rocket-meals-dev",
-  "homepage": "https://rocket-meals.github.io/rocket-meals",
+  "homepage": "/rocket-meals",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "deploy:gh:pages": "npm run export:web && gh-pages -d dist",
-    "deploy:local": "npm run export:web && npx serve dist",
+    "deploy:local": "npm run export:web && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export -p web --dev",
     "test": "jest --watchAll"
   },
