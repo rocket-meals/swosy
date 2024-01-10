@@ -20,13 +20,12 @@ jobs:
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci --force
-      - run: npm install @unimodules/core@~7.2.0 --force
+      - run: npm ci
       - run: git config --global user.name 'Rocket Meals'
       - run: git config --global user.email 'nils@baumgartner-software.de'
       #https://www.npmjs.com/package/gh-pages
       - run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          CI=false npm run deployghpages -- -u "github-actions-bot <support+actions@github.com>"
+          CI=false npm run deploy:gh:pages -- -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
