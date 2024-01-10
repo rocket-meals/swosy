@@ -2,16 +2,15 @@ name: CodePush Publish Native
 on:
   push:
     branches:
-      - main
-      - master
+      - codepush
     paths:
-      - 'frontend/app/**'
+      - '/frontend/rocket-meals-dev/**'
 
 jobs:
   build:
     defaults:
       run:
-        working-directory: ./frontend/app
+        working-directory: ./frontend/rocket-meals-dev
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2

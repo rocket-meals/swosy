@@ -6,13 +6,13 @@ on:
       - main
       - master
     paths:
-      - 'frontend/app/**'
+      - './frontend/rocket-meals-dev/**'
       
 jobs:
   gh-pages:
     defaults:
       run:
-        working-directory: ./frontend/app
+        working-directory: ./frontend/rocket-meals-dev
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
