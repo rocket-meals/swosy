@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - './frontend/rocket-meals-dev/**'
+      - '/frontend/rocket-meals-dev/**'
       
 jobs:
   gh-pages:
