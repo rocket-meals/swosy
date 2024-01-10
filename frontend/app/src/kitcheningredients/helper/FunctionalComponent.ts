@@ -1,1 +1,0 @@
-export type CallbackFunction = (...args: any[]) => JSX.Element;

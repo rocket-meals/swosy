@@ -1,3 +1,0 @@
-#KitchenHelper
-
-A helper library
