@@ -1,4 +1,7 @@
 function getBackendURL(){
+    let backendUrlForSwosy = "https://swosy.rocket-meals.de/rocket-meals/api"
+
+
     let fallbackBackendUrl = "http://127.0.0.1/rocketmeals/api"; // For local testing
     fallbackBackendUrl = "https://rocket-meals.de/demo/api"; // For demo purpose
     //fallbackBackendUrl = "https://studi-futter.rocket-meals.de/backend/api"; // For demo purpose
