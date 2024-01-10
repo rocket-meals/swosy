@@ -2,8 +2,6 @@ name: GH-Pages Publish
 on:
   push:
     branches:
-      - dev
-      - main
       - master
     paths:
       - './frontend/rocket-meals-dev/**'
