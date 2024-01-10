@@ -2,9 +2,9 @@ name: CodePush Publish Native
 on:
   push:
     branches:
-      - codepush
+      - native
     paths:
-      - '/frontend/rocket-meals-dev/**'
+      - 'frontend/rocket-meals-dev/**'
 
 jobs:
   build:
