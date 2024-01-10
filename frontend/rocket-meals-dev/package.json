@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "deploy:gh:pages": "npm run export:web && gh-pages -d dist",
     "deploy:local": "npm run export:web && npx serve dist",
-    "export:web": "expo export -p web",
+    "export:web": "expo export -p web --dev",
     "test": "jest --watchAll"
   },
   "jest": {
