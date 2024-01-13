@@ -14,4 +14,4 @@
 - Github Pages with sub-path - baseUrl
   - https://docs.expo.dev/more/expo-cli/#hosting-with-sub-paths
   - SDK 50 and abouve
-  - 
+
