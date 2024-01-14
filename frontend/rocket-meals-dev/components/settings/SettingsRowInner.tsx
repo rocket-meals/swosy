@@ -8,7 +8,7 @@ export interface SettingsRowProps {
     contentShouldGrow?: boolean,
     rightIcon?: any,
     leftIcon?: any,
-    color?: any
+    color?: string
     flex?: number,
 }
 export const SettingsRowInner: FunctionComponent<SettingsRowProps> = (props) => {
