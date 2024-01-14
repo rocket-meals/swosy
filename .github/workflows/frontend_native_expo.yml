@@ -2,7 +2,9 @@ name: Expo Update
 on:
   push:
     branches:
-      - expo
+      - master
+      - main
+      - dev
     paths:
       - 'frontend/rocket-meals-dev/**'
 
