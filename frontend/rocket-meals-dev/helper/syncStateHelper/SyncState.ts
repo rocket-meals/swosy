@@ -13,15 +13,16 @@ import {
     BeforeHookType,
     SynchedVariableInterface
 } from "@/helper/syncStateHelper/SynchedVariableInterface";
+import {SyncStateVariablesNonPersistent} from "@/helper/syncStateHelper/SyncStateVariablesNonPersistent";
 
-function useSyncStateRaw(storageKey: string): [value: string, setValue: (value: any) => {}] {
+function useSyncStateRaw(storageKey: string): [value: any, setValue: (value: any) => {}] {
     const value = useStoreState((state) => {
-      // @ts-ignore
+        // @ts-ignore TODO: fix this for correct type
         return state?.[storageKey]?.value
     });
     const setValue = useStoreActions((actions) => {
-        // @ts-ignore
-        return actions?.[storageKey].setValue;
+        // @ts-ignore TODO: fix this for correct type
+        return actions?.[storageKey]?.setValue;
     });
     return [
         value,
@@ -29,7 +30,7 @@ function useSyncStateRaw(storageKey: string): [value: string, setValue: (value: 
     ]
 }
 
-export function useSyncJsonState(storageKey: string): [value: any, setValue: (value: any) => {}, rawValue: any] {
+export function useSyncState<T>(storageKey: string): [value: T | null, setValue: (value: T) => {}, rawValue: any] {
   const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
   const setValue = (dict: any) => setJsonStateAsString(JSON.stringify(dict))
@@ -40,7 +41,7 @@ export function useSyncJsonState(storageKey: string): [value: any, setValue: (va
   ]
 }
 
-export interface Model {
+interface Model {
     [key: string]: {
         value: any;
         setValue: any;
@@ -53,7 +54,26 @@ export class SyncState {
 
     private globalSynchedStoreModels: {[key: string] : SynchedVariableInterface} = {};
 
-    private registerSyncState(key: string, defaultValue?: string, beforeHook?: BeforeHookType, afterHook?: AfterHookType, override: boolean = false){
+    constructor() {
+        this.registerSyncStateVariablesNonPersistent();
+    }
+
+    private registerSyncStateVariablesNonPersistent(){
+        let additionalClassKeys = Object.keys(SyncStateVariablesNonPersistent) as Array<keyof typeof SyncStateVariablesNonPersistent>;
+        let additionalKeys: string[] = [];
+        for(let i=0; i<additionalClassKeys.length; i++){
+            let key = additionalClassKeys[i];
+            let value: any = SyncStateVariablesNonPersistent[key];
+            if (typeof value === 'string') {
+                additionalKeys.push(value);
+            }
+        }
+
+        this.registerSyncStates(additionalKeys);
+    }
+
+
+    private registerSyncState(key: string, defaultValue?: string, beforeHook?: BeforeHookType, afterHook?: AfterHookType, override?: boolean){
         if(this.storeRetrieved){
             return new Error("Register State before getStore()");
         }
@@ -65,7 +85,7 @@ export class SyncState {
         this.globalSynchedStoreModels[key] = new SynchedVariableInterface(key, defaultValue, beforeHook, afterHook);
     }
 
-    registerSyncStates(listOfKeys: string[] | string, defaultValue?: string, beforeHook?: BeforeHookType, afterHook?: AfterHookType, override: boolean = false){
+    private registerSyncStates(listOfKeys: string[] | string, defaultValue?: string, beforeHook?: BeforeHookType, afterHook?: AfterHookType, override?: boolean){
         if (typeof listOfKeys === 'string'){
             listOfKeys = [listOfKeys];
         }
@@ -97,10 +117,15 @@ export class SyncState {
 
         let additionalKeys = Object.keys(this.globalSynchedStoreModels);
 
+        console.log("GetStore");
         for(let i=0; i<additionalKeys.length; i++){
             let key = additionalKeys[i];
             let aditionalStoreModel: SynchedVariableInterface = this.globalSynchedStoreModels[key];
             let storageKey = aditionalStoreModel.key;
+
+            console.log("storageKey", storageKey)
+
+
             model[storageKey] = {
                 value: aditionalStoreModel.defaultValue,
                 setValue: action((state, payload) => {

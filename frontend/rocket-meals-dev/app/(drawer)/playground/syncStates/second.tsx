@@ -12,7 +12,7 @@ export default function HomeScreen() {
 
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Sync Screen Index</Text>
+        <Text style={styles.title}>Sync Screen Second</Text>
 
         <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
           setExampleValue(text);
