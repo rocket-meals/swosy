@@ -7,6 +7,7 @@ on:
       - dev
     paths:
       - 'frontend/rocket-meals-dev/**'
+      - ".github/workflows/frontend_native_expo.yml"
 
 jobs:
   update:
