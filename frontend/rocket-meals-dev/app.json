@@ -35,6 +35,15 @@
     "experiments": {
       "typedRoutes": true,
       "baseUrl": "/rocket-meals"
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "36f72583-5997-4602-8609-05f39444f2e7"
+      }
+    },
+    "owner": "nilsbaumgartner1994"
   }
 }
