@@ -1,4 +1,4 @@
-import {authentication, createDirectus, DirectusClient, graphql, rest, RestClient,} from "@directus/sdk";
+import {authentication, createDirectus, DirectusClient, graphql, readItems, rest, RestClient,} from "@directus/sdk";
 import {CustomDirectusTypes} from "@/helper/database_helper/directusTypes/types";
 
 export class ServerAPI {
