@@ -8,7 +8,9 @@ import { useEffect } from 'react';
 import { useColorScheme } from '@/components/useColorScheme';
 
 import { GluestackUIProvider, Text, Box } from "@gluestack-ui/themed"
-import { config } from "@gluestack-ui/config" // Optional if you want to use default theme
+import { config } from "@gluestack-ui/config"
+import {StoreProvider} from "easy-peasy";
+import {SyncState} from "@/helper/syncStateHelper/SyncState"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,15 +52,21 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  let syncState = new SyncState();
+  //syncState.registerSynchedStates()
+  let store = syncState.getStore();
+
   return (
-      <GluestackUIProvider config={config}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </ThemeProvider>
-      </GluestackUIProvider>
+      <StoreProvider store={store}>
+        <GluestackUIProvider config={config}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            </Stack>
+          </ThemeProvider>
+        </GluestackUIProvider>
+      </StoreProvider>
   );
 }

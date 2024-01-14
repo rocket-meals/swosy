@@ -44,6 +44,13 @@ export default function AppLayout() {
                     }}
                 />
                 <Drawer.Screen
+                    name="playground/index" // This is the name of the page and must match the url from root
+                    options={{
+                        drawerLabel: 'Playground',
+                        title: 'Playground',
+                    }}
+                />
+                <Drawer.Screen
                     name="settings/index" // This is the name of the page and must match the url from root
                     options={{
                         drawerLabel: 'Settings',
