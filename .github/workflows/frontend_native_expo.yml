@@ -10,9 +10,6 @@ on:
 
 jobs:
   update:
-    defaults:
-      run:
-        working-directory: ./frontend/rocket-meals-dev
     name: EAS Update
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +36,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: yarn install
+        run: cd ./frontend/rocket-meals-dev && npm ci
 
       - name: Publish update
-        run: eas update --auto
+        run: cd ./frontend/rocket-meals-dev && eas update --auto
