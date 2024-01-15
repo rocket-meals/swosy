@@ -6,6 +6,14 @@ on:
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
+  pull_request:
+    types: [closed]
+    branches:
+      - expo
+    paths:
+      - 'frontend/rocket-meals-dev/**'
+      - ".github/workflows/frontend_native_expo.yml"
+
 
 jobs:
   update:
