@@ -11,14 +11,14 @@ export default function HomeScreen() {
   const [exampleValue, setExampleValue] = useSyncState<string>(NonPersistent.test);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Playground</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Sync Screen Second Non Persistent</Text>
 
-      <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
-        setExampleValue(text);
-      }} />
-      <BottomRow />
-    </View>
+        <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
+          setExampleValue(text);
+        }} />
+        <BottomRow />
+      </View>
   );
 }
 

@@ -1,11 +1,20 @@
 // define beforeHook type
+
+/**
+ * @typedef {Function} BeforeHookType
+ * @returns {Promise<boolean>} true if the action should be cancelled
+ */
 export interface BeforeHookType {
-	(storageKey: string, state: any, payload: any): boolean;
+	(storageKey: string, state: any, payload: any): Promise<boolean>;
 }
 
 // define afterHook type
+/**
+ * @typedef {Function} AfterHookType
+ * @returns {Promise<boolean>} true if the action should be cancelled
+ */
 export interface AfterHookType {
-	(storageKey: string, state: any, payload: any): void;
+	(storageKey: string, state: any, payload: any): Promise<boolean>;
 }
 
 export class SynchedVariableInterface {

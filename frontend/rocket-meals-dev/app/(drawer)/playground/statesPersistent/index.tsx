@@ -1,18 +1,16 @@
 import {StyleSheet, TextInput} from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import {Text, View} from '@/components/Themed';
 import {BottomRow} from "@/app/(drawer)/_layout";
-import {useSyncState} from "@/helper/syncStateHelper/SyncState";
-import {SyncStateVariablesNonPersistent} from "@/helper/syncStateHelper/SyncStateVariablesNonPersistent";
+import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {Persistent} from "@/helper/sync_state_helper/Persistent";
 
 export default function HomeScreen() {
 
-  const [exampleValue, setExampleValue] = useSyncState<string>(SyncStateVariablesNonPersistent.playground);
+  const [exampleValue, setExampleValue] = useSyncState<string>(Persistent.test);
 
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Sync Screen Index</Text>
+        <Text style={styles.title}>Sync Screen Index Persistent</Text>
 
         <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
           setExampleValue(text);
