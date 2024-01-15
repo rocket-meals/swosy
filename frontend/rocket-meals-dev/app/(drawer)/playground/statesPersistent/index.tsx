@@ -2,11 +2,11 @@ import {StyleSheet, TextInput} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {BottomRow} from "@/app/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {Persistent} from "@/helper/sync_state_helper/Persistent";
+import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 
 export default function HomeScreen() {
 
-  const [exampleValue, setExampleValue] = useSyncState<string>(Persistent.test);
+  const [exampleValue, setExampleValue] = useSyncState<string>(PersistentStore.test);
 
   return (
       <View style={styles.container}>

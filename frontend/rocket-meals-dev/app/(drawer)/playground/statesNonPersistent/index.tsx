@@ -4,11 +4,11 @@ import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 import {BottomRow} from "@/app/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {NonPersistent} from "@/helper/sync_state_helper/NonPersistent";
+import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 
 export default function HomeScreen() {
 
-  const [exampleValue, setExampleValue] = useSyncState<string>(NonPersistent.test);
+  const [exampleValue, setExampleValue] = useSyncState<string>(NonPersistentStore.test);
 
   return (
       <View style={styles.container}>

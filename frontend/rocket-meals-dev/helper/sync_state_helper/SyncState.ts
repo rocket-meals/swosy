@@ -13,8 +13,8 @@ import {
     BeforeHookType,
     SynchedVariableInterface
 } from "@/helper/sync_state_helper/SynchedVariableInterface";
-import {NonPersistent} from "@/helper/sync_state_helper/NonPersistent";
-import {Persistent} from "@/helper/sync_state_helper/Persistent";
+import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {StorageHelper} from "@/helper/storage_helper/StorageHelper";
 
 function useSyncStateRaw(storageKey: string): [value: any, setValue: (value: any) => {}] {
@@ -69,7 +69,7 @@ export class SyncState {
         this.initialized = true;
     }
 
-    private async getKeysOfClass(classRef: typeof Persistent | typeof NonPersistent){
+    private async getKeysOfClass(classRef: typeof PersistentStore | typeof NonPersistentStore){
         let additionalClassKeys = Object.keys(classRef) as Array<keyof typeof classRef>;
         let additionalKeys: string[] = [];
         for(let key of additionalClassKeys){
@@ -83,7 +83,7 @@ export class SyncState {
     }
 
     private async registerSyncStateVariablesPersistent(){
-        let additionalKeys: string[] = await this.getKeysOfClass(Persistent);
+        let additionalKeys: string[] = await this.getKeysOfClass(PersistentStore);
 
         let beforeHook = async (storageKey: string, state: any, payload: any) => {
             console.log("beforeHook persistent", storageKey, payload)
@@ -105,7 +105,7 @@ export class SyncState {
     }
 
     private async registerSyncStateVariablesNonPersistent(){
-        let additionalKeys: string[] = await this.getKeysOfClass(NonPersistent);
+        let additionalKeys: string[] = await this.getKeysOfClass(NonPersistentStore);
 
         this.registerSyncStates(additionalKeys);
     }
