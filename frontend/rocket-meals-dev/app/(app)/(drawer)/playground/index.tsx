@@ -2,7 +2,7 @@ import {StyleSheet, TextInput} from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import {BottomRow} from "@/app/(drawer)/_layout";
+import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 
