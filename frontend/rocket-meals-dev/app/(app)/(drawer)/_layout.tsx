@@ -11,7 +11,7 @@ import {DrawerContent} from "@react-navigation/drawer";
 export function BottomRow() {
     return (
         <View style={styles.container}>
-            <Text>Bottom Row Content</Text>
+            <Text>{"Bottom Row Content"}</Text>
             {/* Add other UI elements and functionality here */}
         </View>
     );

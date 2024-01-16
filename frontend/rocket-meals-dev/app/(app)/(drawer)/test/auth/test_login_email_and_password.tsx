@@ -46,7 +46,7 @@ export default function HomeScreen() {
           })
         }
         }>
-          {"Sign In"}
+          <Text>{"Sign In"}</Text>
         </Button>
         <Divider />
         <Text>{"Result"}</Text>
