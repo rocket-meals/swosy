@@ -1,10 +1,12 @@
 import {
-    action, Actions,
+    action,
+    Actions,
     createStore,
     EasyPeasyConfig,
     FilterActionTypes,
     StateMapper,
-    Store, thunk,
+    Store,
+    thunk,
     useStoreActions,
     useStoreState
 } from "easy-peasy";
@@ -13,11 +15,13 @@ import {
     BeforeHookType,
     SynchedVariableInterface
 } from "@/helper/sync_state_helper/SynchedVariableInterface";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {NonPersistentStore, NonPersistentStoreValues} from "@/helper/sync_state_helper/NonPersistentStore";
+import {PersistentStore, PersistentStoreValues} from "@/helper/sync_state_helper/PersistentStore";
 import {StorageHelper} from "@/helper/storage_helper/StorageHelper";
 
-function useSyncStateRaw(storageKey: string): [value: any, setValue: (value: any) => {}] {
+export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues;
+
+function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (value: any) => {}] {
     const value = useStoreState((state) => {
         // @ts-ignore TODO: fix this for correct type
         return state?.[storageKey]?.value
@@ -32,10 +36,14 @@ function useSyncStateRaw(storageKey: string): [value: any, setValue: (value: any
     ]
 }
 
-export function useSyncState<T>(storageKey: string): [value: T | null, setValue: (value: T) => {}, rawValue: any] {
+export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T) => void, rawValue: any] {
   const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
-  const setValue = (dict: any) => setJsonStateAsString(JSON.stringify(dict))
+  const setValue = (dict: T) => {
+      console.log("setValue", dict)
+      console.log("JSON.stringify(dict)", JSON.stringify(dict))
+      setJsonStateAsString(JSON.stringify(dict))
+  }
   return [
     parsedJSON,
     setValue,

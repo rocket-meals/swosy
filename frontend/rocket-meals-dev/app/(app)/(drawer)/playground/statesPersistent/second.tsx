@@ -1,6 +1,6 @@
-import {StyleSheet, TextInput} from 'react-native';
-import {Text, View} from '@/components/Themed';
-import {BottomRow} from "@/app/(drawer)/_layout";
+import {StyleSheet} from 'react-native';
+import {Text, View, TextInput} from '@/components/Themed';
+import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 

@@ -1,22 +1,21 @@
-import {StyleSheet, TextInput} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {BottomRow} from "@/app/(drawer)/_layout";
+import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {ServerInfo} from "@/helper/database_helper/server/ServerAPI";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 
 export default function HomeScreen() {
 
-  const [exampleValue, setExampleValue] = useSyncState<string>(PersistentStore.test);
+  const [serverInfo, setServerInfo] = useSyncState<ServerInfo>(PersistentStore.server_info);
 
   return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Sync Screen Index Persistent</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Server Info</Text>
 
-        <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
-          setExampleValue(text);
-        }} />
-        <BottomRow />
-      </View>
+      <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+      <BottomRow />
+    </View>
   );
 }
 
