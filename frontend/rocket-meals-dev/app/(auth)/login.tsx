@@ -5,6 +5,7 @@ import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 import {useEffect} from "react";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {Button, Divider} from "@gluestack-ui/themed";
 
 
 export default function Login() {
@@ -37,13 +38,14 @@ export default function Login() {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text
+            <Button
                 onPress={() => {
                     setLoggedIn(true)
                 }}>
-                Debug Login
-            </Text>
-            <Text
+                {"Debug Login"}
+            </Button>
+            <Divider />
+            <Button
                 onPress={() => {
                     console.log("Handle sign in");
                     //signIn();
@@ -51,8 +53,8 @@ export default function Login() {
                     // successful before navigating.
                     router.replace('/');
                 }}>
-                Normal Sign In
-            </Text>
+                {"TODO: Normal Sign In"}
+            </Button>
             <Text>{"loggedIn: "+loggedIn}</Text>
             <Text>{"route.name: "+route.name}</Text>
             <Text>{"slug: "+JSON.stringify(slug, null, 2)}</Text>

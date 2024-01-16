@@ -1,7 +1,5 @@
-import {StyleSheet, TextInput} from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import {StyleSheet} from 'react-native';
+import {Text, View, TextInput} from '@/components/Themed';
 import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
@@ -13,10 +11,13 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Playground</Text>
-
-      <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
-        setExampleValue(text);
-      }} />
+      <TextInput
+            value={exampleValue || ""}
+            onChangeText={(text: string) => {
+              setExampleValue(text);
+            }}
+            placeholder={"Enter Text here"}
+        />
       <BottomRow />
     </View>
   );

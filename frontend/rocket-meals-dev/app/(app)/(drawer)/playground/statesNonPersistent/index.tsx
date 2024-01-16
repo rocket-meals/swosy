@@ -1,7 +1,7 @@
-import {StyleSheet, TextInput} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import {Text, TextInput, View} from '@/components/Themed';
 import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
@@ -14,7 +14,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Sync Screen Index Non Persistent</Text>
 
-        <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
+        <TextInput placeholder="change me" value={exampleValue || ""} onChangeText={(text) => {
           setExampleValue(text);
         }} />
         <BottomRow />

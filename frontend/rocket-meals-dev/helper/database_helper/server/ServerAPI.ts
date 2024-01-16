@@ -56,11 +56,13 @@ export class ServerAPI {
         const client = ServerAPI.getClient();
         const result = await client.request(login(email, password))
         console.log(result);
+        return result;
     }
 
     static async getMe(): Promise<any>{
         let directus = ServerAPI.getClient();
         let me = await directus.request(readMe())
+        return me;
     }
 
 
