@@ -34,7 +34,7 @@ export default function HomeScreen() {
               isDisabled={false}
               isInvalid={false}
               isReadOnly={false}
-              value={email} onChangeText={setPassword}
+              value={password} onChangeText={setPassword}
               placeholder={"Password"}
           />
         <Divider />
