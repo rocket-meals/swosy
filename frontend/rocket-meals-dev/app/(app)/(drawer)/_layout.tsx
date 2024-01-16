@@ -28,12 +28,7 @@ const styles = StyleSheet.create({
 });
 
 function DrawerContentWrapper(props: any) {
-    console.log("DrawerContentWrapper");
-    console.log(props);
-
     let registeredRoutes = props?.state?.routeNames;
-    console.log("registeredRoutes");
-    console.log(registeredRoutes);
 
     /**
      * TODO: Find a nice way to show only routes for users role
@@ -52,16 +47,11 @@ function DrawerContentWrapper(props: any) {
      */
 
     return (
-        <DrawerContent {...props}>
-            {props.children}
-        </DrawerContent>
+        <DrawerContent {...props} />
     );
 }
 
 function DrawerWrapper(props: any) {
-
-    console.log("DrawerWrapper");
-    console.log(props);
 
     const isLargeDevice = useIsLargeDevice();
     return (

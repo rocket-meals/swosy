@@ -16,7 +16,8 @@ import {ServerAPI, ServerInfo} from "@/helper/database_helper/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {useRoute} from "@react-navigation/core";
-import Slot = Navigator.Slot; // Optional if you want to use default theme
+import Slot = Navigator.Slot;
+import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -80,10 +81,10 @@ function AuthFlowUserCheck(){
     )
 }
 
-function AuthFlow(){
+function ServerStatusFlow(){
   console.log("AuthFlow")
 
-  const [serverInfo, setServerInfo] = useSyncState<ServerInfo>(PersistentStore.server_info);
+  const [serverInfo, setServerInfo] = useServerInfoRaw();
 
   console.log("serverInfo", serverInfo)
 
@@ -137,7 +138,7 @@ function RootLayoutNav() {
       <StoreProvider store={store}>
         <GluestackUIProvider config={config}>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <AuthFlow />
+            <ServerStatusFlow />
           </ThemeProvider>
         </GluestackUIProvider>
       </StoreProvider>
