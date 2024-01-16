@@ -42,7 +42,9 @@ export default function Login() {
                 onPress={() => {
                     setLoggedIn(true)
                 }}>
-                {"Debug Login"}
+                <Text>
+                    {"Debug Login"}
+                </Text>
             </Button>
             <Divider />
             <Button
@@ -53,7 +55,9 @@ export default function Login() {
                     // successful before navigating.
                     router.replace('/');
                 }}>
-                {"TODO: Normal Sign In"}
+                <Text>
+                    {"TODO: Normal Sign In"}
+                </Text>
             </Button>
             <Text>{"loggedIn: "+loggedIn}</Text>
             <Text>{"route.name: "+route.name}</Text>
