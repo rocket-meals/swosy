@@ -9,6 +9,8 @@ export default function AppLayout() {
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
 
+    // AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
+
     // You can keep the splash screen open, or render a loading screen like we do here.
     if (isLoading) {
         return <Text>Loading...</Text>;

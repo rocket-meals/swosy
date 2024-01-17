@@ -1,11 +1,13 @@
-import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import { Text, View } from 'react-native';
+import {Link, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
+import {StyleSheet, Text, View} from 'react-native';
 import {useRoute} from "@react-navigation/core";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 import {useEffect} from "react";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {Button, Divider} from "@gluestack-ui/themed";
+import {ExternalLink} from "@/components/ExternalLink";
+import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 
 
 export default function Login() {
@@ -63,6 +65,31 @@ export default function Login() {
             <Text>{"route.name: "+route.name}</Text>
             <Text>{"slug: "+JSON.stringify(slug, null, 2)}</Text>
             <Text>{"params: "+JSON.stringify(params)}</Text>
+
+            <ExternalLink href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
+                <Text style={styles.linkText}>Test Google Login</Text>
+            </ExternalLink>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    link: {
+        marginTop: 15,
+        paddingVertical: 15,
+    },
+    linkText: {
+        fontSize: 14,
+        color: '#2e78b7',
+    },
+});
