@@ -39,7 +39,7 @@ export default function HomeScreen() {
           />
         <Divider />
         <Button onPress={() => {
-          ServerAPI.login_with_email_and_password(email, password).then((result) => {
+          ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
             setResult(result);
           }).catch((error) => {
             setResult(error);

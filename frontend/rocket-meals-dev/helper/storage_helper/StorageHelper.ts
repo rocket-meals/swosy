@@ -15,7 +15,6 @@ export class StorageHelper {
      * @param value
      */
     static async setItem(key: string, value: string | null): Promise<boolean> {
-        console.log("StorageHelper.setItem", key, value)
         if(value===null){
             return await StorageHelper.removeItemRaw(key);
         } else {
@@ -44,11 +43,8 @@ export class StorageHelper {
     }
 
     private static async setItemRaw(key: string, value: string): Promise<boolean> {
-        console.log("StorageHelper.setItemRaw", key, value)
         try {
-            console.log("Call AsyncStorage.setItem")
             await AsyncStorage.setItem(key, value);
-            console.log("Call AsyncStorage.setItem done")
             return true;
         } catch (error) {
             console.error(error);

@@ -9,12 +9,15 @@ import {Button, Divider} from "@gluestack-ui/themed";
 import {ExternalLink} from "@/components/ExternalLink";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {TextInput} from "@/components/Themed";
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 
 
 export default function Login() {
 
     const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
     const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
+
+    const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -77,8 +80,9 @@ export default function Login() {
             <Button
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.login_with_email_and_password(email, password);
+                        let result = await ServerAPI.authenticate_with_email_and_password(email, password);
                         setLoginWithAccessTokenResult(result)
+                        //setRefreshToken(result.refresh_token)
                     } catch (e) {
                         console.error(e)
                         setLoginWithAccessTokenResult(e)
@@ -90,10 +94,11 @@ export default function Login() {
             </Button>
             <Divider />
             <Button
-                disabled={!directus_token}
+                disabled={!(directus_token)}
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.login_with_access_token(directus_token);
+                        let result = await ServerAPI.authenticate_with_access_token(directus_token);
+                        setRefreshToken(result.refresh_token)
                         setLoginWithAccessTokenResult(result)
                     } catch (e) {
                         console.error(e)
@@ -102,6 +107,23 @@ export default function Login() {
                 }}>
                 <Text>
                     {"Use Access Token to login"}
+                </Text>
+            </Button>
+            <Divider />
+            <Button
+                disabled={!(refreshToken)}
+                onPress={async () => {
+                    try {
+                        let result = await ServerAPI.authenticate_with_access_token(refreshToken);
+                        setRefreshToken(result.refresh_token)
+                        setLoginWithAccessTokenResult(result)
+                    } catch (e) {
+                        console.error(e)
+                        setLoginWithAccessTokenResult(e)
+                    }
+                }}>
+                <Text>
+                    {"Use refreshToken Token to login"}
                 </Text>
             </Button>
             <Text>{"loginResult: "+JSON.stringify(loginWithAccessTokenResult, null, 2)}</Text>
@@ -123,13 +145,14 @@ export default function Login() {
             <Text>{"currentUser: "+JSON.stringify(currentUser, null, 2)}</Text>
 
             <Text>{"loggedIn: "+loggedIn}</Text>
-            <Text>{"route.name: "+route.name}</Text>
-            <Text>{"slug: "+JSON.stringify(localSearchParams, null, 2)}</Text>
-            <Text>{"params: "+JSON.stringify(globalSearchParams)}</Text>
-            <Text>{"directus_token: "+directus_token}</Text>
+            <Text>{"directus_token from url params: "+directus_token}</Text>
+            <Text>{"refresh_token from storage: "+refreshToken}</Text>
 
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
                 <Text style={styles.linkText}>Test Google Login</Text>
+            </ExternalLink>
+            <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
+                <Text style={styles.linkText}>Test Login Exploit</Text>
             </ExternalLink>
         </View>
     );

@@ -17,7 +17,8 @@ import {View, Text} from "@/components/Themed";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {useRoute} from "@react-navigation/core";
 import Slot = Navigator.Slot;
-import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo"; // Optional if you want to use default theme
+import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -72,9 +73,35 @@ export default function RootLayout() {
 
 function AuthFlowUserCheck(){
 
+  console.log("AuthFlowUserCheck")
+
+  const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
+  const [initialRefreshDone, setInitialRefreshDone] = useState<boolean>(false)
     // 2. Check if user is logged in
     // if user is authenticated (logged in or anonymous) in, load collections and user information
     // if user is not authenticated in, go to login screen
+
+  useEffect(() => {
+    // call anonymous function
+    (async () => {
+      console.log("AuthFlowUserCheck useEffect")
+      console.log("refreshToken", refreshToken)
+      if(!!refreshToken){
+        try {
+          //let result = await ServerAPI.authenticate_with_access_token(refreshToken);
+          //setRefreshToken(result.refresh_token)
+        } catch (e) {
+          console.log("AuthFlowUserCheck useEffect error", e)
+          setRefreshToken("")
+        }
+      }
+      setInitialRefreshDone(true)
+    })();
+  }, []);
+
+  if(!initialRefreshDone){
+    return null;
+  }
 
     return(
         <Slot />

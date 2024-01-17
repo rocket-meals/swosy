@@ -38,7 +38,7 @@ export class ServerAPI {
     static client: DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any> | null = null;
 
     static getServerUrl(){
-        return 'https://rocket-meals.de/rocket-meals-demo/api';
+        return 'https://rocket-meals.de/demo/api';
     }
 
     static getParamNameForDirectusAccessToken(){
@@ -63,7 +63,7 @@ export class ServerAPI {
                 //storage?: AuthenticationStorage;
             }
             const client = createDirectus(ServerAPI.getServerUrl())
-                .with(authentication('cookie', authconfig))
+                .with(authentication('json', authconfig))
                 .with(graphql())
                 .with(rest());
             ServerAPI.client = client;
@@ -71,31 +71,26 @@ export class ServerAPI {
         return ServerAPI.client;
     }
 
-    static async login_with_access_token(directus_access_token: string){
+    static async authenticate_with_access_token(directus_access_token: string){
         console.log("login_with_access_token");
         console.log("directus_access_token", directus_access_token);
         const client = ServerAPI.getClient();
         let refresh_token: string = directus_access_token;
-        const result = await client.request(refresh('cookie', refresh_token));
+        const result = await client.request(refresh('json', refresh_token));
         let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
         // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
         // TODO: we should use ExpoSecureStore to store the refresh token on mobile devices (https://docs.expo.io/versions/latest/sdk/securestore/) and an encrypted local storage on web or using the idea of the browser fingerprint (https://www.npmjs.com/package/react-secure-storage)
         client.setToken(result.access_token);
-        let obj = {
-            access_token: result.access_token,
-            refresh_token: new_refresh_token
-        }
-        console.log(obj);
-        return obj;
+        return result;
     }
 
-    static async login_with_email_and_password(email: string, password: string){
+    static async authenticate_with_email_and_password(email: string, password: string){
         console.log("login_with_email_and_password");
         console.log("email", email);
         console.log("password", password)
         const client = ServerAPI.getClient();
         const result = await client.request(login(email, password))
-        console.log(result);
+        client.setToken(result.access_token);
         return result;
     }
 
@@ -131,6 +126,17 @@ export class ServerAPI {
         console.log("RedirectURL: "+redirectURL)
         let redirect_with_access_token = "?redirect="+ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
         let totalURL = ServerAPI.getServerUrl()+"/auth/login/"+provider+redirect_with_access_token;
+        return totalURL
+    }
+
+    /**
+     * TODO: Check if this problem still occurs when https://github.com/rocket-meals/rocket-meals/issues/11 is fixed
+     * Currently we could send a user a mail with a link. This link would redirect the user to an application that the attacker controls. the attacker could then grab the token and use it to login to the app.
+     */
+    static getUrlToLoginExploit(){
+        let redirectURL = UrlHelper.getURLToLogin();
+        console.log("RedirectURL: "+redirectURL)
+        let totalURL = ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
         return totalURL
     }
 
