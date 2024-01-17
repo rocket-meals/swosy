@@ -97,8 +97,7 @@ export default function Login() {
                 disabled={!(directus_token)}
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.authenticate_with_access_token(directus_token);
-                        setRefreshToken(result.refresh_token)
+                        let result = await ServerAPI.authenticate_with_access_token(directus_token, setRefreshToken);
                         setLoginWithAccessTokenResult(result)
                     } catch (e) {
                         console.error(e)
@@ -114,8 +113,7 @@ export default function Login() {
                 disabled={!(refreshToken)}
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.authenticate_with_access_token(refreshToken);
-                        setRefreshToken(result.refresh_token)
+                        let result = await ServerAPI.authenticate_with_access_token(refreshToken, setRefreshToken);
                         setLoginWithAccessTokenResult(result)
                     } catch (e) {
                         console.error(e)

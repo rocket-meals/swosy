@@ -92,8 +92,7 @@ function AuthFlowUserCheck(){
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
         if(!!refreshToken){ // but only if we have a refresh token
           try {
-            let result = await ServerAPI.authenticate_with_access_token(refreshToken);
-            setRefreshToken(result.refresh_token)
+            let result = await ServerAPI.authenticate_with_access_token(refreshToken, setRefreshToken);
           } catch (e) {
             console.log("AuthFlowUserCheck useEffect error", e)
             setRefreshToken(null)
