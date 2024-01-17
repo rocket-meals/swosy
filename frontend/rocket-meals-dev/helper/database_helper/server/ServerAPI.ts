@@ -1,8 +1,8 @@
 import {
-    authentication,
+    authentication, AuthenticationClient, AuthenticationConfig,
     createDirectus,
     DirectusClient,
-    graphql, login, readMe, refresh,
+    graphql, GraphqlClient, login, readMe, refresh,
     rest,
     RestClient,
     serverInfo,
@@ -35,6 +35,8 @@ export interface ServerInfo{
 
 export class ServerAPI {
 
+    static client: DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any> | null = null;
+
     static getServerUrl(){
         return 'https://rocket-meals.de/demo/api';
     }
@@ -43,17 +45,30 @@ export class ServerAPI {
         return "directus_access_token";
     }
 
+    static getDirectusAccessTokenFromParams(params: any){
+        return params?.[ServerAPI.getParamNameForDirectusAccessToken()];
+    }
+
     static getPublicClient():  DirectusClient<CustomDirectusTypes> & RestClient<any>{
         const client = createDirectus<CustomDirectusTypes>(ServerAPI.getServerUrl()).with(rest());
         return client;
     }
 
-    static getClient():  DirectusClient<CustomDirectusTypes> & RestClient<any>{
-        const client = createDirectus(ServerAPI.getServerUrl())
-            .with(authentication('cookie', { credentials: 'include' }))
-            .with(graphql({ credentials: 'include' }))
-            .with(rest({ credentials: 'include' }));
-        return client;
+    static getClient(): DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any>{
+        if(!ServerAPI.client){
+            let authconfig:  Partial<AuthenticationConfig> = {
+                autoRefresh: true,
+                //msRefreshBeforeExpires: number;
+                credentials: "include",
+                //storage?: AuthenticationStorage;
+            }
+            const client = createDirectus(ServerAPI.getServerUrl())
+                .with(authentication('cookie', authconfig))
+                .with(graphql())
+                .with(rest());
+            ServerAPI.client = client;
+        }
+        return ServerAPI.client;
     }
 
     static async login_with_access_token(directus_access_token: string){
@@ -61,8 +76,17 @@ export class ServerAPI {
         console.log("directus_access_token", directus_access_token);
         const client = ServerAPI.getClient();
         let refresh_token: string = directus_access_token;
-        const result = await client.request(refresh('json', refresh_token));
-        console.log(result);
+        const result = await client.request(refresh('cookie', refresh_token));
+        let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
+        // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
+        // TODO: we should use ExpoSecureStore to store the refresh token on mobile devices (https://docs.expo.io/versions/latest/sdk/securestore/) and an encrypted local storage on web or using the idea of the browser fingerprint (https://www.npmjs.com/package/react-secure-storage)
+        client.setToken(result.access_token);
+        let obj = {
+            access_token: result.access_token,
+            refresh_token: new_refresh_token
+        }
+        console.log(obj);
+        return obj;
     }
 
     static async login_with_email_and_password(email: string, password: string){
