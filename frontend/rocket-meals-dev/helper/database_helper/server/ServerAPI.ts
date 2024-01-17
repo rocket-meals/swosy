@@ -71,11 +71,14 @@ export class ServerAPI {
         return ServerAPI.client;
     }
 
-    static async authenticate_with_access_token(directus_access_token: string){
+    static async authenticate_with_access_token(directus_access_token: string | undefined | null){
         console.log("login_with_access_token");
         console.log("directus_access_token", directus_access_token);
         const client = ServerAPI.getClient();
-        let refresh_token: string = directus_access_token;
+        let refresh_token: string | undefined = undefined;
+        if(directus_access_token){
+            refresh_token = directus_access_token
+        }
         const result = await client.request(refresh('json', refresh_token));
         let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
         // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
