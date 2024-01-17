@@ -38,7 +38,7 @@ export class ServerAPI {
     static client: DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any> | null = null;
 
     static getServerUrl(){
-        return 'https://rocket-meals.de/demo/api';
+        return 'https://rocket-meals.de/rocket-meals-demo/api';
     }
 
     static getParamNameForDirectusAccessToken(){
