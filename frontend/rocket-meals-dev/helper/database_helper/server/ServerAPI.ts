@@ -9,11 +9,27 @@ import {
     ServerInfoOutput
 } from "@directus/sdk";
 import {CustomDirectusTypes} from "@/helper/database_helper/directusTypes/types";
+import {UrlHelper} from "@/helper/UrlHelper";
+
+
+interface ExtendedProperties {
+    project: {
+        project_descriptor: string | null;
+        project_logo: string | null;
+        project_color: string | null;
+        public_foreground: string | null;
+        public_background: string | null;
+        public_note: string | null;
+        custom_css: string | null;
+    };
+}
+
+type ExtendedServerInfoOutput = ServerInfoOutput & ExtendedProperties;
 
 export interface ServerInfo{
     // status can be "loading", "online" or "offline"
     status: "loading" | "online" | "offline" | "error" | "cached";
-    info: ServerInfoOutput | null;
+    info: ExtendedServerInfoOutput | null;
     errorMessage?: any;
 }
 
@@ -59,13 +75,6 @@ export class ServerAPI {
         return result;
     }
 
-    static async getMe(): Promise<any>{
-        let directus = ServerAPI.getClient();
-        let me = await directus.request(readMe())
-        return me;
-    }
-
-
     static async downloadServerInfo(): Promise<ServerInfo>{
         let result: ServerInfo = {
             status: "loading",
@@ -77,7 +86,7 @@ export class ServerAPI {
             let directus = ServerAPI.getPublicClient();
              let remote_info = await directus.request(serverInfo());
              result.status = "online";
-             result.info = remote_info;
+             result.info = remote_info as ExtendedServerInfoOutput;
         } catch (err){
             console.log("Err at ServerAPI.getServerInfo()");
             console.log(err);
@@ -89,6 +98,33 @@ export class ServerAPI {
             result.status = "offline";
         }
         return result;
+    }
+
+    static getUrlToProviderLogin(provider: string){
+        provider= provider.toLowerCase();
+        console.log("getUrlToProvider: "+provider);
+        let redirectURL = UrlHelper.getURLToLogin();
+        console.log("RedirectURL: "+redirectURL)
+        let redirect_with_access_token = "?redirect="+ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
+        let totalURL = ServerAPI.getServerUrl()+"/auth/login/"+provider+redirect_with_access_token;
+        return totalURL
+    }
+
+    static getAssetImageURL(imageID: string | null | undefined){
+        return ServerAPI.getAssetURL(imageID);
+    }
+
+    static getAssetURL(file_id: string | null | undefined): any{
+        if(!file_id){
+            return null;
+        }
+        return ServerAPI.getServerUrl()+"/assets/"+file_id
+    }
+
+    static async getMe(): Promise<any>{
+        let directus = ServerAPI.getClient();
+        let me = await directus.request(readMe())
+        return me;
     }
 
 }

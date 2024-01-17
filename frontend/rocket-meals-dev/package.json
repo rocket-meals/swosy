@@ -43,7 +43,8 @@
     "react-native-screens": "~3.27.0",
     "react-native-svg": "^13.4.0",
     "react-native-web": "~0.19.6",
-    "@react-native-async-storage/async-storage": "1.21.0"
+    "@react-native-async-storage/async-storage": "1.21.0",
+    "expo-image": "~1.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

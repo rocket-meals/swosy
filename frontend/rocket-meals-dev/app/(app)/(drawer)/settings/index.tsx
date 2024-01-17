@@ -12,6 +12,7 @@ export default function SettingsScreen() {
 
       <SettingsRowSyncBooleanSwitch accessibilityLabel={"Test"} variable={PersistentStore.debug} />
       <SettingsRowSyncBooleanSwitch accessibilityLabel={"LoggedIn TEST"} variable={NonPersistentStore.loggedIn} />
+      <SettingsRowSyncBooleanSwitch accessibilityLabel={"Debug Auto Login"} variable={PersistentStore.debugAutoLogin} />
     </View>
   );
 }
