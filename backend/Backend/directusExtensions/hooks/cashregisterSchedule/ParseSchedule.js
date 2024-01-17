@@ -205,7 +205,7 @@ export class ParseSchedule {
 
         let obj = undefined;
         let objs = this.cashregisters_transactions_service.readOne(obj_json?.id);
-        let obj = objs[0]
+        obj = objs[0]
         /**
          * Using readOne get this error:
          * https://github.com/directus/directus/issues/20990
