@@ -83,7 +83,11 @@ export class ServerAPI {
         let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
         // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
         // TODO: we should use ExpoSecureStore to store the refresh token on mobile devices (https://docs.expo.io/versions/latest/sdk/securestore/) and an encrypted local storage on web or using the idea of the browser fingerprint (https://www.npmjs.com/package/react-secure-storage)
+
+
         client.setToken(result.access_token);
+
+
         return result;
     }
 

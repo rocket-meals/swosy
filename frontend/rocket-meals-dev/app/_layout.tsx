@@ -75,6 +75,8 @@ function AuthFlowUserCheck(){
 
   console.log("AuthFlowUserCheck")
 
+  const [serverInfo, setServerInfo] = useServerInfoRaw();
+
   const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
   const [initialRefreshDone, setInitialRefreshDone] = useState<boolean>(false)
     // 2. Check if user is logged in
@@ -86,13 +88,16 @@ function AuthFlowUserCheck(){
     (async () => {
       console.log("AuthFlowUserCheck useEffect")
       console.log("refreshToken", refreshToken)
-      if(!!refreshToken){
-        try {
-          //let result = await ServerAPI.authenticate_with_access_token(refreshToken);
-          //setRefreshToken(result.refresh_token)
-        } catch (e) {
-          console.log("AuthFlowUserCheck useEffect error", e)
-          setRefreshToken("")
+
+      if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+        if(!!refreshToken){ // but only if we have a refresh token
+          try {
+            let result = await ServerAPI.authenticate_with_access_token(refreshToken);
+            setRefreshToken(result.refresh_token)
+          } catch (e) {
+            console.log("AuthFlowUserCheck useEffect error", e)
+            setRefreshToken(null)
+          }
         }
       }
       setInitialRefreshDone(true)
