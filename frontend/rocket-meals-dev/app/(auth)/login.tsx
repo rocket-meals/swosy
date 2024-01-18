@@ -1,5 +1,5 @@
 import {Link, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useRoute} from "@react-navigation/core";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
@@ -53,7 +53,7 @@ export default function Login() {
 
 
     return (
-        <View style={{ }}>
+        <ScrollView style={{ width: "100%", height: "100%" }}>
             <Button
                 onPress={() => {
                     setLoggedIn(true)
@@ -154,7 +154,7 @@ export default function Login() {
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
                 <Text style={styles.linkText}>Test Login Exploit</Text>
             </ExternalLink>
-        </View>
+        </ScrollView>
     );
 }
 
