@@ -1,8 +1,17 @@
 import {
-    authentication, AuthenticationClient, AuthenticationConfig,
+    authentication,
+    AuthenticationClient,
+    AuthenticationConfig,
+    AuthenticationData,
+    AuthenticationStorage,
+    ClientOptions,
     createDirectus,
     DirectusClient,
-    graphql, GraphqlClient, login, readMe, refresh,
+    graphql,
+    GraphqlClient,
+    login,
+    readMe,
+    refresh,
     rest,
     RestClient,
     serverInfo,
@@ -54,15 +63,52 @@ export class ServerAPI {
         return client;
     }
 
+    static simpleAuthentificationStorageData: AuthenticationData | null = null
+
+    /**
+     * interface AuthenticationStorage {
+     *     get: () => Promise<AuthenticationData | null> | AuthenticationData | null;
+     *     set: (value: AuthenticationData | null) => Promise<void> | void;
+     * }
+     */
+    static simpleAuthentificationStorage: AuthenticationStorage = {
+        get: () => {
+            console.log("get simpleAuthentificationStorageData");
+            return ServerAPI.simpleAuthentificationStorageData;
+        },
+        set: (value: AuthenticationData | null) => {
+            console.log("set simpleAuthentificationStorageData", value);
+            ServerAPI.simpleAuthentificationStorageData = value;
+        }
+    }
+
+    // TODO create a initClient function that passes the storage to use which uses our useSyncState hook to save the data.
+
     static getClient(): DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any>{
         if(!ServerAPI.client){
             let authconfig:  Partial<AuthenticationConfig> = {
                 autoRefresh: true,
                 //msRefreshBeforeExpires: number;
                 credentials: "include",
-                //storage?: AuthenticationStorage;
+                storage: ServerAPI.simpleAuthentificationStorage
             }
-            const client = createDirectus(ServerAPI.getServerUrl())
+
+            // type FetchInterface = (input: string | any, init?: RequestInit | any) => Promise<unknown>;
+            let myFetch = async (input: string | any, init?: RequestInit | any) => {
+                console.log("myFetch");
+                console.log("input", input);
+                console.log("init", init);
+                let result = await fetch(input, init);
+                console.log("result", result);
+                return result;
+            }
+            let clientOptions: ClientOptions = {
+                globals: {
+                    fetch: myFetch
+                }
+            }
+
+            const client = createDirectus(ServerAPI.getServerUrl(), clientOptions)
                 .with(authentication('json', authconfig))
                 .with(graphql())
                 .with(rest());
@@ -78,13 +124,26 @@ export class ServerAPI {
         let refresh_token: string | undefined = undefined;
         if(directus_access_token){
             refresh_token = directus_access_token
+            ServerAPI.simpleAuthentificationStorageData = {
+                refresh_token: directus_access_token,
+                access_token:  null,
+                expires_at: null,
+                expires: null,
+            }
         }
-        const result = await client.request(refresh('json', refresh_token));
+
+        let result = await client.refresh();
+
+        //const result = await client.request(refresh('json', refresh_token));
         let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
         // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
         // TODO: we should use ExpoSecureStore to store the refresh token on mobile devices (https://docs.expo.io/versions/latest/sdk/securestore/) and an encrypted local storage on web or using the idea of the browser fingerprint (https://www.npmjs.com/package/react-secure-storage)
-        client.setToken(result.access_token);
+        //client.setToken(result.access_token);
+        //ServerAPI.simpleAuthentificationStorageData = result;
+        client.getToken()
         setRefreshToken(result.refresh_token)
+
+
         return result;
     }
 
@@ -125,9 +184,9 @@ export class ServerAPI {
 
     static getUrlToProviderLogin(provider: string){
         provider= provider.toLowerCase();
-        console.log("getUrlToProvider: "+provider);
+        //console.log("getUrlToProvider: "+provider);
         let redirectURL = UrlHelper.getURLToLogin();
-        console.log("RedirectURL: "+redirectURL)
+        //console.log("RedirectURL: "+redirectURL)
         let redirect_with_access_token = "?redirect="+ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
         let totalURL = ServerAPI.getServerUrl()+"/auth/login/"+provider+redirect_with_access_token;
         return totalURL
@@ -139,7 +198,7 @@ export class ServerAPI {
      */
     static getUrlToLoginExploit(){
         let redirectURL = UrlHelper.getURLToLogin();
-        console.log("RedirectURL: "+redirectURL)
+        //console.log("RedirectURL: "+redirectURL)
         let totalURL = ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
         return totalURL
     }
