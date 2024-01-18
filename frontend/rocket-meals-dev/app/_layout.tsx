@@ -18,7 +18,9 @@ import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {useRoute} from "@react-navigation/core";
 import Slot = Navigator.Slot;
 import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore"; // Optional if you want to use default theme
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {AuthenticationData, AuthenticationStorage} from "@directus/sdk";
+import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -116,6 +118,19 @@ function ServerStatusFlow(){
   console.log("AuthFlow")
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+  ServerAPI.createAuthentificationStorage(async () => {
+
+    // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
+    // So we have to fetch the data from the storage directly
+    let authDataRaw = await SecureStorageHelper.getItem(PersistentSecureStore.authentificationData)
+    console.log("authDataRaw", authDataRaw)
+    if(!authDataRaw){
+      return null;
+    } else {
+        return JSON.parse(authDataRaw)
+    }
+  }, async (newAuthData) => await setAuthData(newAuthData))
 
   console.log("serverInfo", serverInfo)
 

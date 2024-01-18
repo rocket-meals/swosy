@@ -63,7 +63,27 @@ export class ServerAPI {
         return client;
     }
 
-    static simpleAuthentificationStorageData: AuthenticationData | null = null
+    static createAuthentificationStorage(
+        get: () => Promise<AuthenticationData | null> | AuthenticationData | null,
+        set: (value: AuthenticationData | null) => Promise<void> | void
+    ){
+        console.log("createAuthentificationStorage called")
+        if(!ServerAPI.simpleAuthentificationStorage){
+            console.log("createAuthentificationStorage first time created")
+            ServerAPI.simpleAuthentificationStorage = {
+                get: async () => {
+                    let result = await get();
+                    console.log("simpleAuthentificationStorage get", result)
+                    return result;
+                },
+                set: async (value: AuthenticationData | null) => {
+                    console.log("simpleAuthentificationStorage set", value)
+                    await set(value);
+                    console.log("simpleAuthentificationStorage set done")
+                }
+            }
+        }
+    }
 
     /**
      * interface AuthenticationStorage {
@@ -71,65 +91,48 @@ export class ServerAPI {
      *     set: (value: AuthenticationData | null) => Promise<void> | void;
      * }
      */
-    static simpleAuthentificationStorage: AuthenticationStorage = {
-        get: () => {
-            console.log("get simpleAuthentificationStorageData");
-            return ServerAPI.simpleAuthentificationStorageData;
-        },
-        set: (value: AuthenticationData | null) => {
-            console.log("set simpleAuthentificationStorageData", value);
-            ServerAPI.simpleAuthentificationStorageData = value;
-        }
-    }
+    static simpleAuthentificationStorage: AuthenticationStorage | null = null;
 
     // TODO create a initClient function that passes the storage to use which uses our useSyncState hook to save the data.
 
     static getClient(): DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any>{
         if(!ServerAPI.client){
-            let authconfig:  Partial<AuthenticationConfig> = {
-                autoRefresh: true,
-                //msRefreshBeforeExpires: number;
-                credentials: "include",
-                storage: ServerAPI.simpleAuthentificationStorage
-            }
-
-            // type FetchInterface = (input: string | any, init?: RequestInit | any) => Promise<unknown>;
-            let myFetch = async (input: string | any, init?: RequestInit | any) => {
-                console.log("myFetch");
-                console.log("input", input);
-                console.log("init", init);
-                let result = await fetch(input, init);
-                console.log("result", result);
-                return result;
-            }
-            let clientOptions: ClientOptions = {
-                globals: {
-                    fetch: myFetch
+            let authentificationStorage = ServerAPI.simpleAuthentificationStorage;
+            if(!authentificationStorage){
+                throw new Error("ServerAPI.simpleAuthentificationStorage is not set. Please call ServerAPI.createAuthentificationStorage() before calling ServerAPI.getClient()");
+            } else {
+                let authconfig:  Partial<AuthenticationConfig> = {
+                    autoRefresh: true,
+                    //msRefreshBeforeExpires: number;
+                    credentials: "include",
+                    storage: authentificationStorage
                 }
-            }
 
-            const client = createDirectus(ServerAPI.getServerUrl(), clientOptions)
-                .with(authentication('json', authconfig))
-                .with(graphql())
-                .with(rest());
-            ServerAPI.client = client;
+                const client = createDirectus(ServerAPI.getServerUrl())
+                    .with(authentication('json', authconfig))
+                    .with(graphql())
+                    .with(rest());
+                ServerAPI.client = client;
+            }
         }
         return ServerAPI.client;
     }
 
-    static async authenticate_with_access_token(directus_access_token: string | undefined | null, setRefreshToken: (refresh_token: string | null) => void){
+    static async authenticate_with_access_token(directus_access_token: string | undefined | null){
         console.log("login_with_access_token");
         console.log("directus_access_token", directus_access_token);
         const client = ServerAPI.getClient();
         let refresh_token: string | undefined = undefined;
         if(directus_access_token){
             refresh_token = directus_access_token
-            ServerAPI.simpleAuthentificationStorageData = {
+            console.log("authenticate_with_access_token set refresh_token to directus_access_token")
+            await ServerAPI.simpleAuthentificationStorage?.set({
+                access_token: null,
                 refresh_token: directus_access_token,
-                access_token:  null,
-                expires_at: null,
                 expires: null,
-            }
+                expires_at: null,
+            });
+            console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
         }
 
         let result = await client.refresh();
@@ -141,7 +144,6 @@ export class ServerAPI {
         //client.setToken(result.access_token);
         //ServerAPI.simpleAuthentificationStorageData = result;
         client.getToken()
-        setRefreshToken(result.refresh_token)
 
 
         return result;

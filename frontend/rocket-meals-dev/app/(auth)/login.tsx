@@ -10,6 +10,7 @@ import {ExternalLink} from "@/components/ExternalLink";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {TextInput} from "@/components/Themed";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {AuthenticationData} from "@directus/sdk";
 
 
 export default function Login() {
@@ -17,7 +18,7 @@ export default function Login() {
     const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
     const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
 
-    const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
+    const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -97,7 +98,7 @@ export default function Login() {
                 disabled={!(directus_token)}
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.authenticate_with_access_token(directus_token, setRefreshToken);
+                        let result = await ServerAPI.authenticate_with_access_token(directus_token);
                         setLoginWithAccessTokenResult(result)
                     } catch (e) {
                         console.error(e)
@@ -110,10 +111,10 @@ export default function Login() {
             </Button>
             <Divider />
             <Button
-                disabled={!(refreshToken)}
+                disabled={!(authData?.refresh_token)}
                 onPress={async () => {
                     try {
-                        let result = await ServerAPI.authenticate_with_access_token(refreshToken, setRefreshToken);
+                        let result = await ServerAPI.authenticate_with_access_token(authData?.refresh_token);
                         setLoginWithAccessTokenResult(result)
                     } catch (e) {
                         console.error(e)
@@ -121,7 +122,7 @@ export default function Login() {
                     }
                 }}>
                 <Text>
-                    {"Use refreshToken Token to login"}
+                    {"Use Auth Data from saved data Token to login, but thats not needed since the storage is fetched by the sdk"}
                 </Text>
             </Button>
             <Text>{"loginResult: "+JSON.stringify(loginWithAccessTokenResult, null, 2)}</Text>
@@ -144,7 +145,8 @@ export default function Login() {
 
             <Text>{"loggedIn: "+loggedIn}</Text>
             <Text>{"directus_token from url params: "+directus_token}</Text>
-            <Text>{"refresh_token from storage: "+refreshToken}</Text>
+            <Text>{"authData from storage: "}</Text>
+            <Text>{JSON.stringify(authData, null, 2)}</Text>
 
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
                 <Text style={styles.linkText}>Test Google Login</Text>
