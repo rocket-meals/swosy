@@ -6,7 +6,7 @@ function configureRouter(
         const refresh_token = req.cookies.directus_refresh_token;
         const redirect = req.query.redirect;
         const redirectURL = redirect + refresh_token;
-        //TODO allow regex and wildcards
+        //TODO: check if redirect is in listOfAllowedRedirects
         //https://github.com/directus/directus/discussions/8867#discussioncomment-1977411
         res.redirect(redirectURL);
     });

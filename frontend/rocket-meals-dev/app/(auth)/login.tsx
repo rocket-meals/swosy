@@ -1,13 +1,16 @@
 import {Link, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useRoute} from "@react-navigation/core";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {Button, Divider} from "@gluestack-ui/themed";
 import {ExternalLink} from "@/components/ExternalLink";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {TextInput} from "@/components/Themed";
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {AuthenticationData} from "@directus/sdk";
 
 
 export default function Login() {
@@ -15,10 +18,21 @@ export default function Login() {
     const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
     const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
 
-    const slug = useLocalSearchParams();
+    const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
-    // get params from url like /home?param1=1&param2=2
-    const params = useGlobalSearchParams();
+    // email and password for login
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+    const [currentUser, setCurrentUser] = useState<any>()
+    const [loginWithAccessTokenResult, setLoginWithAccessTokenResult] = useState<any>()
+
+    const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
+    const globalSearchParams = useGlobalSearchParams();
+
+    let params = localSearchParams;
+
+    let directus_token = ServerAPI.getDirectusAccessTokenFromParams(params);
 
     // get current route name
     const route = useRoute();
@@ -39,7 +53,7 @@ export default function Login() {
 
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ScrollView style={{ width: "100%", height: "100%" }}>
             <Button
                 onPress={() => {
                     setLoggedIn(true)
@@ -61,15 +75,86 @@ export default function Login() {
                     {"TODO: Normal Sign In"}
                 </Text>
             </Button>
-            <Text>{"loggedIn: "+loggedIn}</Text>
-            <Text>{"route.name: "+route.name}</Text>
-            <Text>{"slug: "+JSON.stringify(slug, null, 2)}</Text>
-            <Text>{"params: "+JSON.stringify(params)}</Text>
+            <Divider />
+            <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
+            <TextInput value={password} onChangeText={setPassword} placeholder={"password"} />
+            <Button
+                onPress={async () => {
+                    try {
+                        let result = await ServerAPI.authenticate_with_email_and_password(email, password);
+                        setLoginWithAccessTokenResult(result)
+                        //setRefreshToken(result.refresh_token)
+                    } catch (e) {
+                        console.error(e)
+                        setLoginWithAccessTokenResult(e)
+                    }
+                }}>
+                <Text>
+                    {"Login with email and password"}
+                </Text>
+            </Button>
+            <Divider />
+            <Button
+                disabled={!(directus_token)}
+                onPress={async () => {
+                    try {
+                        let result = await ServerAPI.authenticate_with_access_token(directus_token);
+                        setLoginWithAccessTokenResult(result)
+                    } catch (e) {
+                        console.error(e)
+                        setLoginWithAccessTokenResult(e)
+                    }
+                }}>
+                <Text>
+                    {"Use Access Token to login"}
+                </Text>
+            </Button>
+            <Divider />
+            <Button
+                disabled={!(authData?.refresh_token)}
+                onPress={async () => {
+                    try {
+                        let result = await ServerAPI.authenticate_with_access_token(authData?.refresh_token);
+                        setLoginWithAccessTokenResult(result)
+                    } catch (e) {
+                        console.error(e)
+                        setLoginWithAccessTokenResult(e)
+                    }
+                }}>
+                <Text>
+                    {"Use Auth Data from saved data Token to login, but thats not needed since the storage is fetched by the sdk"}
+                </Text>
+            </Button>
+            <Text>{"loginResult: "+JSON.stringify(loginWithAccessTokenResult, null, 2)}</Text>
+            <Divider />
+            <Button
+                onPress={async () => {
+                    try {
+                        let me = await ServerAPI.getMe();
+                        setCurrentUser(me)
+                    } catch (e) {
+                        console.error(e)
+                        setCurrentUser(e)
+                    }
+                }}>
+                <Text>
+                    {"Load current user"}
+                </Text>
+            </Button>
+            <Text>{"currentUser: "+JSON.stringify(currentUser, null, 2)}</Text>
 
-            <ExternalLink href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
+            <Text>{"loggedIn: "+loggedIn}</Text>
+            <Text>{"directus_token from url params: "+directus_token}</Text>
+            <Text>{"authData from storage: "}</Text>
+            <Text>{JSON.stringify(authData, null, 2)}</Text>
+
+            <ExternalLink target={"_self"} href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
                 <Text style={styles.linkText}>Test Google Login</Text>
             </ExternalLink>
-        </View>
+            <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
+                <Text style={styles.linkText}>Test Login Exploit</Text>
+            </ExternalLink>
+        </ScrollView>
     );
 }
 

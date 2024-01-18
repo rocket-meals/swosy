@@ -18,8 +18,10 @@ import {
 import {NonPersistentStore, NonPersistentStoreValues} from "@/helper/sync_state_helper/NonPersistentStore";
 import {PersistentStore, PersistentStoreValues} from "@/helper/sync_state_helper/PersistentStore";
 import {StorageHelper} from "@/helper/storage_helper/StorageHelper";
+import {PersistentSecureStore, PersistentSecureStoreValues} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 
-export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues;
+export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
 function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (value: any) => {}] {
     const value = useStoreState((state) => {
@@ -36,12 +38,12 @@ function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (val
     ]
 }
 
-export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T) => void, rawValue: any] {
+export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => void, rawValue: any] {
   const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
-  const setValue = (dict: T) => {
-      console.log("setValue", dict)
-      console.log("JSON.stringify(dict)", JSON.stringify(dict))
+  const setValue = (dict: T | null) => {
+      //console.log("setValue", dict)
+      //console.log("JSON.stringify(dict)", JSON.stringify(dict))
       setJsonStateAsString(JSON.stringify(dict))
   }
   return [
@@ -71,13 +73,14 @@ export class SyncState {
     }
 
     async init(){
-        await this.registerSyncStateVariablesNonPersistent();
-        await this.registerSyncStateVariablesPersistent();
+        await this.registerSyncStateVariablesNonPersistentStore();
+        await this.registerSyncStateVariablesPersistentStore();
+        await this.registerSyncStateVariablesPersistentSecure();
 
         this.initialized = true;
     }
 
-    private async getKeysOfClass(classRef: typeof PersistentStore | typeof NonPersistentStore){
+    private async getKeysOfClass(classRef: typeof PersistentStore | typeof NonPersistentStore | typeof PersistentSecureStore ){
         let additionalClassKeys = Object.keys(classRef) as Array<keyof typeof classRef>;
         let additionalKeys: string[] = [];
         for(let key of additionalClassKeys){
@@ -90,11 +93,11 @@ export class SyncState {
         return additionalKeys;
     }
 
-    private async registerSyncStateVariablesPersistent(){
+    private async registerSyncStateVariablesPersistentStore(){
         let additionalKeys: string[] = await this.getKeysOfClass(PersistentStore);
 
         let beforeHook = async (storageKey: string, state: any, payload: any) => {
-            console.log("beforeHook persistent", storageKey, payload)
+            //console.log("beforeHook persistent", storageKey, payload)
 
             await StorageHelper.setItem(storageKey, payload);
             let value = await StorageHelper.getItem(storageKey);
@@ -112,7 +115,31 @@ export class SyncState {
         }
     }
 
-    private async registerSyncStateVariablesNonPersistent(){
+
+
+    private async registerSyncStateVariablesPersistentSecure(){
+        let additionalKeys: string[] = await this.getKeysOfClass(PersistentSecureStore);
+
+        let beforeHook = async (storageKey: string, state: any, payload: any) => {
+            //console.log("beforeHook persistent secure", storageKey, payload)
+
+            await SecureStorageHelper.setItem(storageKey, payload);
+            let value = await SecureStorageHelper.getItem(storageKey);
+            if(value !== payload){
+                console.error("Error setting item", storageKey, payload, value);
+                return true; // cancel action
+            }
+            return false; // do not cancel action
+        }
+
+        for(let i=0; i<additionalKeys.length; i++){
+            let key = additionalKeys[i];
+            let value = await SecureStorageHelper.getItem(key);
+            this.registerSyncState(key, value, beforeHook, undefined, undefined);
+        }
+    }
+
+    private async registerSyncStateVariablesNonPersistentStore(){
         let additionalKeys: string[] = await this.getKeysOfClass(NonPersistentStore);
 
         this.registerSyncStates(additionalKeys);
@@ -150,11 +177,11 @@ export class SyncState {
             cancel = await beforeHook(storageKey, state, payload);
         }
         if(!cancel){
-            console.log("handleAction", storageKey, payload)
+            //console.log("handleAction", storageKey, payload)
             // @ts-ignore
             actions.setValueSync(payload);
 
-            console.log("state", state)
+            //console.log("state", state)
             // @ts-ignore // TODO fix this for correct type
             state.value = payload;
             if(!!afterHook){
@@ -177,13 +204,13 @@ export class SyncState {
 
         let additionalKeys = Object.keys(this.globalSynchedStoreModels);
 
-        console.log("GetStore");
+        //console.log("GetStore");
         for(let i=0; i<additionalKeys.length; i++){
             let key = additionalKeys[i];
             let aditionalStoreModel: SynchedVariableInterface = this.globalSynchedStoreModels[key];
             let storageKey = aditionalStoreModel.key;
 
-            console.log("storageKey", storageKey)
+            //console.log("storageKey", storageKey)
 
 
             model[storageKey] = {
@@ -192,7 +219,7 @@ export class SyncState {
                     this.handleActionSync(state, payload);
                 }),
                 setValue: thunk( async (actions, payload) => {
-                    console.log("setValue async", payload)
+                    //console.log("setValue async", payload)
                     await this.handleAction(actions, storageKey, actions, payload, aditionalStoreModel);
                 })
             }

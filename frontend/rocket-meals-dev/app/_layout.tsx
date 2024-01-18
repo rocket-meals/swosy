@@ -17,7 +17,10 @@ import {View, Text} from "@/components/Themed";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {useRoute} from "@react-navigation/core";
 import Slot = Navigator.Slot;
-import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo"; // Optional if you want to use default theme
+import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {AuthenticationData, AuthenticationStorage} from "@directus/sdk";
+import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -72,9 +75,39 @@ export default function RootLayout() {
 
 function AuthFlowUserCheck(){
 
+  console.log("AuthFlowUserCheck")
+
+  const [serverInfo, setServerInfo] = useServerInfoRaw();
+
+  const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
+  const [initialRefreshDone, setInitialRefreshDone] = useState<boolean>(false)
     // 2. Check if user is logged in
     // if user is authenticated (logged in or anonymous) in, load collections and user information
     // if user is not authenticated in, go to login screen
+
+  useEffect(() => {
+    // call anonymous function
+    (async () => {
+      console.log("AuthFlowUserCheck useEffect")
+      console.log("refreshToken", refreshToken)
+
+      if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+        if(!!refreshToken){ // but only if we have a refresh token
+          try {
+            let result = await ServerAPI.authenticate_with_access_token(refreshToken, setRefreshToken);
+          } catch (e) {
+            console.log("AuthFlowUserCheck useEffect error", e)
+            setRefreshToken(null)
+          }
+        }
+      }
+      setInitialRefreshDone(true)
+    })();
+  }, []);
+
+  if(!initialRefreshDone){
+    return null;
+  }
 
     return(
         <Slot />
@@ -85,6 +118,19 @@ function ServerStatusFlow(){
   console.log("AuthFlow")
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+  ServerAPI.createAuthentificationStorage(async () => {
+
+    // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
+    // So we have to fetch the data from the storage directly
+    let authDataRaw = await SecureStorageHelper.getItem(PersistentSecureStore.authentificationData)
+    console.log("authDataRaw", authDataRaw)
+    if(!authDataRaw){
+      return null;
+    } else {
+        return JSON.parse(authDataRaw)
+    }
+  }, async (newAuthData) => await setAuthData(newAuthData))
 
   console.log("serverInfo", serverInfo)
 
