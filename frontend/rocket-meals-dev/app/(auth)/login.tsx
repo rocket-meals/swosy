@@ -149,11 +149,25 @@ export default function Login() {
             <Text>{JSON.stringify(authData, null, 2)}</Text>
 
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
-                <Text style={styles.linkText}>Test Google Login</Text>
+                <Text style={styles.linkText}>Test Google Login / Does not work with ExpoGo</Text>
             </ExternalLink>
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
-                <Text style={styles.linkText}>Test Login Exploit</Text>
+                <Text style={styles.linkText}>Test Login Exploit / Does not work with ExpoGo</Text>
             </ExternalLink>
+            <Divider />
+            <Button
+                onPress={async () => {
+                    try {
+                        setAuthData(null)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                }}>
+                <Text>
+                    {"Clear Auth Data"}
+                </Text>
+            </Button>
+            <Divider />
         </ScrollView>
     );
 }
