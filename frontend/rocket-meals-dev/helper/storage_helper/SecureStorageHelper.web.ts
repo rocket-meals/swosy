@@ -5,9 +5,9 @@
 // Usage
 // https://docs.expo.dev/versions/latest/sdk/securestore/#usage
 
-import * as SecureStore from 'expo-secure-store';
+//import * as SecureStore from 'expo-secure-store'; // Not available in web
+import secureLocalStorage from "react-secure-storage"; // WARNING: This does not work in react-native context
 import {SecureStorageHelperAbstractClass,} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
-import {Promise} from "ts-toolbelt/out/Any/Promise";
 
 export class SecureStorageHelper extends SecureStorageHelperAbstractClass{
 
@@ -17,7 +17,7 @@ export class SecureStorageHelper extends SecureStorageHelperAbstractClass{
 
     async removeItemRaw(key: string): Promise<boolean> {
         try {
-            await SecureStore.deleteItemAsync(key);
+            await secureLocalStorage.removeItem(key);
             return true;
         } catch (error) {
             console.error(error);
@@ -27,7 +27,7 @@ export class SecureStorageHelper extends SecureStorageHelperAbstractClass{
 
     async setItemRaw(key: string, value: string): Promise<boolean> {
         try {
-            await SecureStore.setItemAsync(key, value);
+            await secureLocalStorage.setItem(key, value)
             return true;
         } catch (error) {
             console.error(error);
@@ -36,8 +36,14 @@ export class SecureStorageHelper extends SecureStorageHelperAbstractClass{
     }
 
     async getItemRaw(key: string): Promise<string | undefined | null> {
-        let value = await SecureStore.getItemAsync(key);
-        return value;
+        let value: string | undefined | null = undefined
+        let valueFromSecureLocalStorage = secureLocalStorage.getItem(key);
+        if(typeof valueFromSecureLocalStorage === "string"){
+            value = valueFromSecureLocalStorage;
+        }
+        if (value !== null) {
+            return value;
+        }
     }
 
 }

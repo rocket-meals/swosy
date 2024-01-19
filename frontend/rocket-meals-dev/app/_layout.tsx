@@ -20,7 +20,8 @@ import Slot = Navigator.Slot;
 import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData, AuthenticationStorage} from "@directus/sdk";
-import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper"; // Optional if you want to use default theme
+import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
+import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,6 +29,7 @@ export {
 } from 'expo-router';
 
 const syncState = new SyncState();
+const secureStorageHelper: SecureStorageHelperAbstractClass = SecureStorageHelperAbstractClass.getInstance();
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -53,6 +55,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function loadStorage() {
+        await secureStorageHelper.init();
         await syncState.init();
         setStorageLoaded(true);
     }
@@ -94,7 +97,7 @@ function AuthFlowUserCheck(){
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
         if(!!refreshToken){ // but only if we have a refresh token
           try {
-            let result = await ServerAPI.authenticate_with_access_token(refreshToken, setRefreshToken);
+            let result = await ServerAPI.authenticate_with_access_token(refreshToken);
           } catch (e) {
             console.log("AuthFlowUserCheck useEffect error", e)
             setRefreshToken(null)
@@ -123,7 +126,7 @@ function ServerStatusFlow(){
 
     // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
     // So we have to fetch the data from the storage directly
-    let authDataRaw = await SecureStorageHelper.getItem(PersistentSecureStore.authentificationData)
+    let authDataRaw = await secureStorageHelper.getItem(PersistentSecureStore.authentificationData)
     console.log("authDataRaw", authDataRaw)
     if(!authDataRaw){
       return null;
