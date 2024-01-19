@@ -5,19 +5,19 @@ import {ChevronRightIcon, ChevronsRightIcon, Divider} from "@gluestack-ui/themed
 import {AccessibilityRole} from "react-native";
 
 export interface SettingsRowProps {
-    key: any;
-    children: any;
-    leftContent: string | any,
+    key?: any;
+    children?: any;
+    leftContent?: string | any,
     rightContent?: string | any,
     leftIcon?: any | string,
     rightIcon?: any,
-    onPress: any,
+    onPress?: any,
     color?: any
     hideLeftContent?: boolean,
     expandable?: boolean,
     expanded?: boolean,
     customDivider?: any,
-    accessibilityLabel?: string,
+    accessibilityLabel: string,
     accessibilityRole?: AccessibilityRole | undefined,
     accessibilityState?: any,
     flex?: number,
@@ -28,20 +28,6 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     const expanded = props.expanded;
 
     let accessibilityLabel = props?.accessibilityLabel
-    if (accessibilityLabel === undefined) {
-        accessibilityLabel = "";
-        let leftContent = props?.leftContent;
-        if(typeof leftContent === "string"){
-            accessibilityLabel += leftContent
-        }
-        if(!!accessibilityLabel && accessibilityLabel.length > 0){
-            accessibilityLabel += " "
-        }
-        let rightContent = props?.rightContent;
-        if(typeof rightContent === "string"){
-            accessibilityLabel += rightContent
-        }
-    }
 
     function renderLeftIcon(){
         if(props?.leftIcon){
@@ -63,9 +49,14 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
         const flex = props.flex!==undefined ? props.flex : 1;
 
+        let leftContent = props?.leftContent
+        if(leftContent===undefined){
+            leftContent = <Text>{accessibilityLabel}</Text>
+        }
+
         return(
             <>
-                <SettingsRowInner flex={flex} leftContent={props?.leftContent} leftIcon={renderLeftIcon()} rightContent={props?.rightContent} rightIcon={rightIcon} />
+                <SettingsRowInner flex={flex} leftContent={leftContent} leftIcon={renderLeftIcon()} rightContent={props?.rightContent} rightIcon={rightIcon} />
                 {divider}
             </>
         )

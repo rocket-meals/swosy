@@ -1,5 +1,7 @@
 import {EventHelper} from '../../helper/EventHelper.js';
 
+// TODO: Catch if table does not exist
+
 /**
  * A small hook, to create a profile upon user registration
  * You will need to create a table (e. G. "profiles") with a field "user" which relates to "directus_users"

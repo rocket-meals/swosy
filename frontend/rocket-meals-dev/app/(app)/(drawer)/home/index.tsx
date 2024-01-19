@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
-import {BottomRow} from "@/app/(drawer)/_layout";
+import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 
 export default function HomeScreen() {
   return (

@@ -10,7 +10,7 @@ export default function SettingsScreen() {
       <Text style={styles.title}>Tab Two</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/two.tsx" />
-      <SettingsRow leftContent={"Hello"} onPress={() => {}} />
+      <SettingsRow accessibilityLabel={"Test"} leftContent={"Hello"} onPress={() => {}} />
     </View>
   );
 }
