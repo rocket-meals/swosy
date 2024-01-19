@@ -20,6 +20,8 @@ export default function Login() {
 
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
+    const slug = useLocalSearchParams();
+
     // email and password for login
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -145,15 +147,34 @@ export default function Login() {
 
             <Text>{"loggedIn: "+loggedIn}</Text>
             <Text>{"directus_token from url params: "+directus_token}</Text>
+            <Text>{"slud: "}</Text>
+            <Text>{JSON.stringify(slug, null, 2)}</Text>
+            <Text>{"params: "}</Text>
+            <Text>{JSON.stringify(params, null, 2)}</Text>
             <Text>{"authData from storage: "}</Text>
             <Text>{JSON.stringify(authData, null, 2)}</Text>
 
-            <ExternalLink target={"_self"} href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
-                <Text style={styles.linkText}>Test Google Login</Text>
+            <ExternalLink href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
+                <Text style={styles.linkText}>Test Google Login / Does not work with ExpoGo</Text>
+                <Text style={styles.linkText}>{ServerAPI.getUrlToProviderLogin("google")}</Text>
             </ExternalLink>
             <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
-                <Text style={styles.linkText}>Test Login Exploit</Text>
+                <Text style={styles.linkText}>Test Login Exploit / Does not work with ExpoGo</Text>
             </ExternalLink>
+            <Divider />
+            <Button
+                onPress={async () => {
+                    try {
+                        setAuthData(null)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                }}>
+                <Text>
+                    {"Clear Auth Data"}
+                </Text>
+            </Button>
+            <Divider />
         </ScrollView>
     );
 }

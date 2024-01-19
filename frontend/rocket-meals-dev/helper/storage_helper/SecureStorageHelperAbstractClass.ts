@@ -1,5 +1,3 @@
-import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
-
 // TODO: Rename to SecureStorageHelper and Rename the other SecureStorageHelper to something with platform Specific or so.
 export abstract class SecureStorageHelperAbstractClass {
 
@@ -14,9 +12,13 @@ export abstract class SecureStorageHelperAbstractClass {
 
     static instance: SecureStorageHelperAbstractClass | null = null;
 
+    static setInstance(instance: SecureStorageHelperAbstractClass){
+        SecureStorageHelperAbstractClass.instance = instance;
+    }
+
     static getInstance(): SecureStorageHelperAbstractClass {
         if(!SecureStorageHelperAbstractClass.instance){
-            SecureStorageHelperAbstractClass.instance = new SecureStorageHelper();
+            throw new Error("Initialize SecureStorageHelperAbstractClass first.");
         }
         return SecureStorageHelperAbstractClass.instance;
     }

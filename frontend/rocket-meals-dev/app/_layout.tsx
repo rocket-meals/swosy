@@ -1,27 +1,24 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import {Navigator, Stack, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
+import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
+import {useFonts} from 'expo-font';
+import {Navigator} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect, useState} from 'react';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import {useColorScheme} from '@/components/useColorScheme';
 
-import { GluestackUIProvider, Box } from "@gluestack-ui/themed"
-import { config } from "@gluestack-ui/config"
+import {GluestackUIProvider} from "@gluestack-ui/themed"
+import {config} from "@gluestack-ui/config"
 import {StoreProvider} from "easy-peasy";
 import {SyncState, useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
-import {ServerAPI, ServerInfo} from "@/helper/database_helper/server/ServerAPI";
-import {View, Text} from "@/components/Themed";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
-import {useRoute} from "@react-navigation/core";
-import Slot = Navigator.Slot;
+import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {Text, View} from "@/components/Themed";
 import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
-import {AuthenticationData, AuthenticationStorage} from "@directus/sdk";
+import {AuthenticationData} from "@directus/sdk";
 import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
+import Slot = Navigator.Slot;
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -29,7 +26,7 @@ export {
 } from 'expo-router';
 
 const syncState = new SyncState();
-const secureStorageHelper: SecureStorageHelperAbstractClass = SecureStorageHelperAbstractClass.getInstance();
+SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -55,7 +52,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     async function loadStorage() {
-        await secureStorageHelper.init();
+        await SecureStorageHelperAbstractClass.init();
         await syncState.init();
         setStorageLoaded(true);
     }
@@ -126,7 +123,7 @@ function ServerStatusFlow(){
 
     // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
     // So we have to fetch the data from the storage directly
-    let authDataRaw = await secureStorageHelper.getItem(PersistentSecureStore.authentificationData)
+    let authDataRaw = await SecureStorageHelperAbstractClass.getItem(PersistentSecureStore.authentificationData)
     console.log("authDataRaw", authDataRaw)
     if(!authDataRaw){
       return null;
