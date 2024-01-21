@@ -9,9 +9,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "deploy:gh:pages": "npm run export:web && gh-pages -d dist",
+    "deploy:gh:pages": "npm run export:web && gh-pages -t -d dist",
     "deploy:local": "npm run export:web && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
-    "export:web": "expo export -p web --dev",
+    "export:web": "expo export -p web",
     "test": "jest --watchAll"
   },
   "jest": {
