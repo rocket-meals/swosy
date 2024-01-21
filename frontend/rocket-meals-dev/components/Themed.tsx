@@ -23,19 +23,17 @@ export type TextProps = ThemeProps & NativeText['props'];
 export type ViewProps = ThemeProps & NativeView['props'];
 
 
-export type IconProps = {
-    size?: number;
-    family?: string; // TODO: Add more families from expo vector icons
-    color?: string;
-}
+export type IconProps = DefaultIconProps<any> & {
+    family?: string;
+};
 
-export function Icon({size, family, ...props}: IconProps){
+export function Icon({name, size, family, ...props}: IconProps){
     let defaultSize = 16
     let useSize = defaultSize;
     if(!!size){
         useSize = size;
     }
-  return <MaterialCommunityIcons size={useSize} {...props} />
+  return <MaterialCommunityIcons name={name} size={useSize} {...props} />
 }
 
 type TextInputProps = {

@@ -64,7 +64,7 @@ export const MyButton = ({leftIconFamily, leftIconName, leftIconColor, rightIcon
             {leftIcon}
             <View style={{justifyContent: "center", flex: 1, paddingLeft: 20}}>
                 <Text>{text}</Text>
-                {children}
+                {content}
             </View>
             {rightIcon}
         </View>
