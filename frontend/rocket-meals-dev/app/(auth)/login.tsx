@@ -14,11 +14,8 @@ import {AuthenticationData} from "@directus/sdk";
 import {UrlHelper} from "@/helper/UrlHelper";
 import {createURL} from "expo-linking";
 import {EnvHelper} from "@/helper/EnvHelper";
+import ButtonSsoLogin from "@/components/buttons/ButtonSsoLogin";
 
-
-function renderSSOButton(provider: string) {
-    return renderSSOButtonWithUrl(provider, ServerAPI.getUrlToProviderLogin(provider));
-}
 
 function renderSSOButtonWithUrl(provider: string, url: string) {
     let urlToLogin = UrlHelper.getURLToLogin();
@@ -193,8 +190,9 @@ export default function Login() {
             <Text>{"authData from storage: "}</Text>
             <Text>{JSON.stringify(authData, null, 2)}</Text>
 
-            {renderSSOButton("google")}
+            <ButtonSsoLogin provider={"google"} display_name={"Google"} />
             {renderSSOButtonWithUrl("Exploit", ServerAPI.getUrlToLoginExploit())}
+            <Divider />
             <Text>{"Create URL /"}</Text>
             <Text>{createURL("/")}</Text>
             <Text>{"UrlHelper.getURLToLogin()"}</Text>

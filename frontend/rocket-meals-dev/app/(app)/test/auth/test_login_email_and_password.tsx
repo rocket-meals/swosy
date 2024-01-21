@@ -1,9 +1,6 @@
 import {StyleSheet} from 'react-native';
-import {Text, View, TextInput} from '@/components/Themed';
-import {BottomRow} from "@/app/(app)/(drawer)/_layout";
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {ServerAPI, ServerInfo} from "@/helper/database_helper/server/ServerAPI";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {Text, TextInput, View} from '@/components/Themed';
+import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {useState} from "react";
 import {Button, Divider} from "@gluestack-ui/themed";
 

@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import {Text, TextInput, View} from '@/components/Themed';
-import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 
@@ -15,7 +14,6 @@ export default function HomeScreen() {
         <TextInput placeholder="change me"  value={exampleValue || ""} onChangeText={(text) => {
           setExampleValue(text);
         }} />
-        <BottomRow />
       </View>
   );
 }

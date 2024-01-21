@@ -1,10 +1,9 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {BottomRow} from "@/app/(app)/(drawer)/_layout";
-import {useServerInfo} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {
     useProjectColor,
-    useProjectInfo, useProjectLogoAssetId,
+    useProjectInfo,
+    useProjectLogoAssetId,
     useProjectName
 } from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";

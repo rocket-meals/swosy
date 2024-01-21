@@ -3,12 +3,16 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Text as NativeText, View as NativeView} from 'react-native';
-import {Icon as DefaultIcon, Text as DefaultText, View as DefaultView, Input as DefaultInput, InputField as DefaultInputField} from '@gluestack-ui/themed';
-
-import Colors from '@/constants/Colors';
-import {useColorScheme} from './useColorScheme';
+import {
+    Input as DefaultInput,
+    InputField as DefaultInputField,
+    Text as DefaultText,
+    View as DefaultView
+} from '@gluestack-ui/themed';
 import {ComponentProps} from "react";
+import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 
 type ThemeProps = {
   lightColor?: string;
@@ -18,22 +22,20 @@ type ThemeProps = {
 export type TextProps = ThemeProps & NativeText['props'];
 export type ViewProps = ThemeProps & NativeView['props'];
 
-export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
 
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
+export type IconProps = {
+    size?: number;
+    family?: string; // TODO: Add more families from expo vector icons
+    color?: string;
 }
 
-export function Icon(props: any){
-  return <DefaultIcon {...props} />
+export function Icon({size, family, ...props}: IconProps){
+    let defaultSize = 16
+    let useSize = defaultSize;
+    if(!!size){
+        useSize = size;
+    }
+  return <MaterialCommunityIcons size={useSize} {...props} />
 }
 
 type TextInputProps = {

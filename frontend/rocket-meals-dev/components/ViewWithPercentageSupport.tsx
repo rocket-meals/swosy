@@ -50,7 +50,7 @@ export const ViewWithPercentageSupport: FunctionComponent<ExtendedViewProps> = (
     let copiedStyle: ExtendedViewStyle = JSON.parse(JSON.stringify(mergedStyle || {}));
 
     function fixPercentage(copiedValue: string){
-        if(!!copiedValue && typeof copiedValue==="string" && copiedValue.endsWith("%")){
+        if(!!copiedValue && copiedValue.endsWith("%")){
             let percentage = parseInt(copiedValue);
             let width = dimension.width;
             if(!!width && !!percentage){

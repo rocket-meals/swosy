@@ -5,8 +5,6 @@ import {Navigator} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {useEffect, useState} from 'react';
 
-import {useColorScheme} from '@/components/useColorScheme';
-
 import {GluestackUIProvider} from "@gluestack-ui/themed"
 import {config} from "@gluestack-ui/config"
 import {StoreProvider} from "easy-peasy";
@@ -181,7 +179,7 @@ function ServerStatusFlow(){
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const colorScheme = "dark"
 
   let store = syncState.getStore();
 
