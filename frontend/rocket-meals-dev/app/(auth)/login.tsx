@@ -12,6 +12,8 @@ import {TextInput} from "@/components/Themed";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
 import {UrlHelper} from "@/helper/UrlHelper";
+import {createURL} from "expo-linking";
+import {EnvHelper} from "@/helper/EnvHelper";
 
 
 function renderSSOButton(provider: string) {
@@ -43,8 +45,9 @@ function renderSSOButtonWithUrl(provider: string, url: string) {
     }
 
     return(
-        <ExternalLink href={url} style={styles.link}>
-            <Text style={styles.linkText}>{"Login with: "+provider}</Text>
+        <ExternalLink target={"_self"} href={url} style={styles.link}>
+            <Text style={styles.linkText}>{"Login with: "+provider+"\n"}</Text>
+            <Text style={styles.linkText}>{"URL: "+url}</Text>
         </ExternalLink>
     )
 }
@@ -192,6 +195,15 @@ export default function Login() {
 
             {renderSSOButton("google")}
             {renderSSOButtonWithUrl("Exploit", ServerAPI.getUrlToLoginExploit())}
+            <Text>{"Create URL /"}</Text>
+            <Text>{createURL("/")}</Text>
+            <Text>{"UrlHelper.getURLToLogin()"}</Text>
+            <Text>{UrlHelper.getURLToLogin()}</Text>
+            <Divider />
+            <Text>{"EnvHelper.getEnv()"}</Text>
+            <Text>{JSON.stringify(EnvHelper.getEnv(), null, 2)}</Text>
+            <Divider />
+            <Text>{"EnvHelper.getBaseUrl(): "+EnvHelper.getBaseUrl()}</Text>
             <Divider />
             <Button
                 onPress={async () => {
