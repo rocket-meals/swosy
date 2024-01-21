@@ -119,6 +119,8 @@ function ServerStatusFlow(){
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+
+  // TODO: move this to a helper function
   ServerAPI.createAuthentificationStorage(async () => {
 
     // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
@@ -130,7 +132,10 @@ function ServerStatusFlow(){
     } else {
         return JSON.parse(authDataRaw)
     }
-  }, async (newAuthData) => await setAuthData(newAuthData))
+  }, async (newAuthData) => {
+    setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
+    await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
+  })
 
   console.log("serverInfo", serverInfo)
 

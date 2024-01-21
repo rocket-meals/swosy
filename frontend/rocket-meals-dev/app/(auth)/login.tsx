@@ -11,7 +11,43 @@ import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {TextInput} from "@/components/Themed";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
+import {UrlHelper} from "@/helper/UrlHelper";
 
+
+function renderSSOButton(provider: string) {
+    return renderSSOButtonWithUrl(provider, ServerAPI.getUrlToProviderLogin(provider));
+}
+
+function renderSSOButtonWithUrl(provider: string, url: string) {
+    let urlToLogin = UrlHelper.getURLToLogin();
+    // check if we are in expo go on mobile
+    let isExpoGo = false;
+    let isExpoGoWithSsoWorking = false;
+    if(urlToLogin.startsWith("exp://")) {
+        isExpoGo = true;
+        if(urlToLogin.startsWith("exp://u.expo.dev")) {
+            isExpoGoWithSsoWorking = true; // this is when the update is uploaded to expo for example via expo publish or our workflow
+        } else {
+            isExpoGoWithSsoWorking = false; // url is like: exp://192.168.178.35:8081 or something like that
+        }
+    }
+
+
+    if(isExpoGo && !isExpoGoWithSsoWorking) {
+        return(
+            <View style={styles.link}>
+                <Text style={styles.linkText}>{"Login with: "+provider}</Text>
+                <Text style={styles.linkText}>{"Does not work on local ExpoGo"}</Text>
+            </View>
+        )
+    }
+
+    return(
+        <ExternalLink href={url} style={styles.link}>
+            <Text style={styles.linkText}>{"Login with: "+provider}</Text>
+        </ExternalLink>
+    )
+}
 
 export default function Login() {
 
@@ -154,13 +190,8 @@ export default function Login() {
             <Text>{"authData from storage: "}</Text>
             <Text>{JSON.stringify(authData, null, 2)}</Text>
 
-            <ExternalLink href={ServerAPI.getUrlToProviderLogin("google")} style={styles.link}>
-                <Text style={styles.linkText}>Test Google Login / Does not work with ExpoGo</Text>
-                <Text style={styles.linkText}>{ServerAPI.getUrlToProviderLogin("google")}</Text>
-            </ExternalLink>
-            <ExternalLink target={"_self"} href={ServerAPI.getUrlToLoginExploit()} style={styles.link}>
-                <Text style={styles.linkText}>Test Login Exploit / Does not work with ExpoGo</Text>
-            </ExternalLink>
+            {renderSSOButton("google")}
+            {renderSSOButtonWithUrl("Exploit", ServerAPI.getUrlToLoginExploit())}
             <Divider />
             <Button
                 onPress={async () => {
