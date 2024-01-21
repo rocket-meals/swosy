@@ -1,15 +1,10 @@
-import React, {FunctionComponent} from 'react';
+import React from 'react';
 import {useProjectLogoAssetId} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
-import {ViewStyleProps} from "@react-types/shared";
+import {ViewProps} from "react-native";
 
-// Extend the default ViewStyleProps with our own.
-interface AppState{
-    style?: ViewStyleProps<any>;
-}
-
-export const ProjectLogo: FunctionComponent<AppState> = (props) => {
+export const ProjectLogo = ({...props}: ViewProps) => {
 
     const projectLogoAssetId = useProjectLogoAssetId()
-    return <DirectusImage assetId={projectLogoAssetId} style={props?.style} />
+    return <DirectusImage assetId={projectLogoAssetId} {...props}  />
 }

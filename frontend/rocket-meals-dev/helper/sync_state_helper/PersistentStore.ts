@@ -5,6 +5,8 @@ export class PersistentStore {
   static debug = "PersistentStore.debug"
   static debugAutoLogin = "PersistentStore.debugAutoLogin"
 
+  static colorSchemeName = "PersistentStore.colorSchemeName"
+
   static server_info = "PersistentStore.server_info"
 
 }

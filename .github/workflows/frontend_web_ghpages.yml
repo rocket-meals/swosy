@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - master
+      - web
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
@@ -12,6 +13,7 @@ on:
     branches:
       - expo
       - master
+      - web
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"

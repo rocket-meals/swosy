@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {BottomRow} from "@/app/(app)/(drawer)/_layout";
 import {useServerInfo} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 
@@ -16,7 +15,6 @@ export default function HomeScreen() {
 
       <Text style={styles.title}>Server Info</Text>
       <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
-      <BottomRow />
     </View>
   );
 }
