@@ -26,7 +26,7 @@ export function useCurrentUserRaw(): [CachedUserInformation | null, (newValue: C
 
 export function getIsUserAnonymous(user: CachedUserInformation | undefined | null): boolean {
     if(!user) return false
-    return user?.id === undefined || user?.id === null
+    return user?.data?.id === undefined || user?.data?.id === null
 }
 
 export function getAnonymousUser(): any {
