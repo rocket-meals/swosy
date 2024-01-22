@@ -17,7 +17,12 @@ import {AuthenticationData} from "@directus/sdk";
 import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
 import Slot = Navigator.Slot;
-import {useCachedUser, useCurrentUser, useCurrentUserRaw} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {
+  getIsUserAnonymous,
+  useCachedUserRaw,
+  useCurrentUser,
+  useCurrentUserRaw
+} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -82,7 +87,7 @@ function AuthFlowUserCheck(){
   let refreshToken = authData?.refresh_token;
   const [currentUser, setCurrentUser] = useCurrentUser()
   const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
-  const [cachedUser, setCachedUser] = useCachedUser()
+  const [cachedUser, setCachedUser] = useCachedUserRaw()
 
     // 2. Check if user is logged in
     // if user is authenticated (logged in or anonymous) in, load collections and user information
@@ -110,7 +115,16 @@ function AuthFlowUserCheck(){
           }
         } else {
           console.log("AuthFlowUserCheck useEffect server is online, but we have no refresh token")
-          setCurrentUser(null);
+          // this means we are either logged out (not authenticated) or anonymous
+          console.log("Lets check what the cached user is")
+          console.log("cachedUser", cachedUser)
+          let isUserAnonymous = getIsUserAnonymous(cachedUser);
+            console.log("isUserAnonymous", isUserAnonymous)
+          if(getIsUserAnonymous(cachedUser)){ // if we are anonymous, we can set the user to the cached user
+            setCurrentUser(cachedUser)
+          } else { // if we are not anonymous, we are logged out (not authenticated) so we can set the user to null
+            setCurrentUser(null);
+          }
         }
       } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
         console.log("AuthFlowUserCheck useEffect server is offline, but we have cached data")
@@ -128,7 +142,7 @@ function AuthFlowUserCheck(){
   }
 
     return(
-        <Slot />
+        <Slot /> // render the children
     )
 }
 

@@ -2,14 +2,19 @@ import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 
-export function useCachedUser(): [any | null, (newValue: any) => void] {
-    const [cachedUser, setCachedUser] = useSyncState(PersistentStore.cachedUser)
-    return [cachedUser, setCachedUser]
+export type CachedUserInformation = {
+    data: any,
+    loggedIn: boolean
 }
 
-export function useCurrentUserRaw(): [any | null, (newValue: any) => void] {
-    const [cachedUser, setCachedUser] = useCachedUser()
-    const [currentUser, setCurrentUser] = useSyncState(NonPersistentStore.currentUser)
+export function useCachedUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {
+    const [cachedUserRaw, setCachedUser] = useSyncState<CachedUserInformation>(PersistentStore.cachedUser)
+    return [cachedUserRaw, setCachedUser]
+}
+
+export function useCurrentUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {
+    const [cachedUser, setCachedUser] = useCachedUserRaw()
+    const [currentUser, setCurrentUser] = useSyncState<CachedUserInformation>(NonPersistentStore.currentUser)
     // TODO: Update cached user
     let setUserWithCache = (newValue: any) => {
         setCurrentUser(newValue)
@@ -19,10 +24,24 @@ export function useCurrentUserRaw(): [any | null, (newValue: any) => void] {
     return [currentUser, setUserWithCache]
 }
 
+export function getIsUserAnonymous(user: CachedUserInformation | undefined | null): boolean {
+    if(!user) return false
+    return user?.id === undefined || user?.id === null
+}
+
+export function getAnonymousUser(): any {
+    return {
+        // TODO: Add some default values
+        id: null,
+    }
+}
+
 export function useCurrentUser(): [any | null, (newValue: any) => void] {
     const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
     // TODO: Update cached user
     let setUserWithCache = (newValue: any) => {
+        let isAnonymous = getIsUserAnonymous(newValue)
+
         setCurrentUserRaw(
             {
                 data: newValue,

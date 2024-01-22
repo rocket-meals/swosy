@@ -3,6 +3,7 @@ import {SettingsRowInner} from "./SettingsRowInner";
 import {Icon, View, Text} from "@/components/Themed";
 import {ChevronRightIcon, ChevronsRightIcon, Divider} from "@gluestack-ui/themed";
 import {AccessibilityRole} from "react-native";
+import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 
 export interface SettingsRowProps {
     key?: any;
@@ -27,7 +28,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
     const expanded = props.expanded;
 
-    let accessibilityLabel = props?.accessibilityLabel
+    let accessibilityLabel = props.accessibilityLabel
 
     function renderLeftIcon(){
         if(props?.leftIcon){
@@ -39,11 +40,19 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         return null;
     }
 
-    function renderInner(showPress: boolean){
+    function renderRightIcon(showPress: boolean){
         let rightIcon = props?.rightIcon
         if(showPress && !rightIcon){
             rightIcon = <Icon as={ChevronRightIcon}  />;
         }
+        if(rightIcon && typeof props?.rightIcon === "string"){
+            return <Icon name={props.rightIcon} />
+        }
+        return rightIcon
+    }
+
+    function renderInner(showPress: boolean){
+        let rightIcon = renderRightIcon(showPress)
 
         const divider = props.customDivider!==undefined ? props.customDivider : <Divider />
 
@@ -67,10 +76,10 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
         if(!!props.onPress){
             return(
-                <View accessibilityState={props?.accessibilityState} accessibilityRole={props?.accessibilityRole} accessibilityLabel={accessibilityLabel} key={props?.key+props.leftIcon} onPointerDown={props.onPress} >
+                <MyTouchableOpacity accessibilityState={props?.accessibilityState} accessibilityRole={props?.accessibilityRole} accessibilityLabel={accessibilityLabel} key={props?.key+props.leftIcon} onPointerDown={props.onPress} >
                     {renderInner(true)}
                     {children}
-                </View>
+                </MyTouchableOpacity>
             )
         }
         return(
@@ -82,7 +91,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     }
 
     return(
-        <View >
+        <View style={{width: "100%"}} >
             {renderOuter()}
         </View>
     )
