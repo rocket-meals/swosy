@@ -13,7 +13,7 @@ import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: "(auth)",
+    initialRouteName: "login",
 };
 
 
