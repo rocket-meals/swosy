@@ -16,19 +16,30 @@ export type MyExternalLinkProps = {
 // define the button component
 export const MyExternalLink = ({_target, href, accessibilityLabel, children}: MyExternalLinkProps) => {
 
-    // TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
     const onPress = () => {
-         if (Platform.OS !== 'web') {
-         // Prevent the default behavior of linking to the default browser on native.
+        if (Platform.OS !== 'web') {
+            // Prevent the default behavior of linking to the default browser on native.
             WebBrowser.openBrowserAsync(href);
-         }
+        }
     }
 
-    return(
-        <MyTouchableOpacity onPress={onPress} accessibilityLabel={accessibilityLabel}>
-            {children}
-        </MyTouchableOpacity>
+    let button = (
+        (
+            <MyTouchableOpacity style={{width: "100%"}} onPress={onPress} accessibilityLabel={accessibilityLabel}>
+                {children}
+            </MyTouchableOpacity>
+        )
     )
 
+    // TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
+    if(Platform.OS === "web"){
+        return(
+            <a href={href} target={_target} style={{ textDecoration: 'none' }}>
+                {button}
+            </a>
+        )
+    } else {
+        return button
+    }
 
 }

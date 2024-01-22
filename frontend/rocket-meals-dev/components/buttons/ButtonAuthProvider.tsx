@@ -30,41 +30,38 @@ function isSsoLoginPossible() {
 }
 
 // The component to handle SSO login links
-const ButtonAuthProvider = ( {provider}: SsoProvider) => {
+export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
     const isDebug = useIsDebug();
 
     const translation_log_in_with = useTranslation(TranslationKeys.log_in_with);
-    let accessibilityLabel = translation_log_in_with+": "+provider.name;
-    let text = translation_log_in_with+": "+provider.name;
+
+    let providerName = provider.name;
+    // capitalize first letter
+    providerName = providerName.charAt(0).toUpperCase() + providerName.slice(1);
+
+    let accessibilityLabel = translation_log_in_with+": "+providerName;
+    let text = translation_log_in_with+": "+providerName;
 
     const url = ServerAPI.getUrlToProviderLogin(provider);
 
     const disabled = !isSsoLoginPossible();
 
-    let contentRows = [];
-
     if(disabled) {
-        contentRows.push(
-            <Text key={"loginNotPossible"}>{"Does not work on local ExpoGo"}</Text>
-        )
+        text += "\n"
+        text += "Does not work on local ExpoGo"
     }
 
     if(isDebug) {
-        contentRows.push(
-            <Text key={"loginWithDebugText"} >{"URL: "+url}</Text>
-        )
+        text += "\n"
+        text += "Debug: URL: "+url
     }
 
     let onPress = undefined; // handled by MyExternalLink
 
     return (
         // @ts-ignore
-        <MyExternalLink target={"_self"} href={url}>
-            <ButtonAuthProviderCustom disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text}>
-                {contentRows}
-            </ButtonAuthProviderCustom>
+        <MyExternalLink key={"ssoButtonLink"+provider.name} target={"_self"} href={url} accessibilityLabel={accessibilityLabel}>
+            <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text} />
         </MyExternalLink>
     );
 };
-
-export default ButtonAuthProvider;

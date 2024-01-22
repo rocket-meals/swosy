@@ -28,7 +28,6 @@ export const ButtonAuthAnonym = () => {
     }
 
     return (
-        <ButtonAuthProviderCustom accessibilityLabel={continueAnonym} onPress={onPress} icon_name={"incognito"} text={continueAnonym}>
-        </ButtonAuthProviderCustom>
+        <ButtonAuthProviderCustom key={"authAnonym"} accessibilityLabel={continueAnonym} onPress={onPress} icon_name={"incognito"} text={continueAnonym} />
     );
 };

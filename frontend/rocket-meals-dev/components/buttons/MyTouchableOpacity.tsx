@@ -1,5 +1,13 @@
 import React, {FunctionComponent, useState} from "react";
-import {AccessibilityRole, AccessibilityState, GestureResponderEvent, TouchableOpacity} from "react-native";
+import {
+    AccessibilityRole,
+    AccessibilityState,
+    GestureResponderEvent,
+    TouchableOpacity,
+    ViewProps
+} from "react-native";
+import {Icon, View, Text} from "@/components/Themed";
+
 import {Tooltip} from "@gluestack-ui/themed";
 import {GestureEvent} from "react-native-gesture-handler";
 
@@ -14,31 +22,38 @@ export type MyTouchableOpacityProps = {
     accessibilityHint?: string,
     accessibilityState?: AccessibilityState,
     onPress?: () => void | ((event: GestureResponderEvent) => void)
-    style?: any
-} & TouchableOpacity['props']
-
-
+    style?: ViewProps["style"]
+    styled?: ViewProps["style"]
+    children?: React.ReactNode
+}
 
 export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLabel, onPress, style ,...props}: MyTouchableOpacityProps) => {
 
-    let mergedStyle = []
+    let mergedStyle: ViewProps["style"] = {
+
+    };
     if(Array.isArray(style)){
-        mergedStyle = style
+        for(let singleStyle of style){
+            // @ts-ignore
+            mergedStyle = {...mergedStyle, ...singleStyle};
+        }
     } else {
-        mergedStyle.push(style)
+        // @ts-ignore
+        mergedStyle = {...mergedStyle, ...style};
     }
-    if(disabled){
-        mergedStyle.push({
+
+    if(disabled) {
+        // @ts-ignore
+        mergedStyle = {...mergedStyle,
             cursor: "not-allowed",
-            //opacity: 0.5
-        });
+        };
     }
 
     return(
         // TODO: add tooltip support
-        <TouchableOpacity onPress={onPress} accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityRole={accessibilityRole ?? 'button'} accessibilityLabel={accessibilityLabel} disabled={disabled} style={mergedStyle} {...props}>
-            {props?.children}
-        </TouchableOpacity>
+            <TouchableOpacity onPress={onPress} accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityRole={accessibilityRole ?? 'button'} accessibilityLabel={accessibilityLabel} style={mergedStyle} disabled={disabled}  {...props}>
+                {props?.children}
+            </TouchableOpacity>
     )
 
 }

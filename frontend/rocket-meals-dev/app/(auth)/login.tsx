@@ -1,26 +1,29 @@
 import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import {ScrollView, StyleSheet} from 'react-native';
-import {useRoute} from "@react-navigation/core";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {useEffect, useState} from "react";
 import {Button, Divider} from "@gluestack-ui/themed";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
-import {TextInput} from "@/components/Themed";
+import {Text, TextInput, View} from "@/components/Themed";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
-import ButtonAuthProvider from "@/components/buttons/ButtonAuthProvider";
+import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
 import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
-import {View, Text} from "@/components/Themed";
+import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
+import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
+import {ProjectLogo} from "@/components/project/ProjectLogo";
+import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
+import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
+import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
+    let projectInfo = useProjectInfo();
 
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
-
-    const slug = useLocalSearchParams();
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -29,15 +32,8 @@ export default function Login() {
     const [currentUser, setCurrentUser] = useCurrentUser()
     const [loginWithAccessTokenResult, setLoginWithAccessTokenResult] = useState<any>()
 
-    const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
-    const globalSearchParams = useGlobalSearchParams();
-
-    let params = localSearchParams;
-
-    let directus_token = ServerAPI.getDirectusAccessTokenFromParams(params);
-
-    // get current route name
-    const route = useRoute();
+    const localSearchParams = useLocalSearchParams(); // get url params from router
+    let directus_token = ServerAPI.getDirectusAccessTokenFromParams(localSearchParams);
 
     function signIn() {
         console.log("login.tsx signIn");
@@ -51,8 +47,7 @@ export default function Login() {
         }
     }, [changedLoginStatus, loggedIn]);
 
-    // UseEffect when directus_token changes, then call login with access token
-    useEffect(() => {
+    async function authenticate_with_access_token(directus_token: string | null | undefined) {
         console.log("login.tsx useEffect directus_token");
         if(directus_token) {
             console.log("login.tsx useEffect directus_token: "+directus_token);
@@ -69,10 +64,19 @@ export default function Login() {
                 //router.replace('/login'); // clear url params
             })
         }
+    }
+
+    // UseEffect when directus_token changes, then call login with access token
+    useEffect(() => {
+        authenticate_with_access_token(directus_token);
     }, [directus_token]);
 
     return (
-        <ScrollView style={{ width: "100%", height: "100%" }}>
+        <View style={{ width: "100%", height: "100%" }}>
+
+            <View style={{ height: 20}} />
+            <ProjectLogo />
+
             <View  style={{ width: "100%", height: "100%" }}>
                 <Button
                     disabled={!loggedIn}
@@ -107,9 +111,7 @@ export default function Login() {
                 </Button>
                 <Divider />
                 <Divider />
-                <ButtonAuthProvider provider={{
-                    name: "google",
-                }} />
+                <ServerSsoAuthProviders />
                 <ButtonAuthAnonym />
                 <Divider />
                 <Text>
@@ -132,7 +134,7 @@ export default function Login() {
                 <Divider />
             </View>
 
-        </ScrollView>
+        </View>
     );
 }
 
