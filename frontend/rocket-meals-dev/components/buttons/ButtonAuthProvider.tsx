@@ -10,7 +10,6 @@ import {MyExternalLink} from '@/components/link/MyExternalLink';
 // Define the type for Single Sign-On (SSO) providers
 type SsoProvider = {
     provider: AuthProvider
-    key?: string
 }
 
 function isSsoLoginPossible() {
@@ -61,7 +60,7 @@ export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
 
     return (
         // @ts-ignore
-        <MyExternalLink key={provider.name} target={"_self"} href={url} accessibilityLabel={accessibilityLabel}>
+        <MyExternalLink key={"ssoButtonLink"+provider.name} target={"_self"} href={url} accessibilityLabel={accessibilityLabel}>
             <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text} />
         </MyExternalLink>
     );

@@ -14,12 +14,11 @@ type ButtonAuthProviderCustomProps = {
     icon_family?: string,
     disabled?: boolean,
     children?: React.ReactNode
-    style?: ViewProps["style"],
-    key: string
+    style?: ViewProps["style"]
 }
 
 // The component to handle SSO login links
-export const ButtonAuthProviderCustom = ({ key, text, accessibilityLabel, onPress, icon_family, icon_name, disabled, children, style }: ButtonAuthProviderCustomProps) => {
+export const ButtonAuthProviderCustom = ({ text, accessibilityLabel, onPress, icon_family, icon_name, disabled, children, style }: ButtonAuthProviderCustomProps) => {
     const projectColorContrast = useProjectColorContrast();
 
     let backgroundColor = "#FFFFFF"
@@ -28,13 +27,13 @@ export const ButtonAuthProviderCustom = ({ key, text, accessibilityLabel, onPres
     let contentRows = [];
 
     contentRows.push(
-        <View style={{flex: 1, justifyContent: "center", paddingLeft: 20}}>
+        <View key={"innerView"} style={{flex: 1, justifyContent: "center", paddingLeft: 20}}>
             <Text style={{color: textContrastColor}} >{text}</Text>
         </View>
     )
 
     return(
-        <MyButton key={key} style={{marginVertical: 5, paddingHorizontal: 10, backgroundColor: backgroundColor}} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIconName={icon_name} leftIconFamily={icon_family} leftIconColor={projectColorContrast}>
+        <MyButton style={{marginVertical: 5, paddingHorizontal: 10, backgroundColor: backgroundColor}} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIconName={icon_name} leftIconFamily={icon_family} leftIconColor={projectColorContrast}>
             {contentRows}
         </MyButton>
     )

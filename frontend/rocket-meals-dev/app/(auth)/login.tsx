@@ -14,10 +14,13 @@ import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {ProjectLogo} from "@/components/project/ProjectLogo";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
+import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
+import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
+    let projectInfo = useProjectInfo();
 
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
@@ -72,9 +75,7 @@ export default function Login() {
         <View style={{ width: "100%", height: "100%" }}>
 
             <View style={{ height: 20}} />
-            <ViewWithProjectColor style={{height: 40, width: 40}}>
-                <ProjectLogo style={{height: 40, width: 40}} />
-            </ViewWithProjectColor>
+            <ProjectLogo />
 
             <View  style={{ width: "100%", height: "100%" }}>
                 <Button

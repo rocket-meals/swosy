@@ -2,7 +2,7 @@ import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Image} from "expo-image";
 import {TouchableOpacity} from "react-native";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 
 interface AppState {
     assetId: string | undefined | null;
@@ -17,6 +17,7 @@ interface AppState {
 export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     let url = ServerAPI.getAssetImageURL(props.assetId);
+    const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
 
     const uri = url; // TODO: Maybe check if we might use Base64 for caching or if expo-image does that already
 
@@ -41,8 +42,16 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
         alt={props?.alt || "Image"}
         style={props.style}
         placeholder={blurhash}
+        onError={(e) => {
+            console.log("DirectusImage onError", e)
+            setImageLoadedFailed(true)
+        }}
         cachePolicy={cachePolicy}
     />
+
+    if(imageLoadedFailed){
+        content = props.fallbackElement
+    }
 
     if(!!props.onPress){
         content = (
