@@ -19,6 +19,16 @@ export function useCurrentUserRaw(): [any | null, (newValue: any) => void] {
     return [currentUser, setUserWithCache]
 }
 
+export function getIsUserAnonymous(user: any): boolean {
+    return user?.anonymous
+}
+
+export function getAnonymousUser(): any {
+    return {
+        anonymous: true
+    }
+}
+
 export function useCurrentUser(): [any | null, (newValue: any) => void] {
     const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
     // TODO: Update cached user

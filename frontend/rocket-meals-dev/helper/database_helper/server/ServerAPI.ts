@@ -53,11 +53,13 @@ export class ServerAPI {
         return 'https://rocket-meals.de/demo/api';
     }
 
+    static ParamNameForAccessToken = "directus_refresh_token";
+
     static getParamNameForDirectusAccessToken(){
-        return "directus_access_token";
+        return ServerAPI.ParamNameForAccessToken
     }
 
-    static getDirectusAccessTokenFromParams(params: any){
+    static getDirectusAccessTokenFromParams(params: any): string | null | undefined{
         return params?.[ServerAPI.getParamNameForDirectusAccessToken()];
     }
 

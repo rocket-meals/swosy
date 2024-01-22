@@ -90,7 +90,6 @@ function AppLayoutDrawer() {
 export default function AppLayout() {
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const loggedIn = isUserLoggedIn();
-    const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
 
     // AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
 
@@ -101,7 +100,7 @@ export default function AppLayout() {
 
     // Only require authentication within the (app) group's layout as users
     // need to be able to access the (auth) group and sign in again.
-    if (!loggedIn && !debugAutoLogin) {
+    if (!loggedIn) {
         // On web, static rendering will stop here as the user is not authenticated
         // in the headless Node process that the pages are rendered in.
         // @ts-ignore

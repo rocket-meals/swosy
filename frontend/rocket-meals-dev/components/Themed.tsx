@@ -28,12 +28,12 @@ export type IconProps = DefaultIconProps<any> & {
 };
 
 export function Icon({name, size, family, ...props}: IconProps){
-    let defaultSize = 16
+    let defaultSize = 24
     let useSize = defaultSize;
     if(!!size){
         useSize = size;
     }
-  return <MaterialCommunityIcons name={name} size={useSize} {...props} />
+  return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
 }
 
 type TextInputProps = {
