@@ -30,7 +30,7 @@ function isSsoLoginPossible() {
 }
 
 // The component to handle SSO login links
-const ButtonAuthProvider = ( {provider}: SsoProvider) => {
+export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
     const isDebug = useIsDebug();
 
     const translation_log_in_with = useTranslation(TranslationKeys.log_in_with);
@@ -59,12 +59,10 @@ const ButtonAuthProvider = ( {provider}: SsoProvider) => {
 
     return (
         // @ts-ignore
-        <MyExternalLink target={"_self"} href={url}>
+        <MyExternalLink target={"_self"} href={url} accessibilityLabel={accessibilityLabel}>
             <ButtonAuthProviderCustom disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text}>
                 {contentRows}
             </ButtonAuthProviderCustom>
         </MyExternalLink>
     );
 };
-
-export default ButtonAuthProvider;

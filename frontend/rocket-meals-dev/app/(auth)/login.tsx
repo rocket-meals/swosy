@@ -7,9 +7,10 @@ import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {Text, TextInput, View} from "@/components/Themed";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
-import ButtonAuthProvider from "@/components/buttons/ButtonAuthProvider";
+import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
 import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
 
 export default function Login() {
 
@@ -100,9 +101,7 @@ export default function Login() {
                 </Button>
                 <Divider />
                 <Divider />
-                <ButtonAuthProvider provider={{
-                    name: "google",
-                }} />
+                <ServerSsoAuthProviders />
                 <ButtonAuthAnonym />
                 <Divider />
                 <Text>
