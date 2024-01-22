@@ -12,16 +12,16 @@ export const ServerSsoAuthProviders = () => {
     useEffect(() => {
         // call anonymous function
         (async () => {
-            console.log("ServerSsoAuthProviders useEffect")
+            //console.log("ServerSsoAuthProviders useEffect")
             let remoteAuthProviders = await ServerAPI.getAuthProviders();
-            console.log("ServerSsoAuthProviders useEffect authProviders", remoteAuthProviders)
+            //console.log("ServerSsoAuthProviders useEffect authProviders", remoteAuthProviders)
             setAuthProviders(remoteAuthProviders);
         })()
     }, []);
 
     if(!authProviders) {
         // loading
-        return <ButtonAuthProviderCustom accessibilityLabel={"loading"} disabled={true} text={"Loading..."} icon_name={"loading"} />
+        return <ButtonAuthProviderCustom key={"ssoPlaceholder"} accessibilityLabel={"loading"} disabled={true} text={"Loading..."} icon_name={"loading"} />
     }
 
     let contentRows = [];
@@ -29,13 +29,12 @@ export const ServerSsoAuthProviders = () => {
         contentRows.push(
             <ButtonAuthProvider key={authProvider.name} provider={authProvider} />
         )
-        contentRows.push(
-            <View style={{height: 10}} key={authProvider.name+"spacer"} />
-        )
     }
 
     return(
-        contentRows
+        <View style={{width: "100%"}}>
+            {contentRows}
+        </View>
     )
 
 };

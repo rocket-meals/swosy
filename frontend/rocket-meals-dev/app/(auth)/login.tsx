@@ -11,6 +11,9 @@ import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
 import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
+import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
+import {ProjectLogo} from "@/components/project/ProjectLogo";
+import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 
 export default function Login() {
 
@@ -66,7 +69,13 @@ export default function Login() {
     }, [directus_token]);
 
     return (
-        <ScrollView style={{ width: "100%", height: "100%" }}>
+        <View style={{ width: "100%", height: "100%" }}>
+
+            <View style={{ height: 20}} />
+            <ViewWithProjectColor style={{height: 40, width: 40}}>
+                <ProjectLogo style={{height: 40, width: 40}} />
+            </ViewWithProjectColor>
+
             <View  style={{ width: "100%", height: "100%" }}>
                 <Button
                     disabled={!loggedIn}
@@ -124,7 +133,7 @@ export default function Login() {
                 <Divider />
             </View>
 
-        </ScrollView>
+        </View>
     );
 }
 
