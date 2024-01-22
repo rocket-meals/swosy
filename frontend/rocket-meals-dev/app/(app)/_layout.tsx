@@ -9,10 +9,11 @@ import {DrawerContent} from "@react-navigation/drawer";
 import {useIsLargeDevice} from "@/components/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: 'home',
+    initialRouteName: "index",
 };
 
 
@@ -88,7 +89,7 @@ function AppLayoutDrawer() {
 
 export default function AppLayout() {
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
+    const loggedIn = isUserLoggedIn();
     const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
 
     // AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/

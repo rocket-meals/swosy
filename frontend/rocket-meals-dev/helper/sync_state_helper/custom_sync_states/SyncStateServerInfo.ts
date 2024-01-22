@@ -10,3 +10,8 @@ export function useServerInfo(){
   const [serverInfo, setServerInfo] = useServerInfoRaw();
   return serverInfo;
 }
+
+export function isServerOnline(){
+  let serverInfo = useServerInfo();
+  return serverInfo?.status === "online";
+}

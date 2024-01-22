@@ -14,47 +14,17 @@ import {AuthenticationData} from "@directus/sdk";
 import {UrlHelper} from "@/helper/UrlHelper";
 import {createURL} from "expo-linking";
 import {EnvHelper} from "@/helper/EnvHelper";
-import ButtonSsoLogin from "@/components/buttons/ButtonSsoLogin";
-
-
-function renderSSOButtonWithUrl(provider: string, url: string) {
-    let urlToLogin = UrlHelper.getURLToLogin();
-    // check if we are in expo go on mobile
-    let isExpoGo = false;
-    let isExpoGoWithSsoWorking = false;
-    if(urlToLogin.startsWith("exp://")) {
-        isExpoGo = true;
-        if(urlToLogin.startsWith("exp://u.expo.dev")) {
-            isExpoGoWithSsoWorking = true; // this is when the update is uploaded to expo for example via expo publish or our workflow
-        } else {
-            isExpoGoWithSsoWorking = false; // url is like: exp://192.168.178.35:8081 or something like that
-        }
-    }
-
-
-    if(isExpoGo && !isExpoGoWithSsoWorking) {
-        return(
-            <View style={styles.link}>
-                <Text style={styles.linkText}>{"Login with: "+provider}</Text>
-                <Text style={styles.linkText}>{"Does not work on local ExpoGo"}</Text>
-            </View>
-        )
-    }
-
-    return(
-        <ExternalLink target={"_self"} href={url} style={styles.link}>
-            <Text style={styles.linkText}>{"Login with: "+provider+"\n"}</Text>
-            <Text style={styles.linkText}>{"URL: "+url}</Text>
-        </ExternalLink>
-    )
-}
+import ButtonAuthProvider from "@/components/buttons/ButtonAuthProvider";
+import {ButtonAuthDebug} from "@/components/buttons/ButtonAuthDebug";
+import {isUserLoggedIn, useCachedUser, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 export default function Login() {
 
-    const [loggedIn, setLoggedIn] = useSyncState<boolean>(NonPersistentStore.loggedIn)
-    const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
+    const loggedIn = isUserLoggedIn();
 
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+    const [debugAutoLogin, setDebugAutoLogin] = useSyncState<boolean>(PersistentStore.debugAutoLogin)
+    const [changedLoginStatus, setChangedLoginStatus] = useState(false)
 
     const slug = useLocalSearchParams();
 
@@ -62,7 +32,7 @@ export default function Login() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
-    const [currentUser, setCurrentUser] = useState<any>()
+    const [currentUser, setCurrentUser] = useCurrentUser()
     const [loginWithAccessTokenResult, setLoginWithAccessTokenResult] = useState<any>()
 
     const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
@@ -75,42 +45,61 @@ export default function Login() {
     // get current route name
     const route = useRoute();
 
-    useEffect(() => {
-        console.log("useEffect debugAutoLogin");
-        if(debugAutoLogin) {
-            setLoggedIn(true)
-        }
-    }, []);
+    function signIn() {
+        console.log("login.tsx signIn");
+        router.replace('/(app)/home');
+    }
 
     useEffect(() => {
-        console.log("useEffect loggedIn");
-        if(loggedIn) {
-            router.replace('/');
+        console.log("login.tsx useEffect loggedIn: changedLoginStatus: "+changedLoginStatus+" loggedIn: "+loggedIn);
+        if(changedLoginStatus && loggedIn){
+            signIn();
         }
-    }, [loggedIn]);
+    }, [changedLoginStatus, loggedIn]);
+
+    // UseEffect when directus_token changes, then call login with access token
+    useEffect(() => {
+        console.log("login.tsx useEffect directus_token");
+        if(directus_token) {
+            console.log("login.tsx useEffect directus_token: "+directus_token);
+            ServerAPI.authenticate_with_access_token(directus_token).then(async (result) => {
+                setLoginWithAccessTokenResult(result)
+                let me = await ServerAPI.getMe();
+                setCurrentUser(me);
+                console.log("login.tsx useEffect directus_token me", me)
+                setChangedLoginStatus(true)
+            }).catch((e) => {
+                console.log("useEffect directus_token error")
+                console.error(e)
+                setLoginWithAccessTokenResult(e)
+                router.replace('/login'); // clear url params
+            })
+        }
+    }, [directus_token]);
 
 
     return (
         <ScrollView style={{ width: "100%", height: "100%" }}>
+
             <Button
-                onPress={() => {
-                    setLoggedIn(true)
-                }}>
-                <Text>
-                    {"Debug Login"}
-                </Text>
-            </Button>
-            <Divider />
-            <Button
+                disabled={!loggedIn}
                 onPress={() => {
                     console.log("Handle sign in");
                     //signIn();
                     // Navigate after signing in. You may want to tweak this to ensure sign-in is
                     // successful before navigating.
-                    router.replace('/');
+                    signIn();
                 }}>
                 <Text>
-                    {"TODO: Normal Sign In"}
+                    {loggedIn ? "Continue" : "Not logged in"}
+                </Text>
+            </Button>
+            <Button
+                onPress={() => {
+                    signIn();
+                }}>
+                <Text>
+                    {"Privacy Policy"}
                 </Text>
             </Button>
             <Divider />
@@ -189,9 +178,11 @@ export default function Login() {
             <Text>{JSON.stringify(params, null, 2)}</Text>
             <Text>{"authData from storage: "}</Text>
             <Text>{JSON.stringify(authData, null, 2)}</Text>
-
-            <ButtonSsoLogin provider={"google"} display_name={"Google"} />
-            {renderSSOButtonWithUrl("Exploit", ServerAPI.getUrlToLoginExploit())}
+            <Divider />
+            <ButtonAuthProvider provider={{
+                name: "google",
+            }} />
+            <ButtonAuthDebug />
             <Divider />
             <Text>{"Create URL /"}</Text>
             <Text>{createURL("/")}</Text>
@@ -207,6 +198,7 @@ export default function Login() {
                 onPress={async () => {
                     try {
                         setAuthData(null)
+                        setCurrentUser(null)
                     } catch (e) {
                         console.error(e)
                     }

@@ -6,22 +6,24 @@ import { ViewWithPercentageSupport } from "../ViewWithPercentageSupport";
 import {Icon, View, Text} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
+import {GestureResponderEvent} from "react-native";
 
 export type ButtonType = {
     leftIconFamily?: any,
-    leftIconName?: string,
+    leftIconName?: string | null | undefined,
     leftIconColor?: string,
     rightIconFamily?: any,
-    rightIconName?: string,
+    rightIconName?: string | null | undefined,
     rightIconColor?: string,
-    callback?: () => void,
+    onPress?: () => void | ((event: GestureResponderEvent) => void)
     accessibilityLabel: string,
     text?: string,
     children?: React.ReactNode,
+    disabled?: boolean,
 }
 
 // define the button component
-export const MyButton = ({leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, callback, accessibilityLabel, children, text}: ButtonType) => {
+export const MyButton = ({disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
 
     let content = null;
     if(!!children){
@@ -64,7 +66,7 @@ export const MyButton = ({leftIconFamily, leftIconName, leftIconColor, rightIcon
             {leftIcon}
             <View style={{justifyContent: "center", flex: 1, paddingLeft: 20}}>
                 <Text>{text}</Text>
-                {children}
+                {content}
             </View>
             {rightIcon}
         </View>
@@ -78,9 +80,9 @@ export const MyButton = ({leftIconFamily, leftIconName, leftIconColor, rightIcon
 
     let touchableContent = null;
 
-    if(!!callback){
+    if(!!onPress){
         touchableContent = (
-            <MyTouchableOpacity onPress={callback} accessibilityLabel={accessibilityLabel}>
+            <MyTouchableOpacity disabled={disabled} onPress={onPress} accessibilityLabel={accessibilityLabel}>
                 {buttonContentWrapper}
             </MyTouchableOpacity>
         );
