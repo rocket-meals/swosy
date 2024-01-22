@@ -11,7 +11,7 @@ export default function SettingsScreen() {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 
       <SettingsRowSyncBooleanSwitch accessibilityLabel={"Test"} variable={PersistentStore.debug} />
-      <SettingsRowSyncBooleanSwitch accessibilityLabel={"LoggedIn TEST"} variable={NonPersistentStore.loggedIn} />
+      <SettingsRowSyncBooleanSwitch accessibilityLabel={"LoggedIn TEST"} variable={NonPersistentStore.currentUser} />
       <SettingsRowSyncBooleanSwitch accessibilityLabel={"Debug Auto Login"} variable={PersistentStore.debugAutoLogin} />
     </View>
   );

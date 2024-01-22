@@ -6,6 +6,7 @@ export class PersistentStore {
   static debugAutoLogin = "PersistentStore.debugAutoLogin"
 
   static colorSchemeName = "PersistentStore.colorSchemeName"
+  static cachedUser = "PersistentStore.user"
 
   static server_info = "PersistentStore.server_info"
 

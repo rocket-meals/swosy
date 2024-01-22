@@ -4,14 +4,12 @@ import {
     AuthenticationConfig,
     AuthenticationData,
     AuthenticationStorage,
-    ClientOptions,
     createDirectus,
     DirectusClient,
     graphql,
     GraphqlClient,
     login,
-    readMe,
-    refresh,
+    readMe, ReadProviderOutput, readProviders,
     rest,
     RestClient,
     serverInfo,
@@ -42,6 +40,11 @@ export interface ServerInfo{
     errorMessage?: any;
 }
 
+export type AuthProvider = {
+    name: string;
+    icon?: string | null;
+}
+
 export class ServerAPI {
 
     static client: DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any> | null = null;
@@ -67,22 +70,35 @@ export class ServerAPI {
         get: () => Promise<AuthenticationData | null> | AuthenticationData | null,
         set: (value: AuthenticationData | null) => Promise<void> | void
     ){
-        console.log("createAuthentificationStorage called")
+        //console.log("createAuthentificationStorage called")
         if(!ServerAPI.simpleAuthentificationStorage){
-            console.log("createAuthentificationStorage first time created")
+            //console.log("createAuthentificationStorage first time created")
             ServerAPI.simpleAuthentificationStorage = {
                 get: async () => {
                     let result = await get();
-                    console.log("simpleAuthentificationStorage get", result)
+                    //console.log("simpleAuthentificationStorage get", result)
                     return result;
                 },
                 set: async (value: AuthenticationData | null) => {
-                    console.log("simpleAuthentificationStorage set", value)
+                    //console.log("simpleAuthentificationStorage set", value)
                     await set(value);
-                    console.log("simpleAuthentificationStorage set done")
+                    //console.log("simpleAuthentificationStorage set done")
                 }
             }
         }
+    }
+
+    static async getAuthProviders(): Promise<AuthProvider[]>{
+        const client = ServerAPI.getPublicClient();
+        let providers: AuthProvider[] = [];
+        const result: ReadProviderOutput[] = await client.request(readProviders());
+        for(let provider of result){
+            providers.push({
+                name: provider.name,
+                icon: provider.icon
+            })
+        }
+        return providers;
     }
 
     /**
@@ -119,20 +135,19 @@ export class ServerAPI {
     }
 
     static async authenticate_with_access_token(directus_access_token: string | undefined | null){
-        console.log("login_with_access_token");
-        console.log("directus_access_token", directus_access_token);
+        console.log("ServerAPI.authenticate_with_access_token", directus_access_token);
         const client = ServerAPI.getClient();
         let refresh_token: string | undefined = undefined;
         if(directus_access_token){
             refresh_token = directus_access_token
-            console.log("authenticate_with_access_token set refresh_token to directus_access_token")
+            //console.log("authenticate_with_access_token set refresh_token to directus_access_token")
             await ServerAPI.simpleAuthentificationStorage?.set({
                 access_token: null,
                 refresh_token: directus_access_token,
                 expires: null,
                 expires_at: null,
             });
-            console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
+            //console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
         }
 
         let result = await client.refresh();
@@ -184,13 +199,13 @@ export class ServerAPI {
         return result;
     }
 
-    static getUrlToProviderLogin(provider: string){
-        provider= provider.toLowerCase();
+    static getUrlToProviderLogin(provider: AuthProvider){
+        let providerName = provider.name.toLowerCase();
         //console.log("getUrlToProvider: "+provider);
         let redirectURL = UrlHelper.getURLToLogin();
         //console.log("RedirectURL: "+redirectURL)
         let redirect_with_access_token = "?redirect="+ServerAPI.getServerUrl()+"/redirect-with-token?redirect="+redirectURL+"?"+ServerAPI.getParamNameForDirectusAccessToken()+"=";
-        let totalURL = ServerAPI.getServerUrl()+"/auth/login/"+provider+redirect_with_access_token;
+        let totalURL = ServerAPI.getServerUrl()+"/auth/login/"+providerName+redirect_with_access_token;
         return totalURL
     }
 

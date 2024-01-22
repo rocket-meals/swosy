@@ -17,6 +17,7 @@ import {AuthenticationData} from "@directus/sdk";
 import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
 import Slot = Navigator.Slot;
+import {useCachedUser, useCurrentUser, useCurrentUserRaw} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -77,8 +78,12 @@ function AuthFlowUserCheck(){
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
 
-  const [refreshToken, setRefreshToken] = useSyncState<string>(PersistentSecureStore.refresh_token)
-  const [initialRefreshDone, setInitialRefreshDone] = useState<boolean>(false)
+  const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+  let refreshToken = authData?.refresh_token;
+  const [currentUser, setCurrentUser] = useCurrentUser()
+  const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
+  const [cachedUser, setCachedUser] = useCachedUser()
+
     // 2. Check if user is logged in
     // if user is authenticated (logged in or anonymous) in, load collections and user information
     // if user is not authenticated in, go to login screen
@@ -90,21 +95,36 @@ function AuthFlowUserCheck(){
       console.log("refreshToken", refreshToken)
 
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+        console.log("AuthFlowUserCheck useEffect server is online")
         if(!!refreshToken){ // but only if we have a refresh token
+          console.log("AuthFlowUserCheck useEffect server is online and we have a refresh token")
           try {
             let result = await ServerAPI.authenticate_with_access_token(refreshToken);
+            let me = await ServerAPI.getMe();
+            console.log("AuthFlowUserCheck we found a user", me)
+            setCurrentUser(me);
           } catch (e) {
             console.log("AuthFlowUserCheck useEffect error", e)
-            setRefreshToken(null)
+            setAuthData(null) // TODO maybe a logout function would be better
+            setCurrentUser(null);
           }
+        } else {
+          console.log("AuthFlowUserCheck useEffect server is online, but we have no refresh token")
+          setCurrentUser(null);
         }
+      } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
+        console.log("AuthFlowUserCheck useEffect server is offline, but we have cached data")
+        setCurrentUser(cachedUser);
+      } else { // if server is offline and we have no cached data, we can't check if we are logged in
+        console.log("AuthFlowUserCheck useEffect server is offline and we have no cached data")
+        setCurrentUser(null);
       }
-      setInitialRefreshDone(true)
     })();
   }, []);
 
-  if(!initialRefreshDone){
-    return null;
+  if(!currentUserRaw){
+    console.log("AuthFlowUserCheck useEffect currentUserRaw is null")
+    return <Text>{"app/_layout.tsx: Authenthication flow waiting"}</Text>
   }
 
     return(
@@ -113,7 +133,6 @@ function AuthFlowUserCheck(){
 }
 
 function ServerStatusFlow(){
-  console.log("AuthFlow")
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
@@ -124,7 +143,6 @@ function ServerStatusFlow(){
     // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
     // So we have to fetch the data from the storage directly
     let authDataRaw = await SecureStorageHelperAbstractClass.getItem(PersistentSecureStore.authentificationData)
-    console.log("authDataRaw", authDataRaw)
     if(!authDataRaw){
       return null;
     } else {
@@ -134,8 +152,6 @@ function ServerStatusFlow(){
     setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
     await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
   })
-
-  console.log("serverInfo", serverInfo)
 
   useEffect(() => {
     // call anonymous function
