@@ -16,15 +16,15 @@ export const ButtonAuthAnonym = () => {
     const isAnonymoutUser = getIsUserAnonymous(currentUser)
 
     useEffect(() => {
-        if(loginInitiated && isAnonymoutUser){
-            setLoginInitiated(false)
-            router.navigate('/(app)/home');
+        if(loginInitiated && isAnonymoutUser){ // if the login is initiated and the user is anonymous set
+            setLoginInitiated(false) // we set the login initiated to false so we dont get into an infinite loop
+            router.navigate('/(app)/home'); // we navigate to the home screen
         }
-    }, [currentUser, loginInitiated]);
+    }, [currentUser, loginInitiated]); // whenever the currentUser or loginInitiated changes we check if we need to navigate to the home screen
 
     const onPress = () => {
-        setCurrentUser(getAnonymousUser())
-        setLoginInitiated(true)
+        setCurrentUser(getAnonymousUser()) // we set the user to anonymous but we cant wait for the result
+        setLoginInitiated(true) // we set the login initiated to true so we can wait for the result
     }
 
     return (

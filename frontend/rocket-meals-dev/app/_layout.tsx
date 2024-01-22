@@ -142,7 +142,7 @@ function AuthFlowUserCheck(){
   }
 
     return(
-        <Slot />
+        <Slot /> // render the children
     )
 }
 

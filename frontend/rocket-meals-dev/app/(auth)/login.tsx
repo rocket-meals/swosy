@@ -1,5 +1,5 @@
 import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import {ScrollView, StyleSheet, Text} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 import {useRoute} from "@react-navigation/core";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {useEffect, useState} from "react";
@@ -11,6 +11,7 @@ import {AuthenticationData} from "@directus/sdk";
 import ButtonAuthProvider from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
 import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {View, Text} from "@/components/Themed";
 
 export default function Login() {
 
@@ -72,62 +73,65 @@ export default function Login() {
 
     return (
         <ScrollView style={{ width: "100%", height: "100%" }}>
+            <View  style={{ width: "100%", height: "100%" }}>
+                <Button
+                    disabled={!loggedIn}
+                    onPress={() => {
+                        console.log("Handle sign in");
+                        //signIn();
+                        // Navigate after signing in. You may want to tweak this to ensure sign-in is
+                        // successful before navigating.
+                        signIn();
+                    }}>
+                    <Text>
+                        {loggedIn ? "Continue" : "Not logged in"}
+                    </Text>
+                </Button>
+                <Divider />
+                <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
+                <TextInput value={password} onChangeText={setPassword} placeholder={"password"} />
+                <Button
+                    onPress={async () => {
+                        try {
+                            let result = await ServerAPI.authenticate_with_email_and_password(email, password);
+                            setLoginWithAccessTokenResult(result)
+                            //setRefreshToken(result.refresh_token)
+                        } catch (e) {
+                            console.error(e)
+                            setLoginWithAccessTokenResult(e)
+                        }
+                    }}>
+                    <Text>
+                        {"Login with email and password"}
+                    </Text>
+                </Button>
+                <Divider />
+                <Divider />
+                <ButtonAuthProvider provider={{
+                    name: "google",
+                }} />
+                <ButtonAuthAnonym />
+                <Divider />
+                <Text>
+                    {JSON.stringify(currentUser, null, 2)}
+                </Text>
+                <View style={{ height: 20, width: 20 }} />
+                <Button
+                    onPress={async () => {
+                        try {
+                            setAuthData(null)
+                            setCurrentUser(null)
+                        } catch (e) {
+                            console.error(e)
+                        }
+                    }}>
+                    <Text>
+                        {"Clear Auth Data"}
+                    </Text>
+                </Button>
+                <Divider />
+            </View>
 
-            <Button
-                disabled={!loggedIn}
-                onPress={() => {
-                    console.log("Handle sign in");
-                    //signIn();
-                    // Navigate after signing in. You may want to tweak this to ensure sign-in is
-                    // successful before navigating.
-                    signIn();
-                }}>
-                <Text>
-                    {loggedIn ? "Continue" : "Not logged in"}
-                </Text>
-            </Button>
-            <Divider />
-            <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
-            <TextInput value={password} onChangeText={setPassword} placeholder={"password"} />
-            <Button
-                onPress={async () => {
-                    try {
-                        let result = await ServerAPI.authenticate_with_email_and_password(email, password);
-                        setLoginWithAccessTokenResult(result)
-                        //setRefreshToken(result.refresh_token)
-                    } catch (e) {
-                        console.error(e)
-                        setLoginWithAccessTokenResult(e)
-                    }
-                }}>
-                <Text>
-                    {"Login with email and password"}
-                </Text>
-            </Button>
-            <Divider />
-            <Divider />
-            <ButtonAuthProvider provider={{
-                name: "google",
-            }} />
-            <ButtonAuthAnonym />
-            <Divider />
-            <Text>
-                {JSON.stringify(currentUser, null, 2)}
-            </Text>
-            <Button
-                onPress={async () => {
-                    try {
-                        setAuthData(null)
-                        setCurrentUser(null)
-                    } catch (e) {
-                        console.error(e)
-                    }
-                }}>
-                <Text>
-                    {"Clear Auth Data"}
-                </Text>
-            </Button>
-            <Divider />
         </ScrollView>
     );
 }

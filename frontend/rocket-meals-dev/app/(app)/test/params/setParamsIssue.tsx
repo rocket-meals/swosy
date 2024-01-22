@@ -11,6 +11,8 @@ export default function HomeScreen() {
   return (
       <View style={styles.container}>
           <Text>{"This page shall show the params setting issue"}</Text>
+          <Text>{"On npm run web, everything works fine."}</Text>
+          <Text>{"The issue occurs only on npm run deploy:local (and of course for github pages then)."}</Text>
           <Text>{"When you visit the page via /test/params/setParamsIssue everything works fine"}</Text>
           <Text>{"When you visit the page via /test/params/setParamsIssue?test=123 the url wont update correct but the printed params"}</Text>
           <Button
@@ -24,22 +26,6 @@ export default function HomeScreen() {
           <Button
               onPress={() => {
                   router.setParams({test: undefined})
-              }}>
-              <Text>
-                  {"Clear Params"}
-              </Text>
-          </Button>
-          <Button
-              onPress={() => {
-                  router.navigate("/test/params/setParamsIssue", {test: "123"})
-              }}>
-              <Text>
-                  {"Set Test with navigate"}
-              </Text>
-          </Button>
-          <Button
-              onPress={() => {
-                  router.navigate("/test/params/setParamsIssue", {test: undefined})
               }}>
               <Text>
                   {"Clear Params"}
