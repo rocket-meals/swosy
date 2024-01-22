@@ -29,6 +29,22 @@ export default function HomeScreen() {
                   {"Clear Params"}
               </Text>
           </Button>
+          <Button
+              onPress={() => {
+                  router.navigate("/test/params/setParamsIssue", {test: "123"})
+              }}>
+              <Text>
+                  {"Set Test with navigate"}
+              </Text>
+          </Button>
+          <Button
+              onPress={() => {
+                  router.navigate("/test/params/setParamsIssue", {test: undefined})
+              }}>
+              <Text>
+                  {"Clear Params"}
+              </Text>
+          </Button>
           <Text>{"localSearchParams: "}</Text>
           <Text>{JSON.stringify(localSearchParams, null, 2)}</Text>
       </View>
