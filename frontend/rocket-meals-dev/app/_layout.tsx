@@ -67,12 +67,11 @@ export default function RootLayout() {
 
   // Render the Root Layout
   return (
-      <StoreProvider store={store}> {/* StoreProvider has to be the most outer component */}
+      <StoreProvider store={store}>
         <GluestackUIProvider config={config}>
           <RootThemeProvider>
             <RootServerStatusFlowLoader>
               <RootAuthUserFlowLoader>
-                {/* Render the children */}
                   <Slot />
               </RootAuthUserFlowLoader>
             </RootServerStatusFlowLoader>

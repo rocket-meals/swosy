@@ -40,8 +40,6 @@ export function useCurrentUser(): [any | null, (newValue: any) => void] {
     const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
     // TODO: Update cached user
     let setUserWithCache = (newValue: any) => {
-        let isAnonymous = getIsUserAnonymous(newValue)
-
         setCurrentUserRaw(
             {
                 data: newValue,

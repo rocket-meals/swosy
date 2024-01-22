@@ -76,7 +76,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
         if(!!props.onPress){
             return(
-                <MyTouchableOpacity accessibilityState={props?.accessibilityState} accessibilityRole={props?.accessibilityRole} accessibilityLabel={accessibilityLabel} key={props?.key+props.leftIcon} onPointerDown={props.onPress} >
+                <MyTouchableOpacity accessibilityState={props?.accessibilityState} accessibilityRole={props?.accessibilityRole} accessibilityLabel={accessibilityLabel} key={props?.key+props.leftIcon} onPress={props.onPress} >
                     {renderInner(true)}
                     {children}
                 </MyTouchableOpacity>
