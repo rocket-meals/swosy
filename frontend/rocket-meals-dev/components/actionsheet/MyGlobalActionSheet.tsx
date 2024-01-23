@@ -118,9 +118,7 @@ export const MyGlobalActionSheet = (props) => {
                         hide()
                     }
                 }}>
-                    <ActionsheetIcon>
-                        <Icon name={item.icon}/>
-                    </ActionsheetIcon>
+                    <ActionsheetItemText><Icon name={item.icon} /></ActionsheetItemText>
                     <ActionsheetItemText>{item.label}</ActionsheetItemText>
                 </ActionsheetItem>
             )
