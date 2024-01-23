@@ -47,23 +47,40 @@ export default function Login() {
         }
     }, [changedLoginStatus, loggedIn]);
 
+    async function handleSuccessfulAuthentication(result: AuthenticationData) {
+        setLoginWithAccessTokenResult(result)
+        let me = await ServerAPI.getMe();
+        setCurrentUser(me);
+        console.log("login.tsx useEffect directus_token me", me)
+        setChangedLoginStatus(true)
+    }
+
+    async function handleFailedAuthentication(e: any) {
+        console.log("login.tsx authentication failed")
+        console.error(e)
+        setLoginWithAccessTokenResult(e)
+        //router.replace('/login'); // clear url params
+    }
+
     async function authenticate_with_access_token(directus_token: string | null | undefined) {
         console.log("login.tsx useEffect directus_token");
         if(directus_token) {
             console.log("login.tsx useEffect directus_token: "+directus_token);
-            ServerAPI.authenticate_with_access_token(directus_token).then(async (result) => {
-                setLoginWithAccessTokenResult(result)
-                let me = await ServerAPI.getMe();
-                setCurrentUser(me);
-                console.log("login.tsx useEffect directus_token me", me)
-                setChangedLoginStatus(true)
+            ServerAPI.authenticate_with_access_token(directus_token).then((result) => {
+                handleSuccessfulAuthentication(result)
             }).catch((e) => {
-                console.log("useEffect directus_token error")
-                console.error(e)
-                setLoginWithAccessTokenResult(e)
-                //router.replace('/login'); // clear url params
+                handleFailedAuthentication(e)
             })
         }
+    }
+
+    async function authenticate_with_email_and_password(email: string, password: string) {
+        console.log("login.tsx useEffect email: "+email+" password: "+password);
+        ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
+            handleSuccessfulAuthentication(result)
+        }).catch((e) => {
+            handleFailedAuthentication(e)
+        })
     }
 
     // UseEffect when directus_token changes, then call login with access token
@@ -93,17 +110,11 @@ export default function Login() {
                 </Button>
                 <Divider />
                 <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
-                <TextInput value={password} onChangeText={setPassword} placeholder={"password"} />
+                <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={"password"} />
                 <Button
-                    onPress={async () => {
-                        try {
-                            let result = await ServerAPI.authenticate_with_email_and_password(email, password);
-                            setLoginWithAccessTokenResult(result)
-                            //setRefreshToken(result.refresh_token)
-                        } catch (e) {
-                            console.error(e)
-                            setLoginWithAccessTokenResult(e)
-                        }
+                    disabled={loggedIn || !email || !password}
+                    onPress={() => {
+                        authenticate_with_email_and_password(email, password)
                     }}>
                     <Text>
                         {"Login with email and password"}
