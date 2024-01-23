@@ -2,15 +2,14 @@ import {ScrollView, StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {SettingsRowSyncBooleanSwitch} from "@/components/settings/SettingsRowSyncBooleanSwitch";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
-import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
-import {SettingsRow} from "@/components/settings/SettingsRow";
+import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
 import React from "react";
 import {SettingsRowLogout} from "@/components/settings/SettingsRowLogout";
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 
 export default function SettingsScreen() {
 
@@ -30,6 +29,8 @@ export default function SettingsScreen() {
           <Text >{JSON.stringify(currentUser, null, 2)}</Text>
           <Text >{"authData: "}</Text>
           <Text >{JSON.stringify(authData, null, 2)}</Text>
+          <SettingsRowActionsheet accessibilityLabel={"Actionsheet"} />
+
         </View>
       </ScrollView>
   );

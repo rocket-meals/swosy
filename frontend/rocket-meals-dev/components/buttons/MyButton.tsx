@@ -88,18 +88,10 @@ export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIco
         delete mergedStyle.backgroundColor;
     }
 
-    let textContent = null;
-    if(!!text){
-        textContent = ( // Directly rendering the text will cause an empty row on mobile
-            <Text>{text}</Text>
-        );
-    }
-
     let buttonContent = (
         <View style={{flexDirection: "row", borderRadius: borderRadius, width: "100%", backgroundColor: mergedStyleBackgroundColor}}>
             {leftIcon}
             <View style={{justifyContent: "center", flex: 1, paddingLeft: 0}}>
-                {textContent}
                 {content}
             </View>
             {rightIcon}
