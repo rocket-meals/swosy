@@ -8,7 +8,7 @@ import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {Text} from "@/components/Themed";
 
 
-export const SettingsRowLogout = (props) => {
+export const SettingsRowLogout = (props: any) => {
     const loggedIn = isUserLoggedIn();
     const [currentUser, setCurrentUser] = useCurrentUser()
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
@@ -26,7 +26,7 @@ export const SettingsRowLogout = (props) => {
         if(!isUseDebug){
             return null
         } else {
-            return <Text>{"clicked: "+clicked}</Text>
+            return null;
         }
     }
 

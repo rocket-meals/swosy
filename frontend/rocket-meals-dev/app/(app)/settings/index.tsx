@@ -24,8 +24,6 @@ export default function SettingsScreen() {
         <View style={styles.container}>
           <Text style={styles.title}>Settings</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          <Text >{"isDebug: "+isDebug}</Text>
-          <Text >{"isDebug: "+isDebug}</Text>
           <SettingsRowSyncBooleanSwitch accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
           <SettingsRowLogout />
           <Text >{"currentUser: "}</Text>
