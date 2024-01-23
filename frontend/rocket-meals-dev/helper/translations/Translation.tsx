@@ -41,7 +41,13 @@ export class TranslationKeys {
   static home = createTranslationKey("home", "Startseite");
 
   static switch = createTranslationKey("switch", "Umschalten");
+  static edit = createTranslationKey("edit", "Bearbeiten");
   static button_disabled = createTranslationKey("button_disabled", "Knopf deaktiviert");
+
+  static color_scheme = createTranslationKey("color_scheme", "Farbschema");
+  static color_scheme_light = createTranslationKey("color_scheme_light", "Hell");
+  static color_scheme_dark = createTranslationKey("color_scheme_dark", "Dunkel");
+  static color_scheme_system = createTranslationKey("color_scheme_system", "System");
 
   static rushMinutes_openedFrom = createTranslationKey("rushMinutes_openedFrom", "Geöffnet von");
   static rushMinutes_closedAfter = createTranslationKey("rushMinutes_closedAfter", "Geschlossen nach");

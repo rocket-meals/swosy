@@ -7,14 +7,16 @@ import {
 } from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {Text} from "@/components/Themed";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 interface AppState {
 
 }
-export const SettingsRowTheme: FunctionComponent<AppState> = ({...props}) => {
+export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) => {
 
     const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-    let accessibilityLabel = "Theme Changer" // TODO: translate using our translation system
+
+    const title = useTranslation(TranslationKeys.color_scheme)
 
     let availableThemeKeys = getMyColorSchemeNameOptions()
     let [savedColorSchemeOption, setColorSchemeOption] = useMyColorSchemeSavedOption()
@@ -22,17 +24,26 @@ export const SettingsRowTheme: FunctionComponent<AppState> = ({...props}) => {
     const theme = useThemeDetermined()
     const isDebug = useIsDebug()
 
-    const themeKeyToName = {
-        [MyColorSchemeName.Dark]: "Dark", // TODO: translate using our translation system
-        [MyColorSchemeName.Light]: "Light",
-        [MyColorSchemeName.System]: "System",
+    const color_scheme_light = useTranslation(TranslationKeys.color_scheme_light)
+    const color_scheme_dark = useTranslation(TranslationKeys.color_scheme_dark)
+    const color_scheme_system = useTranslation(TranslationKeys.color_scheme_system)
+
+    const translation_edit = useTranslation(TranslationKeys.edit)
+
+    const colorSchemeKeyToName = {
+        [MyColorSchemeName.Light]: color_scheme_light,
+        [MyColorSchemeName.Dark]: color_scheme_dark,
+        [MyColorSchemeName.System]: color_scheme_system
     }
 
-    let selectedThemeName = themeKeyToName[savedColorSchemeOption]
+    let selectedThemeName = colorSchemeKeyToName[savedColorSchemeOption]
+
+    const accessibilityLabel = translation_edit+": "+title + " " + selectedThemeName
+    const label = title
 
     let items = []
     for(let key of availableThemeKeys){
-        let label = themeKeyToName[key]
+        let label = colorSchemeKeyToName[key]
         items.push({
             key: key,
             label: label,
@@ -46,7 +57,7 @@ export const SettingsRowTheme: FunctionComponent<AppState> = ({...props}) => {
     const config = {
         onCancel: undefined,
         visible: true,
-        title: "Theme: "+selectedThemeName,
+        title: title,
         items: items
     }
 
@@ -63,9 +74,11 @@ export const SettingsRowTheme: FunctionComponent<AppState> = ({...props}) => {
         }
     }
 
+    const colorSchemeIconName = "theme-light-dark"
+
     return(
         <>
-            <SettingsRowActionsheet config={config} accessibilityLabel={accessibilityLabel} {...props}  />
+            <SettingsRowActionsheet config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
             {renderDebug()}
         </>
     )

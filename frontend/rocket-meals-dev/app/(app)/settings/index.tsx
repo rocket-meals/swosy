@@ -9,7 +9,7 @@ import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
-import {SettingsRowTheme} from "@/components/theme/SettingsRowTheme";
+import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
 
 export default function SettingsScreen() {
 
@@ -23,14 +23,9 @@ export default function SettingsScreen() {
         <View style={styles.container}>
           <Text style={styles.title}>Settings</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          <SettingsRowTheme />
-          <SettingsRowSyncBooleanSwitch accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
+          <SettingsRowColorScheme />
+          <SettingsRowSyncBooleanSwitch leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
           <SettingsRowLogout />
-          <Text >{"currentUser: "}</Text>
-          <Text >{JSON.stringify(currentUser, null, 2)}</Text>
-          <Text >{"authData: "}</Text>
-          <Text >{JSON.stringify(authData, null, 2)}</Text>
-
         </View>
       </ScrollView>
   );
