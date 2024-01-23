@@ -23,7 +23,7 @@ import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
-function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (value: any) => {}] {
+export function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (value: any) => {}] {
     const value = useStoreState((state) => {
         // @ts-ignore TODO: fix this for correct type
         return state?.[storageKey]?.value

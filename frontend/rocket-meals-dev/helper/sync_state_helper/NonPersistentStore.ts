@@ -4,6 +4,8 @@ export class NonPersistentStore {
 
   static currentUser = "NonPersistentStore.currentUser"
 
+  static globalMyActionSheetConfig = "NonPersistentStore.globalMyActionSheetConfig"
+
 }
 
 type ValueOf<T> = T[keyof T];

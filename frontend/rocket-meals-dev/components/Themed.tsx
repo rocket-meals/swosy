@@ -39,6 +39,8 @@ export function Icon({name, size, family, ...props}: IconProps){
 type TextInputProps = {
     variant?: "outline" | "rounded" | "underlined" | undefined
     size?: "sm" | "md" | "lg";
+    hidden?: boolean;
+    isPassword?: boolean;
     isDisabled?: boolean;
     isInvalid?: boolean;
     isReadOnly?: boolean;
@@ -62,10 +64,17 @@ export function TextInput(props: TextInputProps){
         defaultInputProps.size = "md";
     }
 
+    // set mask to password if isPassword is true
+    let type: "text" | "password" | undefined = "text";
+    if(props.isPassword){
+        type = "password";
+    }
+
   let defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
     value: props.value,
     onChangeText: props.onChangeText,
     placeholder: props.placeholder,
+      type: type
   }
 
   return(

@@ -6,35 +6,25 @@ import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {Text} from "@/components/Themed";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 
-export const SettingsRowLogout = (props) => {
-    const loggedIn = isUserLoggedIn();
+export const SettingsRowLogout = (props: any) => {
+    // TODO: Implement logout functionality at ServerAPI
     const [currentUser, setCurrentUser] = useCurrentUser()
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
-    const isUseDebug = useIsDebug()
-    const [clicked, setClicked] = React.useState(0)
 
+    const translation_title = useTranslation(TranslationKeys.logout)
 
     const onPress = () => {
         setAuthData(null)
         setCurrentUser(null)
-        setClicked(clicked+1)
-    }
-
-    function renderDebug(){
-        if(!isUseDebug){
-            return null
-        } else {
-            return <Text>{"clicked: "+clicked}</Text>
-        }
     }
 
     return(
         <>
-            <SettingsRow accessibilityLabel={"Logout"} onPress={onPress} leftIcon={"account"} leftContent={"Logout"} rightIcon={"logout"} >
+            <SettingsRow accessibilityLabel={translation_title} onPress={onPress} leftIcon={"account"} leftContent={translation_title} rightIcon={"logout"} >
             </SettingsRow>
-            {renderDebug()}
         </>
     )
 }
