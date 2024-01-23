@@ -17,7 +17,7 @@ export enum MyColorSchemeName {
  * Retrieves all values from MyColorSchemeName enum.
  * @returns Array of MyColorSchemeName values.
  */
-export function getMyColorSchemeNameOptions(): MyColorSchemeName[] {
+export function getMyColorSchemeNameOptions(): string[] {
     return Object.values(MyColorSchemeName);
 }
 
@@ -28,6 +28,10 @@ export function getMyColorSchemeNameOptions(): MyColorSchemeName[] {
 export function useMyColorSchemeSavedOption(): [MyColorSchemeName | null, (newValue: MyColorSchemeName) => void] {
     const [colorSchemeRaw, setColorSchemeRaw] = useSyncState<MyColorSchemeName>(PersistentStore.colorSchemeName)
     return [colorSchemeRaw, setColorSchemeRaw]
+}
+
+function isColorSchemeNameValid(colorSchemeName: string): boolean {
+    return getMyColorSchemeNameOptions().includes(colorSchemeName);
 }
 
 /**
@@ -41,14 +45,15 @@ export function useMyColorSchemeNameDetermined(): MyColorSchemeName {
 
     let usedColorScheme: MyColorSchemeName = MyColorSchemeName.Light; // Default value
 
+    if(!!colorSchemeRaw && isColorSchemeNameValid(colorSchemeRaw)){
+        usedColorScheme = colorSchemeRaw;
+    }
+
     // Determine the color scheme based on system setting or user preference
     if(!colorSchemeRaw || colorSchemeRaw === MyColorSchemeName.System){
         if(!!systemColorScheme){
-            if(systemColorScheme === MyColorSchemeName.Dark){
-                usedColorScheme = MyColorSchemeName.Dark;
-            }
-            if(systemColorScheme === MyColorSchemeName.Light){
-                usedColorScheme = MyColorSchemeName.Light;
+            if(isColorSchemeNameValid(systemColorScheme)){
+                usedColorScheme = systemColorScheme as MyColorSchemeName;
             }
         }
     }

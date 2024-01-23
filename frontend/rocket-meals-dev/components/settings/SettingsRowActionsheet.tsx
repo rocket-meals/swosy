@@ -1,40 +1,20 @@
 import React, {FunctionComponent} from "react";
 import {SettingsRow, SettingsRowProps} from "./SettingsRow";
-import {useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
+import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 
 interface AppState {
     value: boolean,
     accessibilityLabel: string,
     debug?: boolean,
     disabled?: boolean
-
+    config: MyGlobalActionSheetConfig
 }
-export const SettingsRowActionsheet: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel,...props}) => {
+export const SettingsRowActionsheet: FunctionComponent<AppState & SettingsRowProps> = ({config, accessibilityLabel,...props}) => {
 
     const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 
     const onPress = () => {
-        show({
-            onCancel: undefined,
-            visible: true,
-            title: accessibilityLabel,
-                    items: [
-                        {
-                            key: "1",
-                            label: "1",
-                            onSelect: async (key) => {
-                                return true
-                            }
-                        },
-                        {
-                            key: "2",
-                            label: "2",
-                            onSelect: async (key) => {
-                                return true
-                            }
-                        },
-                    ]
-                })
+        show(config)
     }
 
     return(

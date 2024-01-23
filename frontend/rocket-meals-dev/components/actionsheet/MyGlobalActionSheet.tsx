@@ -84,6 +84,8 @@ export const MyGlobalActionSheet = (props) => {
 
     const showActionsheet = showActionsheetConfig.visible || false;
 
+    let title = showActionsheetConfig.title || ""
+
     const onCancel = async () => {
         let congifOnCancel = showActionsheetConfig.onCancel
         let cancelAllowed = true;
@@ -141,8 +143,8 @@ export const MyGlobalActionSheet = (props) => {
                     <ActionsheetDragIndicatorWrapper>
                         <ActionsheetDragIndicator />
                     </ActionsheetDragIndicatorWrapper>
+                    <Text>{title}</Text>
                     {renderedItems}
-                    <Text>{JSON.stringify(renderedItemsForStringify, null, 2)}</Text>
                 </ActionsheetContent>
             </Actionsheet>
         </KeyboardAvoidingView>
