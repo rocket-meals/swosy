@@ -52,6 +52,8 @@ export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIco
         );
     }
 
+
+
     let rightIcon = null;
     if(!!rightIconName){
         rightIcon = (
@@ -86,11 +88,18 @@ export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIco
         delete mergedStyle.backgroundColor;
     }
 
+    let textContent = null;
+    if(!!text){
+        textContent = ( // Directly rendering the text will cause an empty row on mobile
+            <Text>{text}</Text>
+        );
+    }
+
     let buttonContent = (
-        <View style={{flexDirection: "row", borderRadius: borderRadius, flex: 1, backgroundColor: mergedStyleBackgroundColor}}>
+        <View style={{flexDirection: "row", borderRadius: borderRadius, width: "100%", backgroundColor: mergedStyleBackgroundColor}}>
             {leftIcon}
             <View style={{justifyContent: "center", flex: 1, paddingLeft: 0}}>
-                <Text>{text}</Text>
+                {textContent}
                 {content}
             </View>
             {rightIcon}
