@@ -20,9 +20,7 @@ import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/Proj
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
-    let projectInfo = useProjectInfo();
 
-    const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
 
     // email and password for login
@@ -124,24 +122,6 @@ export default function Login() {
                 <Divider />
                 <ServerSsoAuthProviders />
                 <ButtonAuthAnonym />
-                <Divider />
-                <Text>
-                    {JSON.stringify(currentUser, null, 2)}
-                </Text>
-                <View style={{ height: 20, width: 20 }} />
-                <Button
-                    onPress={async () => {
-                        try {
-                            setAuthData(null)
-                            setCurrentUser(null)
-                        } catch (e) {
-                            console.error(e)
-                        }
-                    }}>
-                    <Text>
-                        {"Clear Auth Data"}
-                    </Text>
-                </Button>
                 <Divider />
             </View>
 

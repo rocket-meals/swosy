@@ -1,14 +1,9 @@
-import {Navigator, Redirect, Stack} from 'expo-router';
+import {Navigator, Redirect} from 'expo-router';
 import React, {useState} from "react";
 import {Text} from "@/components/Themed"
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
-import Slot = Navigator.Slot;
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {DrawerContent} from "@react-navigation/drawer";
-import {useIsLargeDevice} from "@/components/DeviceHelper";
+import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 export const unstable_settings = {
