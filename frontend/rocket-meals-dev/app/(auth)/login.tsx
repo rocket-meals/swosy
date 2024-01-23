@@ -1,5 +1,5 @@
 import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import {ScrollView, StyleSheet} from 'react-native';
+import {Appearance, ScrollView, StyleSheet} from 'react-native';
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {useEffect, useState} from "react";
 import {Button, Divider} from "@gluestack-ui/themed";
