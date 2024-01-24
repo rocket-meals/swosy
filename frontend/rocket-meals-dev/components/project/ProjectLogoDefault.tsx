@@ -14,10 +14,7 @@ export const ProjectLogoDefault = (props: ProjectLogoDefaultProps) => {
     const projectColorContrast = useProjectColorContrast();
     // projectColorContrast is a string either "#000000" or "#FFFFFF"
     // so when #000000 we want to use the white logo and when #FFFFFF we want to use the black logo
-    let useWhiteLogo = projectColorContrast === "#000000";
-
-    const blurhash =
-        '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+    let useWhiteLogo = projectColorContrast === "#FFFFFF";
 
     type CachePolicy = "none" | "disk" | "memory" | "memory-disk"
     let cachePolicy: CachePolicy = "none"
@@ -38,7 +35,6 @@ export const ProjectLogoDefault = (props: ProjectLogoDefaultProps) => {
         alt={"Logo"}
         contentFit={"contain"}
         style={props.style}
-        placeholder={blurhash}
         cachePolicy={cachePolicy}
     />
 }
