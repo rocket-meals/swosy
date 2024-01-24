@@ -1,10 +1,25 @@
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+import {AuthenticationData} from "@directus/sdk";
+import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export type CachedUserInformation = {
     data: any,
     loggedIn: boolean
+}
+
+export function useLogoutCallback(): () => void {
+    const [currentUser, setCurrentUser] = useCurrentUser()
+    const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+
+    const onPress = () => {
+        setAuthData(null)
+        setCurrentUser(null)
+    }
+
+    return onPress
 }
 
 export function useCachedUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {

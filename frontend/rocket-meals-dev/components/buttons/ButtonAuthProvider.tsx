@@ -34,7 +34,7 @@ function isSsoLoginPossible() {
 export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
     const isDebug = useIsDebug();
 
-    const translation_log_in_with = useTranslation(TranslationKeys.log_in_with);
+    const translation_log_in_with = useTranslation(TranslationKeys.sign_in_with);
 
     let providerName = provider.name;
     // capitalize first letter

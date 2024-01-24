@@ -24,6 +24,9 @@ export function useTranslation(key: TranslationKey): string{
 export class TranslationKeys {
   static sidebar_menu = createTranslationKey("sidebar_menu", "Menü");
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
+
+  static currently_logged_in_as = createTranslationKey("currently_logged_in_as", "Angemeldet als");
+  static if_you_want_to_login_with_this_account_please_press = createTranslationKey("if_you_want_to_login_with_this_account_please_press", "Wenn Sie sich mit diesem Konto anmelden möchten, drücken Sie bitte");
   static logout = createTranslationKey("logout", "Abmelden");
   static logout_confirm_message = createTranslationKey("logout_confirm_message", "Möchten Sie sich wirklich abmelden?");
   static register = createTranslationKey("register", "Registrieren");
@@ -39,7 +42,7 @@ export class TranslationKeys {
   static password_hide = createTranslationKey("password_hide", "Passwort verstecken");
   static confirm_password = createTranslationKey("confirm_password", "Passwort bestätigen");
   static continue_as_anonymous = createTranslationKey("continue_as_anonymous", "Anonym fortfahren");
-  static log_in_with = createTranslationKey("log_in_with", "Einloggen mit");
+  static sign_in_with = createTranslationKey("sign_in_with", "Fortfahren mit");
   static home = createTranslationKey("home", "Startseite");
 
   static switch = createTranslationKey("switch", "Umschalten");

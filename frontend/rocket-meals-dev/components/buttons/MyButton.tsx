@@ -7,8 +7,10 @@ import {Icon, View, Text} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 import {GestureResponderEvent, ViewProps} from "react-native";
+import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 
 export type ButtonType = {
+    useProjectColorAsBackgroundColor?: boolean,
     leftIconFamily?: any,
     leftIconName?: string | null | undefined,
     leftIconColor?: string,
@@ -24,7 +26,9 @@ export type ButtonType = {
 }
 
 // define the button component
-export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
+export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
+
+    const projectColor = useProjectColor()
 
     let content = null;
     if(!!children){
@@ -86,6 +90,9 @@ export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIco
     if(mergedStyleBackgroundColor){
         // @ts-ignore
         delete mergedStyle.backgroundColor;
+    }
+    if(useProjectColorAsBackgroundColor){
+        mergedStyleBackgroundColor = projectColor;
     }
 
     let buttonContent = (
