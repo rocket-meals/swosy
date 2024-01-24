@@ -20,7 +20,8 @@ function getContrastRatio(foreground: string | undefined, background: string): n
 
 enum ContrastThreshold {
     MaternaLandNiedersachsen = 4.5,
-    WCAG_AA = 3.0
+    WCAG_AA = 3.0,
+    WCAG_AAA = 7.0,
 }
 
 /**

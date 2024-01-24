@@ -11,6 +11,7 @@ export enum MyColorSchemeKey {
     Light = "light",
     Dark = "dark",
     System = "system"
+    // TODO: Idea to automatically set the color scheme based on the time of day.
 }
 
 /**

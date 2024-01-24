@@ -33,7 +33,7 @@ export const ButtonAuthProviderCustom = ({ text, accessibilityLabel, onPress, ic
     )
 
     return(
-        <MyButton style={{marginVertical: 5, paddingHorizontal: 10, backgroundColor: backgroundColor}} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIconName={icon_name} leftIconFamily={icon_family} leftIconColor={projectColorContrast}>
+        <MyButton style={{paddingVertical: 5, paddingHorizontal: 10, backgroundColor: backgroundColor}} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIconName={icon_name} leftIconFamily={icon_family} leftIconColor={projectColorContrast}>
             {contentRows}
         </MyButton>
     )

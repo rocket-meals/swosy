@@ -6,6 +6,7 @@ import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {MyExternalLink} from '@/components/link/MyExternalLink';
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 
 // Define the type for Single Sign-On (SSO) providers
 type SsoProvider = {
@@ -56,12 +57,12 @@ export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
         text += "Debug: URL: "+url
     }
 
-    let onPress = undefined; // handled by MyExternalLink
+    let onPress = () => {
+        CommonSystemActionHelper.openExternalURL(url)
+    }
 
     return (
         // @ts-ignore
-        <MyExternalLink key={"ssoButtonLink"+provider.name} target={"_self"} href={url} accessibilityLabel={accessibilityLabel}>
-            <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text} />
-        </MyExternalLink>
+        <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text} />
     );
 };

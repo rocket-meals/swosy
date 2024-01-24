@@ -99,25 +99,21 @@ export const MyButton = ({style, disabled, leftIconFamily, leftIconName, leftIco
     );
 
 
-    let buttonContentWrapper = (
-        <ViewWithPercentageSupport style={mergedStyle}>
-            {buttonContent}
-        </ViewWithPercentageSupport>
-    )
-
     let touchableContent = null;
 
     if(!!onPress){
         touchableContent = (
             <MyTouchableOpacity disabled={disabled} onPress={onPress} accessibilityLabel={accessibilityLabel}>
-                {buttonContentWrapper}
+                {buttonContent}
             </MyTouchableOpacity>
         );
     } else {
-        touchableContent = (buttonContentWrapper);
+        touchableContent = (buttonContent);
     }
 
     return (
-        touchableContent
+        <ViewWithPercentageSupport style={mergedStyle}>
+            {touchableContent}
+        </ViewWithPercentageSupport>
     );
 }
