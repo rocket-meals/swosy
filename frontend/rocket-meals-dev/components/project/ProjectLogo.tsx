@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {useProjectLogoAssetId} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {ViewProps} from "react-native";
@@ -6,7 +6,12 @@ import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
 import {View} from "@/components/Themed";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 
-export const ProjectLogo = ({style, ...props}: ViewProps) => {
+interface AppState {
+    rounded?: boolean
+    size?: string
+    titleBoxHeight?: number
+}
+export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...props}) => {
 
     const defaultHeightAndWidth = 64;
     const defaultStyle = {width: defaultHeightAndWidth, height: defaultHeightAndWidth}
@@ -17,5 +22,7 @@ export const ProjectLogo = ({style, ...props}: ViewProps) => {
     </ViewWithProjectColor>
     //let fallbackElement = undefined
 
-    return <DirectusImage assetId={projectLogoAssetId} fallbackElement={fallbackElement} style={[defaultStyle,style]} {...props}  />
+    return <View style={{height: defaultHeightAndWidth, width: defaultHeightAndWidth, borderRadius: defaultHeightAndWidth/6, alignItems: "center", justifyContent: "center", overflow: "hidden"}}>
+        <DirectusImage assetId={projectLogoAssetId} fallbackElement={fallbackElement} style={[defaultStyle,style]} {...props}  />
+    </View>
 }

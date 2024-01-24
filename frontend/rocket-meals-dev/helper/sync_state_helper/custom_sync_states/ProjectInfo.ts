@@ -30,3 +30,8 @@ export function useProjectLogoAssetId(){
   let projectInfo = useProjectInfo();
   return projectInfo?.project_logo
 }
+
+export function useProjectPublicBackgroundAssetId(){
+  let projectInfo = useProjectInfo();
+  return projectInfo?.public_background
+}

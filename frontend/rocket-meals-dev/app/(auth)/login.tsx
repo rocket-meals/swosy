@@ -18,6 +18,7 @@ import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
 import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {LoginLayout} from "@/components/auth/LoginLayout";
 
 export default function Login() {
 
@@ -27,6 +28,7 @@ export default function Login() {
 
     const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
     const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
+    const translation_sign_in= useTranslation(TranslationKeys.sign_in);
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -111,13 +113,9 @@ export default function Login() {
         }
     }
 
-    return (
-        <View style={{ width: "100%", height: "100%" }}>
-
-            <View style={{ height: 20}} />
-            <ProjectLogo />
-
-            <View  style={{ width: "100%", height: "100%" }}>
+    function renderWhenLoggedIn() {
+        if(loggedIn) {
+            return (
                 <Button
                     disabled={!loggedIn}
                     onPress={() => {
@@ -131,43 +129,46 @@ export default function Login() {
                         {loggedIn ? "Continue" : "Not logged in"}
                     </Text>
                 </Button>
-                <Divider />
-                <ServerSsoAuthProviders />
-                <ButtonAuthAnonym />
-                <Divider />
-                {renderLoginWithUsernameAndPassword()}
-                <Divider />
-                <MyTouchableOpacity
-                    onPress={() => {
-                        setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
-                    }} accessibilityLabel={translation_show_login_with_username_and_password}>
-                    <Text>
-                        {translation_show_login_with_username_and_password}
-                    </Text>
-                </MyTouchableOpacity>
-            </View>
+            )
+        }
+    }
 
-        </View>
+    function renderWhenNotLoggedIn() {
+        if(!loggedIn) {
+            return (
+                <>
+                    <Text style={{fontSize: 24, fontWeight: "bold"}}>{translation_sign_in}</Text>
+                    <View style={{height: 16}}></View>
+                    <Divider />
+                    <View style={{height: 16}}></View>
+                    <ServerSsoAuthProviders />
+                    <ButtonAuthAnonym />
+                    <View style={{height: 16}}></View>
+                    <Divider />
+                    <View style={{height: 16}}></View>
+                    {renderLoginWithUsernameAndPassword()}
+                    <MyTouchableOpacity
+                        onPress={() => {
+                            setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
+                        }} accessibilityLabel={translation_show_login_with_username_and_password}>
+                        <Text>
+                            {translation_show_login_with_username_and_password}
+                        </Text>
+                    </MyTouchableOpacity>
+                </>
+            )
+        }
+    }
+
+    return (
+        <LoginLayout>
+            <View  style={{ width: "100%", height: "100%" }}>
+
+                {renderWhenLoggedIn()}
+                {renderWhenNotLoggedIn()}
+                <View style={{height: 16}}></View>
+                <Divider />
+            </View>
+        </LoginLayout>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    link: {
-        marginTop: 15,
-        paddingVertical: 15,
-    },
-    linkText: {
-        fontSize: 14,
-        color: '#2e78b7',
-    },
-});
