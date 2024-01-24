@@ -89,7 +89,7 @@ export function TextInput(props: TextInputProps){
 }
 
 export function Text(props: TextProps) {
-  return <DefaultText {...props} />;
+  return <DefaultText selectable={true} {...props} />;
 }
 
 export function View(props: ViewProps) {

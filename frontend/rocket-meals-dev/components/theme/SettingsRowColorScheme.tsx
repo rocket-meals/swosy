@@ -14,6 +14,8 @@ interface AppState {
 }
 export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) => {
 
+    const colorSchemeIconName = "theme-light-dark"
+
     const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 
     const title = useTranslation(TranslationKeys.color_scheme)
@@ -49,10 +51,15 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         let themeForKey = colorSchemeKeyToThemeDict[key]
         let isDark = themeForKey.dark
 
+        let icon = isDark ? "moon-waning-crescent" : "white-balance-sunny"
+        if(key === MyColorSchemeKey.System){
+            icon = "theme-light-dark"
+        }
+
         items.push({
             key: key,
             label: label,
-            icon: isDark ? "moon-waning-crescent" : "white-balance-sunny",
+            icon: icon,
             onSelect: async (key) => {
                 setColorSchemeOptionRaw(key)
                 return true // do not close the actionsheet
@@ -78,7 +85,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         }
     }
 
-    const colorSchemeIconName = "theme-light-dark"
+
 
     return(
         <>
