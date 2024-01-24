@@ -9,7 +9,7 @@ import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecure
 import {AuthenticationData} from "@directus/sdk";
 import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
-import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {getAnonymousUser, isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {ProjectLogo} from "@/components/project/ProjectLogo";
@@ -52,19 +52,25 @@ export default function Login() {
         }
     }, [changedLoginStatus, loggedIn]);
 
-    async function handleSuccessfulAuthentication(result: AuthenticationData) {
-        setLoginWithAccessTokenResult(result)
-        let me = await ServerAPI.getMe();
-        setCurrentUser(me);
-        console.log("login.tsx useEffect directus_token me", me)
+    async function handleSuccessfulAuthenticationWithNewCurrentUser(new_current_user: any) {
+        setCurrentUser(new_current_user);
+        console.log("login.tsx handleSuccessfulAuthenticationWithNewCurrentUser", new_current_user)
         setChangedLoginStatus(true)
+    }
+
+    async function handleSuccessfulAuthenticationNonAnonymous(result: AuthenticationData) {
+        let me = await ServerAPI.getMe();
+        handleSuccessfulAuthenticationWithNewCurrentUser(me)
     }
 
     async function handleFailedAuthentication(e: any) {
         console.log("login.tsx authentication failed")
         console.error(e)
-        setLoginWithAccessTokenResult(e)
         //router.replace('/login'); // clear url params
+    }
+
+    async function authenticate_as_anonymous() {
+        handleSuccessfulAuthenticationWithNewCurrentUser(getAnonymousUser())
     }
 
     async function authenticate_with_access_token(directus_token: string | null | undefined) {
@@ -72,7 +78,7 @@ export default function Login() {
         if(directus_token) {
             console.log("login.tsx useEffect directus_token: "+directus_token);
             ServerAPI.authenticate_with_access_token(directus_token).then((result) => {
-                handleSuccessfulAuthentication(result)
+                handleSuccessfulAuthenticationNonAnonymous(result)
             }).catch((e) => {
                 handleFailedAuthentication(e)
             })
@@ -82,7 +88,7 @@ export default function Login() {
     async function authenticate_with_email_and_password(email: string, password: string) {
         console.log("login.tsx useEffect email: "+email+" password: "+password);
         ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
-            handleSuccessfulAuthentication(result)
+            handleSuccessfulAuthenticationNonAnonymous(result)
         }).catch((e) => {
             handleFailedAuthentication(e)
         })
@@ -142,7 +148,7 @@ export default function Login() {
                     <Divider />
                     <View style={{height: 16}}></View>
                     <ServerSsoAuthProviders />
-                    <ButtonAuthAnonym />
+                    <ButtonAuthAnonym onPress={authenticate_as_anonymous} />
                     <View style={{height: 16}}></View>
                     <Divider />
                     <View style={{height: 16}}></View>
