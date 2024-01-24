@@ -60,40 +60,42 @@ export const LoginLayout = (props: any) => {
 
         return(
             <View style={{width: width, height: "100%"}}>
-                <KeyboardAvoidingView
-                    keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
-                    style={{flex: 1, width: "100%"}}
-                    behavior={Platform.OS === "ios" ? "padding" : "height"} >
-                    <ScrollViewWithGradient style={{flex: 1}}>
+                <SafeAreaView style={{width: "100%", height: "100%"}}>
+                    <KeyboardAvoidingView
+                        keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
+                        style={{flex: 1, width: "100%"}}
+                        behavior={Platform.OS === "ios" ? "padding" : "height"} >
+                        <ScrollViewWithGradient style={{flex: 1}}>
 
-                        <View style={{paddingHorizontal: padding, paddingTop: padding, height: "100%", width: "100%"}}>
-                            <View
-                                style={{
-                                    flex: 1,
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                }}
-                            >
-                                <ProjectBanner />
+                            <View style={{paddingHorizontal: padding, paddingTop: padding, height: "100%", width: "100%"}}>
+                                <View
+                                    style={{
+                                        flex: 1,
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    <ProjectBanner />
+                                </View>
+                                {renderSpaceBetweenLogoAndSignIn()}
+                                <View>
+                                    {props.children}
+                                </View>
                             </View>
-                            {renderSpaceBetweenLogoAndSignIn()}
-                            <View>
-                                {props.children}
-                            </View>
+                        </ScrollViewWithGradient>
+                    </KeyboardAvoidingView>
+                    <View style={{paddingHorizontal: padding, width: "100%"}}>
+                        {renderConsentTermsOfUseAndPrivacyPolicy()}
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <LegalRequiredLinks />
                         </View>
-                    </ScrollViewWithGradient>
-                </KeyboardAvoidingView>
-                <View style={{paddingHorizontal: padding, width: "100%"}}>
-                    {renderConsentTermsOfUseAndPrivacyPolicy()}
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            flexWrap: "wrap",
-                        }}
-                    >
-                        <LegalRequiredLinks />
                     </View>
-                </View>
+                </SafeAreaView>
             </View>
         );
     }
