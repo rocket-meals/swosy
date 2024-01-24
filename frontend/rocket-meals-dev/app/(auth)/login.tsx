@@ -16,12 +16,17 @@ import {ProjectLogo} from "@/components/project/ProjectLogo";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
 import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
 
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
+
+    const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
+    const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -86,6 +91,26 @@ export default function Login() {
         authenticate_with_access_token(directus_token);
     }, [directus_token]);
 
+    function renderLoginWithUsernameAndPassword() {
+        if(showLoginWithUsernameAndPassword) {
+            return (
+                <>
+                    <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
+                    <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={"password"} />
+                    <Button
+                        disabled={loggedIn || !email || !password}
+                        onPress={() => {
+                            authenticate_with_email_and_password(email, password)
+                        }}>
+                        <Text>
+                            {"Login with email and password"}
+                        </Text>
+                    </Button>
+                </>
+            )
+        }
+    }
+
     return (
         <View style={{ width: "100%", height: "100%" }}>
 
@@ -107,22 +132,19 @@ export default function Login() {
                     </Text>
                 </Button>
                 <Divider />
-                <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
-                <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={"password"} />
-                <Button
-                    disabled={loggedIn || !email || !password}
-                    onPress={() => {
-                        authenticate_with_email_and_password(email, password)
-                    }}>
-                    <Text>
-                        {"Login with email and password"}
-                    </Text>
-                </Button>
-                <Divider />
-                <Divider />
                 <ServerSsoAuthProviders />
                 <ButtonAuthAnonym />
                 <Divider />
+                {renderLoginWithUsernameAndPassword()}
+                <Divider />
+                <MyTouchableOpacity
+                    onPress={() => {
+                        setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
+                    }} accessibilityLabel={translation_show_login_with_username_and_password}>
+                    <Text>
+                        {translation_show_login_with_username_and_password}
+                    </Text>
+                </MyTouchableOpacity>
             </View>
 
         </View>
