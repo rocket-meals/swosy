@@ -3,26 +3,36 @@ import {Image} from "expo-image";
 import {TouchableOpacity} from "react-native";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
+import {useAccessToken} from "@/helper/sync_state_helper/custom_sync_states/User";
 
 interface AppState {
     assetId: string | undefined | null;
     style?: any;
     alt?: string;
     showLoading?: boolean
-    useUnsafeAccessTokenInURL?: boolean,
     fallbackElement?: any,
     onPress?: () => {}
 }
 
 export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
+    const accessToken = useAccessToken()
+
     let url = ServerAPI.getAssetImageURL(props.assetId);
     const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
 
     const uri = url; // TODO: Maybe check if we might use Base64 for caching or if expo-image does that already
 
+    let headers = undefined;
+    if(accessToken){
+        headers = {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    }
+
     let source={
         uri: uri,
+        headers: headers
     }
 
     const blurhash =

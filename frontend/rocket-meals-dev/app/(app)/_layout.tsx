@@ -64,10 +64,10 @@ function AppLayoutDrawer() {
                     }}
                 />
                 <Drawer.Screen
-                    name="playground/index" // This is the name of the page and must match the url from root
+                    name="test/index" // This is the name of the page and must match the url from root
                     options={{
-                        drawerLabel: 'Playground',
-                        title: 'Playground',
+                        drawerLabel: 'Test',
+                        title: 'Test',
                     }}
                 />
                 <Drawer.Screen

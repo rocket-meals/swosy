@@ -9,7 +9,12 @@ import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecure
 import {AuthenticationData} from "@directus/sdk";
 import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
-import {isUserLoggedIn, useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {
+    getAnonymousUser,
+    isUserLoggedIn,
+    useCurrentUser,
+    useLogoutCallback
+} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {ProjectLogo} from "@/components/project/ProjectLogo";
@@ -18,15 +23,24 @@ import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
 import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {LoginLayout} from "@/components/auth/LoginLayout";
+import {MyButton} from "@/components/buttons/MyButton";
 
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
+    const logout = useLogoutCallback()
 
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
 
     const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
     const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
+    const translation_sign_in= useTranslation(TranslationKeys.sign_in);
+    const translation_if_you_want_to_login_with_this_account_please_press = useTranslation(TranslationKeys.if_you_want_to_login_with_this_account_please_press);
+    const translation_continue = useTranslation(TranslationKeys.continue);
+    const translation_logout = useTranslation(TranslationKeys.logout);
+    const translation_email = useTranslation(TranslationKeys.email);
+    const translation_password = useTranslation(TranslationKeys.password);
 
     // email and password for login
     const [email, setEmail] = useState("")
@@ -50,19 +64,27 @@ export default function Login() {
         }
     }, [changedLoginStatus, loggedIn]);
 
-    async function handleSuccessfulAuthentication(result: AuthenticationData) {
-        setLoginWithAccessTokenResult(result)
-        let me = await ServerAPI.getMe();
-        setCurrentUser(me);
-        console.log("login.tsx useEffect directus_token me", me)
+    async function handleSuccessfulAuthenticationWithNewCurrentUser(new_current_user: any) {
+        setCurrentUser(new_current_user);
+        console.log("login.tsx handleSuccessfulAuthenticationWithNewCurrentUser", new_current_user)
         setChangedLoginStatus(true)
+    }
+
+    async function handleSuccessfulAuthenticationNonAnonymous(result: AuthenticationData) {
+        // the result is irrelevant, just to make sure authentication was successful
+        let me = await ServerAPI.getMe();
+        handleSuccessfulAuthenticationWithNewCurrentUser(me)
     }
 
     async function handleFailedAuthentication(e: any) {
         console.log("login.tsx authentication failed")
         console.error(e)
-        setLoginWithAccessTokenResult(e)
         //router.replace('/login'); // clear url params
+    }
+
+    async function authenticate_as_anonymous() {
+        console.log("login.tsx useEffect authenticate_as_anonymous");
+        handleSuccessfulAuthenticationWithNewCurrentUser(getAnonymousUser())
     }
 
     async function authenticate_with_access_token(directus_token: string | null | undefined) {
@@ -70,7 +92,7 @@ export default function Login() {
         if(directus_token) {
             console.log("login.tsx useEffect directus_token: "+directus_token);
             ServerAPI.authenticate_with_access_token(directus_token).then((result) => {
-                handleSuccessfulAuthentication(result)
+                handleSuccessfulAuthenticationNonAnonymous(result)
             }).catch((e) => {
                 handleFailedAuthentication(e)
             })
@@ -80,7 +102,7 @@ export default function Login() {
     async function authenticate_with_email_and_password(email: string, password: string) {
         console.log("login.tsx useEffect email: "+email+" password: "+password);
         ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
-            handleSuccessfulAuthentication(result)
+            handleSuccessfulAuthenticationNonAnonymous(result)
         }).catch((e) => {
             handleFailedAuthentication(e)
         })
@@ -91,52 +113,67 @@ export default function Login() {
         authenticate_with_access_token(directus_token);
     }, [directus_token]);
 
-    function renderLoginWithUsernameAndPassword() {
-        if(showLoginWithUsernameAndPassword) {
+    function renderWhenLoggedIn() {
+        if(loggedIn) {
             return (
                 <>
-                    <TextInput value={email} onChangeText={setEmail} placeholder={"email"} />
-                    <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={"password"} />
-                    <Button
-                        disabled={loggedIn || !email || !password}
-                        onPress={() => {
-                            authenticate_with_email_and_password(email, password)
-                        }}>
-                        <Text>
-                            {"Login with email and password"}
-                        </Text>
-                    </Button>
+                    <Text>{"TODO: Show name of user"}</Text>
+                    <Text>{translation_if_you_want_to_login_with_this_account_please_press+": "+translation_continue}</Text>
+                    <View style={{height: 16}}></View>
+                    <View style={{flexDirection: "row", width: "100%"}}>
+                        <View style={{flex: 1}}>
+                            <MyTouchableOpacity accessibilityLabel={translation_logout} onPress={logout}>
+                                <Text>{translation_logout}</Text>
+                            </MyTouchableOpacity>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <MyButton
+                                accessibilityLabel={translation_continue}
+                                useProjectColorAsBackgroundColor={true}
+                                disabled={!loggedIn}
+                                onPress={() => {
+                                    console.log("Handle sign in");
+                                    //signIn();
+                                    // Navigate after signing in. You may want to tweak this to ensure sign-in is
+                                    // successful before navigating.
+                                    signIn();
+                                }}>
+                                <Text>
+                                    {translation_continue}
+                                </Text>
+                            </MyButton>
+                        </View>
+                    </View>
                 </>
             )
         }
     }
 
-    return (
-        <View style={{ width: "100%", height: "100%" }}>
+    function renderEmployeeLogin() {
+        if(showLoginWithUsernameAndPassword) {
+            return (
+                <>
+                    <TextInput value={email} onChangeText={setEmail} placeholder={translation_email} />
+                    <View style={{height: 8}}></View>
+                    <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={translation_password} />
+                    <View style={{height: 8}}></View>
+                    <View>
+                        <MyButton
+                            leftIconName={"account"}
+                            style={{marginVertical: 8, width: "100%"}}
+                            text={translation_sign_in}
+                            accessibilityLabel={translation_sign_in}
+                            disabled={loggedIn || !email || !password}
+                            onPress={() => {
+                                authenticate_with_email_and_password(email, password)
+                            }} />
+                    </View>
+                </>
+            )
+        }
 
-            <View style={{ height: 20}} />
-            <ProjectLogo />
-
-            <View  style={{ width: "100%", height: "100%" }}>
-                <Button
-                    disabled={!loggedIn}
-                    onPress={() => {
-                        console.log("Handle sign in");
-                        //signIn();
-                        // Navigate after signing in. You may want to tweak this to ensure sign-in is
-                        // successful before navigating.
-                        signIn();
-                    }}>
-                    <Text>
-                        {loggedIn ? "Continue" : "Not logged in"}
-                    </Text>
-                </Button>
-                <Divider />
-                <ServerSsoAuthProviders />
-                <ButtonAuthAnonym />
-                <Divider />
-                {renderLoginWithUsernameAndPassword()}
-                <Divider />
+        return(
+            <>
                 <MyTouchableOpacity
                     onPress={() => {
                         setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
@@ -145,29 +182,37 @@ export default function Login() {
                         {translation_show_login_with_username_and_password}
                     </Text>
                 </MyTouchableOpacity>
-            </View>
+            </>
+        )
+    }
 
-        </View>
+    function renderWhenNotLoggedIn() {
+        if(!loggedIn) {
+            return (
+                <>
+                    <ServerSsoAuthProviders />
+                    <ButtonAuthAnonym onPress={authenticate_as_anonymous} />
+                    <View style={{height: 16}}></View>
+                    <Divider />
+                    <View style={{height: 16}}></View>
+                    {renderEmployeeLogin()}
+                </>
+            )
+        }
+    }
+
+    return (
+        <LoginLayout>
+            <View  style={{ width: "100%", height: "100%" }}>
+                <Text style={{fontSize: 24, fontWeight: "bold"}}>{translation_sign_in}</Text>
+                <View style={{height: 16}}></View>
+                <Divider />
+                <View style={{height: 16}}></View>
+                {renderWhenLoggedIn()}
+                {renderWhenNotLoggedIn()}
+                <View style={{height: 16}}></View>
+                <Divider />
+            </View>
+        </LoginLayout>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    link: {
-        marginTop: 15,
-        paddingVertical: 15,
-    },
-    linkText: {
-        fontSize: 14,
-        color: '#2e78b7',
-    },
-});

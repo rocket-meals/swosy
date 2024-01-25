@@ -40,6 +40,7 @@ function isColorSchemeKeyValid(colorSchemeKey: string | null): boolean {
 
 function getBestFittingSystemColorSchemeKey(systemColorScheme: RNColorSchemeName): MyColorSchemeKey {
     if(!!systemColorScheme){
+        // @ts-ignore Ignore this error since the value of RNColorSchemeName might change in the future.
         if(isColorSchemeKeyValid(systemColorScheme) && systemColorScheme !== MyColorSchemeKey.System){
             return systemColorScheme as MyColorSchemeKey;
         }
