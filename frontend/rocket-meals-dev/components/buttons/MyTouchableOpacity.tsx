@@ -49,10 +49,16 @@ export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLa
         };
     }
 
+    if(!onPress){
+        return <View accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityLabel={accessibilityLabel} style={mergedStyle}>
+            {props?.children}
+        </View>
+    }
+
     return(
         // TODO: add tooltip support
             <TouchableOpacity onPress={onPress} accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityRole={accessibilityRole ?? 'button'} accessibilityLabel={accessibilityLabel} style={mergedStyle} disabled={disabled}  {...props}>
-                {props?.children}
+
             </TouchableOpacity>
     )
 

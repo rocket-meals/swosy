@@ -1,10 +1,18 @@
-import {Navigator, Redirect} from 'expo-router';
+import {Redirect} from 'expo-router';
 import React, {useState} from "react";
-import {Text} from "@/components/Themed"
+import {Icon, Text, View} from "@/components/Themed"
 import {DrawerContent} from "@react-navigation/drawer";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {MyCard} from "@/components/card/MyCard";
+import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
+import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
+import {BottomTabDescriptorMap} from "@react-navigation/bottom-tabs/src/types";
+import {ProjectBanner} from "@/components/project/ProjectBanner";
+import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
@@ -13,26 +21,25 @@ export const unstable_settings = {
 
 
 function DrawerContentWrapper(props: any) {
-    let registeredRoutes = props?.state?.routeNames;
+    return(
+        <View style={{width: "100%", height: "100%"}}>
+            <MyTouchableOpacity
+                onPress={() => {
+                    props.navigation.navigate("index");
+                }}
+                style={{
+                width: "100%",
+                padding: 10,
+            }}>
+                <ProjectBanner/>
+            </MyTouchableOpacity>
+            <DrawerContent {...props}>
 
-    /**
-     * TODO: Find a nice way to show only routes for users role
-     * TODO: Render routes with expandable subroutes like in: https://stackoverflow.com/questions/47766564/need-to-show-expandable-list-view-inside-navigation-drawer
-     * registeredRoutes = [ "home/index", "playground/index", "settings/index", "index", "playground/syncStates/index" ]
-     */
-
-    /**
-     * FOR REFERENCE:
-     export { default as DrawerContent } from './views/DrawerContent';
-     export { default as DrawerContentScrollView } from './views/DrawerContentScrollView';
-     export { default as DrawerItem } from './views/DrawerItem';
-     export { default as DrawerItemList } from './views/DrawerItemList';
-     export { default as DrawerToggleButton } from './views/DrawerToggleButton';
-     export { default as DrawerView } from './views/DrawerView';
-     */
-
-    return (
-        <DrawerContent {...props} />
+            </DrawerContent>
+        <View style={{width: "100%"}}>
+            <LegalRequiredLinks/>
+        </View>
+    </View>
     );
 }
 
@@ -51,32 +58,49 @@ function DrawerWrapper(props: any) {
 }
 
 function AppLayoutDrawer() {
+    let projectColor = useProjectColor()
+    let contrastColor = useMyContrastColor(projectColor)
 
+    // TODO: Set the hamburger menu icon to custom icon
+
+    function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string){
+        return(
+            <Drawer.Screen
+                name={routeName} // This is the name of the page and must match the url from root
+                options={{
+                    drawerLabel: ({ focused, color }) => (
+                        <Text style={{ color: focused ? contrastColor : color }}>{label}</Text>
+                    ),
+                    title: title,
+                    drawerIcon: ({ focused, color, size }) => (
+                        <Icon name={icon} size={size} color={focused ? contrastColor : undefined} />
+                    ),
+                    drawerActiveBackgroundColor: projectColor,
+                }}
+            />
+        )
+    }
+
+    function hideMyDrawerScreen(routeName: string){
+        return(
+            <Drawer.Screen
+                name={routeName} // This is the name of the page and must match the url from root
+                options={{
+                    drawerItemStyle: { display: 'none' }
+                }}
+            />
+        )
+    }
+
+    // TODO: find a better solution to hide unwanted screens
+    // TODO: find a way to show only screens for the role of the user
 
     return (
             <DrawerWrapper
             >
-                <Drawer.Screen
-                    name="home/index" // This is the name of the page and must match the url from root
-                    options={{
-                        drawerLabel: 'Home',
-                        title: 'Home',
-                    }}
-                />
-                <Drawer.Screen
-                    name="test/index" // This is the name of the page and must match the url from root
-                    options={{
-                        drawerLabel: 'Test',
-                        title: 'Test',
-                    }}
-                />
-                <Drawer.Screen
-                    name="settings/index" // This is the name of the page and must match the url from root
-                    options={{
-                        drawerLabel: 'Settings',
-                        title: 'Settings',
-                    }}
-                />
+                {renderMyDrawerScreen("home/index", "Home", "Home", "home")}
+                {renderMyDrawerScreen("settings/index", "Settings", "Settings", "cog")}
+                {hideMyDrawerScreen("index")}
             </DrawerWrapper>
     );
 }

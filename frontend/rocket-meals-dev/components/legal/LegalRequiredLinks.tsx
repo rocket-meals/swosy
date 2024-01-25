@@ -31,14 +31,14 @@ export const LegalRequiredLinks = (props: any) => {
         if (first) {
             renderedContent.push(renderSpacer("legalRequiredLinksSpacerFirst-"+i));
         }
-        renderedContent.push(<View key={"legalRequiredLinks-"+i} style={{flexDirection: "row", margin: 5}}>{content[i]}</View>);
+        renderedContent.push(<View key={"legalRequiredLinks-"+i} style={{flexDirection: "row", padding: 5}}>{content[i]}</View>);
         if (!last) {
             renderedContent.push(renderSpacer("legalRequiredLinksSpacerLast-"+i));
         }
     }
 
     return (
-        <View style={{width: "100%", margin: 10, flexDirection: "row", flexWrap: "wrap", justifyContent: "center"}}>
+        <View style={{width: "100%", padding: 10, flexDirection: "row", flexWrap: "wrap", justifyContent: "center"}}>
             {renderedContent}
         </View>
     )

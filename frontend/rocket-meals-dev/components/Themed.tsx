@@ -9,6 +9,7 @@ import {
     Input as DefaultInput,
     InputField as DefaultInputField,
     Text as DefaultText,
+    Heading as DefaultHeading,
     View as DefaultView
 } from '@gluestack-ui/themed';
 import {ComponentProps} from "react";
@@ -88,6 +89,16 @@ export function TextInput(props: TextInputProps){
         />
       </DefaultInput>
   )
+}
+
+export function Heading({style,...props}: TextProps) {
+    const theme = useThemeDetermined();
+    const backgroundColor = theme?.colors?.background
+    let textContrastColor = useMyContrastColor(backgroundColor);
+    // @ts-ignore
+    let mergedStyle = {color: textContrastColor}
+
+    return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
 export function Text({style,...props}: TextProps) {
