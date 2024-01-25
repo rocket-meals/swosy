@@ -3,7 +3,6 @@ import {SettingsRow, SettingsRowProps} from "./SettingsRow";
 import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 
 interface AppState {
-    value: boolean,
     accessibilityLabel: string,
     debug?: boolean,
     disabled?: boolean

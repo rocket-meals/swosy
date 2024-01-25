@@ -36,10 +36,11 @@ export type MyGlobalActionSheetItem = {
     // onSelect: (key: string) => boolean | void // return true to close the actionsheet
 }
 
-export const useMyGlobalActionSheet = () => {
-    const [showActionsheetConfigRaw, setShowActionsheetConfigRaw] = useSyncStateRaw<MyGlobalActionSheetConfig>(NonPersistentStore.globalMyActionSheetConfig)
+export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig]
+    = () => {
+    const [actionsheetConfigRaw, setActionsheetConfigRaw] = useSyncStateRaw<MyGlobalActionSheetConfig>(NonPersistentStore.globalMyActionSheetConfig)
 
-    console.log("useMyGlobalActionSheet", showActionsheetConfigRaw)
+    console.log("useMyGlobalActionSheet", actionsheetConfigRaw)
 
     let usedShowActionsheetConfig: MyGlobalActionSheetConfig = {
         visible: false,
@@ -47,12 +48,12 @@ export const useMyGlobalActionSheet = () => {
         items: []
     }
 
-    if(!!showActionsheetConfigRaw){
-        usedShowActionsheetConfig = showActionsheetConfigRaw
+    if(!!actionsheetConfigRaw){
+        usedShowActionsheetConfig = actionsheetConfigRaw
     }
 
     const setShowActionsheetConfig = (showActionsheetConfig: MyGlobalActionSheetConfig) => {
-        setShowActionsheetConfigRaw(showActionsheetConfig)
+        setActionsheetConfigRaw(showActionsheetConfig)
     }
 
     const show = (config?: MyGlobalActionSheetConfig) => {
@@ -78,7 +79,7 @@ export const useMyGlobalActionSheet = () => {
     ]
 }
 
-export const MyGlobalActionSheet = (props) => {
+export const MyGlobalActionSheet = (props: any) => {
 
     const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 

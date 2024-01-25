@@ -1,11 +1,13 @@
 import {StyleSheet} from 'react-native';
 import {View, Text} from "@/components/Themed";
+import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 
 export default function Screen() {
 
     return (
         <View>
             <Text>{"Here comes terms of service"}</Text>
+            <LegalRequiredLinks />
         </View>
     );
 }

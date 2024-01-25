@@ -6,7 +6,7 @@ export default function Screen() {
 
     return (
         <View>
-            <Text>{"Here comes privacy policy"}</Text>
+            <Text>{"Here comes cookie policy"}</Text>
             <LegalRequiredLinks />
         </View>
     );

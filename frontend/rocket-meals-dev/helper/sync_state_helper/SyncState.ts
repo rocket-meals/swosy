@@ -23,7 +23,7 @@ import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
-export function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValue: (value: any) => {}] {
+export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setValue: (value: T) => {}] {
     const value = useStoreState((state) => {
         // @ts-ignore TODO: fix this for correct type
         return state?.[storageKey]?.value
@@ -39,7 +39,7 @@ export function useSyncStateRaw(storageKey: SyncStateKeys): [value: any, setValu
 }
 
 export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => void, rawValue: any] {
-  const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw(storageKey);
+  const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<any>(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
   const setValue = (dict: T | null) => {
       //console.log("setValue", dict)

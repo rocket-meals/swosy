@@ -16,8 +16,6 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 
     const colorSchemeIconName = "theme-light-dark"
 
-    const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
     const title = useTranslation(TranslationKeys.color_scheme)
 
     let availableColorSchemeKeys = getMyColorSchemeKeyOptions()
@@ -34,7 +32,8 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 
     const translation_edit = useTranslation(TranslationKeys.edit)
 
-    const colorSchemeKeyToName = {
+    const colorSchemeKeyToName: {[key in MyColorSchemeKey]: string}
+        = {
         [MyColorSchemeKey.Light]: color_scheme_light,
         [MyColorSchemeKey.Dark]: color_scheme_dark,
         [MyColorSchemeKey.System]: color_scheme_system
@@ -47,7 +46,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 
     let items = []
     for(let key of availableColorSchemeKeys){
-        let label = colorSchemeKeyToName[key]
+        let label: string = colorSchemeKeyToName[key]
         let themeForKey = colorSchemeKeyToThemeDict[key]
         let isDark = themeForKey.dark
 
@@ -57,11 +56,12 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         }
 
         items.push({
-            key: key,
+            key: key as string,
             label: label,
             icon: icon,
-            onSelect: async (key) => {
-                setColorSchemeOptionRaw(key)
+            onSelect: async (key: string) => {
+                let nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
+                setColorSchemeOptionRaw(nextColorSchemeKey)
                 return true // do not close the actionsheet
             }
         })

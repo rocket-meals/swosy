@@ -9,10 +9,13 @@ import {
     Input as DefaultInput,
     InputField as DefaultInputField,
     Text as DefaultText,
+    Heading as DefaultHeading,
     View as DefaultView
 } from '@gluestack-ui/themed';
 import {ComponentProps} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
+import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 type ThemeProps = {
   lightColor?: string;
@@ -88,8 +91,24 @@ export function TextInput(props: TextInputProps){
   )
 }
 
-export function Text(props: TextProps) {
-  return <DefaultText selectable={true} {...props} />;
+export function Heading({style,...props}: TextProps) {
+    const theme = useThemeDetermined();
+    const backgroundColor = theme?.colors?.background
+    let textContrastColor = useMyContrastColor(backgroundColor);
+    // @ts-ignore
+    let mergedStyle = {color: textContrastColor}
+
+    return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
+}
+
+export function Text({style,...props}: TextProps) {
+    const theme = useThemeDetermined();
+    const backgroundColor = theme?.colors?.background
+    let textContrastColor = useMyContrastColor(backgroundColor);
+    // @ts-ignore
+    let mergedStyle = {color: textContrastColor}
+
+  return <DefaultText selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
 export function View(props: ViewProps) {
