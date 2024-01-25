@@ -9,6 +9,7 @@ import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 import {GestureResponderEvent, ViewProps} from "react-native";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 
 export type ButtonType = {
     useProjectColorAsBackgroundColor?: boolean,
@@ -31,7 +32,9 @@ export type ButtonType = {
 export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
 
     const projectColor = useProjectColor()
-    const backgroundColor = useProjectColorAsBackgroundColor ? projectColor : "#FFFFFF"
+    const theme = useThemeDetermined();
+
+    const backgroundColor = useProjectColorAsBackgroundColor ? projectColor : theme?.colors?.background
     let textContrastColor = useMyContrastColor(backgroundColor);
 
     let content = null;

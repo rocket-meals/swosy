@@ -1,13 +1,9 @@
-import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
-import {Appearance, ScrollView, StyleSheet} from 'react-native';
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {router, useLocalSearchParams} from 'expo-router';
 import {useEffect, useState} from "react";
-import {Button, Divider} from "@gluestack-ui/themed";
+import {Divider} from "@gluestack-ui/themed";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {Text, TextInput, View} from "@/components/Themed";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
-import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";
 import {
     getAnonymousUser,
@@ -16,11 +12,6 @@ import {
     useLogoutCallback
 } from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
-import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
-import {ProjectLogo} from "@/components/project/ProjectLogo";
-import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
-import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";
-import {useProjectInfo} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {LoginLayout} from "@/components/auth/LoginLayout";
