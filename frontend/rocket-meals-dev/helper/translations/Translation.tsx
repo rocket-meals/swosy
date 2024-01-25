@@ -25,6 +25,12 @@ export class TranslationKeys {
   static sidebar_menu = createTranslationKey("sidebar_menu", "Menü");
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
 
+  static about_us = createTranslationKey("about_us", "Über uns");
+  static license = createTranslationKey("license", "Lizenz");
+  static terms_and_conditions = createTranslationKey("terms_and_conditions", "Nutzungsbedingungen");
+  static cookie_policy = createTranslationKey("cookie_policy", "Cookie-Richtlinie");
+  static privacy_policy = createTranslationKey("privacy_policy", "Datenschutzerklärung");
+
   static currently_logged_in_as = createTranslationKey("currently_logged_in_as", "Angemeldet als");
   static if_you_want_to_login_with_this_account_please_press = createTranslationKey("if_you_want_to_login_with_this_account_please_press", "Wenn Sie sich mit diesem Konto anmelden möchten, drücken Sie bitte");
   static logout = createTranslationKey("logout", "Abmelden");
