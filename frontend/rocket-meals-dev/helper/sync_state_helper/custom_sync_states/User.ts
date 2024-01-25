@@ -22,6 +22,11 @@ export function useLogoutCallback(): () => void {
     return onPress
 }
 
+export function useAccessToken(): string | null | undefined {
+    const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+    return authData?.access_token
+}
+
 export function useCachedUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {
     const [cachedUserRaw, setCachedUser] = useSyncState<CachedUserInformation>(PersistentStore.cachedUser)
     return [cachedUserRaw, setCachedUser]

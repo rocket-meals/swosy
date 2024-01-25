@@ -8,6 +8,7 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
 import {GestureResponderEvent, ViewProps} from "react-native";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export type ButtonType = {
     useProjectColorAsBackgroundColor?: boolean,
@@ -23,12 +24,15 @@ export type ButtonType = {
     children?: React.ReactNode,
     disabled?: boolean,
     style?: ViewProps["style"] | ViewProps["style"][],
+    innerStyle?: ViewProps["style"] | ViewProps["style"][],
 }
 
 // define the button component
 export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
 
     const projectColor = useProjectColor()
+    const backgroundColor = useProjectColorAsBackgroundColor ? projectColor : "#FFFFFF"
+    let textContrastColor = useMyContrastColor(backgroundColor);
 
     let content = null;
     if(!!children){
@@ -36,7 +40,7 @@ export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, lef
     }
     if(!!text){
         content = (
-            <Text>{text}</Text>
+            <Text style={{color: textContrastColor}}>{text}</Text>
         );
     }
 
@@ -49,7 +53,7 @@ export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, lef
                 <Icon
                     name={leftIconName}
                     family={leftIconFamily}
-                    color={leftIconColor}
+                    color={leftIconColor || textContrastColor}
                     style={{}}
                 />
             </ViewWithProjectColor>
@@ -64,7 +68,7 @@ export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, lef
             <Icon
                 name={rightIconName}
                 family={rightIconFamily}
-                color={rightIconColor}
+                color={rightIconColor || textContrastColor}
                 style={{}}
             />
         );
@@ -73,7 +77,14 @@ export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, lef
 
     // check if style is an array
     let mergedStyle: ViewProps["style"] = {
-        width: "100%"
+        width: "100%",
+        borderColor: projectColor,
+        borderWidth: 1,
+        flexDirection: "row",
+        marginVertical: 5,
+        marginRight: 20,
+        borderRadius: borderRadius,
+        backgroundColor: useProjectColorAsBackgroundColor ? projectColor : undefined,
     };
     if(Array.isArray(style)){
         for(let singleStyle of style){
@@ -85,42 +96,19 @@ export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, lef
         mergedStyle = {...mergedStyle, ...style};
     }
 
-    // @ts-ignore
-    let mergedStyleBackgroundColor = mergedStyle?.backgroundColor;
-    if(mergedStyleBackgroundColor){
-        // @ts-ignore
-        delete mergedStyle.backgroundColor;
-    }
-    if(useProjectColorAsBackgroundColor){
-        mergedStyleBackgroundColor = projectColor;
-    }
-
-    let buttonContent = (
-        <View style={{flexDirection: "row", borderRadius: borderRadius, width: "100%", backgroundColor: mergedStyleBackgroundColor}}>
+    let innerContent = (
+        <>
             {leftIcon}
-            <View style={{justifyContent: "center", flex: 1, paddingLeft: 0}}>
+            <View style={{justifyContent: "center", flex: 1, paddingLeft: 10}}>
                 {content}
             </View>
             {rightIcon}
-        </View>
-    );
+        </>
+    )
 
-
-    let touchableContent = null;
-
-    if(!!onPress){
-        touchableContent = (
-            <MyTouchableOpacity disabled={disabled} onPress={onPress} accessibilityLabel={accessibilityLabel}>
-                {buttonContent}
-            </MyTouchableOpacity>
-        );
-    } else {
-        touchableContent = (buttonContent);
-    }
-
-    return (
-        <ViewWithPercentageSupport style={mergedStyle}>
-            {touchableContent}
-        </ViewWithPercentageSupport>
-    );
+    return(
+        <MyTouchableOpacity onPress={onPress} accessibilityLabel={accessibilityLabel} style={mergedStyle}>
+            {innerContent}
+        </MyTouchableOpacity>
+    )
 }

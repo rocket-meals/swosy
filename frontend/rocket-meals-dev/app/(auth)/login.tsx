@@ -83,6 +83,7 @@ export default function Login() {
     }
 
     async function authenticate_as_anonymous() {
+        console.log("login.tsx useEffect authenticate_as_anonymous");
         handleSuccessfulAuthenticationWithNewCurrentUser(getAnonymousUser())
     }
 
@@ -116,6 +117,7 @@ export default function Login() {
         if(loggedIn) {
             return (
                 <>
+                    <Text>{"TODO: Show name of user"}</Text>
                     <Text>{translation_if_you_want_to_login_with_this_account_please_press+": "+translation_continue}</Text>
                     <View style={{height: 16}}></View>
                     <View style={{flexDirection: "row", width: "100%"}}>
@@ -155,18 +157,17 @@ export default function Login() {
                     <View style={{height: 8}}></View>
                     <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={translation_password} />
                     <View style={{height: 8}}></View>
-                    <MyButton
-                        useProjectColorAsBackgroundColor={true}
-                        style={{padding: 8, width: "100%"}}
-                        accessibilityLabel={translation_sign_in}
-                        disabled={loggedIn || !email || !password}
-                        onPress={() => {
-                            authenticate_with_email_and_password(email, password)
-                        }}>
-                        <Text>
-                            {translation_sign_in}
-                        </Text>
-                    </MyButton>
+                    <View>
+                        <MyButton
+                            leftIconName={"account"}
+                            style={{marginVertical: 8, width: "100%"}}
+                            text={translation_sign_in}
+                            accessibilityLabel={translation_sign_in}
+                            disabled={loggedIn || !email || !password}
+                            onPress={() => {
+                                authenticate_with_email_and_password(email, password)
+                            }} />
+                    </View>
                 </>
             )
         }
