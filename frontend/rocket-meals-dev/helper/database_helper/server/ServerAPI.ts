@@ -8,7 +8,7 @@ import {
     DirectusClient,
     graphql,
     GraphqlClient,
-    login,
+    login, LoginOptions,
     readMe, ReadProviderOutput, readProviders,
     rest,
     RestClient,
@@ -171,8 +171,10 @@ export class ServerAPI {
         console.log("email", email);
         console.log("password", password)
         const client = ServerAPI.getClient();
-        const result = await client.request(login(email, password))
-        client.setToken(result.access_token);
+        let result = await client.login(email, password);
+        console.log("login_with_email_and_password result", result);
+        result = await client.refresh();
+
         return result;
     }
 
