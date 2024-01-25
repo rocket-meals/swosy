@@ -3,6 +3,7 @@ import React from 'react';
 import {Appearance} from "react-native";
 import {useMyColorSchemeKeyDetermined, useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {MyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
+import {RootFabHolder} from "@/components/rootLayout/RootFabHolder";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -19,6 +20,7 @@ export const RootThemeProvider = (props: RootThemeProviderProps) => {
       <ThemeProvider value={theme}>
             {/* Render the children */}
             {props?.children}
+            <RootFabHolder />
             <MyGlobalActionSheet />
       </ThemeProvider>
   )

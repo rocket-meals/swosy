@@ -18,7 +18,7 @@ export enum MyColorSchemeKey {
  * Retrieves all values from MyColorSchemeKey enum.
  * @returns Array of MyColorSchemeKey values.
  */
-export function getMyColorSchemeKeyOptions(): string[] {
+export function getMyColorSchemeKeyOptions(): MyColorSchemeKey[] {
     return Object.values(MyColorSchemeKey);
 }
 
@@ -35,7 +35,7 @@ function isColorSchemeKeyValid(colorSchemeKey: string | null): boolean {
     if(!colorSchemeKey){
         return false;
     }
-    return getMyColorSchemeKeyOptions().includes(colorSchemeKey);
+    return getMyColorSchemeKeyOptions().includes(colorSchemeKey as MyColorSchemeKey);
 }
 
 function getBestFittingSystemColorSchemeKey(systemColorScheme: RNColorSchemeName): MyColorSchemeKey {
