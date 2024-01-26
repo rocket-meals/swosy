@@ -49,7 +49,10 @@ export class TranslationKeys {
   static confirm_password = createTranslationKey("confirm_password", "Passwort bestätigen");
   static continue_as_anonymous = createTranslationKey("continue_as_anonymous", "Anonym fortfahren");
   static sign_in_with = createTranslationKey("sign_in_with", "Fortfahren mit");
+
   static home = createTranslationKey("home", "Startseite");
+
+  static settings = createTranslationKey("settings", "Einstellungen");
 
   static switch = createTranslationKey("switch", "Umschalten");
   static edit = createTranslationKey("edit", "Bearbeiten");

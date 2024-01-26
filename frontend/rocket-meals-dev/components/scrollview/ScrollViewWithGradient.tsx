@@ -7,15 +7,16 @@ import {View} from "@/components/Themed";
 interface AppState {
     hideGradient?: boolean
     scrollViewProps?: ScrollViewProps
+    gradientBackgroundColor?: string
+    gradientHeight?: number
 }
 export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProps> = (props) => {
 
-    let horizontal = props?.scrollViewProps?.horizontal;
-
+    let horizontal: boolean | undefined | null = !!props?.scrollViewProps?.horizontal;
 
     let hideGradient = props.hideGradient;
-    let renderedGradient = hideGradient ? null : <ShowMoreGradient horizontal={horizontal} />
-    let renderedPlaceholder = hideGradient ? null : <ShowMoreGradientPlaceholder />
+    let renderedGradient = hideGradient ? null : <ShowMoreGradient gradientHeight={props?.gradientHeight} horizontal={horizontal} gradientBackgroundColor={props?.gradientBackgroundColor} />
+    let renderedPlaceholder = hideGradient ? null : <ShowMoreGradientPlaceholder gradientHeight={props?.gradientHeight} />
 
 
     let flexDirection: "row" | "column" | "row-reverse" | "column-reverse" | undefined = horizontal ? "row" : "column";

@@ -21,7 +21,6 @@ export default function SettingsScreen() {
   return (
       <ScrollView style={{width: "100%", height: "100%"}}>
         <View style={styles.container}>
-          <Text style={styles.title}>Settings</Text>
           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
           <SettingsRowColorScheme />
           <SettingsRowSyncBooleanSwitch leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
