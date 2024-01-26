@@ -1,11 +1,19 @@
-import React from "react";
+import React, {FunctionComponent} from "react";
 import {View} from "@/components/Themed";
 
-export const ShowMoreGradientPlaceholder = (props) => {
+interface AppState {
+    gradientHeight?: number
+}
+export const ShowMoreGradientPlaceholder: FunctionComponent<AppState> = (props) => {
+
+    let padding = props.gradientHeight
+    if(padding=== undefined){
+        padding = 12
+    }
 
     return (
         <View style={{opacity: 0}}>
-            <View style={{padding: 12}} >
+            <View style={{padding: padding}} >
 
             </View>
         </View>

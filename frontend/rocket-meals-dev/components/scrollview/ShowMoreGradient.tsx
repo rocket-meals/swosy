@@ -5,6 +5,8 @@ import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/
 
 interface AppState {
     horizontal?: boolean | undefined | null
+    gradientBackgroundColor?: string
+    gradientHeight?: number
 }
 export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
     const horizontal = props?.horizontal;
@@ -13,7 +15,7 @@ export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
 
     const theme = useThemeDetermined()
 
-    const bgColor = theme?.colors?.background || "#000000";
+    const bgColor = props?.gradientBackgroundColor || theme?.colors?.background || "#000000";
 
     useEffect(() => {
         let isMounted = true;  // mutable flag
@@ -42,7 +44,7 @@ export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
             <>
                 {steps.map((_, i) => (
                     <View
-                        pointerEvents={'none'}
+                        pointerEvents={'none' /* pass all press events through */}
                         key={i}
                         style={{
                             flex: 1,
@@ -62,7 +64,7 @@ export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
 
     return (
         <View pointerEvents="none" style={{position: "absolute", right: 0, bottom: 0, height: height, width: width }}>
-            <ShowMoreGradientPlaceholder />
+            <ShowMoreGradientPlaceholder gradientHeight={props?.gradientHeight} />
             <View style={{position: "absolute", flexDirection: flexDirection, height: "100%", width: "100%", bottom: 0, right: 0}}>
                 {renderGradient()}
                 <View style={{flex: 1, backgroundColor: bgColor}} />
