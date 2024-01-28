@@ -1,7 +1,7 @@
 import {Redirect} from 'expo-router';
 import React, {useState} from "react";
 import {Heading, Icon, Text, View} from "@/components/Themed"
-import {DrawerContent} from "@react-navigation/drawer";
+import {DrawerContent, DrawerItem} from "@react-navigation/drawer";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
@@ -27,8 +27,40 @@ function DrawerContentWrapper(props: any) {
     const theme = useThemeDetermined()
     let gradientBackgroundColor = theme?.colors?.card
 
+    let renderedDrawerItems = props.state.routes.map((route: any, index: number) => {
+        const { options } = props.descriptors[route.key];
+        const label =
+            options.drawerLabel !== undefined
+                ? options.drawerLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name;
+
+        const isFocused = props.state.index === index;
+
+        const onPress = () => {
+            props.navigation.navigate(route.name);
+        };
+
+        let icon = options.drawerIcon
+        let backgroundColor = isFocused ? options.drawerActiveBackgroundColor : undefined
+
+        return (
+            <DrawerItem label={label} key={index} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={icon}/>
+        );
+    })
+
+    let renderedDrawerItemsWithSeparator = renderedDrawerItems.map((item: any, index: number) => {
+        return(
+            <View key={index}>
+                {item}
+                <View style={{width: "100%", height: 1, backgroundColor: undefined}}/>
+            </View>
+        )
+    }   )
+
     return(
-        <View style={{width: "100%", height: "100%"}}>
+        <View style={{width: "100%", height: "100%", overflow: "hidden"}}>
             <SafeAreaView style={{width: "100%", height: "100%"}}>
                 <MyTouchableOpacity
                     onPress={() => {
@@ -42,9 +74,7 @@ function DrawerContentWrapper(props: any) {
                 </MyTouchableOpacity>
                 <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
                     <View style={{width: "100%", height: "100%"}}>
-                        <DrawerContent {...props}>
-
-                        </DrawerContent>
+                        {renderedDrawerItemsWithSeparator}
                     </View>
                 </ScrollViewWithGradient>
                 <View style={{width: "100%"}}>
