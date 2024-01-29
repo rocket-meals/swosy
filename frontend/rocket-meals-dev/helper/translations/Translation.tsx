@@ -41,6 +41,8 @@ export class TranslationKeys {
   static is_currently_authenticated_remember_this_account = createTranslationKey("is_currently_authenticated_remember_this_account", "Dieses Konto merken");
   static forgot_password = createTranslationKey("forgot_password", "Passwort vergessen?");
 
+  static navigate_to = createTranslationKey("navigate_to", "Navigiere zu");
+
   static show_login_with_username_and_password = createTranslationKey("show_login_with_username_and_password", "Mitarbeiter-Login");
   static email = createTranslationKey("email", "E-Mail");
   static password = createTranslationKey("password", "Passwort");

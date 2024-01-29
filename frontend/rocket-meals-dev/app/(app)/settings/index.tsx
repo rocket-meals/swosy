@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet} from 'react-native';
+import {SafeAreaView, ScrollView, StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {SettingsRowSyncBooleanSwitch} from "@/components/settings/SettingsRowSyncBooleanSwitch";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
@@ -19,14 +19,16 @@ export default function SettingsScreen() {
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
   return (
-      <ScrollView style={{width: "100%", height: "100%"}}>
-        <View style={styles.container}>
-          <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-          <SettingsRowColorScheme />
-          <SettingsRowSyncBooleanSwitch leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
-          <SettingsRowLogout />
-        </View>
-      </ScrollView>
+     <SafeAreaView style={{width: "100%", height: "100%"}}>
+       <ScrollView style={{width: "100%", height: "100%"}}>
+         <View style={styles.container}>
+           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+           <SettingsRowColorScheme />
+           <SettingsRowSyncBooleanSwitch leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
+           <SettingsRowLogout />
+         </View>
+       </ScrollView>
+     </SafeAreaView>
   );
 }
 

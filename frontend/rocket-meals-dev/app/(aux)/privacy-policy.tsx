@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import {View, Text} from "@/components/Themed";
 import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 
-export default function Screen() {
+export default function ScreenPrivacyPolicy() {
 
     return (
         <View>
