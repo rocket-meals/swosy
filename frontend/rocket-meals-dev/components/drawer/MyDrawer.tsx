@@ -1,7 +1,7 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Heading, Icon, Text, View} from "@/components/Themed"
 import {DrawerItem} from "@react-navigation/drawer";
-import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
+import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
@@ -13,8 +13,7 @@ import {SafeAreaView} from "react-native";
 import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-
-const hide_all_not_especially_defined_drawer_items = true
+import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 
 export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string) {
     let projectColor = useProjectColor()
@@ -37,14 +36,39 @@ export function renderMyDrawerScreen(routeName: string, label: string, title: st
     )
 }
 
+function useDrawerPosition() {
+    return "left" // "left" | "right
+}
+
+function useDrawerWidth() {
+    const insets = useInsets()
+    let baseDrawerWidth = 320
+    let drawerWidth = baseDrawerWidth
+    let drawerPosition = useDrawerPosition()
+    if(drawerPosition === "left") {
+        drawerWidth = insets.left + baseDrawerWidth
+    }
+    if(drawerPosition === "right") {
+        drawerWidth = insets.right + baseDrawerWidth
+    }
+    return drawerWidth
+}
+
 export const MyDrawer = (props: any) => {
     const isLargeDevice = useIsLargeDevice();
+
+    const drawerWidth = useDrawerWidth()
+    const drawerPosition = useDrawerPosition()
 
     return (
         <Drawer
             drawerContent={DrawerContentWrapper}
             screenOptions={{
+                drawerPosition: drawerPosition,
                 drawerType: isLargeDevice ? 'permanent' : 'front',
+                drawerStyle: {
+                    width: drawerWidth,
+                },
                 // The drawerIcon is used but IDEA does not recognize it
                 drawerIcon: (props) => {return renderCustomDrawerIcon("chevron-right", props)},
                 header: ({ navigation, route, options }) => {
@@ -82,6 +106,8 @@ export const MyDrawer = (props: any) => {
 }
 
 function DrawerContentWrapper(props: any) {
+    const isDebug = useIsDebug();
+
     const theme = useThemeDetermined()
     let gradientBackgroundColor = theme?.colors?.card
 
@@ -94,7 +120,11 @@ function DrawerContentWrapper(props: any) {
 
         // [hide-drawer-item] Our custom option variable to hide the drawer item
         const visible = options.visible
-        if(!visible && hide_all_not_especially_defined_drawer_items) return null;
+
+        let hide_all_not_especially_defined_drawer_items = true
+        if(isDebug) {
+            hide_all_not_especially_defined_drawer_items = false
+        }
 
         const label =
             options.drawerLabel !== undefined
@@ -113,6 +143,9 @@ function DrawerContentWrapper(props: any) {
         let icon = options.drawerIcon
         let backgroundColor = isFocused ? options.drawerActiveBackgroundColor : undefined
 
+        if(!visible && hide_all_not_especially_defined_drawer_items) {
+            return null
+        }
         return (
             <DrawerItem accessibilityLabel={drawer_item_accessibility_label} label={label} key={index} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={icon}/>
         );
