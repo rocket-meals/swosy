@@ -10,6 +10,7 @@ import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
+import {SettingsRowDrawerPosition} from "@/components/drawer/SettingsRowDrawerPosition";
 
 export default function SettingsScreen() {
 
@@ -24,6 +25,7 @@ export default function SettingsScreen() {
          <View style={styles.container}>
            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
            <SettingsRowColorScheme />
+           <SettingsRowDrawerPosition />
            <SettingsRowSyncBooleanSwitch leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
            <SettingsRowLogout />
          </View>
