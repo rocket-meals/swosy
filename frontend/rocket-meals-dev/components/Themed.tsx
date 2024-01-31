@@ -6,16 +6,16 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Text as NativeText, View as NativeView} from 'react-native';
 import {
+    Heading as DefaultHeading,
     Input as DefaultInput,
     InputField as DefaultInputField,
     Text as DefaultText,
-    Heading as DefaultHeading,
     View as DefaultView
 } from '@gluestack-ui/themed';
 import {ComponentProps} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 type ThemeProps = {
   lightColor?: string;
@@ -91,10 +91,20 @@ export function TextInput(props: TextInputProps){
   )
 }
 
-export function Heading({style,...props}: TextProps) {
+export function useViewBackgroundColor() {
     const theme = useThemeDetermined();
-    const backgroundColor = theme?.colors?.background
-    let textContrastColor = useMyContrastColor(backgroundColor);
+    const backgroundColor = theme?.colors?.background;
+    const asHex = getColorAsHex(backgroundColor);
+    return asHex
+}
+
+export function useTextContrastColor() {
+    const backgroundColor = useViewBackgroundColor();
+    return useMyContrastColor(backgroundColor);
+}
+
+export function Heading({style,...props}: TextProps) {
+    let textContrastColor = useTextContrastColor();
     // @ts-ignore
     let mergedStyle = {color: textContrastColor}
 
@@ -102,9 +112,7 @@ export function Heading({style,...props}: TextProps) {
 }
 
 export function Text({style,...props}: TextProps) {
-    const theme = useThemeDetermined();
-    const backgroundColor = theme?.colors?.background
-    let textContrastColor = useMyContrastColor(backgroundColor);
+    let textContrastColor = useTextContrastColor();
     // @ts-ignore
     let mergedStyle = {color: textContrastColor}
 

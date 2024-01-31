@@ -59,6 +59,7 @@ export class TranslationKeys {
   static switch = createTranslationKey("switch", "Umschalten");
   static edit = createTranslationKey("edit", "Bearbeiten");
   static button_disabled = createTranslationKey("button_disabled", "Knopf deaktiviert");
+  static select = createTranslationKey("select", "Auswählen");
 
   static drawer_config_position = createTranslationKey("drawer_config_position", "Position des Menüs");
   static drawer_config_position_left = createTranslationKey("drawer_config_position_left", "Links");

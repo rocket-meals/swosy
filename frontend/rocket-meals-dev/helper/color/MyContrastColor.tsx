@@ -1,5 +1,6 @@
 import Color from 'tinycolor2';
 import {useIsDarkTheme} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useMemo} from "react";
 
 // TODO: memorize this function to reduce computation load and improve performance
 /**
@@ -16,6 +17,46 @@ function getContrastRatio(foreground: string | undefined, background: string): n
   const lumA = Color(foreground).getLuminance();
   const lumB = Color(background).getLuminance();
   return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+}
+
+export function getColorAsHex(color: string | undefined): string | undefined {
+  if (!color) {
+    return undefined;
+  }
+  return Color(color).toHexString();
+}
+
+export function useLighterOrDarkerColorForSelection(color: string | undefined): string {
+    return getLighterOrDarkerColorByContrast(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen);
+}
+
+function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRatio: number): string {
+    return useMemo(() => {
+        if (!color) {
+            return "transparent";
+        }
+        const backgroundColor = Color(color);
+        const isDark = backgroundColor.isDark();
+        let modifiedColor = backgroundColor.clone();
+        let step = 0.1; // Adjust step to be more precise
+        let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+
+        // Loop until the contrast ratio is met or improved
+        while (currentContrastRatio < contrastRatio) {
+            if(isDark){
+                modifiedColor = modifiedColor.lighten(step);
+            } else {
+                modifiedColor = modifiedColor.darken(step);
+            }
+            currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+        }
+
+        return modifiedColor.toHexString();
+    }, [color, contrastRatio]); // Only recompute if color or contrastRatio changes
+}
+
+export enum ContrastThresholdSelectedItems {
+    MaternaLandNiedersachsen = 1.9,
 }
 
 enum ContrastThreshold {

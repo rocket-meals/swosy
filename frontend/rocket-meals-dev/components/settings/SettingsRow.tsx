@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from "react";
 import {SettingsRowInner} from "./SettingsRowInner";
 import {Icon, View, Text} from "@/components/Themed";
-import {ChevronRightIcon, ChevronsRightIcon, Divider} from "@gluestack-ui/themed";
+import {Divider} from "@gluestack-ui/themed";
 import {AccessibilityRole} from "react-native";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 
@@ -43,7 +43,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     function renderRightIcon(showPress: boolean){
         let rightIcon = props?.rightIcon
         if(showPress && !rightIcon){
-            rightIcon = <Icon as={ChevronRightIcon}  />;
+            rightIcon = <Icon name={"chevron-right"} />;
         }
         if(rightIcon && typeof props?.rightIcon === "string"){
             return <Icon name={props.rightIcon} />

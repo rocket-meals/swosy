@@ -21,15 +21,8 @@ function useDrawerPositionByLanguage(): DrawerConfigPosition {
     // TODO: check if language is RTL (right to left) or LTR (left to right)
 }
 
-export function useDrawerPosition(): [DrawerConfigPosition | null, (newValue: DrawerConfigPosition) => void] {
+export function useDrawerPositionRaw(): [DrawerConfigPosition | null, (newValue: DrawerConfigPosition) => void] {
     const [drawerConfigRaw, setDrawerConfigRaw] = useDrawerConfigRaw()
-    const drawerPositionByLanguage = useDrawerPositionByLanguage()
-    let position = drawerConfigRaw?.position || drawerPositionByLanguage
-
-    // Check to only use position left or right
-    if(!(position === DrawerConfigPosition.Left || position === DrawerConfigPosition.Right)){ // if position is not left or right
-        position = DrawerConfigPosition.Left // set position to left
-    }
 
     const setPosition = (newValue: DrawerConfigPosition) => {
         let newConfig = {...drawerConfigRaw}
@@ -41,6 +34,20 @@ export function useDrawerPosition(): [DrawerConfigPosition | null, (newValue: Dr
 
         setDrawerConfigRaw(newConfig)
     }
+
+    return [drawerConfigRaw?.position || null, setPosition]
+}
+
+export function useDrawerPosition(): [DrawerConfigPosition | null, (newValue: DrawerConfigPosition) => void] {
+    const [drawerPositionRaw, setPosition] = useDrawerPositionRaw()
+    const drawerPositionByLanguage = useDrawerPositionByLanguage()
+    let position = drawerPositionRaw || drawerPositionByLanguage
+
+    // Check to only use position left or right
+    if(!(position === DrawerConfigPosition.Left || position === DrawerConfigPosition.Right)){ // if position is not left or right
+        position = DrawerConfigPosition.Left // set position to left
+    }
+
     return [position, setPosition]
 }
 
