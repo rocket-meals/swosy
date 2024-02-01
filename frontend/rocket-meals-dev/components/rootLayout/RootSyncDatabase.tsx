@@ -5,6 +5,7 @@ import {useSynchedCanteens} from "@/helper/sync_state_helper/custom_sync_states/
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
 import {Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
+import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -19,6 +20,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   //console.log("AuthFlowUserCheck")
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const demo = useIsDemo()
   const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 
   let canteensCollectionHelper = new CollectionHelper<Canteens>("canteens");
@@ -40,7 +42,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   addSynchedResource("canteens", canteens, lastUpdateCanteens)
   addSynchedResource("foods", foods, lastUpdateFoods)
 
-  let syncComplete = checkSynchedResources()
+  let syncComplete = demo || checkSynchedResources()
 
   function checkSynchedResources(){
     let synchedResourceKeys = Object.keys(synchedResources)
@@ -100,8 +102,10 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
       //console.log("refreshToken", refreshToken)
 
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
-        await updateCanteens()
-        await updateFoods()
+        if(!demo){
+          await updateCanteens()
+          await updateFoods()
+        }
       } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
 
       } else { // if server is offline and we have no cached data, we can't check if we are logged in

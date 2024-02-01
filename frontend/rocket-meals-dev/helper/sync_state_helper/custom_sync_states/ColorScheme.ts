@@ -4,12 +4,25 @@ import {DarkTheme, DefaultTheme, Theme} from "@react-navigation/native";
 import {useColorScheme as useDefaultColorScheme} from "react-native";
 import {ColorSchemeName as RNColorSchemeName} from "react-native/Libraries/Utilities/Appearance";
 
+const DarkBlueTheme: Theme = {
+    dark: true,
+    colors: {
+        primary: 'rgb(10, 132, 255)',
+        background: '#0f172a',
+        card: 'rgb(18, 18, 18)',
+        text: 'rgb(229, 229, 231)',
+        border: 'rgb(39, 39, 41)',
+        notification: 'rgb(255, 69, 58)',
+    },
+};
+
 /**
  * Enum for raw color scheme names including system setting.
  */
 export enum MyColorSchemeKey {
     Light = "light",
     Dark = "dark",
+    DarkBlueTheme = "darkBlueTheme",
     System = "system"
     // TODO: Idea to automatically set the color scheme based on the time of day.
 }
@@ -54,6 +67,7 @@ export function useColorSchemeKeyToThemeDictionary(): Record<MyColorSchemeKey, T
     let defaultMap = {
         [MyColorSchemeKey.System]: DefaultTheme,
         [MyColorSchemeKey.Light]: DefaultTheme,
+        [MyColorSchemeKey.DarkBlueTheme]: DarkBlueTheme,
         [MyColorSchemeKey.Dark]: DarkTheme
     }
 

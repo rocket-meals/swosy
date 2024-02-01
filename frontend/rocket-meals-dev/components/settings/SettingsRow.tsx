@@ -9,6 +9,7 @@ export interface SettingsRowProps {
     key?: any;
     children?: any;
     label: string,
+    labelRight?: string,
     leftContent?: string | any,
     rightContent?: string | any,
     leftIcon?: any | string,
@@ -89,6 +90,9 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
                 color: usedTextColor,
             }}>{item.label}</ActionsheetItemText>
         </View>
+            <ActionsheetItemText sx={{
+                color: usedTextColor,
+            }}>{props.labelRight}</ActionsheetItemText>
         <ActionsheetItemText>{renderRightIcon(!!props.onPress)}</ActionsheetItemText>
     </ActionsheetItem>
         {renderedChildren}
