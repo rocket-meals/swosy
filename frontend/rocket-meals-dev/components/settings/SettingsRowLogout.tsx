@@ -17,7 +17,7 @@ export const SettingsRowLogout = (props: any) => {
 
     return(
         <>
-            <SettingsRow accessibilityLabel={translation_title} onPress={logout} leftIcon={"account"} leftContent={translation_title} rightIcon={"logout"} >
+            <SettingsRow label={translation_title} accessibilityLabel={translation_title} onPress={logout} leftIcon={"account"} leftContent={translation_title} rightIcon={"logout"} >
             </SettingsRow>
         </>
     )

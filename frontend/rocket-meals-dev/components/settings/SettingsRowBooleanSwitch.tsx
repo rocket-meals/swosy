@@ -9,13 +9,14 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 interface AppState {
     value: boolean,
     accessibilityLabel: string,
+    label: string,
     onPress?: (nextValue: boolean) => void,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
 
 }
-export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel,...props}) => {
+export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, label,...props}) => {
 
     const debug = props?.debug
 
@@ -43,14 +44,6 @@ export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowP
     }
 
     let debugContent = null;
-    if(debug){
-        debugContent = (
-          <View>
-            <Text>{"isChecked: "+JSON.stringify(isChecked)}</Text>
-            <Text>{"props?.disabled: "+JSON.stringify(props?.disabled)}</Text>
-          </View>
-        )
-    }
 
     let rightContent = (
         <ViewWithPercentageSupport style={{paddingRight: 10}}>
@@ -71,6 +64,6 @@ export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowP
     )
 
     return(
-        <SettingsRow accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightIcon={rightContent} onPress={onPress} />
+        <SettingsRow label={label} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightIcon={rightContent} onPress={onPress} />
     )
 }

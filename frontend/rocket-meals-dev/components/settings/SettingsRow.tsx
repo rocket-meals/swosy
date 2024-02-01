@@ -8,6 +8,7 @@ import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/Pro
 export interface SettingsRowProps {
     key?: any;
     children?: any;
+    label: string,
     leftContent?: string | any,
     rightContent?: string | any,
     leftIcon?: any | string,
@@ -51,7 +52,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     let item = {
         key: props?.key,
         icon: props.leftIcon,
-        label: props.accessibilityLabel,
+        label: props.label,
         accessibilityLabel: props.accessibilityLabel,
         onSelect: props.onPress,
         leftIcon: props.leftIcon,

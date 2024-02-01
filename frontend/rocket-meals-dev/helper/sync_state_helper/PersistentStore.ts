@@ -12,6 +12,8 @@ export class PersistentStore {
 
   static server_info = "PersistentStore.server_info"
 
+  static canteens = "PersistentStore.canteens"
+
 }
 
 type ValueOf<T> = T[keyof T];

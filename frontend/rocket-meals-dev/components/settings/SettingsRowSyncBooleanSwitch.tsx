@@ -6,6 +6,7 @@ import {Text} from "@/components/Themed";
 
 interface AppState {
     accessibilityLabel: string,
+    label: string,
     variable: SyncStateKeys,
     onPress?: (nextValue: boolean) => void,
 }

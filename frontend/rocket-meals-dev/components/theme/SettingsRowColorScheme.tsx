@@ -84,21 +84,14 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
     }
 
     function renderDebug(){
-        if(isDebug){
-            return(
-                <>
-                    <Text>{"selectedThemeName: "+selectedThemeName}</Text>
-                    <Text>{JSON.stringify(theme, null, 2)}</Text>
-                </>
-            )
-        }
+
     }
 
 
 
     return(
         <>
-            <SettingsRowActionsheet config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
             {renderDebug()}
         </>
     )

@@ -15,7 +15,7 @@ import {
     serverInfo,
     ServerInfoOutput
 } from "@directus/sdk";
-import {CustomDirectusTypes} from "@/helper/database_helper/directusTypes/types";
+import {CustomDirectusTypes} from "@/helper/database_helper/databaseTypes/types";
 import {UrlHelper} from "@/helper/UrlHelper";
 
 
