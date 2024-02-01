@@ -29,6 +29,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
     const color_scheme_light = useTranslation(TranslationKeys.color_scheme_light)
     const color_scheme_dark = useTranslation(TranslationKeys.color_scheme_dark)
     const color_scheme_system = useTranslation(TranslationKeys.color_scheme_system)
+    const translation_select = useTranslation(TranslationKeys.select)
 
     const translation_edit = useTranslation(TranslationKeys.edit)
 
@@ -49,16 +50,24 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         let label: string = colorSchemeKeyToName[key]
         let themeForKey = colorSchemeKeyToThemeDict[key]
         let isDark = themeForKey.dark
+        let active = key === selectedColorSchemeKey
 
         let icon = isDark ? "moon-waning-crescent" : "white-balance-sunny"
         if(key === MyColorSchemeKey.System){
             icon = "theme-light-dark"
         }
+        if(key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined){
+            active = true
+        }
+
+        let itemAccessibilityLabel = label+" "+translation_select
 
         items.push({
             key: key as string,
             label: label,
             icon: icon,
+            active: active,
+            accessibilityLabel: itemAccessibilityLabel,
             onSelect: async (key: string) => {
                 let nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
                 setColorSchemeOptionRaw(nextColorSchemeKey)
@@ -75,21 +84,14 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
     }
 
     function renderDebug(){
-        if(isDebug){
-            return(
-                <>
-                    <Text>{"selectedThemeName: "+selectedThemeName}</Text>
-                    <Text>{JSON.stringify(theme, null, 2)}</Text>
-                </>
-            )
-        }
+
     }
 
 
 
     return(
         <>
-            <SettingsRowActionsheet config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
             {renderDebug()}
         </>
     )

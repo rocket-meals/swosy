@@ -3,9 +3,10 @@
 // also allow the content to be a component
 
 import {Box, VStack} from "@gluestack-ui/themed";
-import {Text, View, Heading} from "@/components/Themed";
+import {Text, View, Heading, useViewBackgroundColor} from "@/components/Themed";
 import {Image} from "expo-image";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export type MyFabProps = {
     onPress?: () => void,
@@ -23,6 +24,10 @@ export type MyFabProps = {
 // define the button component
 export const MyCard = ({date, heading, text, topComponent, bottomComponent, imageUri, onPress, children, accessibilityLabel, style}: MyFabProps) => {
 
+    const viewBackgroundColor = useViewBackgroundColor()
+    const viewBackgroundColorDark = useLighterOrDarkerColorForSelection(viewBackgroundColor)
+    const textContrastColor = useMyContrastColor(viewBackgroundColorDark)
+
     let renderedTopComponent = null;
     if(!!topComponent){
         renderedTopComponent = topComponent;
@@ -37,39 +42,42 @@ export const MyCard = ({date, heading, text, topComponent, bottomComponent, imag
 
         let renderedDate = null;
         if(!!date){
-            renderedDate = <Text fontSize="$sm" my="$1.5">
+            renderedDate = <Text style={{color: textContrastColor}} fontSize="$sm" my="$1.5">
                 {date}
             </Text>
         }
 
         let renderedHeading = null;
         if(!!heading){
-            renderedHeading = <Heading size="sm">
+            renderedHeading = <Heading style={{color: textContrastColor}} size="sm">
                 {heading}
             </Heading>
         }
 
         let renderedText = null;
         if(!!text){
-            renderedText = <Text my="$1.5"  fontSize="$xs">
+            renderedText = <Text style={{color: textContrastColor}} my="$1.5"  fontSize="$xs">
                 {text}
             </Text>
         }
 
         renderedBottomComponent = (
-            <VStack px="$4" pt="$2" pb="$2">
-                {renderedDate}
-                {renderedHeading}
-                {renderedText}
-                {children}
-            </VStack>
+            <View style={{backgroundColor: viewBackgroundColorDark, width: "100%", height: "100%"}}>
+                <VStack px="$4" pt="$2" pb="$2">
+                        {renderedDate}
+                        {renderedHeading}
+                        {renderedText}
+                        {children}
+                </VStack>
+            </View>
         )
     }
 
     return(
-        <MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} style={{"width": "100%"}}>
+        <MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} style={{"width": "100%", height: "100%"}}>
             <Box
                 maxWidth="100%"
+                maxHeight="100%"
                 borderColor="$borderLight200"
                 borderRadius="$lg"
                 borderWidth="$1"

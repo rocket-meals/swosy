@@ -1,13 +1,14 @@
 import React, {FunctionComponent} from "react";
-import {SettingsRowInner} from "./SettingsRowInner";
-import {Icon, View, Text} from "@/components/Themed";
-import {ChevronRightIcon, ChevronsRightIcon, Divider} from "@gluestack-ui/themed";
+import {Icon, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
+import {ActionsheetItem, ActionsheetItemText, Divider} from "@gluestack-ui/themed";
 import {AccessibilityRole} from "react-native";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 
 export interface SettingsRowProps {
     key?: any;
     children?: any;
+    label: string,
     leftContent?: string | any,
     rightContent?: string | any,
     leftIcon?: any | string,
@@ -26,24 +27,17 @@ export interface SettingsRowProps {
 }
 export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
-    const expanded = props.expanded;
-
-    let accessibilityLabel = props.accessibilityLabel
-
-    function renderLeftIcon(){
-        if(props?.leftIcon){
-            if(typeof props?.leftIcon === "string"){
-                return <Icon name={props.leftIcon} />
-            }
-            return props.leftIcon
-        }
-        return null;
-    }
+    const viewBackgroundColor = useViewBackgroundColor()
+    const textColor = useTextContrastColor()
+    const lighterOrDarkerBackgroundColor = useLighterOrDarkerColorForSelection(viewBackgroundColor)
+    const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
+    const projectColor = useProjectColor()
+    const projectColorContrast = useMyContrastColor(projectColor)
 
     function renderRightIcon(showPress: boolean){
         let rightIcon = props?.rightIcon
         if(showPress && !rightIcon){
-            rightIcon = <Icon as={ChevronRightIcon}  />;
+            rightIcon = <Icon name={"chevron-right"} />;
         }
         if(rightIcon && typeof props?.rightIcon === "string"){
             return <Icon name={props.rightIcon} />
@@ -51,48 +45,53 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         return rightIcon
     }
 
-    function renderInner(showPress: boolean){
-        let rightIcon = renderRightIcon(showPress)
+    let isActive = false
+    const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
+    let usedTextColor = isActive ? projectColorContrast : textColor;
 
-        const divider = props.customDivider!==undefined ? props.customDivider : <Divider />
-
-        const flex = props.flex!==undefined ? props.flex : 1;
-
-        let leftContent = props?.leftContent
-        if(leftContent===undefined){
-            leftContent = <Text>{accessibilityLabel}</Text>
-        }
-
-        return(
-            <>
-                <SettingsRowInner flex={flex} leftContent={leftContent} leftIcon={renderLeftIcon()} rightContent={props?.rightContent} rightIcon={rightIcon} />
-                {divider}
-            </>
-        )
+    let item = {
+        key: props?.key,
+        icon: props.leftIcon,
+        label: props.label,
+        accessibilityLabel: props.accessibilityLabel,
+        onSelect: props.onPress,
+        leftIcon: props.leftIcon,
     }
 
-    function renderOuter(){
-        let children = expanded ? props.children : null
-
-        if(!!props.onPress){
-            return(
-                <MyTouchableOpacity accessibilityState={props?.accessibilityState} accessibilityRole={props?.accessibilityRole} accessibilityLabel={accessibilityLabel} key={props?.key+props.leftIcon} onPress={props.onPress} >
-                    {renderInner(true)}
-                    {children}
-                </MyTouchableOpacity>
-            )
-        }
-        return(
-            <View key={props?.key+props.leftIcon} >
-                {renderInner(false)}
-                {children}
-            </View>
-        )
+    let renderedLeftIcon = <Icon color={textColor} name={item.icon} />
+    if(isActive){
+        renderedLeftIcon = <Icon color={projectColorContrast} name={item.icon} />
     }
 
-    return(
-        <View style={{width: "100%"}} >
-            {renderOuter()}
+    const expanded = props.expanded;
+    const children = props.children;
+
+    let renderedChildren = null;
+    if(expanded){
+        renderedChildren = children;
+    }
+
+    return <>
+        <ActionsheetItem
+        accessibilityLabel={item.accessibilityLabel}
+        sx={{
+            bg: usedViewBackgroundColor,
+            ":hover": {
+                bg: lighterOrDarkerBackgroundColor,
+            },
+        }}
+        key={item.key} onPress={item.onSelect} >
+        <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+        <View style={{
+            flex: 1
+        }}>
+            <ActionsheetItemText sx={{
+                color: usedTextColor,
+            }}>{item.label}</ActionsheetItemText>
         </View>
-    )
+        <ActionsheetItemText>{renderRightIcon(!!props.onPress)}</ActionsheetItemText>
+    </ActionsheetItem>
+        {renderedChildren}
+        <Divider />
+        </>
 }

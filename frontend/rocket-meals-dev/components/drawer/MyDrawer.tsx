@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Heading, Icon, Text, View} from "@/components/Themed"
 import {DrawerItem} from "@react-navigation/drawer";
 import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
@@ -14,6 +14,7 @@ import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elemen
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
 
 export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string) {
     let projectColor = useProjectColor()
@@ -36,19 +37,15 @@ export function renderMyDrawerScreen(routeName: string, label: string, title: st
     )
 }
 
-function useDrawerPosition() {
-    return "left" // "left" | "right
-}
-
 function useDrawerWidth() {
     const insets = useInsets()
     let baseDrawerWidth = 320
     let drawerWidth = baseDrawerWidth
-    let drawerPosition = useDrawerPosition()
-    if(drawerPosition === "left") {
+    let [drawerPosition, setDrawerPosition] = useDrawerPosition()
+    if(drawerPosition === DrawerConfigPosition.Left) {
         drawerWidth = insets.left + baseDrawerWidth
     }
-    if(drawerPosition === "right") {
+    if(drawerPosition === DrawerConfigPosition.Right) {
         drawerWidth = insets.right + baseDrawerWidth
     }
     return drawerWidth
@@ -58,7 +55,7 @@ export const MyDrawer = (props: any) => {
     const isLargeDevice = useIsLargeDevice();
 
     const drawerWidth = useDrawerWidth()
-    const drawerPosition = useDrawerPosition()
+    let [drawerPosition, setDrawerPosition] = useDrawerPosition()
 
     return (
         <Drawer

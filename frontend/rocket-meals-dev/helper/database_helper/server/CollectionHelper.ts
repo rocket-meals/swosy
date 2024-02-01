@@ -1,5 +1,5 @@
 import {DirectusClient, readItem, readItems, updateItem, updateItems, deleteItem, deleteItems, createItem, createItems, RestClient,} from "@directus/sdk";
-import {CustomDirectusTypes} from "@/helper/database_helper/directusTypes/types";
+import {CustomDirectusTypes} from "@/helper/database_helper/databaseTypes/types";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 
 export class CollectionHelper<CollectionScheme> {
@@ -15,32 +15,43 @@ export class CollectionHelper<CollectionScheme> {
         }
     }
 
-    async readItems<CollectionScheme>(query: any) {
+    async readItems(query?: any) {
         return await this.client.request<CollectionScheme[]>(readItems(this.collection, query));
     }
 
-    async readItem<CollectionScheme>(id: number | string, query?: any) {
+    async readItem(id: number | string, query?: any) {
         return await this.client.request<CollectionScheme>(readItem(this.collection, id, query));
     }
 
-    async updateItem<CollectionScheme>(id: number | string, data: any) {
+    async updateItem(id: number | string, data: any) {
         return await this.client.request(updateItem(this.collection, id, data));
     }
 
-    async updateItems<CollectionScheme>(query: any, data: any) {
+    async updateItems(query: any, data: any) {
         return await this.client.request(updateItems(this.collection, query, data));
     }
 
-    async deleteItem<CollectionScheme>(id: number | string) {
+    async deleteItem(id: number | string) {
         return await this.client.request(deleteItem(this.collection, id));
     }
 
-    async deleteItems<CollectionScheme>(query: any) {
+    async deleteItems(query: any) {
         return await this.client.request(deleteItems(this.collection, query));
     }
 
     async createItem<CollectionScheme>(data: any) {
         return await this.client.request(createItem(this.collection, data));
+    }
+
+    convertListToDict(list: CollectionScheme[], key: string){
+        let dict: Record<any, CollectionScheme> = {};
+        for(let item of list){
+            // @ts-ignore
+            let id = item[key];
+            // @ts-ignore
+            dict[item[key]] = item;
+        }
+        return dict;
     }
 
 }

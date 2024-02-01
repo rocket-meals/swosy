@@ -18,6 +18,7 @@ export function useProjectDescription(){
 
 export function useProjectColor(): string{
   let projectInfo = useProjectInfo();
+  //return "#FDFDFD"
   return projectInfo?.project_color || "transparent";
 }
 

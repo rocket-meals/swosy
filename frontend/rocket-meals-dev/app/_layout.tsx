@@ -15,6 +15,7 @@ import {RootAuthUserFlowLoader} from "@/components/rootLayout/RootAuthUserFlowLo
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from "@/components/rootLayout/RootThemeProvider";
 import Slot = Navigator.Slot;
+import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
 
 // Setting up Secure Storage and Sync State
 const syncState = new SyncState();
@@ -72,7 +73,9 @@ export default function RootLayout() {
           <RootThemeProvider>
             <RootServerStatusFlowLoader>
               <RootAuthUserFlowLoader>
+                <RootSyncDatabase>
                   <Slot />
+                </RootSyncDatabase>
               </RootAuthUserFlowLoader>
             </RootServerStatusFlowLoader>
           </RootThemeProvider>
