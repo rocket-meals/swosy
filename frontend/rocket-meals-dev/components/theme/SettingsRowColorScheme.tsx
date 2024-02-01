@@ -37,7 +37,8 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         = {
         [MyColorSchemeKey.Light]: color_scheme_light,
         [MyColorSchemeKey.Dark]: color_scheme_dark,
-        [MyColorSchemeKey.System]: color_scheme_system
+        [MyColorSchemeKey.System]: color_scheme_system,
+        [MyColorSchemeKey.DarkBlueTheme]: "Dark Blue Theme",
     }
 
     let selectedThemeName = colorSchemeKeyToName[selectedColorSchemeKey]
@@ -87,11 +88,12 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 
     }
 
+    let labelRight = selectedThemeName
 
 
     return(
         <>
-            <SettingsRowActionsheet label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
             {renderDebug()}
         </>
     )
