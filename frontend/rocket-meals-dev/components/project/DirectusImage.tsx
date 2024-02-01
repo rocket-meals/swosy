@@ -4,11 +4,14 @@ import {TouchableOpacity} from "react-native";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
 import {useAccessToken} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
 
 interface AppState {
     assetId: string | undefined | null;
     style?: any;
     alt?: string;
+    placeholder?: string;
+    thumbHash?: string;
     showLoading?: boolean
     fallbackElement?: any,
     onPress?: () => {}
@@ -35,6 +38,17 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
         headers: headers
     }
 
+    let thumbHash = "93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48";
+    if(!!props.thumbHash){
+        //thumbHash = props.thumbHash
+    }
+    const thumbHashBase64 = thumbHashStringToDataURL(thumbHash)
+    let placeholder = thumbHashBase64;
+    if(!!props.placeholder){
+        placeholder = props.placeholder
+    }
+
+
     const blurhash =
         '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
@@ -51,7 +65,7 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
         source={source}
         alt={props?.alt || "Image"}
         style={props.style}
-        placeholder={blurhash}
+        placeholder={thumbHashBase64}
         onError={(e) => {
             console.log("DirectusImage onError", e)
             setImageLoadedFailed(true)
@@ -60,7 +74,14 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
     />
 
     if(imageLoadedFailed){
-        content = props.fallbackElement
+        content = props?.fallbackElement
+        if(!content){
+            content = <Image
+                source={thumbHashBase64}
+                alt={props?.alt || "Image"}
+                style={props.style}
+            />
+        }
     }
 
     if(!!props.onPress){

@@ -3,6 +3,8 @@ export class PersistentStore {
   static test = "PersistentStore.test"
 
   static debug = "PersistentStore.debug"
+  static demo = "PersistentStore.demo"
+
   static debugAutoLogin = "PersistentStore.debugAutoLogin"
 
   static drawerConfig = "PersistentStore.drawerConfig"
@@ -13,6 +15,7 @@ export class PersistentStore {
   static server_info = "PersistentStore.server_info"
 
   static canteens = "PersistentStore.canteens"
+  static foods = "PersistentStore.foods"
 
 }
 

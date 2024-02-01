@@ -67,9 +67,10 @@ export const MyCard = ({date, heading, text, topComponent, bottomComponent, imag
     }
 
     return(
-        <MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} style={{"width": "100%"}}>
+        <MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} style={{"width": "100%", height: "100%"}}>
             <Box
                 maxWidth="100%"
+                maxHeight="100%"
                 borderColor="$borderLight200"
                 borderRadius="$lg"
                 borderWidth="$1"

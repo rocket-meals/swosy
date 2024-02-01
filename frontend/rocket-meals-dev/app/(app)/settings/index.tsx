@@ -27,6 +27,7 @@ export default function SettingsScreen() {
            <SettingsRowColorScheme />
            <SettingsRowDrawerPosition />
            <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
+           <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
            <SettingsRowLogout />
          </View>
        </ScrollView>
