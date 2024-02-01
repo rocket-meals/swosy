@@ -14,7 +14,7 @@ export default function HomeScreen() {
       let renderedImage = <DirectusImage assetId={value.image} thumbHash={value?.thumbHash} style={{width: "100%", height: 300}} />
 
       renderCanteens.push(
-        <View style={{width: 500, height: 500, padding: 10, backgroundColor: "orange"}}>
+        <View style={{width: 500, height: 500, padding: 10}}>
           <MyCard topComponent={renderedImage} accessibilityLabel={value.alias || key} heading={value.alias} text={value.image} date={value.date_updated} onPress={() => {}} style={{width: 500, height: "100%"}}>
 
           </MyCard>
@@ -24,8 +24,8 @@ export default function HomeScreen() {
 
 }
   return (
-    <View style={{width: "100%", height: "100%", backgroundColor: "red"}}>
-      <ScrollView style={{width: "100%", height: "100%", backgroundColor: "blue"}}>
+    <View style={{width: "100%", height: "100%"}}>
+      <ScrollView style={{width: "100%", height: "100%"}}>
         {renderCanteens}
         <Text>{JSON.stringify(resources, null, 2)}</Text>
       </ScrollView>

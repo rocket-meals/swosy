@@ -75,7 +75,7 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     if(imageLoadedFailed){
         content = props?.fallbackElement
-        if(!content){
+        if(!content && thumbHashBase64){
             content = <Image
                 source={thumbHashBase64}
                 alt={props?.alt || "Image"}
