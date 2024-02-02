@@ -4,9 +4,10 @@ import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore"
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {DirectusUsers} from "@/helper/database_helper/databaseTypes/types";
 
 export type CachedUserInformation = {
-    data: any,
+    data: DirectusUsers | undefined,
     loggedIn: boolean
 }
 
@@ -56,7 +57,7 @@ export function getAnonymousUser(): any {
     }
 }
 
-export function useCurrentUser(): [any | null, (newValue: any) => void] {
+export function useCurrentUser(): [DirectusUsers | undefined, (newValue: any) => void] {
     const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
     // TODO: Update cached user
     let setUserWithCache = (newValue: any) => {

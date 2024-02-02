@@ -6,6 +6,13 @@ import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper
 import {Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
 import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {
+  getEmptyProfile,
+  loadProfileRemote,
+  useSynchedProfile
+} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
+import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {ScrollView} from "react-native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -20,6 +27,8 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   //console.log("AuthFlowUserCheck")
 
   const [serverInfo, setServerInfo] = useServerInfoRaw();
+  let [currentUser, setUserWithCache] = useCurrentUser();
+
   const demo = useIsDemo()
   const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 
@@ -28,6 +37,8 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
 
   const foodsCollectionHelper = new CollectionHelper<Foods>("foods");
   const [foods, setFoods, lastUpdateFoods] = useSynchedFoods()
+
+  const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 
 
   let synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
@@ -41,6 +52,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
 
   addSynchedResource("canteens", canteens, lastUpdateCanteens)
   addSynchedResource("foods", foods, lastUpdateFoods)
+  addSynchedResource("profile", profile, lastUpdateProfile);
 
   let syncComplete = demo || checkSynchedResources()
 
@@ -50,10 +62,12 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
       let isResourceSynched = false;
       let synchedResourceKey = synchedResourceKeys[i]
       let synchedResourceInformation = synchedResources[synchedResourceKey]
-      let synchedResource = synchedResourceInformation.data
-      let synchedResourceLastUpdate = synchedResourceInformation.lastUpdate
-      console.log("synchedResource", synchedResourceKey)
+      let synchedResource = synchedResourceInformation?.data
+      let synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
+      console.log("synchedResourceKey", synchedResourceKey)
+      console.log("synchedResourceInformation: ",synchedResourceInformation);
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+        console.log("server is online");
         if (synchedResourceLastUpdate != null) {
           isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
         } else {
@@ -63,7 +77,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
         isResourceSynched = !!synchedResource
       }
       if(!isResourceSynched){
-          false;
+          return false;
       }
     }
     return true
@@ -95,6 +109,21 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
     setFoods(foodsDict, nowInMs);
   }
 
+  async function updateProfile(){
+    if(!!currentUser && !!currentUser.id){
+      let remoteProfile = await loadProfileRemote(currentUser)
+      if(!!remoteProfile){
+        setProfile(remoteProfile, nowInMs);
+      }
+    } else {
+      if(!!profile && JSON.stringify(profile) !== JSON.stringify({})){
+        setProfile(profile, nowInMs)
+      } else {
+        setProfile(getEmptyProfile(), nowInMs)
+      }
+    }
+  }
+
   useEffect(() => {
     // call anonymous function
     (async () => {
@@ -105,6 +134,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
         if(!demo){
           await updateCanteens()
           await updateFoods()
+          await updateProfile()
         }
       } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
 
@@ -117,10 +147,12 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   if(!syncComplete){
     //console.log("AuthFlowUserCheck useEffect currentUserRaw is null")
     return <>
-      <Text>{"SyncDatabase flow waiting"}</Text>
-      <Text>{"nowInMS: "+nowInMs}</Text>
-      <Text>{"synchedResources: "}</Text>
-      <Text>{JSON.stringify(synchedResources, null, 2)}</Text>
+      <ScrollView style={{width: "100%", height: "100%"}}>
+        <Text>{"SyncDatabase flow waiting"}</Text>
+        <Text>{"nowInMS: "+nowInMs}</Text>
+        <Text>{"synchedResources: "}</Text>
+        <Text>{JSON.stringify(synchedResources, null, 2)}</Text>
+      </ScrollView>
     </>
   }
 

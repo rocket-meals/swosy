@@ -17,6 +17,8 @@ export class PersistentStore {
   static canteens = "PersistentStore.canteens"
   static foods = "PersistentStore.foods"
 
+  static profile = "PersistentStore.profile"
+
 }
 
 type ValueOf<T> = T[keyof T];
