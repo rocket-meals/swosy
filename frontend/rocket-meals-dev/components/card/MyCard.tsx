@@ -2,9 +2,8 @@
 // also allow to set a callback for the button
 // also allow the content to be a component
 
-import {Box, VStack} from "@gluestack-ui/themed";
-import {Heading, Text, useViewBackgroundColor, View} from "@/components/Themed";
-import {Image} from "expo-image";
+import {Box} from "@gluestack-ui/themed";
+import {useViewBackgroundColor, View} from "@/components/Themed";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export type MyCardProps = {

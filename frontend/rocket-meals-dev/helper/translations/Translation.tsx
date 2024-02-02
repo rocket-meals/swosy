@@ -24,6 +24,8 @@ export function useTranslation(key: TranslationKey): string{
 export class TranslationKeys {
   static sidebar_menu = createTranslationKey("sidebar_menu", "Menü");
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
+  static profile = createTranslationKey("profile", "Profil")
+  static user = createTranslationKey("user", "Nutzer")
 
   static about_us = createTranslationKey("about_us", "Über uns");
   static license = createTranslationKey("license", "Lizenz");

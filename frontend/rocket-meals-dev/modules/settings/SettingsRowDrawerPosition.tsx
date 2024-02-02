@@ -43,9 +43,9 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
         [DrawerConfigPosition.System]: "autorenew"
     }
 
-    let selectedThemeName = optionKeyToName[selectedKey]
+    let selectedName = optionKeyToName[selectedKey]
 
-    const accessibilityLabel = translation_edit+": "+title + " " + selectedThemeName
+    const accessibilityLabel = translation_edit+": "+title + " " + selectedName
     const label = title
 
     let items = []
@@ -83,7 +83,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 
     return(
         <>
-            <SettingsRowActionsheet label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet labelRight={selectedName} label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedName} leftIcon={colorSchemeIconName} {...props}  />
         </>
     )
 }

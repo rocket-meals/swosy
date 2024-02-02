@@ -10,7 +10,11 @@ import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
-import {SettingsRowDrawerPosition} from "@/components/drawer/SettingsRowDrawerPosition";
+import {SettingsRowDrawerPosition} from "@/modules/settings/SettingsRowDrawerPosition";
+import {SettingsRowProfile} from "@/modules/settings/SettingsRowProfile";
+import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
+import {Divider} from "@gluestack-ui/themed";
+import {SettingsRowUser} from "@/modules/settings/SettingsRowUser";
 
 export default function SettingsScreen() {
 
@@ -24,6 +28,11 @@ export default function SettingsScreen() {
        <ScrollView style={{width: "100%", height: "100%"}}>
          <View style={styles.container}>
            <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+           <Divider />
+           <SettingsRowUser />
+           <SettingsRowProfile />
+           <SettingsRowSpacer />
+           <Divider />
            <SettingsRowColorScheme />
            <SettingsRowDrawerPosition />
            <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
