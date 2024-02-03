@@ -22,7 +22,7 @@ export async function loadProfileRemote(user: DirectusUsers | undefined) {
             return acc;
         }, {} as Record<string, { _limit: number }>);
 
-        let usersProfileId = user.profile
+        let usersProfileId: string = user.profile as unknown as string
         if (usersProfileId){
             const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
             return await profileCollectionHelper.readItem(usersProfileId, {
