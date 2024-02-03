@@ -1,6 +1,6 @@
 export type Apartments = {
   available_from?: string;
-  building?: number & Buildings;
+  building?: number | Buildings;
   date_created?: string;
   date_updated?: string;
   family_friendly?: boolean;
@@ -86,7 +86,7 @@ export type AppSettingsHousing = {
 };
 
 export type AppSettingsHousingTranslations = {
-  app_settings_housing_id?: number & AppSettingsHousing;
+  app_settings_housing_id?: number | AppSettingsHousing;
   be_source_for_translations?: boolean;
   create_translations_for_all_languages?: boolean;
   description?: string;
@@ -208,7 +208,7 @@ export type Buildings = {
 
 export type BuildingsTranslations = {
   be_source_for_translations?: boolean;
-  buildings_id?: number & Buildings;
+  buildings_id?: number | Buildings;
   content?: string;
   create_translations_for_all_languages?: boolean;
   id: number;
@@ -233,7 +233,7 @@ export type Businesshours = {
 };
 
 export type Canteens = {
-  building?: number & Buildings;
+  building?: number | Buildings;
   date_created?: string;
   date_updated?: string;
   id: number;
@@ -246,13 +246,13 @@ export type Canteens = {
 };
 
 export type CanteensBusinesshours = {
-  businesshours_id?: number & Businesshours;
-  canteens_id?: number & Canteens;
+  businesshours_id?: number | Businesshours;
+  canteens_id?: number | Canteens;
   id: number;
 };
 
 export type ChatroomMessages = {
-  chatroom?: number & Chatrooms;
+  chatroom?: number | Chatrooms;
   date_created?: string;
   date_updated?: string;
   id: number;
@@ -276,7 +276,7 @@ export type ChatroomTopics = {
 
 export type ChatroomTopicsTranslations = {
   be_source_for_translations?: boolean;
-  chatroom_topics_id?: number & ChatroomTopics;
+  chatroom_topics_id?: number | ChatroomTopics;
   content?: string;
   create_translations_for_all_languages?: boolean;
   id: number;
@@ -288,10 +288,10 @@ export type Chatrooms = {
   date_created?: string;
   date_updated?: string;
   id: number;
-  owner?: number & Profiles;
+  owner?: number | Profiles;
   sort?: number;
   status: string;
-  topic?: number & ChatroomTopics;
+  topic?: number | ChatroomTopics;
   user_created?: string | DirectusUsers;
   user_updated?: string | DirectusUsers;
   messages: string | ChatroomMessages[];
@@ -314,7 +314,7 @@ export type Devices = {
   isTablet?: boolean;
   isWeb?: boolean;
   platform?: string;
-  profile?: number & Profiles;
+  profile?: number | Profiles;
   pushTokenObj?: unknown;
   sort?: number;
   status: string;
@@ -337,7 +337,7 @@ export type Flowhooks = {
 };
 
 export type Foodoffers = {
-  canteen?: number & Canteens;
+  canteen?: number | Canteens;
   date?: string;
   date_created?: string;
   date_updated?: string;
@@ -354,9 +354,9 @@ export type Foodoffers = {
 };
 
 export type FoodoffersMarkings = {
-  foodoffers_id?: number & Foodoffers;
+  foodoffers_id?: number | Foodoffers;
   id: number;
-  markings_id?: number & Markings;
+  markings_id?: number | Markings;
 };
 
 export type Foods = {
@@ -386,14 +386,14 @@ export type FoodsFeedbacks = {
   comment?: string;
   foods_id?: string | Foods;
   id: number;
-  profiles_id?: number & Profiles;
+  profiles_id?: number | Profiles;
   rating?: number;
 };
 
 export type FoodsMarkings = {
   foods_id?: string | Foods;
   id: number;
-  markings_id?: number & Markings;
+  markings_id?: number | Markings;
 };
 
 export type FoodsTranslations = {
@@ -453,7 +453,7 @@ export type MarkingsTranslations = {
   id: number;
   languages_code?: string | Languages;
   let_be_translated?: boolean;
-  markings_id?: number & Markings;
+  markings_id?: number | Markings;
   name?: string;
 };
 
@@ -478,7 +478,7 @@ export type NewsTranslations = {
   id: number;
   languages_code?: string | Languages;
   let_be_translated?: boolean;
-  news_id?: number & News;
+  news_id?: number | News;
   title?: string;
   translation: string;
 };
@@ -495,7 +495,7 @@ export type PrivacyPolicy = {
 
 export type Profiles = {
   avatar?: unknown;
-  canteen?: number & Canteens;
+  canteen?: number | Canteens;
   course_timetable?: unknown;
   credit_balance?: number;
   date_created?: string;
@@ -515,27 +515,27 @@ export type Profiles = {
 };
 
 export type ProfilesBuildingsFavorites = {
-  buildings_id?: number & Buildings;
+  buildings_id?: number | Buildings;
   id: number;
-  profiles_id?: number & Profiles;
+  profiles_id?: number | Profiles;
 };
 
 export type ProfilesBuildingsLastVisited = {
-  buildings_id?: number & Buildings;
+  buildings_id?: number | Buildings;
   id: number;
   last_visited?: string;
-  profiles_id?: number & Profiles;
+  profiles_id?: number | Profiles;
 };
 
 export type ProfilesMarkings = {
   dislikes?: boolean;
   id: number;
-  markings_id?: number & Markings;
-  profiles_id?: number & Profiles;
+  markings_id?: number | Markings;
+  profiles_id?: number | Profiles;
 };
 
 export type Washingmachines = {
-  apartment?: number & Apartments;
+  apartment?: number | Apartments;
   date_created?: string;
   date_finished?: string;
   date_updated?: string;
@@ -557,7 +557,7 @@ export type Wikis = {
   icon?: string;
   id: number;
   notice_private?: string;
-  parent?: number & Wikis;
+  parent?: number | Wikis;
   public?: boolean;
   role?: string | DirectusRoles;
   sort?: number;
@@ -576,7 +576,7 @@ export type WikisTranslations = {
   languages_code?: string | Languages;
   let_be_translated?: boolean;
   title?: string;
-  wikis_id?: number & Wikis;
+  wikis_id?: number | Wikis;
   translation: string;
 };
 
@@ -721,12 +721,12 @@ export type DirectusRelations = {
 
 export type DirectusRevisions = {
   id: number;
-  activity: number & DirectusActivity;
+  activity: number | DirectusActivity;
   collection: string;
   item: string;
   data?: unknown;
   delta?: unknown;
-  parent?: number & DirectusRevisions;
+  parent?: number | DirectusRevisions;
 };
 
 export type DirectusRoles = {
@@ -804,7 +804,7 @@ export type DirectusUsers = {
   external_identifier?: string;
   auth_data?: unknown;
   email_notifications?: boolean;
-  profile?: number & Profiles;
+  profile?: number | Profiles;
   preferences_divider: string;
   admin_divider: string;
 };
