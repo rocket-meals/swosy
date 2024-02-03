@@ -46,14 +46,13 @@ export function useSynchedProfile(): [(Profiles | undefined), ((newValue: Profil
 }
 
 function getDemoResource(): Profiles {
+    const undefinedBuildingsFavorites: ProfilesBuildingsFavorites[] = [];
+    const undefinedBuildingsLastVisited: ProfilesBuildingsLastVisited[] = [];
+    const undefinedDevices: Devices[] = [];
+    const undefinedFoodsFeedbacks: FoodsFeedbacks[] = [];
+    const undefinedMarkings: ProfilesMarkings[] = [];
 
-    const undefinedBuildingsFavorites = undefined as any as string & ProfilesBuildingsFavorites[];
-    const undefinedBuildingsLastVisited = undefined as any as string & ProfilesBuildingsLastVisited[];
-    const undefinedDevices = undefined as any as string & Devices[];
-    const undefinedFoodsFeedbacks = undefined as any as string & FoodsFeedbacks[];
-    const undefinedMarkings = undefined as any as string & ProfilesMarkings[];
-
-    let demoResource: Profiles = {
+    return {
         //avatar?: unknown;
         //canteen?: undefined
         //course_timetable?: unknown;
@@ -73,8 +72,6 @@ function getDemoResource(): Profiles {
         foods_feedbacks: undefinedFoodsFeedbacks,
         markings: undefinedMarkings,
     }
-
-    return demoResource
 }
 
 export function getEmptyProfile(): Profiles{
