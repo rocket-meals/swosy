@@ -15,24 +15,20 @@ import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper
 export async function loadProfileRemote(user: DirectusUsers | undefined) {
     if(!!user){
         const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
-        const profileFields = ["*"];
-        for(let relation of profileRelations) {
-            profileFields.push(relation+".*");
-        }
+        const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
 
-        const deepFields: Record<string, { _limit: number }> = {};
-        for(let relation of profileRelations) {
-            deepFields[relation] = { _limit: -1 };
-        }
+        const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
+            acc[x] = { _limit: -1 };
+            return acc;
+        }, {} as Record<string, { _limit: number }>);
 
         let usersProfileId = user.profile
-        if(usersProfileId){
+        if (usersProfileId){
             const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
-            let profile = await profileCollectionHelper.readItem(usersProfileId, {
+            return await profileCollectionHelper.readItem(usersProfileId, {
                 fields: profileFields,
                 deep: deepFields,
-            })
-            return profile;
+            });
         }
     }
     return undefined;
