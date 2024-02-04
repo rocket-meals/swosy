@@ -15,6 +15,12 @@ import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
+import {DrawerContentComponentProps, DrawerProps} from "@react-navigation/drawer/src/types";
+import {router} from "expo-router";
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+
+
+
 
 export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string) {
     let projectColor = useProjectColor()
@@ -51,15 +57,21 @@ function useDrawerWidth() {
     return drawerWidth
 }
 
-export const MyDrawer = (props: any) => {
+export type MyDrawerProps = {
+    customDrawerItems?: MyDrawerCustomItem[]
+    children: React.ReactNode
+}
+
+export const MyDrawer = (props: MyDrawerProps) => {
     const isLargeDevice = useIsLargeDevice();
+    const customDrawerItems = props?.customDrawerItems;
 
     const drawerWidth = useDrawerWidth()
     let [drawerPosition, setDrawerPosition] = useDrawerPosition()
 
     return (
         <Drawer
-            drawerContent={DrawerContentWrapper}
+            drawerContent={(props: DrawerContentComponentProps) => {return <DrawerContentWrapper customDrawerItems={customDrawerItems} {...props} />}}
             screenOptions={{
                 drawerPosition: drawerPosition,
                 drawerType: isLargeDevice ? 'permanent' : 'front',
@@ -102,8 +114,23 @@ export const MyDrawer = (props: any) => {
     );
 }
 
-function DrawerContentWrapper(props: any) {
+export type MyDrawerCustomItem = {
+    label: string,
+    onPress?: () => void,
+    onPressInternalRouteTo?: string,
+    onPressExternalRouteTo?: string,
+    icon?: string,
+    position?: number
+}
+
+type DrawerContentWrapperProps = {
+    customDrawerItems?: MyDrawerCustomItem[]
+} & DrawerContentComponentProps
+function DrawerContentWrapper(props: DrawerContentWrapperProps) {
     const isDebug = useIsDebug();
+
+    let projectColor = useProjectColor()
+    let contrastColor = useMyContrastColor(projectColor)
 
     const theme = useThemeDetermined()
     let gradientBackgroundColor = theme?.colors?.card
@@ -112,10 +139,51 @@ function DrawerContentWrapper(props: any) {
     const translation_home = useTranslation(TranslationKeys.home)
     const accessibilityLabel_home = translation_navigate_to + " " + translation_home
 
-    let renderedDrawerItems = props.state.routes.map((route: any, index: number) => {
+    const renderCustomDrawerItem = (customItem: MyDrawerCustomItem) => {
+        // @ts-ignore
+        const label = ({ focused, color }) => (
+            <Text style={{ color: focused ? contrastColor : color }}>{customItem.label}</Text>
+        );
+        const drawer_item_accessibility_label = translation_navigate_to + " " + customItem.label
+        const key = customItem.label
+        const isFocused = false;
+        let backgroundColor = undefined;
+        let icon = undefined;
+        const customDrawerIcon: string |undefined = customItem.icon;
+        if(customDrawerIcon){
+            icon = (props: MyCustomDrawerIconProps) => {return renderCustomDrawerIcon(customDrawerIcon, props)}
+        }
+
+        let onPress: any = undefined;
+        if(!!customItem.onPress){
+            onPress = customItem.onPress;
+        }
+
+        if(!onPress){
+            if(customItem.onPressInternalRouteTo){
+                onPress = () => {
+                    console.log("Route to: "+customItem.onPressInternalRouteTo)
+                    // @ts-ignore TODO: test if Href if working here
+                    router.navigate(customItem.onPressInternalRouteTo)
+                };
+            }
+            if(customItem.onPressExternalRouteTo){
+                onPress = () => {
+                    CommonSystemActionHelper.openExternalURL(customItem.onPressExternalRouteTo);
+                };
+            }
+        }
+
+        return (
+            <DrawerItem accessibilityLabel={drawer_item_accessibility_label} label={label} key={key} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={icon}/>
+        );
+    }
+
+    let generatedDrawerItems = props.state.routes.map((route: any, index: number) => {
         const { options } = props.descriptors[route.key];
 
         // [hide-drawer-item] Our custom option variable to hide the drawer item
+        // @ts-ignore
         const visible = options.visible
 
         let hide_all_not_especially_defined_drawer_items = true
@@ -148,11 +216,40 @@ function DrawerContentWrapper(props: any) {
         );
     })
 
-    let renderedDrawerItemsWithSeparator = renderedDrawerItems.map((item: any, index: number) => {
+    // Step 1: Sort customDrawerItems by position
+    const sortedCustomDrawerItems = (props.customDrawerItems || []).sort((a, b) => {
+        // Assuming items without a position should be placed at the end
+        const positionA = a.position !== undefined ? a.position : Number.MAX_VALUE;
+        const positionB = b.position !== undefined ? b.position : Number.MAX_VALUE;
+        return positionA - positionB;
+    });
+    // Add the customDrawerItem infront of the position of the renderedDrawerItems item
+
+    // Step 2: Merge sortedCustomDrawerItems with renderedDrawerItems
+    let finalDrawerItems = [];
+    let customItemIndex = 0; // To keep track of our position in the sortedCustomDrawerItems
+
+    generatedDrawerItems.forEach((item, index) => {
+        // Add any customDrawerItems that should be placed before the current item
+        while (customItemIndex < sortedCustomDrawerItems.length && sortedCustomDrawerItems[customItemIndex].position === index) {
+            const customItem = sortedCustomDrawerItems[customItemIndex];
+            finalDrawerItems.push(renderCustomDrawerItem(customItem)); // Assuming renderCustomDrawerItem is a function that returns a DrawerItem for a customDrawerItem
+            customItemIndex++;
+        }
+        finalDrawerItems.push(item);
+    });
+
+    // Add any remaining customDrawerItems at the end
+    while (customItemIndex < sortedCustomDrawerItems.length) {
+        const customItem = sortedCustomDrawerItems[customItemIndex];
+        finalDrawerItems.push(renderCustomDrawerItem(customItem));
+        customItemIndex++;
+    }
+
+    let renderedDrawerItemsWithSeparator = finalDrawerItems.map((item: any, index: number) => {
         return(
             <View key={index}>
                 {item}
-                <View style={{width: "100%", height: 1, backgroundColor: undefined}}/>
             </View>
         )
     }   )
