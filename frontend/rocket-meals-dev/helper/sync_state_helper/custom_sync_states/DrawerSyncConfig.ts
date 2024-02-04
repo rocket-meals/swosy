@@ -43,6 +43,10 @@ export function useDrawerPosition(): [DrawerConfigPosition.Left | DrawerConfigPo
     const drawerPositionByLanguage = useDrawerPositionByLanguage()
     let position: DrawerConfigPosition.Left | DrawerConfigPosition.Right = DrawerConfigPosition.Left
 
+    if(!!drawerPositionRaw && (drawerPositionRaw === DrawerConfigPosition.Left || drawerPositionRaw === DrawerConfigPosition.Right)){
+        position = drawerPositionRaw;
+    }
+
     // Check to only use position left or right
     if(!(position === DrawerConfigPosition.Left || position === DrawerConfigPosition.Right)){ // if position is not left or right
         position = DrawerConfigPosition.Left // set position to left
