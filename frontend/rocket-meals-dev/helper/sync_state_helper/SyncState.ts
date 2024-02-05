@@ -20,6 +20,7 @@ import {PersistentStore, PersistentStoreValues} from "@/helper/sync_state_helper
 import {StorageHelper} from "@/helper/storage_helper/StorageHelper";
 import {PersistentSecureStore, PersistentSecureStoreValues} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
+import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
@@ -63,21 +64,60 @@ interface Model {
 
 export class SyncState {
 
+    private static instance: SyncState | undefined = undefined;
     private storeRetrieved: boolean = false;
     private initialized: boolean = false;
 
     private globalSynchedStoreModels: {[key: string] : SynchedVariableInterface} = {};
 
+    private setLoadState: ((state: boolean) => void) | undefined = undefined;
+
     constructor() {
 
     }
 
+    static getInstance(){
+        if(SyncState.instance){
+            return SyncState.instance
+        }
+        SyncState.instance = new SyncState();
+        return SyncState.instance;
+    }
+
+    static setLoadState(setStorageLoaded: (state: boolean) => void){
+        SyncState.getInstance().setLoadState = setStorageLoaded
+    }
+
+    private setInitFinished(){
+        const setLoadState = this.setLoadState
+        if(setLoadState){
+            setLoadState(true);
+        }
+    }
+
+    async reset(){
+        this.initialized = false;
+        await SyncState.getInstance().clear();
+        const setLoadState = this.setLoadState
+        if(setLoadState){
+            setLoadState(false);
+        }
+    }
+
     async init(){
+        await SecureStorageHelperAbstractClass.getInstance().init();
+
         await this.registerSyncStateVariablesNonPersistentStore();
         await this.registerSyncStateVariablesPersistentStore();
         await this.registerSyncStateVariablesPersistentSecure();
 
         this.initialized = true;
+        this.setInitFinished();
+    }
+
+    async clear(){
+        await SecureStorageHelperAbstractClass.clear();
+        await StorageHelper.clear();
     }
 
     private async getKeysOfClass(classRef: typeof PersistentStore | typeof NonPersistentStore | typeof PersistentSecureStore ){

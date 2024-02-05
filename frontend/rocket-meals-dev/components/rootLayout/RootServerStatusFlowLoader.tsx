@@ -12,8 +12,6 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
-const syncState = new SyncState();
-
 export interface ServerStatusFlowLoaderProps {
     children?: React.ReactNode;
 }

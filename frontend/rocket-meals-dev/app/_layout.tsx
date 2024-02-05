@@ -8,19 +8,16 @@ import {GluestackUIProvider} from "@gluestack-ui/themed";
 import {config} from "@gluestack-ui/config";
 import {StoreProvider} from "easy-peasy";
 import {SyncState} from "@/helper/sync_state_helper/SyncState";
-import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
-import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
 import {RootServerStatusFlowLoader} from "@/components/rootLayout/RootServerStatusFlowLoader";
 import {RootAuthUserFlowLoader} from "@/components/rootLayout/RootAuthUserFlowLoader";
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from "@/components/rootLayout/RootThemeProvider";
-import Slot = Navigator.Slot;
 import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
+import Slot = Navigator.Slot;
+import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
+import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
 
 // Setting up Secure Storage and Sync State
-const syncState = new SyncState();
-SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
-
 // Preventing the splash screen from auto-hiding before asset loading is complete
 SplashScreen.preventAutoHideAsync();
 
@@ -28,24 +25,34 @@ export const unstable_settings = {
   initialRouteName: '(app)',
 };
 
+SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
+
 export default function RootLayout() {
   // State for checking if fonts and storage are loaded
-  const [storageLoaded, setStorageLoaded] = useState(false);
+  const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
   const [fontsLoaded, fontsError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
 
+  const reset = (bool: boolean) => {
+    console.log("RootLayout: reset: "+bool);
+    setStorageLoaded(bool);
+  }
+
+  async function loadStorage() {
+    let instance = SyncState.getInstance();
+    SyncState.setLoadState(reset);
+    await instance.init();
+  }
+
   // Load storage asynchronously and update state
   useEffect(() => {
-    async function loadStorage() {
-      await SecureStorageHelperAbstractClass.init();
-      await syncState.init();
-      setStorageLoaded(true);
+    console.log("Load storage asynchronously and update state")
+    if(!storageLoaded){
+      loadStorage();
     }
-
-    loadStorage();
-  }, []);
+  }, [storageLoaded]);
 
   // Hide SplashScreen after fonts and storage are loaded
   useEffect(() => {
@@ -64,14 +71,14 @@ export default function RootLayout() {
     return null;
   }
 
-  const store = syncState.getStore();
+  const store = SyncState.getInstance().getStore();
 
   // Render the Root Layout
   return (
-      <StoreProvider store={store}>
+      <StoreProvider store={store} key={storageLoaded+"" /* In order to reload storage */}>
         <GluestackUIProvider config={config}>
           <RootThemeProvider>
-            <RootServerStatusFlowLoader>
+            <RootServerStatusFlowLoader key={storageLoaded+"" /* In order to reload storage */}>
               <RootAuthUserFlowLoader>
                 <RootSyncDatabase>
                   <Slot />

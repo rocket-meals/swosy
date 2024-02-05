@@ -72,19 +72,19 @@ export class ServerAPI {
         get: () => Promise<AuthenticationData | null> | AuthenticationData | null,
         set: (value: AuthenticationData | null) => Promise<void> | void
     ){
-        //console.log("createAuthentificationStorage called")
+        console.log("createAuthentificationStorage called")
         if(!ServerAPI.simpleAuthentificationStorage){
-            //console.log("createAuthentificationStorage first time created")
+            console.log("createAuthentificationStorage first time created")
             ServerAPI.simpleAuthentificationStorage = {
                 get: async () => {
                     let result = await get();
-                    //console.log("simpleAuthentificationStorage get", result)
+                    console.log("simpleAuthentificationStorage get", result)
                     return result;
                 },
                 set: async (value: AuthenticationData | null) => {
-                    //console.log("simpleAuthentificationStorage set", value)
+                    console.log("simpleAuthentificationStorage set", value)
                     await set(value);
-                    //console.log("simpleAuthentificationStorage set done")
+                    console.log("simpleAuthentificationStorage set done")
                 }
             }
         }
@@ -167,11 +167,19 @@ export class ServerAPI {
     }
 
     static async authenticate_with_email_and_password(email: string, password: string){
-        console.log("login_with_email_and_password");
-        console.log("email", email);
-        console.log("password", password)
+        //console.log("login_with_email_and_password");
+        //console.log("email", email);
+        //console.log("password", password)
         const client = ServerAPI.getClient();
         let result = await client.login(email, password);
+
+        await ServerAPI.simpleAuthentificationStorage?.set({
+            access_token: result.access_token,
+            refresh_token: result.refresh_token,
+            expires: result.expires,
+            expires_at: result.expires_at,
+        });
+
         console.log("login_with_email_and_password result", result);
         result = await client.refresh();
 

@@ -1,9 +1,8 @@
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {SyncState, useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DirectusUsers} from "@/helper/database_helper/databaseTypes/types";
 
 export type CachedUserInformation = {
@@ -12,15 +11,19 @@ export type CachedUserInformation = {
 }
 
 export function useLogoutCallback(): () => void {
+    return async () => {
+        await SyncState.getInstance().reset();
+    }
+}
+
+export function useLogoutCallbackWithoutStorageClear(): () => void {
     const [currentUser, setCurrentUser] = useCurrentUser()
     const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
-    const onPress = () => {
+    return async () => {
         setAuthData(null)
         setCurrentUser(null)
     }
-
-    return onPress
 }
 
 export function useAccessToken(): string | null | undefined {
