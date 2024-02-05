@@ -24,15 +24,13 @@ export const MyDrawerAuthenticated = (props: any) => {
         */
     ]
 
-    const componentsMenu = isDevelopMode ? renderMyDrawerScreen("components/index", "Components", "Components", "drawing-box") : null
-
     return(
         <MyDrawer
             customDrawerItems={customDrawerItems}
         >
             {renderMyDrawerScreen("home/index", translation_home, translation_home, "home")}
             {renderMyDrawerScreen("settings/index", translation_settings, translation_settings, "cog")}
-            {componentsMenu}
+            {renderMyDrawerScreen("components/index", "Components", "Components", "drawing-box", isDevelopMode)}
         </MyDrawer>
     )
 }

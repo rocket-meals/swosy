@@ -19,15 +19,20 @@ import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string) {
+export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string, visible?: boolean | null | undefined) {
     let projectColor = useProjectColor(); // Fetch the current project color for use in styling.
+
+    let usedVisible = true;
+    if(visible!==undefined && visible!==null){
+        usedVisible = visible;
+    }
 
     return(
         <Drawer.Screen
             name={routeName} // The route name must match the URL from the root for navigation.
             options={{
                 // @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
-                visible: true, // This custom property is used to conditionally render drawer items.
+                visible: usedVisible, // This custom property is used to conditionally render drawer items.
                 label: label,
                 title: title,
                 drawerIcon: getMyDrawerItemIcon(icon),
