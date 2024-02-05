@@ -9,7 +9,7 @@ import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/Pro
 
 export type MyDrawerCustomItemProps = {
     label: string,
-    key?: string | number,
+    innerKey?: string | number,
     isFocused?: boolean,
     onPress?: () => void,
     onPressInternalRouteTo?: string, // TODO: check if we can use StaticRoutes or something like that?

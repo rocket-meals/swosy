@@ -51,7 +51,7 @@ export const MyDrawerItemIcon: ({iconName, focused, color, size}: MyCustomDrawer
     // A View wrapper is used to adjust the icon's layout, specifically to correct spacing issues.
     // The Icon component is customized based on focus state, using the contrast color for focused items.
     return (
-        <View style={{marginRight: -20}}> {/* Adjusts spacing between the icon and the text */}
+        <View style={{marginRight: -20}}>
             <Icon name={iconName} size={size} color={focused ? contrastColor : color} />
         </View>
     );

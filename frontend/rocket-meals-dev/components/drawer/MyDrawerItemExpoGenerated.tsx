@@ -49,5 +49,5 @@ export const getMyDrawerItemExpoGenerated = (route: any, index: number, props: D
     };
 
     // Return a custom drawer item component with the determined properties.
-    return <MyDrawerCustomItem label={label} key={index} isFocused={isFocused} drawerIcon={options.drawerIcon} onPress={onPress} />;
+    return <MyDrawerCustomItem label={label} innerKey={index} isFocused={isFocused} drawerIcon={options.drawerIcon} onPress={onPress} />;
 }
