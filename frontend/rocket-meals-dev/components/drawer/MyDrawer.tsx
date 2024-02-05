@@ -1,6 +1,5 @@
 import React from "react";
-import {Heading, Icon, Text, View} from "@/components/Themed"
-import {DrawerItem} from "@react-navigation/drawer";
+import {View} from "@/components/Themed";
 import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
@@ -8,289 +7,143 @@ import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {SafeAreaView} from "react-native";
-import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
-import {DrawerContentComponentProps, DrawerProps} from "@react-navigation/drawer/src/types";
-import {router} from "expo-router";
-import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
+import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
+import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
+import {getMyDrawerHeader} from "@/components/drawer/MyDrawerHeader";
+import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 
-
-
-
+// Function to render individual screens within the Drawer navigation.
+// It dynamically sets the drawer's appearance based on the current project color.
 export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string) {
-    let projectColor = useProjectColor()
-    let contrastColor = useMyContrastColor(projectColor)
+    let projectColor = useProjectColor(); // Fetch the current project color for use in styling.
 
     return(
         <Drawer.Screen
-            name={routeName} // This is the name of the page and must match the url from root
+            name={routeName} // The route name must match the URL from the root for navigation.
             options={{
-                // @ts-ignore
-                visible: true, // [hide-drawer-item] since expo-router would render all registered screens, we need to hide some of them
-                drawerLabel: ({ focused, color }) => (
-                    <Text style={{ color: focused ? contrastColor : color }}>{label}</Text>
-                ),
+                // @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
+                visible: true, // This custom property is used to conditionally render drawer items.
+                label: label,
                 title: title,
-                drawerIcon: (props) => {return renderCustomDrawerIcon(icon, props)},
-                drawerActiveBackgroundColor: projectColor,
+                drawerIcon: getMyDrawerItemIcon(icon),
+                drawerActiveBackgroundColor: projectColor, // Customize the background color of the active drawer item.
             }}
-        />
-    )
-}
-
-function useDrawerWidth() {
-    const insets = useInsets()
-    let baseDrawerWidth = 320
-    let drawerWidth = baseDrawerWidth
-    let [drawerPosition, setDrawerPosition] = useDrawerPosition()
-    if(drawerPosition === DrawerConfigPosition.Left) {
-        drawerWidth = insets.left + baseDrawerWidth
-    }
-    if(drawerPosition === DrawerConfigPosition.Right) {
-        drawerWidth = insets.right + baseDrawerWidth
-    }
-    return drawerWidth
-}
-
-export type MyDrawerProps = {
-    customDrawerItems?: MyDrawerCustomItem[]
-    children: React.ReactNode
-}
-
-export const MyDrawer = (props: MyDrawerProps) => {
-    const isLargeDevice = useIsLargeDevice();
-    const customDrawerItems = props?.customDrawerItems;
-
-    const drawerWidth = useDrawerWidth()
-    let [drawerPosition, setDrawerPosition] = useDrawerPosition()
-
-    return (
-        <Drawer
-            drawerContent={(props: DrawerContentComponentProps) => {return <DrawerContentWrapper customDrawerItems={customDrawerItems} {...props} />}}
-            screenOptions={{
-                drawerPosition: drawerPosition,
-                drawerType: isLargeDevice ? 'permanent' : 'front',
-                drawerStyle: {
-                    width: drawerWidth,
-                },
-                // The drawerIcon is used but IDEA does not recognize it
-                drawerIcon: (props) => {return renderCustomDrawerIcon("chevron-right", props)},
-                header: ({ navigation, route, options }) => {
-                    const title = getHeaderTitle(options, route.name);
-
-                    const renderHeaderTitle = (props: HeaderTitleProps) => {
-                        const readOnlyStyle: any = options.headerStyle
-                        return <Heading style={readOnlyStyle} >{title}</Heading>
-                    }
-
-
-                    function renderHeaderLeft(props: {
-                        tintColor?: string;
-                        pressColor?: string;
-                        pressOpacity?: number;
-                        labelVisible?: boolean;
-                    }) {
-                        if(isLargeDevice) return null;
-
-                        return <MyTouchableOpacity style={{paddingLeft: 10}} accessibilityLabel={"Open Drawer"} onPress={() => navigation.openDrawer()}>
-                            <Icon name={"menu"} />
-                        </MyTouchableOpacity>
-                    }
-
-                    return <Header
-                        headerLeft={renderHeaderLeft}
-                        headerTitleAlign={"left"} // let the header be rendered left / flex-start
-                        headerTitle={(props: HeaderTitleProps) => {return renderHeaderTitle(props)}}
-                        title={title}/>;
-                }
-            }}
-            {...props}
         />
     );
 }
 
-export type MyDrawerCustomItem = {
-    label: string,
-    onPress?: () => void,
-    onPressInternalRouteTo?: string,
-    onPressExternalRouteTo?: string,
-    icon?: string,
-    position?: number
+/**
+ * Custom hook to calculate and provide the appropriate width for the drawer.
+ */
+function useDrawerWidth() {
+    const insets = useInsets(); // Get safe area insets to adjust drawer width accordingly.
+    const baseDrawerWidth = 320; // Define a base width for the drawer.
+    let drawerWidth = baseDrawerWidth;
+    let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Fetch and set the current drawer position (left/right).
+
+    // Adjust drawer width based on its position and the safe area insets.
+    if(drawerPosition === DrawerConfigPosition.Left) {
+        drawerWidth += insets.left;
+    }
+    if(drawerPosition === DrawerConfigPosition.Right) {
+        drawerWidth += insets.right;
+    }
+    return drawerWidth; // Return the calculated drawer width.
 }
 
+// Component type definition for custom drawer items.
+export type MyDrawerProps = {
+    customDrawerItems?: MyDrawerCustomItemProps[];
+    children: React.ReactNode;
+};
+
+// Main drawer component that renders the navigation drawer along with custom items.
+export const MyDrawer = (props: MyDrawerProps) => {
+    const isLargeDevice = useIsLargeDevice(); // Determine if the device has a large screen.
+    const customDrawerItems = props?.customDrawerItems; // Optional custom drawer items.
+
+    const drawerWidth = useDrawerWidth(); // Calculate the dynamic width of the drawer.
+    let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Get and set the current drawer position.
+
+    return (
+        <Drawer
+            drawerContent={(props: DrawerContentComponentProps) => {
+                // Render custom drawer content, passing through custom items and props.
+                return <DrawerContentWrapper customDrawerItems={customDrawerItems} {...props} />;
+            }}
+            screenOptions={{
+                drawerPosition: drawerPosition, // Set the drawer to appear on the left or right.
+                drawerType: isLargeDevice ? 'permanent' : 'front', // Use a permanent drawer on large devices.
+                drawerStyle: {
+                    width: drawerWidth, // Apply the dynamically calculated width.
+                },
+                drawerIcon: getMyDrawerItemIcon("chevron-right"), // Default icon for the drawer items.
+                header: getMyDrawerHeader() // Render a custom header for the drawer.
+            }}
+            {...props}
+        />
+    );
+};
+
+function renderDrawerContentTop(props: DrawerContentComponentProps){
+    const translation_navigate_to = useTranslation(TranslationKeys.navigate_to);
+    const translation_home = useTranslation(TranslationKeys.home);
+    const accessibilityLabel_home = translation_navigate_to + " " + translation_home;
+
+    return(
+        <MyTouchableOpacity
+            accessibilityLabel={accessibilityLabel_home}
+            onPress={() => {
+                props.navigation.navigate("index"); // Navigate to the home screen when the banner is pressed.
+            }}
+            style={{
+                width: "100%",
+                padding: 10,
+            }}>
+            <ProjectBanner/>
+        </MyTouchableOpacity>
+    )
+}
+
+function renderDrawerContentBottom(){
+    return(
+        <View style={{width: "100%"}}>
+            <LegalRequiredLinks/>
+        </View>
+    )
+}
+
+// Wrapper component for the content inside the drawer.
+// It manages the layout of custom drawer items, the project banner, and legal links.
 type DrawerContentWrapperProps = {
-    customDrawerItems?: MyDrawerCustomItem[]
-} & DrawerContentComponentProps
+    customDrawerItems?: MyDrawerCustomItemProps[];
+} & DrawerContentComponentProps;
+
 function DrawerContentWrapper(props: DrawerContentWrapperProps) {
-    const isDebug = useIsDebug();
+    const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
+    let gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
 
-    let projectColor = useProjectColor()
-    let contrastColor = useMyContrastColor(projectColor)
+    // Use translations for accessibility labels and navigation prompts.
 
-    const theme = useThemeDetermined()
-    let gradientBackgroundColor = theme?.colors?.card
 
-    const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
-    const translation_home = useTranslation(TranslationKeys.home)
-    const accessibilityLabel_home = translation_navigate_to + " " + translation_home
-
-    const renderCustomDrawerItem = (customItem: MyDrawerCustomItem) => {
-        // @ts-ignore
-        const label = ({ focused, color }) => (
-            <Text style={{ color: focused ? contrastColor : color }}>{customItem.label}</Text>
-        );
-        const drawer_item_accessibility_label = translation_navigate_to + " " + customItem.label
-        const key = customItem.label
-        const isFocused = false;
-        let backgroundColor = undefined;
-        let icon = undefined;
-        const customDrawerIcon: string |undefined = customItem.icon;
-        if(customDrawerIcon){
-            icon = (props: MyCustomDrawerIconProps) => {return renderCustomDrawerIcon(customDrawerIcon, props)}
-        }
-
-        let onPress: any = undefined;
-        if(!!customItem.onPress){
-            onPress = customItem.onPress;
-        }
-
-        if(!onPress){
-            if(customItem.onPressInternalRouteTo){
-                onPress = () => {
-                    console.log("Route to: "+customItem.onPressInternalRouteTo)
-                    // @ts-ignore TODO: test if Href if working here
-                    router.navigate(customItem.onPressInternalRouteTo)
-                };
-            }
-            if(customItem.onPressExternalRouteTo){
-                onPress = () => {
-                    CommonSystemActionHelper.openExternalURL(customItem.onPressExternalRouteTo);
-                };
-            }
-        }
-
-        return (
-            <DrawerItem accessibilityLabel={drawer_item_accessibility_label} label={label} key={key} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={icon}/>
-        );
-    }
-
-    let generatedDrawerItems = props.state.routes.map((route: any, index: number) => {
-        const { options } = props.descriptors[route.key];
-
-        // [hide-drawer-item] Our custom option variable to hide the drawer item
-        // @ts-ignore
-        const visible = options.visible
-
-        let hide_all_not_especially_defined_drawer_items = true
-        if(isDebug) {
-            hide_all_not_especially_defined_drawer_items = false
-        }
-
-        const label =
-            options.drawerLabel !== undefined
-                ? options.drawerLabel
-                : options.title !== undefined
-                ? options.title
-                : route.name;
-
-        const isFocused = props.state.index === index;
-        const drawer_item_accessibility_label = translation_navigate_to + " " + label
-
-        const onPress = () => {
-            props.navigation.navigate(route.name);
-        };
-
-        let icon = options.drawerIcon
-        let backgroundColor = isFocused ? options.drawerActiveBackgroundColor : undefined
-
-        if(!visible && hide_all_not_especially_defined_drawer_items) {
-            return null
-        }
-        return (
-            <DrawerItem accessibilityLabel={drawer_item_accessibility_label} label={label} key={index} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={icon}/>
-        );
-    })
-
-    // Step 1: Sort customDrawerItems by position
-    const sortedCustomDrawerItems = (props.customDrawerItems || []).sort((a, b) => {
-        // Assuming items without a position should be placed at the end
-        const positionA = a.position !== undefined ? a.position : Number.MAX_VALUE;
-        const positionB = b.position !== undefined ? b.position : Number.MAX_VALUE;
-        return positionA - positionB;
-    });
-    // Add the customDrawerItem infront of the position of the renderedDrawerItems item
-
-    // Step 2: Merge sortedCustomDrawerItems with renderedDrawerItems
-    let finalDrawerItems = [];
-    let customItemIndex = 0; // To keep track of our position in the sortedCustomDrawerItems
-
-    generatedDrawerItems.forEach((item, index) => {
-        // Add any customDrawerItems that should be placed before the current item
-        while (customItemIndex < sortedCustomDrawerItems.length && sortedCustomDrawerItems[customItemIndex].position === index) {
-            const customItem = sortedCustomDrawerItems[customItemIndex];
-            finalDrawerItems.push(renderCustomDrawerItem(customItem)); // Assuming renderCustomDrawerItem is a function that returns a DrawerItem for a customDrawerItem
-            customItemIndex++;
-        }
-        finalDrawerItems.push(item);
-    });
-
-    // Add any remaining customDrawerItems at the end
-    while (customItemIndex < sortedCustomDrawerItems.length) {
-        const customItem = sortedCustomDrawerItems[customItemIndex];
-        finalDrawerItems.push(renderCustomDrawerItem(customItem));
-        customItemIndex++;
-    }
-
-    let renderedDrawerItemsWithSeparator = finalDrawerItems.map((item: any, index: number) => {
-        return(
-            <View key={index}>
-                {item}
-            </View>
-        )
-    }   )
+    let renderedDrawerItemsWithSeparator = getMyDrawerItems(props); // Get the list of drawer items to render.
 
     return(
         <View style={{width: "100%", height: "100%", overflow: "hidden"}}>
             <SafeAreaView style={{width: "100%", height: "100%"}}>
-                <MyTouchableOpacity
-                    accessibilityLabel={accessibilityLabel_home}
-                    onPress={() => {
-                        props.navigation.navigate("index");
-                    }}
-                    style={{
-                        width: "100%",
-                        padding: 10,
-                    }}>
-                    <ProjectBanner/>
-                </MyTouchableOpacity>
+                {renderDrawerContentTop(props)}
                 <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
                     <View style={{width: "100%", height: "100%"}}>
                         {renderedDrawerItemsWithSeparator}
                     </View>
                 </ScrollViewWithGradient>
-                <View style={{width: "100%"}}>
-                    <LegalRequiredLinks/>
-                </View>
+                {renderDrawerContentBottom()}
             </SafeAreaView>
-    </View>
-    );
-}
-
-export type MyCustomDrawerIconProps = {
-    color: string, size: number, focused: boolean
-}
-function renderCustomDrawerIcon (iconName: string, { focused, color, size }: MyCustomDrawerIconProps){
-    let projectColor = useProjectColor()
-    let contrastColor = useMyContrastColor(projectColor)
-
-    return ( // Dirty trick to move the text closer: https://stackoverflow.com/questions/73102614/react-native-remove-space-between-drawericon-and-item-text-on-drawer-screen
-        <View style={{marginRight: -20}}>
-            <Icon name={iconName} size={size} color={focused ? contrastColor : undefined} />
         </View>
-    )
+    );
 }

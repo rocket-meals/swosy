@@ -44,6 +44,7 @@ export class TranslationKeys {
   static forgot_password = createTranslationKey("forgot_password", "Passwort vergessen?");
 
   static navigate_to = createTranslationKey("navigate_to", "Navigiere zu");
+  static open_drawer = createTranslationKey("open_drawer", "Seitenleiste öffnen")
 
   static show_login_with_username_and_password = createTranslationKey("show_login_with_username_and_password", "Mitarbeiter-Login");
   static email = createTranslationKey("email", "E-Mail");

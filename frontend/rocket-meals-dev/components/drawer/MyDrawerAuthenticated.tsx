@@ -1,12 +1,13 @@
-import {MyDrawer, MyDrawerCustomItem, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
+import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import React from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
 
-    const customDrawerItems: MyDrawerCustomItem[] = [
+    const customDrawerItems: MyDrawerCustomItemProps[] = [
         /**
         {
             label: "Hallo",

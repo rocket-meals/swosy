@@ -1,12 +1,8 @@
-import {Navigator} from 'expo-router';
-import React, {useState} from "react";
-import {Text} from "@/components/Themed"
-import {DrawerContent} from "@react-navigation/drawer";
-import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
-import {Drawer} from "expo-router/drawer";
+import React from "react";
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
-import {MyDrawer, MyDrawerCustomItem, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
+import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
@@ -20,7 +16,7 @@ export default function AppLayout() {
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_sign_in = useTranslation(TranslationKeys.sign_in);
 
-    const customDrawerItems: MyDrawerCustomItem[] = [
+    const customDrawerItems: MyDrawerCustomItemProps[] = [
         /**
          {
          label: "Hallo",
