@@ -30,6 +30,7 @@ SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 export default function RootLayout() {
   // State for checking if fonts and storage are loaded
   const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
+  const [reloadNumber, setReloadNumber] = useState(0);
   const [fontsLoaded, fontsError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -41,17 +42,18 @@ export default function RootLayout() {
   }
 
   async function loadStorage() {
-    let instance = SyncState.getInstance();
-    SyncState.setLoadState(reset);
-    await instance.init();
+    console.log("Load storage asynchronously and update state")
+    if(!storageLoaded){
+      let instance = SyncState.getInstance();
+      SyncState.setLoadState(reset);
+      await instance.init();
+      setReloadNumber(reloadNumber+1)
+    }
   }
 
   // Load storage asynchronously and update state
   useEffect(() => {
-    console.log("Load storage asynchronously and update state")
-    if(!storageLoaded){
-      loadStorage();
-    }
+    loadStorage();
   }, [storageLoaded]);
 
   // Hide SplashScreen after fonts and storage are loaded
@@ -75,13 +77,13 @@ export default function RootLayout() {
 
   // Render the Root Layout
   return (
-      <StoreProvider store={store} key={storageLoaded+"" /* In order to reload storage */}>
-        <GluestackUIProvider config={config}>
-          <RootThemeProvider>
-            <RootServerStatusFlowLoader key={storageLoaded+"" /* In order to reload storage */}>
-              <RootAuthUserFlowLoader>
-                <RootSyncDatabase>
-                  <Slot />
+      <StoreProvider store={store} key={reloadNumber+""}>
+        <GluestackUIProvider config={config} key={reloadNumber+""}>
+          <RootThemeProvider key={reloadNumber+""}>
+            <RootServerStatusFlowLoader key={reloadNumber+""} >
+              <RootAuthUserFlowLoader key={reloadNumber+""}>
+                <RootSyncDatabase key={reloadNumber+""}>
+                  <Slot key={reloadNumber+""} />
                 </RootSyncDatabase>
               </RootAuthUserFlowLoader>
             </RootServerStatusFlowLoader>

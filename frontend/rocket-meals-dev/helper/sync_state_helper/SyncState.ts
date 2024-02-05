@@ -97,7 +97,9 @@ export class SyncState {
 
     async reset(){
         this.initialized = false;
+        this.globalSynchedStoreModels = {};
         await SyncState.getInstance().clear();
+
         const setLoadState = this.setLoadState
         if(setLoadState){
             setLoadState(false);
@@ -244,23 +246,23 @@ export class SyncState {
 
         let additionalKeys = Object.keys(this.globalSynchedStoreModels);
 
-        //console.log("GetStore");
+        console.log("GetStore");
         for(let i=0; i<additionalKeys.length; i++){
             let key = additionalKeys[i];
-            let aditionalStoreModel: SynchedVariableInterface = this.globalSynchedStoreModels[key];
-            let storageKey = aditionalStoreModel.key;
+            let additionalStoreModel: SynchedVariableInterface = this.globalSynchedStoreModels[key];
+            let storageKey = additionalStoreModel.key;
 
-            //console.log("storageKey", storageKey)
+            console.log("storageKey", storageKey, additionalStoreModel.defaultValue)
 
 
             model[storageKey] = {
-                value: aditionalStoreModel.defaultValue,
+                value: additionalStoreModel.defaultValue,
                 setValueSync: action((state, payload) => {
                     this.handleActionSync(state, payload);
                 }),
                 setValue: thunk( async (actions, payload) => {
                     //console.log("setValue async", payload)
-                    await this.handleAction(actions, storageKey, actions, payload, aditionalStoreModel);
+                    await this.handleAction(actions, storageKey, actions, payload, additionalStoreModel);
                 })
             }
         }
