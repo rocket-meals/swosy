@@ -4,6 +4,7 @@ export class PersistentStore {
 
   static debug = "PersistentStore.debug"
   static demo = "PersistentStore.demo"
+  static develop = "PersistentStore.develop"
 
   static debugAutoLogin = "PersistentStore.debugAutoLogin"
 

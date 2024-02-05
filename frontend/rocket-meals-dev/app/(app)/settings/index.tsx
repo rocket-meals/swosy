@@ -15,6 +15,7 @@ import {SettingsRowProfile} from "@/modules/settings/SettingsRowProfile";
 import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
 import {Divider} from "@gluestack-ui/themed";
 import {SettingsRowUser} from "@/modules/settings/SettingsRowUser";
+import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 
 export default function SettingsScreen() {
 
@@ -27,17 +28,18 @@ export default function SettingsScreen() {
      <SafeAreaView style={{width: "100%", height: "100%"}}>
        <ScrollView style={{width: "100%", height: "100%"}}>
          <View style={styles.container}>
-           <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-           <Divider />
+           <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
            <SettingsRowProfile />
-           <SettingsRowSpacer />
-           <Divider />
+           <SettingsRowSpacerWithDivider />
            <SettingsRowColorScheme />
            <SettingsRowDrawerPosition />
+           <SettingsRowSpacerWithDivider />
+           <SettingsRowLogout />
+           <SettingsRowSpacerWithDivider />
            <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
            <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
-           <SettingsRowLogout />
+           <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
          </View>
        </ScrollView>
      </SafeAreaView>
