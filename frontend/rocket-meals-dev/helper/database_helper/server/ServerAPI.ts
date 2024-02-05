@@ -137,53 +137,54 @@ export class ServerAPI {
     }
 
     static async authenticate_with_access_token(directus_access_token: string | undefined | null){
-        console.log("ServerAPI.authenticate_with_access_token", directus_access_token);
-        const client = ServerAPI.getClient();
-        let refresh_token: string | undefined = undefined;
-        if(directus_access_token){
-            refresh_token = directus_access_token
-            //console.log("authenticate_with_access_token set refresh_token to directus_access_token")
-            await ServerAPI.simpleAuthentificationStorage?.set({
-                access_token: null,
-                refresh_token: directus_access_token,
-                expires: null,
-                expires_at: null,
-            });
-            //console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
+        try{
+            console.log("ServerAPI.authenticate_with_access_token", directus_access_token);
+            const client = ServerAPI.getClient();
+            let refresh_token: string | undefined = undefined;
+            if(directus_access_token){
+                refresh_token = directus_access_token
+                //console.log("authenticate_with_access_token set refresh_token to directus_access_token")
+                await ServerAPI.simpleAuthentificationStorage?.set({
+                    access_token: null,
+                    refresh_token: directus_access_token,
+                    expires: null,
+                    expires_at: null,
+                });
+                //console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
+            }
+            let result = await client.refresh();
+            console.log("authenticate_with_access_token: result: ", result)
+
+            return result;
+        } catch (err){
+            console.log("ERROR: authenticate_with_access_token")
+            console.log(err);
         }
-
-        let result = await client.refresh();
-
-        //const result = await client.request(refresh('json', refresh_token));
-        let new_refresh_token = result.refresh_token; // TODO: we should store this somewhere
-        // TODO: upon start of the app in _layout.tsx we should check if the refresh token is still valid
-        // TODO: we should use ExpoSecureStore to store the refresh token on mobile devices (https://docs.expo.io/versions/latest/sdk/securestore/) and an encrypted local storage on web or using the idea of the browser fingerprint (https://www.npmjs.com/package/react-secure-storage)
-        //client.setToken(result.access_token);
-        //ServerAPI.simpleAuthentificationStorageData = result;
-        client.getToken()
-
-
-        return result;
     }
 
     static async authenticate_with_email_and_password(email: string, password: string){
-        //console.log("login_with_email_and_password");
-        //console.log("email", email);
-        //console.log("password", password)
-        const client = ServerAPI.getClient();
-        let result = await client.login(email, password);
+        try{
+            //console.log("login_with_email_and_password");
+            //console.log("email", email);
+            //console.log("password", password)
+            const client = ServerAPI.getClient();
+            let result = await client.login(email, password);
 
-        await ServerAPI.simpleAuthentificationStorage?.set({
-            access_token: result.access_token,
-            refresh_token: result.refresh_token,
-            expires: result.expires,
-            expires_at: result.expires_at,
-        });
+            await ServerAPI.simpleAuthentificationStorage?.set({
+                access_token: result.access_token,
+                refresh_token: result.refresh_token,
+                expires: result.expires,
+                expires_at: result.expires_at,
+            });
 
-        console.log("login_with_email_and_password result", result);
-        result = await client.refresh();
+            console.log("login_with_email_and_password result", result);
+            result = await client.refresh();
 
-        return result;
+            return result;
+        } catch (err){
+            console.log("ERROR: login_with_email_and_password")
+            console.log(err);
+        }
     }
 
     static async downloadServerInfo(): Promise<ServerInfo>{

@@ -64,10 +64,10 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
       let synchedResourceInformation = synchedResources[synchedResourceKey]
       let synchedResource = synchedResourceInformation?.data
       let synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
-      console.log("synchedResourceKey", synchedResourceKey)
-      console.log("synchedResourceInformation: ",synchedResourceInformation);
+      //console.log("synchedResourceKey", synchedResourceKey)
+      //console.log("synchedResourceInformation: ",synchedResourceInformation);
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
-        console.log("server is online");
+        //console.log("server is online");
         if (synchedResourceLastUpdate != null) {
           isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
         } else {
@@ -90,21 +90,21 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   }
 
   async function updateCanteens(){
-    console.log("updateCanteens")
+    //console.log("updateCanteens")
     let canteensList = await canteensCollectionHelper.readItems()
-    console.log("canteensList", canteensList)
+    //console.log("canteensList", canteensList)
     let canteensDict = canteensCollectionHelper.convertListToDict(canteensList, "id")
-    console.log("canteensDict", canteensDict)
+    //console.log("canteensDict", canteensDict)
     //await wait(2000)
     setCanteens(canteensDict, nowInMs);
   }
 
   async function updateFoods(){
-    console.log("updateFoods")
+    //console.log("updateFoods")
     let foodsList = await foodsCollectionHelper.readItems()
-    console.log("foodsList", foodsList)
+    //console.log("foodsList", foodsList)
     let foodsDict = foodsCollectionHelper.convertListToDict(foodsList, "id")
-    console.log("foodsDict", foodsDict)
+    //console.log("foodsDict", foodsDict)
     //await wait(2000)
     setFoods(foodsDict, nowInMs);
   }
