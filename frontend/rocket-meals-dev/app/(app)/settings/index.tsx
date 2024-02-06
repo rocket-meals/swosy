@@ -1,5 +1,5 @@
 import {SafeAreaView, ScrollView, StyleSheet} from 'react-native';
-import {Text, View} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {SettingsRowSyncBooleanSwitch} from "@/components/settings/SettingsRowSyncBooleanSwitch";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
@@ -12,10 +12,9 @@ import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecure
 import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
 import {SettingsRowDrawerPosition} from "@/modules/settings/SettingsRowDrawerPosition";
 import {SettingsRowProfile} from "@/modules/settings/SettingsRowProfile";
-import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
-import {Divider} from "@gluestack-ui/themed";
 import {SettingsRowUser} from "@/modules/settings/SettingsRowUser";
 import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
+import {SettingsRowProfileCanteen} from "@/modules/settings/SettingsRowProfileCanteen";
 
 export default function SettingsScreen() {
 
@@ -31,6 +30,7 @@ export default function SettingsScreen() {
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
            <SettingsRowProfile />
+           <SettingsRowProfileCanteen />
            <SettingsRowSpacerWithDivider />
            <SettingsRowColorScheme />
            <SettingsRowDrawerPosition />

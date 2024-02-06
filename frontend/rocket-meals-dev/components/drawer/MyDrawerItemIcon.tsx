@@ -22,7 +22,7 @@ export type RequiredDrawerIconProps = {
  * @prop {string | undefined} iconName - The name of the icon to be used. Can be undefined.
  */
 export type MyCustomDrawerIconProps = {
-    iconName: string | undefined,
+    iconName: string | undefined | null,
 } & RequiredDrawerIconProps
 
 /**
@@ -31,7 +31,7 @@ export type MyCustomDrawerIconProps = {
  * @param {string | undefined} iconName - The name of the icon. Can be undefined to allow for dynamic icon names.
  * @returns A function that takes RequiredDrawerIconProps and returns a JSX.Element representing the custom drawer icon.
  */
-export const getMyDrawerItemIcon: (iconName: (string | undefined)) => (props: RequiredDrawerIconProps) => React.JSX.Element = (iconName: string | undefined) => {
+export const getMyDrawerItemIcon: (iconName: (string | undefined | null)) => (props: RequiredDrawerIconProps) => React.JSX.Element = (iconName: string | undefined | null) => {
     return (props: RequiredDrawerIconProps) => (
         <MyDrawerItemIcon iconName={iconName} {...props} />
     );

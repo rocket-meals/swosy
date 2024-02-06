@@ -246,13 +246,13 @@ export class SyncState {
 
         let additionalKeys = Object.keys(this.globalSynchedStoreModels);
 
-        console.log("GetStore");
+        //console.log("GetStore");
         for(let i=0; i<additionalKeys.length; i++){
             let key = additionalKeys[i];
             let additionalStoreModel: SynchedVariableInterface = this.globalSynchedStoreModels[key];
             let storageKey = additionalStoreModel.key;
 
-            console.log("storageKey", storageKey, additionalStoreModel.defaultValue)
+            //console.log("storageKey", storageKey, additionalStoreModel.defaultValue)
 
 
             model[storageKey] = {

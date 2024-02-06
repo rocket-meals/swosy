@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Text} from "@/components/Themed";
 import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
-import {useSynchedCanteens} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
+import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
 import {Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
@@ -22,7 +22,12 @@ export {
 export interface RootAuthUserFlowLoaderProps {
     children?: React.ReactNode;
 }
-export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
+
+export interface RootAuthUserFlowLoaderInnerProps {
+  children?: React.ReactNode;
+  setSyncComplete: (finished: boolean) => void
+}
+export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) => {
 
   //console.log("AuthFlowUserCheck")
 
@@ -33,7 +38,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 
   let canteensCollectionHelper = new CollectionHelper<Canteens>("canteens");
-  const [canteens, setCanteens, lastUpdateCanteens] = useSynchedCanteens()
+  const [canteens, setCanteens, lastUpdateCanteens] = useSynchedCanteensDict()
 
   const foodsCollectionHelper = new CollectionHelper<Foods>("foods");
   const [foods, setFoods, lastUpdateFoods] = useSynchedFoods()
@@ -54,9 +59,8 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   addSynchedResource("foods", foods, lastUpdateFoods)
   addSynchedResource("profile", profile, lastUpdateProfile);
 
-  let syncComplete = demo || checkSynchedResources()
-
   function checkSynchedResources(){
+    console.log("--- checkSynchedResources ---");
     let synchedResourceKeys = Object.keys(synchedResources)
     for(let i = 0; i < synchedResourceKeys.length; i++){
       let isResourceSynched = false;
@@ -64,10 +68,10 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
       let synchedResourceInformation = synchedResources[synchedResourceKey]
       let synchedResource = synchedResourceInformation?.data
       let synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
-      //console.log("synchedResourceKey", synchedResourceKey)
-      //console.log("synchedResourceInformation: ",synchedResourceInformation);
+      console.log("synchedResourceKey", synchedResourceKey)
+      console.log("synchedResourceInformation: ",synchedResourceInformation);
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
-        //console.log("server is online");
+        console.log("server is online");
         if (synchedResourceLastUpdate != null) {
           isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
         } else {
@@ -77,7 +81,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
         isResourceSynched = !!synchedResource
       }
       if(!isResourceSynched){
-          return false;
+        return false;
       }
     }
     return true
@@ -144,16 +148,31 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
     })();
   }, []);
 
+  useEffect(() => {
+    console.log("Check if sync is complete: ")
+    let syncComplete = demo || checkSynchedResources()
+    console.log("syncComplete: "+syncComplete);
+    if(syncComplete){
+      props.setSyncComplete(true);
+    }
+  }, [canteens, profile, foods]);
+
+  return <>
+    <ScrollView style={{width: "100%", height: "100%"}}>
+      <Text>{"SyncDatabase flow waiting"}</Text>
+      <Text>{"nowInMS: "+nowInMs}</Text>
+      <Text>{"synchedResources: "}</Text>
+      <Text>{JSON.stringify(synchedResources, null, 2)}</Text>
+    </ScrollView>
+  </>
+}
+
+export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
+
+  const [syncComplete, setSyncComplete] = useState(false);
+
   if(!syncComplete){
-    //console.log("AuthFlowUserCheck useEffect currentUserRaw is null")
-    return <>
-      <ScrollView style={{width: "100%", height: "100%"}}>
-        <Text>{"SyncDatabase flow waiting"}</Text>
-        <Text>{"nowInMS: "+nowInMs}</Text>
-        <Text>{"synchedResources: "}</Text>
-        <Text>{JSON.stringify(synchedResources, null, 2)}</Text>
-      </ScrollView>
-    </>
+    return <RootSyncDatabaseInner setSyncComplete={setSyncComplete} />
   }
 
     return(

@@ -1,8 +1,13 @@
-import {Redirect} from 'expo-router';
+import {Redirect, router, usePathname} from 'expo-router';
 import React, {useState} from "react";
 import {Text} from "@/components/Themed"
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {MyDrawerAuthenticated} from "@/components/drawer/MyDrawerAuthenticated";
+import {
+    useIsProfileSetupComplete,
+    useSynchedProfileCanteen
+} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
+import {MyDrawerSetup} from "@/components/drawer/MyDrawerSetup";
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
@@ -14,6 +19,9 @@ export const unstable_settings = {
 export default function AppLayout() {
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const loggedIn = isUserLoggedIn();
+    const pathName = usePathname();
+
+    const isProfileSetupComplete = useIsProfileSetupComplete();
 
     // AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
 
@@ -29,6 +37,15 @@ export default function AppLayout() {
         // in the headless Node process that the pages are rendered in.
         // @ts-ignore
         return <Redirect href="/(auth)/login" />;
+    }
+
+    if(!isProfileSetupComplete){
+        console.log(pathName);
+        if(pathName!=="/setup"){
+            return <Redirect href="/setup" />;
+        } else {
+            return <MyDrawerSetup />
+        }
     }
 
     // This layout can be deferred because it's not the root layout.

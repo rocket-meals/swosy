@@ -1,5 +1,6 @@
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {
+    Canteens,
     Devices,
     DirectusUsers,
     FoodsFeedbacks,
@@ -11,6 +12,7 @@ import {
 import {useSynchedResourceSingleRaw} from "@/helper/sync_state_helper/custom_sync_states/SynchedResource";
 import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
+import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
 
 export async function loadProfileRemote(user: DirectusUsers | undefined) {
     if(!!user){
@@ -34,15 +36,49 @@ export async function loadProfileRemote(user: DirectusUsers | undefined) {
     return undefined;
 }
 
-export function useSynchedProfile(): [(Profiles | undefined), ((newValue: Profiles, timestampe?: number) => void), (number | undefined)] {
-    const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Profiles>(PersistentStore.profile);
+export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestampe?: number) => void), (number | undefined)] {
+    const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
     let lastUpdate = resourceRaw?.lastUpdate;
     const demo = useIsDemo()
     let usedResource = resourceOnly;
+    if(!usedResource){
+        usedResource = getEmptyProfile();
+    }
     if(demo) {
         usedResource = getDemoResource()
     }
     return [usedResource, setResource, lastUpdate]
+}
+
+export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{
+    const [profile, setProfile] = useSynchedProfile();
+    const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
+
+    let canteen_id = profile?.canteen as number;
+    let canteen = undefined
+    if(canteenDict && canteen_id){
+        canteen = canteenDict[canteen_id];
+    }
+
+    const setCanteen = (canteen: Canteens) => {
+        profile.canteen = canteen.id;
+        setProfile(profile);
+    }
+    return [canteen, setCanteen];
+}
+
+export function useIsProfileSetupComplete(): boolean {
+    const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+
+    const requiredSetVariables = [profileCanteen]
+    for(let i=0; i<requiredSetVariables.length; i++){
+        let requiredVariable = requiredSetVariables[i];
+        if(!requiredVariable){
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function getDemoResource(): Profiles {
@@ -74,7 +110,7 @@ function getDemoResource(): Profiles {
     }
 }
 
-export function getEmptyProfile(): Profiles{
+export function getEmptyProfile(): Partial<Profiles>{
     const undefinedBuildingsFavorites = undefined as any as string & ProfilesBuildingsFavorites[];
     const undefinedBuildingsLastVisited = undefined as any as string & ProfilesBuildingsLastVisited[];
     const undefinedDevices = undefined as any as string & Devices[];
@@ -86,9 +122,8 @@ export function getEmptyProfile(): Profiles{
         buildings_last_visited: undefinedBuildingsLastVisited,
         devices: undefinedDevices,
         foods_feedbacks: undefinedFoodsFeedbacks,
-        id: 0,
+        canteen: undefined,
         markings: undefinedMarkings,
-        status: "",
-        nickname: "Demo User"
+        nickname: "Gast"
     }
 }

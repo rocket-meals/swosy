@@ -46,6 +46,8 @@ export class TranslationKeys {
   static navigate_to = createTranslationKey("navigate_to", "Navigiere zu");
   static open_drawer = createTranslationKey("open_drawer", "Seitenleiste öffnen")
 
+  static canteen = createTranslationKey("canteen", "Mensa");
+
   static show_login_with_username_and_password = createTranslationKey("show_login_with_username_and_password", "Mitarbeiter-Login");
   static email = createTranslationKey("email", "E-Mail");
   static password = createTranslationKey("password", "Passwort");

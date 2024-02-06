@@ -1,7 +1,5 @@
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {MyCard} from "@/components/card/MyCard";
-import {useSynchedCanteens} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";

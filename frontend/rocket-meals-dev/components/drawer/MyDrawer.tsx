@@ -19,12 +19,12 @@ import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string, visible?: boolean | null | undefined) {
+export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string | undefined | null, visible?: boolean | null | undefined) {
     let projectColor = useProjectColor(); // Fetch the current project color for use in styling.
 
     let usedVisible = true;
-    if(visible!==undefined && visible!==null){
-        usedVisible = visible;
+    if(visible!==undefined){
+        usedVisible = !!visible;
     }
 
     return(
@@ -64,7 +64,7 @@ function useDrawerWidth() {
 // Component type definition for custom drawer items.
 export type MyDrawerProps = {
     customDrawerItems?: MyDrawerCustomItemProps[];
-    children: React.ReactNode;
+    children?: React.ReactNode;
 };
 
 // Main drawer component that renders the navigation drawer along with custom items.
