@@ -27,6 +27,7 @@ export {
 
 export interface RootAuthUserFlowLoaderProps {
     children?: React.ReactNode;
+  userId: number | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
@@ -193,12 +194,18 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
 export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
 
-  const [syncComplete, setSyncComplete] = useState(false);
-  const [currentUser, setCurrentUser] = useCurrentUser()
+  const userId = props.userId;
+  const [synchedForUserId, setSynchedForUserId] = useState<any>({
+    userId: false
+  });
+  const setSyncComplete = (bool: boolean) => {
+    setSynchedForUserId({
+      userId: userId
+    })
+  }
 
-  useEffect(() => {
+  const syncComplete = synchedForUserId.userId === userId;
 
-  }, [currentUser]);
 
   if(!syncComplete){
     return <RootSyncDatabaseInner setSyncComplete={setSyncComplete} />

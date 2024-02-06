@@ -1,4 +1,4 @@
-import {Redirect, router, usePathname} from 'expo-router';
+import {Redirect, router, usePathname, useRootNavigationState} from 'expo-router';
 import React, {useState} from "react";
 import {Text} from "@/components/Themed"
 import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
@@ -15,15 +15,19 @@ export const unstable_settings = {
 };
 
 export default function AppLayout() {
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const loggedIn = isUserLoggedIn();
     const pathName = usePathname();
+    const rootNavigationState = useRootNavigationState();
+
+    //https://stackoverflow.com/questions/76828511/expo-router-error-attempted-to-navigate-before-mounting-the-root-layout-compone
+    const isLoading = !rootNavigationState?.key
 
     const isProfileSetupComplete = useIsProfileSetupComplete();
 
     // AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
 
     // You can keep the splash screen open, or render a loading screen like we do here.
+
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
@@ -38,12 +42,14 @@ export default function AppLayout() {
     }
 
     if(!isProfileSetupComplete){
-        console.log(pathName);
+        console.log("(app)_layout.tsx: pathName: "+pathName);
         if(pathName!=="/setup"){
             return <Redirect href="/setup" />;
         } else {
             return <MyDrawerSetup />
         }
+    } else if(isProfileSetupComplete){
+
     }
 
     // This layout can be deferred because it's not the root layout.

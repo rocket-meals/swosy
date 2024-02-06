@@ -95,7 +95,7 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
   console.log("AuthFlowUserCheck currentUserRaw: ", currentUserRaw)
 
     return(
-        <RootSyncDatabase key={currentUser?.id+""}>
+        <RootSyncDatabase userId={currentUser?.id} key={currentUser?.id+""}>
           <Slot key={currentUser?.id+""} />
         </RootSyncDatabase>
     )
