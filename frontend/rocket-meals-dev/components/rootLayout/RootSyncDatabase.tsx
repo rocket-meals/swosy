@@ -3,7 +3,7 @@ import {Text} from "@/components/Themed";
 import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
-import {Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
+import {Buildings, Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
 import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
 import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ScrollView} from "react-native";
+import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,6 +41,9 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   let canteensCollectionHelper = new CollectionHelper<Canteens>("canteens");
   const [canteens, setCanteens, lastUpdateCanteens] = useSynchedCanteensDict()
 
+  let buildingsCollectionHelper = new CollectionHelper<Buildings>("buildings");
+  const [buildings, setBuildings, lastUpdateBuildings] = useSynchedBuildingsDict()
+
   const foodsCollectionHelper = new CollectionHelper<Foods>("foods");
   const [foods, setFoods, lastUpdateFoods] = useSynchedFoods()
 
@@ -56,6 +60,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   }
 
   addSynchedResource("canteens", canteens, lastUpdateCanteens)
+  addSynchedResource("buildings", buildings, lastUpdateBuildings)
   addSynchedResource("foods", foods, lastUpdateFoods)
   addSynchedResource("profile", profile, lastUpdateProfile);
 
@@ -103,6 +108,12 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     setCanteens(canteensDict, nowInMs);
   }
 
+  async function updateBuildings(){
+    let buildingsList = await buildingsCollectionHelper.readItems();
+    let buildingsDict = buildingsCollectionHelper.convertListToDict(buildingsList, "id")
+    setBuildings(buildingsDict, nowInMs)
+  }
+
   async function updateFoods(){
     //console.log("updateFoods")
     let foodsList = await foodsCollectionHelper.readItems()
@@ -137,6 +148,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
       if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
         if(!demo){
           await updateCanteens()
+          await updateBuildings();
           await updateFoods()
           await updateProfile()
         }

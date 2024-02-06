@@ -10,12 +10,14 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {MyCardWithText} from "@/components/card/MyCardWithText";
 import {router} from "expo-router";
+import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
 
 export default function SettingsScreen() {
 
     const isProfileSetupComplete = useIsProfileSetupComplete();
   const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
   const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
+  const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 
   let renderCanteens = []
   if(canteenDict){
@@ -23,6 +25,12 @@ export default function SettingsScreen() {
     for(let i=0; i<canteen_keys.length; i++){
       let canteen_key = canteen_keys[i];
       let canteen = canteenDict[canteen_key]
+
+      let building = undefined;
+      if(buildingsDict){
+          building = buildingsDict[canteen?.id];
+      }
+
       let canteen_label = canteen.label || canteen_key
 
       const onPress = () => {
@@ -33,7 +41,7 @@ export default function SettingsScreen() {
 
       let renderedImage = (
           <MyTouchableOpacity accessibilityLabel={canteen_label} onPress={onPress} >
-            <DirectusImage assetId={canteen?.image} thumbHash={canteen?.thumbHash} style={{width: "100%", height: 400}} />
+            <DirectusImage assetId={building?.image} thumbHash={building?.thumbHash} style={{width: "100%", height: 400}} />
           </MyTouchableOpacity>
       )
 
@@ -58,6 +66,8 @@ export default function SettingsScreen() {
            {renderCanteens}
          <Text>{"profileCanteen:"}</Text>
          <Text>{JSON.stringify(profileCanteen, null, 2)}</Text>
+           <Text>{"canteenDict:"}</Text>
+           <Text>{JSON.stringify(canteenDict, null, 2)}</Text>
        </ScrollView>
      </SafeAreaView>
   );

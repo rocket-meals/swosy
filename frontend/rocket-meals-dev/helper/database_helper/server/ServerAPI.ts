@@ -15,8 +15,9 @@ import {
     serverInfo,
     ServerInfoOutput
 } from "@directus/sdk";
-import {CustomDirectusTypes} from "@/helper/database_helper/databaseTypes/types";
+import {CustomDirectusTypes, DirectusFiles} from "@/helper/database_helper/databaseTypes/types";
 import {UrlHelper} from "@/helper/UrlHelper";
+import {DirectusImage} from "@/components/project/DirectusImage";
 
 
 interface ExtendedProperties {
@@ -233,8 +234,17 @@ export class ServerAPI {
         return totalURL
     }
 
-    static getAssetImageURL(imageID: string | null | undefined){
-        return ServerAPI.getAssetURL(imageID);
+    static getAssetImageURL(imageID: string | null | undefined | DirectusFiles) {
+        let usedImageId;
+
+        // Assuming DirectusFiles is a type and we need to check if imageID is of that type
+        if (typeof imageID === 'object' && imageID !== null && 'id' in imageID) {
+            usedImageId = imageID.id;
+        } else {
+            usedImageId = imageID;
+        }
+
+        return ServerAPI.getAssetURL(usedImageId);
     }
 
     static getAssetURL(file_id: string | null | undefined): any{

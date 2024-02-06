@@ -16,6 +16,7 @@ export class PersistentStore {
   static server_info = "PersistentStore.server_info"
 
   static canteens = "PersistentStore.canteens"
+  static buildings = "PersistentStore.buildings"
   static foods = "PersistentStore.foods"
 
   static profile = "PersistentStore.profile"

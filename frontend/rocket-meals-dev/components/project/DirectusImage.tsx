@@ -10,7 +10,7 @@ import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSo
 import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 
 interface AppState {
-    assetId: string | undefined | null;
+    assetId: string | undefined | null | DirectusFiles;
     style?: any;
     alt?: string;
     placeholder?: string;

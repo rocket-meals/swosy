@@ -9,14 +9,13 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
   let lastUpdate = resourcesRaw?.lastUpdate;
   let usedResources = resourcesOnly;
   if(demo) {
-    usedResources = getDemoResource()
+    usedResources = getDemoCanteens()
   }
   return [usedResources, setResourcesOnly, lastUpdate]
 }
 
-function getDemoResource(): Record<string, Canteens> {
+function getDemoCanteens(): Record<string, Canteens> {
 
-  const emptyBusinesshours = undefined as any as string & CanteensBusinesshours[];
   let demoResource: Canteens = {
     building: undefined,
     date_created: new Date().toISOString(),
@@ -27,7 +26,7 @@ function getDemoResource(): Record<string, Canteens> {
     status: "",
     user_created: undefined,
     user_updated: undefined,
-    businesshours: emptyBusinesshours,
+    businesshours: [],
   }
 
   return {
