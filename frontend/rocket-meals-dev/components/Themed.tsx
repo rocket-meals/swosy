@@ -41,7 +41,7 @@ export function Icon({name, size, family, ...props}: IconProps){
 }
 
 type TextInputProps = {
-    ref: React.Ref<RNTextInput> | undefined | MutableRefObject<RNTextInput | undefined>
+    myRef: React.Ref<RNTextInput> | undefined | MutableRefObject<RNTextInput | undefined>
     variant?: "outline" | "rounded" | "underlined" | undefined
     size?: "sm" | "md" | "lg";
     hidden?: boolean;
@@ -88,8 +88,18 @@ export function TextInput(props: TextInputProps){
       type: type
   }
 
+    /**
+    return(
+        <RNTextInput
+            ref={props.myRef}
+            style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+        />
+    )
+        */
+
   return(
       <DefaultInput
+
           sx={{
               _input:{
                   color: usedColor,
@@ -98,6 +108,7 @@ export function TextInput(props: TextInputProps){
           {...defaultInputProps}
       >
         <DefaultInputField
+            ref={props.myRef}
             {...defaultInputFieldProps}
         />
       </DefaultInput>

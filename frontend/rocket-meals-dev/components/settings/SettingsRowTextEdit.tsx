@@ -12,11 +12,12 @@ export const MyContent = (props: any) => {
 
     const inputRef = useRef<any>(null);
 
+    // After the component mounts, focus the input
     useEffect(() => {
         if(inputRef.current){
             inputRef.current.focus();
         }
-    }, []);
+    }, [inputRef?.current])
 
     return(
         <View style={{
@@ -26,7 +27,7 @@ export const MyContent = (props: any) => {
                 width: "100%",
             }}>
                 <TextInput
-                    ref={props?.inputRef}
+                    myRef={inputRef}
                     value={inputValueLocal}
                     onChangeText={(newText: string) => {
                         console.log("OnChangeText")

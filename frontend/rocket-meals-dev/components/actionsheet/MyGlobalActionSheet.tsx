@@ -192,9 +192,6 @@ export const MyGlobalActionSheet = (props: any) => {
     }
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
             <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}>
                 <ActionsheetBackdrop onPress={onCancel} />
                 <ActionsheetContent h="$72" zIndex={999}
@@ -213,6 +210,5 @@ export const MyGlobalActionSheet = (props: any) => {
                     {renderedItems}
                 </ActionsheetContent>
             </Actionsheet>
-        </KeyboardAvoidingView>
     )
 }

@@ -16,6 +16,8 @@ import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
 import Slot = Navigator.Slot;
 import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
 import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
+import {KeyboardAvoidingView, Platform} from "react-native";
+import {useInsets} from "@/helper/device/DeviceHelper";
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -77,6 +79,10 @@ export default function RootLayout() {
 
   // Render the Root Layout
   return (
+      <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "height" : "height"}
+          style={{ flex: 1, zIndex: 999 }}
+      >
       <StoreProvider store={store} key={reloadNumber+""}>
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
@@ -87,5 +93,6 @@ export default function RootLayout() {
           </RootThemeProvider>
         </GluestackUIProvider>
       </StoreProvider>
+      </KeyboardAvoidingView>
   );
 }
