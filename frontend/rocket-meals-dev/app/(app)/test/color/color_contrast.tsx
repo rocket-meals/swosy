@@ -7,8 +7,13 @@ import {
     useLighterOrDarkerColorForSelection,
     useMyContrastColor
 } from "@/helper/color/MyContrastColor";
+import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 
 export default function HomeScreen() {
+
+    const projectColor = useProjectColor()
+    const projectContrastColor = useMyContrastColor(projectColor);
+    const contrastRatioProjectContrastColor = getContrastRatio(projectColor, projectContrastColor)
 
     const viewBackgroundColor = useViewBackgroundColor()
     const myContrastColorBackground = useMyContrastColor(viewBackgroundColor)
@@ -24,8 +29,11 @@ export default function HomeScreen() {
 
   return (
       <View style={styles.container}>
-        <Text style={styles.title}>Device Information</Text>
+        <Text style={styles.title}>Color Information</Text>
         <Divider />
+          <View style={{width: "100%", height: 20, backgroundColor: projectColor}}>
+              <Text style={{color: projectContrastColor}}>{"contrastRatioProjectContrastColor: "+contrastRatioProjectContrastColor}</Text>
+          </View>
         <Text>{"viewBackgroundColor: "+viewBackgroundColor}</Text>
           <View style={{width: 20, height: 20, backgroundColor: viewBackgroundColor}}></View>
           <Divider />
