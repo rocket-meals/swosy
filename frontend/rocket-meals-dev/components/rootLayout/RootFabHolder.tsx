@@ -5,6 +5,7 @@ import {
 } from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {Icon, View} from "@/components/Themed";
 import {MyFab} from "@/components/fab/MyFab";
+import {useIsDevelop} from "@/helper/sync_state_helper/custom_sync_states/Develop";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -14,23 +15,38 @@ export {
 export interface RootFabHolderProps {
     children?: React.ReactNode;
 }
-export const RootFabHolder = (props: RootFabHolderProps) => {
+
+const DevelopThemeSwitch = () => {
     let [savedColorSchemeOptionRaw, setColorSchemeOptionRaw] = useMyColorSchemeKeySavedOption()
     let isDarkMode = useIsDarkTheme()
+
+    return(
+        <MyFab style={{backgroundColor: "red"}} accessibilityLabel={"themeSwitcher"} onPress={() => {
+            if(isDarkMode) {
+                setColorSchemeOptionRaw(MyColorSchemeKey.Light)
+            } else {
+                setColorSchemeOptionRaw(MyColorSchemeKey.Dark)
+            }
+        }}>
+            <Icon name={"theme-light-dark"} size={24} />
+        </MyFab>
+    )
+}
+
+export const RootFabHolder = (props: RootFabHolderProps) => {
+
+        const isDevelopMode = useIsDevelop();
+
+        const developHelperComponents = []
+    if(isDevelopMode){
+        developHelperComponents.push(<DevelopThemeSwitch />)
+    }
 
   return(
       <View style={{position: "absolute", bottom: 0, right: 0}}>
             {/* Render the children */}
             {props?.children}
-          <MyFab style={{backgroundColor: "red"}} accessibilityLabel={"themeSwitcher"} onPress={() => {
-              if(isDarkMode) {
-                  setColorSchemeOptionRaw(MyColorSchemeKey.Light)
-              } else {
-                  setColorSchemeOptionRaw(MyColorSchemeKey.Dark)
-              }
-          }}>
-             <Icon name={"theme-light-dark"} size={24} />
-              </MyFab>
+          {developHelperComponents}
       </View>
   )
 }

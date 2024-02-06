@@ -38,16 +38,14 @@ export async function loadProfileRemote(user: DirectusUsers | undefined) {
 
 export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestampe?: number) => void), (number | undefined)] {
     const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+
     let lastUpdate = resourceRaw?.lastUpdate;
-    const demo = useIsDemo()
+    let usedSetResource = setResource;
     let usedResource = resourceOnly;
     if(!usedResource){
         usedResource = getEmptyProfile();
     }
-    if(demo) {
-        usedResource = getDemoResource()
-    }
-    return [usedResource, setResource, lastUpdate]
+    return [usedResource, usedSetResource, lastUpdate]
 }
 
 export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{
