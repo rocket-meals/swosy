@@ -12,10 +12,11 @@ import {
     Text as DefaultText,
     View as DefaultView
 } from '@gluestack-ui/themed';
-import {ComponentProps} from "react";
+import {ComponentProps, MutableRefObject} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
+import { TextInput as RNTextInput } from "react-native"; // Use the correct import for TextInput
 
 type ThemeProps = {
   lightColor?: string;
@@ -40,6 +41,7 @@ export function Icon({name, size, family, ...props}: IconProps){
 }
 
 type TextInputProps = {
+    ref: React.Ref<RNTextInput> | undefined | MutableRefObject<RNTextInput | undefined>
     variant?: "outline" | "rounded" | "underlined" | undefined
     size?: "sm" | "md" | "lg";
     hidden?: boolean;
@@ -108,6 +110,7 @@ export function Heading({style,...props}: TextProps) {
     // @ts-ignore
     let mergedStyle = {color: textContrastColor}
 
+    // @ts-ignore
     return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 

@@ -1,6 +1,3 @@
-// The component to handle SSO login links
-
-
 import {
     Actionsheet,
     ActionsheetBackdrop,
@@ -28,15 +25,14 @@ export type MyGlobalActionSheetConfig = {
     title: string,
     // description?: string,
     items: MyGlobalActionSheetItem[]
-    onCancel?: any
+    onCancel?: () => Promise<boolean>
 }
 
 export type MyGlobalActionSheetItem = {
     key: string,
     label: string,
     accessibilityLabel: string,
-    // disabled?: boolean,
-    // renderContent?: (onSelect: any) => any,
+    render?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     icon?: string,
     active?: boolean,
     onSelect?: (key: string) => Promise<boolean | void> // return false to not close the actionsheet
@@ -46,8 +42,6 @@ export type MyGlobalActionSheetItem = {
 export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig]
     = () => {
     const [actionsheetConfigRaw, setActionsheetConfigRaw] = useSyncStateRaw<MyGlobalActionSheetConfig>(NonPersistentStore.globalMyActionSheetConfig)
-
-    console.log("useMyGlobalActionSheet", actionsheetConfigRaw)
 
     let usedShowActionsheetConfig: MyGlobalActionSheetConfig = {
         visible: false,
@@ -121,54 +115,70 @@ export const MyGlobalActionSheet = (props: any) => {
         for(let item of showActionsheetConfig.items) {
             let isActive = item.active || false;
 
-            const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
+            let usedViewBackgroundColor: string = "transparent";
+            if(isActive && projectColor){
+                usedViewBackgroundColor = projectColor
+            }
+            if(!isActive && viewBackgroundColor){
+                usedViewBackgroundColor = viewBackgroundColor
+            }
             let usedTextColor = isActive ? projectColorContrast : textColor;
 
-            let renderedCheckboxIcon = <Icon color={textColor} name={"checkbox-blank-circle-outline"} />
-            if(isActive){
-                renderedCheckboxIcon = <Icon color={projectColorContrast} name={"checkbox-blank-circle"} />
-            }
+            const customRender = item.render;
+            if(!!customRender){
+                renderedItems.push(
+                    customRender(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
+                )
+            } else {
+                let renderedCheckboxIcon = <Icon color={usedTextColor} name={"checkbox-blank-circle-outline"} />
+                if(isActive){
+                    renderedCheckboxIcon = <Icon color={usedTextColor} name={"checkbox-blank-circle"} />
+                }
 
-            let renderedLeftIcon = <Icon color={textColor} name={item.icon} />
-            if(isActive){
-                renderedLeftIcon = <Icon color={projectColorContrast} name={item.icon} />
-            }
+                let renderedLeftIcon = <Icon color={usedTextColor} name={item.icon} />
+                if(isActive){
+                    renderedLeftIcon = <Icon color={usedTextColor} name={item.icon} />
+                }
 
-            renderedItems.push(
-                <ActionsheetItem
-                    accessibilityLabel={item.accessibilityLabel}
-                    sx={{
-                        bg: usedViewBackgroundColor,
-                        ":hover": {
-                            bg: lighterOrDarkerBackgroundColor,
-                        },
-                    }}
-                    key={item.key} onPress={async () => {
-                    let closeActionsheet = true;
-                    if (!!item.onSelect) {
-                        let onSelectResult = await item.onSelect(item.key)
-                        if (onSelectResult === false) {
-                            closeActionsheet = false;
-                        }
-                    }
-                    if (closeActionsheet) {
-                        hide()
-                    }
-                }}>
-                    <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-                    <View style={{
-                        flex: 1
-                    }}>
-                        <ActionsheetItemText sx={{
-                            color: usedTextColor,
+                renderedItems.push(
+                    <ActionsheetItem
+                        disabled={!item.onSelect}
+                        accessibilityLabel={item.accessibilityLabel}
+                        sx={{
+                            bg: usedViewBackgroundColor,
                             ":hover": {
-                                color: "red",
+                                bg: lighterOrDarkerBackgroundColor,
                             },
-                        }}>{item.label}</ActionsheetItemText>
-                    </View>
-                    <ActionsheetItemText>{renderedCheckboxIcon}</ActionsheetItemText>
-                </ActionsheetItem>
-            )
+                        }}
+                        key={item.key} onPress={async () => {
+                            let closeActionsheet = true;
+                            if (!!item.onSelect) {
+                                let onSelectResult = await item.onSelect(item.key)
+                                if (onSelectResult === false) {
+                                    closeActionsheet = false;
+                                }
+                            }
+                            if (closeActionsheet) {
+                                hide()
+                            }
+                    }}>
+                        <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+                        <View style={{
+                            flex: 1
+                        }}>
+                            <ActionsheetItemText selectable={true} sx={{
+                                color: usedTextColor,
+                                ":hover": {
+                                    color: "red",
+                                },
+                            }}>{item.label}</ActionsheetItemText>
+                        </View>
+                        <ActionsheetItemText>{renderedCheckboxIcon}</ActionsheetItemText>
+                    </ActionsheetItem>
+                )
+            }
+
+
             renderedItems.push(
                 <Divider key={"divider"+item.key} />
             )

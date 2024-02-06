@@ -1,28 +1,21 @@
-import {StyleSheet} from 'react-native';
-import {Text, View} from '@/components/Themed';
+import {SafeAreaView, ScrollView} from 'react-native';
+import {Text} from '@/components/Themed';
+import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
+import React, {useState} from "react";
+import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTestEdit";
+import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 
 export default function HomeScreen() {
+  const [text, setText] = useState<string | undefined>("InitialText");
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+      <SafeAreaView style={{width: "100%", height: "100%"}}>
+        <ScrollView style={{width: "100%", height: "100%"}}>
+          <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} label={"Test"} onSave={setText} />
+          <SettingsRowSpacerWithDivider />
+          <Text>{"TEXT: "+text}</Text>
+            <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} text={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />
+        </ScrollView>
+      </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

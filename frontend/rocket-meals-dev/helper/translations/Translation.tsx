@@ -63,6 +63,7 @@ export class TranslationKeys {
 
   static switch = createTranslationKey("switch", "Umschalten");
   static edit = createTranslationKey("edit", "Bearbeiten");
+  static save = createTranslationKey("save", "Speichern");
   static button_disabled = createTranslationKey("button_disabled", "Knopf deaktiviert");
   static select = createTranslationKey("select", "Auswählen");
 

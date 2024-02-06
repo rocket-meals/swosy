@@ -18,7 +18,7 @@ export type MyCardProps = {
 export const MyCardDefaultBorderRadius = 20;
 
 // define the button component
-export const MyCard = ({topComponent, bottomComponent, children}: MyCardProps) => {
+export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardProps) => {
 
     const viewBackgroundColor = useViewBackgroundColor()
     const viewBackgroundColorDark = useLighterOrDarkerColorForSelection(viewBackgroundColor)
@@ -36,8 +36,14 @@ export const MyCard = ({topComponent, bottomComponent, children}: MyCardProps) =
         renderedBottomComponent = bottomComponent;
     }
 
+
+    let usedStyle = {...style};
+
+    usedStyle.height = usedStyle?.height || "100%"
+    usedStyle.width = usedStyle?.width || "100%"
+
     return(
-        <View style={{"width": "100%", height: "100%"}}>
+        <View style={style}>
             <Box
                 maxWidth="100%"
                 maxHeight="100%"

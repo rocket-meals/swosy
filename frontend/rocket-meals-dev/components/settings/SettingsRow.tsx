@@ -9,7 +9,7 @@ export interface SettingsRowProps {
     key?: any;
     children?: any;
     label: string,
-    labelRight?: string,
+    labelRight?: string | null,
     leftContent?: string | any,
     rightContent?: string | any,
     leftIcon?: any | string,
@@ -74,6 +74,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
     return <>
         <ActionsheetItem
+            disabled={!item.onSelect}
         accessibilityLabel={item.accessibilityLabel}
         sx={{
             bg: usedViewBackgroundColor,
@@ -86,11 +87,11 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         <View style={{
             flex: 1
         }}>
-            <ActionsheetItemText sx={{
+            <ActionsheetItemText selectable={true} sx={{
                 color: usedTextColor,
             }}>{item.label}</ActionsheetItemText>
         </View>
-            <ActionsheetItemText sx={{
+            <ActionsheetItemText selectable={true} sx={{
                 color: usedTextColor,
             }}>{props.labelRight}</ActionsheetItemText>
         <ActionsheetItemText>{renderRightIcon(!!props.onPress)}</ActionsheetItemText>

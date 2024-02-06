@@ -1,27 +1,23 @@
 import {ScrollView} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {DirectusImage} from "@/components/project/DirectusImage";
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {MyCardWithText} from "@/components/card/MyCardWithText";
+import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 
 export default function HomeScreen() {
   const [resources, setResources, lastUpdate] = useSynchedFoods();
 
   let renderCanteens = []
+
   if(resources){
     for (const [key, value] of Object.entries(resources)) {
-      let renderedImage =
-          <MyTouchableOpacity accessibilityLabel={value.alias || key} onPress={() => {}} >
-          <DirectusImage assetId={value.image} thumbHash={value?.thumbHash} style={{width: "100%", height: 200}} />
-        </MyTouchableOpacity>
+        let label = value.alias || key
+        let accessibilityLabel = label
+        let assetId = value.image;
+        let thumbHash = value?.thumbHash;
+
 
       renderCanteens.push(
-        <View style={{width: 500, height: 500, padding: 10, borderWidth: 1, borderColor: "orange"}}>
-          <MyCardWithText topComponent={renderedImage} heading={value.alias} text={value.image} onPress={() => {}} style={{width: 500, height: "100%"}}>
-
-          </MyCardWithText>
-        </View>
+          <MyCardForResourcesWithImage style={{width: 500, height: 500, padding: 10, borderColor: "orange", borderWidth: 1}} imageHeight={300} accessibilityLabel={accessibilityLabel} text={label} assetId={assetId} thumbHash={thumbHash} />
       )
     }
 

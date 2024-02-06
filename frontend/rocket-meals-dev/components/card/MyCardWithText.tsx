@@ -47,6 +47,6 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
     )
 
     return(
-        <MyCard {...props} bottomComponent={renderedBottomComponent} />
+            <MyCard {...props} bottomComponent={renderedBottomComponent} />
     )
 }
