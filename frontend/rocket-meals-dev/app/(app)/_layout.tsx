@@ -14,8 +14,6 @@ export const unstable_settings = {
     initialRouteName: "index",
 };
 
-
-
 export default function AppLayout() {
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const loggedIn = isUserLoggedIn();

@@ -5,6 +5,9 @@ import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
 import {useAccessToken} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
+import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSources";
+import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
 
 interface AppState {
     assetId: string | undefined | null;
@@ -20,6 +23,8 @@ interface AppState {
 export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     const accessToken = useAccessToken()
+    const isDemoMode = useIsDemo()
+    const isDebug = useIsDebug()
 
     let url = ServerAPI.getAssetImageURL(props.assetId);
     const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
@@ -36,6 +41,12 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
     let source={
         uri: uri,
         headers: headers
+    }
+    if(isDemoMode){
+        let demoSource = DirectusImageDemoSources.getSource(props.assetId);
+        if(!!demoSource){
+            source = demoSource;
+        }
     }
 
     let thumbHash = "93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48";
@@ -92,9 +103,19 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
         )
     }
 
+    let debugContent = null;
+    if(isDebug){
+        debugContent = (
+            <View style={{position: "absolute", top: 0, left: 0}}>
+                <Text>{props.assetId}</Text>
+            </View>
+        )
+    }
+
     return(
         <View style={props.style}>
             {content}
+            {debugContent}
         </View>
     )
 }
