@@ -4,17 +4,23 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {useSynchedProfile} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
 import {Text, View} from "@/components/Themed";
+import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 
 interface AppState {
 
 }
-export const SettingsRowProfile: FunctionComponent<AppState> = ({...props}) => {
+export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...props}) => {
 
     const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
     const debug = useIsDebug();
 
+    async function onSave(nextValue: string){
+        console.log("SettingsRowProfileNickname onSave", nextValue)
+        return await setProfile({...profile, nickname: nextValue})
+    }
+
     const leftIcon = "account"
-    const translation_title = useTranslation(TranslationKeys.profile)
+    const translation_title = useTranslation(TranslationKeys.nickname)
     const label = translation_title
     const labelRight = profile?.nickname
 
@@ -30,8 +36,8 @@ export const SettingsRowProfile: FunctionComponent<AppState> = ({...props}) => {
 
     return(
         <>
-            <SettingsRow label={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
-            </SettingsRow>
+            <SettingsRowTextEdit onSave={onSave} label={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
+            </SettingsRowTextEdit>
             {renderDebug()}
         </>
     )

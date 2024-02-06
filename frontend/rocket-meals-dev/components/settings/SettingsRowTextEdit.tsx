@@ -20,10 +20,10 @@ export const MyContent = (props: any) => {
 
     return(
         <View style={{
-            width: "100%", backgroundColor: "red",
+            width: "100%",
         }}>
             <View style={{
-                width: "100%", backgroundColor: "red",
+                width: "100%",
             }}>
                 <TextInput
                     ref={props?.inputRef}
@@ -36,18 +36,13 @@ export const MyContent = (props: any) => {
                             setInputValueLocal(newText);
                         }
                     }}
+
                     placeholder={props?.placeholder}
-                    style={{
-                        backgroundColor: '#fff', // Example styling
-                        color: props?.textColor,
-                        padding: 10,
-                        marginVertical: 10,
-                    }}
                     accessibilityLabel={props?.accessibilityLabel}
                 />
             </View>
             <View style={{
-                width: "100%", backgroundColor: "red", flexDirection: "row", justifyContent: "space-between"
+                width: "100%", flexDirection: "row", justifyContent: "space-between"
             }}>
                 <View style={{flex: 1, alignItems: "flex-start"}}>
                     <ActionsheetItem
@@ -66,9 +61,6 @@ export const MyContent = (props: any) => {
                         }}>
                             <ActionsheetItemText selectable={true} sx={{
                                 color: props?.textColor,
-                                ":hover": {
-                                    color: "red",
-                                },
                             }}>{"NO"}</ActionsheetItemText>
                         </View>
                     </ActionsheetItem>
@@ -90,9 +82,6 @@ export const MyContent = (props: any) => {
                         }}>
                             <ActionsheetItemText selectable={true} sx={{
                                 color: props?.textColor,
-                                ":hover": {
-                                    color: "red",
-                                },
                             }}>{"Okay"}</ActionsheetItemText>
                         </View>
                     </ActionsheetItem>
@@ -106,14 +95,15 @@ interface AppState {
     accessibilityLabel: string,
     placeholder?: string,
     label: string,
-    onSave: ((nextValue: string) => Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
+    // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
+    onSave: (value: string) => (boolean | void) | Promise<boolean | void> | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
     description?: string,
 }
 
-export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, label,...props}) => {
+export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, label, rightIcon,...props}) => {
 
     const title = label;
 
@@ -128,7 +118,9 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         console.log("Save Final Value: ", finalValue);
         let result = true;
         if(props.onSave){
+            console.log("Has onSave")
             let resultFromOnSave = await props.onSave(finalValue);
+            console.log("Result from onSave: ", resultFromOnSave);
             if(resultFromOnSave===false){
                 result = false;
             }
@@ -173,20 +165,14 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         items: items
     }
 
-    function renderDebug(){
-        return(
-            <>
-                <Text>{"inputValue: "+inputValue}</Text>
-            </>
-        )
-    }
-
     let labelRight = inputValue
 
+    let usedIconRight = rightIcon;
+    if(usedIconRight===undefined){
+        usedIconRight = "pencil"
+    }
+
     return(
-        <>
-            <SettingsRowActionsheet label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} {...props}  />
-            {renderDebug()}
-        </>
+        <SettingsRowActionsheet rightIcon={usedIconRight} label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} {...props}  />
     )
 }

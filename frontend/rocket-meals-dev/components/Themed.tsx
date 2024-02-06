@@ -54,6 +54,12 @@ type TextInputProps = {
     onChangeText?: (text: string) => void;
 }
 export function TextInput(props: TextInputProps){
+    let textContrastColor = useTextContrastColor();
+    let usedColor = props.style?.color;
+    if(usedColor === undefined){
+        usedColor = textContrastColor;
+    }
+
   let defaultInputProps: ComponentProps<typeof DefaultInput> = {
     variant: props.variant,
     size: props.size,
@@ -84,6 +90,11 @@ export function TextInput(props: TextInputProps){
 
   return(
       <DefaultInput
+          sx={{
+              _input:{
+                  color: usedColor,
+              }
+          }}
           {...defaultInputProps}
       >
         <DefaultInputField

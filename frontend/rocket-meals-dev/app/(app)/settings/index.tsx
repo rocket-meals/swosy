@@ -11,7 +11,7 @@ import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
 import {SettingsRowDrawerPosition} from "@/modules/settings/SettingsRowDrawerPosition";
-import {SettingsRowProfile} from "@/modules/settings/SettingsRowProfile";
+import {SettingsRowProfileNickname} from "@/modules/settings/SettingsRowProfileNickname";
 import {SettingsRowUser} from "@/modules/settings/SettingsRowUser";
 import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 import {SettingsRowProfileCanteen} from "@/modules/settings/SettingsRowProfileCanteen";
@@ -29,7 +29,7 @@ export default function SettingsScreen() {
          <View style={styles.container}>
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
-           <SettingsRowProfile />
+           <SettingsRowProfileNickname />
            <SettingsRowProfileCanteen />
            <SettingsRowSpacerWithDivider />
            <SettingsRowColorScheme />

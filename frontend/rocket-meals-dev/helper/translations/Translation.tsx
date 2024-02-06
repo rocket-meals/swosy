@@ -25,6 +25,7 @@ export class TranslationKeys {
   static sidebar_menu = createTranslationKey("sidebar_menu", "Menü");
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
   static profile = createTranslationKey("profile", "Profil")
+  static nickname = createTranslationKey("nickname", "Spitzname")
   static user = createTranslationKey("user", "Nutzer")
 
   static about_us = createTranslationKey("about_us", "Über uns");
