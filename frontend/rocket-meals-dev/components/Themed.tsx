@@ -41,7 +41,7 @@ export function Icon({name, size, family, ...props}: IconProps){
 }
 
 type TextInputProps = {
-    myRef: React.Ref<RNTextInput> | undefined | MutableRefObject<RNTextInput | undefined>
+    myRef: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
     variant?: "outline" | "rounded" | "underlined" | undefined
     size?: "sm" | "md" | "lg";
     hidden?: boolean;
@@ -99,7 +99,6 @@ export function TextInput(props: TextInputProps){
 
   return(
       <DefaultInput
-
           sx={{
               _input:{
                   color: usedColor,
