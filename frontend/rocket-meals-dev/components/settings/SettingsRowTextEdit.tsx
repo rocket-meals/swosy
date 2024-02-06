@@ -4,12 +4,11 @@ import {Text, TextInput, View} from "@/components/Themed";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import {MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
 import {ActionsheetItem, ActionsheetItemText} from "@gluestack-ui/themed";
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+
 
 export const MyContent = (props: any) => {
-    console.log("RENDER MY ITEM")
-    const [inputValue, setInputValue] = useSyncState<string>(NonPersistentStore.settingsRowTestEdit);
+    const {setInputValue} = props;
+    const [inputValueLocal, setInputValueLocal] = useState(props?.initialValue)
 
     const inputRef = useRef<any>(null);
 
@@ -18,8 +17,6 @@ export const MyContent = (props: any) => {
             inputRef.current.focus();
         }
     }, []);
-
-    let usedInputValue = inputValue || ""
 
     return(
         <View style={{
@@ -30,12 +27,13 @@ export const MyContent = (props: any) => {
             }}>
                 <TextInput
                     ref={props?.inputRef}
-                    value={usedInputValue}
+                    value={inputValueLocal}
                     onChangeText={(newText: string) => {
                         console.log("OnChangeText")
                         console.log(newText);
                         if(setInputValue){
                             setInputValue(newText);
+                            setInputValueLocal(newText);
                         }
                     }}
                     placeholder={props?.placeholder}
@@ -84,7 +82,7 @@ export const MyContent = (props: any) => {
                             },
                         }}
                         onPress={async () => {
-                            props.onSave(inputValue);
+                            props.onSave(inputValueLocal, props.hide);
                         }}>
                         <ActionsheetItemText>{"li"}</ActionsheetItemText>
                         <View style={{
@@ -121,13 +119,26 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
 
     const initialValue = props.labelRight
     const placeholder = props.placeholder;
-    const [inputValue, setInputValue] = useSyncState<string | undefined>(NonPersistentStore.settingsRowTestEdit);
+    const [inputValue, setInputValue] = useState(initialValue)
 
     let items: MyGlobalActionSheetItem[] = [];
 
 
-    function onSave(finalValue: string){
+    async function onSaveChange(finalValue: string, hide: () => void){
         console.log("Save Final Value: ", finalValue);
+        let result = true;
+        if(props.onSave){
+            let resultFromOnSave = await props.onSave(finalValue);
+            if(resultFromOnSave===false){
+                result = false;
+            }
+        }
+        if(result===true){
+            setInputValue(finalValue)
+            hide()
+        } else {
+            setInputValue(initialValue)
+        }
     }
 
     items.push({
@@ -137,7 +148,17 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         active: false,
         accessibilityLabel: "test",
         render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-            return <MyContent onSave={onSave} backgroundColor={backgroundColor} backgroundColorOnHover={backgroundColorOnHover} textColor={textColor} lighterOrDarkerTextColor={lighterOrDarkerTextColor} hide={hide} />
+            // Use the custom context provider to provide the input value and setter
+            return<MyContent
+                initialValue={initialValue}
+                setInputValue={setInputValue}
+                onSave={onSaveChange}
+                placeholder={placeholder}
+                backgroundColor={backgroundColor}
+                backgroundColorOnHover={backgroundColorOnHover}
+                textColor={textColor}
+                lighterOrDarkerTextColor={lighterOrDarkerTextColor}
+                hide={hide} />
         }
     })
 

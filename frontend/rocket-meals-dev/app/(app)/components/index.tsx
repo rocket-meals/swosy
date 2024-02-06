@@ -2,7 +2,7 @@ import {SafeAreaView, ScrollView} from 'react-native';
 import {Text} from '@/components/Themed';
 import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 import React, {useState} from "react";
-import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTestEdit";
+import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 
 export default function HomeScreen() {
