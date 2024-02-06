@@ -6,6 +6,9 @@ export class NonPersistentStore {
 
   static globalMyActionSheetConfig = "NonPersistentStore.globalMyActionSheetConfig"
 
+  static settingsRowTestEdit = "NonPersistentStore.settingsRowTestEdit"
+
+
 }
 
 type ValueOf<T> = T[keyof T];
