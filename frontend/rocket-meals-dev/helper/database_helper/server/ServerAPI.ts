@@ -73,19 +73,19 @@ export class ServerAPI {
         get: () => Promise<AuthenticationData | null> | AuthenticationData | null,
         set: (value: AuthenticationData | null) => Promise<void> | void
     ){
-        console.log("createAuthentificationStorage called")
+        //console.log("createAuthentificationStorage called")
         if(!ServerAPI.simpleAuthentificationStorage){
-            console.log("createAuthentificationStorage first time created")
+            //console.log("createAuthentificationStorage first time created")
             ServerAPI.simpleAuthentificationStorage = {
                 get: async () => {
                     let result = await get();
-                    console.log("simpleAuthentificationStorage get", result)
+                    //console.log("simpleAuthentificationStorage get", result)
                     return result;
                 },
                 set: async (value: AuthenticationData | null) => {
-                    console.log("simpleAuthentificationStorage set", value)
+                    //console.log("simpleAuthentificationStorage set", value)
                     await set(value);
-                    console.log("simpleAuthentificationStorage set done")
+                    //console.log("simpleAuthentificationStorage set done")
                 }
             }
         }
@@ -139,7 +139,7 @@ export class ServerAPI {
 
     static async authenticate_with_access_token(directus_access_token: string | undefined | null){
         try{
-            console.log("ServerAPI.authenticate_with_access_token", directus_access_token);
+            //console.log("ServerAPI.authenticate_with_access_token", directus_access_token);
             const client = ServerAPI.getClient();
             let refresh_token: string | undefined = undefined;
             if(directus_access_token){
@@ -154,7 +154,7 @@ export class ServerAPI {
                 //console.log("authenticate_with_access_token set refresh_token to directus_access_token done")
             }
             let result = await client.refresh();
-            console.log("authenticate_with_access_token: result: ", result)
+            //console.log("authenticate_with_access_token: result: ", result)
 
             return result;
         } catch (err){
@@ -178,7 +178,7 @@ export class ServerAPI {
                 expires_at: result.expires_at,
             });
 
-            console.log("login_with_email_and_password result", result);
+            //console.log("login_with_email_and_password result", result);
             result = await client.refresh();
 
             return result;

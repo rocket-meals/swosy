@@ -1,6 +1,11 @@
 import {useEffect, useState} from 'react';
 import {Text} from "@/components/Themed";
-import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {
+  useIsServerCached,
+  useIsServerOnline,
+  useServerInfo,
+  useServerInfoRaw
+} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
 import {Buildings, Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
@@ -11,7 +16,7 @@ import {
   loadProfileRemote,
   useSynchedProfile
 } from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
-import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useCurrentUser, useIsCurrentUserAnonymous} from "@/helper/sync_state_helper/custom_sync_states/User";
 import {ScrollView} from "react-native";
 import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
 
@@ -32,8 +37,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
   //console.log("AuthFlowUserCheck")
 
-  const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const isServerOnline = useIsServerOnline()
+  const isServerCached = useIsServerCached();
+
   let [currentUser, setUserWithCache] = useCurrentUser();
+  const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
   const demo = useIsDemo()
   const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
@@ -65,7 +73,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   addSynchedResource("profile", profile, lastUpdateProfile);
 
   function checkSynchedResources(){
-    console.log("--- checkSynchedResources ---");
+    //console.log("--- checkSynchedResources ---");
     let synchedResourceKeys = Object.keys(synchedResources)
     for(let i = 0; i < synchedResourceKeys.length; i++){
       let isResourceSynched = false;
@@ -73,16 +81,16 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
       let synchedResourceInformation = synchedResources[synchedResourceKey]
       let synchedResource = synchedResourceInformation?.data
       let synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
-      console.log("synchedResourceKey", synchedResourceKey)
-      console.log("synchedResourceInformation: ",synchedResourceInformation);
-      if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
-        console.log("server is online");
+      //console.log("synchedResourceKey", synchedResourceKey)
+      //console.log("synchedResourceInformation: ",synchedResourceInformation);
+      if(isServerOnline){ // if server is online, we can check if we are logged in
+        //console.log("server is online");
         if (synchedResourceLastUpdate != null) {
           isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
         } else {
           isResourceSynched = false
         }
-      } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
+      } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
         isResourceSynched = !!synchedResource
       }
       if(!isResourceSynched){
@@ -125,8 +133,12 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   }
 
   async function updateProfile(){
-    if(!!currentUser && !!currentUser.id){
+    console.log("RootSyncDatabase: Update profile");
+    console.log("RootSyncDatabase: Update profile - isCurrentUserAnonymous: ",isCurrentUserAnonymous);
+    if(!isCurrentUserAnonymous){
+      console.log("RootSyncDatabase: Update profile - loadProfileRemote: ");
       let remoteProfile = await loadProfileRemote(currentUser)
+      console.log("RootSyncDatabase: Update profile - remoteProfile: ",remoteProfile);
       if(!!remoteProfile){
         setProfile(remoteProfile, nowInMs);
       }
@@ -145,14 +157,14 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
       //console.log("AuthFlowUserCheck useEffect")
       //console.log("refreshToken", refreshToken)
 
-      if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+      if(isServerOnline){ // if server is online, we can check if we are logged in
         if(!demo){
           await updateCanteens()
           await updateBuildings();
           await updateFoods()
           await updateProfile()
         }
-      } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
+      } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 
       } else { // if server is offline and we have no cached data, we can't check if we are logged in
 
@@ -161,9 +173,9 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   }, []);
 
   useEffect(() => {
-    console.log("Check if sync is complete: ")
+    //console.log("Check if sync is complete: ")
     let syncComplete = demo || checkSynchedResources()
-    console.log("syncComplete: "+syncComplete);
+    //console.log("syncComplete: "+syncComplete);
     if(syncComplete){
       props.setSyncComplete(true);
     }
@@ -182,6 +194,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
 
   const [syncComplete, setSyncComplete] = useState(false);
+  const [currentUser, setCurrentUser] = useCurrentUser()
+
+  useEffect(() => {
+
+  }, [currentUser]);
 
   if(!syncComplete){
     return <RootSyncDatabaseInner setSyncComplete={setSyncComplete} />

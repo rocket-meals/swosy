@@ -13,8 +13,12 @@ import {useSynchedResourceSingleRaw} from "@/helper/sync_state_helper/custom_syn
 import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
 import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
+import {useIsCurrentUserAnonymous} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useIsServerOnline} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 
 export async function loadProfileRemote(user: DirectusUsers | undefined) {
+    console.log("loadProfileRemote");
+    console.log("user", user)
     if(!!user){
         const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
         const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
@@ -25,7 +29,9 @@ export async function loadProfileRemote(user: DirectusUsers | undefined) {
         }, {} as Record<string, { _limit: number }>);
 
         let usersProfileId: string = user.profile as unknown as string
+        console.log("usersProfileId: ",usersProfileId)
         if (usersProfileId){
+            console.log("Okay lets load from remote")
             const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
             return await profileCollectionHelper.readItem(usersProfileId, {
                 fields: profileFields,
@@ -36,14 +42,43 @@ export async function loadProfileRemote(user: DirectusUsers | undefined) {
     return undefined;
 }
 
-export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestampe?: number) => void), (number | undefined)] {
+export async function updateProfileRemote(id: string | number, profile: Partial<Profiles>){
+    console.log("updateProfileRemote")
+    console.log("id: ", id)
+    console.log("profile: ", profile)
+    const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
+    let answer = await profileCollectionHelper.updateItem(id, profile);
+    console.log("answer: ",answer)
+    return answer
+}
+
+export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestamp?: number) => void), (number | undefined)] {
     const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+    const isServerOnline = useIsServerOnline()
+    const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
     let lastUpdate = resourceRaw?.lastUpdate;
     let usedSetResource = setResource;
+    if(isServerOnline && !isCurrentUserAnonymous){
+        usedSetResource = async (newValue: Partial<Profiles>, timestamp?: number) => {
+            console.log("useSynchedProfile setProfile online");
+            const profile_id = newValue?.id || resourceOnly?.id;
+            console.log("profile_id: ",profile_id)
+            if(!!profile_id){
+                try{
+                    let remoteAnswer = await updateProfileRemote(profile_id, newValue);
+                    setResource(newValue, timestamp);
+                } catch (err){
+                    console.log(err)
+                }
+            } else {
+                setResource(newValue, timestamp);
+            }
+        }
+    }
     let usedResource = resourceOnly;
     if(!usedResource){
-        usedResource = getEmptyProfile();
+        usedResource = {}
     }
     return [usedResource, usedSetResource, lastUpdate]
 }
@@ -60,7 +95,7 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 
     const setCanteen = (canteen: Canteens) => {
         profile.canteen = canteen.id;
-        setProfile(profile);
+        return setProfile(profile);
     }
     return [canteen, setCanteen];
 }

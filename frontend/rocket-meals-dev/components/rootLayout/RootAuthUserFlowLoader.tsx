@@ -1,17 +1,23 @@
-import {Navigator} from 'expo-router';
-import {useEffect} from 'react';
+import {Navigator, Slot} from 'expo-router';
+import React, {useEffect} from 'react';
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {Text} from "@/components/Themed";
-import {useServerInfoRaw} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {
+  useIsServerCached,
+  useIsServerOnline,
+  useServerInfo,
+  useServerInfoRaw
+} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
 import {
-  getIsUserAnonymous,
+  getIsCachedUserAnonymous,
   useCachedUserRaw,
   useCurrentUser,
   useCurrentUserRaw
 } from "@/helper/sync_state_helper/custom_sync_states/User";
+import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -25,7 +31,8 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 
   //console.log("AuthFlowUserCheck")
 
-  const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const isServerOnline = useIsServerOnline()
+  const isServerCached = useIsServerCached();
 
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
   let refreshToken = authData?.refresh_token;
@@ -43,7 +50,7 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
       //console.log("AuthFlowUserCheck useEffect")
       //console.log("refreshToken", refreshToken)
 
-      if(serverInfo?.status === "online"){ // if server is online, we can check if we are logged in
+      if(isServerOnline){ // if server is online, we can check if we are logged in
         //console.log("AuthFlowUserCheck useEffect server is online")
         if(!!refreshToken){ // but only if we have a refresh token
           //console.log("AuthFlowUserCheck useEffect server is online and we have a refresh token")
@@ -62,15 +69,15 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
           // this means we are either logged out (not authenticated) or anonymous
           //console.log("Lets check what the cached user is")
           //console.log("cachedUser", cachedUserRaw)
-          let isUserAnonymous = getIsUserAnonymous(cachedUserRaw);
+          let isUserAnonymous = getIsCachedUserAnonymous(cachedUserRaw);
           //console.log("isUserAnonymous", isUserAnonymous)
-          if(getIsUserAnonymous(cachedUserRaw)){ // if we are anonymous, we can set the user to the cached user
+          if(isUserAnonymous){ // if we are anonymous, we can set the user to the cached user
             setCurrentUser(cachedUserRaw?.data);
           } else { // if we are not anonymous, we are logged out (not authenticated) so we can set the user to null
             setCurrentUser(null);
           }
         }
-      } else if (serverInfo?.status === "cached") { // if server is offline, but we have cached data, we can check if we are logged in
+      } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
         //console.log("AuthFlowUserCheck useEffect server is offline, but we have cached data")
         setCurrentUser(cachedUserRaw?.data);
       } else { // if server is offline and we have no cached data, we can't check if we are logged in
@@ -81,11 +88,15 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
   }, []);
 
   if(!currentUserRaw){
-    //console.log("AuthFlowUserCheck useEffect currentUserRaw is null")
+    console.log("AuthFlowUserCheck useEffect currentUserRaw is null")
     return <Text>{"app/_layout.tsx: Authenthication flow waiting"}</Text>
   }
 
+  console.log("AuthFlowUserCheck currentUserRaw: ", currentUserRaw)
+
     return(
-        props.children
+        <RootSyncDatabase key={currentUser?.id+""}>
+          <Slot key={currentUser?.id+""} />
+        </RootSyncDatabase>
     )
 }

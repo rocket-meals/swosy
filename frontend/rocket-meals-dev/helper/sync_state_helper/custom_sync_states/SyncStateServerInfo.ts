@@ -33,3 +33,18 @@ export function useServerInfo(){
 
   return usedServerInfo;
 }
+
+export function useServerStatus(){
+  const serverInfo = useServerInfo();
+  return serverInfo?.status;
+}
+
+export function useIsServerOnline(){
+  const status = useServerStatus();
+  return status === "online"
+}
+
+export function useIsServerCached(){
+  const status = useServerStatus();
+  return status === "cached"
+}

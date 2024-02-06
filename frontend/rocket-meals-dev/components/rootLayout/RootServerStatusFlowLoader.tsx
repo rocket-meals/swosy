@@ -18,7 +18,8 @@ export interface ServerStatusFlowLoaderProps {
 
 export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) => {
 
-  const [serverInfo, setServerInfo] = useServerInfoRaw();
+  const [serverInfoRaw, setServerInfoRaw
+  ] = useServerInfoRaw();
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
   // TODO: move this to a helper function
@@ -43,32 +44,32 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
       let remote_server_info = await ServerAPI.downloadServerInfo();
       if(remote_server_info.status === "offline"){
         //console.log("Server is offline at fetching remote")
-          if(!!serverInfo){
+          if(!!serverInfoRaw){
             //console.log("Server is offline at fetching remote, but we have local data")
-            remote_server_info = serverInfo;
+            remote_server_info = serverInfoRaw;
             remote_server_info.status = "cached"
           }
       }
 
-      setServerInfo(remote_server_info);
+      setServerInfoRaw(remote_server_info);
     })();
   }, []);
 
     // 1. load server information
-  if(!serverInfo){
+  if(!serverInfoRaw){
     return(
         <View>
           <Text>{"Loading server Info"}</Text>
-          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+          <Text>{JSON.stringify(serverInfoRaw, null, 2)}</Text>
         </View>
     )
   }
 
-  if(serverInfo.status === "offline"){
+  if(serverInfoRaw.status === "offline"){
     return(
         <View>
           <Text>{"Server is offline and no data is cached"}</Text>
-          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+          <Text>{JSON.stringify(serverInfoRaw, null, 2)}</Text>
         </View>
     )
   }

@@ -82,9 +82,6 @@ export default function RootLayout() {
           <RootThemeProvider key={reloadNumber+""}>
             <RootServerStatusFlowLoader key={reloadNumber+""} >
               <RootAuthUserFlowLoader key={reloadNumber+""}>
-                <RootSyncDatabase key={reloadNumber+""}>
-                  <Slot key={reloadNumber+""} />
-                </RootSyncDatabase>
               </RootAuthUserFlowLoader>
             </RootServerStatusFlowLoader>
           </RootThemeProvider>

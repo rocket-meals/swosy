@@ -48,9 +48,22 @@ export function useCurrentUserRaw(): [CachedUserInformation | null, (newValue: C
     return [currentUser, setUserWithCache]
 }
 
-export function getIsUserAnonymous(user: CachedUserInformation | undefined | null): boolean {
-    if(!user) return false
-    return user?.data?.id === undefined || user?.data?.id === null
+function isDirectusUserAnonymous(user: DirectusUsers | undefined){
+    if(!user) return true
+    return user?.id === undefined || user?.id === null
+}
+
+/**
+ * Used in the RootAuthUser Flow Loader where we want to check the cache
+ * @param user
+ */
+export function getIsCachedUserAnonymous(user: CachedUserInformation | undefined | null): boolean {
+    return isDirectusUserAnonymous(user?.data);
+}
+
+export function useIsCurrentUserAnonymous(){
+    const [currentUser, setCurrentUser] = useCurrentUser();
+    return isDirectusUserAnonymous(currentUser);
 }
 
 export function getAnonymousUser(): any {
