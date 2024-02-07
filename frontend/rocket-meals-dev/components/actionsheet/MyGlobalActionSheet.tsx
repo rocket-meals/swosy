@@ -9,7 +9,7 @@ import {
     ActionsheetItemText, Divider
 } from "@gluestack-ui/themed";
 import React from "react";
-import {KeyboardAvoidingView, Platform} from "react-native";
+import {DimensionValue, KeyboardAvoidingView, Platform} from "react-native";
 import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
 import {useSyncStateRaw} from "@/helper/sync_state_helper/SyncState";
 import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
@@ -18,6 +18,8 @@ import {
     useMyContrastColor
 } from "@/helper/color/MyContrastColor";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {PlatformHelper} from "@/helper/PlatformHelper";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 
 export type MyGlobalActionSheetConfig = {
@@ -26,6 +28,7 @@ export type MyGlobalActionSheetConfig = {
     // description?: string,
     items: MyGlobalActionSheetItem[]
     onCancel?: () => Promise<boolean>
+    maxHeight?: string | number | DimensionValue
 }
 
 export type MyGlobalActionSheetItem = {
@@ -91,6 +94,9 @@ export const MyGlobalActionSheet = (props: any) => {
     const projectColorContrast = useMyContrastColor(projectColor)
 
     const showActionsheet = showActionsheetConfig.visible || false;
+
+    const maxHeightDefault = PlatformHelper.isWeb() ? "70%" : "80%"
+    const maxHeight = showActionsheetConfig.maxHeight || maxHeightDefault
 
     let title = showActionsheetConfig.title || ""
 
@@ -186,9 +192,12 @@ export const MyGlobalActionSheet = (props: any) => {
     }
 
     return (
-            <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}>
+            <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}
+            >
                 <ActionsheetBackdrop onPress={onCancel} />
-                <ActionsheetContent h="$72" zIndex={999}
+                <ActionsheetContent
+                    maxHeight={maxHeight}
+                     zIndex={999}
                     style={{
                         backgroundColor: viewBackgroundColor,
                     }}
@@ -201,7 +210,9 @@ export const MyGlobalActionSheet = (props: any) => {
                         />
                     </ActionsheetDragIndicatorWrapper>
                     <Text>{title}</Text>
-                    {renderedItems}
+                    <MyScrollView>
+                        {renderedItems}
+                    </MyScrollView>
                 </ActionsheetContent>
             </Actionsheet>
     )

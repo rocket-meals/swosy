@@ -8,10 +8,10 @@ import {View} from "@/components/Themed";
  * @param props
  * @constructor
  */
-export const MyScrollView = ({children, ...props}: ScrollViewProps) => {
+export const MyScrollView = ({children, contentContainerStyle, ...props}: ScrollViewProps) => {
     return(
             <ScrollView style={{width: "100%", height: "100%"}} {...props}>
-                <View style={{flex: 1, width: '100%'}}>
+                <View style={[{flex: 1, width: '100%'}, contentContainerStyle]}>
                     {children}
                 </View>
             </ScrollView>
