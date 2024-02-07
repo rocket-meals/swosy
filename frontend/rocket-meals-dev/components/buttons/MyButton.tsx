@@ -1,117 +1,55 @@
-// define button type which has a icon for left and right side with family and name and color
-// also allow to set a callback for the button
-// also allow the content to be a component
-
-import { ViewWithPercentageSupport } from "../ViewWithPercentageSupport";
-import {Icon, View, Text} from "@/components/Themed";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {ViewWithProjectColor} from "@/components/project/ViewWithProjectColor";
-import {GestureResponderEvent, ViewProps} from "react-native";
+import {Icon, useTextContrastColor, useViewBackgroundColor, View, Text} from '@/components/Themed';
+import React, {useState} from "react";
+import {ActionsheetItem, ActionsheetItemText} from "@gluestack-ui/themed";
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
+import {ViewStyle} from "react-native";
+import {MyButtonCustom} from "@/components/buttons/MyButtonCustom";
 
-export type ButtonType = {
-    useProjectColorAsBackgroundColor?: boolean,
-    leftIconFamily?: any,
-    leftIconName?: string | null | undefined,
-    leftIconColor?: string,
-    rightIconFamily?: any,
-    rightIconName?: string | null | undefined,
-    rightIconColor?: string,
-    onPress?: () => void | ((event: GestureResponderEvent) => void)
+export type MyNewButtonProps = {
+    isActive?: boolean,
+    onPress?: () => Promise<void> | void,
     accessibilityLabel: string,
     text?: string,
-    children?: React.ReactNode,
+    leftIcon?: string,
+    leftIconActive?: string,
+    rightIcon?: string,
+    rightIconActive?: string,
+    useOnlyNecessarySpace?: boolean,
     disabled?: boolean,
-    style?: ViewProps["style"] | ViewProps["style"][],
-    innerStyle?: ViewProps["style"] | ViewProps["style"][],
+    leftIconColoredBox?: boolean,
+    tooltip?: string,
 }
-
-// define the button component
-export const MyButton = ({useProjectColorAsBackgroundColor, style, disabled, leftIconFamily, leftIconName, leftIconColor, rightIconFamily, rightIconName, rightIconColor, onPress, accessibilityLabel, children, text}: ButtonType) => {
-
+export const MyButton = (props: MyNewButtonProps) => {
+    const viewBackgroundColor = useViewBackgroundColor()
+    const textColor = useTextContrastColor()
     const projectColor = useProjectColor()
-    const theme = useThemeDetermined();
 
-    const backgroundColor = useProjectColorAsBackgroundColor ? projectColor : theme?.colors?.background
-    let textContrastColor = useMyContrastColor(backgroundColor);
+    // When active
+    const activeBackgroundColor = projectColor
+    const activeTextColor = useMyContrastColor(activeBackgroundColor)
 
-    let content = null;
-    if(!!children){
-        content = children;
-    }
-    if(!!text){
-        content = (
-            <Text style={{color: textContrastColor}}>{text}</Text>
-        );
-    }
+    // When active and hovered
+    const activeHoveredBackgroundColor = useLighterOrDarkerColorForSelection(activeBackgroundColor)
+    const activeHoveredTextColor = useMyContrastColor(activeHoveredBackgroundColor)
 
-    const borderRadius = 6;
+    // When not active and not hovered
+    const inactiveBackgroundColor = viewBackgroundColor || "transparent"
+    const inactiveTextColor = textColor
 
-    let leftIcon = null;
-    if(!!leftIconName){
-        leftIcon = (
-            <ViewWithProjectColor style={{height: 50, width: 50, alignItems: "center", justifyContent: "center", borderRadius: borderRadius}}>
-                <Icon
-                    name={leftIconName}
-                    family={leftIconFamily}
-                    color={leftIconColor || textContrastColor}
-                    style={{}}
-                />
-            </ViewWithProjectColor>
-        );
-    }
+    // When not active and hovered
+    const inactiveHoveredBackgroundColor = useLighterOrDarkerColorForSelection(inactiveBackgroundColor)
+    const inactiveHoveredTextColor = useMyContrastColor(inactiveHoveredBackgroundColor)
 
+    let activeBorderColor = projectColor
+    let inactiveBorderColor = projectColor
 
-
-    let rightIcon = null;
-    if(!!rightIconName){
-        rightIcon = (
-            <Icon
-                name={rightIconName}
-                family={rightIconFamily}
-                color={rightIconColor || textContrastColor}
-                style={{}}
-            />
-        );
-    }
-
-
-    // check if style is an array
-    let mergedStyle: ViewProps["style"] = {
-        width: "100%",
-        borderColor: projectColor,
-        borderWidth: 1,
-        flexDirection: "row",
-        marginVertical: 5,
-        marginRight: 20,
-        borderRadius: borderRadius,
-        backgroundColor: useProjectColorAsBackgroundColor ? projectColor : undefined,
-    };
-    if(Array.isArray(style)){
-        for(let singleStyle of style){
-            // @ts-ignore
-            mergedStyle = {...mergedStyle, ...singleStyle};
-        }
-    } else {
-        // @ts-ignore
-        mergedStyle = {...mergedStyle, ...style};
-    }
-
-    let innerContent = (
-        <>
-            {leftIcon}
-            <View style={{justifyContent: "center", flex: 1, paddingLeft: 10}}>
-                {content}
-            </View>
-            {rightIcon}
-        </>
-    )
-
-    return(
-        <MyTouchableOpacity onPress={onPress} accessibilityLabel={accessibilityLabel} style={mergedStyle}>
-            {innerContent}
-        </MyTouchableOpacity>
-    )
+    return <MyButtonCustom {...props}
+                           activeBorderColor={activeBorderColor} inactiveBorderColor={inactiveBorderColor}
+                           activeBackgroundColor={activeBackgroundColor} activeTextColor={activeTextColor}
+                           activeHoveredBackgroundColor={activeHoveredBackgroundColor} activeHoveredTextColor={activeHoveredTextColor}
+                           inactiveBackgroundColor={inactiveBackgroundColor} inactiveTextColor={inactiveTextColor}
+                           inactiveHoveredBackgroundColor={inactiveHoveredBackgroundColor} inactiveHoveredTextColor={inactiveHoveredTextColor}
+    />
 }

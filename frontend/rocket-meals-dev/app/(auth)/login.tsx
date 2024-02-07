@@ -118,21 +118,10 @@ export default function Login() {
                             </MyTouchableOpacity>
                         </View>
                         <View style={{flex: 1}}>
-                            <MyButton
-                                accessibilityLabel={translation_continue}
-                                useProjectColorAsBackgroundColor={true}
-                                disabled={!loggedIn}
-                                onPress={() => {
-                                    console.log("Handle sign in");
-                                    //signIn();
-                                    // Navigate after signing in. You may want to tweak this to ensure sign-in is
-                                    // successful before navigating.
-                                    signIn();
-                                }}>
-                                <Text>
-                                    {translation_continue}
-                                </Text>
-                            </MyButton>
+                            <MyButton accessibilityLabel={translation_continue} text={translation_continue} disabled={!loggedIn} onPress={() => {
+                                console.log("Handle sign in");
+                                signIn();
+                            }} />
                         </View>
                     </View>
                 </>
@@ -150,14 +139,15 @@ export default function Login() {
                     <View style={{height: 8}}></View>
                     <View>
                         <MyButton
-                            leftIconName={"account"}
-                            style={{marginVertical: 8, width: "100%"}}
+                            leftIconColoredBox={true}
+                            leftIcon={"account"}
                             text={translation_sign_in}
                             accessibilityLabel={translation_sign_in}
+                            tooltip={translation_sign_in}
                             disabled={loggedIn || !email || !password}
                             onPress={() => {
                                 authenticate_with_email_and_password(email, password)
-                            }} />
+                            }}  />
                     </View>
                 </>
             )
@@ -165,14 +155,14 @@ export default function Login() {
 
         return(
             <>
-                <MyTouchableOpacity
+                <MyButton
+                    leftIconColoredBox={false}
+                    leftIcon={"account-tie"}
+                    text={translation_show_login_with_username_and_password}
+                    accessibilityLabel={translation_show_login_with_username_and_password}
                     onPress={() => {
                         setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
-                    }} accessibilityLabel={translation_show_login_with_username_and_password}>
-                    <Text>
-                        {translation_show_login_with_username_and_password}
-                    </Text>
-                </MyTouchableOpacity>
+                    }}  />
             </>
         )
     }

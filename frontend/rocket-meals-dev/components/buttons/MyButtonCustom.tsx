@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {ActionsheetItem, ActionsheetItemText, Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {Pressable, ViewStyle} from "react-native";
-import {MyNewButtonProps} from "@/components/buttons/MyNewButton";
+import {MyNewButtonProps} from "@/components/buttons/MyButton";
 
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
@@ -17,7 +17,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps
-export const MyNewButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -88,13 +88,46 @@ export const MyNewButtonCustom = ({isActive, tooltip, disabled, leftIconColoredB
         opacity: disabled ? 0.5 : 1,
     }
 
+    let defaultBorderRadius = 6;
     let defaultPadding = 12;
     let leftIconViewStyle: StyleProp<ViewStyle> = {
         backgroundColor: leftIconColoredBox ? usedIconBoxBackgroundColor : undefined,
         paddingVertical: defaultPadding,
-        paddingLeft: defaultPadding,
-        borderBottomRightRadius: 2,
-        borderTopRightRadius: 2,
+        paddingLeft: defaultPadding/2,
+        paddingRight: defaultPadding/2,
+        borderBottomRightRadius: defaultBorderRadius,
+        borderTopRightRadius: defaultBorderRadius,
+        height: "100%",
+        justifyContent: "center",
+    }
+
+    let leftItem: any = undefined
+    if(leftIcon){
+        leftItem = <View style={leftIconViewStyle}>
+            <ActionsheetItemText><Icon color={usedIconBoxTextColor} name={leftIconUsed} /></ActionsheetItemText>
+        </View>
+    } else {
+        leftItem = <View style={{
+            paddingVertical: defaultPadding,
+            paddingLeft: defaultPadding
+        }}>
+        </View>
+    }
+
+    let rightItem: any = undefined
+    if(rightIcon){
+        rightItem = <View style={{
+            paddingVertical: defaultPadding,
+            paddingRight: defaultPadding
+        }}>
+            <ActionsheetItemText><Icon color={usedTextColor} name={rightIconUsed} /></ActionsheetItemText>
+        </View>
+    } else {
+        rightItem = <View style={{
+            paddingVertical: defaultPadding,
+            paddingRight: defaultPadding
+        }}>
+        </View>
     }
 
     const renderButton = (triggerProps: any) => (
@@ -118,11 +151,10 @@ export const MyNewButtonCustom = ({isActive, tooltip, disabled, leftIconColoredB
                     padding: 0,
                     margin: 0,
                     overflow: "hidden",
+                    borderRadius: defaultBorderRadius
                 }}
                 onPress={onPress}>
-                <View style={leftIconViewStyle}>
-                    <ActionsheetItemText><Icon color={usedIconBoxTextColor} name={leftIconUsed} /></ActionsheetItemText>
-                </View>
+                {leftItem}
                 <View style={[innerViewStyle, {
                     paddingVertical: defaultPadding,
                 }]}>
@@ -130,12 +162,7 @@ export const MyNewButtonCustom = ({isActive, tooltip, disabled, leftIconColoredB
                         color: usedTextColor,
                     }}>{text}</ActionsheetItemText>
                 </View>
-                <View style={{
-                    paddingVertical: defaultPadding,
-                    paddingRight: defaultPadding
-                }}>
-                    <ActionsheetItemText><Icon color={usedTextColor} name={rightIconUsed} /></ActionsheetItemText>
-                </View>
+                {rightItem}
             </ActionsheetItem>
         </View>
     )

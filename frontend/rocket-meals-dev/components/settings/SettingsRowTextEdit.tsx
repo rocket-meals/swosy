@@ -3,7 +3,7 @@ import {SettingsRowProps} from "./SettingsRow";
 import {TextInput, View} from "@/components/Themed";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import {MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
-import {MyNewButton} from "@/components/buttons/MyNewButton";
+import {MyButton} from "@/components/buttons/MyButton";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 
 interface MyContentProps {
@@ -68,14 +68,14 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
             <View style={{
                 width: "100%", flexDirection: "row", marginTop: 10, justifyContent: "flex-end", marginBottom: 10
             }}>
-                <MyNewButton useOnlyNecessarySpace={true} isActive={false} accessibilityLabel={"Cancel"} text={"Cancel"} onPress={async () => {
+                <MyButton useOnlyNecessarySpace={true} isActive={false} accessibilityLabel={"Cancel"} text={"Cancel"} onPress={async () => {
                     props?.hide()
                 }} leftIcon={"close"} />
                 <View style={{
                     // small space between the buttons
                     width: 10,
                 }} />
-                <MyNewButton useOnlyNecessarySpace={true} accessibilityLabel={"Save"} text={"Save"} onPress={handleOnSave} isActive={true} leftIcon={"content-save"} />
+                <MyButton useOnlyNecessarySpace={true} accessibilityLabel={"Save"} text={"Save"} onPress={handleOnSave} isActive={true} leftIcon={"content-save"} />
             </View>
         </View>
     )

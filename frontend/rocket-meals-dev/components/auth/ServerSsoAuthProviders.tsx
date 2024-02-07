@@ -27,7 +27,12 @@ export const ServerSsoAuthProviders = () => {
     let contentRows = [];
     for(let authProvider of authProviders) {
         contentRows.push(
-            <ButtonAuthProvider key={authProvider.name} provider={authProvider} />
+            <View style={{
+                    width: "100%",
+                    marginBottom: 8,
+                }}>
+                <ButtonAuthProvider key={authProvider.name} provider={authProvider} />
+            </View>
         )
     }
 

@@ -5,7 +5,6 @@ import React, {useState} from "react";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {MyButton} from "@/components/buttons/MyButton";
-import {MyNewButton} from "@/components/buttons/MyNewButton";
 
 export default function HomeScreen() {
   const [text, setText] = useState<string | undefined | null>("InitialText");
@@ -21,13 +20,13 @@ export default function HomeScreen() {
             <Text>{"TEXT: "+text}</Text>
             <SettingsRowSpacerWithDivider />
             <View>
-                <MyNewButton accessibilityLabel={"Switch Active"} text={"Switch Active"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
+                <MyButton accessibilityLabel={"Switch Active"} text={"Switch Active"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <View>
-                <MyNewButton disabled={true} leftIconColoredBox={false} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
+                <MyButton disabled={true} leftIconColoredBox={false} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <View>
-                <MyNewButton key={"newStyleTest"} tooltip={"Test"} leftIconColoredBox={true} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
+                <MyButton key={"newStyleTest"} tooltip={"Test"} leftIconColoredBox={true} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <SettingsRowSpacerWithDivider />
           <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} label={"Test"} onSave={setText} />
