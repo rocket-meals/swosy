@@ -21,7 +21,7 @@ const DevelopThemeSwitch = () => {
     let isDarkMode = useIsDarkTheme()
 
     return(
-        <MyFab style={{backgroundColor: "red"}} accessibilityLabel={"themeSwitcher"} onPress={() => {
+        <MyFab key={"develop-theme-switch"} style={{backgroundColor: "red"}} accessibilityLabel={"themeSwitcher"} onPress={() => {
             if(isDarkMode) {
                 setColorSchemeOptionRaw(MyColorSchemeKey.Light)
             } else {
