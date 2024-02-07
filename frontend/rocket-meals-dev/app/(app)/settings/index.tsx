@@ -17,6 +17,7 @@ import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpa
 import {SettingsRowProfileCanteen} from "@/modules/settings/SettingsRowProfileCanteen";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 
 export default function SettingsScreen() {
 
@@ -27,8 +28,7 @@ export default function SettingsScreen() {
 
   return (
      <SafeAreaView>
-       <MyScrollView>
-         <View style={styles.container}>
+       <ScrollViewWithGradient>
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
            <SettingsRowProfileNickname />
@@ -42,12 +42,7 @@ export default function SettingsScreen() {
            <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
            <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
            <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
-
-           <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
-           <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
-           <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
-         </View>
-       </MyScrollView>
+       </ScrollViewWithGradient>
      </SafeAreaView>
   );
 }

@@ -23,7 +23,7 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
     let flexDirection: "row" | "column" | "row-reverse" | "column-reverse" | undefined = horizontal ? "row" : "column";
 
     return(
-        <View style={{width: "100%", flex: 1, flexDirection: flexDirection}} onLayout={props.onLayout}>
+        <View style={{width: "100%", height: "100%", flexDirection: flexDirection}} onLayout={props.onLayout}>
             <MyScrollView
                 overScrollMode={"always"}
                 style={props.style}
