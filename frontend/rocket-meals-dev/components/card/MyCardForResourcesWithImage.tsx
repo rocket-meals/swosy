@@ -14,7 +14,7 @@ export type MyCardForResourcesWithImageProps = {
     thumbHash?: string,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined,
-    imageHeight: number,
+    imageHeight?: number,
 } & MyCardProps
 
 // define the button component
