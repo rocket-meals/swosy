@@ -153,11 +153,18 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
         <View style={{width: "100%", height: "100%", overflow: "hidden"}}>
             <MyDrawerSafeAreaView>
                 {renderDrawerContentTop(props)}
-                <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
-                    <View style={{width: "100%", height: "100%"}}>
-                        {renderedDrawerItemsWithSeparator}
-                    </View>
-                </ScrollViewWithGradient>
+                <View style={{
+                    flex: 1,
+                    width: "100%",
+                    height: "100%",
+                    overflow: "hidden",
+                }}>
+                    <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
+                        <View style={{width: "100%", height: "100%"}}>
+                            {renderedDrawerItemsWithSeparator}
+                        </View>
+                    </ScrollViewWithGradient>
+                </View>
                 {renderDrawerContentBottom()}
             </MyDrawerSafeAreaView>
         </View>
