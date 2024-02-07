@@ -18,6 +18,8 @@ import {getMyDrawerHeader} from "@/components/drawer/MyDrawerHeader";
 import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyDrawerSafeAreaView} from "@/components/drawer/MyDrawerSafeAreaView";
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
@@ -131,26 +133,6 @@ function renderDrawerContentBottom(){
     )
 }
 
-type MyDrawerSafeAreaViewProps = {
-    children: React.ReactNode
-    style?: StyleProp<ViewStyle>
-}
-/**
- * Since SafeAreaView is not supported in Drawer, we need to create a custom wrapper to handle the safe area insets.
- * @param props
- * @constructor
- */
-function MyDrawerSafeAreaView(props: MyDrawerSafeAreaViewProps){
-    const insets = useInsets()
-
-    return(
-        <View style={[{width: "100%", height: "100%", paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right, paddingBottom: insets.bottom}, props.style]}>
-            {props.children}
-        </View>
-    )
-
-}
-
 // Wrapper component for the content inside the drawer.
 // It manages the layout of custom drawer items, the project banner, and legal links.
 type DrawerContentWrapperProps = {
@@ -171,7 +153,6 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
         <View style={{width: "100%", height: "100%", overflow: "hidden"}}>
             <MyDrawerSafeAreaView>
                 {renderDrawerContentTop(props)}
-                <Text>{JSON.stringify(insets, null, 2)}</Text>
                 <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
                     <View style={{width: "100%", height: "100%"}}>
                         {renderedDrawerItemsWithSeparator}

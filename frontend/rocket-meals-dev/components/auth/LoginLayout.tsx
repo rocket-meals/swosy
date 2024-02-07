@@ -7,6 +7,8 @@ import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGrad
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBackgroundImage} from "@/components/project/ProjectBackgroundImage";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 
 export const LoginLayout = (props: any) => {
     /**
@@ -57,17 +59,15 @@ export const LoginLayout = (props: any) => {
 
         let padding = isSmallDevice ? 20: 80;
         let width: DimensionValue = isSmallDevice ? "100%" : 500;
-
         return(
-            <View style={{width: width, height: "100%"}}>
-                <SafeAreaView style={{width: "100%", height: "100%"}}>
+            <View style={{width: width, height: "100%", flex: 1}}>
+                <MySafeAreaViewForScreensWithoutHeader>
                     <KeyboardAvoidingView
                         keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
                         style={{flex: 1, width: "100%"}}
                         behavior={Platform.OS === "ios" ? "padding" : "height"} >
                         <ScrollViewWithGradient style={{flex: 1}}>
-
-                            <View style={{paddingHorizontal: padding, paddingTop: padding, height: "100%", width: "100%"}}>
+                            <View style={{flex: 1, paddingHorizontal: padding, paddingTop: padding, width: "100%"}}>
                                 <View
                                     style={{
                                         flex: 1,
@@ -78,7 +78,9 @@ export const LoginLayout = (props: any) => {
                                     <ProjectBanner />
                                 </View>
                                 {renderSpaceBetweenLogoAndSignIn()}
-                                <View>
+                                <View style={{
+                                    flex: 1,
+                                }}>
                                     {props.children}
                                 </View>
                             </View>
@@ -95,7 +97,7 @@ export const LoginLayout = (props: any) => {
                             <LegalRequiredLinks />
                         </View>
                     </View>
-                </SafeAreaView>
+                </MySafeAreaViewForScreensWithoutHeader>
             </View>
         );
     }
@@ -114,7 +116,7 @@ export const LoginLayout = (props: any) => {
 
     return (
             <View
-                style={{height: "100%", width: "100%", flexDirection: "row"}}
+                style={{height: "100%", width: "100%", flexDirection: "row", flex: 1}}
             >
                 {renderLeftSide()}
                 {renderRightSide()}

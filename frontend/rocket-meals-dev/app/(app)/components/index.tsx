@@ -1,10 +1,11 @@
-import {SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 import React, {useState} from "react";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {MyButton} from "@/components/buttons/MyButton";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export default function HomeScreen() {
   const [text, setText] = useState<string | undefined | null>("InitialText");
@@ -15,8 +16,8 @@ export default function HomeScreen() {
   }
 
   return (
-      <SafeAreaView style={{width: "100%", height: "100%"}}>
-        <ScrollView style={{width: "100%", height: "100%"}}>
+      <SafeAreaView style={{width: "100%", height: "100%", flex: 1}}>
+        <MyScrollView>
             <Text>{"TEXT: "+text}</Text>
             <SettingsRowSpacerWithDivider />
             <View>
@@ -33,7 +34,7 @@ export default function HomeScreen() {
           <SettingsRowSpacerWithDivider />
 
             <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} text={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />
-        </ScrollView>
+        </MyScrollView>
       </SafeAreaView>
   );
 }

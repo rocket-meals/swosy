@@ -1,4 +1,4 @@
-import {SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import React, {useEffect} from "react";
 import {
@@ -11,6 +11,7 @@ import {DirectusImage} from "@/components/project/DirectusImage";
 import {MyCardWithText} from "@/components/card/MyCardWithText";
 import {router} from "expo-router";
 import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export default function SettingsScreen() {
 
@@ -62,13 +63,13 @@ export default function SettingsScreen() {
 
   return (
      <SafeAreaView style={{width: "100%", height: "100%"}}>
-       <ScrollView style={{width: "100%", height: "100%"}}>
+       <MyScrollView>
            {renderCanteens}
          <Text>{"profileCanteen:"}</Text>
          <Text>{JSON.stringify(profileCanteen, null, 2)}</Text>
            <Text>{"canteenDict:"}</Text>
            <Text>{JSON.stringify(canteenDict, null, 2)}</Text>
-       </ScrollView>
+       </MyScrollView>
      </SafeAreaView>
   );
 }

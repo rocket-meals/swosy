@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useFonts} from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import {View, Text, ScrollView} from 'react-native';
 
 // Importing components and helpers
 import {GluestackUIProvider} from "@gluestack-ui/themed";

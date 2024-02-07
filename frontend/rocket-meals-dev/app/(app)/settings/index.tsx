@@ -15,6 +15,8 @@ import {SettingsRowProfileNickname} from "@/modules/settings/SettingsRowProfileN
 import {SettingsRowUser} from "@/modules/settings/SettingsRowUser";
 import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 import {SettingsRowProfileCanteen} from "@/modules/settings/SettingsRowProfileCanteen";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export default function SettingsScreen() {
 
@@ -24,8 +26,8 @@ export default function SettingsScreen() {
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
   return (
-     <SafeAreaView style={{width: "100%", height: "100%"}}>
-       <ScrollView style={{width: "100%", height: "100%"}}>
+     <SafeAreaView>
+       <MyScrollView>
          <View style={styles.container}>
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
@@ -40,8 +42,12 @@ export default function SettingsScreen() {
            <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
            <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
            <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
+
+           <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
+           <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
+           <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
          </View>
-       </ScrollView>
+       </MyScrollView>
      </SafeAreaView>
   );
 }

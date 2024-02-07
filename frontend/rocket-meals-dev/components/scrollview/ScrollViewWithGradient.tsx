@@ -3,6 +3,7 @@ import {ScrollView, ScrollViewProps} from 'react-native';
 import {ShowMoreGradient} from "./ShowMoreGradient";
 import {ShowMoreGradientPlaceholder} from "./ShowMoreGradientPlaceholder";
 import {View} from "@/components/Themed";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 interface AppState {
     hideGradient?: boolean
@@ -23,15 +24,16 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
 
     return(
         <View style={{width: "100%", flex: 1, flexDirection: flexDirection}} onLayout={props.onLayout}>
-            <ScrollView
+            <MyScrollView
+                overScrollMode={"always"}
                 style={props.style}
-                contentContainerStyle={{ width: '100%', alignItems: "center" }}
+                contentContainerStyle={{ width: '100%', alignItems: "center"}}
                 showsVerticalScrollIndicator={true}
                 {...props.scrollViewProps}
             >
                 {props.children}
                 {renderedPlaceholder}
-            </ScrollView>
+            </MyScrollView>
             {renderedGradient}
         </View>
     )

@@ -1,7 +1,7 @@
-import {ScrollView} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export default function HomeScreen() {
   const [resources, setResources, lastUpdate] = useSynchedFoods();
@@ -24,10 +24,10 @@ export default function HomeScreen() {
 }
   return (
     <View style={{width: "100%", height: "100%"}}>
-      <ScrollView style={{width: "100%", height: "100%"}}>
+      <MyScrollView>
         {renderCanteens}
         <Text>{JSON.stringify(resources, null, 2)}</Text>
-      </ScrollView>
+      </MyScrollView>
     </View>
   );
 }

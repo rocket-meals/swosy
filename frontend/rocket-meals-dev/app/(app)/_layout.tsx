@@ -44,7 +44,7 @@ export default function AppLayout() {
     if(!isProfileSetupComplete){
         console.log("(app)_layout.tsx: pathName: "+pathName);
         if(pathName!=="/setup"){
-            return <Redirect href="/setup" />;
+            return <Redirect href="/setup/" />;
         } else {
             return <MyDrawerSetup />
         }
