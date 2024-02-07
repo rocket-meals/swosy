@@ -92,7 +92,6 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
     let defaultPadding = 12;
     let leftIconViewStyle: StyleProp<ViewStyle> = {
         backgroundColor: leftIconColoredBox ? usedIconBoxBackgroundColor : undefined,
-        paddingVertical: defaultPadding,
         paddingLeft: defaultPadding/2,
         paddingRight: defaultPadding/2,
         borderBottomRightRadius: defaultBorderRadius,

@@ -1,5 +1,5 @@
 import React from "react";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
@@ -7,7 +7,7 @@ import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
-import {SafeAreaView} from "react-native";
+import {DimensionValue, SafeAreaView} from "react-native";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
@@ -16,6 +16,8 @@ import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 import {getMyDrawerHeader} from "@/components/drawer/MyDrawerHeader";
 import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
+import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
@@ -45,20 +47,26 @@ export function renderMyDrawerScreen(routeName: string, label: string, title: st
 /**
  * Custom hook to calculate and provide the appropriate width for the drawer.
  */
-function useDrawerWidth() {
+function useDrawerWidth(): number | DimensionValue {
     const insets = useInsets(); // Get safe area insets to adjust drawer width accordingly.
-    const baseDrawerWidth = 320; // Define a base width for the drawer.
-    let drawerWidth = baseDrawerWidth;
     let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Fetch and set the current drawer position (left/right).
+    const isLargeDevice = useIsLargeDevice(); // Determine if the device has a large screen.
 
-    // Adjust drawer width based on its position and the safe area insets.
-    if(drawerPosition === DrawerConfigPosition.Left) {
-        drawerWidth += insets.left;
+    if(!isLargeDevice) {
+        return "80%"; // Use a fixed width for the drawer on small devices.
+    } else {
+        const baseDrawerWidth = 320; // Define a base width for the drawer.
+        let drawerWidth = baseDrawerWidth;
+
+        // Adjust drawer width based on its position and the safe area insets.
+        if(drawerPosition === DrawerConfigPosition.Left) {
+            drawerWidth += insets.left;
+        }
+        if(drawerPosition === DrawerConfigPosition.Right) {
+            drawerWidth += insets.right;
+        }
+        return drawerWidth; // Return the calculated drawer width.
     }
-    if(drawerPosition === DrawerConfigPosition.Right) {
-        drawerWidth += insets.right;
-    }
-    return drawerWidth; // Return the calculated drawer width.
 }
 
 // Component type definition for custom drawer items.
@@ -123,6 +131,26 @@ function renderDrawerContentBottom(){
     )
 }
 
+type MyDrawerSafeAreaViewProps = {
+    children: React.ReactNode
+    style?: StyleProp<ViewStyle>
+}
+/**
+ * Since SafeAreaView is not supported in Drawer, we need to create a custom wrapper to handle the safe area insets.
+ * @param props
+ * @constructor
+ */
+function MyDrawerSafeAreaView(props: MyDrawerSafeAreaViewProps){
+    const insets = useInsets()
+
+    return(
+        <View style={[{width: "100%", height: "100%", paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right, paddingBottom: insets.bottom}, props.style]}>
+            {props.children}
+        </View>
+    )
+
+}
+
 // Wrapper component for the content inside the drawer.
 // It manages the layout of custom drawer items, the project banner, and legal links.
 type DrawerContentWrapperProps = {
@@ -133,22 +161,24 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
     const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
     let gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
 
-    // Use translations for accessibility labels and navigation prompts.
+    const insets = useInsets()
 
+    // Use translations for accessibility labels and navigation prompts.
 
     let renderedDrawerItemsWithSeparator = getMyDrawerItems(props); // Get the list of drawer items to render.
 
     return(
         <View style={{width: "100%", height: "100%", overflow: "hidden"}}>
-            <SafeAreaView style={{width: "100%", height: "100%"}}>
+            <MyDrawerSafeAreaView>
                 {renderDrawerContentTop(props)}
+                <Text>{JSON.stringify(insets, null, 2)}</Text>
                 <ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
                     <View style={{width: "100%", height: "100%"}}>
                         {renderedDrawerItemsWithSeparator}
                     </View>
                 </ScrollViewWithGradient>
                 {renderDrawerContentBottom()}
-            </SafeAreaView>
+            </MyDrawerSafeAreaView>
         </View>
     );
 }

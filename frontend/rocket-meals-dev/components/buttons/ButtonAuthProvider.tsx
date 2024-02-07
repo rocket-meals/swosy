@@ -63,6 +63,6 @@ export const ButtonAuthProvider = ( {provider}: SsoProvider) => {
 
     return (
         // @ts-ignore
-        <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text+" "+text+" "+text+" "+text} />
+        <ButtonAuthProviderCustom key={"ssoButton"+provider.name} disabled={disabled} accessibilityLabel={accessibilityLabel} onPress={onPress} icon_name={provider.name} text={text} />
     );
 };
