@@ -43,14 +43,34 @@ export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowP
         }
     }
 
-    let debugContent = null;
+    const iOS_SwitchHeight = 31;
+    const Android_SwitchHeight = undefined
 
-    let rightContent = (
-        <ViewWithPercentageSupport style={{paddingRight: 10}}>
-            {debugContent}
+    let usedVertical = undefined;
+    let usedSwitchHeight = undefined;
+    if(PlatformHelper.isIOS()){
+        usedSwitchHeight = iOS_SwitchHeight;
+    }
+    if(PlatformHelper.isAndroid()){
+        usedVertical = -10; // we want to counter the margin of the SettingsRow
+        usedSwitchHeight = Android_SwitchHeight;
+    }
+
+    let rightContent: any = (
+        <View style={{
+            paddingRight: 0,
+            justifyContent: "center",
+            alignItems: "center",
+        }}>
             <Switch
+                style={{
+                    // on android the switch has a margin, so we need to remove it
+                    marginVertical: usedVertical,
+                    height: usedSwitchHeight,
+                }}
                     size={"md"}
                     value={isChecked}
+                    accessibilityLabel={accessibilityLabelWithFunction}
                     disabled={props?.disabled}
                     isChecked={isChecked}
                     onToggle={() => {
@@ -60,10 +80,10 @@ export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowP
                             onPress();
                         }
                     }}  />
-        </ViewWithPercentageSupport>
+        </View>
     )
 
     return(
-        <SettingsRow label={label} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightIcon={rightContent} onPress={onPress} />
+        <SettingsRow label={label} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightContent={rightContent} onPress={onPress} />
     )
 }

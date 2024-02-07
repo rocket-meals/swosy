@@ -11,9 +11,9 @@ export interface SettingsRowProps {
     label: string,
     labelRight?: string | null,
     leftContent?: string | any,
-    rightContent?: string | any,
+    rightContent?: React.ReactNode,
     leftIcon?: any | string,
-    rightIcon?: any,
+    rightIcon?: string,
     onPress?: any,
     color?: any
     hideLeftContent?: boolean,
@@ -35,15 +35,26 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     const projectColor = useProjectColor()
     const projectColorContrast = useMyContrastColor(projectColor)
 
-    function renderRightIcon(showPress: boolean){
+    function renderRightContent(showPress: boolean): React.ReactNode{
         let rightIcon = props?.rightIcon
+        let rightContent = props?.rightContent
+        if(rightContent){
+            return rightContent;
+        }
+
+        let content:any = null;
+
         if(showPress && !rightIcon){
-            rightIcon = <Icon name={"chevron-right"} />;
+            content = <Icon name={"chevron-right"} />;
         }
-        if(rightIcon && typeof props?.rightIcon === "string"){
-            return <Icon name={props.rightIcon} />
+        if(rightIcon){
+            content = <Icon name={rightIcon} />
         }
-        return rightIcon
+
+        return <ActionsheetItemText selectable={true} sx={{
+            color: usedTextColor,
+        }}>{content}</ActionsheetItemText>
+
     }
 
     let isActive = false
@@ -94,7 +105,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
             <ActionsheetItemText selectable={true} sx={{
                 color: usedTextColor,
             }}>{props.labelRight}</ActionsheetItemText>
-        <ActionsheetItemText>{renderRightIcon(!!props.onPress)}</ActionsheetItemText>
+        {renderRightContent(!!item.onSelect)}
     </ActionsheetItem>
         {renderedChildren}
         <Divider />

@@ -83,7 +83,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 
     return(
         <>
-            <SettingsRowActionsheet labelRight={selectedName} label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet labelRight={selectedName} label={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={colorSchemeIconName} {...props}  />
         </>
     )
 }

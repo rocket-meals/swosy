@@ -93,7 +93,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 
     return(
         <>
-            <SettingsRowActionsheet label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} rightContent={selectedThemeName} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={colorSchemeIconName} {...props}  />
             {renderDebug()}
         </>
     )
