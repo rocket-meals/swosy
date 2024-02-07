@@ -5,6 +5,7 @@ import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/
 import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native";
+import {MyNewButtonCustom} from "@/components/buttons/MyNewButtonCustom";
 
 export type MyNewButtonProps = {
     isActive: boolean,
@@ -15,101 +16,40 @@ export type MyNewButtonProps = {
     leftIconActive?: string,
     rightIcon?: string,
     rightIconActive?: string,
-    // prop to tell to use only the necessary space
     useOnlyNecessarySpace?: boolean,
+    disabled?: boolean,
+    leftIconColoredBox?: boolean,
+    tooltip?: string,
 }
-export const MyNewButton = ({isActive, onPress, accessibilityLabel, text, leftIcon, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace}: MyNewButtonProps) => {
+export const MyNewButton = (props: MyNewButtonProps) => {
     const viewBackgroundColor = useViewBackgroundColor()
     const textColor = useTextContrastColor()
     const projectColor = useProjectColor()
-
-    const [hovered, setHovered] = useState<boolean>(false)
 
     // When active
     const activeBackgroundColor = projectColor
     const activeTextColor = useMyContrastColor(activeBackgroundColor)
 
     // When active and hovered
-    const lighterOrDarkerActiveBackgroundColor = useLighterOrDarkerColorForSelection(activeBackgroundColor)
-    const lighterOrDarkerActiveTextColor = useMyContrastColor(lighterOrDarkerActiveBackgroundColor)
+    const activeHoveredBackgroundColor = useLighterOrDarkerColorForSelection(activeBackgroundColor)
+    const activeHoveredTextColor = useMyContrastColor(activeHoveredBackgroundColor)
 
     // When not active and not hovered
     const inactiveBackgroundColor = viewBackgroundColor || "transparent"
     const inactiveTextColor = textColor
 
     // When not active and hovered
-    const lighterOrDarkerInactiveBackgroundColor = useLighterOrDarkerColorForSelection(inactiveBackgroundColor)
-    const lighterOrDarkerInactiveTextColor = useMyContrastColor(lighterOrDarkerInactiveBackgroundColor)
+    const inactiveHoveredBackgroundColor = useLighterOrDarkerColorForSelection(inactiveBackgroundColor)
+    const inactiveHoveredTextColor = useMyContrastColor(inactiveHoveredBackgroundColor)
 
-    let usedViewBackgroundColor: string;
-    let usedTextColor: string;
+    let activeBorderColor = projectColor
+    let inactiveBorderColor = projectColor
 
-    if(isActive){
-        if(hovered){
-            usedViewBackgroundColor = lighterOrDarkerActiveBackgroundColor
-            usedTextColor = lighterOrDarkerActiveTextColor
-        } else {
-            usedViewBackgroundColor = activeBackgroundColor
-            usedTextColor = activeTextColor
-        }
-    } else {
-        if(hovered){
-            usedViewBackgroundColor = lighterOrDarkerInactiveBackgroundColor
-            usedTextColor = lighterOrDarkerInactiveTextColor
-        } else {
-            usedViewBackgroundColor = inactiveBackgroundColor
-            usedTextColor = inactiveTextColor
-        }
-    }
-
-
-    let leftIconUsed = leftIcon;
-    if(isActive && leftIconActive){
-        leftIconUsed = leftIconActive
-    }
-    let rightIconUsed = rightIcon;
-    if(isActive && rightIconActive){
-        rightIconUsed = rightIconActive
-    }
-
-    let styleTakeAllSpace: StyleProp<ViewStyle>= {
-        flex: 1, // This makes the child take all the space
-    }
-    let styleUseOnlyNecessarySpace: StyleProp<ViewStyle> = {
-        alignSelf: 'flex-start', // This makes the child take only the necessary space
-    }
-
-    let outerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
-    let innerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
-
-    return(
-        <View style={
-            outerViewStyle
-        }>
-            <ActionsheetItem
-                onHoverIn={() => setHovered(true)}
-                onHoverOut={() => setHovered(false)}
-
-                accessibilityLabel={accessibilityLabel}
-
-                style={{
-                    borderColor: projectColor,
-                    borderWidth: 1,
-                    backgroundColor: usedViewBackgroundColor,
-                }}
-                onPress={onPress}>
-                <ActionsheetItemText><Icon color={usedTextColor} name={leftIconUsed} /></ActionsheetItemText>
-                <View style={innerViewStyle}>
-                    <ActionsheetItemText selectable={true} sx={{
-                        color: usedTextColor,
-                    }}>{text}</ActionsheetItemText>
-                </View>
-                <ActionsheetItemText><Icon color={usedTextColor} name={rightIconUsed} /></ActionsheetItemText>
-            </ActionsheetItem>
-        </View>
-    )
-
-    /**
-
-     */
+    return <MyNewButtonCustom {...props}
+              activeBorderColor={activeBorderColor} inactiveBorderColor={inactiveBorderColor}
+              activeBackgroundColor={activeBackgroundColor} activeTextColor={activeTextColor}
+              activeHoveredBackgroundColor={activeHoveredBackgroundColor} activeHoveredTextColor={activeHoveredTextColor}
+                inactiveBackgroundColor={inactiveBackgroundColor} inactiveTextColor={inactiveTextColor}
+                inactiveHoveredBackgroundColor={inactiveHoveredBackgroundColor} inactiveHoveredTextColor={inactiveHoveredTextColor}
+    />
 }
