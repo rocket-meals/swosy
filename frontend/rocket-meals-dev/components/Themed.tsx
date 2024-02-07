@@ -16,7 +16,8 @@ import {ComponentProps, MutableRefObject} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import { TextInput as RNTextInput } from "react-native"; // Use the correct import for TextInput
+import { TextInput as RNTextInput } from "react-native";
+import {ReturnKeyType} from "@/helper/input/ReturnKeyType"; // Use the correct import for TextInput
 
 type ThemeProps = {
   lightColor?: string;
@@ -52,6 +53,9 @@ type TextInputProps = {
     placeholder?: string;
     value?: string;
     onChangeText?: (text: string) => void;
+    onSubmitEditing?: () => void;
+    returnKeyType?: ReturnKeyType;
+    style?: any;
 }
 export function TextInput(props: TextInputProps){
     let textContrastColor = useTextContrastColor();
@@ -107,6 +111,8 @@ export function TextInput(props: TextInputProps){
           {...defaultInputProps}
       >
         <DefaultInputField
+            returnKeyType={props?.returnKeyType}
+            onSubmitEditing={props?.onSubmitEditing}
             ref={props.myRef}
             {...defaultInputFieldProps}
         />

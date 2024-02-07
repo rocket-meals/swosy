@@ -1,12 +1,23 @@
 import React, {Dispatch, FunctionComponent, SetStateAction, useEffect, useRef, useState} from "react";
 import {SettingsRowProps} from "./SettingsRow";
-import {Text, TextInput, View} from "@/components/Themed";
+import {TextInput, View} from "@/components/Themed";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import {MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
-import {ActionsheetItem, ActionsheetItemText} from "@gluestack-ui/themed";
+import {MyNewButton} from "@/components/buttons/MyNewButton";
+import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 
-
-export const MyContent = (props: any) => {
+interface MyContentProps {
+    initialValue: string | undefined | null,
+    setInputValue: Dispatch<SetStateAction<string | undefined | null>>,
+    onSave: (value: string | undefined | null, hide: () => void) => void,
+    placeholder?: string,
+    backgroundColor?: string,
+    backgroundColorOnHover?: string,
+    textColor?: string,
+    lighterOrDarkerTextColor?: string,
+    hide: () => void,
+}
+const MyContent: FunctionComponent<MyContentProps> = (props) => {
     const {setInputValue} = props;
     const [inputValueLocal, setInputValueLocal] = useState(props?.initialValue)
 
@@ -19,74 +30,52 @@ export const MyContent = (props: any) => {
         }
     }, [inputRef?.current])
 
+    function handleOnSave(){
+        props.onSave(inputValueLocal, props.hide);
+    }
+
+    let usedValue = inputValueLocal || "";
+
     return(
         <View style={{
             width: "100%",
+            marginTop: 10,
         }}>
             <View style={{
                 width: "100%",
             }}>
                 <TextInput
                     myRef={inputRef}
-                    value={inputValueLocal}
+                    value={usedValue}
                     onChangeText={(newText: string) => {
+                        let usedNewText: string | undefined | null = newText;
                         console.log("OnChangeText")
                         console.log(newText);
+                        if(usedNewText==="") {
+                            usedNewText = null;
+                        }
+
                         if(setInputValue){
-                            setInputValue(newText);
-                            setInputValueLocal(newText);
+                            setInputValue(usedNewText);
+                            setInputValueLocal(usedNewText);
                         }
                     }}
-
+                    returnKeyType={ReturnKeyType.done}
+                    onSubmitEditing={handleOnSave}
                     placeholder={props?.placeholder}
-                    accessibilityLabel={props?.accessibilityLabel}
                 />
             </View>
             <View style={{
-                width: "100%", flexDirection: "row", justifyContent: "space-between"
+                width: "100%", flexDirection: "row", marginTop: 10, justifyContent: "flex-end", marginBottom: 10
             }}>
-                <View style={{flex: 1, alignItems: "flex-start"}}>
-                    <ActionsheetItem
-                        sx={{
-                            bg: props?.backgroundColor,
-                            ":hover": {
-                                bg: props?.backgroundColorOnHover,
-                            },
-                        }}
-                        onPress={async () => {
-                            props?.hide()
-                        }}>
-                        <ActionsheetItemText>{"li"}</ActionsheetItemText>
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <ActionsheetItemText selectable={true} sx={{
-                                color: props?.textColor,
-                            }}>{"NO"}</ActionsheetItemText>
-                        </View>
-                    </ActionsheetItem>
-                </View>
-                <View style={{flex: 1, alignItems: "flex-end"}}>
-                    <ActionsheetItem
-                        sx={{
-                            bg: props?.backgroundColor,
-                            ":hover": {
-                                bg: props?.backgroundColorOnHover,
-                            },
-                        }}
-                        onPress={async () => {
-                            props.onSave(inputValueLocal, props.hide);
-                        }}>
-                        <ActionsheetItemText>{"li"}</ActionsheetItemText>
-                        <View style={{
-                            flex: 1
-                        }}>
-                            <ActionsheetItemText selectable={true} sx={{
-                                color: props?.textColor,
-                            }}>{"Okay"}</ActionsheetItemText>
-                        </View>
-                    </ActionsheetItem>
-                </View>
+                <MyNewButton useOnlyNecessarySpace={true} isActive={false} accessibilityLabel={"Cancel"} text={"Cancel"} onPress={async () => {
+                    props?.hide()
+                }} leftIcon={"close"} />
+                <View style={{
+                    // small space between the buttons
+                    width: 10,
+                }} />
+                <MyNewButton useOnlyNecessarySpace={true} accessibilityLabel={"Save"} text={"Save"} onPress={handleOnSave} isActive={true} leftIcon={"content-save"} />
             </View>
         </View>
     )
@@ -97,7 +86,7 @@ interface AppState {
     placeholder?: string,
     label: string,
     // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
-    onSave: (value: string) => (boolean | void) | Promise<boolean | void> | Dispatch<SetStateAction<string>>,
+    onSave: (value: string | undefined | null) => (boolean | void) | Promise<boolean | void> | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
@@ -115,18 +104,18 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
     let items: MyGlobalActionSheetItem[] = [];
 
 
-    async function onSaveChange(finalValue: string, hide: () => void){
-        console.log("Save Final Value: ", finalValue);
-        let result = true;
+    async function onSaveChange(finalValue: string | undefined | null, hide: () => void){
+        //console.log("Save Final Value: ", finalValue);
+        let result: boolean = true;
         if(props.onSave){
-            console.log("Has onSave")
+            //console.log("Has onSave")
             let resultFromOnSave = await props.onSave(finalValue);
-            console.log("Result from onSave: ", resultFromOnSave);
+            //console.log("Result from onSave: ", resultFromOnSave);
             if(resultFromOnSave===false){
                 result = false;
             }
         }
-        if(result===true){
+        if(result){
             setInputValue(finalValue)
             hide()
         } else {

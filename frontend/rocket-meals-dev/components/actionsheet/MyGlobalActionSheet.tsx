@@ -116,13 +116,15 @@ export const MyGlobalActionSheet = (props: any) => {
             let isActive = item.active || false;
 
             let usedViewBackgroundColor: string = "transparent";
+            let usedTextColor = textColor;
             if(isActive && projectColor){
                 usedViewBackgroundColor = projectColor
+                usedTextColor = projectColorContrast
             }
             if(!isActive && viewBackgroundColor){
                 usedViewBackgroundColor = viewBackgroundColor
+                usedTextColor = lighterOrDarkerTextColor
             }
-            let usedTextColor = isActive ? projectColorContrast : textColor;
 
             const customRender = item.render;
             if(!!customRender){
@@ -130,15 +132,10 @@ export const MyGlobalActionSheet = (props: any) => {
                     customRender(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
                 )
             } else {
-                let renderedCheckboxIcon = <Icon color={usedTextColor} name={"checkbox-blank-circle-outline"} />
-                if(isActive){
-                    renderedCheckboxIcon = <Icon color={usedTextColor} name={"checkbox-blank-circle"} />
-                }
+                let checkboxIconName = isActive ? "checkbox-blank-circle" : "checkbox-blank-circle-outline"
+                let renderedCheckboxIcon = <Icon color={usedTextColor} name={checkboxIconName} />
 
                 let renderedLeftIcon = <Icon color={usedTextColor} name={item.icon} />
-                if(isActive){
-                    renderedLeftIcon = <Icon color={usedTextColor} name={item.icon} />
-                }
 
                 renderedItems.push(
                     <ActionsheetItem
@@ -168,9 +165,6 @@ export const MyGlobalActionSheet = (props: any) => {
                         }}>
                             <ActionsheetItemText selectable={true} sx={{
                                 color: usedTextColor,
-                                ":hover": {
-                                    color: "red",
-                                },
                             }}>{item.label}</ActionsheetItemText>
                         </View>
                         <ActionsheetItemText>{renderedCheckboxIcon}</ActionsheetItemText>
