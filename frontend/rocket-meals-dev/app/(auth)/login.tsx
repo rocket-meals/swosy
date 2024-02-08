@@ -184,16 +184,14 @@ export default function Login() {
 
     return (
         <LoginLayout>
-            <View  style={{ width: "100%", height: "100%" }}>
-                <Text style={{fontSize: 24, fontWeight: "bold"}}>{translation_sign_in}</Text>
-                <View style={{height: 16}}></View>
-                <Divider />
-                <View style={{height: 16}}></View>
-                {renderWhenLoggedIn()}
-                {renderWhenNotLoggedIn()}
-                <View style={{height: 16}}></View>
-                <Divider />
-            </View>
+            <Text style={{fontSize: 24, fontWeight: "bold"}}>{translation_sign_in}</Text>
+            <View style={{height: 16}}></View>
+            <Divider />
+            <View style={{height: 16}}></View>
+            {renderWhenLoggedIn()}
+            {renderWhenNotLoggedIn()}
+            <View style={{height: 16}}></View>
+            <Divider />
         </LoginLayout>
     );
 }

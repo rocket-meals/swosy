@@ -60,17 +60,16 @@ export const LoginLayout = (props: any) => {
         let padding = isSmallDevice ? 20: 80;
         let width: DimensionValue = isSmallDevice ? "100%" : 500;
         return(
-            <View style={{width: width, height: "100%", flex: 1}}>
+            <View style={{width: width, height: "100%"}}>
                 <MySafeAreaViewForScreensWithoutHeader>
                     <KeyboardAvoidingView
                         keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
                         style={{flex: 1, width: "100%"}}
                         behavior={Platform.OS === "ios" ? "padding" : "height"} >
                         <ScrollViewWithGradient style={{flex: 1}}>
-                            <View style={{flex: 1, paddingHorizontal: padding, paddingTop: padding, width: "100%"}}>
+                            <View style={{paddingHorizontal: padding, paddingTop: padding, width: "100%"}}>
                                 <View
                                     style={{
-                                        flex: 1,
                                         flexDirection: "row",
                                         justifyContent: "space-between",
                                     }}
@@ -78,11 +77,7 @@ export const LoginLayout = (props: any) => {
                                     <ProjectBanner />
                                 </View>
                                 {renderSpaceBetweenLogoAndSignIn()}
-                                <View style={{
-                                    flex: 1,
-                                }}>
-                                    {props.children}
-                                </View>
+                                {props.children}
                             </View>
                         </ScrollViewWithGradient>
                     </KeyboardAvoidingView>
