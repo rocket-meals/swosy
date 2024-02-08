@@ -6,6 +6,7 @@ import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {MyButton} from "@/components/buttons/MyButton";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 export default function HomeScreen() {
   const [text, setText] = useState<string | undefined | null>("InitialText");
@@ -16,7 +17,7 @@ export default function HomeScreen() {
   }
 
   return (
-      <SafeAreaView style={{width: "100%", height: "100%", flex: 1}}>
+      <MySafeAreaView>
         <MyScrollView>
             <Text>{"TEXT: "+text}</Text>
             <SettingsRowSpacerWithDivider />
@@ -35,6 +36,6 @@ export default function HomeScreen() {
 
             <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} text={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />
         </MyScrollView>
-      </SafeAreaView>
+      </MySafeAreaView>
   );
 }

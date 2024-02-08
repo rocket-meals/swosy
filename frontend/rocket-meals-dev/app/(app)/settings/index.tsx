@@ -21,13 +21,8 @@ import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGrad
 
 export default function SettingsScreen() {
 
-  const isDebug = useIsDebug()
-
-  const [currentUser, setCurrentUser] = useCurrentUser()
-  const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
-
   return (
-     <SafeAreaView>
+     <MySafeAreaView>
        <ScrollViewWithGradient>
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
@@ -43,23 +38,6 @@ export default function SettingsScreen() {
            <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
            <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
        </ScrollViewWithGradient>
-     </SafeAreaView>
+     </MySafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

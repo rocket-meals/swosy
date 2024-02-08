@@ -64,7 +64,7 @@ interface Model {
 
 export class SyncState {
 
-    private static instance: SyncState | undefined = undefined;
+    private static instance?: SyncState = undefined;
     private storeRetrieved: boolean = false;
     private initialized: boolean = false;
 

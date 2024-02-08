@@ -12,6 +12,7 @@ import {MyCardWithText} from "@/components/card/MyCardWithText";
 import {router} from "expo-router";
 import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 export default function SettingsScreen() {
 
@@ -62,7 +63,7 @@ export default function SettingsScreen() {
     }, [isProfileSetupComplete]);
 
   return (
-     <SafeAreaView style={{width: "100%", height: "100%"}}>
+     <MySafeAreaView>
        <MyScrollView>
            {renderCanteens}
          <Text>{"profileCanteen:"}</Text>
@@ -70,6 +71,6 @@ export default function SettingsScreen() {
            <Text>{"canteenDict:"}</Text>
            <Text>{JSON.stringify(canteenDict, null, 2)}</Text>
        </MyScrollView>
-     </SafeAreaView>
+     </MySafeAreaView>
   );
 }
