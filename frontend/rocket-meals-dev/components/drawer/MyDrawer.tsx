@@ -143,10 +143,6 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
     const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
     let gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
 
-    const insets = useInsets()
-
-    // Use translations for accessibility labels and navigation prompts.
-
     let renderedDrawerItemsWithSeparator = getMyDrawerItems(props); // Get the list of drawer items to render.
 
     return(

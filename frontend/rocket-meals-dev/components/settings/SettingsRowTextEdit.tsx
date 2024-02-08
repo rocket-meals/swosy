@@ -23,11 +23,20 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 
     const inputRef = useRef<any>(null);
 
+    function handleFocusTextInput(){
+        // Workaround for android: https://github.com/facebook/react-native/issues/19366
+        if(inputRef.current){
+            inputRef.current.blur();
+
+            setTimeout(() => {
+                inputRef.current.focus();
+            }, 100);
+        }
+    }
+
     // After the component mounts, focus the input
     useEffect(() => {
-        if(inputRef.current){
-            inputRef.current.focus();
-        }
+        handleFocusTextInput();
     }, [inputRef?.current])
 
     function handleOnSave(){
