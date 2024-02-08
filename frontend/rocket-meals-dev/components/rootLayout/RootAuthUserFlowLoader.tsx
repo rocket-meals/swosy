@@ -29,7 +29,7 @@ export interface RootAuthUserFlowLoaderProps {
 }
 export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 
-  //console.log("AuthFlowUserCheck")
+  console.log("RootAuthUserFlowLoader")
 
   const isServerOnline = useIsServerOnline()
   const isServerCached = useIsServerCached();
@@ -47,11 +47,11 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
   useEffect(() => {
     // call anonymous function
     (async () => {
-      //console.log("AuthFlowUserCheck useEffect")
+      console.log("RootAuthUserFlowLoader useEffect")
       //console.log("refreshToken", refreshToken)
 
       if(isServerOnline){ // if server is online, we can check if we are logged in
-        //console.log("AuthFlowUserCheck useEffect server is online")
+        console.log("RootAuthUserFlowLoader useEffect server is online")
         if(!!refreshToken){ // but only if we have a refresh token
           //console.log("AuthFlowUserCheck useEffect server is online and we have a refresh token")
           try {
@@ -65,10 +65,10 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
             setCurrentUser(null);
           }
         } else {
-          //console.log("AuthFlowUserCheck useEffect server is online, but we have no refresh token")
+          console.log("RootAuthUserFlowLoader useEffect server is online, but we have no refresh token")
           // this means we are either logged out (not authenticated) or anonymous
-          //console.log("Lets check what the cached user is")
-          //console.log("cachedUser", cachedUserRaw)
+          console.log("Lets check what the cached user is")
+          console.log("cachedUser", cachedUserRaw)
           let isUserAnonymous = getIsCachedUserAnonymous(cachedUserRaw);
           //console.log("isUserAnonymous", isUserAnonymous)
           if(isUserAnonymous){ // if we are anonymous, we can set the user to the cached user

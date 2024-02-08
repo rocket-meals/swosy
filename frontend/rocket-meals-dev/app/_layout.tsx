@@ -72,7 +72,8 @@ export default function RootLayout() {
   }, [fontsError]);
 
   // Return null if fonts or storage are not loaded
-  if (!fontsLoaded || !storageLoaded) {
+  let hotReloadOrFirstLoad = reloadNumber === 0 // Expo hot reload would cause storage to stay loaded, which would result in a double render
+  if (!fontsLoaded || !storageLoaded || hotReloadOrFirstLoad) {
     return null;
   }
 
