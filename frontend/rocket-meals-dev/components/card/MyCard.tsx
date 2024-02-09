@@ -43,7 +43,7 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
     usedStyle.width = usedStyle?.width || "100%"
 
     return(
-        <View style={style}>
+        <View style={usedStyle}>
             <Box
                 maxWidth="100%"
                 maxHeight="100%"

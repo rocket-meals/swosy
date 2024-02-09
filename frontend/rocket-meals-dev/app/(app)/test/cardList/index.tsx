@@ -1,33 +1,39 @@
-import {Text, View} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {useSynchedFoods} from "@/states/SynchedFoods";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MyGridList} from "@/components/grid/MyGridList";
+import {Foods} from "@/helper/database/databaseTypes/types";
 
-export default function HomeScreen() {
+export default function CardListTestScreen() {
   const [resources, setResources, lastUpdate] = useSynchedFoods();
 
-  let renderCanteens = []
 
-  if(resources){
-    for (const [key, value] of Object.entries(resources)) {
-        let label = value.alias || key
-        let accessibilityLabel = label
-        let assetId = value.image;
-        let thumbHash = value?.thumbHash;
-
-
-      renderCanteens.push(
-          <MyCardForResourcesWithImage style={{width: 500, height: 500, padding: 10, borderColor: "orange", borderWidth: 1}} imageHeight={300} accessibilityLabel={accessibilityLabel} text={label} assetId={assetId} thumbHash={thumbHash} />
-      )
+  // define data type for grid list DataItem<Foods>[] = [{key: string, data: Foods}]
+  let data: { key: string; data: Foods }[] = []
+    if(resources) {
+        let foodKeys = Object.keys(resources)
+        foodKeys.forEach((key) => {
+            let food = resources[key]
+            data.push({key: key, data: food})
+        })
     }
 
-}
+    const renderItem = ({ item }: { item: { key: string; data: Foods } }) => {
+        const title: string = item.data?.alias || "No name"
+
+        return (
+            <MyCardForResourcesWithImage
+                key={item.key}
+                text={title}
+                assetId={item.data.image}
+                onPress={() => console.log("Pressed")}
+             accessibilityLabel={title}/>
+        );
+    }
+
   return (
     <View style={{width: "100%", height: "100%"}}>
-      <MyScrollView>
-        {renderCanteens}
-        <Text>{JSON.stringify(resources, null, 2)}</Text>
-      </MyScrollView>
+        <MyGridList data={data} renderItem={renderItem} gridAmount={2} flexDirection="row" />;
     </View>
   );
 }
