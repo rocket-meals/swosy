@@ -5,7 +5,7 @@ import {router} from "expo-router";
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {getMyDrawerItemLabel} from "@/components/drawer/MyDrawerItemLabel";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 
 export type MyDrawerCustomItemProps = {
     label: string,

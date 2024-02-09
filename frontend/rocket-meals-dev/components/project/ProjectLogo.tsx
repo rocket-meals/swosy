@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {useProjectLogoAssetId} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectLogoAssetId} from "@/states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {ViewProps} from "react-native";
 import {ProjectLogoDefault} from "@/components/project/ProjectLogoDefault";

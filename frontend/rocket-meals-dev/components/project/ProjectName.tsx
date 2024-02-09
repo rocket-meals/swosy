@@ -2,7 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {
     useProjectDescription,
     useProjectName,
-} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+} from "@/states/ProjectInfo";
 import {View, Text} from "@/components/Themed";
 
 interface AppState {

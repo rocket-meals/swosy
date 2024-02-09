@@ -1,6 +1,6 @@
 import {ThemeProvider} from '@react-navigation/native';
 import React from 'react';
-import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useThemeDetermined} from "@/states/ColorScheme";
 import {MyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {RootFabHolder} from "@/components/rootLayout/RootFabHolder";
 

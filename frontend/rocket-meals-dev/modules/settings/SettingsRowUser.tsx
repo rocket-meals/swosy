@@ -1,9 +1,9 @@
 import React, {FunctionComponent} from "react";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {Text, View} from "@/components/Themed";
-import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useCurrentUser} from "@/states/User";
 
 interface AppState {
 

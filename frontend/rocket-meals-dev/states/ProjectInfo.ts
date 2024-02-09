@@ -1,4 +1,4 @@
-import {useServerInfo} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export function useProjectInfo(){

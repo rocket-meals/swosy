@@ -1,7 +1,7 @@
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {Buildings} from "@/helper/database_helper/databaseTypes/types";
-import {useSynchedResourceRaw} from "@/helper/sync_state_helper/custom_sync_states/SynchedResource";
-import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {useSynchedResourceRaw} from "@/states/SynchedResource";
+import {useIsDemo} from "@/states/SynchedDemo";
 
 export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefined), ((newValue: Record<string, Buildings>, timestampe?: number) => void), (number | undefined)] {
   const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Buildings>(PersistentStore.buildings);

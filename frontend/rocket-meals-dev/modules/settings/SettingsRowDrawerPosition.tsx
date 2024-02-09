@@ -1,12 +1,12 @@
 import React, {FunctionComponent} from "react";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {
     DrawerConfigPosition,
     getDrawerPositionKeyOptions,
     useDrawerPositionRaw
-} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
+} from "@/states/DrawerSyncConfig";
 
 interface AppState {
 

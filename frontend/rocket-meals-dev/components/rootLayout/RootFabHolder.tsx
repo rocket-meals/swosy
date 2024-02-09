@@ -2,10 +2,10 @@ import React from 'react';
 import {
     MyColorSchemeKey, useIsDarkTheme,
     useMyColorSchemeKeySavedOption
-} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+} from "@/states/ColorScheme";
 import {Icon, View} from "@/components/Themed";
 import {MyFab} from "@/components/fab/MyFab";
-import {useIsDevelop} from "@/helper/sync_state_helper/custom_sync_states/Develop";
+import {useIsDevelop} from "@/states/Develop";
 
 export {
   // Catch any errors thrown by the Layout component.

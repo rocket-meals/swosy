@@ -1,5 +1,5 @@
 import Color from 'tinycolor2';
-import {useIsDarkTheme} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useIsDarkTheme} from "@/states/ColorScheme";
 import {useMemo} from "react";
 
 // TODO: memorize this function to reduce computation load and improve performance

@@ -5,7 +5,7 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
 import {ParamListBase, RouteProp} from "@react-navigation/native";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
-import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
+import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 /**

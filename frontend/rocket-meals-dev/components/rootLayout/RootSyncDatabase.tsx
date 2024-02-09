@@ -5,20 +5,20 @@ import {
   useIsServerOnline,
   useServerInfo,
   useServerInfoRaw
-} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
-import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
+} from "@/states/SyncStateServerInfo";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
 import {Buildings, Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
-import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
-import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {useSynchedFoods} from "@/states/SynchedFoods";
+import {useIsDemo} from "@/states/SynchedDemo";
 import {
   getEmptyProfile,
   loadProfileRemote,
   useSynchedProfile
-} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
-import {useCurrentUser, useIsCurrentUserAnonymous} from "@/helper/sync_state_helper/custom_sync_states/User";
+} from "@/states/SynchedProfile";
+import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
 import {ScrollView} from "react-native";
-import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
+import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 
 export {
   // Catch any errors thrown by the Layout component.

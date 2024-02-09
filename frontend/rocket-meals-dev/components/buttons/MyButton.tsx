@@ -2,7 +2,7 @@ import {Icon, useTextContrastColor, useViewBackgroundColor, View, Text} from '@/
 import React, {useState} from "react";
 import {ActionsheetItem, ActionsheetItemText} from "@gluestack-ui/themed";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native";
 import {MyButtonCustom} from "@/components/buttons/MyButtonCustom";

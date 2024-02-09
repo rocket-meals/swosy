@@ -3,7 +3,7 @@ import {Icon, useTextContrastColor, useViewBackgroundColor, View} from "@/compon
 import {ActionsheetItem, ActionsheetItemText, Divider} from "@gluestack-ui/themed";
 import {AccessibilityRole} from "react-native";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 
 export interface SettingsRowProps {
     key?: any;

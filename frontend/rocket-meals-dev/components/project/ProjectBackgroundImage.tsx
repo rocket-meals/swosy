@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {useProjectPublicBackgroundAssetId} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectPublicBackgroundAssetId} from "@/states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {ViewProps, ViewStyle} from "react-native";
 import {View} from "@/components/Themed";

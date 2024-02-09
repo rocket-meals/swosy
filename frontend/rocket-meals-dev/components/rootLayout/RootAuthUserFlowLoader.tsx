@@ -8,7 +8,7 @@ import {
   useIsServerOnline,
   useServerInfo,
   useServerInfoRaw
-} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+} from "@/states/SyncStateServerInfo";
 import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
 import {
@@ -16,7 +16,7 @@ import {
   useCachedUserRaw,
   useCurrentUser,
   useCurrentUserRaw
-} from "@/helper/sync_state_helper/custom_sync_states/User";
+} from "@/states/User";
 import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
 
 export {

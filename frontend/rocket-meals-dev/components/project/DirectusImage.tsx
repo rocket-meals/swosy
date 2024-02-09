@@ -3,11 +3,11 @@ import {Image} from "expo-image";
 import {TouchableOpacity} from "react-native";
 import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
-import {useAccessToken} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useAccessToken} from "@/states/User";
 import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
-import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {useIsDemo} from "@/states/SynchedDemo";
 import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSources";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 
 interface AppState {
     assetId: string | undefined | null | DirectusFiles;

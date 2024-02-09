@@ -17,7 +17,7 @@ import {
     useLighterOrDarkerColorForSelection,
     useMyContrastColor
 } from "@/helper/color/MyContrastColor";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 

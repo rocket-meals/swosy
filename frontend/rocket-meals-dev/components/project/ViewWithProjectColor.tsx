@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {useProjectColor, useProjectLogoAssetId} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor, useProjectLogoAssetId} from "@/states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {ViewStyleProps} from "@react-types/shared";
 import {View} from "@/components/Themed";

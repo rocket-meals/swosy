@@ -1,5 +1,5 @@
 import React from "react";
-import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {isUserLoggedIn} from "@/states/User";
 import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";

@@ -4,7 +4,7 @@ import {Text} from "@/components/Themed"
 import {DrawerContent} from "@react-navigation/drawer";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
-import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {isUserLoggedIn} from "@/states/User";
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.

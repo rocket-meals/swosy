@@ -1,5 +1,5 @@
 import React from 'react';
-import {useProjectColorContrast} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColorContrast} from "@/states/ProjectInfo";
 import {Image} from "expo-image";
 
 // import from asset/logo the default logo RocketMealsLogoWhite

@@ -2,7 +2,7 @@ import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import React from "react";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useLogoutCallback} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useLogoutCallback} from "@/states/User";
 
 export const MyDrawerSetup = (props: any) => {
     const translation_logout = useTranslation(TranslationKeys.logout);

@@ -1,8 +1,8 @@
 import React, {FunctionComponent} from "react";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SettingsRow} from "@/components/settings/SettingsRow";
-import {useSynchedProfile} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
+import {useSynchedProfile} from "@/states/SynchedProfile";
 import {Text, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 

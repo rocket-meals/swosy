@@ -5,7 +5,7 @@ import {
     useProjectInfo,
     useProjectLogoAssetId,
     useProjectName
-} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+} from "@/states/ProjectInfo";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {ProjectLogo} from "@/components/project/ProjectLogo";
 

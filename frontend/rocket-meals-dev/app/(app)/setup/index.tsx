@@ -4,13 +4,13 @@ import React, {useEffect} from "react";
 import {
     useIsProfileSetupComplete,
     useSynchedProfileCanteen
-} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
-import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
+} from "@/states/SynchedProfile";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {MyCardWithText} from "@/components/card/MyCardWithText";
 import {router} from "expo-router";
-import {useSynchedBuildingsDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedBuildings";
+import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 

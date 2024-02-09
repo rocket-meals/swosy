@@ -2,7 +2,7 @@ import React from 'react';
 import {Text} from "@/components/Themed";
 import {UrlHelper} from "@/helper/UrlHelper";
 import {AuthProvider, ServerAPI} from "@/helper/database_helper/server/ServerAPI";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {MyExternalLink} from '@/components/link/MyExternalLink';

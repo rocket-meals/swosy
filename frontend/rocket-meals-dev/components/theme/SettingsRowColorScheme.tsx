@@ -4,8 +4,8 @@ import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionshe
 import {
     getMyColorSchemeKeyOptions, MyColorSchemeKey, useColorSchemeKeyToThemeDictionary, useMyColorSchemeKeyDetermined,
     useMyColorSchemeKeySavedOption, useThemeDetermined
-} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+} from "@/states/ColorScheme";
+import {useIsDebug} from "@/states/Debug";
 import {Text} from "@/components/Themed";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 

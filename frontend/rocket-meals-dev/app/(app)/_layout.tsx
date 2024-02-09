@@ -1,12 +1,12 @@
 import {Redirect, router, usePathname, useRootNavigationState} from 'expo-router';
 import React, {useState} from "react";
 import {Text} from "@/components/Themed"
-import {isUserLoggedIn} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {isUserLoggedIn} from "@/states/User";
 import {MyDrawerAuthenticated} from "@/components/drawer/MyDrawerAuthenticated";
 import {
     useIsProfileSetupComplete,
     useSynchedProfileCanteen
-} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
+} from "@/states/SynchedProfile";
 import {MyDrawerSetup} from "@/components/drawer/MyDrawerSetup";
 
 export const unstable_settings = {

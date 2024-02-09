@@ -14,7 +14,7 @@ import {
 } from '@gluestack-ui/themed';
 import {ComponentProps, MutableRefObject} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
-import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useThemeDetermined} from "@/states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import { TextInput as RNTextInput } from "react-native";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType"; // Use the correct import for TextInput

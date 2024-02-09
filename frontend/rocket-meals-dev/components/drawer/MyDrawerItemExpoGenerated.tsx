@@ -2,7 +2,7 @@ import {DrawerNavigationOptions} from "@react-navigation/drawer";
 import {MyDrawerCustomItem} from "@/components/drawer/MyDrawerCustomItem";
 import React from "react";
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 
 /**
  * Dynamically generates a custom drawer item for the navigation drawer.

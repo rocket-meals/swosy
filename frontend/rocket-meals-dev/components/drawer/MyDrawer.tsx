@@ -6,11 +6,11 @@ import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGrad
 import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 import {DimensionValue, SafeAreaView} from "react-native";
-import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useThemeDetermined} from "@/states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {DrawerConfigPosition, useDrawerPosition} from "@/helper/sync_state_helper/custom_sync_states/DrawerSyncConfig";
+import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";

@@ -1,5 +1,5 @@
 import {Text, View} from '@/components/Themed';
-import {useSynchedFoods} from "@/helper/sync_state_helper/custom_sync_states/SynchedFoods";
+import {useSynchedFoods} from "@/states/SynchedFoods";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 

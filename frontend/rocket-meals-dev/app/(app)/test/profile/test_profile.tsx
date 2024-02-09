@@ -1,7 +1,7 @@
-import {useCurrentUser} from "@/helper/sync_state_helper/custom_sync_states/User";
+import {useCurrentUser} from "@/states/User";
 import {useState} from "react";
 import {Profiles} from "@/helper/database_helper/databaseTypes/types";
-import {loadProfileRemote} from "@/helper/sync_state_helper/custom_sync_states/SynchedProfile";
+import {loadProfileRemote} from "@/states/SynchedProfile";
 import {Text, View} from "@/components/Themed";
 import {Button, Divider} from "@gluestack-ui/themed";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";

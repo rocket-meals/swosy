@@ -10,7 +10,7 @@ import {
     isUserLoggedIn,
     useCurrentUser,
     useLogoutCallback
-} from "@/helper/sync_state_helper/custom_sync_states/User";
+} from "@/states/User";
 import {ServerSsoAuthProviders} from "@/components/auth/ServerSsoAuthProviders";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";

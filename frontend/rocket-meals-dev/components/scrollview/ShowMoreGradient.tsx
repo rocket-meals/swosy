@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect} from "react";
 import {ShowMoreGradientPlaceholder} from "./ShowMoreGradientPlaceholder";
 import {View} from "@/components/Themed";
-import {useThemeDetermined} from "@/helper/sync_state_helper/custom_sync_states/ColorScheme";
+import {useThemeDetermined} from "@/states/ColorScheme";
 
 interface AppState {
     horizontal?: boolean | undefined | null

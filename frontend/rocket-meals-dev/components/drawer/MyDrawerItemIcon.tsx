@@ -1,6 +1,6 @@
 import React from "react";
 import {Icon, View} from "@/components/Themed";
-import {useProjectColor} from "@/helper/sync_state_helper/custom_sync_states/ProjectInfo";
+import {useProjectColor} from "@/states/ProjectInfo";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 /**

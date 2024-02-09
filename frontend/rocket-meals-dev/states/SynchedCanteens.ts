@@ -1,7 +1,7 @@
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 import {Canteens, CanteensBusinesshours} from "@/helper/database_helper/databaseTypes/types";
-import {useSynchedResourceRaw} from "@/helper/sync_state_helper/custom_sync_states/SynchedResource";
-import {useIsDemo} from "@/helper/sync_state_helper/custom_sync_states/SynchedDemo";
+import {useSynchedResourceRaw} from "@/states/SynchedResource";
+import {useIsDemo} from "@/states/SynchedDemo";
 
 export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined), ((newValue: Record<string, Canteens>, timestampe?: number) => void), (number | undefined)] {
   const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Canteens>(PersistentStore.canteens);

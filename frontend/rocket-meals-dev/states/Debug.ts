@@ -1,4 +1,4 @@
-import {useServerInfo} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {useSyncState} from "@/helper/sync_state_helper/SyncState";
 import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
 

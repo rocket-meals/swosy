@@ -10,7 +10,7 @@ import {Icon, View, Text} from "@/components/Themed";
 
 import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {GestureEvent} from "react-native-gesture-handler";
-import {useIsDebug} from "@/helper/sync_state_helper/custom_sync_states/Debug";
+import {useIsDebug} from "@/states/Debug";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {PressableStateCallbackType} from "react-native/Libraries/Components/Pressable/Pressable";

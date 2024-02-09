@@ -9,11 +9,11 @@ import {
     ProfilesBuildingsLastVisited,
     ProfilesMarkings
 } from "@/helper/database_helper/databaseTypes/types";
-import {useSynchedResourceSingleRaw} from "@/helper/sync_state_helper/custom_sync_states/SynchedResource";
+import {useSynchedResourceSingleRaw} from "@/states/SynchedResource";
 import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
-import {useSynchedCanteensDict} from "@/helper/sync_state_helper/custom_sync_states/SynchedCanteens";
-import {useIsCurrentUserAnonymous} from "@/helper/sync_state_helper/custom_sync_states/User";
-import {useIsServerOnline} from "@/helper/sync_state_helper/custom_sync_states/SyncStateServerInfo";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
+import {useIsCurrentUserAnonymous} from "@/states/User";
+import {useIsServerOnline} from "@/states/SyncStateServerInfo";
 
 export async function loadProfileRemote(user: DirectusUsers | undefined) {
     console.log("loadProfileRemote");
