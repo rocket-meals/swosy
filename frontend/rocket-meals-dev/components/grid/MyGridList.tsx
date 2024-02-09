@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, LayoutChangeEvent, ListRenderItem } from 'react-native';
-import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
+import {FlatList, StyleSheet, LayoutChangeEvent, ListRenderItem, ListRenderItemInfo} from 'react-native';
+import {View} from "@/components/Themed";
+
 
 interface DataItem {
     key: string;
@@ -29,29 +30,25 @@ export const MyGridList = <T extends { key: string }>({
 
     const itemSize = flexDirection === 'row' ? containerSize.width / gridAmount : containerSize.height / gridAmount;
 
-    const renderGridItem = ({ item, index }: { item: T; index: number }) => (
-        <View
-            style={[
-                styles.item,
-                {
-                    width: flexDirection === 'row' ? itemSize : '100%',
-                    height: flexDirection === 'column' ? itemSize : '100%',
-                },
-            ]}
-        >
-            {renderItem({
-                separators: {
-                    highlight: function () {
-                    }, unhighlight: function () {
-                    }, updateProps: function (p1: "leading" | "trailing", p2: any) {
-                    }
-                }, item, index })}
-        </View>
-    );
+    function renderGridItem(info: ListRenderItemInfo<T> ){
+            return(
+                <View
+                    style={[
+                        styles.item,
+                        {
+                            width: flexDirection === 'row' ? itemSize : '100%',
+                            height: flexDirection === 'column' ? itemSize : '100%',
+                        },
+                    ]}
+                >
+                    {renderItem({...info})}
+                </View>
+            );
+        }
 
     return (
         <View style={styles.container} onLayout={onLayout}>
-            <FlatList<T>
+            <FlatList
                 contentContainerStyle={{
                     width: '100%',
                 }}
