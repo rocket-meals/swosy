@@ -1,0 +1,2 @@
+# README for Composition Directory
+This directory contains a collection of React components that are composed of basic components for specific use cases. These components are designed to be reusable and modular, allowing for efficient development and maintenance of the application. 
