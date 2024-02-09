@@ -1,5 +1,5 @@
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {DarkTheme, DefaultTheme, Theme} from "@react-navigation/native";
 import {useColorScheme as useDefaultColorScheme} from "react-native";
 import {ColorSchemeName as RNColorSchemeName} from "react-native/Libraries/Utilities/Appearance";

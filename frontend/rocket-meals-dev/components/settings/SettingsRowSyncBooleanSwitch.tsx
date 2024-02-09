@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from "react";
 import {SettingsRow, SettingsRowProps} from "./SettingsRow";
 import {SettingsRowBooleanSwitch} from "./SettingsRowBooleanSwitch";
-import {SyncStateKeys, useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {SyncStateKeys, useSyncState} from "@/helper/syncState/SyncState";
 import {Text} from "@/components/Themed";
 
 interface AppState {

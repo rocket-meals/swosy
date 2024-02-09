@@ -5,7 +5,7 @@
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {DirectusImage} from "@/components/project/DirectusImage";
 import {MyCardWithText} from "@/components/card/MyCardWithText";
-import {DirectusFiles} from "@/helper/database_helper/databaseTypes/types";
+import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardProps} from "@/components/card/MyCard";
 
 export type MyCardForResourcesWithImageProps = {

@@ -1,4 +1,4 @@
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {useSyncState} from "@/helper/syncState/SyncState";
 
 export type NewValueRawTypeKey = string | number |symbol
 export type NewValueRawType<Key extends NewValueRawTypeKey, Scheme> = {

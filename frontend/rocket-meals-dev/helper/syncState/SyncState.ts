@@ -14,13 +14,13 @@ import {
     AfterHookType,
     BeforeHookType,
     SynchedVariableInterface
-} from "@/helper/sync_state_helper/SynchedVariableInterface";
-import {NonPersistentStore, NonPersistentStoreValues} from "@/helper/sync_state_helper/NonPersistentStore";
-import {PersistentStore, PersistentStoreValues} from "@/helper/sync_state_helper/PersistentStore";
-import {StorageHelper} from "@/helper/storage_helper/StorageHelper";
-import {PersistentSecureStore, PersistentSecureStoreValues} from "@/helper/sync_state_helper/PersistentSecureStore";
-import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
-import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
+} from "@/helper/syncState/SynchedVariableInterface";
+import {NonPersistentStore, NonPersistentStoreValues} from "@/helper/syncState/NonPersistentStore";
+import {PersistentStore, PersistentStoreValues} from "@/helper/syncState/PersistentStore";
+import {StorageHelper} from "@/helper/storage/StorageHelper";
+import {PersistentSecureStore, PersistentSecureStoreValues} from "@/helper/syncState/PersistentSecureStore";
+import {SecureStorageHelper} from "@/helper/storage/SecureStorageHelper";
+import {SecureStorageHelperAbstractClass} from "@/helper/storage/SecureStorageHelperAbstractClass";
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 

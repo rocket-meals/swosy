@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Text, TextInput, View} from '@/components/Themed';
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 
 export default function HomeScreen() {
 

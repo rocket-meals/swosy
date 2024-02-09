@@ -1,4 +1,4 @@
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {
     Canteens,
     Devices,
@@ -8,9 +8,9 @@ import {
     ProfilesBuildingsFavorites,
     ProfilesBuildingsLastVisited,
     ProfilesMarkings
-} from "@/helper/database_helper/databaseTypes/types";
+} from "@/helper/database/databaseTypes/types";
 import {useSynchedResourceSingleRaw} from "@/states/SynchedResource";
-import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useIsCurrentUserAnonymous} from "@/states/User";
 import {useIsServerOnline} from "@/states/SyncStateServerInfo";

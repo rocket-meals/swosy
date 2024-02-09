@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {useServerInfo} from "@/states/SyncStateServerInfo";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 
 export default function HomeScreen() {
 

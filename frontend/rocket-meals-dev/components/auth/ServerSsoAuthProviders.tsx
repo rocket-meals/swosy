@@ -2,7 +2,7 @@
 import {ButtonAuthProvider} from "@/components/buttons/ButtonAuthProvider";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
 import {useEffect, useState} from "react";
-import {AuthProvider, ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {AuthProvider, ServerAPI} from "@/helper/database/server/ServerAPI";
 import {View} from "@/components/Themed";
 
 export const ServerSsoAuthProviders = () => {

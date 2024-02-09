@@ -1,6 +1,6 @@
 import {DirectusClient, readItem, readItems, updateItem, updateItems, deleteItem, deleteItems, createItem, createItems, RestClient,} from "@directus/sdk";
-import {CustomDirectusTypes} from "@/helper/database_helper/databaseTypes/types";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {CustomDirectusTypes} from "@/helper/database/databaseTypes/types";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 
 export class CollectionHelper<CollectionScheme> {
     private collection: string;

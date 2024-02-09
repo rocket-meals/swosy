@@ -1,6 +1,6 @@
 import {useCurrentUser} from "@/states/User";
 import {useState} from "react";
-import {Profiles} from "@/helper/database_helper/databaseTypes/types";
+import {Profiles} from "@/helper/database/databaseTypes/types";
 import {loadProfileRemote} from "@/states/SynchedProfile";
 import {Text, View} from "@/components/Themed";
 import {Button, Divider} from "@gluestack-ui/themed";

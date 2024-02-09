@@ -1,6 +1,6 @@
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {ServerInfo} from "@/helper/database_helper/server/ServerAPI";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {ServerInfo} from "@/helper/database/server/ServerAPI";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {DEMO_ASSET_IDS} from "@/components/project/DirectusImageDemoSources";
 

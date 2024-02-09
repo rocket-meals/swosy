@@ -1,7 +1,7 @@
 import {Navigator, Slot} from 'expo-router';
 import React, {useEffect} from 'react';
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {Text} from "@/components/Themed";
 import {
   useIsServerCached,
@@ -9,7 +9,7 @@ import {
   useServerInfo,
   useServerInfoRaw
 } from "@/states/SyncStateServerInfo";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
 import {
   getIsCachedUserAnonymous,

@@ -7,7 +7,7 @@
 
 //import * as SecureStore from 'expo-secure-store'; // Not available in web
 import secureLocalStorage from "react-secure-storage"; // WARNING: This does not work in react-native context
-import {SecureStorageHelperAbstractClass,} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
+import {SecureStorageHelperAbstractClass,} from "@/helper/storage/SecureStorageHelperAbstractClass";
 
 export class SecureStorageHelper extends SecureStorageHelperAbstractClass{
 

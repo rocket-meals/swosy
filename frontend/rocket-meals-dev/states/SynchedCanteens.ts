@@ -1,5 +1,5 @@
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
-import {Canteens, CanteensBusinesshours} from "@/helper/database_helper/databaseTypes/types";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {Canteens, CanteensBusinesshours} from "@/helper/database/databaseTypes/types";
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
 

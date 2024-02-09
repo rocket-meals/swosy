@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text} from "@/components/Themed";
 import {UrlHelper} from "@/helper/UrlHelper";
-import {AuthProvider, ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {AuthProvider, ServerAPI} from "@/helper/database/server/ServerAPI";
 import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";

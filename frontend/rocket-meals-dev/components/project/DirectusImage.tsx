@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Image} from "expo-image";
 import {TouchableOpacity} from "react-native";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {View, Text} from "@/components/Themed";
 import {useAccessToken} from "@/states/User";
 import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";

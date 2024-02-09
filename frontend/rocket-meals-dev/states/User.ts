@@ -1,9 +1,9 @@
-import {SyncState, useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+import {SyncState, useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {AuthenticationData} from "@directus/sdk";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
-import {DirectusUsers} from "@/helper/database_helper/databaseTypes/types";
+import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
+import {DirectusUsers} from "@/helper/database/databaseTypes/types";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,

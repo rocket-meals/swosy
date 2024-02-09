@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {Text, TextInput, View} from '@/components/Themed';
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {useState} from "react";
 import {Button, Divider} from "@gluestack-ui/themed";
 import {DirectusImage} from "@/components/project/DirectusImage";

@@ -1,7 +1,7 @@
 import {router, useLocalSearchParams} from 'expo-router';
 import {useEffect, useState} from "react";
 import {Divider} from "@gluestack-ui/themed";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {Text, TextInput, View} from "@/components/Themed";
 import {AuthenticationData} from "@directus/sdk";
 import {ButtonAuthAnonym} from "@/components/buttons/ButtonAuthAnonym";

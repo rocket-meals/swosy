@@ -11,8 +11,8 @@ import {
 import React from "react";
 import {DimensionValue, KeyboardAvoidingView, Platform} from "react-native";
 import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
-import {useSyncStateRaw} from "@/helper/sync_state_helper/SyncState";
-import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+import {useSyncStateRaw} from "@/helper/syncState/SyncState";
+import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {
     useLighterOrDarkerColorForSelection,
     useMyContrastColor

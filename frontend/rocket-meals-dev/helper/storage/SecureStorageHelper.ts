@@ -6,7 +6,7 @@
 // https://docs.expo.dev/versions/latest/sdk/securestore/#usage
 
 import * as SecureStore from 'expo-secure-store';
-import {SecureStorageHelperAbstractClass,} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
+import {SecureStorageHelperAbstractClass,} from "@/helper/storage/SecureStorageHelperAbstractClass";
 import {Promise} from "ts-toolbelt/out/Any/Promise";
 
 export class SecureStorageHelper extends SecureStorageHelperAbstractClass{

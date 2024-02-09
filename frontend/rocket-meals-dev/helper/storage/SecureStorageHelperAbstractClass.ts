@@ -1,5 +1,5 @@
 // TODO: Rename to SecureStorageHelper and Rename the other SecureStorageHelper to something with platform Specific or so.
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 
 export abstract class SecureStorageHelperAbstractClass {
 

@@ -1,11 +1,11 @@
 import {useEffect} from 'react';
-import {SyncState, useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {ServerAPI} from "@/helper/database_helper/server/ServerAPI";
+import {SyncState, useSyncState} from "@/helper/syncState/SyncState";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {Text, View} from "@/components/Themed";
 import {useServerInfoRaw} from "@/states/SyncStateServerInfo";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 import {AuthenticationData} from "@directus/sdk";
-import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
+import {SecureStorageHelperAbstractClass} from "@/helper/storage/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
 
 export {
   // Catch any errors thrown by the Layout component.

@@ -2,8 +2,8 @@ import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import React from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);

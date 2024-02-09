@@ -1,5 +1,5 @@
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 
 export function useIsDevelop(): boolean {
   const [debug, setDebug] = useSyncState<boolean>(PersistentStore.develop)

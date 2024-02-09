@@ -8,15 +8,15 @@ import {View, Text, ScrollView} from 'react-native';
 import {GluestackUIProvider} from "@gluestack-ui/themed";
 import {config} from "@gluestack-ui/config";
 import {StoreProvider} from "easy-peasy";
-import {SyncState} from "@/helper/sync_state_helper/SyncState";
+import {SyncState} from "@/helper/syncState/SyncState";
 import {RootServerStatusFlowLoader} from "@/components/rootLayout/RootServerStatusFlowLoader";
 import {RootAuthUserFlowLoader} from "@/components/rootLayout/RootAuthUserFlowLoader";
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from "@/components/rootLayout/RootThemeProvider";
 import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
 import Slot = Navigator.Slot;
-import {SecureStorageHelperAbstractClass} from "@/helper/storage_helper/SecureStorageHelperAbstractClass";
-import {SecureStorageHelper} from "@/helper/storage_helper/SecureStorageHelper";
+import {SecureStorageHelperAbstractClass} from "@/helper/storage/SecureStorageHelperAbstractClass";
+import {SecureStorageHelper} from "@/helper/storage/SecureStorageHelper";
 import {KeyboardAvoidingView, Platform} from "react-native";
 import {useInsets} from "@/helper/device/DeviceHelper";
 

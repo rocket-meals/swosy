@@ -1,14 +1,14 @@
 import {SafeAreaView, ScrollView, StyleSheet} from 'react-native';
 import {View} from '@/components/Themed';
 import {SettingsRowSyncBooleanSwitch} from "@/components/settings/SettingsRowSyncBooleanSwitch";
-import {PersistentStore} from "@/helper/sync_state_helper/PersistentStore";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useCurrentUser} from "@/states/User";
 import React from "react";
 import {SettingsRowLogout} from "@/components/settings/SettingsRowLogout";
 import {useIsDebug} from "@/states/Debug";
-import {useSyncState} from "@/helper/sync_state_helper/SyncState";
+import {useSyncState} from "@/helper/syncState/SyncState";
 import {AuthenticationData} from "@directus/sdk";
-import {PersistentSecureStore} from "@/helper/sync_state_helper/PersistentSecureStore";
+import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 import {SettingsRowColorScheme} from "@/components/theme/SettingsRowColorScheme";
 import {SettingsRowDrawerPosition} from "@/modules/settings/SettingsRowDrawerPosition";
 import {SettingsRowProfileNickname} from "@/modules/settings/SettingsRowProfileNickname";

@@ -7,8 +7,8 @@ import {
   useServerInfoRaw
 } from "@/states/SyncStateServerInfo";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
-import {CollectionHelper} from "@/helper/database_helper/server/CollectionHelper";
-import {Buildings, Canteens, Foods} from "@/helper/database_helper/databaseTypes/types";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {Buildings, Canteens, Foods} from "@/helper/database/databaseTypes/types";
 import {useSynchedFoods} from "@/states/SynchedFoods";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {
