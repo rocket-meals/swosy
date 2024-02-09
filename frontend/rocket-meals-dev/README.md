@@ -17,3 +17,11 @@ In order to use it, follow these steps:
 
    const [exampleValue, setExampleValue] = useSyncState<string>(NonPersistentStore.test);
     ```
+   
+## Update Expo SDK
+
+In order to update the Expo SDK, follow these steps:
+
+1. Update the `package.json` file with the new version of the SDK.
+2. Run `npm install` to install the new version of the SDK.
+3. Run `npx expo install --fix` to upgrade the project to the new version of the SDK and fix any issues that may arise.
