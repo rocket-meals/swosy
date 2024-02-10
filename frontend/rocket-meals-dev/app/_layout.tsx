@@ -5,6 +5,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {View, Text, ScrollView} from 'react-native';
 
 // Importing components and helpers
+// Todo remove this comment. just for testing snorkel.ai
 import {GluestackUIProvider} from "@gluestack-ui/themed";
 import {config} from "@gluestack-ui/config";
 import {StoreProvider} from "easy-peasy";
