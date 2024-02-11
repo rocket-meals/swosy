@@ -19,6 +19,8 @@ export class ParseSchedule {
         this.parser = parser;
         this.finished = true;
     }
+    
+    // Todo create/generate documentation 
 
     async init(getSchema, services, database, logger) {
         this.schema = await getSchema();
