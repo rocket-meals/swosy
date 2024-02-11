@@ -1,16 +1,34 @@
 import React from 'react';
-import {FlatList, ListRenderItem, ListRenderItemInfo} from 'react-native';
+import {FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
 import {View} from "@/components/Themed";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
+/**
+ * Defines the spacing properties for the grid list.
+ *
+ * @property {number} [marginOuter] - The margin applied to the outer side of the first and last item in a row.
+ * @property {number} [marginInner] - The margin applied between items within a row.
+ * @property {number} [marginRow] - The margin applied below each row.
+ */
 type GridListSpacing = {
     marginOuter?: number,
     marginInner?: number,
     marginRow?: number,
 }
 
-
+/**
+ * Props for the MyGridList component.
+ *
+ * @template T The type of data items.
+ *
+ * @property {T[]} data - The data array to be rendered.
+ * @property {ListRenderItem<T>} renderItem - The function that renders each item.
+ * @property {number} gridAmount - The number of items per row.
+ * @property {boolean} [horizontal] - If true, the list is horizontally scrollable.
+ * @property {StyleProp<ViewStyle>} [contentContainerStyle] - Style for the list's content container.
+ * @property {GridListSpacing} [spacing] - Spacing configuration for margins between items and rows.
+ */
 interface GridListProps<T> {
     data: T[];
     renderItem: ListRenderItem<T>;
@@ -18,15 +36,29 @@ interface GridListProps<T> {
     horizontal?: boolean;
     contentContainerStyle?: StyleProp<ViewStyle>;
     spacing?: GridListSpacing;
+    flatListProps?: FlatListProps<T>
 }
 
+/**
+ * A custom grid list component that renders items in a grid layout.
+ * Internally, it uses a FlatList to render the items. Customize the FlatList by passing flatListProps.
+ *
+ * This component supports both vertical and horizontal layouts, customizable spacing
+ * between items and rows, and automatically fills the last row with dummy items if needed
+ * to maintain the grid structure.
+ *
+ * @template T The type of data items. Each item must have a unique `key` property.
+ *
+ * @param {GridListProps<T>} props - The properties of the component.
+ * @returns {React.ReactElement} The rendered grid list.
+ */
 export const MyGridList = <T extends { key: string }>({
                                                  data,
                                                  renderItem,
                                                  gridAmount,
                                                  horizontal,
                                                 spacing,
-                                                ...props
+                                                flatListProps,
                                              }: GridListProps<T>) => {
 
     const amountCompleteRows = Math.floor(data.length / gridAmount);
@@ -120,7 +152,7 @@ export const MyGridList = <T extends { key: string }>({
                 data={adjustedData}
                 renderItem={renderItemsWithFillUpDummies}
                 numColumns={numColumns}
-                {...props}
+                {...flatListProps}
             />
         </View>
     );

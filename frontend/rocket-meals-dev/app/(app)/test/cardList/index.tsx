@@ -27,7 +27,10 @@ export default function CardListTestScreen() {
 
      const renderItem = (info: ListRenderItemInfo<DataItem>) => {
      const {item, index} = info;
-        const title: string = item.data?.alias || "No name"
+        let title: string = item.data?.alias || "No name"
+         if(index === 14){
+            title = "This is a very long name for an item"
+         }
 
         return (
                 <MyCardForResourcesWithImage
@@ -56,7 +59,6 @@ export default function CardListTestScreen() {
         >
         <View style={{
             width: "100%",
-            backgroundColor: "red",
             paddingBottom: 10,
         }}>
             <Heading>{"Parameters"}</Heading>
@@ -79,7 +81,6 @@ export default function CardListTestScreen() {
             width: "100%",
             height: "100%",
             flex: 1,
-            backgroundColor: "green",
         }}>
             <MyGridList
                 data={data} renderItem={renderItem} gridAmount={amountColumns} />
