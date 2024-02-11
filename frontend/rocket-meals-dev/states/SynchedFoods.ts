@@ -19,7 +19,7 @@ function getDemoResources(): Record<string, Foods> {
   let demoNames = ["Fries", "Burger", "Lasagne", "Pizza", "Pasta", "Salad", "Soup", "Sushi", "Steak", "Chicken", "Fish", "Rice", "Noodles", "Dumplings", "Curry", "Tacos", "Burritos", "Sandwich", "Hotdog", "Kebab", "Doner", "Falafel", "Shawarma"]
   let demoeResources: Record<string, Foods> = {}
     demoNames.forEach((name, index) => {
-      let demoResource: Foods = getDemoResource(index.toString(), "Demo "+name)
+      let demoResource: Foods = getDemoResource(index.toString(), "Demo "+name+" "+index.toString())
         demoeResources[demoResource.id] = demoResource
     })
 

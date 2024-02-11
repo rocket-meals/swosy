@@ -20,7 +20,7 @@ export type MyCardForResourcesWithImageProps = {
 // define the button component
 export const MyCardForResourcesWithImage = ({text, accessibilityLabel, assetId, onPress, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
-    const usedImageHeight = imageHeight || 200;
+    const usedImageHeight = imageHeight || 100;
 
     const image = <DirectusImage assetId={assetId} thumbHash={thumbHash} style={{width: "100%", height: usedImageHeight}} />
     let topContent = image;

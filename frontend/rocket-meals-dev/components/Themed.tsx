@@ -17,7 +17,9 @@ import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIcon
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import { TextInput as RNTextInput } from "react-native";
-import {ReturnKeyType} from "@/helper/input/ReturnKeyType"; // Use the correct import for TextInput
+import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
+import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet"; // Use the correct import for TextInput
 
 type ThemeProps = {
   lightColor?: string;
@@ -149,6 +151,28 @@ export function Text({style,...props}: TextProps) {
   return <DefaultText selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
-export function View(props: ViewProps) {
-  return <DefaultView {...props} />;
+export function View({style, ...props}: ViewProps) {
+
+    // copy the style to not mutate the original style
+    let styleCopy: StyleProp<ViewStyle> = {}
+    if(style === undefined){
+        styleCopy = {}
+    } else {
+        if(Array.isArray(style)){
+            styleCopy = [...style]
+        } else {
+            // @ts-ignore
+            styleCopy = {...style}
+        }
+    }
+
+    // set flexDirection to column if not set
+    // @ts-ignore
+    if(styleCopy?.flexDirection === undefined){
+        // @ts-ignore
+        styleCopy.flexDirection = "column"; // Fixes on web the padding issue
+    }
+    console.log("View styleCopy", styleCopy)
+
+  return <DefaultView style={styleCopy} {...props} />;
 }

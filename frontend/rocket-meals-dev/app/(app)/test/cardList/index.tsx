@@ -3,7 +3,8 @@ import {useSynchedFoods} from "@/states/SynchedFoods";
 import {MyGridList} from "@/components/grid/MyGridList";
 import {Foods} from "@/helper/database/databaseTypes/types";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
-import {ListRenderItemInfo} from "react-native";
+import {ListRenderItemInfo, SafeAreaView} from "react-native";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 export default function CardListTestScreen() {
   const [resources, setResources, lastUpdate] = useSynchedFoods();
@@ -27,12 +28,20 @@ export default function CardListTestScreen() {
         const title: string = item.data?.alias || "No name"
 
         return (
-            <MyCardForResourcesWithImage
-                key={item.key}
-                text={title}
-                assetId={item.data.image}
-                onPress={() => console.log("Pressed")}
-             accessibilityLabel={title}/>
+            <View style={
+                {
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "red",
+                }
+            }>
+                <MyCardForResourcesWithImage
+                    key={item.key}
+                    text={title}
+                    assetId={item.data.image}
+                    onPress={() => console.log("Pressed")}
+                    accessibilityLabel={title}/>
+            </View>
         );
     }
 
@@ -58,8 +67,8 @@ export default function CardListTestScreen() {
         */
 
   return (
-    <View style={{width: "100%", height: "100%"}}>
+    <MySafeAreaView>
         <MyGridList data={data} renderItem={renderItem} gridAmount={2} flexDirection="row" />
-    </View>
+    </MySafeAreaView>
   );
 }
