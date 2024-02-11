@@ -81,7 +81,8 @@ export default function CardListTestScreen() {
             flex: 1,
             backgroundColor: "green",
         }}>
-            <MyGridList data={data} renderItem={renderItem} gridAmount={amountColumns} />
+            <MyGridList
+                data={data} renderItem={renderItem} gridAmount={amountColumns} />
         </View>
     </View>
   );

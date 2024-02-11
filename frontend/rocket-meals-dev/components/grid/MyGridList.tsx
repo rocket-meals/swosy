@@ -4,12 +4,20 @@ import {View} from "@/components/Themed";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
+type GridListSpacing = {
+    marginOuter?: number,
+    marginInner?: number,
+    marginRow?: number,
+}
+
+
 interface GridListProps<T> {
     data: T[];
     renderItem: ListRenderItem<T>;
     gridAmount: number;
     horizontal?: boolean;
     contentContainerStyle?: StyleProp<ViewStyle>;
+    spacing?: GridListSpacing;
 }
 
 export const MyGridList = <T extends { key: string }>({
@@ -17,6 +25,7 @@ export const MyGridList = <T extends { key: string }>({
                                                  renderItem,
                                                  gridAmount,
                                                  horizontal,
+                                                spacing,
                                                 ...props
                                              }: GridListProps<T>) => {
 
@@ -29,17 +38,50 @@ export const MyGridList = <T extends { key: string }>({
     const adjustedData = [...data, ...Array(amountDummyItemsNeeded).fill({ key: dummyKey, isDummy: true })];
     // We need to add dummy items. If we don't, the last row will be max width stretched to fill the container, which is not what we want.
 
-    const renderSingleItem = (content: any, key: string) => {
-        return(
-            <View
-                key={key}
-                style={{
-                    flex: 1, // CAUTION: Test on Android if you want to remove this line with MyCardForResourcesWithImage
-                }}
-            >
+    const renderSingleItem = (content: any, key: string, index: number) => {
+        const isFirstInRow = (index % gridAmount) === 0;
+        const isLastInRow = (index % gridAmount) === gridAmount - 1;
+        const isInCenter = !isFirstInRow && !isLastInRow;
+
+        let itemStyle: StyleProp<ViewStyle>= {
+            flex: 1,
+        };
+
+        // row margin
+        if (spacing?.marginRow) {
+            itemStyle.marginBottom = spacing.marginRow;
+        }
+
+        // outer margin only for the first item in a row
+        if (spacing?.marginOuter) {
+            if (isFirstInRow) {
+                itemStyle.marginLeft = spacing.marginOuter;
+            }
+            if (isLastInRow) {
+                itemStyle.marginRight = spacing.marginOuter;
+            }
+        }
+
+        // inner margin
+        if (spacing?.marginInner) {
+            if (isInCenter) {
+                itemStyle.marginLeft = spacing.marginInner;
+                itemStyle.marginRight = spacing.marginInner;
+            }
+            if(isFirstInRow){
+                itemStyle.marginRight = spacing.marginInner;
+            }
+            if(isLastInRow){
+                itemStyle.marginLeft = spacing.marginInner;
+            }
+        }
+
+
+        return (
+            <View key={key} style={itemStyle}>
                 {content}
             </View>
-        )
+        );
     }
 
     const renderItemsWithFillUpDummies = (info: ListRenderItemInfo<T>) => {
@@ -50,10 +92,10 @@ export const MyGridList = <T extends { key: string }>({
 
         if(item?.isDummy){
             const dummyKey = `dummy-${index}`;
-            return renderSingleItem(null, dummyKey);
+            return renderSingleItem(null, dummyKey, index);
         }
 
-        return renderSingleItem(renderItem(info), item.key);
+        return renderSingleItem(renderItem(info), item.key, index);
     };
 
     const usedHorizontal = horizontal;
@@ -76,7 +118,6 @@ export const MyGridList = <T extends { key: string }>({
                 key={flatListKey}
                 horizontal={usedHorizontal}
                 data={adjustedData}
-
                 renderItem={renderItemsWithFillUpDummies}
                 numColumns={numColumns}
                 {...props}
