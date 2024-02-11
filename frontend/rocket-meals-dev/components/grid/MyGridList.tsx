@@ -39,7 +39,7 @@ export const MyGridList = <T extends { key: string }>({
             <View
                 key={key}
                 style={{
-                    flex: 1, // CAUTION: Test on Android if you want to remove this line
+                    flex: 1, // CAUTION: Test on Android if you want to remove this line with MyCardForResourcesWithImage
                 }}
             >
                 {content}
