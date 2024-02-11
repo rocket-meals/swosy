@@ -4,12 +4,6 @@ import {View} from "@/components/Themed";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
-
-interface DataItem {
-    key: string;
-    // Add other properties as needed
-}
-
 interface GridListProps<T> {
     data: T[];
     renderItem: ListRenderItem<T>;
@@ -25,13 +19,14 @@ export const MyGridList = <T extends { key: string }>({
                                                  horizontal,
                                                 ...props
                                              }: GridListProps<T>) => {
-    const completeRows = Math.floor(data.length / gridAmount);
-    const totalItemsLastRow = data.length - completeRows * gridAmount;
-    const dummyItemsNeeded = totalItemsLastRow > 0 ? gridAmount - totalItemsLastRow : 0;
+
+    const amountCompleteRows = Math.floor(data.length / gridAmount);
+    const amountTotalItemsLastRow = data.length - amountCompleteRows * gridAmount;
+    const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? gridAmount - amountTotalItemsLastRow : 0;
 
     const dummyKey = 'dummy';
 
-    const adjustedData = [...data, ...Array(dummyItemsNeeded).fill({ key: dummyKey, isDummy: true })];
+    const adjustedData = [...data, ...Array(amountDummyItemsNeeded).fill({ key: dummyKey, isDummy: true })];
     // We need to add dummy items. If we don't, the last row will be max width stretched to fill the container, which is not what we want.
 
     const renderSingleItem = (content: any, key: string) => {
@@ -46,10 +41,7 @@ export const MyGridList = <T extends { key: string }>({
             </View>
         )
     }
-
-    /**
-     * @param info
-     */
+    
     const renderItemsWithFillUpDummies = (info: ListRenderItemInfo<T>) => {
 
         const {item, index} = info;
