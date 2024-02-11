@@ -75,7 +75,14 @@ export default function CardListTestScreen() {
                 }
             } labelRight={amountItems.toString()} />
         </View>
-        <MyGridList data={data} renderItem={renderItem} gridAmount={amountColumns} />
+        <View style={{
+            width: "100%",
+            height: "100%",
+            flex: 1,
+            backgroundColor: "green",
+        }}>
+            <MyGridList data={data} renderItem={renderItem} gridAmount={amountColumns} />
+        </View>
     </View>
   );
 }

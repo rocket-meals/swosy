@@ -172,7 +172,6 @@ export function View({style, ...props}: ViewProps) {
         // @ts-ignore
         styleCopy.flexDirection = "column"; // Fixes on web the padding issue
     }
-    console.log("View styleCopy", styleCopy)
 
   return <DefaultView style={styleCopy} {...props} />;
 }
