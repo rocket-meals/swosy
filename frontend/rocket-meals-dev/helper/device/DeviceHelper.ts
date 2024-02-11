@@ -1,21 +1,97 @@
 import {useWindowDimensions} from "react-native";
 import {EdgeInsets, useSafeAreaInsets} from "react-native-safe-area-context";
 
-export function getMinWithLargeDevice(): number {
-    return 1024;
+/**
+ * Defines the breakpoints for responsive design.
+ * @returns {BreakPointsDictionary<number>} An object with keys as breakpoint names and values as the corresponding widths in pixels.
+ */
+export function getDimensionWidthBreakPoints(): BreakPointsDictionary<number> {
+    return {
+        [BreakPoint.sm]: 576,
+        [BreakPoint.md]: 768,
+        [BreakPoint.lg]: 992,
+        [BreakPoint.xl]: 1200,
+        [BreakPoint.xxl]: 1400
+    };
 }
 
-export function getMinWithXLDevice(): number {
-    return 1524;
-}
-
+/**
+ * Custom hook to determine if the device has a large screen.
+ * @returns {boolean} True if the screen width is greater than or equal to the large breakpoint, false otherwise.
+ */
 export function useIsLargeDevice(): boolean {
-    const dimensions = useWindowDimensions();
-
-    return dimensions.width >= getMinWithLargeDevice();
-
+    return useBreakPointValue({
+        sm: false,
+        lg: true,
+    });
 }
 
+// Enumeration of possible breakpoint names.
+export enum BreakPoint {
+    sm = 'sm',
+    md = 'md',
+    lg = 'lg',
+    xl = 'xl',
+    xxl = 'xxl'
+}
+
+/**
+ * Defines a type for a dictionary where 'sm' breakpoint is required and other breakpoints are optional.
+ * @template T The type of values associated with each breakpoint.
+ */
+type BreakPointsDictionary<T> = {
+    [P in Exclude<BreakPoint, BreakPoint.sm>]?: T;
+} & {
+    sm: T; // Making 'sm' required
+};
+
+/**
+ * Generates a sorted list of breakpoints from smallest to largest based on their associated widths.
+ * @returns {BreakPoint[]} An ordered array of breakpoints from smallest to largest width.
+ */
+function getSmallestToLargestBreakPointList(): BreakPoint[] {
+    const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
+    let widthToBreakPoint: { width: number, breakPoint: BreakPoint }[] = [];
+    for (let breakPoint in widthBreakPoints) {
+        const width: number | undefined = widthBreakPoints[breakPoint as BreakPoint];
+        if(width !== undefined){
+            widthToBreakPoint.push({width, breakPoint: breakPoint as BreakPoint});
+        }
+    }
+    widthToBreakPoint.sort((a, b) => a.width - b.width);
+    return widthToBreakPoint.map(value => value.breakPoint);
+}
+
+/**
+ * Custom hook to obtain the value associated with the current breakpoint.
+ * @template T The type of value to be returned based on the current breakpoint.
+ * @param {BreakPointsDictionary<T>} breakPoints An object mapping breakpoints to their corresponding values.
+ * @returns {T} The value associated with the current screen width's breakpoint.
+ */
+export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T {
+    const dimensions = useWindowDimensions();
+    const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
+
+    let breakPointOrder = getSmallestToLargestBreakPointList().reverse(); // From largest to smallest for iteration.
+
+    for (let i = 0; i < breakPointOrder.length; i++) {
+        const breakPoint = breakPointOrder[i];
+        const width: number | undefined = widthBreakPoints[breakPoint];
+        if (width && dimensions.width >= width) {
+            const valueOfBreakPoint = breakPoints[breakPoint]
+            if(valueOfBreakPoint) {
+                return valueOfBreakPoint;
+            }
+        }
+    }
+
+    return breakPoints[BreakPoint.sm];
+}
+
+/**
+ * Custom hook to obtain the safe area insets of the current device screen.
+ * @returns {EdgeInsets} An object representing the safe area insets of the screen.
+ */
 export function useInsets(): EdgeInsets {
     const insets = useSafeAreaInsets();
 
