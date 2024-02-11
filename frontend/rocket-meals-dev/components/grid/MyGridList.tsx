@@ -41,7 +41,7 @@ export const MyGridList = <T extends { key: string }>({
             </View>
         )
     }
-    
+
     const renderItemsWithFillUpDummies = (info: ListRenderItemInfo<T>) => {
 
         const {item, index} = info;
