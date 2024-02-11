@@ -140,7 +140,7 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         accessibilityLabel: "test",
         render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
             // Use the custom context provider to provide the input value and setter
-            return<MyContent
+            return <MyContent
                 initialValue={initialValue}
                 setInputValue={setInputValue}
                 onSave={onSaveChange}
