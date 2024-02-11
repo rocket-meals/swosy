@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from "react";
-import {ScrollView, ScrollViewProps} from 'react-native';
+import {ScrollViewProps} from 'react-native';
 import {ShowMoreGradient} from "./ShowMoreGradient";
 import {ShowMoreGradientPlaceholder} from "./ShowMoreGradientPlaceholder";
 import {View} from "@/components/Themed";

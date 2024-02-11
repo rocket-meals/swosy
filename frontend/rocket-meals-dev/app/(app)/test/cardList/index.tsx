@@ -1,33 +1,90 @@
-import {Text, View} from '@/components/Themed';
-import {useSynchedFoods} from "@/states/SynchedFoods";
+import {MyGridList} from "@/components/grid/MyGridList";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {ListRenderItemInfo} from "react-native";
+import {useState} from "react";
+import {Heading, View} from "@/components/Themed";
+import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 
-export default function HomeScreen() {
-  const [resources, setResources, lastUpdate] = useSynchedFoods();
+export default function CardListTestScreen() {
 
-  let renderCanteens = []
+    const initialAmountColumns = 2;
+    const initialAmountItems = 23;
 
-  if(resources){
-    for (const [key, value] of Object.entries(resources)) {
-        let label = value.alias || key
-        let accessibilityLabel = label
-        let assetId = value.image;
-        let thumbHash = value?.thumbHash;
+    const [amountColumns, setAmountColumns] = useState(initialAmountColumns);
+    const [amountItems, setAmountItems] = useState(initialAmountItems);
 
+    type DataItem = { key: string; data: { alias: string, image: string | undefined } }
 
-      renderCanteens.push(
-          <MyCardForResourcesWithImage style={{width: 500, height: 500, padding: 10, borderColor: "orange", borderWidth: 1}} imageHeight={300} accessibilityLabel={accessibilityLabel} text={label} assetId={assetId} thumbHash={thumbHash} />
-      )
+  let data: DataItem[] = []
+    let amount = amountItems;
+    for (let i = 0; i < amount; i++) {
+        data.push({key: i.toString(), data: {
+            alias: `Item ${i}`,
+            image: undefined
+        }})
     }
 
-}
+
+     const renderItem = (info: ListRenderItemInfo<DataItem>) => {
+     const {item, index} = info;
+        let title: string = item.data?.alias || "No name"
+         if(index === 14){
+            title = "This is a very long name for an item"
+         }
+
+        return (
+                <MyCardForResourcesWithImage
+                    key={item.key}
+                    text={title}
+                    assetId={item.data.image}
+                    onPress={() => console.log("Pressed")}
+                    accessibilityLabel={title}/>
+        );
+    }
+
+    function parseValueToInt(value: string | undefined | null, defaultNumber: number): number {
+        if (value) {
+            return parseInt(value)
+        } else {
+            return defaultNumber
+        }
+    }
+
   return (
-    <View style={{width: "100%", height: "100%"}}>
-      <MyScrollView>
-        {renderCanteens}
-        <Text>{JSON.stringify(resources, null, 2)}</Text>
-      </MyScrollView>
+    <View
+        style={{
+            width: "100%",
+            height: "100%",
+        }}
+        >
+        <View style={{
+            width: "100%",
+            paddingBottom: 10,
+        }}>
+            <Heading>{"Parameters"}</Heading>
+            <SettingsRowTextEdit
+                leftIcon={"dots-grid"}
+                accessibilityLabel={"Edit Grid Amount"} label={"Edit Grid Amount"} onSave={
+                (value) => {
+                    setAmountColumns(parseValueToInt(value, initialAmountColumns))
+                }
+            } labelRight={amountColumns.toString()} />
+            <SettingsRowTextEdit
+                leftIcon={"view-list"}
+                accessibilityLabel={"Edit Amount Items"} label={"Edit Amount Items"} onSave={
+                (value) => {
+                    setAmountItems(parseValueToInt(value, initialAmountItems))
+                }
+            } labelRight={amountItems.toString()} />
+        </View>
+        <View style={{
+            width: "100%",
+            height: "100%",
+            flex: 1,
+        }}>
+            <MyGridList
+                data={data} renderItem={renderItem} gridAmount={amountColumns} />
+        </View>
     </View>
   );
 }
