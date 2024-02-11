@@ -41,6 +41,7 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
 
     usedStyle.height = usedStyle?.height || "100%"
     usedStyle.width = usedStyle?.width || "100%"
+    usedStyle.flex = usedStyle?.flex || 1
 
     return(
         <View style={usedStyle}>
