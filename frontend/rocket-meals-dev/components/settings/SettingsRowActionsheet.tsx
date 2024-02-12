@@ -16,9 +16,7 @@ export const SettingsRowActionsheet: FunctionComponent<AppState & SettingsRowPro
         show(config)
     }
 
-    const iconRight = "chevron-right"
-
     return(
-        <SettingsRow accessibilityLabel={accessibilityLabel} rightIcon={iconRight} {...props} onPress={onPress} />
+        <SettingsRow accessibilityLabel={accessibilityLabel} {...props} onPress={onPress} />
     )
 }

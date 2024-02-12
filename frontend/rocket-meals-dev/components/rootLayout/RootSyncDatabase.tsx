@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {DependencyList, useEffect, useState} from 'react';
 import {Text} from "@/components/Themed";
 import {
   useIsServerCached,
@@ -20,6 +20,7 @@ import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
 import {ScrollView} from "react-native";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {useSynchedWikisDict} from "@/states/SynchedWikis";
+import {loadLanguageRemoteDict, useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -27,7 +28,7 @@ export {
 } from 'expo-router';
 
 export interface RootAuthUserFlowLoaderProps {
-    children?: React.ReactNode;
+  children?: React.ReactNode;
   userId: number | undefined
 }
 
@@ -35,6 +36,7 @@ export interface RootAuthUserFlowLoaderInnerProps {
   children?: React.ReactNode;
   setSyncComplete: (finished: boolean) => void
 }
+
 export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) => {
 
   //console.log("AuthFlowUserCheck")
@@ -48,11 +50,15 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   const demo = useIsDemo()
   const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 
+  const registeredItemsToLoad: any[] = [];
+
   let canteensCollectionHelper = new CollectionHelper<Canteens>("canteens");
   const [canteens, setCanteens, lastUpdateCanteens] = useSynchedCanteensDict()
 
   let buildingsCollectionHelper = new CollectionHelper<Buildings>("buildings");
   const [buildings, setBuildings, lastUpdateBuildings] = useSynchedBuildingsDict()
+
+  const [languagesDict, setLanguagesDict, lastUpdateLanguages] = useSynchedLanguagesDict()
 
   let wikisCollectionHelper = new CollectionHelper<Wikis>("wikis");
   const [wikis, setWikis, lastUpdateWikis] = useSynchedWikisDict()
@@ -66,17 +72,28 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   let synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
   function addSynchedResource(label: string, resource: any, lastUpdate: number | undefined){
+    registeredItemsToLoad.push(resource);
     synchedResources[label] = {
       data: resource,
       lastUpdate: lastUpdate
     }
   }
 
+  /**
+   * Needs to be called before the useEffect
+   */
   addSynchedResource("canteens", canteens, lastUpdateCanteens)
   addSynchedResource("buildings", buildings, lastUpdateBuildings)
   addSynchedResource("foods", foods, lastUpdateFoods)
   addSynchedResource("profile", profile, lastUpdateProfile);
-  const itemsToLoad = [canteens, profile, foods, wikis];
+  addSynchedResource("wikis", wikis, lastUpdateWikis)
+  addSynchedResource("languages", languagesDict, lastUpdateLanguages)
+
+  function getDependencies(): DependencyList {
+    return registeredItemsToLoad;
+  }
+
+  const itemsToLoad = getDependencies();
 
   function checkSynchedResources(){
     //console.log("--- checkSynchedResources ---");
@@ -144,6 +161,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     setFoods(foodsDict, nowInMs);
   }
 
+  async function updateLanguages(){
+    let languagesDict = await loadLanguageRemoteDict()
+    setLanguagesDict(languagesDict, nowInMs)
+  }
+
   async function updateProfile(){
     console.log("RootSyncDatabase: Update profile");
     console.log("RootSyncDatabase: Update profile - isCurrentUserAnonymous: ",isCurrentUserAnonymous);
@@ -176,6 +198,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
           await updateFoods()
           await updateProfile()
           await updateWikis()
+          await updateLanguages()
         }
       } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 

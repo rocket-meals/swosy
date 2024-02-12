@@ -65,14 +65,14 @@ export default function CardListTestScreen() {
             <Heading>{"Parameters"}</Heading>
             <SettingsRowTextEdit
                 leftIcon={"dots-grid"}
-                accessibilityLabel={"Edit Grid Amount"} label={"Edit Grid Amount"} onSave={
+                accessibilityLabel={"Edit Grid Amount"} labelLeft={"Edit Grid Amount"} onSave={
                 (value) => {
                     setAmountColumns(parseValueToInt(value, initialAmountColumns))
                 }
             } labelRight={amountColumns.toString()} />
             <SettingsRowTextEdit
                 leftIcon={"view-list"}
-                accessibilityLabel={"Edit Amount Items"} label={"Edit Amount Items"} onSave={
+                accessibilityLabel={"Edit Amount Items"} labelLeft={"Edit Amount Items"} onSave={
                 (value) => {
                     setAmountItems(parseValueToInt(value, initialAmountItems))
                 }

@@ -37,7 +37,7 @@ export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...prop
 
     return(
         <>
-            <SettingsRowTextEdit onSave={onSave} label={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
+            <SettingsRowTextEdit onSave={onSave} labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
             </SettingsRowTextEdit>
             {renderDebug()}
         </>

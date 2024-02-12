@@ -63,7 +63,7 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 
     return(
         <>
-            <SettingsRowActionsheet label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} {...props}  />
+            <SettingsRowActionsheet labelLeft={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} {...props}  />
         </>
     )
 }

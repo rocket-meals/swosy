@@ -9,14 +9,14 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 interface AppState {
     value: boolean,
     accessibilityLabel: string,
-    label: string,
+    labelLeft: string,
     onPress?: (nextValue: boolean) => void,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
 
 }
-export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, label,...props}) => {
+export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, labelLeft,...props}) => {
 
     const debug = props?.debug
 
@@ -84,6 +84,6 @@ export const SettingsRowBooleanSwitch: FunctionComponent<AppState & SettingsRowP
     )
 
     return(
-        <SettingsRow label={label} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightContent={rightContent} onPress={onPress} />
+        <SettingsRow labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={"switch"} {...props} rightContent={rightContent} onPress={onPress} />
     )
 }

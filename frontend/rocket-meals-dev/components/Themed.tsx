@@ -44,7 +44,7 @@ export function Icon({name, size, family, ...props}: IconProps){
 }
 
 type TextInputProps = {
-    myRef: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
+    myRef?: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
     variant?: "outline" | "rounded" | "underlined" | undefined
     size?: "sm" | "md" | "lg";
     hidden?: boolean;
