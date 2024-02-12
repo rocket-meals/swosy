@@ -22,6 +22,11 @@ export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefin
   return [usedResources, setResourcesOnly, lastUpdate]
 }
 
+export function useSynchedLanguageByCode(code: string): Languages | undefined {
+    const [resources, setResources, lastUpdate] = useSynchedLanguagesDict()
+    return resources?.[code]
+}
+
 function getDemoResources(): Record<string, Languages> {
 
   let demoResource: Languages = {

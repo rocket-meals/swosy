@@ -1,8 +1,8 @@
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useProfileLanguage} from "@/states/SynchedProfile";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {Text, View} from "@/components/Themed";
+import {Text} from "@/components/Themed";
 import CountryFlag from "react-native-country-flag";
 import {useIsDebug} from "@/states/Debug";
 
@@ -14,7 +14,7 @@ export function useGlobalActionSheetSettingProfileLanguage(){
 
     const title = useTranslation(TranslationKeys.language)
 
-    const [selectedLanguageKey, setSavedLanguageKey] = useProfileLanguage()
+    const [selectedLanguageKey, setSavedLanguageKey] = useProfileLanguageCode()
     const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
     const usedLanguageDict = languageDict || {}
     let selectedKey = selectedLanguageKey

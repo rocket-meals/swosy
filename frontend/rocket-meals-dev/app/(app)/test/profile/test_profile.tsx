@@ -9,7 +9,7 @@ import {MyScrollView} from "@/components/scrollview/MyScrollView";
 export default function HomeScreen() {
 
     const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
-    const usedLanguageCode = useProfileLanguageCode()
+    const [languageCode, setLanguageCode]  = useProfileLanguageCode()
 
     return (
         <MyScrollView>
@@ -17,7 +17,7 @@ export default function HomeScreen() {
                 <Text>{"profile"}</Text>
                 <Text>{JSON.stringify(profile, null, 2)}</Text>
                 <Text>{"usedLanguageCode"}</Text>
-                <Text>{JSON.stringify(usedLanguageCode, null, 2)}</Text>
+                <Text>{JSON.stringify(languageCode, null, 2)}</Text>
             </View>
         </MyScrollView>
     );

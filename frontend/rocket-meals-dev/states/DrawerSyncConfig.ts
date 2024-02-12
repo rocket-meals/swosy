@@ -1,5 +1,7 @@
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {useSynchedLanguageByCode} from "@/states/SynchedLanguages";
 
 export enum DrawerConfigPosition {
     Left = "left",
@@ -16,9 +18,16 @@ function useDrawerConfigRaw(): [DrawerConfig | null, (newValue: DrawerConfig) =>
     return [drawerConfigRaw, setDrawerConfigRaw]
 }
 
-function useDrawerPositionByLanguage(): DrawerConfigPosition {
+function useDrawerPositionByLanguage(): DrawerConfigPosition.Left | DrawerConfigPosition.Right {
+    const [languageCode, setLanguageCode] = useProfileLanguageCode()
+    const language = useSynchedLanguageByCode(languageCode)
+    if(!!language){
+        if(language.direction === "rtl"){
+            return DrawerConfigPosition.Right
+        }
+    }
+
     return DrawerConfigPosition.Left
-    // TODO: check if language is RTL (right to left) or LTR (left to right)
 }
 
 export function useDrawerPositionRaw(): [DrawerConfigPosition | null, (newValue: DrawerConfigPosition) => void] {
@@ -41,7 +50,7 @@ export function useDrawerPositionRaw(): [DrawerConfigPosition | null, (newValue:
 export function useDrawerPosition(): [DrawerConfigPosition.Left | DrawerConfigPosition.Right, (newValue: DrawerConfigPosition) => void] {
     const [drawerPositionRaw, setPosition] = useDrawerPositionRaw()
     const drawerPositionByLanguage = useDrawerPositionByLanguage()
-    let position: DrawerConfigPosition.Left | DrawerConfigPosition.Right = DrawerConfigPosition.Left
+    let position: DrawerConfigPosition.Left | DrawerConfigPosition.Right = drawerPositionByLanguage
 
     if(!!drawerPositionRaw && (drawerPositionRaw === DrawerConfigPosition.Left || drawerPositionRaw === DrawerConfigPosition.Right)){
         position = drawerPositionRaw;

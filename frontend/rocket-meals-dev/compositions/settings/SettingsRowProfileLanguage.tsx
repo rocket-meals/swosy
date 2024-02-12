@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useProfileLanguage} from "@/states/SynchedProfile";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {
     useGlobalActionSheetSettingProfileLanguage
@@ -18,7 +18,7 @@ export const SettingsRowProfileLanguage: FunctionComponent<AppState> = ({...prop
 
     const title = useTranslation(TranslationKeys.language)
 
-    const [selectedLanguageKey, setSavedLanguageKey] = useProfileLanguage()
+    const [selectedLanguageKey, setSavedLanguageKey] = useProfileLanguageCode()
     const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
     const usedLanguageDict = languageDict || {}
 
