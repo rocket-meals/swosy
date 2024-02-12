@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import {View, Text} from "@/components/Themed";
 import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
@@ -14,21 +14,31 @@ import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
-import {getMyDrawerHeader} from "@/components/drawer/MyDrawerHeader";
+import {getMyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyDrawerSafeAreaView} from "@/components/drawer/MyDrawerSafeAreaView";
+import {DrawerHeaderProps} from "@react-navigation/drawer";
+
+export type MyDrawerItemProps = {
+    routeName: string;
+    label: string;
+    title: string;
+    icon: string | undefined | null;
+    visibleInDrawer?: boolean | null | undefined;
+    header?: ((props: DrawerHeaderProps) => ReactNode) | undefined
+};
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen(routeName: string, label: string, title: string, icon: string | undefined | null, visible?: boolean | null | undefined) {
+export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDrawer, header}: MyDrawerItemProps) {
     let projectColor = useProjectColor(); // Fetch the current project color for use in styling.
 
     let usedVisible = true;
-    if(visible!==undefined){
-        usedVisible = !!visible;
+    if(visibleInDrawer!==undefined){
+        usedVisible = !!visibleInDrawer;
     }
 
     return(
@@ -41,6 +51,7 @@ export function renderMyDrawerScreen(routeName: string, label: string, title: st
                 title: title,
                 drawerIcon: getMyDrawerItemIcon(icon),
                 drawerActiveBackgroundColor: projectColor, // Customize the background color of the active drawer item.
+                header: header || getMyScreenHeader() // Render a custom header for the drawer.
             }}
         />
     );
@@ -98,7 +109,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
                     width: drawerWidth, // Apply the dynamically calculated width.
                 },
                 drawerIcon: getMyDrawerItemIcon("chevron-right"), // Default icon for the drawer items.
-                header: getMyDrawerHeader() // Render a custom header for the drawer.
+                header: getMyScreenHeader() // Render a custom header for the drawer.
             }}
             {...props}
         />

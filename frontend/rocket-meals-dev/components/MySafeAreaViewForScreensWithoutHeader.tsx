@@ -14,7 +14,7 @@ import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
-import {getMyDrawerHeader} from "@/components/drawer/MyDrawerHeader";
+import {getMyScreenHeader} from "@/components/drawer/MyScreenHeader";
 import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";

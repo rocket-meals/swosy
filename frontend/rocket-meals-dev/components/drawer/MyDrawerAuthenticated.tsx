@@ -4,12 +4,14 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
 
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
+    const translation_canteens = useTranslation(TranslationKeys.canteens);
 
     const customDrawerItems: MyDrawerCustomItemProps[] = [
         /**
@@ -28,9 +30,34 @@ export const MyDrawerAuthenticated = (props: any) => {
         <MyDrawer
             customDrawerItems={customDrawerItems}
         >
-            {renderMyDrawerScreen("home/index", translation_home, translation_home, "home")}
-            {renderMyDrawerScreen("settings/index", translation_settings, translation_settings, "cog")}
-            {renderMyDrawerScreen("components/index", "Components", "Components", "drawing-box", isDevelopMode)}
+            {renderMyDrawerScreen({
+                routeName: "home/index",
+                label: translation_home,
+                title: translation_home,
+                icon: "home",
+                visibleInDrawer: false
+            })}
+
+            {renderMyDrawerScreen({
+                    routeName: "foodoffers/index",
+                    label: translation_canteens,
+                    title: translation_canteens,
+                    icon: "silverware-variant",
+                    header: getMyScreenHeaderFoodOffers()
+            })}
+            {renderMyDrawerScreen({
+                routeName: "settings/index",
+                label: translation_settings,
+                title: translation_settings,
+                icon: "cog",
+            })}
+            {renderMyDrawerScreen({
+                routeName: "components/index",
+                label: "Components",
+                title: "Components",
+                icon: "drawing-box",
+                visibleInDrawer: isDevelopMode
+            })}
         </MyDrawer>
     )
 }

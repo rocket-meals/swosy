@@ -8,8 +8,9 @@ import {
     DirectusClient,
     graphql,
     GraphqlClient,
-    login, LoginOptions,
-    readMe, ReadProviderOutput, readProviders,
+    readMe,
+    ReadProviderOutput,
+    readProviders,
     rest,
     RestClient,
     serverInfo,
@@ -17,7 +18,6 @@ import {
 } from "@directus/sdk";
 import {CustomDirectusTypes, DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {UrlHelper} from "@/helper/UrlHelper";
-import {DirectusImage} from "@/components/project/DirectusImage";
 
 
 interface ExtendedProperties {
