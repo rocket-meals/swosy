@@ -1,34 +1,9 @@
-import {StyleSheet} from 'react-native';
-import {View, Text} from "@/components/Themed";
-import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
+import {Custom_Wiki_Ids} from "@/states/SynchedWikis";
+import {LegalScreenWithWiki} from "@/compositions/legal/LegalScreenWithWiki";
 
-export default function ScreenPrivacyPolicy() {
+export default function LegalScreenPrivacyPolicy() {
 
     return (
-        <View>
-            <Text>{"Here comes privacy policy"}</Text>
-            <LegalRequiredLinks />
-        </View>
+        <LegalScreenWithWiki custom_id={Custom_Wiki_Ids.privacy_policy} />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    link: {
-        marginTop: 15,
-        paddingVertical: 15,
-    },
-    linkText: {
-        fontSize: 14,
-        color: '#2e78b7',
-    },
-});

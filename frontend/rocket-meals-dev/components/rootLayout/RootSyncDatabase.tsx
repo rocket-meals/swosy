@@ -8,7 +8,7 @@ import {
 } from "@/states/SyncStateServerInfo";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
-import {Buildings, Canteens, Foods} from "@/helper/database/databaseTypes/types";
+import {Buildings, Canteens, Foods, Wikis} from "@/helper/database/databaseTypes/types";
 import {useSynchedFoods} from "@/states/SynchedFoods";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {
@@ -19,6 +19,7 @@ import {
 import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
 import {ScrollView} from "react-native";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
+import {useSynchedWikisDict} from "@/states/SynchedWikis";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -53,6 +54,9 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   let buildingsCollectionHelper = new CollectionHelper<Buildings>("buildings");
   const [buildings, setBuildings, lastUpdateBuildings] = useSynchedBuildingsDict()
 
+  let wikisCollectionHelper = new CollectionHelper<Wikis>("wikis");
+  const [wikis, setWikis, lastUpdateWikis] = useSynchedWikisDict()
+
   const foodsCollectionHelper = new CollectionHelper<Foods>("foods");
   const [foods, setFoods, lastUpdateFoods] = useSynchedFoods()
 
@@ -72,6 +76,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   addSynchedResource("buildings", buildings, lastUpdateBuildings)
   addSynchedResource("foods", foods, lastUpdateFoods)
   addSynchedResource("profile", profile, lastUpdateProfile);
+  const itemsToLoad = [canteens, profile, foods, wikis];
 
   function checkSynchedResources(){
     //console.log("--- checkSynchedResources ---");
@@ -115,6 +120,12 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     //console.log("canteensDict", canteensDict)
     //await wait(2000)
     setCanteens(canteensDict, nowInMs);
+  }
+
+  async function updateWikis(){
+    let wikisList = await wikisCollectionHelper.readItems(CollectionHelper.getQueryWithRelatedFieldsAndTranslations())
+    let wikisDict = wikisCollectionHelper.convertListToDict(wikisList, "id")
+    setWikis(wikisDict, nowInMs)
   }
 
   async function updateBuildings(){
@@ -164,6 +175,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
           await updateBuildings();
           await updateFoods()
           await updateProfile()
+          await updateWikis()
         }
       } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 
@@ -180,7 +192,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     if(syncComplete){
       props.setSyncComplete(true);
     }
-  }, [canteens, profile, foods]);
+  }, itemsToLoad);
 
   return <>
     <ScrollView style={{width: "100%", height: "100%"}}>

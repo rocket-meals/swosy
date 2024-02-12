@@ -14,6 +14,7 @@ import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useIsCurrentUserAnonymous} from "@/states/User";
 import {useIsServerOnline} from "@/states/SyncStateServerInfo";
+import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 
 export async function loadProfileRemote(user: DirectusUsers | undefined) {
     console.log("loadProfileRemote");
@@ -96,6 +97,12 @@ export function useNickname(): [string | undefined, ((newValue: string | undefin
     }
     const nickname = profile?.nickname
     return [nickname, setNickname]
+}
+
+export function useProfileLanguageCode(){
+    let default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+    const [profile, setProfile] = useSynchedProfile();
+    return profile?.language || default_language_code;
 }
 
 export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{

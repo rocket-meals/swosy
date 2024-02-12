@@ -98,6 +98,7 @@ interface AppState {
     onSave: (value: string | undefined | null) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
     debug?: boolean,
+    value?: string,
     disabled?: boolean
     description?: string,
 }
@@ -106,9 +107,14 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
 
     const title = label;
 
-    const initialValue = props.labelRight
+
+    const initialValue = props?.value || props.labelRight
     const placeholder = props.placeholder;
     const [inputValue, setInputValue] = useState(initialValue)
+    let labelRight = inputValue
+    if(props.labelRight){
+        labelRight = props.labelRight
+    }
 
     let items: MyGlobalActionSheetItem[] = [];
 
@@ -163,8 +169,6 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         title: title,
         items: items
     }
-
-    let labelRight = inputValue
 
     let usedIconRight = rightIcon;
     if(usedIconRight===undefined){

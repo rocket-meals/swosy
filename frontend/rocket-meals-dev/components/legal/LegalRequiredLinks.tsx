@@ -9,12 +9,14 @@ export const LegalRequiredLinks = (props: any) => {
     const translation_about_us = useTranslation(TranslationKeys.about_us);
     const translation_license = useTranslation(TranslationKeys.license);
     const translation_cookie_policy = useTranslation(TranslationKeys.cookie_policy);
+    const translation_accessibility = useTranslation(TranslationKeys.accessibility);
 
     let content = [];
     content.push(<LegalRequiredLink href={"/(aux)/about-us"}  text={translation_about_us} />);
     content.push(<LegalRequiredLink href={"/(aux)/privacy-policy"} text={translation_privacy_policy} />);
     content.push(<LegalRequiredLink href={"/(aux)/license"} text={translation_license} />);
     content.push(<LegalRequiredLink href={"/(aux)/cookie-policy"} text={translation_cookie_policy} />);
+    content.push(<LegalRequiredLink href={"/(aux)/accessibility"} text={translation_accessibility} />);
 
     function renderSpacer(key: string) {
         return (

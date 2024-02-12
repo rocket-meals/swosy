@@ -30,6 +30,7 @@ export class TranslationKeys {
 
   static about_us = createTranslationKey("about_us", "Über uns");
   static license = createTranslationKey("license", "Lizenz");
+  static accessibility = createTranslationKey("accessibility", "Barrierefreiheit");
   static terms_and_conditions = createTranslationKey("terms_and_conditions", "Nutzungsbedingungen");
   static cookie_policy = createTranslationKey("cookie_policy", "Cookie-Richtlinie");
   static privacy_policy = createTranslationKey("privacy_policy", "Datenschutzerklärung");
