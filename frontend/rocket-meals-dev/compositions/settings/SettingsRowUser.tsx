@@ -30,7 +30,7 @@ export const SettingsRowUser: FunctionComponent<AppState> = ({...props}) => {
 
     return(
         <>
-            <SettingsRow label={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
+            <SettingsRow labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
             </SettingsRow>
             {renderDebug()}
         </>

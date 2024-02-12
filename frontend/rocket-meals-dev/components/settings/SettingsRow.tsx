@@ -8,7 +8,7 @@ import {useProjectColor} from "@/states/ProjectInfo";
 export interface SettingsRowProps {
     key?: any;
     children?: any;
-    label: string,
+    labelLeft: string,
     labelRight?: string | null,
     leftContent?: string | any,
     rightContent?: React.ReactNode,
@@ -64,7 +64,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
     let item = {
         key: props?.key,
         icon: props.leftIcon,
-        label: props.label,
+        label: props.labelLeft,
         accessibilityLabel: props.accessibilityLabel,
         onSelect: props.onPress,
         leftIcon: props.leftIcon,

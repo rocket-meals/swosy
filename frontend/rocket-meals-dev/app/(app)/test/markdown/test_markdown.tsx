@@ -80,7 +80,7 @@ export default function ScreenMarkdownTest() {
                     value={mardkown}
                     labelRight={"Edit Markdown"}
                     leftIcon={"text"}
-                    accessibilityLabel={"Edit Markdown"} label={"Edit Markdown"} onSave={
+                    accessibilityLabel={"Edit Markdown"} labelLeft={"Edit Markdown"} onSave={
                     (value) => {
                         if(value) {
                             setMarkdown(value)

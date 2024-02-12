@@ -93,7 +93,7 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 interface AppState {
     accessibilityLabel: string,
     placeholder?: string,
-    label: string,
+    labelLeft: string,
     // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
     onSave: (value: string | undefined | null) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
@@ -103,9 +103,9 @@ interface AppState {
     description?: string,
 }
 
-export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, label, rightIcon,...props}) => {
+export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, labelLeft, rightIcon,...props}) => {
 
-    const title = label;
+    const title = labelLeft;
 
 
     const initialValue = props?.value || props.labelRight
@@ -140,7 +140,7 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
 
     items.push({
         key: "test",
-        label: label,
+        label: labelLeft,
         icon: "test",
         active: false,
         accessibilityLabel: "test",
@@ -176,6 +176,6 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
     }
 
     return(
-        <SettingsRowActionsheet rightIcon={usedIconRight} label={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} {...props}  />
+        <SettingsRowActionsheet rightIcon={usedIconRight} labelLeft={labelLeft} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={labelLeft} {...props}  />
     )
 }

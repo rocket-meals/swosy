@@ -100,9 +100,19 @@ export function useNickname(): [string | undefined, ((newValue: string | undefin
 }
 
 export function useProfileLanguageCode(){
-    let default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+    const [language, setLanguage] = useProfileLanguage();
+    return language;
+}
+
+export function useProfileLanguage(): [string, ((newValue: string) => void)]{
     const [profile, setProfile] = useSynchedProfile();
-    return profile?.language || default_language_code;
+    let language = profile?.language || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+    const setLanguage = (language: string) => {
+        profile.language = language;
+        return setProfile(profile);
+    }
+    return [language, setLanguage];
+
 }
 
 export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{

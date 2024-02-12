@@ -36,6 +36,7 @@ export type MyGlobalActionSheetItem = {
     label: string,
     accessibilityLabel: string,
     render?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
+    renderLeftIcon?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     icon?: string,
     active?: boolean,
     onSelect?: (key: string) => Promise<boolean | void> // return false to not close the actionsheet
@@ -141,7 +142,10 @@ export const MyGlobalActionSheet = (props: any) => {
                 let checkboxIconName = isActive ? "checkbox-blank-circle" : "checkbox-blank-circle-outline"
                 let renderedCheckboxIcon = <Icon color={usedTextColor} name={checkboxIconName} />
 
-                let renderedLeftIcon = <Icon color={usedTextColor} name={item.icon} />
+                let renderedLeftIcon: any = <Icon color={usedTextColor} name={item.icon} />
+                if(!!item.renderLeftIcon){
+                    renderedLeftIcon = item.renderLeftIcon(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
+                }
 
                 renderedItems.push(
                     <ActionsheetItem

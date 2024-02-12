@@ -6,13 +6,13 @@ import {Text} from "@/components/Themed";
 
 interface AppState {
     accessibilityLabel: string,
-    label: string,
+    labelLeft: string,
     leftIconOn?: string,
     leftIconOff?: string,
     variable: SyncStateKeys,
     onPress?: (nextValue: boolean) => void,
 }
-export const SettingsRowSyncBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({leftIcon,...props}) => {
+export const SettingsRowSyncBooleanSwitch: FunctionComponent<AppState & SettingsRowProps> = ({leftIcon, labelLeft,...props}) => {
 
     const [isCheckedRaw, setIsChecked] = useSyncState<boolean>(props.variable);
     const isChecked = isCheckedRaw===true
@@ -37,6 +37,6 @@ export const SettingsRowSyncBooleanSwitch: FunctionComponent<AppState & Settings
     }
 
     return(
-        <SettingsRowBooleanSwitch leftIcon={useLeftIcon} {...props} value={isChecked} onPress={onPress} />
+        <SettingsRowBooleanSwitch leftIcon={useLeftIcon} {...props} labelLeft={labelLeft} value={isChecked} onPress={onPress} />
     )
 }

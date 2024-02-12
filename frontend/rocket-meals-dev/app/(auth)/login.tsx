@@ -17,6 +17,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {LoginLayout} from "@/components/auth/LoginLayout";
 import {MyButton} from "@/components/buttons/MyButton";
 import {useNickname} from "@/states/SynchedProfile";
+import {SettingsRowProfileLanguage} from "@/compositions/settings/SettingsRowProfileLanguage";
 
 export default function Login() {
 
@@ -189,7 +190,7 @@ export default function Login() {
         <LoginLayout>
             <Text style={{fontSize: 24, fontWeight: "bold"}}>{translation_sign_in}</Text>
             <View style={{height: 16}}></View>
-            <Divider />
+            <SettingsRowProfileLanguage />
             <View style={{height: 16}}></View>
             {renderWhenLoggedIn()}
             {renderWhenNotLoggedIn()}

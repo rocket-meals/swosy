@@ -31,7 +31,7 @@ export default function HomeScreen() {
                 <MyButton key={"newStyleTest"} tooltip={"Test"} leftIconColoredBox={true} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <SettingsRowSpacerWithDivider />
-          <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} label={"Test"} onSave={setText} />
+          <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} labelLeft={"Test"} onSave={setText} />
           <SettingsRowSpacerWithDivider />
 
             <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} text={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />

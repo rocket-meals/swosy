@@ -18,6 +18,7 @@ import {SettingsRowProfileCanteen} from "@/compositions/settings/SettingsRowProf
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
+import {SettingsRowProfileLanguage} from "@/compositions/settings/SettingsRowProfileLanguage";
 
 export default function SettingsScreen() {
 
@@ -27,6 +28,7 @@ export default function SettingsScreen() {
            <SettingsRowSpacerWithDivider />
            <SettingsRowUser />
            <SettingsRowProfileNickname />
+           <SettingsRowProfileLanguage />
            <SettingsRowProfileCanteen />
            <SettingsRowSpacerWithDivider />
            <SettingsRowColorScheme />
@@ -34,9 +36,9 @@ export default function SettingsScreen() {
            <SettingsRowSpacerWithDivider />
            <SettingsRowLogout />
            <SettingsRowSpacerWithDivider />
-           <SettingsRowSyncBooleanSwitch label={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
-           <SettingsRowSyncBooleanSwitch label={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
-           <SettingsRowSyncBooleanSwitch label={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
+           <SettingsRowSyncBooleanSwitch labelLeft={"Debug"} leftIcon={"bug"} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
+           <SettingsRowSyncBooleanSwitch labelLeft={"Demo"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
+           <SettingsRowSyncBooleanSwitch labelLeft={"Developer"} leftIconOn={"test-tube"} leftIconOff={"test-tube-empty"} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
        </ScrollViewWithGradient>
      </MySafeAreaView>
   );
