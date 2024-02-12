@@ -88,6 +88,16 @@ export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<P
     return [usedResource, usedSetResource, lastUpdate]
 }
 
+export function useNickname(): [string | undefined, ((newValue: string | undefined) => Promise<boolean | void>)]{
+    const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+    async function setNickname(nextValue: string | undefined){
+        console.log("SettingsRowProfileNickname onSave", nextValue)
+        return await setProfile({...profile, nickname: nextValue})
+    }
+    const nickname = profile?.nickname
+    return [nickname, setNickname]
+}
+
 export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{
     const [profile, setProfile] = useSynchedProfile();
     const [canteenDict, setCanteenDict] = useSynchedCanteensDict();

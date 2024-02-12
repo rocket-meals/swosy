@@ -59,7 +59,7 @@ export const MyGridList = <T extends { key: string }>({
                                                  horizontal,
                                                 spacing,
                                                 flatListProps,
-                                             }: GridListProps<T>) => {
+                                             }: GridListProps<T>): React.ReactElement => {
 
     const amountCompleteRows = Math.floor(data.length / gridAmount);
     const amountTotalItemsLastRow = data.length - amountCompleteRows * gridAmount;

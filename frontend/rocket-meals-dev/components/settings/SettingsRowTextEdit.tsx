@@ -95,7 +95,7 @@ interface AppState {
     placeholder?: string,
     label: string,
     // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
-    onSave: (value: string | undefined | null) => (boolean | void) | Promise<boolean | void> | Dispatch<SetStateAction<string>>,
+    onSave: (value: string | undefined | null) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean

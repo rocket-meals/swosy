@@ -16,17 +16,20 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {LoginLayout} from "@/components/auth/LoginLayout";
 import {MyButton} from "@/components/buttons/MyButton";
+import {useNickname} from "@/states/SynchedProfile";
 
 export default function Login() {
 
     const loggedIn = isUserLoggedIn();
     const logout = useLogoutCallback()
+    const [nickname, setNickname] = useNickname()
 
     const [changedLoginStatus, setChangedLoginStatus] = useState(false)
 
     const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
     const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
     const translation_sign_in= useTranslation(TranslationKeys.sign_in);
+    const translation_currently_logged_in_as = useTranslation(TranslationKeys.currently_logged_in_as);
     const translation_if_you_want_to_login_with_this_account_please_press = useTranslation(TranslationKeys.if_you_want_to_login_with_this_account_please_press);
     const translation_continue = useTranslation(TranslationKeys.continue);
     const translation_logout = useTranslation(TranslationKeys.logout);
@@ -108,7 +111,7 @@ export default function Login() {
         if(loggedIn) {
             return (
                 <>
-                    <Text>{"TODO: Show name of user"}</Text>
+                    <Text>{translation_currently_logged_in_as+": "+nickname}</Text>
                     <Text>{translation_if_you_want_to_login_with_this_account_please_press+": "+translation_continue}</Text>
                     <View style={{height: 16}}></View>
                     <View style={{flexDirection: "row", width: "100%"}}>
