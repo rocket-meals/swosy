@@ -6,6 +6,7 @@ import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesW
 import {Canteens} from "@/helper/database/databaseTypes/types";
 import {MyGridList} from "@/components/grid/MyGridList";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
+import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
@@ -15,7 +16,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
   const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
   const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 
-    const amountColumns = useBreakPointValue({sm: 2, md: 3, lg: 4, xl: 5})
+    const amountColumns = useMyGridListDefaultColumns();
 
     type DataItem = { key: string; data: Canteens }
     let data: DataItem[] = []

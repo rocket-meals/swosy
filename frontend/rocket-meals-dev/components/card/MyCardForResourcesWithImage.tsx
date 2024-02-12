@@ -7,6 +7,7 @@ import {DirectusImage} from "@/components/project/DirectusImage";
 import {MyCardWithText} from "@/components/card/MyCardWithText";
 import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardProps} from "@/components/card/MyCard";
+import {Rectangle} from "@/components/shapes/Rectangle";
 
 export type MyCardForResourcesWithImageProps = {
     text?: string,
@@ -20,9 +21,11 @@ export type MyCardForResourcesWithImageProps = {
 // define the button component
 export const MyCardForResourcesWithImage = ({text, accessibilityLabel, assetId, onPress, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
-    const usedImageHeight = imageHeight || 100;
+    const usedImageHeight = imageHeight || "100%";
 
-    const image = <DirectusImage assetId={assetId} thumbHash={thumbHash} style={{width: "100%", height: usedImageHeight}} />
+    const image = <Rectangle>
+        <DirectusImage assetId={assetId} thumbHash={thumbHash} style={{width: "100%", height: usedImageHeight}} />
+    </Rectangle>
     let topContent = image;
 
     if(onPress){

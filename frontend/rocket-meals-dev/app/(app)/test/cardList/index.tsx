@@ -4,10 +4,11 @@ import {ListRenderItemInfo} from "react-native";
 import {useState} from "react";
 import {Heading, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
+import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
 
 export default function CardListTestScreen() {
 
-    const initialAmountColumns = 2;
+    const initialAmountColumns = useMyGridListDefaultColumns();
     const initialAmountItems = 23;
 
     const [amountColumns, setAmountColumns] = useState(initialAmountColumns);
