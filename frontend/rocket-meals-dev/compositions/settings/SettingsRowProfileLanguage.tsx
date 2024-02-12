@@ -1,12 +1,5 @@
 import React, {FunctionComponent} from "react";
-import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
-import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {
-    DrawerConfigPosition,
-    getDrawerPositionKeyOptions,
-    useDrawerPositionRaw
-} from "@/states/DrawerSyncConfig";
 import {useProfileLanguage} from "@/states/SynchedProfile";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {

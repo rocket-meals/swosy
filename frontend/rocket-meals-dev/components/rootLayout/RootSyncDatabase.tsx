@@ -63,9 +63,6 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   let wikisCollectionHelper = new CollectionHelper<Wikis>("wikis");
   const [wikis, setWikis, lastUpdateWikis] = useSynchedWikisDict()
 
-  const foodsCollectionHelper = new CollectionHelper<Foods>("foods");
-  const [foods, setFoods, lastUpdateFoods] = useSynchedFoods()
-
   const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 
 
@@ -84,7 +81,6 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
    */
   addSynchedResource("canteens", canteens, lastUpdateCanteens)
   addSynchedResource("buildings", buildings, lastUpdateBuildings)
-  addSynchedResource("foods", foods, lastUpdateFoods)
   addSynchedResource("profile", profile, lastUpdateProfile);
   addSynchedResource("wikis", wikis, lastUpdateWikis)
   addSynchedResource("languages", languagesDict, lastUpdateLanguages)
@@ -151,16 +147,6 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     setBuildings(buildingsDict, nowInMs)
   }
 
-  async function updateFoods(){
-    //console.log("updateFoods")
-    let foodsList = await foodsCollectionHelper.readItems()
-    //console.log("foodsList", foodsList)
-    let foodsDict = foodsCollectionHelper.convertListToDict(foodsList, "id")
-    //console.log("foodsDict", foodsDict)
-    //await wait(2000)
-    setFoods(foodsDict, nowInMs);
-  }
-
   async function updateLanguages(){
     let languagesDict = await loadLanguageRemoteDict()
     setLanguagesDict(languagesDict, nowInMs)
@@ -195,7 +181,6 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
         if(!demo){
           await updateCanteens()
           await updateBuildings();
-          await updateFoods()
           await updateProfile()
           await updateWikis()
           await updateLanguages()
