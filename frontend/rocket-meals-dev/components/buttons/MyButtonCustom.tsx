@@ -1,6 +1,6 @@
-import {Icon, View} from '@/components/Themed';
+import {Icon, Text, View} from '@/components/Themed';
 import React, {useState} from "react";
-import {ActionsheetItem, ActionsheetItemText, Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
+import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {Pressable, ViewStyle} from "react-native";
 import {MyNewButtonProps} from "@/components/buttons/MyButton";
@@ -16,7 +16,7 @@ export type MyNewButtonPropsCustom = {
     inactiveHoveredTextColor?: string,
     activeBorderColor?: string,
     inactiveBorderColor?: string,
-} & MyNewButtonProps
+} & MyNewButtonProps // TODO change this to merge with MyButton
 export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
@@ -68,25 +68,23 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
     }
 
     let styleTakeAllSpace: StyleProp<ViewStyle>= {
-        flex: 1, // This makes the child take all the space
-        height: "100%",
         justifyContent: "center",
+        width: "100%",
     }
     let styleUseOnlyNecessarySpace: StyleProp<ViewStyle> = {
         alignSelf: 'flex-start', // This makes the child take only the necessary space
     }
 
     let outerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
-    let innerTextViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
 
     let defaultBorderRadius = 6;
     let defaultPadding = 12;
 
     let defaultInnerStyle: StyleProp<ViewStyle> = {
         flexDirection: "row",
-        height: "100%",
-        marginVertical: defaultPadding,
     }
+
+
     let usedInnerViewStyle: StyleProp<ViewStyle> = [defaultInnerStyle]
 
     let pressedStyle: StyleProp<ViewStyle> = {
@@ -101,59 +99,101 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
     }
 
 
-    let leftIconPaddingRight = defaultPadding/2
-    let leftIconPaddingLeft = defaultPadding/2
+    let leftIconPaddingRight = defaultPadding
+    let leftIconPaddingLeft = defaultPadding
 
     let leftIconViewStyle: StyleProp<ViewStyle> = {
         backgroundColor: leftIconColoredBox ? usedIconBoxBackgroundColor : undefined,
         paddingRight: leftIconPaddingRight,
         paddingLeft: leftIconPaddingLeft,
-        borderBottomRightRadius: defaultBorderRadius,
-        borderTopRightRadius: defaultBorderRadius,
-        height: "100%",
+        paddingVertical: defaultPadding,
+        borderRadius: defaultBorderRadius,
+        flexGrow: 1,
         justifyContent: "center",
     }
 
     let leftItem: any = undefined
     if(leftIcon){
-        leftItem = <View style={leftIconViewStyle}>
-            <ActionsheetItemText><Icon color={usedIconBoxTextColor} name={leftIconUsed} /></ActionsheetItemText>
-        </View>
+        leftItem = <View style={{
+            flexShrink: 1
+            }}>
+                <View style={leftIconViewStyle}>
+                    <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
+                </View>
+            </View>
     }
 
     let renderedText: any = null;
     if(text){
-        renderedText = <View style={[innerTextViewStyle]}>
-            <ActionsheetItemText selectable={true} sx={{
-                color: usedTextColor,
-            }}>{text}</ActionsheetItemText>
+        renderedText = <View style={{
+            flex: 1,
+            flexGrow: 1,
+        }}>
+            <View style={{
+                flex: 1,
+                flexGrow: 1,
+                marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+                marginLeft: defaultPadding/2, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+                marginRight: defaultPadding/2, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            }}>
+                <Text>{text}</Text>
+            </View>
         </View>
     }
 
-    let rightIconPaddingLeft = 0
-    if(rightIconUsed && text){
-        rightIconPaddingLeft = defaultPadding/2
+    let rightIconViewStyle: StyleProp<ViewStyle> = {
+        paddingRight: leftIconPaddingRight,
+        paddingLeft: leftIconPaddingLeft,
+        paddingVertical: defaultPadding,
+        borderRadius: defaultBorderRadius,
+        flexGrow: 1,
+        justifyContent: "center",
     }
 
     let rightItem: any = undefined
     if(rightIcon){
         rightItem = <View style={{
-            paddingLeft: rightIconPaddingLeft,
-            height: "100%",
-            justifyContent: "center",
+            flexShrink: 1
         }}>
-            <ActionsheetItemText><Icon color={usedTextColor} name={rightIconUsed} /></ActionsheetItemText>
+            <View style={rightIconViewStyle}>
+                <Icon color={usedIconBoxTextColor} name={rightIconUsed} />
+            </View>
         </View>
     }
 
 
+    /**
+     <ActionsheetItem
+     {...triggerProps}
+     disabled={disabled}
+     onHoverIn={() => setHovered(true)}
+     onHoverOut={() => setHovered(false)}
+     onPressIn={() => setIsPressed(true)}
+     onPressOut={() => setIsPressed(false)}
+
+     accessibilityLabel={accessibilityLabel}
+
+     style={{
+     borderColor: usedBorderColor,
+     borderWidth: 1,
+     backgroundColor: usedViewBackgroundColor,
+     padding: 0,
+     margin: 0,
+     overflow: "hidden",
+     borderRadius: defaultBorderRadius,
+     }}
+     onPress={onPress}>
+     <View style={usedInnerViewStyle}>
+     {leftItem}
+     {renderedText}
+     {rightItem}
+     </View>
+     </ActionsheetItem>
+     * @param triggerProps
+     */
 
     const renderButton = (triggerProps: any) => (
-        <View style={
-            [outerViewStyle, disabledStyle, pressedStyle]
-        }>
-            <ActionsheetItem
-                {...triggerProps}
+            <Pressable
                 disabled={disabled}
                 onHoverIn={() => setHovered(true)}
                 onHoverOut={() => setHovered(false)}
@@ -162,23 +202,25 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
 
                 accessibilityLabel={accessibilityLabel}
 
-                style={{
-                    borderColor: usedBorderColor,
-                    borderWidth: 1,
-                    backgroundColor: usedViewBackgroundColor,
-                    padding: 0,
-                    margin: 0,
-                    overflow: "hidden",
-                    borderRadius: defaultBorderRadius,
-                }}
-                onPress={onPress}>
+                style={
+                    [outerViewStyle, disabledStyle, pressedStyle,                 {
+                        borderColor: usedBorderColor,
+                        borderWidth: 1,
+                        backgroundColor: usedViewBackgroundColor,
+                        justifyContent: "center",
+                        overflow: "hidden",
+                        borderRadius: defaultBorderRadius,
+                        //height: "100%",
+                    }]
+            }
+                onPress={onPress}
+            >
                 <View style={usedInnerViewStyle}>
                     {leftItem}
                     {renderedText}
                     {rightItem}
                 </View>
-            </ActionsheetItem>
-        </View>
+            </Pressable>
     )
 
     if(!!tooltip){

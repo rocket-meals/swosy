@@ -11,11 +11,14 @@ export const getMyScreenHeaderFoodOffers: getMyScreenHeaderFunction = () => {
             return (
                 <View style={{
                     height: "100%",
+                    width: "100%",
                     backgroundColor: "orange",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    justifyContent: "flex-end",
                     flexDirection: "row",
                 }} >
+                    <View style={{height: 10, width: 10, backgroundColor: "green"}}>
+
+                    </View>
                     <SettingsButtonProfileCanteen />
                 </View>
             );

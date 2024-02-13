@@ -141,18 +141,16 @@ export default function Login() {
                     <View style={{height: 8}}></View>
                     <TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={translation_password} />
                     <View style={{height: 8}}></View>
-                    <View>
-                        <MyButton
-                            leftIconColoredBox={true}
-                            leftIcon={IconNames.sign_in_icon}
-                            text={translation_sign_in}
-                            accessibilityLabel={translation_sign_in}
-                            tooltip={translation_sign_in}
-                            disabled={loggedIn || !email || !password}
-                            onPress={() => {
-                                authenticate_with_email_and_password(email, password)
-                            }}  />
-                    </View>
+                    <MyButton
+                        leftIconColoredBox={true}
+                        leftIcon={IconNames.sign_in_icon}
+                        text={translation_sign_in}
+                        accessibilityLabel={translation_sign_in}
+                        tooltip={translation_sign_in}
+                        disabled={loggedIn || !email || !password}
+                        onPress={() => {
+                            authenticate_with_email_and_password(email, password)
+                        }}  />
                 </>
             )
         }

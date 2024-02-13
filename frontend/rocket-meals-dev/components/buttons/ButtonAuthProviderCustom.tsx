@@ -18,7 +18,7 @@ export const ButtonAuthProviderCustom = ({ text, accessibilityLabel, onPress, ic
      */
 
     return(
-        <MyButton text={text} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIcon={icon_name}
+        <MyButton text={text+" "+text+ " "+text} onPress={onPress} disabled={disabled} accessibilityLabel={accessibilityLabel} leftIcon={icon_name}
                   leftIconColoredBox={true} />
     )
 };
