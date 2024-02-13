@@ -4,6 +4,7 @@ import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {Pressable, ViewStyle} from "react-native";
 import {MyNewButtonProps} from "@/components/buttons/MyButton";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
@@ -114,9 +115,10 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
             marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
             marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
             marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-            flexDirection: 'row', flexWrap: 'wrap'
+            flexDirection: 'row', flexWrap: 'wrap',
+            wordBreak: "break-word" // only for web since otherwise a long word would not break
         }}>
-            <Text>{text}</Text>
+            <Text style={{ flexShrink: 1 }}>{text}</Text>
         </View>
     }
 
@@ -124,19 +126,13 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         paddingRight: leftIconPaddingRight,
         paddingLeft: leftIconPaddingLeft,
         paddingVertical: defaultPadding,
-        borderRadius: defaultBorderRadius,
-        flexGrow: 1,
         justifyContent: "center",
     }
 
     let rightItem: any = undefined
     if(rightIcon){
-        rightItem = <View style={{
-            flexShrink: 1
-        }}>
-            <View style={rightIconViewStyle}>
-                <Icon color={usedIconBoxTextColor} name={rightIconUsed} />
-            </View>
+        rightItem = <View style={rightIconViewStyle}>
+            <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
         </View>
     }
 
@@ -192,6 +188,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                         borderRadius: defaultBorderRadius,
                         flexDirection: "row",
                         //height: "100%",
+                        flexShrink: 1,
                     }]
             }
                 onPress={onPress}
@@ -202,6 +199,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                     alignItems: "flex-start",
                     // and make sure the text gets wrapped if it is too long
                     flexShrink: 1,
+                    flexGrow: PlatformHelper.isWeb() ? 1 : useOnlyNecessarySpace ? 0 : 1,
                 }}>
                     {renderedText}
                 </View>

@@ -5,87 +5,52 @@ import {useState} from "react";
 import {Heading, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MyButton} from "@/components/buttons/MyButton";
 
-export default function CardListTestScreen() {
-
-    const initialAmountColumns = useMyGridListDefaultColumns();
-    const initialAmountItems = 23;
-
-    const [amountColumns, setAmountColumns] = useState(initialAmountColumns);
-    const [amountItems, setAmountItems] = useState(initialAmountItems);
-
-    type DataItem = { key: string; data: { alias: string, image: string | undefined } }
-
-  let data: DataItem[] = []
-    let amount = amountItems;
-    for (let i = 0; i < amount; i++) {
-        data.push({key: i.toString(), data: {
-            alias: `Item ${i}`,
-            image: undefined
-        }})
-    }
-
-
-     const renderItem = (info: ListRenderItemInfo<DataItem>) => {
-     const {item, index} = info;
-        let title: string = item.data?.alias || "No name"
-         if(index === 14){
-            title = "This is a very long name for an item"
-         }
-
-        return (
-                <MyCardForResourcesWithImage
-                    key={item.key}
-                    text={title}
-                    assetId={item.data.image}
-                    onPress={() => console.log("Pressed")}
-                    accessibilityLabel={title}/>
-        );
-    }
-
-    function parseValueToInt(value: string | undefined | null, defaultNumber: number): number {
-        if (value) {
-            return parseInt(value)
-        } else {
-            return defaultNumber
-        }
-    }
+export default function ButtonTestScreen() {
 
   return (
-    <View
-        style={{
-            width: "100%",
-            height: "100%",
-        }}
-        >
-        <View style={{
-            width: "100%",
-            paddingBottom: 10,
-        }}>
-            <Heading>{"Parameters"}</Heading>
-            <SettingsRowTextEdit
-                leftIcon={"dots-grid"}
-                accessibilityLabel={"Edit Grid Amount"} labelLeft={"Edit Grid Amount"} onSave={
-                (value) => {
-                    setAmountColumns(parseValueToInt(value, initialAmountColumns))
-                }
-            } labelRight={amountColumns.toString()} />
-            <SettingsRowTextEdit
-                leftIcon={"view-list"}
-                accessibilityLabel={"Edit Amount Items"} labelLeft={"Edit Amount Items"} onSave={
-                (value) => {
-                    setAmountItems(parseValueToInt(value, initialAmountItems))
-                }
-            } labelRight={amountItems.toString()} />
-        </View>
-        <View style={{
-            width: "100%",
-            height: "100%",
-            flex: 1,
-        }}>
-            <MyGridList
-                data={data} renderItem={renderItem} gridAmount={amountColumns} />
-        </View>
-    </View>
+    <MySafeAreaView>
+        <MyScrollView>
+            <Heading>{"Button Takes only space required"}</Heading>
+            <View style={{
+                width: 200,
+                backgroundColor: "gray",
+                padding: 20,
+                flexDirection: "column",
+            }}>
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={true} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} useOnlyNecessarySpace={true} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={true} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Hallo dies ist ein langer Text der umgebrochen werden soll"} leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"account"} />
+            </View>
+            <Heading>{"Button Takes only space required in row"}</Heading>
+            <View style={{
+                width: 200,
+                backgroundColor: "gray",
+                padding: 20,
+                flexDirection: "row",
+                flexWrap: "wrap",
+            }}>
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={true} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} useOnlyNecessarySpace={true} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={true} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Hallo dies ist ein langer Text der umgebrochen werden soll"} leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"account"} />
+            </View>
+            <Heading>{"Button Takes whole space given"}</Heading>
+            <View style={{
+                width: 200,
+                backgroundColor: "gray",
+                padding: 20,
+            }}>
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={false} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} useOnlyNecessarySpace={false} leftIcon={"account"} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Test"} useOnlyNecessarySpace={false} leftIconColoredBox={true} />
+                <MyButton accessibilityLabel={"Test"} text={"Hallo dies ist ein langer Text der umgebrochen werden soll"} leftIconColoredBox={true} useOnlyNecessarySpace={false} leftIcon={"account"} />
+            </View>
+        </MyScrollView>
+    </MySafeAreaView>
   );
 }
