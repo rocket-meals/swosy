@@ -116,9 +116,11 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
             marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
             marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
             flexDirection: 'row', flexWrap: 'wrap',
-            wordBreak: "break-word" // only for web since otherwise a long word would not break
+
         }}>
-            <Text style={{ flexShrink: 1 }}>{text}</Text>
+            <Text style={{
+                flexShrink: 1,
+            }}>{text}</Text>
         </View>
     }
 

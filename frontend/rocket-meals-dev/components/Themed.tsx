@@ -146,9 +146,12 @@ export function Heading({style,...props}: TextProps) {
 export function Text({style,...props}: TextProps) {
     let textContrastColor = useTextContrastColor();
     // @ts-ignore
-    let mergedStyle = {color: textContrastColor}
+    let defaultStyle = {
+        color: textContrastColor,
+        wordBreak: "break-word" // only for web since otherwise a long word would not break
+    }
 
-  return <DefaultText selectable={true} style={[mergedStyle, style]} {...props} />;
+  return <DefaultText selectable={true} style={[defaultStyle, style]} {...props} />;
 }
 
 export function View({style, ...props}: ViewProps) {
