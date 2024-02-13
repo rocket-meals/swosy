@@ -67,15 +67,6 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         rightIconUsed = rightIconActive
     }
 
-    let styleTakeAllSpace: StyleProp<ViewStyle>= {
-        justifyContent: "center",
-        width: "100%",
-    }
-    let styleUseOnlyNecessarySpace: StyleProp<ViewStyle> = {
-        alignSelf: 'flex-start', // This makes the child take only the necessary space
-    }
-
-    let outerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
 
     let defaultBorderRadius = 6;
     let defaultPadding = 12;
@@ -107,37 +98,25 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         paddingRight: leftIconPaddingRight,
         paddingLeft: leftIconPaddingLeft,
         paddingVertical: defaultPadding,
-        borderRadius: defaultBorderRadius,
-        flexGrow: 1,
         justifyContent: "center",
     }
 
     let leftItem: any = undefined
     if(leftIcon){
-        leftItem = <View style={{
-            flexShrink: 1
-            }}>
-                <View style={leftIconViewStyle}>
-                    <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
-                </View>
-            </View>
+        leftItem = <View style={leftIconViewStyle}>
+            <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
+        </View>
     }
 
     let renderedText: any = null;
     if(text){
         renderedText = <View style={{
-            flex: 1,
-            flexGrow: 1,
+            marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            flexDirection: 'row', flexWrap: 'wrap'
         }}>
-            <View style={{
-                flex: 1,
-                flexGrow: 1,
-                marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-                marginLeft: defaultPadding/2, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-                marginRight: defaultPadding/2, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-            }}>
-                <Text>{text}</Text>
-            </View>
+            <Text>{text}</Text>
         </View>
     }
 
@@ -203,22 +182,28 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                 accessibilityLabel={accessibilityLabel}
 
                 style={
-                    [outerViewStyle, disabledStyle, pressedStyle,                 {
+                    [disabledStyle, pressedStyle,                 {
                         borderColor: usedBorderColor,
                         borderWidth: 1,
                         backgroundColor: usedViewBackgroundColor,
-                        justifyContent: "center",
+                        justifyContent: "flex-start",
+                        alignSelf: useOnlyNecessarySpace ? "flex-start" : undefined,
                         overflow: "hidden",
                         borderRadius: defaultBorderRadius,
+                        flexDirection: "row",
                         //height: "100%",
                     }]
             }
                 onPress={onPress}
             >
-                <View style={usedInnerViewStyle}>
-                    {leftItem}
+                {leftItem}
+                <View style={{
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    // and make sure the text gets wrapped if it is too long
+                    flexShrink: 1,
+                }}>
                     {renderedText}
-                    {rightItem}
                 </View>
             </Pressable>
     )
