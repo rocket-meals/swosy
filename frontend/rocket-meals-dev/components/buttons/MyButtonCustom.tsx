@@ -171,6 +171,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
 
     const renderButton = (triggerProps: any) => (
             <Pressable
+                {...triggerProps}
                 disabled={disabled}
                 onHoverIn={() => setHovered(true)}
                 onHoverOut={() => setHovered(false)}
