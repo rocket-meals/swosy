@@ -18,6 +18,7 @@ import {LoginLayout} from "@/components/auth/LoginLayout";
 import {MyButton} from "@/components/buttons/MyButton";
 import {useNickname} from "@/states/SynchedProfile";
 import {SettingsRowProfileLanguage} from "@/compositions/settings/SettingsRowProfileLanguage";
+import {IconNames} from "@/constants/IconNames";
 
 export default function Login() {
 
@@ -117,12 +118,11 @@ export default function Login() {
                     <View style={{height: 16}}></View>
                     <View style={{flexDirection: "row", width: "100%"}}>
                         <View style={{flex: 1}}>
-                            <MyTouchableOpacity accessibilityLabel={translation_logout} onPress={logout}>
-                                <Text>{translation_logout}</Text>
-                            </MyTouchableOpacity>
+                            <MyButton leftIcon={IconNames.logout_icon} accessibilityLabel={translation_logout} text={translation_logout} disabled={!loggedIn} onPress={logout} />
                         </View>
+                        <View style={{width: 8}}></View>
                         <View style={{flex: 1}}>
-                            <MyButton accessibilityLabel={translation_continue} text={translation_continue} disabled={!loggedIn} onPress={() => {
+                            <MyButton leftIcon={IconNames.sign_in_icon} accessibilityLabel={translation_continue} text={translation_continue} disabled={!loggedIn} onPress={() => {
                                 console.log("Handle sign in");
                                 signIn();
                             }} />
@@ -144,7 +144,7 @@ export default function Login() {
                     <View>
                         <MyButton
                             leftIconColoredBox={true}
-                            leftIcon={"account"}
+                            leftIcon={IconNames.sign_in_icon}
                             text={translation_sign_in}
                             accessibilityLabel={translation_sign_in}
                             tooltip={translation_sign_in}
@@ -161,7 +161,7 @@ export default function Login() {
             <>
                 <MyButton
                     leftIconColoredBox={false}
-                    leftIcon={"account-tie"}
+                    leftIcon={IconNames.sign_in_with_mail_icon}
                     text={translation_show_login_with_username_and_password}
                     accessibilityLabel={translation_show_login_with_username_and_password}
                     onPress={() => {

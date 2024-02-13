@@ -6,13 +6,14 @@ import {
     useGlobalActionSheetSettingProfileLanguage
 } from "@/compositions/settings/UseGlobalActionSheetSettingProfileLanguage";
 import {SettingsRow} from "@/components/settings/SettingsRow";
+import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
 
 }
 export const SettingsRowProfileLanguage: FunctionComponent<AppState> = ({...props}) => {
 
-    const colorSchemeIconName = "translate"
+    const colorSchemeIconName = IconNames.translate_icon
 
     const translation_edit = useTranslation(TranslationKeys.edit)
 

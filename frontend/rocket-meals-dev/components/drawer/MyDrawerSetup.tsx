@@ -23,7 +23,13 @@ export const MyDrawerSetup = (props: any) => {
         <MyDrawer
             customDrawerItems={customDrawerItems}
         >
-            {renderMyDrawerScreen("setup/index", "Setup", "Setup", undefined, false)}
+            {renderMyDrawerScreen({
+                routeName: "setup/index",
+                label: "Setup",
+                title: "Setup",
+                icon: "home",
+                visibleInDrawer: false
+            })}
         </MyDrawer>
     )
 }

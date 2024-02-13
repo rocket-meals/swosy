@@ -5,6 +5,7 @@ import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
+import {IconNames} from "@/constants/IconNames";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
@@ -37,19 +38,18 @@ export const MyDrawerAuthenticated = (props: any) => {
                 icon: "home",
                 visibleInDrawer: false
             })}
-
             {renderMyDrawerScreen({
                     routeName: "foodoffers/index",
                     label: translation_canteens,
                     title: translation_canteens,
-                    icon: "silverware-variant",
+                    icon: IconNames.foodoffers_icon,
                     header: getMyScreenHeaderFoodOffers()
             })}
             {renderMyDrawerScreen({
                 routeName: "settings/index",
                 label: translation_settings,
                 title: translation_settings,
-                icon: "cog",
+                icon: IconNames.settings_icon,
             })}
             {renderMyDrawerScreen({
                 routeName: "components/index",

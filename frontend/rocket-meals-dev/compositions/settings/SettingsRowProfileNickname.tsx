@@ -5,6 +5,7 @@ import {SettingsRow} from "@/components/settings/SettingsRow";
 import {useNickname, useSynchedProfile} from "@/states/SynchedProfile";
 import {Text, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
+import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
 
@@ -20,7 +21,7 @@ export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...prop
         return await setNickname(nextValue)
     }
 
-    const leftIcon = "account"
+    const leftIcon = IconNames.profile_nickname_icon
     const translation_title = useTranslation(TranslationKeys.nickname)
     const label = translation_title
     const labelRight = nickname

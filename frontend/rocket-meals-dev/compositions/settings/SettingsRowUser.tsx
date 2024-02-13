@@ -4,6 +4,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {Text, View} from "@/components/Themed";
 import {useCurrentUser} from "@/states/User";
+import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
 
@@ -13,7 +14,7 @@ export const SettingsRowUser: FunctionComponent<AppState> = ({...props}) => {
     let [currentUser, setUserWithCache] = useCurrentUser();
     const debug = useIsDebug();
 
-    const leftIcon = "badge-account-horizontal"
+    const leftIcon = IconNames.settings_user_account_icon
     const translation_title = useTranslation(TranslationKeys.user)
     const label = translation_title
     const labelRight = currentUser?.first_name || currentUser?.id

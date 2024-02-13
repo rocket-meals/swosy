@@ -1,0 +1,25 @@
+/**
+ * All icon names are from MaterialCommunityIcons
+ */
+export enum IconNames {
+  canteen_icon = "warehouse",
+  foodoffers_icon = "silverware-variant",
+  settings_icon = "cog",
+  drawer_position_icon = "menu",
+  drawer_position_left_icon = "format-horizontal-align-left",
+    drawer_position_right_icon = "format-horizontal-align-right",
+  settings_system_auto_icon = "autorenew",
+  translate_icon = "translate",
+  profile_nickname_icon = "account",
+  settings_user_account_icon = "badge-account-horizontal",
+  logout_icon = "logout",
+  sign_in_icon = "login",
+  sign_in_with_mail_icon = "account-tie",
+  debug_icon = "bug",
+  demo_icon_on = "test-tube",
+    demo_icon_off = "test-tube-empty",
+  color_scheme_icon = "theme-light-dark",
+  color_scheme_light_icon = "white-balance-sunny",
+    color_scheme_dark_icon = "moon-waning-crescent",
+  color_scheme_system_icon = "theme-light-dark",
+}

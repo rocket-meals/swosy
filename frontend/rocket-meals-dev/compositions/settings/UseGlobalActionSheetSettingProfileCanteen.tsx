@@ -1,30 +1,17 @@
-import React, {FunctionComponent} from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {SettingsRow} from "@/components/settings/SettingsRow";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
-import {MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
-import {CanteenGridList} from "@/compositions/resourceGridList/canteenGridList";
+import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {Canteens} from "@/helper/database/databaseTypes/types";
-import {
-    useGlobalActionSheetSettingProfileCanteen
-} from "@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen";
-import {IconNames} from "@/constants/IconNames";
+import {CanteenGridList} from "@/compositions/resourceGridList/canteenGridList";
+import React from "react";
 
-interface AppState {
-
-}
-export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props}) => {
+export function useGlobalActionSheetSettingProfileCanteen(){
 
     const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
-    const leftIcon = IconNames.canteen_icon
     const translation_title = useTranslation(TranslationKeys.canteen)
     const label = translation_title
-    const canteenId = profileCanteen?.id;
-    const canteenIdAsString = canteenId ? canteenId+"" : undefined;
-    const labelRight: string = profileCanteen?.label || canteenIdAsString || "unknown";
 
-    const accessibilityLabel = translation_title;
 
     let items: MyGlobalActionSheetItem[] = [];
 
@@ -50,11 +37,20 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
         }
     })
 
-    const onPress = useGlobalActionSheetSettingProfileCanteen();
+    const config = {
+        onCancel: async () => {
+            return true;
+        },
+        visible: true,
+        title: translation_title,
+        items: items
+    }
 
-    return(
-        <>
-            <SettingsRow accessibilityLabel={accessibilityLabel} labelRight={labelRight} labelLeft={label} leftIcon={leftIcon} {...props} onPress={onPress} />
-        </>
-    )
+    const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+
+    const onPress = () => {
+        show(config)
+    }
+
+    return onPress;
 }

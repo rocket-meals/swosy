@@ -7,13 +7,14 @@ import {
     getDrawerPositionKeyOptions,
     useDrawerPositionRaw
 } from "@/states/DrawerSyncConfig";
+import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
 
 }
 export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props}) => {
 
-    const colorSchemeIconName = "menu"
+    const leftIcon = IconNames.drawer_position_icon
 
     const title = useTranslation(TranslationKeys.drawer_config_position)
 
@@ -38,9 +39,9 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 
     const optionKeyToIcon: {[key in DrawerConfigPosition]: string}
         = {
-        [DrawerConfigPosition.Left]: "format-horizontal-align-left",
-        [DrawerConfigPosition.Right]: "format-horizontal-align-right",
-        [DrawerConfigPosition.System]: "autorenew"
+        [DrawerConfigPosition.Left]: IconNames.drawer_position_left_icon,
+        [DrawerConfigPosition.Right]: IconNames.drawer_position_right_icon,
+        [DrawerConfigPosition.System]: IconNames.settings_system_auto_icon
     }
 
     let selectedName = optionKeyToName[selectedKey]
@@ -83,7 +84,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 
     return(
         <>
-            <SettingsRowActionsheet labelRight={selectedName} labelLeft={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={colorSchemeIconName} {...props}  />
+            <SettingsRowActionsheet labelRight={selectedName} labelLeft={label} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={leftIcon} {...props}  />
         </>
     )
 }

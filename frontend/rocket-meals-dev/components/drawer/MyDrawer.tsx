@@ -41,6 +41,8 @@ export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDr
         usedVisible = !!visibleInDrawer;
     }
 
+    console.log("renderMyDrawerScreen usedVisible: "+usedVisible+" routeName: "+routeName+" label: "+label+" title: "+title+" icon: "+icon)
+
     return(
         <Drawer.Screen
             name={routeName} // The route name must match the URL from the root for navigation.
