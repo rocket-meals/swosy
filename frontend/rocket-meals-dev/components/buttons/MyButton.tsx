@@ -20,6 +20,8 @@ export type MyNewButtonProps = {
     disabled?: boolean,
     leftIconColoredBox?: boolean,
     tooltip?: string,
+    useTransparentBorderColor?: boolean,
+    useTransparentBackgroundColor?: boolean,
 }
 export const MyButton = (props: MyNewButtonProps) => {
     const viewBackgroundColor = useViewBackgroundColor()
@@ -27,7 +29,7 @@ export const MyButton = (props: MyNewButtonProps) => {
     const projectColor = useProjectColor()
 
     // When active
-    const activeBackgroundColor = projectColor
+    let activeBackgroundColor = projectColor
     const activeTextColor = useMyContrastColor(activeBackgroundColor)
 
     // When active and hovered
@@ -44,6 +46,11 @@ export const MyButton = (props: MyNewButtonProps) => {
 
     let activeBorderColor = projectColor
     let inactiveBorderColor = projectColor
+
+    if(props?.useTransparentBorderColor){
+        activeBorderColor = "transparent"
+        inactiveBorderColor = "transparent"
+    }
 
     return <MyButtonCustom {...props}
                            activeBorderColor={activeBorderColor} inactiveBorderColor={inactiveBorderColor}

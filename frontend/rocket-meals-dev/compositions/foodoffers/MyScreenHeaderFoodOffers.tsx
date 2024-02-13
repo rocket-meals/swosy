@@ -1,17 +1,22 @@
 import React from "react";
 import {Text, View} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
+import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
 
 export const getMyScreenHeaderFoodOffers: getMyScreenHeaderFunction = () => {
     return (props: MyScreenHeaderProps) => {
-        const title = "TEST"
+        const title = undefined //"TEST"
 
         function renderSecondaryHeaderContent(props: any) {
             return (
                 <View style={{
-
+                    height: "100%",
+                    backgroundColor: "orange",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row",
                 }} >
-                    <Text>{"TODO: Render Quick Action (Select Canteen, Markings, Price Group)"}</Text>
+                    <SettingsButtonProfileCanteen />
                 </View>
             );
         }
@@ -23,8 +28,14 @@ export const getMyScreenHeaderFoodOffers: getMyScreenHeaderFunction = () => {
             <View style={{
                 height: 100,
                 width: "100%",
-                backgroundColor: "black"
+                backgroundColor: "orange",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
             }}>
+                <Text>{"Previous day"}</Text>
+                <Text>{"Date Picker"}</Text>
+                <Text>{"Next day"}</Text>
             </View>
         </View>
     }

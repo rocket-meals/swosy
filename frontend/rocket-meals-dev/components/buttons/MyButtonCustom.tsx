@@ -69,13 +69,25 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
 
     let styleTakeAllSpace: StyleProp<ViewStyle>= {
         flex: 1, // This makes the child take all the space
+        height: "100%",
+        justifyContent: "center",
     }
     let styleUseOnlyNecessarySpace: StyleProp<ViewStyle> = {
         alignSelf: 'flex-start', // This makes the child take only the necessary space
     }
 
     let outerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
-    let innerViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
+    let innerTextViewStyle: StyleProp<ViewStyle> = useOnlyNecessarySpace ? styleUseOnlyNecessarySpace : styleTakeAllSpace
+
+    let defaultBorderRadius = 6;
+    let defaultPadding = 12;
+
+    let defaultInnerStyle: StyleProp<ViewStyle> = {
+        flexDirection: "row",
+        height: "100%",
+        marginVertical: defaultPadding,
+    }
+    let usedInnerViewStyle: StyleProp<ViewStyle> = [defaultInnerStyle]
 
     let pressedStyle: StyleProp<ViewStyle> = {
         opacity: isPressed ? 0.5 : 1,
@@ -88,12 +100,14 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         opacity: disabled ? 0.5 : 1,
     }
 
-    let defaultBorderRadius = 6;
-    let defaultPadding = 12;
+
+    let leftIconPaddingRight = defaultPadding/2
+    let leftIconPaddingLeft = defaultPadding/2
+
     let leftIconViewStyle: StyleProp<ViewStyle> = {
         backgroundColor: leftIconColoredBox ? usedIconBoxBackgroundColor : undefined,
-        paddingLeft: defaultPadding/2,
-        paddingRight: defaultPadding/2,
+        paddingRight: leftIconPaddingRight,
+        paddingLeft: leftIconPaddingLeft,
         borderBottomRightRadius: defaultBorderRadius,
         borderTopRightRadius: defaultBorderRadius,
         height: "100%",
@@ -105,29 +119,34 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         leftItem = <View style={leftIconViewStyle}>
             <ActionsheetItemText><Icon color={usedIconBoxTextColor} name={leftIconUsed} /></ActionsheetItemText>
         </View>
-    } else {
-        leftItem = <View style={{
-            paddingVertical: defaultPadding,
-            paddingLeft: defaultPadding
-        }}>
+    }
+
+    let renderedText: any = null;
+    if(text){
+        renderedText = <View style={[innerTextViewStyle]}>
+            <ActionsheetItemText selectable={true} sx={{
+                color: usedTextColor,
+            }}>{text}</ActionsheetItemText>
         </View>
+    }
+
+    let rightIconPaddingLeft = 0
+    if(rightIconUsed && text){
+        rightIconPaddingLeft = defaultPadding/2
     }
 
     let rightItem: any = undefined
     if(rightIcon){
         rightItem = <View style={{
-            paddingVertical: defaultPadding,
-            paddingRight: defaultPadding
+            paddingLeft: rightIconPaddingLeft,
+            height: "100%",
+            justifyContent: "center",
         }}>
             <ActionsheetItemText><Icon color={usedTextColor} name={rightIconUsed} /></ActionsheetItemText>
         </View>
-    } else {
-        rightItem = <View style={{
-            paddingVertical: defaultPadding,
-            paddingRight: defaultPadding
-        }}>
-        </View>
     }
+
+
 
     const renderButton = (triggerProps: any) => (
         <View style={
@@ -150,18 +169,14 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                     padding: 0,
                     margin: 0,
                     overflow: "hidden",
-                    borderRadius: defaultBorderRadius
+                    borderRadius: defaultBorderRadius,
                 }}
                 onPress={onPress}>
-                {leftItem}
-                <View style={[innerViewStyle, {
-                    paddingVertical: defaultPadding,
-                }]}>
-                    <ActionsheetItemText selectable={true} sx={{
-                        color: usedTextColor,
-                    }}>{text}</ActionsheetItemText>
+                <View style={usedInnerViewStyle}>
+                    {leftItem}
+                    {renderedText}
+                    {rightItem}
                 </View>
-                {rightItem}
             </ActionsheetItem>
         </View>
     )

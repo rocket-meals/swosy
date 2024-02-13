@@ -116,5 +116,8 @@ function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: b
  */
 export function useMyContrastColor(trueBg: string | undefined) {
     const isDarkTheme = useIsDarkTheme();
+    if(trueBg==="transparent"){
+        trueBg = undefined;
+    }
     return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
 }

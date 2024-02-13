@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading, Icon} from "@/components/Themed"
+import {Heading, Icon, useViewBackgroundColor} from "@/components/Themed"
 import {DrawerHeaderProps, DrawerNavigationOptions, DrawerNavigationProp} from "@react-navigation/drawer";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
@@ -7,6 +7,7 @@ import {ParamListBase, RouteProp} from "@react-navigation/native";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {Divider} from "@gluestack-ui/themed";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -99,7 +100,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
         pressOpacity?: number;
         labelVisible?: boolean;
     }) {
-        //if(isLargeDevice) return null; // Do not render icon on large devices.
+        if(isLargeDevice) return null; // Do not render icon on large devices.
 
         // Adjust padding based on the drawer's position to align the icon appropriately.
         let paddingLeft: any = 10;
@@ -129,9 +130,13 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
     // TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
     // Consideration for future improvement to allow more flexible title positioning.
 
-    return <Header
-        headerLeft={headerLeft}
-        headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
-        headerRight={headerRight}
-        title={usedTitle}/>;
+    return <>
+        <Header
+            headerTransparent={true}
+            headerLeft={headerLeft}
+            headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
+            headerRight={headerRight}
+            title={usedTitle}/>
+        <Divider />
+    </>
 }
