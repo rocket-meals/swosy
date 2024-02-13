@@ -60,6 +60,7 @@ export class TranslationKeys {
   static sign_in_with = createTranslationKey("sign_in_with", "Fortfahren mit");
 
   static home = createTranslationKey("home", "Startseite");
+  static canteens = createTranslationKey("canteens", "Mensa");
 
   static settings = createTranslationKey("settings", "Einstellungen");
 

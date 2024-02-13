@@ -1,12 +1,13 @@
 import React from "react";
-import {Heading, Icon} from "@/components/Themed"
-import {DrawerNavigationOptions, DrawerNavigationProp} from "@react-navigation/drawer";
+import {Heading, Icon, useViewBackgroundColor} from "@/components/Themed"
+import {DrawerHeaderProps, DrawerNavigationOptions, DrawerNavigationProp} from "@react-navigation/drawer";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
 import {ParamListBase, RouteProp} from "@react-navigation/native";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {Divider} from "@gluestack-ui/themed";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -15,20 +16,29 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
  * @prop {RouteProp<ParamListBase>} route - Route prop for the current screen.
  * @prop {DrawerNavigationOptions} options - Drawer navigation options.
  */
-export type MyDrawerHeaderProps = {
+export type MyScreenHeaderPropsRequired = {
     navigation: DrawerNavigationProp<ParamListBase, string, undefined>
-    route: RouteProp<ParamListBase>,
+    route: RouteProp<ParamListBase>
     options: DrawerNavigationOptions
 }
+
+export type MyScreenHeaderPropsOptional = {
+    custom_title?: string
+    custom_renderHeaderDrawerOpposite?: renderHeaderContentElement
+}
+
+export type MyScreenHeaderProps = MyScreenHeaderPropsRequired & MyScreenHeaderPropsOptional;
 
 /**
  * Factory function to generate a custom drawer header component.
  *
  * @returns A React component function taking `MyDrawerHeaderProps` as props.
  */
-export const getMyDrawerHeader = () => {
-    return (props: MyDrawerHeaderProps) => (
-        <MyDrawerHeader {...props} />
+export type getMyScreenHeaderFunction = () => (props: DrawerHeaderProps) => React.ReactNode
+
+export const getMyScreenHeader: getMyScreenHeaderFunction = () => {
+    return (props: MyScreenHeaderPropsRequired) => (
+        <MyScreenHeader {...props} />
     );
 }
 
@@ -36,7 +46,7 @@ export const getMyDrawerHeader = () => {
  * Type definition for a function that renders a header component.
  * This can be used for headerLeft, headerRight, or potentially other header components.
  */
-export type renderHeader = ((props: {
+export type renderHeaderContentElement = ((props: {
     tintColor?: string | undefined,
     pressColor?: string | undefined,
     pressOpacity?: number | undefined,
@@ -47,16 +57,22 @@ export type renderHeader = ((props: {
  * The main component for rendering a custom drawer header.
  * This component configures the header title and optional left or right icons for toggling the drawer.
  *
- * @param {MyDrawerHeaderProps} props - The properties for configuring the drawer header.
+ * @param navigation
+ * @param route
+ * @param options
+ * @param custom_title
+ * @param custom_renderHeaderDrawerOpposite
+ * @param {MyScreenHeaderPropsRequired} props - The properties for configuring the drawer header.
  * @returns A React element representing the custom drawer header.
  */
-export const MyDrawerHeader = ({ navigation, route, options }: MyDrawerHeaderProps) => {
+export const MyScreenHeader = ({ navigation, route, options, custom_title, custom_renderHeaderDrawerOpposite, ...props }: MyScreenHeaderProps) => {
     const isLargeDevice = useIsLargeDevice(); // Determines if the device is considered large.
     let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Gets and sets the current drawer position (left/right).
 
     const translation_open_drawer = useTranslation(TranslationKeys.open_drawer);
 
-    const title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
+    const default_title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
+    const usedTitle = custom_title || default_title
 
     /**
      * Renders the header title element.
@@ -67,7 +83,7 @@ export const MyDrawerHeader = ({ navigation, route, options }: MyDrawerHeaderPro
      */
     const renderHeaderTitle = (props: HeaderTitleProps) => {
         const readOnlyStyle: any = options.headerStyle;
-        return <Heading style={readOnlyStyle}>{title}</Heading>;
+        return <Heading style={readOnlyStyle}>{usedTitle}</Heading>;
     }
 
     /**
@@ -93,15 +109,16 @@ export const MyDrawerHeader = ({ navigation, route, options }: MyDrawerHeaderPro
             paddingRight = paddingLeft;
             paddingLeft = undefined;
         }
+        const paddingVertical = 10;
 
         // Returns a touchable component with an icon for toggling the drawer.
-        return <MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight}} accessibilityLabel={translation_open_drawer} onPress={() => navigation.openDrawer()}>
+        return <MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_open_drawer} onPress={() => navigation.openDrawer()}>
             <Icon name={"menu"} />
         </MyTouchableOpacity>;
     }
 
-    let headerLeft: renderHeader = renderDrawerIcon; // Assign drawer toggle icon to the left or right header based on position.
-    let headerRight: renderHeader = undefined; // Initialize headerRight as undefined.
+    let headerLeft: renderHeaderContentElement = renderDrawerIcon; // Assign drawer toggle icon to the left or right header based on position.
+    let headerRight: renderHeaderContentElement = custom_renderHeaderDrawerOpposite; // Initialize headerRight as undefined.
 
     // Swap header icons if the drawer is positioned on the right.
     if(drawerPosition === DrawerConfigPosition.Right){
@@ -113,9 +130,13 @@ export const MyDrawerHeader = ({ navigation, route, options }: MyDrawerHeaderPro
     // TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
     // Consideration for future improvement to allow more flexible title positioning.
 
-    return <Header
-        headerLeft={headerLeft}
-        headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
-        headerRight={headerRight}
-        title={title}/>;
+    return <>
+        <Header
+            headerTransparent={true}
+            headerLeft={headerLeft}
+            headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
+            headerRight={headerRight}
+            title={usedTitle}/>
+        <Divider />
+    </>
 }

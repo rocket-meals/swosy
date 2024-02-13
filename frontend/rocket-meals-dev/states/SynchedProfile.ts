@@ -99,12 +99,7 @@ export function useNickname(): [string | undefined, ((newValue: string | undefin
     return [nickname, setNickname]
 }
 
-export function useProfileLanguageCode(){
-    const [language, setLanguage] = useProfileLanguage();
-    return language;
-}
-
-export function useProfileLanguage(): [string, ((newValue: string) => void)]{
+export function useProfileLanguageCode(): [string, ((newValue: string) => void)]{
     const [profile, setProfile] = useSynchedProfile();
     let language = profile?.language || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
     const setLanguage = (language: string) => {

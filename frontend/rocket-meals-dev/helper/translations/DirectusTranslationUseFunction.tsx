@@ -8,7 +8,7 @@ export type TranslationEntry = {
 }
 
 export function useDirectusTranslation(translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string, params?: any): string {
-  let language_code = useProfileLanguageCode();
+  let [languageCode, setLanguageCode] = useProfileLanguageCode();
 
   console.log("translations", translations)
 
@@ -45,7 +45,7 @@ export function useDirectusTranslation(translations: TranslationEntry[], field: 
 
   console.log("translationDict", translationDict)
 
-  let translation = getTranslation(translationDict, language_code, params);
+  let translation = getTranslation(translationDict, languageCode, params);
   if (!!translation) {
     return translation
   }

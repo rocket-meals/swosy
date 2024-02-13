@@ -7,6 +7,7 @@ import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 import {useIsDebug} from "@/states/Debug";
 import {Text} from "@/components/Themed";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {IconNames} from "@/constants/IconNames";
 
 
 export const SettingsRowLogout = (props: any) => {
@@ -17,7 +18,7 @@ export const SettingsRowLogout = (props: any) => {
 
     return(
         <>
-            <SettingsRow labelLeft={translation_title} accessibilityLabel={translation_title} onPress={logout} leftIcon={"account"} leftContent={translation_title} rightIcon={"logout"} >
+            <SettingsRow labelLeft={translation_title} accessibilityLabel={translation_title} onPress={logout} leftIcon={IconNames.logout_icon} leftContent={translation_title} rightIcon={"logout"} >
             </SettingsRow>
         </>
     )

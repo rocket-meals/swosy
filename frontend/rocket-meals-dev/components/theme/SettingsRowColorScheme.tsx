@@ -8,13 +8,14 @@ import {
 import {useIsDebug} from "@/states/Debug";
 import {Text} from "@/components/Themed";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
 
 }
 export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) => {
 
-    const colorSchemeIconName = "theme-light-dark"
+    const colorSchemeIconName = IconNames.color_scheme_icon
 
     const title = useTranslation(TranslationKeys.color_scheme)
 
@@ -53,9 +54,9 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
         let isDark = themeForKey.dark
         let active = key === selectedColorSchemeKey
 
-        let icon = isDark ? "moon-waning-crescent" : "white-balance-sunny"
+        let icon = isDark ? IconNames.color_scheme_dark_icon : IconNames.color_scheme_light_icon
         if(key === MyColorSchemeKey.System){
-            icon = "theme-light-dark"
+            icon = IconNames.color_scheme_system_icon
         }
         if(key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined){
             active = true
