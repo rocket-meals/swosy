@@ -302,7 +302,7 @@ export class DateHelper {
 
         let translationToday = useTranslation(TranslationKeys.today);
         let translationTomorrow = useTranslation(TranslationKeys.tomorrow);
-        let translationYesterday = useTranslation(TranslationKeys.tomorrow);
+        let translationYesterday = useTranslation(TranslationKeys.yesterday);
 
         console.log("check if date is today, then return 'today'", today, dateCopy)
         // check if date is today, then return "today"

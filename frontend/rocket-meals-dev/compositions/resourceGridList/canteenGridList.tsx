@@ -4,9 +4,9 @@ import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {Canteens} from "@/helper/database/databaseTypes/types";
-import {MyGridList} from "@/components/grid/MyGridList";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
-import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
+import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
@@ -64,6 +64,6 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     }
 
   return (
-      <MyGridList data={data} renderItem={renderCanteen} gridAmount={amountColumns} />
+      <MyGridFlatList data={data} renderItem={renderCanteen} gridAmount={amountColumns} />
   );
 }

@@ -52,7 +52,7 @@ interface GridListProps<T> {
  * @param {GridListProps<T>} props - The properties of the component.
  * @returns {React.ReactElement} The rendered grid list.
  */
-export const MyGridList = <T extends { key: string }>({
+export const MyGridFlatList = <T extends { key: string }>({
                                                  data,
                                                  renderItem,
                                                  gridAmount,
@@ -122,6 +122,7 @@ export const MyGridList = <T extends { key: string }>({
         // We first render the item with the correct dimensions
         // Then we wrap it with flex: 1 to fill the remaining space in the container for the child
 
+        // @ts-ignore
         if(item?.isDummy){
             const dummyKey = `dummy-${index}`;
             return renderSingleItem(null, dummyKey, index);

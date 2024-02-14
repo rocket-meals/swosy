@@ -1,12 +1,13 @@
 import React from "react";
-import {Text, View} from "@/components/Themed"
+import {Heading, View} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
 import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferSelectedDate";
-import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
-import {useProfileLocaleForJsDate, useSynchedProfile} from "@/states/SynchedProfile";
+import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
+import {Divider} from "@gluestack-ui/themed";
+import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -16,8 +17,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 
     const translation_day = useTranslation(TranslationKeys.day);
-    const translation_next = useTranslation(TranslationKeys.next);
-    const translation_previous = useTranslation(TranslationKeys.previous);
 
     const dateCopy = new Date(selectedDate);
     const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
@@ -27,13 +26,10 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
             <View style={{
                 height: "100%",
                 width: "100%",
-                backgroundColor: "orange",
                 justifyContent: "flex-end",
+                alignItems: "center",
                 flexDirection: "row",
             }} >
-                <View style={{height: 10, width: 10, backgroundColor: "green"}}>
-
-                </View>
                 <View>
                     <SettingsButtonProfileCanteen />
                 </View>
@@ -43,35 +39,33 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
     function renderSwitchDate(forward: boolean){
         let translation = translation_day;
-        if(forward){
-            translation += ": " + translation_next;
-        } else {
-            translation += ": " + translation_previous;
-        }
-        const iconName = forward ? "chevron-right" : "chevron-left";
-
-        return <MyButton tooltip={translation} useOnlyNecessarySpace={true} leftIcon={iconName} accessibilityLabel={translation} onPress={() => {
+        return <MyPreviousNextButton useTransparentBorderColor={true} translation={translation} forward={forward} onPress={() => {
             changeAmountDays(forward ? 1 : -1);
-        }   } />
+        }} />
     }
 
     return <View style={{
         width: "100%",
     }}>
-        <MyScreenHeader {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+        <MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
         <View style={{
-            height: 100,
             width: "100%",
-            backgroundColor: "orange",
+            //backgroundColor: "orange",
             flexDirection: "row",
             justifyContent: "space-between",
             flexWrap: "wrap",
         }}>
             {renderSwitchDate(false)}
-            <Text>{JSON.stringify(selectedDate, null, 2)}</Text>
-            <Text>{humanReadableDate}</Text>
+            <View style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+            }}>
+                <Heading>{humanReadableDate}</Heading>
+            </View>
             {renderSwitchDate(true)}
         </View>
+        <Divider />
     </View>
 }
 

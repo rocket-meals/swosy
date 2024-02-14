@@ -3,7 +3,7 @@ import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
-import {MyGridList} from "@/components/grid/MyGridList";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useState} from "react";
 
 
