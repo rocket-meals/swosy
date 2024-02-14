@@ -121,6 +121,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
     let headerRight: renderHeaderContentElement = custom_renderHeaderDrawerOpposite; // Initialize headerRight as undefined.
 
     // Swap header icons if the drawer is positioned on the right.
+
     if(drawerPosition === DrawerConfigPosition.Right){
         let swap = headerLeft;
         headerLeft = headerRight;
@@ -130,13 +131,17 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
     // TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
     // Consideration for future improvement to allow more flexible title positioning.
 
+    // make the header render order from left to right: headerLeft, headerTitle, headerRight
+
     return <>
         <Header
+            // header title align right
             headerTransparent={true}
             headerLeft={headerLeft}
             headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
             headerRight={headerRight}
-            title={usedTitle}/>
+            title={usedTitle}
+        />
         <Divider />
     </>
 }

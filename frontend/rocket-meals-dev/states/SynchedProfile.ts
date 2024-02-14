@@ -107,7 +107,21 @@ export function useProfileLanguageCode(): [string, ((newValue: string) => void)]
         return setProfile(profile);
     }
     return [language, setLanguage];
+}
 
+export function useProfileLocaleForJsDate(passedProfile?: Profiles): string {
+    const [profile, setProfile] = useSynchedProfile();
+    const usedProfile = passedProfile ? passedProfile : profile;
+
+    const profilesLanguageCode = usedProfile?.language;
+    let locale = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+    if(!!profilesLanguageCode && profilesLanguageCode.length > 0){
+        locale = profilesLanguageCode;
+    }
+    if(!!locale){
+        locale = locale.toLowerCase() //"en-US" --> "en-us"; since js uses lowercase
+    }
+    return locale;
 }
 
 export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)]{

@@ -28,6 +28,14 @@ export class TranslationKeys {
   static nickname = createTranslationKey("nickname", "Spitzname")
   static user = createTranslationKey("user", "Nutzer")
 
+  static next = createTranslationKey("next", "Weiter");
+  static previous = createTranslationKey("previous", "Zurück");
+
+  static day = createTranslationKey("day", "Tag");
+  static today = createTranslationKey("today", "Heute");
+  static tomorrow = createTranslationKey("tomorrow", "Morgen");
+  static yesterday = createTranslationKey("yesterday", "Gestern");
+
   static about_us = createTranslationKey("about_us", "Über uns");
   static license = createTranslationKey("license", "Lizenz");
   static accessibility = createTranslationKey("accessibility", "Barrierefreiheit");
