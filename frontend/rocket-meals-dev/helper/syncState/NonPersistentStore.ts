@@ -6,7 +6,7 @@ export class NonPersistentStore {
 
   static globalMyActionSheetConfig = "NonPersistentStore.globalMyActionSheetConfig"
 
-  static settingsRowTestEdit = "NonPersistentStore.settingsRowTestEdit"
+  static foodOfferSelectedDate = "NonPersistentStore.foodOfferSelectedDate"
 
 
 }

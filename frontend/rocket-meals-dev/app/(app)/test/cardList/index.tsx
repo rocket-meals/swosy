@@ -1,10 +1,10 @@
-import {MyGridList} from "@/components/grid/MyGridList";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {ListRenderItemInfo} from "react-native";
 import {useState} from "react";
 import {Heading, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
-import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
+import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 
 export default function CardListTestScreen() {
 
@@ -83,7 +83,7 @@ export default function CardListTestScreen() {
             height: "100%",
             flex: 1,
         }}>
-            <MyGridList
+            <MyGridFlatList
                 data={data} renderItem={renderItem} gridAmount={amountColumns} />
         </View>
     </View>

@@ -1,45 +1,77 @@
 import React from "react";
-import {Text, View} from "@/components/Themed"
+import {Heading, View} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
+import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferSelectedDate";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {DateHelper} from "@/helper/date/DateHelper";
+import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
+import {Divider} from "@gluestack-ui/themed";
+import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
+
+const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
+    const title = undefined //"TEST"
+
+    let locale = useProfileLocaleForJsDate()
+
+    const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
+
+    const translation_day = useTranslation(TranslationKeys.day);
+
+    const dateCopy = new Date(selectedDate);
+    const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
+
+    function renderSecondaryHeaderContent(props: any) {
+        return (
+            <View style={{
+                height: "100%",
+                width: "100%",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                flexDirection: "row",
+            }} >
+                <View>
+                    <SettingsButtonProfileCanteen />
+                </View>
+            </View>
+        );
+    }
+
+    function renderSwitchDate(forward: boolean){
+        let translation = translation_day;
+        return <MyPreviousNextButton useTransparentBorderColor={true} translation={translation} forward={forward} onPress={() => {
+            changeAmountDays(forward ? 1 : -1);
+        }} />
+    }
+
+    return <View style={{
+        width: "100%",
+    }}>
+        <MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+        <View style={{
+            width: "100%",
+            //backgroundColor: "orange",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+        }}>
+            {renderSwitchDate(false)}
+            <View style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+            }}>
+                <Heading>{humanReadableDate}</Heading>
+            </View>
+            {renderSwitchDate(true)}
+        </View>
+        <Divider />
+    </View>
+}
+
 
 export const getMyScreenHeaderFoodOffers: getMyScreenHeaderFunction = () => {
     return (props: MyScreenHeaderProps) => {
-        const title = undefined //"TEST"
-
-        function renderSecondaryHeaderContent(props: any) {
-            return (
-                <View style={{
-                    height: "100%",
-                    width: "100%",
-                    backgroundColor: "orange",
-                    justifyContent: "flex-end",
-                    flexDirection: "row",
-                }} >
-                    <View style={{height: 10, width: 10, backgroundColor: "green"}}>
-
-                    </View>
-                    <SettingsButtonProfileCanteen />
-                </View>
-            );
-        }
-
-        return <View style={{
-            width: "100%",
-        }}>
-            <MyScreenHeader {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
-            <View style={{
-                height: 100,
-                width: "100%",
-                backgroundColor: "orange",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-            }}>
-                <Text>{"Previous day"}</Text>
-                <Text>{"Date Picker"}</Text>
-                <Text>{"Next day"}</Text>
-            </View>
-        </View>
+        return <MyScreenHeaderFoodOffers {...props} />
     }
 }

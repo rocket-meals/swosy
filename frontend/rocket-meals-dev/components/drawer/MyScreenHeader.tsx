@@ -25,6 +25,7 @@ export type MyScreenHeaderPropsRequired = {
 export type MyScreenHeaderPropsOptional = {
     custom_title?: string
     custom_renderHeaderDrawerOpposite?: renderHeaderContentElement
+    hideDivider?: boolean
 }
 
 export type MyScreenHeaderProps = MyScreenHeaderPropsRequired & MyScreenHeaderPropsOptional;
@@ -62,10 +63,11 @@ export type renderHeaderContentElement = ((props: {
  * @param options
  * @param custom_title
  * @param custom_renderHeaderDrawerOpposite
+ * @param hideDivider
  * @param {MyScreenHeaderPropsRequired} props - The properties for configuring the drawer header.
  * @returns A React element representing the custom drawer header.
  */
-export const MyScreenHeader = ({ navigation, route, options, custom_title, custom_renderHeaderDrawerOpposite, ...props }: MyScreenHeaderProps) => {
+export const MyScreenHeader = ({ navigation, route, options, custom_title, custom_renderHeaderDrawerOpposite, hideDivider, ...props }: MyScreenHeaderProps) => {
     const isLargeDevice = useIsLargeDevice(); // Determines if the device is considered large.
     let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Gets and sets the current drawer position (left/right).
 
@@ -121,6 +123,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
     let headerRight: renderHeaderContentElement = custom_renderHeaderDrawerOpposite; // Initialize headerRight as undefined.
 
     // Swap header icons if the drawer is positioned on the right.
+
     if(drawerPosition === DrawerConfigPosition.Right){
         let swap = headerLeft;
         headerLeft = headerRight;
@@ -130,13 +133,19 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
     // TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
     // Consideration for future improvement to allow more flexible title positioning.
 
+    // make the header render order from left to right: headerLeft, headerTitle, headerRight
+
+    const renderedDivider = hideDivider? null : <Divider />;
+
     return <>
         <Header
+            // header title align right
             headerTransparent={true}
             headerLeft={headerLeft}
             headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
             headerRight={headerRight}
-            title={usedTitle}/>
-        <Divider />
+            title={usedTitle}
+        />
+        {renderedDivider}
     </>
 }

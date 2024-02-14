@@ -1,10 +1,10 @@
-import {MyGridList} from "@/components/grid/MyGridList";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {ListRenderItemInfo} from "react-native";
 import {useState} from "react";
 import {Heading, View} from "@/components/Themed";
 import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
-import {useMyGridListDefaultColumns} from "@/components/grid/MyGridListDefaultColumns";
+import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {MyButton} from "@/components/buttons/MyButton";

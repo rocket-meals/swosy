@@ -13,8 +13,8 @@ interface AppState {
 
 export function useEditProfileCanteenAccessibilityLabel(): string {
     const translation_title = useTranslation(TranslationKeys.canteen)
-    const translation_edit = useTranslation(TranslationKeys.edit)
-    return translation_title + " " + translation_edit;
+    const translation_select = useTranslation(TranslationKeys.select)
+    return translation_title + ": " + translation_select;
 }
 
 export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props}) => {
