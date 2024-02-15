@@ -28,6 +28,11 @@ export class TranslationKeys {
   static nickname = createTranslationKey("nickname", "Spitzname")
   static user = createTranslationKey("user", "Nutzer")
 
+  static selectDate = createTranslationKey("selectDate", "Datum auswählen");
+  static year = createTranslationKey("year", "Jahr");
+  static month = createTranslationKey("month", "Monat");
+  static selected = createTranslationKey("selected", "Ausgewählt");
+
   static next = createTranslationKey("next", "Weiter");
   static previous = createTranslationKey("previous", "Zurück");
 
