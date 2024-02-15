@@ -10,6 +10,8 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 
 export interface SimpleDatePickerProps {
     currentDate?: Date,
+    textColor?: any,
+    lighterOrDarkerTextColor?: any,
     selectedTextColor?: any,
     selectedDateColor?: any,
     weekdayBackgroundColor?: any,
@@ -100,10 +102,14 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
         let monthOfDateToRender = dateToRender.getMonth();
         let monthOfReferenceDate = referenceDate.getMonth();
 
-        let textColor: string | undefined = undefined;
+        let textColor: string | undefined = props.textColor;
 
         if(monthOfReferenceDate!==monthOfDateToRender){
-            style.opacity = 0.5;
+            if(!!props.lighterOrDarkerTextColor){
+                textColor = props.lighterOrDarkerTextColor
+            } else {
+                style.opacity = 0.5;
+            }
         }
 
         const weekdayName = DateHelper.getWeekdayNameByDate(dateToRender, locale)

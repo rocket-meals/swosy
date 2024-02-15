@@ -7,7 +7,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useProfileLocaleForJsDate, useSynchedProfile} from "@/states/SynchedProfile";
 import {useProjectColor, useProjectColorContrast} from "@/states/ProjectInfo";
-import {View} from "@/components/Themed";
+import {useTextContrastColor, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {MyButton} from "@/components/buttons/MyButton";
 import {IconNames} from "@/constants/IconNames";
@@ -48,7 +48,6 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
         //icon: "test",
         accessibilityLabel: selectDateTranslation,
         render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-            console.log("render" + formatedSelectedDate)
 
             // Use the custom context provider to provide the input value and setter
             const onSelectDate = (date: Date) => {
@@ -58,19 +57,27 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
                 hide();
             }
 
-            return <SimpleDatePickerComponent
-                currentDate={props.currentDate}
-                selectedTextColor={selectedTextColor}
-                selectedDateColor={selectedDateColor}
-                weekdayBackgroundColor={weekdayBackgroundColor}
-                weekdayTextColor={weekdayTextColor}
-                onSelectDate={onSelectDate}
-                renderDate={props.renderDate}
-                locale={locale}
-                yearTranslation={yearTranslation}
-                monthTranslation={monthTranslation}
-                selectedTranslation={selectedTranslation}
-            />
+            return <>
+                <SimpleDatePickerComponent
+                    currentDate={props.currentDate}
+                    textColor={textColor}
+                    selectedTextColor={selectedTextColor}
+                    selectedDateColor={selectedDateColor}
+                    weekdayBackgroundColor={weekdayBackgroundColor}
+                    weekdayTextColor={weekdayTextColor}
+                    onSelectDate={onSelectDate}
+                    renderDate={props.renderDate}
+                    locale={locale}
+                    yearTranslation={yearTranslation}
+                    monthTranslation={monthTranslation}
+                    selectedTranslation={selectedTranslation}
+                />
+                <View style={{
+                    height: 20, width: "100%"
+                }}>
+
+                </View>
+            </>
         }
     })
 
