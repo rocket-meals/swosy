@@ -52,8 +52,13 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
             usedTextColor = inactiveTextColor
 
             // only used for leftIconColoredBox shall be the active color used
-            usedIconBoxBackgroundColor = activeBackgroundColor
-            usedIconBoxTextColor = activeTextColor
+            if(leftIconColoredBox){
+                usedIconBoxBackgroundColor = activeBackgroundColor
+                usedIconBoxTextColor = activeTextColor
+            } else {
+                usedIconBoxBackgroundColor = inactiveBackgroundColor
+                usedIconBoxTextColor = inactiveTextColor
+            }
         }
         usedBorderColor = inactiveBorderColor
     }
@@ -120,6 +125,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         }}>
             <Text style={{
                 flexShrink: 1,
+                color: usedTextColor,
             }}>{text}</Text>
         </View>
     }
