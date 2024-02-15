@@ -32,6 +32,8 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
     const formatedSelectedDate = DateHelper.formatOfferDateToReadable(new Date(currentDate), true);
     const accessibilityLabel = props?.accessibilityLabel || formatedSelectedDate;
 
+    const weekStartsAtDay = DateHelper.Weekday.MONDAY // TODO: Get from Settings, either from the saved or the default settings from the system
+
     const locale = useProfileLocaleForJsDate();
 
     const selectedDateColor = useProjectColor();
@@ -65,6 +67,7 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
                     selectedDateColor={selectedDateColor}
                     weekdayBackgroundColor={weekdayBackgroundColor}
                     weekdayTextColor={weekdayTextColor}
+                    weekStartsAtDay={weekStartsAtDay}
                     onSelectDate={onSelectDate}
                     renderDate={props.renderDate}
                     locale={locale}

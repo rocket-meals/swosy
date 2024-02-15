@@ -15,6 +15,7 @@ export interface SimpleDatePickerProps {
     selectedTextColor?: any,
     selectedDateColor?: any,
     weekdayBackgroundColor?: any,
+    weekStartsAtDay: Weekday,
     weekdayTextColor?: any,
     onSelectDate?: (date: Date) => void,
     locale?: string,
@@ -33,26 +34,13 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
     const selectedTranslation = props?.selectedTranslation || "Selected";
 
     const locale = props?.locale;
-    const weekStartsAtDay = DateHelper.Weekday.MONDAY; // 0=Sunday 1=Monday
+    const weekStartsAtDay = props.weekStartsAtDay
 
     const amountDaysPerWeek = 7;
     const amountCalendarCurrentMonthRows = 4;
     const amountCalendarPreviousMonthRows = 1;
     const amountCalendarNextMonthRows = 1;
     const amountCalendarDateRows = amountCalendarCurrentMonthRows+amountCalendarPreviousMonthRows+amountCalendarNextMonthRows;
-
-    const [dimension, setDimension] = useState<{width: number | undefined, height: number | undefined}>({width: undefined, height: undefined})
-    let smallestDimension: number | undefined = undefined;
-    if(!!dimension?.height){
-        smallestDimension = dimension.height
-    }
-    if(!!dimension?.width){
-        if(!smallestDimension){
-            smallestDimension = dimension.width
-        } else if(dimension?.width < smallestDimension){
-            smallestDimension = dimension.width
-        }
-    }
 
     const currentDateFromProps = props?.currentDate;
     const currentDate = currentDateFromProps ? new Date(currentDateFromProps) : new Date(); // make a copy if currentDateFromProps is a hookValue and to remove side effects
@@ -194,16 +182,12 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
         }
 
         // next month
-        let diffToEndWithLastDayOfWeekForMonth = DateHelper.getAmountDaysFromNextMonthToWeekend(date, firstDayOfWeek);
+        // In order to maintain the same height for all months we fill the gaps
+        let maxItemsInCalendarDisplay = amountDaysPerWeek*amountCalendarDateRows
         tempDate = DateHelper.getFirstDayOfNextMonth(date);
-        for(let i=0; i<diffToEndWithLastDayOfWeekForMonth; i++){
+        while(output.length < maxItemsInCalendarDisplay){
             output.push(new Date(tempDate))
             tempDate.setDate(tempDate.getDate()+1);
-        }
-
-        // In order to maintain the same height for all months we fill the gaps
-        while(output.length < amountDaysPerWeek*amountCalendarDateRows){
-            output.push(null)
         }
 
         return output;
