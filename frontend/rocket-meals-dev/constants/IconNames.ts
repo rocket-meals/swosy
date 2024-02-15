@@ -22,4 +22,5 @@ export enum IconNames {
   color_scheme_light_icon = "white-balance-sunny",
     color_scheme_dark_icon = "moon-waning-crescent",
   color_scheme_system_icon = "theme-light-dark",
+  calendar_icon = "calendar-month",
 }

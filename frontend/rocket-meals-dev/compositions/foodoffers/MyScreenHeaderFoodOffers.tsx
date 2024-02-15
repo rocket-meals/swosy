@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading, View} from "@/components/Themed"
+import {Heading, View, Text} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
 import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferSelectedDate";
@@ -8,6 +8,7 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
+import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -50,20 +51,28 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
         <MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
         <View style={{
             width: "100%",
-            //backgroundColor: "orange",
             flexDirection: "row",
-            justifyContent: "space-between",
             flexWrap: "wrap",
         }}>
-            {renderSwitchDate(false)}
             <View style={{
                 justifyContent: "center",
                 alignItems: "center",
-                flexDirection: "column",
+                flexDirection: "row",
+            }}>
+                {renderSwitchDate(false)}
+                <SimpleDatePicker currentDate={selectedDate} onSelectDate={(date) => {
+                    setSelectedDate(date);
+                } }>
+                </SimpleDatePicker>
+                {renderSwitchDate(true)}
+            </View>
+            <View style={{
+                alignItems: "center",
+                flexDirection: "row",
             }}>
                 <Heading>{humanReadableDate}</Heading>
             </View>
-            {renderSwitchDate(true)}
+
         </View>
         <Divider />
     </View>

@@ -28,7 +28,7 @@ export type MyGlobalActionSheetConfig = {
     // description?: string,
     items: MyGlobalActionSheetItem[]
     onCancel?: () => Promise<boolean>
-    maxHeight?: string | number | DimensionValue
+    maxHeight?: DimensionValue
 }
 
 export type MyGlobalActionSheetItem = {
@@ -96,8 +96,8 @@ export const MyGlobalActionSheet = (props: any) => {
 
     const showActionsheet = showActionsheetConfig.visible || false;
 
-    const maxHeightDefault = PlatformHelper.isWeb() ? "70%" : "80%"
-    const maxHeight = showActionsheetConfig.maxHeight || maxHeightDefault
+    const maxHeightDefault: DimensionValue = PlatformHelper.isWeb() ? "70%" : "80%"
+    const maxHeight: DimensionValue = showActionsheetConfig.maxHeight || maxHeightDefault
 
     let title = showActionsheetConfig.title || ""
 
