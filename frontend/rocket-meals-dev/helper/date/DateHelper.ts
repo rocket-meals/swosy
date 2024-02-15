@@ -15,6 +15,11 @@ export class DateHelper {
 
     static Weekday = Weekday;
 
+    static isWeekend(date: Date){
+        let weekday = date.getDay();
+        return weekday === 0 || weekday === 6; // 0 is sunday, 6 is saturday
+    }
+
     static parseTime(time: string, date?: Date): Date{
         let parts = time.split(":");
         let hours = parseInt(parts[0]) || 0;

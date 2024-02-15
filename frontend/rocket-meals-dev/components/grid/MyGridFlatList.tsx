@@ -12,6 +12,7 @@ import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
  * @property {number} [marginRow] - The margin applied below each row.
  */
 type GridListSpacing = {
+    marginTop?: number,
     marginOuter?: number,
     marginInner?: number,
     marginRow?: number,
@@ -71,6 +72,7 @@ export const MyGridFlatList = <T extends { key: string }>({
     // We need to add dummy items. If we don't, the last row will be max width stretched to fill the container, which is not what we want.
 
     const renderSingleItem = (content: any, key: string, index: number) => {
+        const isFirstRow = index < gridAmount;
         const isFirstInRow = (index % gridAmount) === 0;
         const isLastInRow = (index % gridAmount) === gridAmount - 1;
         const isInCenter = !isFirstInRow && !isLastInRow;
@@ -82,6 +84,10 @@ export const MyGridFlatList = <T extends { key: string }>({
         // row margin
         if (spacing?.marginRow) {
             itemStyle.marginBottom = spacing.marginRow;
+        }
+
+        if(spacing?.marginTop && isFirstRow){
+            itemStyle.marginTop = spacing.marginTop;
         }
 
         // outer margin only for the first item in a row

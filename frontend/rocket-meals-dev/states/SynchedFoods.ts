@@ -9,12 +9,12 @@ export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newVa
   let lastUpdate = resourcesRaw?.lastUpdate;
   let usedResources = resourcesOnly;
   if(demo) {
-    usedResources = getDemoResources()
+    usedResources = getDemoFoods()
   }
   return [usedResources, setResourcesOnly, lastUpdate]
 }
 
-function getDemoResources(): Record<string, Foods> {
+export function getDemoFoods(): Record<string, Foods> {
 
   let demoNames = ["Fries", "Burger", "Lasagne", "Pizza", "Pasta", "Salad", "Soup", "Sushi", "Steak", "Chicken", "Fish", "Rice", "Noodles", "Dumplings", "Curry", "Tacos", "Burritos", "Sandwich", "Hotdog", "Kebab", "Doner", "Falafel", "Shawarma"]
   let demoeResources: Record<string, Foods> = {}
