@@ -1,4 +1,5 @@
-import {EventHelper} from '../../helper/EventHelper.js';
+import {EventHelper} from '../../helper/EventHelper.js'; // in directus we need to add the filetype ... otherwise we get an error
+import {ItemsServiceCreator} from "../../helper/ItemsServiceCreator.js"; // in directus we need to add the filetype ... otherwise we get an error
 
 // TODO: Catch if table does not exist
 
@@ -17,7 +18,13 @@ class ProfileCreateHook {
     static handleHook(
         tablename_profiles,
         registerFunctions,
-        context
+        {
+            services,
+            exceptions,
+            database,
+            getSchema,
+            logger
+        }
     ) {
         const {filter, action, init, schedule} = registerFunctions;
 
@@ -27,6 +34,11 @@ class ProfileCreateHook {
             async (input, meta, actionContext) => {
                 /** filter */
                 const {database, schema, accountability} = actionContext;
+
+                let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+                let profiles_service = itemsServiceCreator.getItemsService("profiles");
+                let users_service = itemsServiceCreator.getItemsService("directus_users");
+
                 const currentProvider = input.provider; //get the current provider
                 //        let userId = input.user; // action
                 let userId = meta.user; // filter
@@ -48,13 +60,14 @@ class ProfileCreateHook {
                 } else {
                     //create a profile for the user
                     try {
-                        const newProfiles = await database(tablename_profiles).insert({});
-                        //update the user
-                        const newProfile = newProfiles[0];
-                        if (newProfile) {
-                            let updatedUser = await database('directus_users')
-                                .where({id: userId})
-                                .update({profile: newProfile});
+                        console.log("Creating profile for user: " + userId)
+                        let profile_id = await profiles_service.createOne({}); //create a profile
+                        console.log("Created profile for user: " + userId)
+                        if (profile_id) {
+                            console.log("New profile id: " + profile_id)
+                            await users_service.updateOne(userId, {
+                                profile: profile_id
+                            });
                             return input;
                         }
                     } catch (e) {

@@ -133,12 +133,4 @@ Check if the RoleId for the SSO-User is set correctly in the `docker-compose.yam
 
 ## Project Settings
 
-```
-.sso-icon {
-    background: #EE581F !important;
-}
-
-.v-icon {
-    color: white !important;
-}
-```
+- Default Rocket Meals Color: #EE581F
