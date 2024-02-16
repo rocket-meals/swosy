@@ -57,7 +57,5 @@ export default function AppLayout() {
     return <MyDrawer
         customDrawerItems={customDrawerItems}
     >
-        {renderMyDrawerScreen("home/index", "Home", "Home", "home")}
-        {renderMyDrawerScreen("settings/index", "Settings", "Settings", "cog")}
     </MyDrawer>
 }
