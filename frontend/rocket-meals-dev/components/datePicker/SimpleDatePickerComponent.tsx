@@ -303,6 +303,9 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
                 <View style={{width: "100%"}}>
                     {renderSwitchYearRow(shownDate)}
                     {renderSwitchMonthRow(shownDate)}
+                    <View style={{
+                        height: 50,
+                    }}></View>
                     {renderRow(renderWeekdayRowForMonth())}
                     {renderAllDaysInMonth(shownDate)}
                 </View>

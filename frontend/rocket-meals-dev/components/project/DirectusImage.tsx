@@ -8,18 +8,25 @@ import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSources";
 import {useIsDebug} from "@/states/Debug";
+import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 
 interface AppState {
-    assetId: string | undefined | null | DirectusFiles;
+    assetId: string | undefined | null | DirectusFiles,
+    image_url?: string | undefined | null;
     style?: any;
     alt?: string;
     placeholder?: string;
-    thumbHash?: string;
+    thumbHash?: string | undefined | null;
     showLoading?: boolean
     fallbackElement?: any,
     onPress?: () => {}
 }
 
+/**
+ * Will render assetId , then image_url and then fallbackElement
+ * @param props
+ * @constructor
+ */
 export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     const accessToken = useAccessToken()
@@ -27,6 +34,10 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
     const isDebug = useIsDebug()
 
     let url = ServerAPI.getAssetImageURL(props.assetId);
+    if(!url && props.image_url){
+        url = props.image_url;
+    }
+
     const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
 
     const uri = url; // TODO: Maybe check if we might use Base64 for caching or if expo-image does that already
@@ -51,7 +62,7 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     let thumbHash = "93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48";
     if(!!props.thumbHash){
-        //thumbHash = props.thumbHash
+        thumbHash = props.thumbHash
     }
     const thumbHashBase64 = thumbHashStringToDataURL(thumbHash)
     let placeholder = thumbHashBase64;
@@ -105,9 +116,17 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
 
     let debugContent = null;
     if(isDebug){
+        let image_asset_id_or_url = ""
+        if(props.image_url){
+            image_asset_id_or_url = props.image_url
+        }
+        if(props.assetId){
+            image_asset_id_or_url = props.assetId+""
+        }
+
         debugContent = (
             <View style={{position: "absolute", top: 0, left: 0}}>
-                <Text>{props.assetId}</Text>
+                <Text>{image_asset_id_or_url}</Text>
             </View>
         )
     }
