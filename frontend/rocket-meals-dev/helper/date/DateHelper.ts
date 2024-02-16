@@ -160,14 +160,23 @@ export class DateHelper {
         if(!weekdayName){
             weekdayName = Weekday.MONDAY;
         }
+
+        let date_monday = new Date().setFullYear(1995, 11, 25);
+        let date_tuesday = new Date().setFullYear(1995, 11, 26);
+        let date_wednesday = new Date().setFullYear(1995, 11, 27);
+        let date_thursday = new Date().setFullYear(1995, 11, 28);
+        let date_friday = new Date().setFullYear(1995, 11, 29);
+        let date_saturday = new Date().setFullYear(1995, 11, 30);
+        let date_sunday = new Date().setFullYear(1995, 11, 31);
+
         switch(weekdayName){
-            case Weekday.MONDAY: return new Date("December 25, 1995 23:15:30");
-            case Weekday.TUESDAY: return new Date("December 26, 1995 23:15:30");
-            case Weekday.WEDNESDAY: return new Date("December 27, 1995 23:15:30");
-            case Weekday.THURSDAY: return new Date("December 28, 1995 23:15:30");
-            case Weekday.FRIDAY: return new Date("December 29, 1995 23:15:30");
-            case Weekday.SATURDAY: return new Date("December 30, 1995 23:15:30");
-            case Weekday.SUNDAY: return new Date("December 31, 1995 23:15:30");
+            case Weekday.MONDAY: return new Date(date_monday);
+            case Weekday.TUESDAY: return new Date(date_tuesday);
+            case Weekday.WEDNESDAY: return new Date(date_wednesday);
+            case Weekday.THURSDAY: return new Date(date_thursday);
+            case Weekday.FRIDAY: return new Date(date_friday);
+            case Weekday.SATURDAY: return new Date(date_saturday);
+            case Weekday.SUNDAY: return new Date(date_sunday);
             default: return DateHelper.getDefaultWeekdayDate(Weekday.MONDAY);
         }
     }

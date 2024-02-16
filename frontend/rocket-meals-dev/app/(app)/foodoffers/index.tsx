@@ -29,11 +29,23 @@ export default function FoodOfferScreen() {
       const {item, index} = info;
       const foodOffer = item.data;
       const food = foodOffer.food;
-      let title = foodOffer.id+""
-      let assetId: string | DirectusFiles | undefined = undefined
+      let title: string | null | undefined = foodOffer.id+""
+      let assetId: string | DirectusFiles | null | undefined = undefined
+      let image_url: string | undefined = undefined
+      let thumb_hash: string | undefined = undefined
       if(typeof food !== "string"){
-        assetId = food?.image
-        title = food?.alias
+        if(food?.image){
+            assetId = food.image
+        }
+        if(food?.image_remote_url){
+            image_url = food.image_remote_url
+        }
+        if(food?.image_thumb_hash){
+            thumb_hash = food.image_thumb_hash
+        }
+        if(food?.alias){
+            title = food.alias
+        }
       }
 
 
@@ -41,6 +53,8 @@ export default function FoodOfferScreen() {
           <MyCardForResourcesWithImage
               key={item.key}
               text={title}
+              thumbHash={thumb_hash}
+              image_url={image_url}
               assetId={assetId}
               onPress={() => console.log("Pressed")}
               accessibilityLabel={title}/>
