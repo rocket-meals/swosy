@@ -73,7 +73,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
             onSelect: async (key: string) => {
                 let nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
                 setColorSchemeOptionRaw(nextColorSchemeKey)
-                return true // do not close the actionsheet
+                return true // close the actionsheet
             }
         })
     }

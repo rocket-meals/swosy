@@ -4,6 +4,7 @@ import {ActionsheetItem, ActionsheetItemText, Divider} from "@gluestack-ui/theme
 import {AccessibilityRole} from "react-native";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {useProjectColor} from "@/states/ProjectInfo";
+import {IconNames} from "@/constants/IconNames";
 
 export interface SettingsRowProps {
     key?: any;
@@ -45,7 +46,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         let content:any = null;
 
         if(showPress && !rightIcon){
-            content = <Icon name={"chevron-right"} />;
+            content = <Icon name={IconNames.chevron_right_icon} />;
         }
         if(rightIcon){
             content = <Icon name={rightIcon} />

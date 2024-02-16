@@ -70,7 +70,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
             onSelect: async (key: string) => {
                 let nextColorSchemeKey: DrawerConfigPosition = key as DrawerConfigPosition
                 setSavedOptionKey(nextColorSchemeKey)
-                return true // do not close the actionsheet
+                return true // close the actionsheet
             }
         })
     }

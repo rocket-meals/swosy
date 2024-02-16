@@ -15,6 +15,11 @@ export class DateHelper {
 
     static Weekday = Weekday;
 
+    static isWeekend(date: Date){
+        let weekday = date.getDay();
+        return weekday === 0 || weekday === 6; // 0 is sunday, 6 is saturday
+    }
+
     static parseTime(time: string, date?: Date): Date{
         let parts = time.split(":");
         let hours = parseInt(parts[0]) || 0;
@@ -53,6 +58,24 @@ export class DateHelper {
             }
         }
         return output;
+    }
+
+    /**
+     * Returns the weekday of the given date as a number. It starts with 0 for sunday and ends with 6 for saturday.
+     * Calculates modulo 7 to ensure that the number is between 0 and 6.
+     * @param weekdayNumber
+     */
+    static getWeekdayByIndex(weekdayNumber: number): Weekday{
+        let modulo = weekdayNumber%7;
+        let enumValues = DateHelper.getWeekdayEnumsValues();
+        for(let i=0; i<enumValues.length; i++){
+            let weekdayEnum = enumValues[i];
+            let weekdayIndex = DateHelper.getWeekdayIndex(weekdayEnum);
+            if(weekdayIndex === modulo){
+                return weekdayEnum;
+            }
+        }
+        return Weekday.MONDAY;
     }
 
     static getWeekdayNames(locale?: string, firstDayOfWeek?: Weekday){
@@ -133,7 +156,7 @@ export class DateHelper {
         }
     }
 
-    static getDefaultWeekdayDate(weekdayName: Weekday){
+    static getDefaultWeekdayDate(weekdayName: Weekday): Date{
         if(!weekdayName){
             weekdayName = Weekday.MONDAY;
         }
@@ -145,14 +168,13 @@ export class DateHelper {
             case Weekday.FRIDAY: return new Date("December 29, 1995 23:15:30");
             case Weekday.SATURDAY: return new Date("December 30, 1995 23:15:30");
             case Weekday.SUNDAY: return new Date("December 31, 1995 23:15:30");
+            default: return DateHelper.getDefaultWeekdayDate(Weekday.MONDAY);
         }
     }
 
-    static getWeekdayTranslationByWeekday(weekdayName: Weekday, locale?: string){
+    static getWeekdayTranslationByWeekday(weekdayName: Weekday, locale?: string): string{
         let date = DateHelper.getDefaultWeekdayDate(weekdayName);
-        if(date){
-            return DateHelper.getWeekdayNameByDate(date, locale);
-        }
+        return DateHelper.getWeekdayNameByDate(date, locale);
     }
 
     static getWeekdayNameByDate(date: Date, locale?: string){

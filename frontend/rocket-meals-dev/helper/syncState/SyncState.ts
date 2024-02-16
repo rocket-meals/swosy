@@ -39,10 +39,10 @@ export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setVal
     ]
 }
 
-export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => void, rawValue: any] {
+export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => Promise<void>, rawValue: any] {
   const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<any>(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
-  const setValue = (dict: T | null) => {
+  const setValue = async (dict: T | null) => {
       //console.log("setValue", dict)
       //console.log("JSON.stringify(dict)", JSON.stringify(dict))
       setJsonStateAsString(JSON.stringify(dict))

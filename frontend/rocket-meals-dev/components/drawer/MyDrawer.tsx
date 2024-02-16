@@ -21,6 +21,7 @@ import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyDrawerSafeAreaView} from "@/components/drawer/MyDrawerSafeAreaView";
 import {DrawerHeaderProps} from "@react-navigation/drawer";
+import {IconNames} from "@/constants/IconNames";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -108,7 +109,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
                 drawerStyle: {
                     width: drawerWidth, // Apply the dynamically calculated width.
                 },
-                drawerIcon: getMyDrawerItemIcon("chevron-right"), // Default icon for the drawer items.
+                drawerIcon: getMyDrawerItemIcon(IconNames.chevron_right_icon), // Default icon for the drawer items.
                 header: getMyScreenHeader() // Render a custom header for the drawer.
             }}
             {...props}

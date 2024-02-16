@@ -109,18 +109,13 @@ export function useProfileLanguageCode(): [string, ((newValue: string) => void)]
     return [language, setLanguage];
 }
 
-export function useProfileLocaleForJsDate(passedProfile?: Profiles): string {
-    const [profile, setProfile] = useSynchedProfile();
-    const usedProfile = passedProfile ? passedProfile : profile;
-
-    const profilesLanguageCode = usedProfile?.language;
-    let locale = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
-    if(!!profilesLanguageCode && profilesLanguageCode.length > 0){
-        locale = profilesLanguageCode;
-    }
+export function useProfileLocaleForJsDate(): string {
+    const [language, setLanguage] = useProfileLanguageCode();
+    let locale = language;
     if(!!locale){
         locale = locale.toLowerCase() //"en-US" --> "en-us"; since js uses lowercase
     }
+    // TODO: check if locale is valid as ISO 639-1 code or something like that
     return locale;
 }
 

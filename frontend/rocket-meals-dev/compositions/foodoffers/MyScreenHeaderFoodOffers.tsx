@@ -2,7 +2,7 @@ import React from "react";
 import {Heading, View, Text} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
-import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferSelectedDate";
+import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
