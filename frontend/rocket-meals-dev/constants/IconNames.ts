@@ -23,4 +23,10 @@ export enum IconNames {
     color_scheme_dark_icon = "moon-waning-crescent",
   color_scheme_system_icon = "theme-light-dark",
   calendar_icon = "calendar-month",
+
+  chevron_right_icon = "chevron-right",
+    chevron_left_icon = "chevron-left",
+
+  first_weekday_icon = "calendar-week",
+  first_weekday_system_icon = "autorenew",
 }

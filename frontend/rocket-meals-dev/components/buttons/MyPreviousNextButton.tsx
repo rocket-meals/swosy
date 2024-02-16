@@ -1,6 +1,7 @@
 import {MyButton} from "@/components/buttons/MyButton";
 import React from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {IconNames} from "@/constants/IconNames";
 
 export type MyPreviousNextButtonProps = {
     forward: boolean,
@@ -10,7 +11,7 @@ export type MyPreviousNextButtonProps = {
 }
 export const MyPreviousNextButton = (props: MyPreviousNextButtonProps) => {
     const forward = props.forward;
-    const iconName = forward ? "chevron-right" : "chevron-left";
+    const iconName = forward ? IconNames.chevron_right_icon : IconNames.chevron_left_icon;
     const translation_next = useTranslation(TranslationKeys.next);
     const translation_previous = useTranslation(TranslationKeys.previous);
     const translation = props.translation;

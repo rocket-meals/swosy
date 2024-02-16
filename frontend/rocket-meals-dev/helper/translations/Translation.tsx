@@ -90,6 +90,8 @@ export class TranslationKeys {
   static drawer_config_position_right = createTranslationKey("drawer_config_position_right", "Rechts");
   static drawer_config_position_system = createTranslationKey("drawer_config_position_system", "System");
 
+  static first_day_of_week = createTranslationKey("first_day_of_week", "Erster Tag der Woche");
+  static first_day_of_week_system = createTranslationKey("first_day_of_week_system", "System");
 
   static color_scheme = createTranslationKey("color_scheme", "Farbschema");
   static color_scheme_light = createTranslationKey("color_scheme_light", "Hell");

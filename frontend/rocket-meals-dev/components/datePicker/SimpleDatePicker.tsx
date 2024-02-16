@@ -1,16 +1,14 @@
 import React, {FunctionComponent} from "react";
-import {TouchableOpacity} from "react-native";
 import {SimpleDatePickerComponent} from "./SimpleDatePickerComponent";
 import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {Canteens} from "@/helper/database/databaseTypes/types";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
-import {useProfileLocaleForJsDate, useSynchedProfile} from "@/states/SynchedProfile";
+import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {useProjectColor, useProjectColorContrast} from "@/states/ProjectInfo";
-import {useTextContrastColor, View} from "@/components/Themed";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {View} from "@/components/Themed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {IconNames} from "@/constants/IconNames";
+import {useSynchedFirstWeekday} from "@/states/SynchedFirstWeekday";
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -22,6 +20,8 @@ export interface SimpleDatePickerProps {
 }
 export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props) => {
 
+    const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday();
+
     const selectDateTranslation = useTranslation(TranslationKeys.selectDate);
     const yearTranslation = useTranslation(TranslationKeys.year);
     const monthTranslation = useTranslation(TranslationKeys.month);
@@ -32,7 +32,7 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
     const formatedSelectedDate = DateHelper.formatOfferDateToReadable(new Date(currentDate), true);
     const accessibilityLabel = props?.accessibilityLabel || formatedSelectedDate;
 
-    const weekStartsAtDay = DateHelper.Weekday.MONDAY // TODO: Get from Settings, either from the saved or the default settings from the system
+    const weekStartsAtDay = firstDayOfWeek
 
     const locale = useProfileLocaleForJsDate();
 
