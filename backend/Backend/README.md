@@ -1,4 +1,13 @@
-# Scheme Import / Exporter
+# Schema Export / Deployment
+
+- start up the directus server
+- adapt the schema in the directus server page
+- export the schema
+  - `npm install`
+  - `npm run schema-export`
+
+
+# TODO: Future work:
 
 TODO: Maybe we shall use this: https://github.com/bcc-code/directus-schema-sync/
 

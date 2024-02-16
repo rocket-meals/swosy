@@ -1,980 +1,998 @@
 export type Apartments = {
-  available_from?: string;
-  building?: number | Buildings;
-  date_created?: string;
-  date_updated?: string;
-  family_friendly?: boolean;
-  handicapped_accessible?: boolean;
-  id: number;
-  singleflat?: boolean;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  washingmachines: string | Washingmachines[];
+  available_from?: string | null;
+  building?: string | Buildings | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  family_friendly?: boolean | null;
+  handicapped_accessible?: boolean | null;
+  id: string;
+  singleflat?: boolean | null;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  washingmachines: any[] | Washingmachines[];
 };
 
 export type AppSettings = {
-  avatars_enabled?: boolean;
-  date_created?: string;
-  date_updated?: string;
-  enabledAvatarStyles?: string;
+  app_stores: string;
+  app_url_to_apple_store?: string | null;
+  app_url_to_google_store?: string | null;
+  balance_enabled?: boolean | null;
+  balance_settings: string;
+  buildings_enabled?: boolean | null;
+  buildings_parsing_enabled?: boolean | null;
+  buildings_parsing_last_date?: string | null;
+  buildings_parsing_status?: string | null;
+  buildings_settings: string;
+  cashregisters_parsing_enabled?: boolean | null;
+  cashregisters_parsing_last_date?: string | null;
+  cashregisters_parsing_status?: string | null;
+  cashregisters_settings: string;
+  course_timetable_enabled?: boolean | null;
+  course_timetable_settings: string;
+  date_created?: string | null;
+  date_privacy_policy_updated?: string | null;
+  date_updated?: string | null;
+  foods_enabled?: boolean | null;
+  foods_parsing_enabled?: boolean | null;
+  foods_parsing_last_date?: string | null;
+  foods_parsing_status?: string | null;
+  foods_placeholder_image?: string | DirectusFiles | null;
+  foods_placeholder_image_thumb_hash?: string | null;
+  foods_ratings_amount_display?: boolean | null;
+  foods_ratings_average_display?: boolean | null;
+  foods_ratings_type?: string | null;
+  foods_settings: string;
+  housing_enabled?: boolean | null;
+  housing_maps_enabled?: boolean | null;
+  housing_parsing_enabled?: boolean | null;
+  housing_parsing_last_date?: string | null;
+  housing_parsing_status?: string | null;
+  housing_settings: string;
+  housing_translations: any[] | AppSettingsHousingTranslations[];
   id: number;
-  initialAvatarStyle?: string;
-  mealplaceholder_image?: string | DirectusFiles;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  avatars_settings_group: string;
-};
-
-export type AppSettingsAccountBalance = {
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type AppSettingsBuildings = {
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type AppSettingsCourseTimetable = {
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type AppSettingsFoods = {
-  comments_type?: string;
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  placeholder_image?: string | DirectusFiles;
-  ratings_amount_display?: boolean;
-  ratings_avg_display?: boolean;
-  ratings_type?: string;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type AppSettingsHousing = {
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  maps_enabled?: boolean;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | AppSettingsHousingTranslations[];
+  maintenance_end?: string | null;
+  maintenance_settings: string;
+  maintenance_start?: string | null;
+  news_enabled?: boolean | null;
+  news_parsing_enabled?: boolean | null;
+  news_parsing_last_date?: string | null;
+  news_parsing_status?: string | null;
+  news_settings: string;
+  notifications_android_enabled?: boolean | null;
+  notifications_email_enabled?: boolean | null;
+  notifications_ios_enabled?: boolean | null;
+  notifications_settings: string;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_forecast_calculation_enabled?: boolean | null;
+  utilization_forecast_calculation_last_date?: string | null;
+  utilization_forecast_calculation_status?: string | null;
+  utilization_settings: string;
 };
 
 export type AppSettingsHousingTranslations = {
-  app_settings_housing_id?: number | AppSettingsHousing;
-  be_source_for_translations?: boolean;
-  create_translations_for_all_languages?: boolean;
-  description?: string;
+  app_settings_id?: number | AppSettings | null;
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
   id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-};
-
-export type AppSettingsNews = {
-  date_created?: string;
-  date_updated?: string;
-  enabled?: boolean;
-  id: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-};
-
-export type AppSettingsNotifications = {
-  android_enabled?: boolean;
-  date_created?: string;
-  date_updated?: string;
-  email_enabled?: boolean;
-  id: number;
-  ios_enabled?: boolean;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type AppTranslations = {
-  date_created?: string;
-  date_updated?: string;
-  id: string;
-  sort?: number;
-  status?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | AppTranslationsTranslations[];
-};
-
-export type AppTranslationsTranslations = {
-  app_translations_id?: string | AppTranslations;
-  be_source_for_translations?: boolean;
-  content?: string;
-  create_translations_for_all_languages?: boolean;
-  id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-  markdown?: string;
-  translation: string;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  translation_settings: string;
 };
 
 export type AutoBackupSettings = {
-  DB_CLIENT?: string;
-  active?: boolean;
-  backup_file_format?: string;
-  backup_file_format_postfix?: string;
-  backup_file_format_prefix?: string;
-  backup_location_custom_path?: string;
-  backup_location_folder_id?: string;
-  backup_location_folder_name?: string;
-  backup_location_type?: string;
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  latest_log?: string;
-  sqlite3_db_filename?: string;
-  state?: string;
-  user_created?: string;
-  user_updated?: string;
+  active?: boolean | null;
+  backup_file_format?: string | null;
+  backup_file_format_postfix?: string | null;
+  backup_file_format_prefix?: string | null;
+  backup_location_custom_path?: string | null;
+  backup_location_folder_id?: string | null;
+  backup_location_folder_name?: string | null;
+  backup_location_type?: string | null;
   backup_location_type_custom: string;
   backup_location_type_file_library: string;
-  divide_to_database_type: string;
-  "divider-oql-hz": string;
-  "divider-qtbpzx": string;
-  divider_to_backup_location: string;
+  date_created?: string | null;
+  date_updated?: string | null;
+  DB_CLIENT?: string | null;
   driver_specific_settings: string;
   general_settings: string;
-  notice_finished: string;
-  notice_please_configure_db_client: string;
-  notice_please_configure_save_location: string;
-  notice_please_setup_name_for_backupfile: string;
-  notice_welcome: string;
+  id: number;
+  latest_log?: string | null;
+  sqlite3_db_filename?: string | null;
   sqlite3_settings: string;
+  state?: string | null;
+  user_created?: string | null;
+  user_updated?: string | null;
   visibility_active: string;
 };
 
 export type AutoTranslationSettings = {
-  active?: boolean;
-  auth_key?: string;
-  extra?: string;
+  active?: boolean | null;
+  auth_key?: string | null;
+  extra?: string | null;
   id: number;
-  informations?: string;
-  limit?: number;
-  percentage?: number;
-  used?: number;
-  valid_auth_key?: boolean;
-  notice: string;
+  informations?: string | null;
+  limit?: number | null;
+  percentage?: number | null;
   usage: string;
+  used?: number | null;
+  valid_auth_key?: boolean | null;
   visible_for_valid_auth_key: string;
 };
 
 export type Buildings = {
-  coord?: unknown;
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  image?: string | DirectusFiles;
-  name?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  year_of_construction?: number;
-  apartments: string | Apartments[];
-  canteens: string | Canteens[];
-  translations: string | BuildingsTranslations[];
+  alias?: string | null;
+  apartments: any[] | Apartments[];
+  coordinates?: string | null;
+  date_created?: string | null;
+  date_of_construction?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  sort?: number | null;
+  status?: string | null;
+  translations: any[] | BuildingsTranslations[];
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type BuildingsTranslations = {
-  be_source_for_translations?: boolean;
-  buildings_id?: number | Buildings;
-  content?: string;
-  create_translations_for_all_languages?: boolean;
+  be_source_for_translations?: boolean | null;
+  buildings_id?: string | Buildings | null;
+  content?: string | null;
   id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-  translation: string;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  translation_settings: string;
 };
 
 export type Businesshours = {
-  date_created?: string;
-  date_updated?: string;
-  date_valid_from?: string;
-  date_valid_till?: string;
-  dayOfTheWeek?: string;
-  id: number;
-  sort?: number;
-  status: string;
-  time_end?: string;
-  time_start?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
+  date_created?: string | null;
+  date_updated?: string | null;
+  date_valid_from?: string | null;
+  date_valid_till?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  time_end?: string | null;
+  time_start?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Canteens = {
-  building?: number | Buildings;
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  label?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  businesshours: string | CanteensBusinesshours[];
+  alias?: string | null;
+  building?: string | Buildings | null;
+  businesshours: any[] | CanteensBusinesshours[];
+  date_created?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  foodoffers: any[] | Foodoffers[];
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_group?: string | UtilizationsGroups | null;
 };
 
 export type CanteensBusinesshours = {
-  businesshours_id?: number | Businesshours;
-  canteens_id?: number | Canteens;
+  businesshours_id?: string | Businesshours | null;
+  canteens_id?: string | Canteens | null;
   id: number;
 };
 
-export type ChatroomMessages = {
-  chatroom?: number | Chatrooms;
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  sort?: number;
-  status: string;
-  textarea?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
+export type Cashregisters = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  transactions: any[] | CashregistersTransactions[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
-export type ChatroomTopics = {
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | ChatroomTopicsTranslations[];
-};
-
-export type ChatroomTopicsTranslations = {
-  be_source_for_translations?: boolean;
-  chatroom_topics_id?: number | ChatroomTopics;
-  content?: string;
-  create_translations_for_all_languages?: boolean;
-  id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
+export type CashregistersTransactions = {
+  cashregister?: string | Cashregisters | null;
+  date?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  name?: string | null;
+  quantity?: number | null;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Chatrooms = {
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  owner?: number | Profiles;
-  sort?: number;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  messages: any[] | ChatroomsMessages[];
+  owner?: string | Profiles | null;
+  participants: any[] | ChatroomsProfiles[];
+  sort?: number | null;
   status: string;
-  topic?: number | ChatroomTopics;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  messages: string | ChatroomMessages[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type ChatroomsMessages = {
+  chatroom?: string | Chatrooms | null;
+  content?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type ChatroomsProfiles = {
+  chatrooms_id?: string | Chatrooms | null;
+  id: number;
+  profiles_id?: string | Profiles | null;
+};
+
+export type CollectionsDatesLastUpdate = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Devices = {
-  brand?: string;
-  date_created?: string;
-  date_updated?: string;
-  display_fontscale?: string;
-  display_height?: string;
-  display_pixelratio?: string;
-  display_scale?: string;
-  display_width?: string;
-  id: number;
-  isAndroid?: boolean;
-  isIOS?: boolean;
-  isLandscape?: boolean;
-  isSimulator?: boolean;
-  isTablet?: boolean;
-  isWeb?: boolean;
-  platform?: string;
-  profile?: number | Profiles;
-  pushTokenObj?: unknown;
-  sort?: number;
-  status: string;
-  systemVersion?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
+  alias?: string | null;
+  brand?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  display_fontscale?: number | null;
   display_group: string;
+  display_height?: number | null;
+  display_pixelratio?: number | null;
+  display_scale?: number | null;
+  display_width?: number | null;
+  id: string;
+  is_android?: boolean | null;
+  is_ios?: boolean | null;
+  is_landscape?: boolean | null;
+  is_simulator?: boolean | null;
+  is_tablet?: boolean | null;
+  is_web?: boolean | null;
+  platform?: string | null;
+  profile?: string | Profiles | null;
+  pushTokenObj?: unknown | null;
+  sort?: number | null;
+  status?: string | null;
   system_group: string;
-};
-
-export type Flowhooks = {
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  last_parsing_date?: string;
-  parse_foodoffers?: string;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type Foodoffers = {
-  canteen?: number | Canteens;
-  date?: string;
-  date_created?: string;
-  date_updated?: string;
-  food?: string | Foods;
-  id: number;
-  price_employee?: number;
-  price_guest?: number;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  price_student?: number;
-  markings: string | FoodoffersMarkings[];
-};
-
-export type FoodoffersMarkings = {
-  foodoffers_id?: number | Foodoffers;
-  id: number;
-  markings_id?: number | Markings;
-};
-
-export type Foods = {
-  calories_kcal?: number;
-  carbohydrate_g?: number;
-  date_created?: string;
-  date_updated?: string;
-  extra?: unknown;
-  fat_g?: number;
-  fiber_g?: number;
-  id: string;
-  image?: string | DirectusFiles;
-  protein_g?: number;
-  saturated_fat_g?: number;
-  sodium_g?: number;
-  sort?: number;
-  status: string;
-  sugar_g?: number;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  feedbacks: string | FoodsFeedbacks[];
-  markings: string | FoodsMarkings[];
-  translations: string | FoodsTranslations[];
-};
-
-export type FoodsFeedbacks = {
-  comment?: string;
-  foods_id?: string | Foods;
-  id: number;
-  profiles_id?: number | Profiles;
-  rating?: number;
-};
-
-export type FoodsMarkings = {
-  foods_id?: string | Foods;
-  id: number;
-  markings_id?: number | Markings;
-};
-
-export type FoodsTranslations = {
-  foods_id?: string | Foods;
-  id: number;
-  languages_code?: string | Languages;
-  name?: string;
-};
-
-export type ImageOverlays = {
-  color?: string;
-  date_created?: string;
-  date_updated?: string;
-  icon?: string;
-  id: string;
-  image?: string | DirectusFiles;
-  position?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | ImageOverlaysTranslations[];
-};
-
-export type ImageOverlaysTranslations = {
-  description?: string;
-  id: number;
-  image_overlays_id?: string | ImageOverlays;
-  languages_code?: string | Languages;
-  title?: string;
-};
-
-export type Languages = {
-  code: string;
-  direction?: string;
-  name?: string;
-};
-
-export type Markings = {
-  date_created?: string;
-  date_updated?: string;
-  icon?: string;
-  id: number;
-  image?: string | DirectusFiles;
-  image_url?: string;
-  label?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | MarkingsTranslations[];
-};
-
-export type MarkingsTranslations = {
-  be_source_for_translations?: boolean;
-  create_translations_for_all_languages?: boolean;
-  id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-  markings_id?: number | Markings;
-  name?: string;
-};
-
-export type News = {
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  image?: string | DirectusFiles;
-  notice_private?: string;
-  sort?: number;
-  status: string;
-  url?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  translations: string | NewsTranslations[];
-};
-
-export type NewsTranslations = {
-  be_source_for_translations?: boolean;
-  content?: string;
-  create_translations_for_all_languages?: boolean;
-  id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-  news_id?: number | News;
-  title?: string;
-  translation: string;
-};
-
-export type PrivacyPolicy = {
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  status: string;
-  text_de?: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type Profiles = {
-  avatar?: unknown;
-  canteen?: number | Canteens;
-  course_timetable?: unknown;
-  credit_balance?: number;
-  date_created?: string;
-  date_updated?: string;
-  id: number;
-  language?: string;
-  nickname?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  buildings_favorites: string | ProfilesBuildingsFavorites[];
-  buildings_last_visited: string | ProfilesBuildingsLastVisited[];
-  devices: string | Devices[];
-  foods_feedbacks: string | FoodsFeedbacks[];
-  markings: string | ProfilesMarkings[];
-};
-
-export type ProfilesBuildingsFavorites = {
-  buildings_id?: number | Buildings;
-  id: number;
-  profiles_id?: number | Profiles;
-};
-
-export type ProfilesBuildingsLastVisited = {
-  buildings_id?: number | Buildings;
-  id: number;
-  last_visited?: string;
-  profiles_id?: number | Profiles;
-};
-
-export type ProfilesMarkings = {
-  dislikes?: boolean;
-  id: number;
-  markings_id?: number | Markings;
-  profiles_id?: number | Profiles;
-};
-
-export type Washingmachines = {
-  apartment?: number | Apartments;
-  date_created?: string;
-  date_finished?: string;
-  date_updated?: string;
-  id: number;
-  name?: string;
-  remoteId?: string;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-};
-
-export type Wikis = {
-  color?: string;
-  custom_id?: string;
-  date_created?: string;
-  date_updated?: string;
-  hideAsNormalWiki?: boolean;
-  icon?: string;
-  id: number;
-  notice_private?: string;
-  parent?: number | Wikis;
-  public?: boolean;
-  role?: string | DirectusRoles;
-  sort?: number;
-  status: string;
-  user_created?: string | DirectusUsers;
-  user_updated?: string | DirectusUsers;
-  children: string | Wikis[];
-  translations: string | WikisTranslations[];
-};
-
-export type WikisTranslations = {
-  be_source_for_translations?: boolean;
-  content?: string;
-  create_translations_for_all_languages?: boolean;
-  id: number;
-  languages_code?: string | Languages;
-  let_be_translated?: boolean;
-  title?: string;
-  wikis_id?: number | Wikis;
-  translation: string;
+  system_version?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type DirectusActivity = {
-  id: number;
   action: string;
-  user?: string | DirectusUsers;
-  timestamp: string;
-  ip?: string;
-  user_agent?: string;
   collection: string;
+  comment?: string | null;
+  id: number;
+  ip?: string | null;
   item: string;
-  comment?: string;
-  origin?: string;
-  revisions: string | DirectusRevisions[];
+  origin?: string | null;
+  revisions: any[] | DirectusRevisions[];
+  timestamp: string;
+  user?: string | DirectusUsers | null;
+  user_agent?: string | null;
 };
 
 export type DirectusCollections = {
-  collection: string;
-  icon?: string;
-  note?: string;
-  display_template?: string;
-  hidden: boolean;
-  singleton: boolean;
-  translations?: unknown;
-  archive_field?: string;
+  accountability?: string | null;
   archive_app_filter: boolean;
-  archive_value?: string;
-  unarchive_value?: string;
-  sort_field?: string;
-  accountability?: string;
-  color?: string;
-  item_duplication_fields?: unknown;
-  sort?: number;
-  group?: string | DirectusCollections;
+  archive_field?: string | null;
+  archive_value?: string | null;
   collapse: string;
-  collection_divider: string;
-  archive_divider: string;
-  sort_divider: string;
-  accountability_divider: string;
-  duplication_divider: string;
+  collection: string;
+  color?: string | null;
+  display_template?: string | null;
+  group?: string | DirectusCollections | null;
+  hidden: boolean;
+  icon?: string | null;
+  item_duplication_fields?: unknown | null;
+  note?: string | null;
+  preview_url?: string | null;
+  singleton: boolean;
+  sort?: number | null;
+  sort_field?: string | null;
+  translations?: unknown | null;
+  unarchive_value?: string | null;
+  versioning: boolean;
+};
+
+export type DirectusDashboards = {
+  color?: string | null;
+  date_created?: string | null;
+  icon: string;
+  id: string;
+  name: string;
+  note?: string | null;
+  panels: any[] | DirectusPanels[];
+  user_created?: string | DirectusUsers | null;
+};
+
+export type DirectusExtensions = {
+  enabled: boolean;
+  name: string;
 };
 
 export type DirectusFields = {
-  id: number;
   collection: string | DirectusCollections;
+  conditions?: unknown | null;
+  display?: string | null;
+  display_options?: unknown | null;
   field: string;
-  special?: unknown;
-  interface?: string;
-  options?: unknown;
-  display?: string;
-  display_options?: unknown;
-  readonly: boolean;
+  group?: string | DirectusFields | null;
   hidden: boolean;
-  sort?: number;
-  width?: string;
-  translations?: unknown;
-  note?: string;
-  conditions?: unknown;
-  required?: boolean;
-  group?: string | DirectusFields;
-  validation?: unknown;
-  validation_message?: string;
+  id: number;
+  interface?: string | null;
+  note?: string | null;
+  options?: unknown | null;
+  readonly: boolean;
+  required?: boolean | null;
+  sort?: number | null;
+  special?: unknown | null;
+  translations?: unknown | null;
+  validation?: unknown | null;
+  validation_message?: string | null;
+  width?: string | null;
 };
 
 export type DirectusFiles = {
-  id: string;
-  storage: string;
-  filename_disk?: string;
+  charset?: string | null;
+  description?: string | null;
+  duration?: number | null;
+  embed?: string | null;
+  filename_disk?: string | null;
   filename_download: string;
-  title?: string;
-  type?: string;
-  folder?: string | DirectusFolders;
-  uploaded_by?: string | DirectusUsers;
-  uploaded_on: string;
-  modified_by?: string | DirectusUsers;
+  filesize?: number | null;
+  folder?: string | DirectusFolders | null;
+  height?: number | null;
+  id: string;
+  location?: string | null;
+  metadata?: unknown | null;
+  modified_by?: string | DirectusUsers | null;
   modified_on: string;
-  charset?: string;
-  filesize?: number;
-  width?: number;
-  height?: number;
-  duration?: number;
-  embed?: string;
-  description?: string;
-  location?: string;
-  tags?: unknown;
-  metadata?: unknown;
-  storage_divider: string;
+  storage: string;
+  tags?: unknown | null;
+  title?: string | null;
+  type?: string | null;
+  uploaded_by?: string | DirectusUsers | null;
+  uploaded_on: string;
+  width?: number | null;
+};
+
+export type DirectusFlows = {
+  accountability?: string | null;
+  color?: string | null;
+  date_created?: string | null;
+  description?: string | null;
+  icon?: string | null;
+  id: string;
+  name: string;
+  operation?: string | DirectusOperations | null;
+  operations: any[] | DirectusOperations[];
+  options?: unknown | null;
+  status: string;
+  trigger?: string | null;
+  user_created?: string | DirectusUsers | null;
 };
 
 export type DirectusFolders = {
   id: string;
   name: string;
-  parent?: string | DirectusFolders;
+  parent?: string | DirectusFolders | null;
 };
 
 export type DirectusMigrations = {
-  version: string;
   name: string;
-  timestamp?: string;
+  timestamp?: string | null;
+  version: string;
+};
+
+export type DirectusNotifications = {
+  collection?: string | null;
+  id: number;
+  item?: string | null;
+  message?: string | null;
+  recipient: string | DirectusUsers;
+  sender?: string | DirectusUsers | null;
+  status?: string | null;
+  subject: string;
+  timestamp?: string | null;
+};
+
+export type DirectusOperations = {
+  date_created?: string | null;
+  flow: string | DirectusFlows;
+  id: string;
+  key: string;
+  name?: string | null;
+  options?: unknown | null;
+  position_x: number;
+  position_y: number;
+  reject?: string | DirectusOperations | null;
+  resolve?: string | DirectusOperations | null;
+  type: string;
+  user_created?: string | DirectusUsers | null;
+};
+
+export type DirectusPanels = {
+  color?: string | null;
+  dashboard: string | DirectusDashboards;
+  date_created?: string | null;
+  height: number;
+  icon?: string | null;
+  id: string;
+  name?: string | null;
+  note?: string | null;
+  options?: unknown | null;
+  position_x: number;
+  position_y: number;
+  show_header: boolean;
+  type: string;
+  user_created?: string | DirectusUsers | null;
+  width: number;
 };
 
 export type DirectusPermissions = {
-  id: number;
-  role?: string | DirectusRoles;
-  collection: string;
   action: string;
-  permissions?: unknown;
-  validation?: unknown;
-  presets?: unknown;
-  fields?: unknown;
+  collection: string;
+  fields?: unknown | null;
+  id: number;
+  permissions?: unknown | null;
+  presets?: unknown | null;
+  role?: string | DirectusRoles | null;
+  validation?: unknown | null;
 };
 
 export type DirectusPresets = {
+  bookmark?: string | null;
+  collection?: string | null;
+  color?: string | null;
+  filter?: unknown | null;
+  icon?: string | null;
   id: number;
-  bookmark?: string;
-  user?: string | DirectusUsers;
-  role?: string | DirectusRoles;
-  collection?: string;
-  search?: string;
-  layout?: string;
-  layout_query?: unknown;
-  layout_options?: unknown;
-  refresh_interval?: number;
-  filter?: unknown;
-  icon: string;
-  color?: string;
+  layout?: string | null;
+  layout_options?: unknown | null;
+  layout_query?: unknown | null;
+  refresh_interval?: number | null;
+  role?: string | DirectusRoles | null;
+  search?: string | null;
+  user?: string | DirectusUsers | null;
 };
 
 export type DirectusRelations = {
   id: number;
+  junction_field?: string | null;
   many_collection: string;
   many_field: string;
-  one_collection?: string;
-  one_field?: string;
-  one_collection_field?: string;
-  one_allowed_collections?: unknown;
-  junction_field?: string;
-  sort_field?: string;
+  one_allowed_collections?: unknown | null;
+  one_collection?: string | null;
+  one_collection_field?: string | null;
   one_deselect_action: string;
+  one_field?: string | null;
+  sort_field?: string | null;
 };
 
 export type DirectusRevisions = {
-  id: number;
   activity: number | DirectusActivity;
   collection: string;
+  data?: unknown | null;
+  delta?: unknown | null;
+  id: number;
   item: string;
-  data?: unknown;
-  delta?: unknown;
-  parent?: number | DirectusRevisions;
+  parent?: number | DirectusRevisions | null;
+  version?: string | DirectusVersions | null;
 };
 
 export type DirectusRoles = {
-  id: string;
-  name: string;
-  icon: string;
-  description?: string;
-  ip_access?: unknown;
-  enforce_tfa: boolean;
   admin_access: boolean;
   app_access: boolean;
-  users: string | DirectusUsers[];
+  description?: string | null;
+  enforce_tfa: boolean;
+  icon: string;
+  id: string;
+  ip_access?: unknown | null;
+  name: string;
+  users: any[] | DirectusUsers[];
 };
 
 export type DirectusSessions = {
-  token: string;
-  user?: string | DirectusUsers;
   expires: string;
-  ip?: string;
-  user_agent?: string;
-  share?: string | DirectusShares;
-  origin?: string;
+  ip?: string | null;
+  origin?: string | null;
+  share?: string | DirectusShares | null;
+  token: string;
+  user?: string | DirectusUsers | null;
+  user_agent?: string | null;
 };
 
 export type DirectusSettings = {
-  id: number;
-  project_name: string;
-  project_url?: string;
-  project_color?: string;
-  project_logo?: string | DirectusFiles;
-  public_foreground?: string | DirectusFiles;
-  public_background?: string | DirectusFiles;
-  public_note?: string;
-  auth_login_attempts?: number;
-  auth_password_policy?: string;
-  storage_asset_transform?: string;
-  storage_asset_presets?: unknown;
-  custom_css?: string;
-  storage_default_folder?: string | DirectusFolders;
-  basemaps?: unknown;
-  mapbox_key?: string;
-  module_bar?: unknown;
-  project_descriptor?: string;
-  translation_strings?: unknown;
+  auth_login_attempts?: number | null;
+  auth_password_policy?: string | null;
+  basemaps?: unknown | null;
+  custom_aspect_ratios?: unknown | null;
+  custom_css?: string | null;
+  default_appearance: string;
   default_language: string;
-  custom_aspect_ratios?: unknown;
-  branding_divider: string;
-  modules_divider: string;
-  security_divider: string;
-  files_divider: string;
-  map_divider: string;
-  image_editor: string;
-};
-
-export type DirectusUsers = {
-  id: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  password?: string;
-  location?: string;
-  title?: string;
-  description?: string;
-  tags?: unknown;
-  avatar?: string | DirectusFiles;
-  language?: string;
-  theme?: string;
-  tfa_secret?: string;
-  status: string;
-  role?: string | DirectusRoles;
-  token?: string;
-  last_access?: string;
-  last_page?: string;
-  provider: string;
-  external_identifier?: string;
-  auth_data?: unknown;
-  email_notifications?: boolean;
-  profile?: number | Profiles;
-  preferences_divider: string;
-  admin_divider: string;
-};
-
-export type DirectusWebhooks = {
+  default_theme_dark?: string | null;
+  default_theme_light?: string | null;
   id: number;
-  name: string;
-  method: string;
-  url: string;
-  status: string;
-  data: boolean;
-  actions: unknown;
-  collections: unknown;
-  headers?: unknown;
-  triggers_divider: string;
-};
-
-export type DirectusDashboards = {
-  id: string;
-  name: string;
-  icon: string;
-  note?: string;
-  date_created?: string;
-  user_created?: string | DirectusUsers;
-  color?: string;
-  panels: string | DirectusPanels[];
-};
-
-export type DirectusPanels = {
-  id: string;
-  dashboard: string | DirectusDashboards;
-  name?: string;
-  icon?: string;
-  color?: string;
-  show_header: boolean;
-  note?: string;
-  type: string;
-  position_x: number;
-  position_y: number;
-  width: number;
-  height: number;
-  options?: unknown;
-  date_created?: string;
-  user_created?: string | DirectusUsers;
-};
-
-export type DirectusNotifications = {
-  id: number;
-  timestamp?: string;
-  status?: string;
-  recipient: string | DirectusUsers;
-  sender?: string | DirectusUsers;
-  subject: string;
-  message?: string;
-  collection?: string;
-  item?: string;
+  mapbox_key?: string | null;
+  module_bar?: unknown | null;
+  project_color: string;
+  project_descriptor?: string | null;
+  project_logo?: string | DirectusFiles | null;
+  project_name: string;
+  project_url?: string | null;
+  public_background?: string | DirectusFiles | null;
+  public_favicon?: string | DirectusFiles | null;
+  public_foreground?: string | DirectusFiles | null;
+  public_note?: string | null;
+  storage_asset_presets?: unknown | null;
+  storage_asset_transform?: string | null;
+  storage_default_folder?: string | DirectusFolders | null;
+  theme_dark_overrides?: unknown | null;
+  theme_light_overrides?: unknown | null;
+  theming_group: string;
 };
 
 export type DirectusShares = {
+  collection: string | DirectusCollections;
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
   id: string;
-  name?: string;
-  collection?: string | DirectusCollections;
-  item?: string;
-  role?: string | DirectusRoles;
-  password?: string;
-  user_created?: string | DirectusUsers;
-  date_created?: string;
-  date_start?: string;
-  date_end?: string;
-  times_used?: number;
-  max_uses?: number;
+  item: string;
+  max_uses?: number | null;
+  name?: string | null;
+  password?: string | null;
+  role?: string | DirectusRoles | null;
+  times_used?: number | null;
+  user_created?: string | DirectusUsers | null;
 };
 
-export type DirectusFlows = {
+export type DirectusTranslations = {
   id: string;
-  name: string;
-  icon?: string;
-  color?: string;
-  description?: string;
-  status: string;
-  trigger?: string;
-  accountability?: string;
-  options?: unknown;
-  operation?: string | DirectusOperations;
-  date_created?: string;
-  user_created?: string | DirectusUsers;
-  operations: string | DirectusOperations[];
-};
-
-export type DirectusOperations = {
-  id: string;
-  name?: string;
   key: string;
-  type: string;
-  position_x: number;
-  position_y: number;
-  options?: unknown;
-  resolve?: string | DirectusOperations;
-  reject?: string | DirectusOperations;
-  flow: string | DirectusFlows;
-  date_created?: string;
-  user_created?: string | DirectusUsers;
+  language: string;
+  value: string;
+};
+
+export type DirectusUsers = {
+  appearance?: string | null;
+  auth_data?: unknown | null;
+  avatar?: string | DirectusFiles | null;
+  description?: string | null;
+  email?: string | null;
+  email_notifications?: boolean | null;
+  external_identifier?: string | null;
+  first_name?: string | null;
+  id: string;
+  language?: string | null;
+  last_access?: string | null;
+  last_name?: string | null;
+  last_page?: string | null;
+  location?: string | null;
+  password?: string | null;
+  provider: string;
+  role?: string | DirectusRoles | null;
+  status: string;
+  tags?: unknown | null;
+  tfa_secret?: string | null;
+  theme_dark?: string | null;
+  theme_dark_overrides?: unknown | null;
+  theme_light?: string | null;
+  theme_light_overrides?: unknown | null;
+  title?: string | null;
+  token?: string | null;
+};
+
+export type DirectusVersions = {
+  collection: string | DirectusCollections;
+  date_created?: string | null;
+  date_updated?: string | null;
+  hash?: string | null;
+  id: string;
+  item: string;
+  key: string;
+  name?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type DirectusWebhooks = {
+  actions: unknown;
+  collections: unknown;
+  data: boolean;
+  headers?: unknown | null;
+  id: number;
+  method: string;
+  name: string;
+  status: string;
+  url: string;
+};
+
+export type Foodoffers = {
+  alias?: string | null;
+  calories_kcal?: number | null;
+  canteen?: string | Canteens | null;
+  carbohydrate_g?: number | null;
+  date?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  fat_g?: number | null;
+  fiber_g?: number | null;
+  food?: string | Foods | null;
+  id: string;
+  markings: any[] | FoodoffersMarkings[];
+  price_employee?: number | null;
+  price_guest?: number | null;
+  price_student?: number | null;
+  protein_g?: number | null;
+  saturated_fat_g?: number | null;
+  sodium_g?: number | null;
+  sort?: number | null;
+  status?: string | null;
+  sugar_g?: number | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FoodoffersMarkings = {
+  foodoffers_id?: string | Foodoffers | null;
+  id: number;
+  markings_id?: string | Markings | null;
+};
+
+export type Foods = {
+  alias?: string | null;
+  calories_kcal?: number | null;
+  carbohydrate_g?: number | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  extra?: string | null;
+  fat_g?: number | null;
+  feedbacks: any[] | FoodsFeedbacks[];
+  fiber_g?: number | null;
+  foodoffers: any[] | Foodoffers[];
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  markings: any[] | FoodsMarkings[];
+  protein_g?: number | null;
+  saturated_fat_g?: number | null;
+  sodium_g?: number | null;
+  sort?: number | null;
+  status?: string | null;
+  sugar_g?: number | null;
+  translations: any[] | FoodsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FoodsFeedbacks = {
+  comment?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  food?: string | Foods | null;
+  id: string;
+  notify?: boolean | null;
+  profile?: string | Profiles | null;
+  rating?: number | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FoodsMarkings = {
+  foods_id?: string | Foods | null;
+  id: number;
+  markings_id?: string | Markings | null;
+};
+
+export type FoodsTranslations = {
+  be_source_for_translations?: boolean | null;
+  foods_id?: string | Foods | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
+};
+
+export type Languages = {
+  code: string;
+  direction?: string | null;
+  name?: string | null;
+};
+
+export type Markings = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  icon?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  sort?: number | null;
+  status?: string | null;
+  translations: any[] | MarkingsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type MarkingsTranslations = {
+  be_source_for_translations?: boolean | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  markings_id?: string | Markings | null;
+  name?: string | null;
+  translation_settings: string;
+};
+
+export type News = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | NewsTranslations[];
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type NewsTranslations = {
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  news_id?: string | News | null;
+  title?: string | null;
+  translation_settings: string;
+};
+
+export type Profiles = {
+  avatar?: string | null;
+  buildings_favorites: any[] | ProfilesBuildingsFavorites[];
+  buildings_last_visited: any[] | ProfilesBuildingsLastVisited[];
+  credit_balance?: number | null;
+  date_created?: string | null;
+  date_privacy_policy_accepted?: string | null;
+  date_updated?: string | null;
+  devices: any[] | Devices[];
+  foods_feedbacks: any[] | FoodsFeedbacks[];
+  id: string;
+  language?: string | Languages | null;
+  markings: any[] | ProfilesMarkings[];
+  nickname?: string | null;
+  price_group?: string | null;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type ProfilesBuildingsFavorites = {
+  buildings_id?: string | Buildings | null;
+  id: number;
+  profiles_id?: string | Profiles | null;
+};
+
+export type ProfilesBuildingsLastVisited = {
+  buildings_id?: string | Buildings | null;
+  id: number;
+  profiles_id?: string | Profiles | null;
+};
+
+export type ProfilesMarkings = {
+  dislikes?: boolean | null;
+  id: number;
+  markings_id?: string | Markings | null;
+  profiles_id?: string | Profiles | null;
+};
+
+export type PushNotifications = {
+  android: string;
+  android_channel_id?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  expo_access_token?: string | null;
+  expo_push_tokens?: unknown | null;
+  id: string;
+  ios: string;
+  ios_badge_count?: number | null;
+  ios_message_subtitle?: string | null;
+  ios_play_sound?: boolean | null;
+  message: string;
+  message_body?: string | null;
+  message_data?: unknown | null;
+  message_title?: string | null;
+  message_ttl?: number | null;
+  sort?: number | null;
+  status?: string | null;
+  status_log?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type UtilizationsEntries = {
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_group?: string | UtilizationsGroups | null;
+  value_forecast_current?: number | null;
+  value_real?: number | null;
+};
+
+export type UtilizationsGroups = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_entries: any[] | UtilizationsEntries[];
+};
+
+export type Washingmachines = {
+  alias?: string | null;
+  apartment?: string | Apartments | null;
+  date_created?: string | null;
+  date_finished?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type Wikis = {
+  children: any[] | Wikis[];
+  custom_id?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  icon?: string | null;
+  id: string;
+  notice_private?: string | null;
+  parent?: string | Wikis | null;
+  public?: boolean | null;
+  roles_required: any[] | WikisDirectusRoles[];
+  show_in_drawer?: boolean | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | WikisTranslations[];
+  url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type WikisDirectusRoles = {
+  directus_roles_id?: string | DirectusRoles | null;
+  id: number;
+  wikis_id?: string | Wikis | null;
+};
+
+export type WikisTranslations = {
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  title?: string | null;
+  translation_settings: string;
+  wikis_id?: string | Wikis | null;
 };
 
 export type CustomDirectusTypes = {
-  apartments: Apartments;
+  apartments: Apartments[];
   app_settings: AppSettings;
-  app_settings_account_balance: AppSettingsAccountBalance;
-  app_settings_buildings: AppSettingsBuildings;
-  app_settings_course_timetable: AppSettingsCourseTimetable;
-  app_settings_foods: AppSettingsFoods;
-  app_settings_housing: AppSettingsHousing;
-  app_settings_housing_translations: AppSettingsHousingTranslations;
-  app_settings_news: AppSettingsNews;
-  app_settings_notifications: AppSettingsNotifications;
-  app_translations: AppTranslations;
-  app_translations_translations: AppTranslationsTranslations;
+  app_settings_housing_translations: AppSettingsHousingTranslations[];
   auto_backup_settings: AutoBackupSettings;
   auto_translation_settings: AutoTranslationSettings;
-  buildings: Buildings;
-  buildings_translations: BuildingsTranslations;
-  businesshours: Businesshours;
-  canteens: Canteens;
-  canteens_businesshours: CanteensBusinesshours;
-  chatroom_messages: ChatroomMessages;
-  chatroom_topics: ChatroomTopics;
-  chatroom_topics_translations: ChatroomTopicsTranslations;
-  chatrooms: Chatrooms;
-  devices: Devices;
-  flowhooks: Flowhooks;
-  foodoffers: Foodoffers;
-  foodoffers_markings: FoodoffersMarkings;
-  foods: Foods;
-  foods_feedbacks: FoodsFeedbacks;
-  foods_markings: FoodsMarkings;
-  foods_translations: FoodsTranslations;
-  image_overlays: ImageOverlays;
-  image_overlays_translations: ImageOverlaysTranslations;
-  languages: Languages;
-  markings: Markings;
-  markings_translations: MarkingsTranslations;
-  news: News;
-  news_translations: NewsTranslations;
-  privacy_policy: PrivacyPolicy;
-  profiles: Profiles;
-  profiles_buildings_favorites: ProfilesBuildingsFavorites;
-  profiles_buildings_last_visited: ProfilesBuildingsLastVisited;
-  profiles_markings: ProfilesMarkings;
-  washingmachines: Washingmachines;
-  wikis: Wikis;
-  wikis_translations: WikisTranslations;
-  directus_activity: DirectusActivity;
-  directus_collections: DirectusCollections;
-  directus_fields: DirectusFields;
-  directus_files: DirectusFiles;
-  directus_folders: DirectusFolders;
-  directus_migrations: DirectusMigrations;
-  directus_permissions: DirectusPermissions;
-  directus_presets: DirectusPresets;
-  directus_relations: DirectusRelations;
-  directus_revisions: DirectusRevisions;
-  directus_roles: DirectusRoles;
-  directus_sessions: DirectusSessions;
+  buildings: Buildings[];
+  buildings_translations: BuildingsTranslations[];
+  businesshours: Businesshours[];
+  canteens: Canteens[];
+  canteens_businesshours: CanteensBusinesshours[];
+  cashregisters: Cashregisters[];
+  cashregisters_transactions: CashregistersTransactions[];
+  chatrooms: Chatrooms[];
+  chatrooms_messages: ChatroomsMessages[];
+  chatrooms_profiles: ChatroomsProfiles[];
+  collections_dates_last_update: CollectionsDatesLastUpdate[];
+  devices: Devices[];
+  directus_activity: DirectusActivity[];
+  directus_collections: DirectusCollections[];
+  directus_dashboards: DirectusDashboards[];
+  directus_extensions: DirectusExtensions[];
+  directus_fields: DirectusFields[];
+  directus_files: DirectusFiles[];
+  directus_flows: DirectusFlows[];
+  directus_folders: DirectusFolders[];
+  directus_migrations: DirectusMigrations[];
+  directus_notifications: DirectusNotifications[];
+  directus_operations: DirectusOperations[];
+  directus_panels: DirectusPanels[];
+  directus_permissions: DirectusPermissions[];
+  directus_presets: DirectusPresets[];
+  directus_relations: DirectusRelations[];
+  directus_revisions: DirectusRevisions[];
+  directus_roles: DirectusRoles[];
+  directus_sessions: DirectusSessions[];
   directus_settings: DirectusSettings;
-  directus_users: DirectusUsers;
-  directus_webhooks: DirectusWebhooks;
-  directus_dashboards: DirectusDashboards;
-  directus_panels: DirectusPanels;
-  directus_notifications: DirectusNotifications;
-  directus_shares: DirectusShares;
-  directus_flows: DirectusFlows;
-  directus_operations: DirectusOperations;
+  directus_shares: DirectusShares[];
+  directus_translations: DirectusTranslations[];
+  directus_users: DirectusUsers[];
+  directus_versions: DirectusVersions[];
+  directus_webhooks: DirectusWebhooks[];
+  foodoffers: Foodoffers[];
+  foodoffers_markings: FoodoffersMarkings[];
+  foods: Foods[];
+  foods_feedbacks: FoodsFeedbacks[];
+  foods_markings: FoodsMarkings[];
+  foods_translations: FoodsTranslations[];
+  languages: Languages[];
+  markings: Markings[];
+  markings_translations: MarkingsTranslations[];
+  news: News[];
+  news_translations: NewsTranslations[];
+  profiles: Profiles[];
+  profiles_buildings_favorites: ProfilesBuildingsFavorites[];
+  profiles_buildings_last_visited: ProfilesBuildingsLastVisited[];
+  profiles_markings: ProfilesMarkings[];
+  push_notifications: PushNotifications[];
+  utilizations_entries: UtilizationsEntries[];
+  utilizations_groups: UtilizationsGroups[];
+  washingmachines: Washingmachines[];
+  wikis: Wikis[];
+  wikis_directus_roles: WikisDirectusRoles[];
+  wikis_translations: WikisTranslations[];
 };
