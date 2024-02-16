@@ -127,7 +127,7 @@ export type AutoTranslationSettings = {
 export type Buildings = {
   alias?: string | null;
   apartments: any[] | Apartments[];
-  coordinates?: string | null;
+  coordinates?: unknown | null;
   date_created?: string | null;
   date_of_construction?: string | null;
   date_updated?: string | null;
@@ -370,6 +370,8 @@ export type DirectusFiles = {
   filename_disk?: string | null;
   filename_download: string;
   filesize?: number | null;
+  focal_point_x?: number | null;
+  focal_point_y?: number | null;
   folder?: string | DirectusFolders | null;
   height?: number | null;
   id: string;
