@@ -16,6 +16,7 @@ export type Apartments = {
 };
 
 export type AppSettings = {
+  api_version?: string | null;
   app_stores: string;
   app_url_to_apple_store?: string | null;
   app_url_to_google_store?: string | null;
@@ -127,6 +128,7 @@ export type AutoTranslationSettings = {
 export type Buildings = {
   alias?: string | null;
   apartments: any[] | Apartments[];
+  canteens: any[] | Canteens[];
   coordinates?: unknown | null;
   date_created?: string | null;
   date_of_construction?: string | null;
@@ -175,7 +177,6 @@ export type Canteens = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
-  foodoffers: any[] | Foodoffers[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -602,6 +603,7 @@ export type DirectusUsers = {
   last_page?: string | null;
   location?: string | null;
   password?: string | null;
+  profile?: string | Profiles | null;
   provider: string;
   role?: string | DirectusRoles | null;
   status: string;

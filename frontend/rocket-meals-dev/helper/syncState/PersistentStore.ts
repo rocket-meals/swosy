@@ -19,7 +19,11 @@ export class PersistentStore {
   static languages = "PersistentStore.languages"
   static wikis = "PersistentStore.wikis"
   static buildings = "PersistentStore.buildings"
+  static apartments = "PersistentStore.apartments"
+  static app_settings = "PersistentStore.app_settings"
+  static markings = "PersistentStore.markings"
   static foods = "PersistentStore.foods"
+  static foodOffers = "PersistentStore.foodOffers"
 
   static profile = "PersistentStore.profile"
 

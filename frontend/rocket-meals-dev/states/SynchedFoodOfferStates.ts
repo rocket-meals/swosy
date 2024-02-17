@@ -2,8 +2,9 @@ import {useSyncState} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Canteens, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {getDemoFoods} from "@/states/SynchedFoods";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
@@ -19,6 +20,68 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
     return [usedSelectedDate, setSelectedDate, changeAmountDays]
 }
 
+export async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
+    let collectionHelper = new CollectionHelper<Foodoffers>("foodoffers");
+
+    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*'];
+
+    let query = {
+        fields: food_offer_fields
+    }
+
+    return await collectionHelper.readItem(foodoffer_id, query);
+}
+
+export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
+    let collectionHelper = new CollectionHelper<Foodoffers>("foodoffers");
+
+    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*'];
+
+    if(amountDays===undefined){
+        amountDays = 1;
+    }
+
+    let andFilters = [];
+
+    let paramDate = DateHelper.formatToOfferDate(date);
+    let formatedDate = new Date(paramDate);
+    let dateRanges = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountDays);
+
+    let startRange = dateRanges[0];
+    let start = new Date(startRange[0]);
+
+    let endRange = dateRanges[dateRanges.length-1];
+    let end = new Date(endRange[1]);
+
+    andFilters.push(
+        {
+            date: {
+                _between: [start.toISOString(), end.toISOString()]
+            }
+        }
+    );
+
+    andFilters.push(
+        {
+            canteen: {
+                _eq: canteen.id,
+            }
+        }
+    )
+
+    let dateFilter = {
+        _and: andFilters
+    }
+
+    let query = {
+        limit: -1,
+        filter: dateFilter,
+        fields: food_offer_fields
+    }
+
+    return await collectionHelper.readItems(query);
+}
+
 export function useFoodOffersForSelectedDate(): [Foodoffers[] | undefined, (newValue: Foodoffers[]) => void]
 {
     const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
@@ -32,6 +95,8 @@ export function useFoodOffersForSelectedDate(): [Foodoffers[] | undefined, (newV
     return [undefined, () => {}];
 
 }
+
+
 
 function getDemoFoodOffersForDate(date: Date): Foodoffers[]
 {
@@ -62,7 +127,7 @@ function getDemoFoodOffersForDate(date: Date): Foodoffers[]
         demoFoodOffer.push({
             date: date.toISOString(),
             food: food,
-            id: i,
+            id: i+"",
             markings: food.markings,
             status: "active",
             user_created: undefined,

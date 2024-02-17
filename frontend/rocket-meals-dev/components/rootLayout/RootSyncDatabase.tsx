@@ -21,6 +21,9 @@ import {ScrollView} from "react-native";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {useSynchedWikisDict} from "@/states/SynchedWikis";
 import {loadLanguageRemoteDict, useSynchedLanguagesDict} from "@/states/SynchedLanguages";
+import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
+import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -52,16 +55,14 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
   const registeredItemsToLoad: any[] = [];
 
-  let canteensCollectionHelper = new CollectionHelper<Canteens>("canteens");
-  const [canteens, setCanteens, lastUpdateCanteens] = useSynchedCanteensDict()
+  const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
 
-  let buildingsCollectionHelper = new CollectionHelper<Buildings>("buildings");
-  const [buildings, setBuildings, lastUpdateBuildings] = useSynchedBuildingsDict()
-
-  const [languagesDict, setLanguagesDict, lastUpdateLanguages] = useSynchedLanguagesDict()
-
-  let wikisCollectionHelper = new CollectionHelper<Wikis>("wikis");
-  const [wikis, setWikis, lastUpdateWikis] = useSynchedWikisDict()
+  const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
+  const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
+  const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
+  const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
+  const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
+  const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
 
   const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 
@@ -79,11 +80,14 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   /**
    * Needs to be called before the useEffect
    */
-  addSynchedResource("canteens", canteens, lastUpdateCanteens)
-  addSynchedResource("buildings", buildings, lastUpdateBuildings)
+  addSynchedResource("app_settings", app_settings, lastUpdateAppSettings)
+  addSynchedResource("canteens", canteensDict, lastUpdateCanteens)
+  addSynchedResource("buildings", buildingsDict, lastUpdateBuildings)
   addSynchedResource("profile", profile, lastUpdateProfile);
-  addSynchedResource("wikis", wikis, lastUpdateWikis)
+  addSynchedResource("wikis", wikisDict, lastUpdateWikis)
   addSynchedResource("languages", languagesDict, lastUpdateLanguages)
+  addSynchedResource("markings", markingsDict, lastUpdateMarkings);
+  addSynchedResource("apartments", apartmentsDict, lastUpdateApartments);
 
   function getDependencies(): DependencyList {
     return registeredItemsToLoad;
@@ -125,33 +129,6 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     });
   }
 
-  async function updateCanteens(){
-    //console.log("updateCanteens")
-    let canteensList = await canteensCollectionHelper.readItems()
-    //console.log("canteensList", canteensList)
-    let canteensDict = canteensCollectionHelper.convertListToDict(canteensList, "id")
-    //console.log("canteensDict", canteensDict)
-    //await wait(2000)
-    setCanteens(canteensDict, nowInMs);
-  }
-
-  async function updateWikis(){
-    let wikisList = await wikisCollectionHelper.readItems(CollectionHelper.getQueryWithRelatedFieldsAndTranslations())
-    let wikisDict = wikisCollectionHelper.convertListToDict(wikisList, "id")
-    setWikis(wikisDict, nowInMs)
-  }
-
-  async function updateBuildings(){
-    let buildingsList = await buildingsCollectionHelper.readItems();
-    let buildingsDict = buildingsCollectionHelper.convertListToDict(buildingsList, "id")
-    setBuildings(buildingsDict, nowInMs)
-  }
-
-  async function updateLanguages(){
-    let languagesDict = await loadLanguageRemoteDict()
-    setLanguagesDict(languagesDict, nowInMs)
-  }
-
   async function updateProfile(){
     console.log("RootSyncDatabase: Update profile");
     console.log("RootSyncDatabase: Update profile - isCurrentUserAnonymous: ",isCurrentUserAnonymous);
@@ -179,11 +156,14 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
       if(isServerOnline){ // if server is online, we can check if we are logged in
         if(!demo){
-          await updateCanteens()
-          await updateBuildings();
+          await updateAppSettingsFromServer(nowInMs)
+          await updateCanteensFromServer(nowInMs);
+          await updateBuildingsFromServer(nowInMs);
           await updateProfile()
-          await updateWikis()
-          await updateLanguages()
+          await updateWikisFromServer(nowInMs)
+          await updateLanguagesFromServer(nowInMs)
+          await updateMarkingsFromServer(nowInMs)
+          await updateApartmentsFromServer(nowInMs)
         }
       } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 
@@ -202,12 +182,26 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     }
   }, itemsToLoad);
 
+  let synchedResourcesDataSynchedDict: {[key: string]: any}
+      = {}
+    let synchedResourceKeys = Object.keys(synchedResources)
+    for(let i = 0; i < synchedResourceKeys.length; i++){
+      let synchedResourceKey = synchedResourceKeys[i]
+      let synchedResourceInformation = synchedResources[synchedResourceKey]
+      let synchedResource = synchedResourceInformation?.data
+      let lastUpdate = synchedResourceInformation?.lastUpdate
+        synchedResourcesDataSynchedDict[synchedResourceKey] = {
+            data: !!synchedResource,
+            lastUpdate: lastUpdate
+        }
+    }
+
   return <>
     <ScrollView style={{width: "100%", height: "100%"}}>
       <Text>{"SyncDatabase flow waiting"}</Text>
       <Text>{"nowInMS: "+nowInMs}</Text>
-      <Text>{"synchedResources: "}</Text>
-      <Text>{JSON.stringify(synchedResources, null, 2)}</Text>
+      <Text>{"synchedResourcesDataSynchedDict: "}</Text>
+      <Text>{JSON.stringify(synchedResourcesDataSynchedDict, null, 2)}</Text>
     </ScrollView>
   </>
 }

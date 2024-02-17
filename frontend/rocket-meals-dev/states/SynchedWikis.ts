@@ -1,7 +1,8 @@
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {Wikis} from "@/helper/database/databaseTypes/types";
+import {Buildings, Wikis} from "@/helper/database/databaseTypes/types";
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 
 export enum Custom_Wiki_Ids {
     about_us = "about_us",
@@ -13,7 +14,21 @@ export enum Custom_Wiki_Ids {
     accessibility = "accessibility",
 }
 
-export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestampe?: number) => void), (number | undefined)] {
+async function loadWikisFromServer(): Promise<Wikis[]> {
+    let collectionHelper = new CollectionHelper<Wikis>("wikis");
+
+    const fields = ['*',"translations.*"];
+
+    let query = {
+        limit: -1,
+        fields: fields
+    }
+
+    return await collectionHelper.readItems(query);
+}
+
+export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+] {
   const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Wikis>(PersistentStore.wikis);
   const demo = useIsDemo()
   let lastUpdate = resourcesRaw?.lastUpdate;
@@ -21,7 +36,14 @@ export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((n
   if(demo) {
     usedResources = getDemoWikis()
   }
-  return [usedResources, setResourcesOnly, lastUpdate]
+
+    async function updateFromServer(nowInMs?: number) {
+        let resourceAsList = await loadWikisFromServer();
+        let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "id")
+        setResourcesOnly(resourceAsDict, nowInMs);
+    }
+
+  return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
 export function useSynchedWikisDictByCustomId(): Record<string, Wikis> {
@@ -31,7 +53,7 @@ export function useSynchedWikisDictByCustomId(): Record<string, Wikis> {
       let wikiKeys = Object.keys(wikis)
         for(let i = 0; i < wikiKeys.length; i++) {
             let wiki = wikis[wikiKeys[i]]
-            if(wiki.custom_id !== undefined){
+            if(wiki.custom_id){
               dictCustomIdToWiki[wiki.custom_id] = wiki
             }
         }
@@ -47,11 +69,12 @@ export function useSynchedWikiByCustomId(customId: string): Wikis | undefined {
 function getDemoWikis(): Record<string, Wikis> {
 
   let demoResource: Wikis = {
-    children: [],
+      roles_required: [],
+      children: [],
     translations: [],
     date_created: new Date().toISOString(),
     date_updated: new Date().toISOString(),
-    id: 123,
+    id: 123+"",
     sort: undefined,
     status: "",
     user_created: undefined,

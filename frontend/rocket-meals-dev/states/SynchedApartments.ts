@@ -1,13 +1,13 @@
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {Buildings, Markings} from "@/helper/database/databaseTypes/types";
+import {Apartments, Buildings, Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 
-async function loadBuildingsFromServer(): Promise<Buildings[]> {
-  let collectionHelper = new CollectionHelper<Buildings>("buildings");
+async function loadApartmentsFromServer(): Promise<Apartments[]> {
+  let collectionHelper = new CollectionHelper<Apartments>("apartments");
 
-  const fields = ['*',"translations.*"];
+  const fields = ['*'];
 
   let query = {
     limit: -1,
@@ -17,9 +17,9 @@ async function loadBuildingsFromServer(): Promise<Buildings[]> {
   return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefined), ((newValue: Record<string, Buildings>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undefined), ((newValue: Record<string, Apartments>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-  const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Buildings>(PersistentStore.buildings);
+  const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Apartments>(PersistentStore.apartments);
   const demo = useIsDemo()
   let lastUpdate = resourcesRaw?.lastUpdate;
   let usedResources = resourcesOnly;
@@ -28,7 +28,7 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
   }
 
   async function updateFromServer(nowInMs?: number) {
-    let resourceAsList = await loadBuildingsFromServer();
+    let resourceAsList = await loadApartmentsFromServer();
     let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "id")
     setResourcesOnly(resourceAsDict, nowInMs);
   }
@@ -36,14 +36,11 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
   return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-function getDemoBuildings(): Record<string, Buildings> {
+function getDemoBuildings(): Record<string, Apartments> {
 
-  let demoResource: Buildings = {
-    alias: "Demo Building",
-    apartments: [],
-    id: 123+"",
-    status: "",
-    translations: []
+  let demoResource: Apartments = {
+    id: "",
+    washingmachines: [],
   }
 
   return {
