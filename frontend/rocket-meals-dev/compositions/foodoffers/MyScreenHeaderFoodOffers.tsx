@@ -9,6 +9,7 @@ import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
+import {UtilizationForecast} from "@/compositions/utilizationForecast/UtilizationForecast";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -74,6 +75,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
             </View>
 
         </View>
+        <UtilizationForecast date={selectedDate} />
         <Divider />
     </View>
 }
