@@ -26,7 +26,7 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
     const label = translation_title
     const canteenId = profileCanteen?.id;
     const canteenIdAsString = canteenId ? canteenId+"" : undefined;
-    const labelRight: string = profileCanteen?.label || canteenIdAsString || "unknown";
+    const labelRight: string = profileCanteen?.alias || canteenIdAsString || "unknown";
 
     const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 

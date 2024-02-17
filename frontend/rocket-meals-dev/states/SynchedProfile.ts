@@ -16,27 +16,33 @@ import {useIsCurrentUserAnonymous} from "@/states/User";
 import {useIsServerOnline} from "@/states/SyncStateServerInfo";
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 
-export async function loadProfileRemote(user: DirectusUsers | undefined) {
+async function loadProfileRemoteByProfileId(id: string) {
+    const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
+    const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
+
+    const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
+        acc[x] = { _limit: -1 };
+        return acc;
+    }, {} as Record<string, { _limit: number }>);
+
+    let usersProfileId: string = id;
+    console.log("usersProfileId: ",usersProfileId)
+    console.log("Okay lets load from remote")
+    const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
+    return await profileCollectionHelper.readItem(usersProfileId, {
+        fields: profileFields,
+        deep: deepFields,
+    });
+}
+
+export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
     console.log("loadProfileRemote");
     console.log("user", user)
     if(!!user){
-        const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
-        const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
-
-        const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
-            acc[x] = { _limit: -1 };
-            return acc;
-        }, {} as Record<string, { _limit: number }>);
-
         let usersProfileId: string = user.profile as unknown as string
         console.log("usersProfileId: ",usersProfileId)
         if (usersProfileId){
-            console.log("Okay lets load from remote")
-            const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
-            return await profileCollectionHelper.readItem(usersProfileId, {
-                fields: profileFields,
-                deep: deepFields,
-            });
+            return await loadProfileRemoteByProfileId(usersProfileId);
         }
     }
     return undefined;
@@ -47,9 +53,8 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
     console.log("id: ", id)
     console.log("profile: ", profile)
     const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
-    let answer = await profileCollectionHelper.updateItem(id, profile);
-    console.log("answer: ",answer)
-    return answer
+    await profileCollectionHelper.updateItem(id, profile);
+    return await loadProfileRemoteByProfileId(id as string);
 }
 
 export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)>), (number | undefined)] {

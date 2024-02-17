@@ -21,7 +21,7 @@ export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefin
 
   async function updateFromServer(nowInMs?: number) {
     let resourceAsList = await loadLanguageRemoteDict();
-    let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "id")
+    let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "code")
     setResourcesOnly(resourceAsDict, nowInMs);
   }
 

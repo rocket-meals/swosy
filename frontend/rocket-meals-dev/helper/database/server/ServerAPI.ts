@@ -10,13 +10,18 @@ import {
     GraphqlClient,
     readMe,
     ReadProviderOutput,
-    readProviders,
+    readProviders, readRoles,
     rest,
     RestClient,
     serverInfo,
     ServerInfoOutput
 } from "@directus/sdk";
-import {CustomDirectusTypes, DirectusFiles} from "@/helper/database/databaseTypes/types";
+import {
+    CustomDirectusTypes,
+    DirectusFiles,
+    DirectusPermissions,
+    DirectusRoles
+} from "@/helper/database/databaseTypes/types";
 import {UrlHelper} from "@/helper/UrlHelper";
 
 
@@ -186,6 +191,18 @@ export class ServerAPI {
             console.log("ERROR: login_with_email_and_password")
             console.log(err);
         }
+    }
+
+    static async readRemoteRoles(){
+        let directus = ServerAPI.getClient();
+        let roles = await directus.request<DirectusRoles[]>(readRoles());
+        return roles;
+    }
+
+    static async readRemotePermissions(){
+        let directus = ServerAPI.getClient();
+        let permissions = await directus.request<DirectusPermissions[]>(readRoles());
+        return permissions;
     }
 
     static async downloadServerInfo(): Promise<ServerInfo>{

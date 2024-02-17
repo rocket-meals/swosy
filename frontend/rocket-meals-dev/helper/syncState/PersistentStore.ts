@@ -22,6 +22,8 @@ export class PersistentStore {
   static apartments = "PersistentStore.apartments"
   static app_settings = "PersistentStore.app_settings"
   static markings = "PersistentStore.markings"
+  static roles = "PersistentStore.roles"
+  static permissions = "PersistentStore.permissions"
   static foods = "PersistentStore.foods"
   static foodOffers = "PersistentStore.foodOffers"
 

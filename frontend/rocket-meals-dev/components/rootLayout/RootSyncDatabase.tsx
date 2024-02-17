@@ -13,7 +13,7 @@ import {useSynchedFoods} from "@/states/SynchedFoods";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {
   getEmptyProfile,
-  loadProfileRemote,
+  loadProfileRemoteByUser,
   useSynchedProfile
 } from "@/states/SynchedProfile";
 import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
@@ -24,6 +24,9 @@ import {loadLanguageRemoteDict, useSynchedLanguagesDict} from "@/states/SynchedL
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useSynchedCollectionsDatesLastUpdateDict} from "@/states/SynchedCollectionsLastUpdate";
+import {useSynchedRolesDict} from "@/states/SynchedRoles";
+import {useSynchedPermissionsDict} from "@/states/SynchedPermissions";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -56,6 +59,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   const registeredItemsToLoad: any[] = [];
 
   const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
+  const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, lastUpdateCollectionsDates, updateCollectionsDatesFromServer] = useSynchedCollectionsDatesLastUpdateDict()
 
   const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
   const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
@@ -63,6 +67,8 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
   const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
   const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
+  const [rolesDict, setRolesDict, lastUpdateRoles, updateRolesFromServer] = useSynchedRolesDict()
+  const [permissionsDict, setPermissionsDict, lastUpdatePermissions, updatePermissionsFromServer] = useSynchedPermissionsDict()
 
   const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 
@@ -88,6 +94,8 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   addSynchedResource("languages", languagesDict, lastUpdateLanguages)
   addSynchedResource("markings", markingsDict, lastUpdateMarkings);
   addSynchedResource("apartments", apartmentsDict, lastUpdateApartments);
+  addSynchedResource("roles", rolesDict, lastUpdateRoles);
+  addSynchedResource("permissions", permissionsDict, lastUpdatePermissions);
 
   function getDependencies(): DependencyList {
     return registeredItemsToLoad;
@@ -134,7 +142,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     console.log("RootSyncDatabase: Update profile - isCurrentUserAnonymous: ",isCurrentUserAnonymous);
     if(!isCurrentUserAnonymous){
       console.log("RootSyncDatabase: Update profile - loadProfileRemote: ");
-      let remoteProfile = await loadProfileRemote(currentUser)
+      let remoteProfile = await loadProfileRemoteByUser(currentUser)
       console.log("RootSyncDatabase: Update profile - remoteProfile: ",remoteProfile);
       if(!!remoteProfile){
         setProfile(remoteProfile, nowInMs);
@@ -164,6 +172,8 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
           await updateLanguagesFromServer(nowInMs)
           await updateMarkingsFromServer(nowInMs)
           await updateApartmentsFromServer(nowInMs)
+          await updateRolesFromServer(nowInMs)
+          await updatePermissionsFromServer(nowInMs)
         }
       } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 
