@@ -39,7 +39,6 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 function getDemoCanteens(): Record<string, Canteens> {
 
   let demoResource: Canteens = {
-    foodoffers: [],
     building: undefined,
     date_created: new Date().toISOString(),
     date_updated: new Date().toISOString(),

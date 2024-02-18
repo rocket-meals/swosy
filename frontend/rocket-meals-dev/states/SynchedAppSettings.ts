@@ -87,6 +87,7 @@ function getDemoAppSettings(): AppSettings {
     status: "",
     user_created: "",
     user_updated: "",
+    utilization_forecast_enabled: true,
     utilization_forecast_calculation_enabled: false,
     utilization_forecast_calculation_last_date: "",
     utilization_forecast_calculation_status: "",

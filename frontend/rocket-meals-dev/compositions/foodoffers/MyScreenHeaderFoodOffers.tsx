@@ -10,6 +10,7 @@ import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
 import {UtilizationForecast} from "@/compositions/utilizationForecast/UtilizationForecast";
+import {UtilizationButton} from "@/compositions/utilizationForecast/UtilizationButton";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -59,6 +60,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
                 justifyContent: "center",
                 alignItems: "center",
                 flexDirection: "row",
+                flexShrink: 1,
             }}>
                 {renderSwitchDate(false)}
                 <SimpleDatePicker currentDate={selectedDate} onSelectDate={(date) => {
@@ -70,12 +72,21 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
             <View style={{
                 alignItems: "center",
                 flexDirection: "row",
+                flexShrink: 1,
             }}>
                 <Heading>{humanReadableDate}</Heading>
             </View>
+            <View style={{
+                // take the rest of the space
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+                flexDirection: "row",
+                flexGrow: 1,
 
+            }}>
+                <UtilizationButton />
+            </View>
         </View>
-        <UtilizationForecast date={selectedDate} />
         <Divider />
     </View>
 }

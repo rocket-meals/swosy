@@ -3,6 +3,7 @@ import {DimensionValue, ScrollView, TouchableOpacity} from "react-native";
 import {UtilizationForecastBar} from "./UtilizationForecastBar";
 import {View, Text, Icon} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 const paddingLeft = 5;
 
@@ -27,14 +28,14 @@ export type UtilizationForecastRowProps = {
 }
 export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 
+    const translation_utilization = useTranslation(TranslationKeys.utilization);
+
     let rushMinutes_openedFrom= props.translation_openedFrom
     let rushMinutes_closedAfter = props.translation_closedAfter
 
     const myScrollViewRef = useRef(null);
 
     let utilization = props?.data
-
-    let [showDetails, setShowDetails] = useState(false)
 
     function getColorForTraffic(traffic: number | undefined) {
         let maxValue = 100;
@@ -168,15 +169,13 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
         }
 
         let firstRenderedText = (
-            text+" "+lastTime
+            text+": "+lastTime
         )
 
         let textBelowPlaceholder = null;
-        if(showDetails){
-            textBelowPlaceholder = (
-                " "
-            );
-        }
+        textBelowPlaceholder = (
+            " "
+        );
 
         //let borderColor = active ? this.fontStyles.normal.color : "transparent"; // TODO:
 
@@ -194,7 +193,7 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
      */
     function renderPopularTimeCols() {
         if (!utilization) {
-            return <Text>{""}</Text>;
+            return null
         }
 
         let now = getNow();
@@ -213,10 +212,8 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
             let value = populartime.traffic;
 
             let height = getItemWidth();
-            if(showDetails){
-                if(value !== undefined){
-                    height = (height * 5) * (value / 100);
-                }
+            if(value !== undefined){
+                height = (height * 5) * (value / 100);
             }
 
             const time = populartime.start || "";
@@ -229,6 +226,7 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
             let HH_end = timeEndParts[0];
             let mm_end = timeEndParts[1];
             lastTime = "" + HH_end + ":" + mm_end;
+            let timeAsString = "" + HH + ":" + mm;
 
             if(i === 0){
                 let openingTime = "" + HH + ":" + mm
@@ -241,39 +239,36 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
             let text = "";
             let renderedText = null;
             let renderedTextInside = "";
-            if(showDetails){
-                text = isFullHour ? HH : "  ";
-                renderedText = text;
-            } else {
-                renderedTextInside = isFullHour ? HH : "  ";
-            }
+            text = isFullHour ? HH : "  ";
+            renderedText = text;
 
             //let bgColor = popularTimeHour === nowHour ? "#FFD500" : "#ffffff";
             let bgColor = getColorForTraffic(value);
 
+            const tooltip = translation_utilization+": "+ timeAsString+" - "+ value + "%";
+            const accessibilityLabel = tooltip
+
             const isActive = i === activeIndex;
             cols.push(
-                renderBar(height, width, bgColor, renderedText, renderedTextInside, isActive)
+                renderBar(height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel)
             );
         }
 
-        let placeHolderRenderedText = showDetails ? (" ") : null;
+        let placeHolderRenderedText = (" ");
         //add empty item to fill the rest of the space
 
         const isActive = activeIndex === keys.length;
         if(keys.length > 0){
             cols.push(renderClosedBar(false, isActive, lastTime));
         }
-        cols.push(renderBar(getItemWidth(), getItemWidth(), "transparent", placeHolderRenderedText, null, false));
+        //cols.push(renderBar(getItemWidth(), getItemWidth(), "transparent", placeHolderRenderedText, null, false));
 
         let scrollViewContent = (
-            <MyTouchableOpacity
+            <View
                 accessibilityLabel={"UtilizationForecastRow"}
-                style={{alignItems: "flex-end", flexGrow: 1, flexDirection: "row"}} onPress={() => {
-                setShowDetails(!showDetails)
-            }} >
+                style={{alignItems: "flex-end", flexGrow: 1, flexDirection: "row"}}>
                 {cols}
-            </MyTouchableOpacity>
+            </View>
         )
 
 
@@ -296,29 +291,18 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
         );
     }
 
-    function renderBar(height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean){
-        return <UtilizationForecastBar height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} />
+    function renderBar(height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean, tooltip?: string, accessibilityLabel?: string
+    ) {
+        return <UtilizationForecastBar height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} tooltip={tooltip} accessibilityLabel={accessibilityLabel} />
     }
 
     const paddingTop = 5;
-    const paddingHorizontal = 10;
 
     return (
         <View style={{width: "100%", paddingBottom: 0}}>
             <View style={{flexDirection: "row"}}>
                 <View style={{flex: 1, paddingTop: paddingTop}}>
                     {renderPopularTimeCols()}
-                </View>
-                <View>
-                    <TouchableOpacity style={{}} onPress={() => {
-                        setShowDetails(!showDetails);
-                    }} >
-                        <View style={{paddingHorizontal: paddingHorizontal, paddingTop: paddingTop}}>
-                            <Icon
-                                name={showDetails ? "chevron-up" : "chevron-down"}
-                            />
-                        </View>
-                    </TouchableOpacity>
                 </View>
             </View>
         </View>

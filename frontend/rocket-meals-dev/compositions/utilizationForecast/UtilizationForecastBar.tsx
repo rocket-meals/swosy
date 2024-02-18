@@ -2,6 +2,7 @@ import React from "react";
 import {DimensionValue} from "react-native";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {Text, View} from "@/components/Themed";
+import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 
 const paddingLeft = 5;
 
@@ -15,6 +16,8 @@ export type UtilizationForecastBarProps = {
     textInside: string | null,
     textBelow: string | null,
     isActive: boolean | undefined,
+    accessibilityLabel: string
+    tooltip: string
 }
 export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
 
@@ -30,33 +33,46 @@ export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
     isActive = true;
     let borderColor = isActive ? bgContrast : "transparent";
 
-    let textStyle = bgColor ? {color: bgContrast} : undefined
+    let textStyle = {color: bgContrast}
 
-    return(
+    return( <View style={{alignItems: "center", paddingRight: 0, paddingLeft: paddingLeft}}
+    >
+        <View
 
-        <View style={{alignItems: "center", paddingRight: 0, paddingLeft: paddingLeft}}
+            accessibilityLabel={props?.accessibilityLabel}
+            style={{
+                width: width,
+                height: height,
+                borderRadius: 10,
+                borderWidth: 2,
+                borderColor: borderColor,
+                backgroundColor: bgColor,
+                justifyContent: "center",
+                alignItems: "center",
+            }}
         >
-            <View
-                style={{
-                    width: width,
-                    height: height,
-                    borderRadius: 10,
-                    borderWidth: 2,
-                    borderColor: borderColor,
-                    backgroundColor: bgColor,
-                    justifyContent: "center",
-                    alignItems: "center",
+            <Tooltip
+                placement="top"
+                trigger={(triggerProps) => {
+                    return (
+                            <View {...triggerProps}  style={{
+
+                                width: "100%",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flex: 1
+                            }}>
+                                <Text >{textInside}</Text>
+                            </View>
+
+                    )
                 }}
             >
-                <View style={{width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1
-                }}>
-                    <Text style={textStyle}>{textInside}</Text>
-                </View>
-            </View>
-            <Text style={textStyle}>{textBelow}</Text>
+                <TooltipContent>
+                    <TooltipText>{props?.tooltip}</TooltipText>
+                </TooltipContent>
+            </Tooltip> </View>
+            <Text >{textBelow}</Text>
         </View>
     )
 }

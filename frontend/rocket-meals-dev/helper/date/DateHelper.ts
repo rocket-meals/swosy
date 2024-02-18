@@ -326,7 +326,7 @@ export class DateHelper {
     // returns "Yesterday", "Today", "Tomorrow", or "Tuesday", "Wednesday" or the date in the format "DD.MM.YYYY"
     static useSmartReadableDate(date: Date, locale?: string){
         const dateCopy = new Date(date); // since the original date may be changed during the process of other functions we need to copy it in order have a reliable date
-        console.log("useSmartReadableDate", dateCopy, locale)
+        //console.log("useSmartReadableDate", dateCopy, locale)
         let today = new Date();
         let tomorrow = DateHelper.addDaysAndReturnNewDate(today, 1);
         let yesterday = DateHelper.addDaysAndReturnNewDate(today, -1);
@@ -335,7 +335,7 @@ export class DateHelper {
         let translationTomorrow = useTranslation(TranslationKeys.tomorrow);
         let translationYesterday = useTranslation(TranslationKeys.yesterday);
 
-        console.log("check if date is today, then return 'today'", today, dateCopy)
+        //console.log("check if date is today, then return 'today'", today, dateCopy)
         // check if date is today, then return "today"
         if(DateHelper.isSameDay(today, dateCopy)){
             return translationToday;
