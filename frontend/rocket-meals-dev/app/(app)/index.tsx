@@ -5,13 +5,11 @@ import {View} from "@/components/Themed";
 
 export default function TabOneScreen() {
 
-  console.log("Rendering (app)/index.tsx")
-
   useFocusEffect(() => {
     // Call the replace method to redirect to a new route without adding to the history.
     // We do this in a useFocusEffect to ensure the redirect happens every time the screen
     // is focused.
-    router.push('/home/')
+    router.push('/foodoffers/')
   });
 
   return <MySafeAreaView>

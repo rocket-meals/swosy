@@ -39,7 +39,6 @@
     "expo-system-ui": "~2.9.3",
     "expo-web-browser": "~12.8.2",
     "markdown-it": "^14.0.0",
-    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.73.4",
