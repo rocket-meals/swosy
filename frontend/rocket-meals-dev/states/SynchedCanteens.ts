@@ -7,7 +7,7 @@ import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 async function loadCanteensFromServer(): Promise<Canteens[]> {
   let collectionHelper = new CollectionHelper<Canteens>("canteens");
 
-  const fields = ['*'];
+  const fields = ['*', "utilization_group.*"];
 
   let query = {
     limit: -1,

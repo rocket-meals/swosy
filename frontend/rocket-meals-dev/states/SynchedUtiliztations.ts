@@ -4,8 +4,6 @@ import {useIsDemo} from "@/states/SynchedDemo";
 
 export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, date: Date, isDemo: boolean): Promise<UtilizationsEntries[]> {
 
-    console.log("loadUtilizationEntriesRemote", utilizationGroup, date, isDemo)
-
     let utilizationEntries: UtilizationsEntries[] = [];
     if(isDemo){
         utilizationEntries = getDemoUtilizationEntries(date);
@@ -20,12 +18,25 @@ export async function loadUtilizationEntriesRemote(utilizationGroup: Utilization
 
         utilizationEntries = await utilizationEntriesHelper.readItems({
             filter: {
-                utilization_group: utilizationGroup.id,
-                date_start: {
-                    $gte: date_start.toISOString(),
-                    $lt: date_end.toISOString()
-                }
-            }
+                _and: [
+                    {
+                        date_start: {
+                            _gte: date_start.toISOString()
+                        }
+                    },
+                    {
+                        date_end: {
+                            _lte: date_end.toISOString()
+                        }
+                    },
+                    {
+                        utilization_group: {
+                            _eq: utilizationGroup.id
+                        }
+                    }
+                ]
+            },
+            limit: -1
         });
         return utilizationEntries;
     }

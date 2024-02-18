@@ -72,6 +72,7 @@ export type AppSettings = {
   utilization_forecast_calculation_enabled?: boolean | null;
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
+  utilization_forecast_enabled?: boolean | null;
   utilization_settings: string;
 };
 
