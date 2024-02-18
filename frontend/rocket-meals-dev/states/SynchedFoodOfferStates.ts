@@ -10,7 +10,9 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 {
     const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
 
-    let usedSelectedDate = selectedDate || new Date();
+    let defaultDate = new Date();
+    defaultDate.setHours(12,0,0,0); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
+    let usedSelectedDate = selectedDate || defaultDate;
 
     function changeAmountDays(days: number) {
         const nextDate = DateHelper.addDaysAndReturnNewDate(usedSelectedDate, days);

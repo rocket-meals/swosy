@@ -14,9 +14,6 @@ export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue:
   const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
   const demo = useIsDemo()
 
-  console.log("useSynchedAppSettings")
-  console.log(resourceRaw)
-
   let lastUpdate = resourceRaw?.lastUpdate;
   let usedResources = resourceOnly;
   if(demo) {

@@ -55,6 +55,9 @@ export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
     // create a useEffect which updates the utilization entries when the dateAsDependecy changes
     useEffect(() => {
         console.log("dateAsDependecy changed")
+        console.log("refreshDate: "+refreshDate)
+        console.log("selectedDate: "+selectedDateCopy.toISOString())
+        console.log("isDemo: "+isDemo)
         updateUtilizationEntries()
     }, [refreshDependencyKey]);
 
@@ -63,18 +66,9 @@ export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
         return null;
     } else {
         return (
-            <View style={{
-                height: 200,
-                width: 200,
-                backgroundColor: "red"
-            }}>
-                <MyButton key={refreshDependencyKey} useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel}
-                          useTransparentBackgroundColor={true} useTransparentBorderColor={true}
-                          leftIcon={IconNames.utilization_icon} {...props} onPress={onPress}/>
-                <Text>
-                    {refreshDate}
-                </Text>
-            </View>
+            <MyButton key={refreshDependencyKey} useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel}
+                      useTransparentBackgroundColor={true} useTransparentBorderColor={true}
+                      leftIcon={IconNames.utilization_icon} {...props} onPress={onPress}/>
         )
     }
 }
