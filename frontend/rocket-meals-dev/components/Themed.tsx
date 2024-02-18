@@ -16,10 +16,10 @@ import {ComponentProps, MutableRefObject} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import { TextInput as RNTextInput } from "react-native";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet"; // Use the correct import for TextInput
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
+import {PlatformHelper} from "@/helper/PlatformHelper"; // Use the correct import for TextInput
 
 type ThemeProps = {
   lightColor?: string;
@@ -145,10 +145,16 @@ export function Heading({style,...props}: TextProps) {
 
 export function Text({style,...props}: TextProps) {
     let textContrastColor = useTextContrastColor();
+    const isWeb = PlatformHelper.isWeb();
+
     // @ts-ignore
     let defaultStyle = {
         color: textContrastColor,
-        wordBreak: "break-word" // only for web since otherwise a long word would not break
+    }
+
+    if(isWeb){ // only for web since on mobile the text will break automatically
+        // @ts-ignore
+        defaultStyle["wordBreak"] = "break-word" // only for web since otherwise a long word would not break
     }
 
   return <DefaultText selectable={true} style={[defaultStyle, style]} {...props} />;
