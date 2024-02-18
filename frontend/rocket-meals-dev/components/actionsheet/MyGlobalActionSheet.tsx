@@ -26,7 +26,8 @@ export type MyGlobalActionSheetConfig = {
     visible: boolean,
     title: string,
     // description?: string,
-    items: MyGlobalActionSheetItem[]
+    items: MyGlobalActionSheetItem[],
+    renderCustomContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     onCancel?: () => Promise<boolean>
     maxHeight?: DimensionValue
 }
@@ -195,6 +196,16 @@ export const MyGlobalActionSheet = (props: any) => {
         }
     }
 
+    let content = undefined
+    if(!!showActionsheetConfig.renderCustomContent){
+        content = showActionsheetConfig.renderCustomContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
+    } else {
+        content = <MyScrollView>
+            {renderedItems}
+        </MyScrollView>
+    }
+
+
     return (
             <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}
             >
@@ -214,9 +225,7 @@ export const MyGlobalActionSheet = (props: any) => {
                         />
                     </ActionsheetDragIndicatorWrapper>
                     <Text>{title}</Text>
-                    <MyScrollView>
-                        {renderedItems}
-                    </MyScrollView>
+                    {content}
                 </ActionsheetContent>
             </Actionsheet>
     )

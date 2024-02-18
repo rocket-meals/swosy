@@ -1,6 +1,7 @@
 import Color from 'tinycolor2';
 import {useIsDarkTheme} from "@/states/ColorScheme";
 import {useMemo} from "react";
+import {useViewBackgroundColor} from "@/components/Themed";
 
 // TODO: memorize this function to reduce computation load and improve performance
 /**
@@ -116,8 +117,9 @@ function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: b
  */
 export function useMyContrastColor(trueBg: string | undefined) {
     const isDarkTheme = useIsDarkTheme();
+    const viewBackgroundColor = useViewBackgroundColor()
     if(trueBg==="transparent"){
-        trueBg = undefined;
+        trueBg = viewBackgroundColor;
     }
     return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
 }

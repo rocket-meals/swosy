@@ -24,6 +24,8 @@ export enum IconNames {
   color_scheme_system_icon = "theme-light-dark",
   calendar_icon = "calendar-month",
 
+  utilization_icon = "human-queue",
+
   chevron_right_icon = "chevron-right",
     chevron_left_icon = "chevron-left",
 

@@ -14,9 +14,6 @@ export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue:
   const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
   const demo = useIsDemo()
 
-  console.log("useSynchedAppSettings")
-  console.log(resourceRaw)
-
   let lastUpdate = resourceRaw?.lastUpdate;
   let usedResources = resourceOnly;
   if(demo) {
@@ -87,6 +84,7 @@ function getDemoAppSettings(): AppSettings {
     status: "",
     user_created: "",
     user_updated: "",
+    utilization_forecast_enabled: true,
     utilization_forecast_calculation_enabled: false,
     utilization_forecast_calculation_last_date: "",
     utilization_forecast_calculation_status: "",
