@@ -1,6 +1,5 @@
 import {UtilizationsEntries, UtilizationsGroups} from "@/helper/database/databaseTypes/types";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
-import {useIsDemo} from "@/states/SynchedDemo";
 
 export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, date: Date, isDemo: boolean): Promise<UtilizationsEntries[]> {
 
@@ -112,4 +111,17 @@ function getDemoUtilizationEntries(date: Date) {
     }
 
     return utilizationEntries;
+}
+
+export function getDemoUtilizationGroup(): UtilizationsGroups {
+    return {
+        utilization_entries: [],
+        id: "demo",
+        date_created: new Date().toISOString(),
+        date_updated: new Date().toISOString(),
+        alias: "Demo Utilization Group",
+        status: "",
+        user_created: undefined,
+        user_updated: undefined
+    };
 }

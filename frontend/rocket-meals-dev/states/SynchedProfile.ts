@@ -155,35 +155,6 @@ export function useIsProfileSetupComplete(): boolean {
     return true;
 }
 
-function getDemoResource(): Profiles {
-    const undefinedBuildingsFavorites: ProfilesBuildingsFavorites[] = [];
-    const undefinedBuildingsLastVisited: ProfilesBuildingsLastVisited[] = [];
-    const undefinedDevices: Devices[] = [];
-    const undefinedFoodsFeedbacks: FoodsFeedbacks[] = [];
-    const undefinedMarkings: ProfilesMarkings[] = [];
-
-    return {
-        //avatar?: unknown;
-        //canteen?: undefined
-        //course_timetable?: unknown;
-        credit_balance: 12.34,
-        date_created: new Date().toISOString(),
-        date_updated: new Date().toISOString(),
-        id: 123,
-        //language?: string;
-        nickname: "Demo User",
-        //sort?: number;
-        status: "",
-        //user_created?: string & DirectusUsers;
-        //user_updated?: string & DirectusUsers;
-        buildings_favorites: undefinedBuildingsFavorites,
-        buildings_last_visited: undefinedBuildingsLastVisited,
-        devices: undefinedDevices,
-        foods_feedbacks: undefinedFoodsFeedbacks,
-        markings: undefinedMarkings,
-    }
-}
-
 export function getEmptyProfile(): Partial<Profiles>{
     const undefinedBuildingsFavorites = undefined as any as string & ProfilesBuildingsFavorites[];
     const undefinedBuildingsLastVisited = undefined as any as string & ProfilesBuildingsLastVisited[];

@@ -3,6 +3,7 @@ import {Canteens, CanteensBusinesshours, Markings} from "@/helper/database/datab
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {getDemoUtilizationGroup} from "@/states/SynchedUtiliztations";
 
 async function loadCanteensFromServer(): Promise<Canteens[]> {
   let collectionHelper = new CollectionHelper<Canteens>("canteens");
@@ -48,7 +49,8 @@ function getDemoCanteens(): Record<string, Canteens> {
     status: "",
     user_created: undefined,
     user_updated: undefined,
-    businesshours: []
+    businesshours: [],
+    utilization_group: getDemoUtilizationGroup()
   }
 
   return {
