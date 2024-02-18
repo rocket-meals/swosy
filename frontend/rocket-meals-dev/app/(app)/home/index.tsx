@@ -8,7 +8,8 @@ export default function HomeScreen() {
     // Call the replace method to redirect to a new route without adding to the history.
     // We do this in a useFocusEffect to ensure the redirect happens every time the screen
     // is focused.
-    router.push('/foodoffers')
+    //router.push('/foodoffers') // does not work on expo go (not local test) on android
+    router.push('/home')
 
     // TODO: https://docs.expo.dev/router/reference/redirects/
     // replace does not work on. Tested on web
