@@ -254,6 +254,11 @@ export class ServerAPI {
     static getAssetImageURL(imageID: string | null | undefined | DirectusFiles) {
         let usedImageId;
 
+        // maybe imageID is a http:// or https:// url that we can use directly
+        if (typeof imageID === 'string' && imageID.startsWith('http')) {
+            return imageID;
+        }
+
         // Assuming DirectusFiles is a type and we need to check if imageID is of that type
         if (typeof imageID === 'object' && imageID !== null && 'id' in imageID) {
             usedImageId = imageID.id;

@@ -20,7 +20,7 @@ export function useServerInfo(){
           project_name: "SWOSY ",
           project_descriptor: "Studierendenwerk Osnabrück",
           default_language: "de-DE",
-          project_logo: DEMO_ASSET_IDS.SWOSY_LOGO,
+          project_logo: "https://play-lh.googleusercontent.com/BCBvebwBE5xppnKt-Y2-0ztIlXxhxl8jcfeldE05JLuildEkFla4tmTQNUuVk-1cQQ=w480-h960",
           project_color: "#FCDE18",
           public_foreground: null,
           public_background: null,
