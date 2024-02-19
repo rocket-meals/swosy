@@ -157,13 +157,13 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   }
 
   useEffect(() => {
-    // call anonymous function
     (async () => {
       //console.log("AuthFlowUserCheck useEffect")
       //console.log("refreshToken", refreshToken)
 
       if(isServerOnline){ // if server is online, we can check if we are logged in
         if(!demo){
+          // TODO: Improve by running all updates in parallel using Promise.all?
           await updateAppSettingsFromServer(nowInMs)
           await updateCanteensFromServer(nowInMs);
           await updateBuildingsFromServer(nowInMs);

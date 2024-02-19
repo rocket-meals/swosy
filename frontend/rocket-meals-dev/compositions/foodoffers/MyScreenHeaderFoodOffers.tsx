@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading, View, Text} from "@/components/Themed"
+import {Heading, View} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
 import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -9,7 +9,6 @@ import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
-import {UtilizationForecast} from "@/compositions/utilizationForecast/UtilizationForecast";
 import {UtilizationButton} from "@/compositions/utilizationForecast/UtilizationButton";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
@@ -70,9 +69,10 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
                 {renderSwitchDate(true)}
             </View>
             <View style={{
-                alignItems: "center",
-                flexDirection: "row",
+                flexDirection: "column",
+                justifyContent: "center",
                 flexShrink: 1,
+                flexWrap: "wrap",
             }}>
                 <Heading>{humanReadableDate}</Heading>
             </View>

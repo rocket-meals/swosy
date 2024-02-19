@@ -33,6 +33,7 @@ export default function SettingsScreen() {
            <SettingsRowSpacerWithDivider />
            <SettingsRowSyncBooleanSwitch labelLeft={"Debug"} leftIcon={IconNames.debug_icon} accessibilityLabel={"Debug"} variable={PersistentStore.debug} />
            <SettingsRowSyncBooleanSwitch labelLeft={"Demo"} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
+           <SettingsRowSyncBooleanSwitch labelLeft={"Performance"} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={"Performance"} variable={PersistentStore.performance} />
            <SettingsRowSyncBooleanSwitch labelLeft={"Developer"} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
        </ScrollViewWithGradient>
      </MySafeAreaView>
