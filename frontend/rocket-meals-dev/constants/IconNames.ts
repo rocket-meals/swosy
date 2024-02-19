@@ -18,6 +18,8 @@ export enum IconNames {
   debug_icon = "bug",
   demo_icon_on = "test-tube",
     demo_icon_off = "test-tube-empty",
+  performance_icon_on = "speedometer",
+    performance_icon_off = "speedometer-slow",
   color_scheme_icon = "theme-light-dark",
   color_scheme_light_icon = "white-balance-sunny",
     color_scheme_dark_icon = "moon-waning-crescent",

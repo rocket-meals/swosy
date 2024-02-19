@@ -62,12 +62,9 @@ export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
         return null;
     } else {
         return (
-            <View>
                 <MyButton key={refreshDependencyKey} useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel}
                           useTransparentBackgroundColor={true} useTransparentBorderColor={true}
                           leftIcon={IconNames.utilization_icon} {...props} onPress={onPress}/>
-                <Text>{}</Text>
-            </View>
         )
     }
 }
