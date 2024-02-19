@@ -142,9 +142,10 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 }
 
 export function useIsProfileSetupComplete(): boolean {
-    const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+    const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen(); // We do not need a canteen to be set
+    // we should check if the user is first time user and has not set any data
 
-    const requiredSetVariables = [profileCanteen]
+    const requiredSetVariables: any[] = []
     for(let i=0; i<requiredSetVariables.length; i++){
         let requiredVariable = requiredSetVariables[i];
         if(!requiredVariable){

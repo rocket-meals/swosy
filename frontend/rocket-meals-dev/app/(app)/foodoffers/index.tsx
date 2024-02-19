@@ -6,10 +6,14 @@ import {DirectusFiles, Foodoffers, Foods} from "@/helper/database/databaseTypes/
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 import {View} from "@/components/Themed";
+import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
+import {CanteenSelectionRequired, useIsValidCanteenSelected} from "@/compositions/foodoffers/CanteenSelectionRequired";
 
 export default function FoodOfferScreen() {
 
   const [foodOffers, setFoodOffers] = useFoodOffersForSelectedDate();
+  const isValidCanteenSelected = useIsValidCanteenSelected();
+
 
   const initialAmountColumns = useMyGridListDefaultColumns();
 
@@ -61,16 +65,18 @@ export default function FoodOfferScreen() {
       );
     }
 
-    return (
-        <MySafeAreaView>
-          <MyGridFlatList
-              spacing={{
-                marginTop: 10,
-                marginOuter: 0,
-                marginInner: 5,
-                marginRow: 10,
-              }}
-              data={data} renderItem={renderItem} gridAmount={initialAmountColumns} />
-        </MySafeAreaView>
-    );
+  if(!isValidCanteenSelected){
+      return (
+          <MySafeAreaView>
+              <CanteenSelectionRequired />
+          </MySafeAreaView>
+      )
+  } else {
+      return (
+          <MySafeAreaView>
+              <MyGridFlatList
+                  data={data} renderItem={renderItem} gridAmount={initialAmountColumns} />
+          </MySafeAreaView>
+      );
+  }
   }

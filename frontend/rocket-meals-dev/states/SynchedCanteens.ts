@@ -39,21 +39,24 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 
 function getDemoCanteens(): Record<string, Canteens> {
 
-  let demoResource: Canteens = {
-    building: undefined,
-    date_created: new Date().toISOString(),
-    date_updated: new Date().toISOString(),
-    id: 123+"",
-    alias: "Demo Canteen",
-    sort: undefined,
-    status: "",
-    user_created: undefined,
-    user_updated: undefined,
-    businesshours: [],
-    utilization_group: getDemoUtilizationGroup()
+  let resources: Record<string, Canteens> = {};
+
+  for (let i=0; i<20; i++){
+    let demoResource: Canteens = {
+      building: undefined,
+      date_created: new Date().toISOString(),
+      date_updated: new Date().toISOString(),
+      id: "demoCanteen"+(i),
+      alias: "Demo Canteen "+(i),
+      sort: undefined,
+      status: "",
+      user_created: undefined,
+      user_updated: undefined,
+      businesshours: [],
+      utilization_group: getDemoUtilizationGroup()
+    }
+    resources[demoResource.id] = demoResource;
   }
 
-  return {
-    [demoResource.id]: demoResource
-  }
+  return resources
 }
