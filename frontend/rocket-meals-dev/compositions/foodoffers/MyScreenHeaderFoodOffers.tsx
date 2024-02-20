@@ -10,6 +10,7 @@ import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
 import {UtilizationButton} from "@/compositions/utilizationForecast/UtilizationButton";
+import {SettingsButtonProfileEatingHabits} from "@/compositions/settings/SettingsButtonProfileEatingHabits";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -32,7 +33,10 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
                 alignItems: "center",
                 flexDirection: "row",
             }} >
-                <View>
+                <View style={{
+                    flexDirection: "row",
+                }}>
+                    <SettingsButtonProfileEatingHabits />
                     <SettingsButtonProfileCanteen />
                 </View>
             </View>

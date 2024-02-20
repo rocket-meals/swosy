@@ -13,6 +13,7 @@ import {SettingsRowProfileLanguage} from "@/compositions/settings/SettingsRowPro
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRowFirstDayOfWeek} from "@/compositions/settings/SettingsRowFirstDayOfWeek";
 import {SettingsRowColorScheme} from "@/compositions/settings/SettingsRowColorScheme";
+import {SettingsRowProfileEatingHabits} from "@/compositions/settings/SettingsRowEatingHabits";
 
 export default function SettingsScreen() {
 
@@ -24,6 +25,7 @@ export default function SettingsScreen() {
            <SettingsRowProfileNickname />
            <SettingsRowProfileLanguage />
            <SettingsRowProfileCanteen />
+           <SettingsRowProfileEatingHabits />
            <SettingsRowSpacerWithDivider />
            <SettingsRowColorScheme />
            <SettingsRowDrawerPosition />
