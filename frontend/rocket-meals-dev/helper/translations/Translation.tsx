@@ -63,6 +63,8 @@ export class TranslationKeys {
 
   static canteen = createTranslationKey("canteen", "Mensa");
 
+  static eating_habits = createTranslationKey("eating_habits", "Essgewohnheiten");
+
   static utilization_forecast = createTranslationKey("utilization_forecast", "Prognose der Auslastung");
   static utilization = createTranslationKey("utilization", "Auslastung");
   static opens_at = createTranslationKey("opend_at", "Öffnet um");

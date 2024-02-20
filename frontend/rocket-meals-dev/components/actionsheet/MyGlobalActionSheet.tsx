@@ -40,7 +40,7 @@ export type MyGlobalActionSheetItem = {
     renderLeftIcon?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     icon?: string,
     active?: boolean,
-    onSelect?: (key: string) => Promise<boolean | void> // return false to not close the actionsheet
+    onSelect?: (key: string) => Promise<boolean | void> | undefined // return false to not close the actionsheet
     // onSelect: (key: string) => boolean | void // return true to close the actionsheet
 }
 
@@ -148,6 +148,22 @@ export const MyGlobalActionSheet = (props: any) => {
                     renderedLeftIcon = item.renderLeftIcon(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
                 }
 
+                let onSelectMethod: any = undefined
+                if(item.onSelect){
+                    onSelectMethod = async () => {
+                        let closeActionsheet = true;
+                        if (!!item.onSelect) {
+                            let onSelectResult = await item.onSelect(item.key)
+                            if (onSelectResult === false) {
+                                closeActionsheet = false;
+                            }
+                        }
+                        if (closeActionsheet) {
+                            hide()
+                        }
+                    }
+                }
+
                 renderedItems.push(
                     <ActionsheetItem
                         disabled={!item.onSelect}
@@ -158,18 +174,7 @@ export const MyGlobalActionSheet = (props: any) => {
                                 bg: lighterOrDarkerBackgroundColor,
                             },
                         }}
-                        key={item.key} onPress={async () => {
-                            let closeActionsheet = true;
-                            if (!!item.onSelect) {
-                                let onSelectResult = await item.onSelect(item.key)
-                                if (onSelectResult === false) {
-                                    closeActionsheet = false;
-                                }
-                            }
-                            if (closeActionsheet) {
-                                hide()
-                            }
-                    }}>
+                        key={item.key} onPress={onSelectMethod}>
                         <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
                         <View style={{
                             flex: 1

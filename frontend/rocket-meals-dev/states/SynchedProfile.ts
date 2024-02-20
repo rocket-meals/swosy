@@ -3,7 +3,7 @@ import {
     Canteens,
     Devices,
     DirectusUsers,
-    FoodsFeedbacks,
+    FoodsFeedbacks, Markings,
     Profiles,
     ProfilesBuildingsFavorites,
     ProfilesBuildingsLastVisited,
@@ -154,6 +154,55 @@ export function useIsProfileSetupComplete(): boolean {
     }
 
     return true;
+}
+
+
+export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking: Markings, dislikes: boolean) => void, (marking: Markings) => void]{
+    const [profile, setProfile] = useSynchedProfile();
+    let profileMarkingsList: ProfilesMarkings[] = profile?.markings || [];
+    let profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+    for(let i=0; i<profileMarkingsList.length; i++){
+        let profilesMarking = profileMarkingsList[i];
+        let markings_key = profilesMarking.markings_id;
+        if(!!markings_key && typeof profilesMarking.markings_id === "string"){
+            profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
+        }
+    }
+
+    const privateSetMarkings = (marking: Markings, dislikes: boolean, remove: boolean) => {
+        let markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
+
+        let newProfileMarking: Partial<ProfilesMarkings> = {
+            markings_id: marking.id,
+            profiles_id: profile?.id,
+            dislikes: dislikes
+        };
+        markingsDictCopy[marking.id] = newProfileMarking;
+
+        if(remove){
+            delete markingsDictCopy[marking.id];
+        }
+
+        let markingsIds = Object.keys(markingsDictCopy);
+        let newMarkings: ProfilesMarkings[] = [];
+        for(let markingId of markingsIds){
+            newMarkings.push(markingsDictCopy[markingId]);
+        }
+
+        profile.markings = newMarkings;
+        setProfile(profile);
+    }
+
+    const setProfileMarking = (marking: Markings, dislikes: boolean) => {
+        privateSetMarkings(marking, dislikes, false);
+    }
+
+    const removeProfileMarking = (marking: Markings) => {
+        privateSetMarkings(marking, false, true);
+    }
+
+
+    return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
 }
 
 export function getEmptyProfile(): Partial<Profiles>{
