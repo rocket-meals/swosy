@@ -1,8 +1,7 @@
 import React, {FunctionComponent} from "react";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {View, Text} from "@/components/Themed";
+import {Text, View} from "@/components/Themed";
 import * as rocketSource from "@/assets/animations/rocket_purple.json";
-import {MyLottieAnimation} from "@/components/lottie/MyLottieAnimation";
 import {MyProjectColoredLottieAnimation} from "@/components/lottie/MyProjectColoredLottieAnimation";
 
 interface AppState {
