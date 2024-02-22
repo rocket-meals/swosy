@@ -106,12 +106,21 @@ export function useNickname(): [string | undefined, ((newValue: string | undefin
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)]{
     const [profile, setProfile] = useSynchedProfile();
-    let language = profile?.language || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
     const setLanguage = (language: string) => {
         profile.language = language;
         return setProfile(profile);
     }
-    return [language, setLanguage];
+    let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+    let profileLanguage = profile?.language;
+    if(!!profileLanguage){
+        if(typeof profileLanguage !== "string"){
+            usedLanguage = profileLanguage.code
+        } else {
+            usedLanguage = profileLanguage;
+        }
+    }
+
+    return [usedLanguage, setLanguage];
 }
 
 export function useProfileLocaleForJsDate(): string {

@@ -20,6 +20,9 @@ export type MyLottieAnimationProps = {
     animationRef?: any,
 }
 
+export const DEFAULT_COLOR_TO_BE_REPLACED = "#FF00FF";
+export const DEFAULT_COLOR_TO_REPLACE_WITH = "#EE581F";
+
 /**
  * A component that displays a Lottie animation, with support for dynamic source fetching,
  * color replacement, looping, and autoplay features. It also adapts to a "performance mode" by disabling animations.
@@ -92,8 +95,6 @@ export const MyLottieAnimation = ({
     }
 
     // Default colors for replacement (not used in this snippet but might be part of a larger context).
-    const defaultPlaceHolderColor = "#FF00FF";
-    const defaultProjectColor = "#EE581F";
 
     if(!usedColorReplaceMap){
         usedColorReplaceMap = {};

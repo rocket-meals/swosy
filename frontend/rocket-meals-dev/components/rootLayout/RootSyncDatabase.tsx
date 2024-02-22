@@ -1,32 +1,20 @@
 import {DependencyList, useEffect, useState} from 'react';
-import {Text} from "@/components/Themed";
-import {
-  useIsServerCached,
-  useIsServerOnline,
-  useServerInfo,
-  useServerInfoRaw
-} from "@/states/SyncStateServerInfo";
+import {useIsServerCached, useIsServerOffline, useIsServerOnline} from "@/states/SyncStateServerInfo";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
-import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
-import {Buildings, Canteens, Foods, Wikis} from "@/helper/database/databaseTypes/types";
-import {useSynchedFoods} from "@/states/SynchedFoods";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {
-  getEmptyProfile,
-  loadProfileRemoteByUser,
-  useSynchedProfile
-} from "@/states/SynchedProfile";
+import {getEmptyProfile, loadProfileRemoteByUser, useSynchedProfile} from "@/states/SynchedProfile";
 import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
-import {ScrollView} from "react-native";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {useSynchedWikisDict} from "@/states/SynchedWikis";
-import {loadLanguageRemoteDict, useSynchedLanguagesDict} from "@/states/SynchedLanguages";
+import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {useSynchedCollectionsDatesLastUpdateDict} from "@/states/SynchedCollectionsLastUpdate";
 import {useSynchedRolesDict} from "@/states/SynchedRoles";
 import {useSynchedPermissionsDict} from "@/states/SynchedPermissions";
+import {LoadingScreenDatabase} from "@/compositions/loadingScreens/LoadingScreenDatabase";
+import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -35,7 +23,7 @@ export {
 
 export interface RootAuthUserFlowLoaderProps {
   children?: React.ReactNode;
-  userId: number | undefined
+  syncForUserId: number | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
@@ -192,44 +180,29 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     }
   }, itemsToLoad);
 
-  let synchedResourcesDataSynchedDict: {[key: string]: any}
-      = {}
-    let synchedResourceKeys = Object.keys(synchedResources)
-    for(let i = 0; i < synchedResourceKeys.length; i++){
-      let synchedResourceKey = synchedResourceKeys[i]
-      let synchedResourceInformation = synchedResources[synchedResourceKey]
-      let synchedResource = synchedResourceInformation?.data
-      let lastUpdate = synchedResourceInformation?.lastUpdate
-        synchedResourcesDataSynchedDict[synchedResourceKey] = {
-            data: !!synchedResource,
-            lastUpdate: lastUpdate
-        }
-    }
-
-  return <>
-    <ScrollView style={{width: "100%", height: "100%"}}>
-      <Text>{"SyncDatabase flow waiting"}</Text>
-      <Text>{"nowInMS: "+nowInMs}</Text>
-      <Text>{"synchedResourcesDataSynchedDict: "}</Text>
-      <Text>{JSON.stringify(synchedResourcesDataSynchedDict, null, 2)}</Text>
-    </ScrollView>
-  </>
+  let key = JSON.stringify(synchedResources);
+  return <LoadingScreenDatabase nowInMs={nowInMs} key={key} synchedResources={synchedResources} />
 }
 
 export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
 
-  const userId = props.userId;
+  const isServerOffline = useIsServerOffline()
+
+  const syncForUserId = props.syncForUserId;
   const [synchedForUserId, setSynchedForUserId] = useState<any>({
     userId: false
   });
   const setSyncComplete = (bool: boolean) => {
     setSynchedForUserId({
-      userId: userId
+      userId: syncForUserId
     })
   }
 
-  const syncComplete = synchedForUserId.userId === userId;
+  const syncComplete = synchedForUserId.userId === syncForUserId;
 
+  if(isServerOffline){
+    return <PleaseConnectFirstTimeWithInternet />
+  }
 
   if(!syncComplete){
     return <RootSyncDatabaseInner setSyncComplete={setSyncComplete} />

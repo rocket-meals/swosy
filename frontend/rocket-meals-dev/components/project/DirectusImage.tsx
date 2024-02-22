@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import {Image} from "expo-image";
 import {TouchableOpacity} from "react-native";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
@@ -8,10 +8,9 @@ import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSources";
 import {useIsDebug} from "@/states/Debug";
-import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 
 interface AppState {
-    assetId: string | undefined | null | DirectusFiles,
+    assetId: string | undefined | null,
     image_url?: string | undefined | null;
     style?: any;
     alt?: string;
@@ -22,78 +21,69 @@ interface AppState {
     onPress?: () => {}
 }
 
-/**
- * Will render assetId , then image_url and then fallbackElement
- * @param props
- * @constructor
- */
 export const DirectusImage: FunctionComponent<AppState> = (props) => {
+    const accessToken = useAccessToken();
+    const isDemoMode = useIsDemo();
+    const isDebug = useIsDebug();
 
-    const accessToken = useAccessToken()
-    const isDemoMode = useIsDemo()
-    const isDebug = useIsDebug()
+    let url = getInitialImageUrl();
 
-    let url = ServerAPI.getAssetImageURL(props.assetId);
-    if(!url && props.image_url){
-        url = props.image_url;
+    // State for managing the image URL
+    const [imageUrl, setImageUrl] = useState<string | undefined | null>(url);
+
+    function getInitialImageUrl(){
+        let url = ServerAPI.getAssetImageURL(props.assetId);
+        if(!url && props.image_url){
+            url = props.image_url;
+        }
+        return url;
     }
+
+
 
     const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
 
-    const uri = url; // TODO: Maybe check if we might use Base64 for caching or if expo-image does that already
+    useEffect(() => {
+        let url = getInitialImageUrl();
+
+        setImageUrl(url); // Update the imageUrl state with the new URL
+        setImageLoadedFailed(!url); // Update the imageLoadedFailed state based on the presence of the URL
+    }, [props.assetId, props.image_url]); // This effect depends on assetId and image_url
 
     let headers = undefined;
-    if(accessToken){
+    if (accessToken) {
         headers = {
             Authorization: `Bearer ${accessToken}`,
-        }
+        };
     }
 
-    let source={
-        uri: uri,
-        headers: headers
-    }
-    if(isDemoMode){
+    let source = {
+        uri: imageUrl,
+        headers: headers,
+    };
+
+    if (isDemoMode) {
         let demoSource = DirectusImageDemoSources.getSource(props.assetId);
-        if(!!demoSource){
+        if (demoSource) {
             source = demoSource;
         }
     }
 
-    let thumbHash = "93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48";
-    if(!!props.thumbHash){
-        thumbHash = props.thumbHash
-    }
-    const thumbHashBase64 = thumbHashStringToDataURL(thumbHash)
-    let placeholder = thumbHashBase64;
-    if(!!props.placeholder){
-        placeholder = props.placeholder
-    }
-
-
-    const blurhash =
-        '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
-
-    type CachePolicy = "none" | "disk" | "memory" | "memory-disk"
-    let cachePolicy: CachePolicy = "none"
-    /** https://docs.expo.dev/versions/latest/sdk/image/#cachepolicy
-     'none' - Image is not cached at all.
-     'disk' - Image is queried from the disk cache if exists, otherwise it's downloaded and then stored on the disk.
-     'memory' - Image is cached in memory. Might be useful when you render a high-resolution picture many times. Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
-     'memory-disk' - Image is cached in memory, but with a fallback to the disk cache.
-     */
+    const thumbHashBase64 = props.thumbHash ? thumbHashStringToDataURL(props.thumbHash) : thumbHashStringToDataURL("93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48");
+    const placeholder = props.placeholder || thumbHashBase64;
 
     let content = <Image
         source={source}
         alt={props?.alt || "Image"}
         style={props.style}
-        placeholder={thumbHashBase64}
+        placeholder={placeholder}
         onError={(e) => {
-            console.log("DirectusImage onError", e)
-            setImageLoadedFailed(true)
+            console.log("DirectusImage onError", e);
+            setImageLoadedFailed(true);
         }}
-        cachePolicy={cachePolicy}
-    />
+        // Assuming cachePolicy is determined elsewhere or is static
+        cachePolicy="none"
+    />;
 
     if(imageLoadedFailed){
         content = props?.fallbackElement
@@ -106,35 +96,29 @@ export const DirectusImage: FunctionComponent<AppState> = (props) => {
         }
     }
 
-    if(!!props.onPress){
+    if (props.onPress) {
         content = (
-            <TouchableOpacity onPress={props.onPress} style={props.style} >
+            <TouchableOpacity onPress={props.onPress} style={props.style}>
                 {content}
             </TouchableOpacity>
-        )
+        );
     }
 
     let debugContent = null;
-    if(isDebug){
-        let image_asset_id_or_url = ""
-        if(props.image_url){
-            image_asset_id_or_url = props.image_url
-        }
-        if(props.assetId){
-            image_asset_id_or_url = props.assetId+""
-        }
+    if (isDebug) {
+        const image_asset_id_or_url = props.image_url || (props.assetId ? props.assetId.toString() : "");
 
         debugContent = (
             <View style={{position: "absolute", top: 0, left: 0}}>
                 <Text>{image_asset_id_or_url}</Text>
             </View>
-        )
+        );
     }
 
-    return(
+    return (
         <View style={props.style}>
             {content}
             {debugContent}
         </View>
-    )
-}
+    );
+};

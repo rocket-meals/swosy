@@ -51,14 +51,14 @@ export function useDirectusTranslation(translations: TranslationEntry[], field: 
   }
 
   // First fallback language
-  let default_language_code = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE;
+  let default_language_code = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
   let fallback_translation = getTranslation(translationDict, default_language_code, params);
   if (!!fallback_translation && !ignoreFallbackLanguage) { //TODO: maybe allow an user to set a proposal for his language
     return fallback_translation
   }
 
   // Second fallback language
-  default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+  default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
   fallback_translation = getTranslation(translationDict, default_language_code, params);
   if (!!fallback_translation && !ignoreFallbackLanguage) { //TODO: maybe allow an user to set a proposal for his language
     return fallback_translation

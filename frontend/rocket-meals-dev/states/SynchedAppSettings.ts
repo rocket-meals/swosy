@@ -28,6 +28,11 @@ export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue:
   return [usedResources, setResourceOnly, lastUpdate, updateFromServer]
 }
 
+export function useIsFoodsEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.foods_enabled || false;
+}
+
 function getDemoAppSettings(): AppSettings {
 
   let demoResource: AppSettings = {
@@ -51,7 +56,7 @@ function getDemoAppSettings(): AppSettings {
     date_created: "",
     date_privacy_policy_updated: "",
     date_updated: "",
-    foods_enabled: false,
+    foods_enabled: true,
     foods_parsing_enabled: false,
     foods_parsing_last_date: "",
     foods_parsing_status: "",

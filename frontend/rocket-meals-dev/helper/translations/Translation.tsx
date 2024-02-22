@@ -26,7 +26,8 @@ export class TranslationKeys {
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
   static profile = createTranslationKey("profile", "Profil")
   static nickname = createTranslationKey("nickname", "Spitzname")
-  static user = createTranslationKey("user", "Nutzer")
+  static account = createTranslationKey("account", "Account")
+  static anonymous = createTranslationKey("anonymous", "Anonym")
 
   static selectDate = createTranslationKey("selectDate", "Datum auswählen");
   static year = createTranslationKey("year", "Jahr");

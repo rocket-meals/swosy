@@ -48,3 +48,8 @@ export function useIsServerCached(){
   const status = useServerStatus();
   return status === "cached"
 }
+
+export function useIsServerOffline(){
+  const status = useServerStatus();
+  return status === "offline" || status === "error" || status === undefined
+}
