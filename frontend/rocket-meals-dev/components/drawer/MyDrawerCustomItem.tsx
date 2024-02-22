@@ -13,7 +13,7 @@ export type MyDrawerCustomItemProps = {
     isFocused?: boolean,
     onPress?: () => void,
     onPressInternalRouteTo?: string, // TODO: check if we can use StaticRoutes or something like that?
-    onPressExternalRouteTo?: string,
+    onPressExternalRouteTo?: string | undefined | null,
     drawerIcon?: (props: {focused: boolean, size: number, color: string}) => React.ReactNode,
     icon?: string,
     position?: number
