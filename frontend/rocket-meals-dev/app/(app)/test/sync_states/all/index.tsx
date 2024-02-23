@@ -1,23 +1,53 @@
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 import React from "react";
-import {useSynchedWikisDict} from "@/states/SynchedWikis";
 import {Text, View} from "@/components/Themed";
-import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
+import {useAllSyncStates} from "@/helper/syncState/SyncState";
+import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
+import {MyGlobalActionSheetConfig} from "@/components/actionsheet/MyGlobalActionSheet";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export default function HomeScreen() {
 
-  const [wikis, setWikis, lastUpdateWikis] = useSynchedWikisDict()
+  const allSyncStates = useAllSyncStates();
+
+  let renderedRows: any[] = [];
+  let allSyncStatesKeys = Object.keys(allSyncStates);
+    for (let i = 0; i < allSyncStatesKeys.length; i++) {
+        let key = allSyncStatesKeys[i];
+        let value = allSyncStates[key];
+
+        const config: MyGlobalActionSheetConfig = {
+            onCancel: undefined,
+            visible: true,
+            title: key,
+            renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+                return (
+                    <MySafeAreaView>
+                        <MyScrollView>
+                            <View style={{
+                                width: "100%",
+                                padding: 20,
+                            }}>
+                                <Text>
+                                    {JSON.stringify(value, null, 2)}
+                                </Text>
+                            </View>
+                        </MyScrollView>
+                    </MySafeAreaView>
+                );
+            }
+        }
+
+        renderedRows.push(
+            <SettingsRowActionsheet accessibilityLabel={key} config={config} labelLeft={key} />
+        );
+    }
 
   return (
       <MySafeAreaView>
         <ScrollViewWithGradient>
-          <SettingsRowSpacer />
-          <View>
-            <Text>
-              {JSON.stringify(wikis, null, 2)}
-            </Text>
-          </View>
+            {renderedRows}
         </ScrollViewWithGradient>
       </MySafeAreaView>
   );

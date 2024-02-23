@@ -41,7 +41,12 @@ export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setVal
 
 export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => Promise<void>, rawValue: any] {
   const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<any>(storageKey);
-  const parsedJSON = JSON.parse(jsonStateAsString || "null");
+  let parsedJSON = null;
+  try{
+      parsedJSON = JSON.parse(jsonStateAsString);
+  } catch (e) { // when jsonStateAsString is null or not a valid JSON
+      //console.error("Error parsing JSON", e, jsonStateAsString)
+  }
   const setValue = async (dict: T | null) => {
       //console.log("setValue", dict)
       //console.log("JSON.stringify(dict)", JSON.stringify(dict))
@@ -52,6 +57,29 @@ export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, se
     setValue,
     jsonStateAsString
   ]
+}
+
+export function useAllSyncStates(): {[key: string]: {value: any, setValue: any, rawValue: any}}
+{
+    let persistentStoreKeyValues = Object.values(PersistentStore);
+    let nonPersistentStoreKeyValues = Object.values(NonPersistentStore);
+    let persistentSecureStoreKeyValues = Object.values(PersistentSecureStore);
+
+    let allKeys = persistentStoreKeyValues.concat(nonPersistentStoreKeyValues).concat(persistentSecureStoreKeyValues);
+
+    let allStates: {[key: string]: any} = {};
+
+    for(let i=0; i<allKeys.length; i++){
+        let key = allKeys[i];
+        let [value, setValue, rawValue] = useSyncState(key);
+        allStates[key] = {
+            value: value,
+            setValue: setValue,
+            rawValue: rawValue
+        }
+    }
+
+    return allStates;
 }
 
 interface Model {
