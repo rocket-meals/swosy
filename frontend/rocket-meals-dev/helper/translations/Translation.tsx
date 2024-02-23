@@ -29,7 +29,7 @@ export class TranslationKeys {
   static account = createTranslationKey("account", "Account")
   static anonymous = createTranslationKey("anonymous", "Anonym")
 
-  static selectDate = createTranslationKey("selectDate", "Datum auswählen");
+  static date = createTranslationKey("date", "Datum");
   static year = createTranslationKey("year", "Jahr");
   static month = createTranslationKey("month", "Monat");
   static selected = createTranslationKey("selected", "Ausgewählt");
