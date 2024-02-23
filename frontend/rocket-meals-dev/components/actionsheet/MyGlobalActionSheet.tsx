@@ -188,11 +188,6 @@ export const MyGlobalActionSheet = (props: any) => {
                 )
             }
 
-
-            renderedItems.push(
-                <Divider key={"divider"+item.key} />
-            )
-
             renderedItemsForStringify.push({
                 key: item.key,
                 label: item.label,

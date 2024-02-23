@@ -29,31 +29,35 @@ function configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem: MyDraw
             }
         }
 
-        let latestRouteKey = latestRoute?.key; // we get the key of the latest route key which is a generated string
+        if(!!latestRoute) {
+            let latestRouteKey = latestRoute?.key; // we get the key of the latest route key which is a generated string
 
-        // we now want to get the descriptor of the latest route
-        const descriptors = props.descriptors; // The descriptors hold the screen information for the drawer which might be active
-        let latestRouteDescriptor = descriptors[latestRouteKey]; // so we have the information about the descriptor of the latest route
-        let latestRouteDescriptorRouteObject: RouteProp<ParamListBase> = latestRouteDescriptor?.route; // we get the route object of the descriptor
-        let latestRouteNameWithUnresolvedParams = latestRouteDescriptorRouteObject?.name; // we get the name of the route
-        // latestRouteParams is a dict with a string key and a string value
-        let latestRouteParams: {[key: string]: string} | undefined = latestRouteDescriptorRouteObject?.params as {[key: string]: string} | undefined; // we get the params of the route
-        // now we want to resolve the params of the route
-        let latestRouteName = latestRouteNameWithUnresolvedParams; // we will use the unresolved route name as the default
-        if(!!latestRouteParams){
-            // latestRouteName is maybe /wikis/[id] and we want to resolve the id
-            let paramsKeys = Object.keys(latestRouteParams);
-            for(let i = 0; i < paramsKeys.length; i++){
-                let key = paramsKeys[i];
-                let value = latestRouteParams[key];
-                latestRouteName = latestRouteName.replace("["+key+"]", value);
+            // we now want to get the descriptor of the latest route
+            const descriptors = props.descriptors; // The descriptors hold the screen information for the drawer which might be active
+            let latestRouteDescriptor = descriptors[latestRouteKey]; // so we have the information about the descriptor of the latest route
+            let latestRouteDescriptorRouteObject: RouteProp<ParamListBase> = latestRouteDescriptor?.route; // we get the route object of the descriptor
+            let latestRouteNameWithUnresolvedParams = latestRouteDescriptorRouteObject?.name; // we get the name of the route
+            // latestRouteParams is a dict with a string key and a string value
+            let latestRouteParams: { [key: string]: string } | undefined = latestRouteDescriptorRouteObject?.params as {
+                [key: string]: string
+            } | undefined; // we get the params of the route
+            // now we want to resolve the params of the route
+            let latestRouteName = latestRouteNameWithUnresolvedParams; // we will use the unresolved route name as the default
+            if (!!latestRouteParams) {
+                // latestRouteName is maybe /wikis/[id] and we want to resolve the id
+                let paramsKeys = Object.keys(latestRouteParams);
+                for (let i = 0; i < paramsKeys.length; i++) {
+                    let key = paramsKeys[i];
+                    let value = latestRouteParams[key];
+                    latestRouteName = latestRouteName.replace("[" + key + "]", value);
+                }
             }
-        }
 
 
-        // if the internalPath is the same as the latestRouteDescriptorPath, we will set the customItem.isFocused to true
-        if(internalPath === latestRouteName){
-            customItem.isFocused = true;
+            // if the internalPath is the same as the latestRouteDescriptorPath, we will set the customItem.isFocused to true
+            if (internalPath === latestRouteName) {
+                customItem.isFocused = true;
+            }
         }
     }
     return customItem;

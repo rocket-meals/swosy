@@ -1,9 +1,9 @@
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
-import {SettingsRowSpacerWithDivider} from "@/components/settings/SettingsRowSpacerWithDivider";
 import React from "react";
 import {useSynchedWikisDict} from "@/states/SynchedWikis";
-import {View, Text} from "@/components/Themed";
+import {Text, View} from "@/components/Themed";
+import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
 
 export default function HomeScreen() {
 
@@ -12,7 +12,7 @@ export default function HomeScreen() {
   return (
       <MySafeAreaView>
         <ScrollViewWithGradient>
-          <SettingsRowSpacerWithDivider />
+          <SettingsRowSpacer />
           <View>
             <Text>
               {JSON.stringify(wikis, null, 2)}

@@ -109,6 +109,5 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         {renderRightContent(!!item.onSelect)}
     </ActionsheetItem>
         {renderedChildren}
-        <Divider />
         </>
 }
