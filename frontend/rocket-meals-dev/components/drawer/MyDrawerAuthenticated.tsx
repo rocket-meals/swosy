@@ -18,8 +18,6 @@ export const MyDrawerAuthenticated = (props: any) => {
     const translation_settings = useTranslation(TranslationKeys.settings);
     const translation_canteens = useTranslation(TranslationKeys.canteens);
 
-    let [languageCode, setLanguageCode] = useProfileLanguageCode();
-
     const customDrawerWikiItems = useMyDrawerWikiItems()
     const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
 

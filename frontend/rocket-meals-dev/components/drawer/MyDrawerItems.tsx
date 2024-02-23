@@ -20,7 +20,15 @@ function configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem: MyDraw
         }
 
         const history = props.state.history;
-        let latestRoute = history[history.length - 1];
+        let latestRoute = undefined
+        for(let i = history.length - 1; i >= 0; i--){
+            let route = history[i];
+            if(route.type === "route"){
+                latestRoute = route;
+                break;
+            }
+        }
+
         let latestRouteKey = latestRoute?.key; // we get the key of the latest route key which is a generated string
 
         // we now want to get the descriptor of the latest route
@@ -56,9 +64,6 @@ type DrawerContentWrapperProps = {
     customDrawerItems?: MyDrawerCustomItemProps[]
 } & DrawerContentComponentProps
 export const getMyDrawerItems = (props: DrawerContentWrapperProps) => {
-
-    console.log("getMyDrawerItems")
-    console.log(props)
 
     let generatedDrawerItems = props.state.routes.map((route: any, index: number) => {
         return getMyDrawerItemExpoGenerated(route, index, props);
