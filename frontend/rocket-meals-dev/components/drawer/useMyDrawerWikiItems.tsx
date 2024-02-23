@@ -79,9 +79,28 @@ export function useMyDrawerWikiItems() {
     return customDrawerItems;
 }
 
-export function useRenderedMyDrawerWikiScreens(){
+function MyWikiHeader(props: MyScreenHeaderPropsRequired){
     const [wikisDict, setWikisDict] = useSynchedWikisDict()
     let [languageCode, setLanguageCode] = useProfileLanguageCode();
+    const { id } = useLocalSearchParams();
+    const wikiId = id as string
+
+    let custom_title = id as string
+
+    if(!!wikisDict && !!wikiId){
+        const wiki = wikisDict[wikiId]
+        const translations = wiki.translations as TranslationEntry[]
+        const fallback_text = wiki.id
+        let label = getDirectusTranslation(languageCode, translations, "title", false, fallback_text)
+        if(!!label){
+            custom_title = label
+        }
+    }
+
+    return <MyScreenHeader custom_title={custom_title} {...props} />
+}
+
+export function useRenderedMyDrawerWikiScreens(){
     const drawerActiveBackgroundColor = useDrawerActiveBackgroundColor()
 
     return renderMyDrawerScreen({
@@ -91,22 +110,7 @@ export function useRenderedMyDrawerWikiScreens(){
             icon: "home",
             visibleInDrawer: false,
             header: (props: MyScreenHeaderPropsRequired) => {
-                const { id } = useLocalSearchParams();
-                const usedId = id as string
-
-                let custom_title = "Undefined"
-
-                if(!!wikisDict && !!usedId){
-                    const wiki = wikisDict[usedId]
-                    const translations = wiki.translations as TranslationEntry[]
-                    const fallback_text = wiki.id
-                    let label = getDirectusTranslation(languageCode, translations, "title", false, fallback_text)
-                    if(!!label){
-                        custom_title = label
-                    }
-                }
-
-                return <MyScreenHeader custom_title={custom_title} {...props} />
+                return <MyWikiHeader {...props} />
             }
         },
         drawerActiveBackgroundColor
