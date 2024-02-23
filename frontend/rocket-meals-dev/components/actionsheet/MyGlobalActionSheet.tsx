@@ -26,7 +26,7 @@ export type MyGlobalActionSheetConfig = {
     visible: boolean,
     title: string,
     // description?: string,
-    items: MyGlobalActionSheetItem[],
+    items?: MyGlobalActionSheetItem[],
     renderCustomContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     onCancel?: () => Promise<boolean>
     maxHeight?: DimensionValue
