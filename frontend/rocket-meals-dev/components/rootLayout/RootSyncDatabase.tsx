@@ -15,6 +15,7 @@ import {useSynchedRolesDict} from "@/states/SynchedRoles";
 import {useSynchedPermissionsDict} from "@/states/SynchedPermissions";
 import {LoadingScreenDatabase} from "@/compositions/loadingScreens/LoadingScreenDatabase";
 import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
+import {useSynchedNewsDict} from "@/states/SynchedNews";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -56,6 +57,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
   const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
   const [rolesDict, setRolesDict, lastUpdateRoles, updateRolesFromServer] = useSynchedRolesDict()
+  const [newsDict, setNewsDict, lastUpdateNews, updateNewsFromServer] = useSynchedNewsDict()
   const [permissionsDict, setPermissionsDict, lastUpdatePermissions, updatePermissionsFromServer] = useSynchedPermissionsDict()
 
   const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
@@ -84,6 +86,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   addSynchedResource("apartments", apartmentsDict, lastUpdateApartments);
   addSynchedResource("roles", rolesDict, lastUpdateRoles);
   addSynchedResource("permissions", permissionsDict, lastUpdatePermissions);
+    addSynchedResource("news", newsDict, lastUpdateNews);
 
   function getDependencies(): DependencyList {
     return registeredItemsToLoad;
@@ -162,6 +165,7 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
           await updateApartmentsFromServer(nowInMs)
           await updateRolesFromServer(nowInMs)
           await updatePermissionsFromServer(nowInMs)
+          await updateNewsFromServer(nowInMs)
         }
       } else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 

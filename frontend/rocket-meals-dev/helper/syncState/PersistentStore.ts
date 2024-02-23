@@ -19,6 +19,7 @@ export class PersistentStore {
   static canteens = "PersistentStore.canteens"
   static languages = "PersistentStore.languages"
   static wikis = "PersistentStore.wikis"
+  static news = "PersistentStore.news"
   static buildings = "PersistentStore.buildings"
   static apartments = "PersistentStore.apartments"
   static app_settings = "PersistentStore.app_settings"

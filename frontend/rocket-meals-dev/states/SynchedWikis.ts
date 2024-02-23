@@ -66,6 +66,14 @@ export function useSynchedWikiByCustomId(customId: string): Wikis | undefined {
     return dictCustomIdToWiki[customId]
 }
 
+export function useSynchedWikiById(id: string): Wikis | undefined {
+    const [wikis, setWikis, lastUpdate] = useSynchedWikisDict();
+    if (wikis) {
+        return wikis[id]
+    }
+    return undefined
+}
+
 function getDemoWikis(): Record<string, Wikis> {
 
   let demoResource: Wikis = {

@@ -1,5 +1,5 @@
 import React, {ReactNode} from "react";
-import {View, Text} from "@/components/Themed";
+import {View} from "@/components/Themed";
 import {useInsets, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {Drawer} from "expo-router/drawer";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
@@ -7,18 +7,15 @@ import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {useProjectColor} from "@/states/ProjectInfo";
-import {DimensionValue, SafeAreaView} from "react-native";
+import {DimensionValue} from "react-native";
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
-import {getMyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
+import {getMyScreenHeader} from "@/components/drawer/MyScreenHeader";
 import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
-import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyDrawerSafeAreaView} from "@/components/drawer/MyDrawerSafeAreaView";
 import {DrawerHeaderProps} from "@react-navigation/drawer";
 import {IconNames} from "@/constants/IconNames";
@@ -30,17 +27,29 @@ export type MyDrawerItemProps = {
     icon: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
     header?: ((props: DrawerHeaderProps) => ReactNode) | undefined
+    params?: any
 };
+
+export function useDrawerActiveBackgroundColor(): string {
+    return useProjectColor();
+}
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDrawer, header}: MyDrawerItemProps) {
-    let projectColor = useProjectColor(); // Fetch the current project color for use in styling.
+export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
+    let drawerActiveBackgroundColor = useDrawerActiveBackgroundColor(); // Fetch the current project color for use in styling.
+    return renderMyDrawerScreen({...props}, drawerActiveBackgroundColor); // Render the drawer screen with the current project color.
+}
 
+// Function to render individual screens within the Drawer navigation.
+// It dynamically sets the drawer's appearance based on the current project color.
+export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
     let usedVisible = true;
     if(visibleInDrawer!==undefined){
         usedVisible = !!visibleInDrawer;
     }
+
+    let usedHeader: any = header || getMyScreenHeader();
 
     return(
         <Drawer.Screen
@@ -51,8 +60,9 @@ export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDr
                 label: label,
                 title: title,
                 drawerIcon: getMyDrawerItemIcon(icon),
-                drawerActiveBackgroundColor: projectColor, // Customize the background color of the active drawer item.
-                header: header || getMyScreenHeader() // Render a custom header for the drawer.
+                drawerActiveBackgroundColor: drawerActiveBackgroundColor, // Customize the background color of the active drawer item.
+                header: usedHeader, // Render a custom header for the drawer.
+                params: params
             }}
         />
     );
