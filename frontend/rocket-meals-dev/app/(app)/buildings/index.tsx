@@ -66,7 +66,7 @@ export default function BuildingsScreen() {
       return (
           <MyCardForResourcesWithImage
               key={item.key}
-              text={title}
+              heading={title}
               thumbHash={thumb_hash}
               image_url={image_url}
               assetId={assetId}

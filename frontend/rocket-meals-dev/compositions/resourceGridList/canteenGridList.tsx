@@ -57,7 +57,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
         return (
             <MyCardForResourcesWithImage
                 key={item.key}
-                text={text}
+                heading={text}
                 assetId={imageAssetId}
                 image_url={image_url}
                 thumbHash={thumbHash}

@@ -4,23 +4,22 @@
 
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {DirectusImage} from "@/components/project/DirectusImage";
-import {MyCardWithText} from "@/components/card/MyCardWithText";
+import {MyCardWithText, MyCardWithTextProps} from "@/components/card/MyCardWithText";
 import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardProps} from "@/components/card/MyCard";
 import {Rectangle} from "@/components/shapes/Rectangle";
 
 export type MyCardForResourcesWithImageProps = {
-    text?: string,
     accessibilityLabel: string,
     thumbHash?: string | undefined | null,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined | null,
     image_url?: string | undefined | null,
     imageHeight?: number,
-} & MyCardProps
+} & MyCardWithTextProps
 
 // define the button component
-export const MyCardForResourcesWithImage = ({text, accessibilityLabel, assetId, onPress, image_url, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
+export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
     const usedImageHeight = imageHeight || "100%";
 
@@ -38,6 +37,6 @@ export const MyCardForResourcesWithImage = ({text, accessibilityLabel, assetId, 
     }
 
     return(
-        <MyCardWithText topComponent={topContent} heading={text} onPress={onPress} {...props} />
+        <MyCardWithText topComponent={topContent} heading={heading} onPress={onPress} {...props} />
     )
 }
