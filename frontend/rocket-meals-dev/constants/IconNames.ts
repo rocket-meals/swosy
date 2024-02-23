@@ -4,6 +4,7 @@
 export enum IconNames {
   canteen_icon = "warehouse",
   foodoffers_icon = "silverware-variant",
+  building_icon = "home-city",
   eating_habit_icon = "medical-bag",
   settings_icon = "cog",
   drawer_position_icon = "menu",
