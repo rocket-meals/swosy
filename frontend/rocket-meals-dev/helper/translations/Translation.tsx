@@ -64,6 +64,8 @@ export class TranslationKeys {
 
   static canteen = createTranslationKey("canteen", "Mensa");
 
+  static news = createTranslationKey("news", "News");
+
   static eating_habits = createTranslationKey("eating_habits", "Essgewohnheiten");
 
   static utilization_forecast = createTranslationKey("utilization_forecast", "Prognose der Auslastung");
@@ -85,7 +87,7 @@ export class TranslationKeys {
 
   static buildings = createTranslationKey("buildings", "Gebäude");
 
-  static apartments = createTranslationKey("apartments", "Wohnungen");
+  static housing = createTranslationKey("housing", "Wohnen");
 
   static settings = createTranslationKey("settings", "Einstellungen");
 

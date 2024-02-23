@@ -10,7 +10,7 @@ const ANDROID_PARAM_NEW_ACTIVITY = {flags: 268435456};
 
 export class CommonSystemActionHelper {
 
-    static async openExternalURL(url, newWindow = false) {
+    static async openExternalURL(url: string, newWindow = false) {
         if(isMobile){
             await Linking.openURL(url);
         } else {
@@ -22,7 +22,7 @@ export class CommonSystemActionHelper {
         }
     }
 
-    static async openMaps(location: LocationType, useGoogleMaps?) {
+    static async openMaps(location: LocationType, useGoogleMaps?: boolean) {
         const latitude = location?.latitude;
         const longitude = location?.longitude;
 
