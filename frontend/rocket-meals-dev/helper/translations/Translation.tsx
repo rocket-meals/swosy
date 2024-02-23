@@ -85,6 +85,8 @@ export class TranslationKeys {
 
   static buildings = createTranslationKey("buildings", "Gebäude");
 
+  static apartments = createTranslationKey("apartments", "Wohnungen");
+
   static settings = createTranslationKey("settings", "Einstellungen");
 
   static switch = createTranslationKey("switch", "Umschalten");

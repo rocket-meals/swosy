@@ -2,7 +2,7 @@ import {ListRenderItemInfo, StyleSheet} from 'react-native';
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {useFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {Buildings, DirectusFiles, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Apartments, Buildings, DirectusFiles, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 import {View} from "@/components/Themed";
@@ -10,24 +10,26 @@ import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/Synched
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from "@/compositions/foodoffers/CanteenSelectionRequired";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {getDirectusTranslation} from "@/helper/translations/DirectusTranslationUseFunction";
+import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 
-export default function BuildingsScreen() {
+export default function ApartmentsScreen() {
 
+  const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict()
   const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 
   const initialAmountColumns = useMyGridListDefaultColumns();
 
   let resources = [];
-    if(buildingsDict){
-        let buildingsKeys = Object.keys(buildingsDict)
+    if(apartmentsDict){
+        let buildingsKeys = Object.keys(apartmentsDict)
         for (let i = 0; i < buildingsKeys.length; i++) {
             const key = buildingsKeys[i];
-            const building = buildingsDict[key];
+            const building = apartmentsDict[key];
             resources.push(building)
         }
     }
 
-  type DataItem = { key: string; data: Buildings }
+  type DataItem = { key: string; data: Apartments }
 
   let data: DataItem[] = []
   if(resources) {
@@ -47,21 +49,25 @@ export default function BuildingsScreen() {
       let assetId: string | DirectusFiles | null | undefined = undefined
       let image_url: string | undefined = undefined
       let thumb_hash: string | undefined = undefined
-      if(typeof resource !== "string"){
-        if(resource?.image){
-            assetId = resource.image
-        }
-        if(resource?.image_remote_url){
-            image_url = resource.image_remote_url
-        }
-        if(resource?.image_thumb_hash){
-            thumb_hash = resource.image_thumb_hash
-        }
-        if(resource?.alias){
-            title = resource.alias
-        }
-      }
 
+        if(!!buildingsDict && resource.building && typeof resource.building === "string"){
+            const building = buildingsDict[resource.building]
+
+            if(typeof building !== "string"){
+                if(building?.image){
+                    assetId = building.image
+                }
+                if(building?.image_remote_url){
+                    image_url = building.image_remote_url
+                }
+                if(building?.image_thumb_hash){
+                    thumb_hash = building.image_thumb_hash
+                }
+                if(building?.alias){
+                    title = building.alias
+                }
+            }
+        }
 
       return (
           <MyCardForResourcesWithImage
