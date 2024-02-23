@@ -54,7 +54,7 @@ export default function FoodOfferScreen() {
       return (
           <MyCardForResourcesWithImage
               key={item.key}
-              text={title}
+              heading={title}
               thumbHash={thumb_hash}
               image_url={image_url}
               assetId={assetId}

@@ -3,6 +3,7 @@ import {Apartments, Buildings, Markings} from "@/helper/database/databaseTypes/t
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {getDemoBuildings} from "@/states/SynchedBuildings";
 
 async function loadApartmentsFromServer(): Promise<Apartments[]> {
   let collectionHelper = new CollectionHelper<Apartments>("apartments");
@@ -24,7 +25,7 @@ export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undef
   let lastUpdate = resourcesRaw?.lastUpdate;
   let usedResources = resourcesOnly;
   if(demo) {
-    usedResources = getDemoBuildings()
+    usedResources = getDemoApartments()
   }
 
   async function updateFromServer(nowInMs?: number) {
@@ -36,14 +37,22 @@ export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undef
   return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-function getDemoBuildings(): Record<string, Apartments> {
+function getDemoApartments(): Record<string, Apartments> {
 
-  let demoResource: Apartments = {
-    id: "",
-    washingmachines: [],
+  let buildingsDict = getDemoBuildings()
+  let demoBuildingsKeys = Object.keys(buildingsDict)
+  let amountApartments = 12
+
+let demoResources: Record<string, Apartments> = {}
+  for(let i = 0; i < amountApartments; i++) {
+    let demoBuildingKey = demoBuildingsKeys[i%demoBuildingsKeys.length]
+    let demoResource: Apartments = {
+      id: i+"",
+      washingmachines: [],
+      building: demoBuildingKey
+    }
+    demoResources[demoResource.id] = demoResource
   }
 
-  return {
-    [demoResource.id]: demoResource
-  }
+  return demoResources
 }

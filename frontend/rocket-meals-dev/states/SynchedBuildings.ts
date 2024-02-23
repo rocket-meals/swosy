@@ -3,6 +3,7 @@ import {Buildings, Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedResourceRaw} from "@/states/SynchedResource";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {index} from "@zxing/text-encoding/es2015/encoding/indexes";
 
 async function loadBuildingsFromServer(): Promise<Buildings[]> {
   let collectionHelper = new CollectionHelper<Buildings>("buildings");
@@ -36,17 +37,24 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
   return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-function getDemoBuildings(): Record<string, Buildings> {
-
-  let demoResource: Buildings = {
-    alias: "Demo Building",
+function getDemoResource(index: number): Buildings {
+  return {
+    canteens: [],
+    alias: "Demo Building "+index,
     apartments: [],
-    id: 123+"",
+    id: index+"",
     status: "",
     translations: []
   }
+}
 
-  return {
-    [demoResource.id]: demoResource
-  }
+export function getDemoBuildings(): Record<string, Buildings> {
+
+  let demoResources: Record<string, Buildings> = {}
+    for(let i = 0; i < 12; i++) {
+        let demoResource = getDemoResource(i)
+        demoResources[demoResource.id] = demoResource
+    }
+
+  return demoResources
 }

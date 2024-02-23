@@ -33,7 +33,7 @@ export default function HomeScreen() {
           <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} labelLeft={"Test"} onSave={setText} />
           <SettingsRowSpacer />
 
-            <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} text={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />
+            <MyCardForResourcesWithImage accessibilityLabel={"ExampleCard"} heading={"Example Card With Image"} assetId={undefined} thumbHash={undefined} />
         </MyScrollView>
       </MySafeAreaView>
   );

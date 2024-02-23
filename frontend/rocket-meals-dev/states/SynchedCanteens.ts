@@ -41,7 +41,7 @@ function getDemoCanteens(): Record<string, Canteens> {
 
   let resources: Record<string, Canteens> = {};
 
-  for (let i=0; i<20; i++){
+  for (let i=0; i<7; i++){
     let demoResource: Canteens = {
       building: undefined,
       date_created: new Date().toISOString(),

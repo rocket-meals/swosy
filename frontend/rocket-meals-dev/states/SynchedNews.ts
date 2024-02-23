@@ -52,14 +52,15 @@ function getSingleDemoNews(index: number): News {
       "- **Moderne Essbereiche**: Genießen Sie Ihre Mahlzeiten in einem angenehmen und modern gestalteten Ambiente.\n" +
       "- **Erweitertes Menüangebot**: Entdecken Sie unsere neuen, saisonalen Menüs, zubereitet mit frischen, lokalen Zutaten.\n" +
       "- **Digitale Bestellung**: Bestellen und bezahlen Sie Ihre Mahlzeiten bequem über unsere App – sparen Sie Zeit und vermeiden Sie Warteschlangen.\n",
+
       "Hier bei Rocket Meals legen wir großen Wert auf Vielfalt und Qualität. Deshalb haben wir unsere Speisekarte um einige neue, leckere Gerichte erweitert."
     ]
 
   let newsTranslations: NewsTranslations = {
     translation_settings: "",
     be_source_for_translations: false,
-    title: titles[titles.length%index],
-    content: contents[contents.length%index],
+    title: titles[index%titles.length],
+    content: contents[index%contents.length],
     id: amountNewsTranslations*index,
     news_id: news_id,
     languages_code: DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN
