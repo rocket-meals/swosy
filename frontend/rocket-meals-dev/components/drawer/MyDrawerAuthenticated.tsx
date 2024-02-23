@@ -17,6 +17,8 @@ export const MyDrawerAuthenticated = (props: any) => {
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
     const translation_canteens = useTranslation(TranslationKeys.canteens);
+    const translation_buildings = useTranslation(TranslationKeys.buildings);
+    const translation_apartments = useTranslation(TranslationKeys.apartments);
 
     const customDrawerWikiItems = useMyDrawerWikiItems()
     const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -57,6 +59,22 @@ export const MyDrawerAuthenticated = (props: any) => {
                     icon: IconNames.foodoffers_icon,
                     header: getMyScreenHeaderFoodOffers()
             })}
+            {useRenderMyDrawerScreen({
+                routeName: "buildings/index",
+                label: translation_buildings,
+                title: translation_buildings,
+                icon: IconNames.building_icon,
+                //header: getMyScreenHeaderFoodOffers()
+            })}
+            {useRenderMyDrawerScreen({
+                routeName: "apartments/index",
+                label: translation_apartments,
+                title: translation_apartments,
+                icon: IconNames.apartments_icon,
+                //header: getMyScreenHeaderFoodOffers()
+            })}
+
+
             {useRenderMyDrawerScreen({
                 routeName: "settings/index",
                 label: translation_settings,
