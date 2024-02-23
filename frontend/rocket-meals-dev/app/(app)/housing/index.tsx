@@ -12,7 +12,7 @@ import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {getDirectusTranslation} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 
-export default function ApartmentsScreen() {
+export default function HousingScreen() {
 
   const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict()
   const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()

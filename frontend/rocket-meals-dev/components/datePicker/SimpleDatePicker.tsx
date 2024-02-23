@@ -22,15 +22,19 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 
     const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday();
 
-    const selectDateTranslation = useTranslation(TranslationKeys.selectDate);
+    const translation_select = useTranslation(TranslationKeys.select);
+    const translation_date = useTranslation(TranslationKeys.date);
+    const selectDateTranslation = translation_select + ": " + translation_date;
     const yearTranslation = useTranslation(TranslationKeys.year);
     const monthTranslation = useTranslation(TranslationKeys.month);
     const selectedTranslation = useTranslation(TranslationKeys.selected);
+    const translation_edit = useTranslation(TranslationKeys.edit);
 
     const currentDateFromProps = props?.currentDate;
     const currentDate = currentDateFromProps ? new Date(currentDateFromProps) : new Date(); // make a copy if currentDateFromProps is a hookValue and to remove side effects
     const formatedSelectedDate = DateHelper.formatOfferDateToReadable(new Date(currentDate), true);
-    const accessibilityLabel = props?.accessibilityLabel || formatedSelectedDate;
+    const defaultAccessibilityLabel = translation_edit + ": " + translation_date + ": " + formatedSelectedDate;
+    const accessibilityLabel = props?.accessibilityLabel || defaultAccessibilityLabel;
 
     const weekStartsAtDay = firstDayOfWeek
 

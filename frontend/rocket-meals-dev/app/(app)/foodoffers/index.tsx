@@ -1,12 +1,10 @@
-import {ListRenderItemInfo, StyleSheet} from 'react-native';
+import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {useFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {DirectusFiles, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {DirectusFiles, Foodoffers} from "@/helper/database/databaseTypes/types";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
-import {View} from "@/components/Themed";
-import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from "@/compositions/foodoffers/CanteenSelectionRequired";
 
 export default function FoodOfferScreen() {

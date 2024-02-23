@@ -7,7 +7,7 @@ import {
 } from "@/compositions/utilizationForecast/UseGlobalActionSheetUtilizationForecast";
 import {UtilizationsEntries, UtilizationsGroups} from "@/helper/database/databaseTypes/types";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useIsUtilizationForecastEnabled, useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {loadUtilizationEntriesRemote} from "@/states/SynchedUtiliztations";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -18,10 +18,10 @@ interface AppState {
 }
 export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
 
+    const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();
     const accessibilityLabel = useTranslation(TranslationKeys.utilization_forecast)
     const tooltip = useTranslation(TranslationKeys.utilization_forecast)
     const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
-    const visible = app_settings?.utilization_forecast_enabled
     const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[]>([])
     const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
@@ -58,7 +58,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
     }, [refreshDependencyKey]);
 
 
-    if(!visible){
+    if(!isUtilizationForecastEnabled){
         return null;
     } else {
         return (

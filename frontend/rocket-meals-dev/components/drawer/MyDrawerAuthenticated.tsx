@@ -10,15 +10,27 @@ import {Custom_Wiki_Ids, useSynchedWikisDict} from "@/states/SynchedWikis";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
+import {
+    useIsBuildingsEnabled,
+    useIsFoodsEnabled,
+    useIsHousingEnabled,
+    useIsNewsEnabled
+} from "@/states/SynchedAppSettings";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
+
+    const isFoodsEnabled = useIsFoodsEnabled();
+    const isHousingEnabled = useIsHousingEnabled();
+    const isBuildingsEnabled = useIsBuildingsEnabled();
+    const isNewsEnabled = useIsNewsEnabled();
 
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
     const translation_canteens = useTranslation(TranslationKeys.canteens);
     const translation_buildings = useTranslation(TranslationKeys.buildings);
-    const translation_apartments = useTranslation(TranslationKeys.apartments);
+    const translation_housing = useTranslation(TranslationKeys.housing);
+    const translation_news = useTranslation(TranslationKeys.news);
 
     const customDrawerWikiItems = useMyDrawerWikiItems()
     const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -57,7 +69,8 @@ export const MyDrawerAuthenticated = (props: any) => {
                     label: translation_canteens,
                     title: translation_canteens,
                     icon: IconNames.foodoffers_icon,
-                    header: getMyScreenHeaderFoodOffers()
+                    header: getMyScreenHeaderFoodOffers(),
+                    visibleInDrawer: isFoodsEnabled
             })}
             {useRenderMyDrawerScreen({
                 routeName: "buildings/index",
@@ -65,16 +78,24 @@ export const MyDrawerAuthenticated = (props: any) => {
                 title: translation_buildings,
                 icon: IconNames.building_icon,
                 //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: isBuildingsEnabled
             })}
             {useRenderMyDrawerScreen({
-                routeName: "apartments/index",
-                label: translation_apartments,
-                title: translation_apartments,
+                routeName: "housing/index",
+                label: translation_housing,
+                title: translation_housing,
                 icon: IconNames.apartments_icon,
                 //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: isHousingEnabled
             })}
-
-
+            {useRenderMyDrawerScreen({
+                routeName: "news/index",
+                label: translation_news,
+                title: translation_news,
+                icon: IconNames.news_icon,
+                //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: true
+            })}
             {useRenderMyDrawerScreen({
                 routeName: "settings/index",
                 label: translation_settings,

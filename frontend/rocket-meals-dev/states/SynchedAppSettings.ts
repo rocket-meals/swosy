@@ -33,6 +33,26 @@ export function useIsFoodsEnabled(): boolean {
     return appSettings?.foods_enabled || false;
 }
 
+export function useIsHousingEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.housing_enabled || false;
+}
+
+export function useIsBuildingsEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.buildings_enabled || false;
+}
+
+export function useIsNewsEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.news_enabled || false;
+}
+
+export function useIsUtilizationForecastEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.utilization_forecast_enabled || false;
+}
+
 function getDemoAppSettings(): AppSettings {
 
   let demoResource: AppSettings = {
