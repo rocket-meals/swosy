@@ -59,17 +59,14 @@ export default function CourseTimetableScreen() {
         title: "Import",
         renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
             return (
-                <MySafeAreaView>
                     <MyScrollView>
                         <View style={{
                             width: "100%",
-                            padding: 20,
                         }}>
                             <Text>{"Show Import"}</Text>
                             <TimetableImportDemo onCloseModal={hide} onImport={onImport}/>
                         </View>
                     </MyScrollView>
-                </MySafeAreaView>
             );
         }
     }
@@ -81,15 +78,13 @@ export default function CourseTimetableScreen() {
             title: "Event Item",
             renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
                 return (
-                    <MySafeAreaView>
-                        <MyScrollView>
-                            <CourseTimetableEvent item={item} handleEdit={(usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
-                                console.log("usedEvent")
-                                console.log(usedEvent)
-                                handlePressOnEvent(usedEvent);
-                            }} />
-                        </MyScrollView>
-                    </MySafeAreaView>
+                    <MyScrollView>
+                        <CourseTimetableEvent item={item} handleEdit={(usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
+                            console.log("usedEvent")
+                            console.log(usedEvent)
+                            handlePressOnEvent(usedEvent);
+                        }} />
+                    </MyScrollView>
                 );
             }
         }
@@ -121,16 +116,13 @@ export default function CourseTimetableScreen() {
             }
 
             return (
-                <MySafeAreaView>
                     <MyScrollView>
                         <View style={{
                             width: "100%",
-                            padding: 20,
                         }}>
                             {renderedImportProviders}
                         </View>
                     </MyScrollView>
-                </MySafeAreaView>
             );
         }
     }

@@ -59,7 +59,7 @@ export const CourseTimetableEvent: FunctionComponent<AppState> = (props) => {
 	}
 
 	function renderTextEditRow(field, description, icon){
-		let initialValue = event?.[field];
+		let initialValue = usedEvent?.[field];
 
 		return null
 	}
