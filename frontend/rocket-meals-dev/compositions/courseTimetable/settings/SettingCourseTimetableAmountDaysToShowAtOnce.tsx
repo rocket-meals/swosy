@@ -1,18 +1,7 @@
 import React, {FunctionComponent} from "react";
-import {Text} from "native-base";
-import {Icon, MyActionsheet} from "../../../../kitcheningredients";
-import {AppTranslation, useAppTranslation} from "../../translations/AppTranslation";
-import {ProfileAPI, useSynchedProfile} from "../../profile/ProfileAPI";
-import {
-	usePersonalCourseTimetableFirstDayOfWeek,
-	usePersonalCourseTimetableAmountDaysOnScreen,
-	usePersonalCourseTimetableTime
-} from "../CourseTimetableHelper";
-import {DateHelper} from "../../../helper/DateHelper";
-import {SettingsRow} from "../../settings/SettingsRow";
-import {SettingsRowTimeEditComponent} from "../../settings/SettingsRowTimeEditComponent";
-import {TimeStartIcon} from "../../icons/TimeStartIcon";
-import {TimeEndIcon} from "../../icons/TimeEndIcon";
+import {Icon} from "../../../../kitcheningredients";
+import {useAppTranslation} from "../../translations/AppTranslation";
+import {usePersonalCourseTimetableAmountDaysOnScreen} from "../CourseTimetableHelper";
 import {SettingsRowNumberEditComponent} from "../../settings/SettingsRowNumberEditComponent";
 
 interface AppState {

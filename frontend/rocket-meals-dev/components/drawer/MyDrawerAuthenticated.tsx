@@ -11,7 +11,7 @@ import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
 import {
-    useIsBuildingsEnabled,
+    useIsBuildingsEnabled, useIsCourseTimetableEnabled,
     useIsFoodsEnabled,
     useIsHousingEnabled,
     useIsNewsEnabled
@@ -24,6 +24,7 @@ export const MyDrawerAuthenticated = (props: any) => {
     const isHousingEnabled = useIsHousingEnabled();
     const isBuildingsEnabled = useIsBuildingsEnabled();
     const isNewsEnabled = useIsNewsEnabled();
+    const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
 
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
@@ -31,6 +32,7 @@ export const MyDrawerAuthenticated = (props: any) => {
     const translation_buildings = useTranslation(TranslationKeys.buildings);
     const translation_housing = useTranslation(TranslationKeys.housing);
     const translation_news = useTranslation(TranslationKeys.news);
+    const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 
     const customDrawerWikiItems = useMyDrawerWikiItems()
     const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -94,7 +96,14 @@ export const MyDrawerAuthenticated = (props: any) => {
                 title: translation_news,
                 icon: IconNames.news_icon,
                 //header: getMyScreenHeaderFoodOffers()
-                visibleInDrawer: true
+                visibleInDrawer: isNewsEnabled
+            })}
+            {useRenderMyDrawerScreen({
+                routeName: "course-timetable/index",
+                label: translation_course_timetable,
+                title: translation_course_timetable,
+                icon: IconNames.course_timetable_icon,
+                visibleInDrawer: isCourseTimetableEnabled
             })}
             {useRenderMyDrawerScreen({
                 routeName: "settings/index",

@@ -1,13 +1,13 @@
 import React, {FunctionComponent} from "react";
-import {getCourseTimetableVisiblity} from "./CourseTimetableHelper";
 import {useSettingTranslationCourseTimetable} from "./SettingTranslationCourseTimetable";
 import {SettingsRowNavigator} from "../settings/SettingsRowNavigator";
 import {CourseTimetableIcon} from "./CourseTimetableIcon";
 import {SettingCourseTimetable} from "../../screens/settings/SettingCourseTimetable";
+import {useIsCourseTimetableEnabled} from "@/states/SynchedAppSettings";
 
 export const SettingsRowCourseTimetable: FunctionComponent = (props) => {
 
-    const courseTimetableVisiblity = getCourseTimetableVisiblity();
+    const courseTimetableVisiblity = useIsCourseTimetableEnabled();
     const translation = useSettingTranslationCourseTimetable()
 
     if(!courseTimetableVisiblity){

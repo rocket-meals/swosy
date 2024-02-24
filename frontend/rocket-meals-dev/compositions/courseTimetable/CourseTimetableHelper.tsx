@@ -1,21 +1,11 @@
-// @ts-nocheck
-import React from "react";
-import {useJSONState, useSynchedSettingsCourseTimetable} from "../../helper/synchedJSONState";
-import {ProfileAPI, useSynchedProfile} from "../profile/ProfileAPI";
-import {StorageKeys} from "../../helper/synchedVariables/StorageKeys";
-import {Weekday} from "../../helper/DateHelper";
-
-export function getCourseTimetableVisiblity(): boolean{
-    const [settingsCourseTimetable, setSettingsCourseTimetable] = useSynchedSettingsCourseTimetable()
-    return settingsCourseTimetable?.["enabled"];
-}
+import {useSynchedProfile} from "@/states/SynchedProfile";
 
 export function useCourseTimetableEvents(): any[]{
     const [profile, setProfile] = useSynchedProfile();
-    let courseTimetable = profile[ProfileAPI.getCourseTimetableFieldName()] || {};
+    let courseTimetable = profile.course_timetable || {};
 
     const setCourseTimetable = async (value) => {
-        profile[ProfileAPI.getCourseTimetableFieldName()] = value;
+        profile.course_timetable = value;
         let success = await setProfile(profile);
         return success;
     }
@@ -43,17 +33,6 @@ export function usePersonalCourseTimetableSettings(): any[]{
         setJsonState({});
     }
     return [jsonState, setJsonState, reset];
-}
-
-export function usePersonalCourseTimetableFirstDayOfWeek(): [Weekday, (value: Weekday) => void]{
-    const [jsonState, setJsonState] = usePersonalCourseTimetableSettings();
-    const field = "firstDayOfWeek";
-    const firstDayOfWeek = jsonState?.[field] || Weekday.MONDAY;
-    const setFirstDayOfWeek = (value: Weekday) => {
-        jsonState[field] = value;
-        setJsonState(jsonState);
-    }
-    return [firstDayOfWeek, setFirstDayOfWeek];
 }
 
 export function usePersonalCourseTimetableTime(start: boolean): [string, (value: string) => void]{

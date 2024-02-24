@@ -7,6 +7,7 @@ export enum IconNames {
   building_icon = "home-city",
   apartments_icon = "home-account",
   news_icon = "newspaper",
+  course_timetable_icon = "calendar-clock",
   eating_habit_icon = "medical-bag",
   settings_icon = "cog",
   drawer_position_icon = "menu",
