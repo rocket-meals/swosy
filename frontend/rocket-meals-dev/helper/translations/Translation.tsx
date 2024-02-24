@@ -44,6 +44,15 @@ export class TranslationKeys {
   static event = createTranslationKey("event", "Veranstaltung");
   static create = createTranslationKey("create", "Erstellen");
 
+  static delete = createTranslationKey("delete", "Löschen");
+  static location = createTranslationKey("location", "Ort");
+  static title = createTranslationKey("title", "Titel");
+  static weekday = createTranslationKey("weekday", "Wochentag");
+  static startTime = createTranslationKey("startTime", "Startzeit");
+  static endTime = createTranslationKey("endTime", "Endzeit");
+  static color = createTranslationKey("color", "Farbe");
+  static cancel = createTranslationKey("cancel", "Abbrechen");
+
   static courseTimetableDescriptionEmpty = createTranslationKey("courseTimetableDescriptionEmpty", "Du hast noch keinen **Stundenplan**?\n\nMit unserer Stundenplanfunktion kannst du dein Studium und deine Mahlzeiten wie ein Profi planen. Wenn du ein Profil hast, synchronisieren wir deinen Stundenplan automatisch.\n\n*Hinweis: Wir analysieren Profile mit Stundenplänen, um überfüllte Essensschlangen zu vermeiden - wir geben diese Daten nicht an Dritte weiter.*\n[Mehr darüber](https://nilsbaumgartner.de/homepage/2023/01/15/speiseprognose/)");
 
   static nothing_found = createTranslationKey("nothing_found", "Nichts gefunden");

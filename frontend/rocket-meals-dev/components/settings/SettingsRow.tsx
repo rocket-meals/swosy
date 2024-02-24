@@ -13,6 +13,7 @@ export interface SettingsRowProps {
     labelRight?: string | null,
     leftContent?: string | any,
     rightContent?: React.ReactNode,
+    disabled?: boolean,
     leftIcon?: any | string,
     rightIcon?: string,
     onPress?: any,
@@ -86,7 +87,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
     return <>
         <ActionsheetItem
-            disabled={!item.onSelect}
+            disabled={!item.onSelect || props.disabled}
         accessibilityLabel={item.accessibilityLabel}
         sx={{
             bg: usedViewBackgroundColor,

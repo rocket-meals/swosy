@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from "react";
 import {CourseTimetableImportDefaultComponent} from "../CourseTimetableImportDefaultComponent";
-import {CourseTimetableEventType} from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {CourseTimetableDictType, CourseTimetableEventType} from "@/compositions/courseTimetable/CourseTimetableHelper";
 import {DateHelper} from "@/helper/date/DateHelper";
 
 interface AppState {
@@ -223,12 +223,12 @@ export const getDemoRawScheduleData = () => {
     ]
 }
 
-function parseStudIPDataToEvent(rawEvent: any): CourseTimetableEventType{
+function parseStudIPDataToEvent(rawEvent: any, index: number): CourseTimetableEventType{
     let rawWeekdayNumber = rawEvent?.weekday;
     let weekday = DateHelper.getWeekdayByDayNumber(rawWeekdayNumber);
 
     let event: CourseTimetableEventType = {
-        id: undefined,
+        id: index+"",
         title: rawEvent.name,
         location: rawEvent.location,
         color: rawEvent.color,
@@ -239,14 +239,16 @@ function parseStudIPDataToEvent(rawEvent: any): CourseTimetableEventType{
     return event;
 }
 
-function parseStudIPDataToEvents(scheduleEvents: [any]): [CourseTimetableEventType]{
+function parseStudIPDataToCourseTimetableEvents(scheduleEvents: [any]): CourseTimetableEventType[]{
     //console.log("parseStudIPDataToEvents");
     //console.log("scheduleEvents");
     //console.log(scheduleEvents);
-    let parsedEvents: [CourseTimetableEventType] = [];
+    let parsedEvents: CourseTimetableEventType[] = []
+    let index = 1;
     for(let scheduleEvent of scheduleEvents){
-        let event = parseStudIPDataToEvent(scheduleEvent);
-        parsedEvents.push(event);
+        let event = parseStudIPDataToEvent(scheduleEvent, index);
+        parsedEvents.push(event)
+        index++;
     }
     //console.log("parsedEvents")
     console.log(parsedEvents)
@@ -256,7 +258,7 @@ function parseStudIPDataToEvents(scheduleEvents: [any]): [CourseTimetableEventTy
 export function getParsedDemoEvents(){
     let rawSchedule = getDemoRawScheduleData();
     if(rawSchedule){
-        return parseStudIPDataToEvents(rawSchedule);
+        return parseStudIPDataToCourseTimetableEvents(rawSchedule);
     }
     return null;
 }

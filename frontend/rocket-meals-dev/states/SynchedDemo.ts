@@ -8,5 +8,7 @@ export function useDemoRaw(): [boolean | null, (newValue: boolean) => void] {
 
 export function useIsDemo(): boolean {
   const [debug, setDebug] = useDemoRaw()
+
+  return true;
   return !!debug
 }

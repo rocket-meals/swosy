@@ -5,22 +5,31 @@ import {useSyncState} from "@/helper/syncState/SyncState";
 import {Weekday} from "@/helper/date/DateHelper";
 
 type MarkerTime =`${number| ''}${number}:${number}${number}`
-export interface CourseTimetableEventType {
+
+// Define the base type with optional 'id'
+export type BaseCourseTimetableEvent = {
     id?: string,
-    title: string,
-    location: string,
-    color: string,
+    title?: string,
+    location?: string,
+    color?: string,
     start: MarkerTime,
     end: MarkerTime,
     weekday: Weekday
 }
 
-export type CourseTimetableType = {
+// Derive the type for new events where 'id' is optional
+export type CourseTimetableEventNewType = BaseCourseTimetableEvent;
+
+// Derive the type for existing events where 'id' is required
+export type CourseTimetableEventType = Required<Pick<BaseCourseTimetableEvent, 'id'>> & BaseCourseTimetableEvent;
+
+
+export type CourseTimetableDictType = {
     [id: string]: CourseTimetableEventType
 }
 
-export function useCourseTimetableEvents(): any[]{
-    const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableType>(PersistentStore.course_timetable)
+export function useCourseTimetableEvents(): any{
+    const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableDictType>(PersistentStore.course_timetable)
     let usedCourseTimetable = courseTimetableRaw || {};
 
     /**
@@ -28,29 +37,33 @@ export function useCourseTimetableEvents(): any[]{
     let courseTimetable = profile.course_timetable || {};
      */
 
-    const setCourseTimetable = async (value: CourseTimetableType) => {
+    const setCourseTimetable = async (value: CourseTimetableDictType) => {
         /**
         profile.course_timetable = value;
         let success = await setProfile(profile);
         return success;
          */
         let success = await setCourseTimetableRaw(value);
+        return success;
     }
 
-    const addNewCourseTimetableEvent = async (event: CourseTimetableEventType) => {
+    const addNewCourseTimetableEvent = async (partialEvent: CourseTimetableEventNewType) => {
         // find the next free id
         let id = 1;
         while(usedCourseTimetable[id+""]){
             // id is already taken
             id++;
         }
+
+        let event: CourseTimetableEventType = partialEvent as CourseTimetableEventType;
         event.id = id+"";
+
         usedCourseTimetable[id] = event;
         let success = await setCourseTimetable(usedCourseTimetable);
         return success;
     }
 
-    const removeCourseTimetableEvent = async (id: number) => {
+    const removeCourseTimetableEvent = async (id: string) => {
         delete usedCourseTimetable[id];
         let success = await setCourseTimetable(usedCourseTimetable);
         return success;

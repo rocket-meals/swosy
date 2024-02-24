@@ -1,14 +1,14 @@
 import React, {FunctionComponent} from "react";
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {CourseTimetableType} from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {CourseTimetableDictType} from "@/compositions/courseTimetable/CourseTimetableHelper";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 interface AppState {
 }
 export const SettingCourseTimetableResetSettings: FunctionComponent<AppState> = (props) => {
 
-	const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableType>(PersistentStore.course_timetable)
+	const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableDictType>(PersistentStore.course_timetable)
 
 	const actionsheet = MyActionsheet.useActionsheet();
 

@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect, useRef, useState} from "react";
 import Timetable from "react-native-calendar-timetable";
 import {CourseTimetableItemCard} from "./CourseTimetableItemCard";
-import {CourseTimetableEventType} from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {CourseTimetableEventType, CourseTimetableDictType} from "@/compositions/courseTimetable/CourseTimetableHelper";
 import {DateHelper, Weekday} from "@/helper/date/DateHelper";
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 import {CardProps} from "react-native-calendar-timetable/lib/types";
@@ -16,7 +16,8 @@ interface AppState {
     amountOfDaysToShowOnScreen?: number;
     weekStartsOn?: Weekday;
     currentWeekday?: Weekday;
-    events?: CourseTimetableEventType[];
+    eventsDict?: CourseTimetableDictType;
+    onPressEvent?: (event: CourseTimetableEventType) => void,
     fromHour?: number;
     toHour?: number;
     renderTime?: (fromHour, toHour) => any;
@@ -66,7 +67,45 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
 
     const columnWidth = (width / amountOfDaysToShowOnScreen)-(timeWidth/amountOfDaysToShowOnScreen)-10/amountOfDaysToShowOnScreen;
 
-    const items = props?.events || [];
+    function getEvent(id: string, start: string, end: string, weekday: Weekday){
+        let useDate = DateHelper.getDefaultWeekdayDate(weekday)
+        let startDate = new Date(useDate);
+        startDate.setHours(parseInt(start.split(":")[0]), parseInt(start.split(":")[1]));
+        startDate.setMinutes(startDate.getMinutes()+1)
+
+        let endDate = new Date(useDate);
+        endDate.setHours(parseInt(end.split(":")[0]), parseInt(end.split(":")[1]));
+
+        /** Fix timeline display. Since events which start and end at the same time they will share space */
+        /** For example 08:00-09:00 and 09:00-10:00 are not overlapping technically */
+        /** But we have to reduce the end by 1 minute */
+        endDate.setMinutes(endDate.getMinutes()-1); // reduce end by 1 minute
+
+        return{
+            id: id,
+            startDate: startDate,
+            endDate: endDate,
+        }
+    }
+
+    function parseTimetableEventsToList(timetableEvents: CourseTimetableDictType){
+        let events = [];
+        let keys = Object.keys(timetableEvents)
+        for(let i=0; i<keys.length; i++){
+            let key = keys[i];
+            let event = timetableEvents[key];
+            console.log("Event: "+key, event)
+            if(!!event){
+                let parsedEvent = getEvent(event.id, event.start, event.end, event.weekday);
+                events.push(parsedEvent)
+            }
+        }
+        return events;
+    }
+
+    const eventsDict: CourseTimetableDictType = props?.eventsDict || {};
+
+    const items = parseTimetableEventsToList(eventsDict);
 
     // corresponding componentDidMount
     useEffect(() => {
@@ -164,7 +203,8 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
                         timeWidth={timeWidth}
                          renderItem={
                                 ({style, item, dayIndex, daysTotal}: CardProps) => {
-                                    return <CourseTimetableItemCard dayIndex={dayIndex} daysTotal={daysTotal} item={item} style={style} />
+                                    const courseTimetableEvent = eventsDict[item.id];
+                                    return <CourseTimetableItemCard onPress={props.onPressEvent} dayIndex={dayIndex} daysTotal={daysTotal} item={courseTimetableEvent} style={style} />
                                 }
                          }
                     />

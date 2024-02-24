@@ -11,6 +11,7 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 interface AppState {
     style: any,
     item: CourseTimetableEventType,
+    onPress?: (item: CourseTimetableEventType) => void,
     dayIndex: any,
     daysTotal: any
 }
@@ -54,7 +55,9 @@ export const CourseTimetableItemCard: FunctionComponent<AppState> = (props) => {
             ...style, // apply calculated styles, be careful not to override these accidentally (unless you know what you are doing)
         }}>
             <MyTouchableOpacity accessibilityLabel={title} style={{height: "100%", width: "100%"}} onPress={() => {
-                console.log("navigate to course timetable event details")
+                if(props.onPress) {
+                    props.onPress(item);
+                }
             }}>
                 <View style={{
                     height: "100%",

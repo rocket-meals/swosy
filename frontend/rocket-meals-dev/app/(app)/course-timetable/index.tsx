@@ -10,7 +10,8 @@ import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 import {useSynchedFirstWeekday} from "@/states/SynchedFirstWeekday";
 import {useProfileLocaleForJsDate, useSynchedProfile} from "@/states/SynchedProfile";
 import {
-    CourseTimetableEventType,
+    BaseCourseTimetableEvent,
+    CourseTimetableEventType, CourseTimetableDictType,
     useCourseTimetableEvents, usePersonalCourseTimetableAmountDaysOnScreen,
     usePersonalCourseTimetableTimeEnd, usePersonalCourseTimetableTimeStart
 } from "@/compositions/courseTimetable/CourseTimetableHelper";
@@ -20,6 +21,7 @@ import {TimetableImportDemo} from "@/compositions/courseTimetable/timetableProvi
 import {CourseTimetableSchedule} from "@/compositions/courseTimetable/CourseTimetableSchedule";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import {IconNames} from "@/constants/IconNames";
+import {CourseTimetableEvent} from "@/compositions/courseTimetable/CourseTimetableEvent";
 
 export default function CourseTimetableScreen() {
 
@@ -51,28 +53,6 @@ export default function CourseTimetableScreen() {
     }
     const amountOfDaysToShowOnScreen = amountDaysOnScreen || useBreakPointValue(breakPointsAmountOfDaysToShowOnScreen)
 
-
-    function getEvent(id: string, start: string, end: string, weekday: Weekday){
-        let useDate = DateHelper.getDefaultWeekdayDate(weekday)
-        let startDate = new Date(useDate);
-        startDate.setHours(parseInt(start.split(":")[0]), parseInt(start.split(":")[1]));
-        startDate.setMinutes(startDate.getMinutes()+1)
-
-        let endDate = new Date(useDate);
-        endDate.setHours(parseInt(end.split(":")[0]), parseInt(end.split(":")[1]));
-
-        /** Fix timeline display. Since events which start and end at the same time they will share space */
-        /** For example 08:00-09:00 and 09:00-10:00 arent overlapping technicly */
-        /** But we have to reduce the end by 1 minute */
-        endDate.setMinutes(endDate.getMinutes()-1); // reduce end by 1 minute
-
-        return{
-            id: id,
-            startDate: startDate,
-            endDate: endDate,
-        }
-    }
-
     const configShowDemoImportProvider: MyGlobalActionSheetConfig = {
         onCancel: undefined,
         visible: true,
@@ -94,15 +74,26 @@ export default function CourseTimetableScreen() {
         }
     }
 
-    const importProviders = []
-
-    if(isDemo){
-        importProviders.push({
-            key: "demo",
-            label: "Demo",
-            icon: IconNames.demo_icon_on,
-            config: configShowDemoImportProvider,
-        })
+    function handlePressOnEvent(item: BaseCourseTimetableEvent){
+        const configShowOnPressEvent: MyGlobalActionSheetConfig = {
+            onCancel: undefined,
+            visible: true,
+            title: "Event Item",
+            renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+                return (
+                    <MySafeAreaView>
+                        <MyScrollView>
+                            <CourseTimetableEvent item={item} handleEdit={(usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
+                                console.log("usedEvent")
+                                console.log(usedEvent)
+                                handlePressOnEvent(usedEvent);
+                            }} />
+                        </MyScrollView>
+                    </MySafeAreaView>
+                );
+            }
+        }
+        show(configShowOnPressEvent);
     }
 
     const configShowSelectImportProvider: MyGlobalActionSheetConfig = {
@@ -110,6 +101,17 @@ export default function CourseTimetableScreen() {
         visible: true,
         title: "Select Import Provider",
         renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+            const importProviders: any[] = []
+
+            if(isDemo){
+                importProviders.push({
+                    key: "demo",
+                    label: "Demo",
+                    icon: IconNames.demo_icon_on,
+                    config: configShowDemoImportProvider,
+                })
+            }
+
             const renderedImportProviders = []
             for(let i=0; i<importProviders.length; i++){
                 let importProvider = importProviders[i];
@@ -136,7 +138,10 @@ export default function CourseTimetableScreen() {
 
 
     function onImport(events: CourseTimetableEventType[]){
-        let newEvents = {};
+        console.log("On Import")
+        console.log(events);
+
+        let newEvents: CourseTimetableDictType = {};
         let currentEventId = 1;
         for(let event of events){
             let id = event?.id || currentEventId;
@@ -144,18 +149,10 @@ export default function CourseTimetableScreen() {
             newEvents[id] = event;
             currentEventId++;
         }
+
+        console.log("New Events dict")
+        console.log(newEvents);
         setTimetableEvents(newEvents)
-    }
-
-
-    function parseTimetableEventsToList(timetableEvents){
-        let events = [];
-        for(let key in timetableEvents){
-            let event = timetableEvents[key];
-            let parsedEvent = getEvent(event.id, event.start, event.end, event.weekday);
-            events.push(parsedEvent)
-        }
-        return events;
     }
 
     function renderActions(){
@@ -182,7 +179,7 @@ export default function CourseTimetableScreen() {
         )
     }
 
-    let events = parseTimetableEventsToList(timetableEvents);
+    console.log("Index: timetableEvents", timetableEvents)
 
     function renderContent(){
         let coursesFound = Object.keys(timetableEvents).length > 0;
@@ -201,7 +198,10 @@ export default function CourseTimetableScreen() {
                         amountOfDaysToShowOnScreen={amountOfDaysToShowOnScreen}
                         backgroundColor={backgroundColor}
                         locale={locale}
-                        events={events}
+                        eventsDict={timetableEvents}
+                        onPressEvent={(item: CourseTimetableEventType) => {
+                            handlePressOnEvent(item);
+                        }}
                         fromHour={parseInt(startTime)}
                         toHour={parseInt(endTime)}
                     />
