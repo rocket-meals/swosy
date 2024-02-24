@@ -1,10 +1,5 @@
 import React, {FunctionComponent} from "react";
-import {HeaderWithActions, Navigation} from "../../../kitcheningredients";
-import {Button, Tooltip, View} from "native-base";
-import {useAppTranslation} from "../translations/AppTranslation";
-import {SettingsIcon} from "../icons/SettingsIcon";
-import {SettingCourseTimetable} from "../../screens/settings/SettingCourseTimetable";
-import {useSettingTranslationCourseTimetable} from "./SettingTranslationCourseTimetable";
+import {useSettingTranslationCourseTimetable} from "./useSettingTranslationCourseTimetable";
 
 export interface AppState{
 

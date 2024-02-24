@@ -1,6 +1,10 @@
 import React, {FunctionComponent} from "react";
 import {useAppTranslation} from "../../translations/AppTranslation";
-import {usePersonalCourseTimetableTime} from "../CourseTimetableHelper";
+import {
+	usePersonalCourseTimetableTime,
+	usePersonalCourseTimetableTimeEnd,
+	usePersonalCourseTimetableTimeStart
+} from "../CourseTimetableHelper";
 import {SettingsRowTimeEditComponent} from "../../settings/SettingsRowTimeEditComponent";
 import {TimeStartIcon} from "../../icons/TimeStartIcon";
 import {TimeEndIcon} from "../../icons/TimeEndIcon";
@@ -22,7 +26,10 @@ export const SettingCourseTimetableTime: FunctionComponent<AppState> = (props) =
 
 	const translationTime = start ? translationStart : translationEnd;
 
-	const [time, setTime] = usePersonalCourseTimetableTime(start);
+	const [startTime, setStartTime] = usePersonalCourseTimetableTimeStart();
+	const [endTime, setEndTime] = usePersonalCourseTimetableTimeEnd();
+	const time = start ? startTime : endTime;
+	const setTime = start ? setStartTime : setEndTime;
 
 	function onChange(newTime: string): boolean{
 		let hours = parseInt(newTime.split(":")[0]);

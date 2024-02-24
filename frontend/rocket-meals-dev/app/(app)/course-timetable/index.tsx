@@ -3,23 +3,28 @@ import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {NoCourseTimetableFound} from "@/compositions/courseTimetable/NoCourseTimetableFound";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {useViewBackgroundColor, View} from "@/components/Themed";
+import {Text, useViewBackgroundColor, View} from "@/components/Themed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {DateHelper, Weekday} from "@/helper/date/DateHelper";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 import {useSynchedFirstWeekday} from "@/states/SynchedFirstWeekday";
 import {useProfileLocaleForJsDate, useSynchedProfile} from "@/states/SynchedProfile";
 import {
-    useCourseTimetableEvents,
-    usePersonalCourseTimetableTime
+    CourseTimetableEventType,
+    useCourseTimetableEvents, usePersonalCourseTimetableAmountDaysOnScreen,
+    usePersonalCourseTimetableTimeEnd, usePersonalCourseTimetableTimeStart
 } from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
+import React from "react";
+import {TimetableImportDemo} from "@/compositions/courseTimetable/timetableProviders/TimetableImportDemo";
+import {CourseTimetableSchedule} from "@/compositions/courseTimetable/CourseTimetableSchedule";
+import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
+import {IconNames} from "@/constants/IconNames";
 
 export default function CourseTimetableScreen() {
 
-
-    const actionsheet = MyActionsheet.useActionsheet();
-
     const translation_import = useTranslation(TranslationKeys.import);
+    const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 
     const isDemo = useIsDemo()
 
@@ -28,8 +33,8 @@ export default function CourseTimetableScreen() {
 
     const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday()
     const [timetableEvents, setTimetableEvents] = useCourseTimetableEvents();
-    const [startTime, setStartTime] = usePersonalCourseTimetableTime(true);
-    const [endTime, setEndTime] = usePersonalCourseTimetableTime(false);
+    const [startTime, setStartTime] = usePersonalCourseTimetableTimeStart();
+    const [endTime, setEndTime] = usePersonalCourseTimetableTimeEnd();
     const [amountDaysOnScreen, setAmountDaysOnScreen] = usePersonalCourseTimetableAmountDaysOnScreen();
 
     const translation_event = useTranslation(TranslationKeys.event)
@@ -68,9 +73,69 @@ export default function CourseTimetableScreen() {
         }
     }
 
-    const actionsheetOptionImportFromStudIP = "importFromStudIP"
+    const configShowDemoImportProvider: MyGlobalActionSheetConfig = {
+        onCancel: undefined,
+        visible: true,
+        title: "Import",
+        renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+            return (
+                <MySafeAreaView>
+                    <MyScrollView>
+                        <View style={{
+                            width: "100%",
+                            padding: 20,
+                        }}>
+                            <Text>{"Show Import"}</Text>
+                            <TimetableImportDemo onCloseModal={hide} onImport={onImport}/>
+                        </View>
+                    </MyScrollView>
+                </MySafeAreaView>
+            );
+        }
+    }
 
-    function onImport(events: TimetableEvent[]){
+    const importProviders = []
+
+    if(isDemo){
+        importProviders.push({
+            key: "demo",
+            label: "Demo",
+            icon: IconNames.demo_icon_on,
+            config: configShowDemoImportProvider,
+        })
+    }
+
+    const configShowSelectImportProvider: MyGlobalActionSheetConfig = {
+        onCancel: undefined,
+        visible: true,
+        title: "Select Import Provider",
+        renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+            const renderedImportProviders = []
+            for(let i=0; i<importProviders.length; i++){
+                let importProvider = importProviders[i];
+                renderedImportProviders.push(
+                    <SettingsRowActionsheet key={importProvider.key} accessibilityLabel={importProvider.label} config={importProvider.config} labelLeft={importProvider.label} leftIcon={importProvider.icon} />
+                )
+            }
+
+            return (
+                <MySafeAreaView>
+                    <MyScrollView>
+                        <View style={{
+                            width: "100%",
+                            padding: 20,
+                        }}>
+                            {renderedImportProviders}
+                        </View>
+                    </MyScrollView>
+                </MySafeAreaView>
+            );
+        }
+    }
+
+
+
+    function onImport(events: CourseTimetableEventType[]){
         let newEvents = {};
         let currentEventId = 1;
         for(let event of events){
@@ -82,23 +147,6 @@ export default function CourseTimetableScreen() {
         setTimetableEvents(newEvents)
     }
 
-    function showStudIPImportOverlay(){
-        let title = "Import from Stud.IP";
-        if(isDemo){
-            title = "Demo Import from Stud.IP";
-        }
-
-        actionsheet.show({
-            title: title,
-            renderCustomContent: (onCloseModal) => {
-                return (
-                    <>
-                        <TimetableImportStudIP onCloseModal={onCloseModal} onImport={onImport} />
-                    </>
-                )
-            }
-        });
-    }
 
     function parseTimetableEventsToList(timetableEvents){
         let events = [];
@@ -111,23 +159,21 @@ export default function CourseTimetableScreen() {
     }
 
     function renderActions(){
-        let demoPreText = "";
         let title_import = translation_import
-        if(isDemo){
-            title_import = "Demo "+translation_import;
-            demoPreText = "Demo ";
-        }
 
         return(
-            <View style={{width: "100%", flexDirection: "row"}}>
-                <MyButton leftIcon={"calendar-import"}
+            <View style={{width: "100%", flexDirection: "row", marginTop: 10, marginHorizontal: 10}}>
+                <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"calendar-import"}
                           accessibilityLabel={title_import}
                           text={title_import}
                           onPress={() => {
-                              console.log("Import from Stud.IP")
+                              show(configShowSelectImportProvider)
                           }}
                 />
-                    <MyButton leftIcon={"calendar-plus"} accessibilityLabel={translationCreateEvent} onPress={() => {
+                <View style={{
+                    width: 10
+                }} />
+                    <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"calendar-plus"} accessibilityLabel={translationCreateEvent} onPress={() => {
                         console.log("Create event")
                     }}
                               text={translationCreateEvent}

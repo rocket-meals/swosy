@@ -1,8 +1,8 @@
-// @ts-nocheck
 import React, {FunctionComponent, useState} from "react";
-import {Button, FormControl, Input, ScrollView, Text, View} from "native-base";
-import {Icon} from "../../../kitcheningredients";
-import {MyButton} from "../buttons/MyButton";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {View, Text, TextInput} from "@/components/Themed";
+import {FormControl} from "@gluestack-ui/themed";
+import {MyButton} from "@/components/buttons/MyButton";
 
 interface AppState {
     onCloseModal: () => void;
@@ -21,22 +21,20 @@ export const CourseTimetableImportDefaultComponent: FunctionComponent<AppState> 
 
     const loginDisabled = loginInitiated || email.length === 0 || password.length === 0;
 
-    let handleCloseModal = props?.onCloseModal;
+    let handleCloseModal = props.onCloseModal;
 
     const toggleShowPasswordIcon = showPassword ? "eye" : "eye-off";
     let rightElement = (
-        <Button roundedLeft="0" onPress={() => {setShowPassword(!showPassword)}}>
-            <Icon name={toggleShowPasswordIcon} size="sm" />
-        </Button>
+        <MyButton useOnlyNecessarySpace={true} leftIcon={toggleShowPasswordIcon} onPress={() => {setShowPassword(!showPassword)}}  accessibilityLabel={"Hide/Show Password"}/>
     )
 
     return (
-        <ScrollView style={{width: "100%"}}>
             <View style={{width: "100%", justifyContent: "center"}}>
-                <Text>{"Your credentials wont be saved and send directly to Stud.IP."}</Text>
-                <FormControl isRequired>
+                <View>
+                    <Text>{"Your credentials wont be saved and send directly to Stud.IP."}</Text>
+                </View>
                     <View style={{marginVertical: 10}}>
-                        <Input
+                        <TextInput
                             isDisabled={loginInitiated}
                             value={email}
                             nativeID={"username"}
@@ -48,10 +46,8 @@ export const CourseTimetableImportDefaultComponent: FunctionComponent<AppState> 
                             }}
                             placeholder="Email" size="lg" />
                     </View>
-                </FormControl>
-                <FormControl isInvalid={loginIncorrect} isRequired>
                     <View style={{marginVertical: 10}} >
-                        <Input
+                        <TextInput
                             isDisabled={loginInitiated}
                             value={password}
                             nativeID={"password"}
@@ -61,30 +57,28 @@ export const CourseTimetableImportDefaultComponent: FunctionComponent<AppState> 
                                 setPassword(event.nativeEvent.text)
                                 setLoginIncorrect(false)
                             }} placeholder="Password" size="lg" />
-                        <FormControl.ErrorMessage>
-                            Incorrect email or password
-                        </FormControl.ErrorMessage>
                     </View>
-                </FormControl>
-                <MyButton disabled={loginDisabled}
-                          label={"Login"+" & "+" "+"Import"}
-                          accessibilityLabel={"Login"+" & "+" "+"Import"}
-                          onPress={async () => {
-                    setLoginInitiated(true);
-                    let onLogin = props?.onLogin;
-                    if (onLogin) {
-                        let success = await onLogin(email, password);
-                        if (success) {
-                            handleCloseModal();
-                            return true;
-                        } else {
-                            setLoginIncorrect(true);
-                        }
-                    }
-                    setLoginInitiated(false);
+                <View style={{
+                    width: "100%",
                 }}>
-                </MyButton>
+                    <MyButton disabled={loginDisabled}
+                              text={"Login"+" & "+" "+"Import"}
+                              accessibilityLabel={"Login"+" & "+" "+"Import"}
+                              onPress={async () => {
+                                  setLoginInitiated(true);
+                                  let onLogin = props?.onLogin;
+                                  if (onLogin) {
+                                      let success = await onLogin(email, password);
+                                      if (success) {
+                                          handleCloseModal();
+                                      } else {
+                                          setLoginIncorrect(true);
+                                      }
+                                  }
+                                  setLoginInitiated(false);
+                              }}>
+                    </MyButton>
+                </View>
             </View>
-        </ScrollView>
     );
 }

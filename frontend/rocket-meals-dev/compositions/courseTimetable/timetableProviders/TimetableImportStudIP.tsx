@@ -1,10 +1,6 @@
-// @ts-nocheck
 import React, {FunctionComponent} from "react";
 import {CourseTimetableImportDefaultComponent} from "../CourseTimetableImportDefaultComponent";
 import {Connector, ScheduleEvent, UrlHelper} from "studip-api";
-import {useDemoMode} from "../../../helper/synchedJSONState";
-import {TimetableEvent} from "../CourseTimetableSchedule";
-import {DateHelper} from "../../../helper/DateHelper";
 
 interface AppState {
     onCloseModal: () => void;

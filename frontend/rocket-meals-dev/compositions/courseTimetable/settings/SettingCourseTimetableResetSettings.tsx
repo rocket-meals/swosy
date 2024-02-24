@@ -1,25 +1,19 @@
 import React, {FunctionComponent} from "react";
-import {AppTranslation, useAppTranslation} from "../../translations/AppTranslation";
-import {
-	useCourseTimetableEvents,
-	usePersonalCourseTimetableAmountDaysOnScreen, usePersonalCourseTimetableSettings,
-	usePersonalCourseTimetableTitleIntelligent
-} from "../CourseTimetableHelper";
-import {SettingsRowBooleanSwitch} from "../../settings/SettingsRowBooleanSwitch";
-import {TitleIcon} from "../../icons/TitleIcon";
-import {Icon, MyActionsheet} from "../../../../kitcheningredients";
-import {SettingsRow} from "../../settings/SettingsRow";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {CourseTimetableType} from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 interface AppState {
 }
 export const SettingCourseTimetableResetSettings: FunctionComponent<AppState> = (props) => {
 
-	const [timetableSettings, setTimetableSettings] = usePersonalCourseTimetableSettings()
+	const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableType>(PersistentStore.course_timetable)
 
 	const actionsheet = MyActionsheet.useActionsheet();
 
-	const translationReset = useAppTranslation("reset");
-	const translationScreenName = useAppTranslation("settings");
+	const translationReset = useTranslation(TranslationKeys.reset);
+	const translationScreenName = useTranslation(TranslationKeys.settings);
 	const rowTitle = translationReset+": "+translationScreenName;
 
 	function onReset(){

@@ -28,6 +28,7 @@ export class TranslationKeys {
   static nickname = createTranslationKey("nickname", "Spitzname")
   static account = createTranslationKey("account", "Account")
   static anonymous = createTranslationKey("anonymous", "Anonym")
+  static reset = createTranslationKey("reset", "Zurücksetzen")
 
   static animation = createTranslationKey("animation", "Animation");
   static allergene = createTranslationKey("allergene", "Allergene");

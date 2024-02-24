@@ -80,7 +80,6 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold): string {
-
   let trueDarkText = '#000000';
   let trueLightText = '#FFFFFF';
 

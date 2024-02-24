@@ -1,88 +1,125 @@
-import {useSynchedProfile} from "@/states/SynchedProfile";
+import {useSynchedCourseTimetableSettingsRaw} from "@/states/SynchedCourseTimetableSettings";
+import {useBreakPointValue} from "@/helper/device/DeviceHelper";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {Weekday} from "@/helper/date/DateHelper";
+
+type MarkerTime =`${number| ''}${number}:${number}${number}`
+export interface CourseTimetableEventType {
+    id?: string,
+    title: string,
+    location: string,
+    color: string,
+    start: MarkerTime,
+    end: MarkerTime,
+    weekday: Weekday
+}
+
+export type CourseTimetableType = {
+    [id: string]: CourseTimetableEventType
+}
 
 export function useCourseTimetableEvents(): any[]{
+    const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableType>(PersistentStore.course_timetable)
+    let usedCourseTimetable = courseTimetableRaw || {};
+
+    /**
     const [profile, setProfile] = useSynchedProfile();
     let courseTimetable = profile.course_timetable || {};
+     */
 
-    const setCourseTimetable = async (value) => {
+    const setCourseTimetable = async (value: CourseTimetableType) => {
+        /**
         profile.course_timetable = value;
         let success = await setProfile(profile);
         return success;
+         */
+        let success = await setCourseTimetableRaw(value);
     }
-    const addNewCourseTimetableEvent = async (event) => {
-        if(!event){
-            return false;
-        }
+
+    const addNewCourseTimetableEvent = async (event: CourseTimetableEventType) => {
         // find the next free id
         let id = 1;
-        while(courseTimetable[id]){
+        while(usedCourseTimetable[id+""]){
             // id is already taken
             id++;
         }
-        event.id = id;
-        courseTimetable[id] = event;
-        let success = await setCourseTimetable(courseTimetable);
+        event.id = id+"";
+        usedCourseTimetable[id] = event;
+        let success = await setCourseTimetable(usedCourseTimetable);
         return success;
     }
-    return [courseTimetable, setCourseTimetable, addNewCourseTimetableEvent];
-}
 
-export function usePersonalCourseTimetableSettings(): any[]{
-    const [jsonState, setJsonState] = useJSONState(StorageKeys.CACHED_PERSONAL_SETTINGS_COURSE_TIMETABLE);
-    const reset = async () => {
-        setJsonState({});
+    const removeCourseTimetableEvent = async (id: number) => {
+        delete usedCourseTimetable[id];
+        let success = await setCourseTimetable(usedCourseTimetable);
+        return success;
     }
-    return [jsonState, setJsonState, reset];
+
+    return [usedCourseTimetable, setCourseTimetable, addNewCourseTimetableEvent, removeCourseTimetableEvent];
 }
 
-export function usePersonalCourseTimetableTime(start: boolean): [string, (value: string) => void]{
-    const [jsonState, setJsonState] = usePersonalCourseTimetableSettings();
-    const field = start ? "timetableStartTime" : "timetableEndTime";
-    const defaultValue = start ? "08:00" : "20:00";
-    const time = jsonState?.[field] || defaultValue;
-    const setCourseTimetableTime = async (value: Weekday) => {
-        jsonState[field] = value;
-        return await setJsonState(jsonState);
+export function usePersonalCourseTimetableTimeStart(): [(string), ((value: string) => Promise<void>)]{
+    const [time, setTime] = usePersonalCourseTimetableTime(true);
+    return [time, setTime];
+}
+
+export function usePersonalCourseTimetableTimeEnd(): [(string), ((value: string) => Promise<void>)]{
+    const [time, setTime] = usePersonalCourseTimetableTime(false);
+    return [time, setTime];
+}
+
+function usePersonalCourseTimetableTime(start: boolean): [string, ((value: string) => Promise<void>)]{
+    const [timetableSettings, setTimetableSettings] = useSynchedCourseTimetableSettingsRaw();
+    const defaultValueStart: string = "08:00";
+    const defaultValueEnd: string = "20:00";
+    let time: string = start ? defaultValueStart : defaultValueEnd;
+    if(timetableSettings?.start_time && start){
+        time = timetableSettings.start_time;
     }
-    return [time, setCourseTimetableTime];
-}
-
-export function usePersonalCourseTimetableAmountDaysOnScreen(): [number, (value: number) => void]{
-    const [jsonState, setJsonState] = usePersonalCourseTimetableSettings();
-    const field = "amountDaysOnScreen";
-    const defaultValue = undefined;
-    const amountDaysOnScreen = jsonState?.[field] || defaultValue;
-    const setAmountDaysOnScreen = async (value: number) => {
-        jsonState[field] = value;
-        if(value <= 0){
-            delete jsonState[field];
+    if(timetableSettings?.end_time && !start){
+        time = timetableSettings.end_time;
+    }
+    const setTime = async (value: string | null) => {
+        let usedValue: string | undefined = undefined
+        if (value) {
+            usedValue = value
         }
-        return await setJsonState(jsonState);
+        if(start){
+            timetableSettings.start_time = usedValue;
+        } else {
+            timetableSettings.end_time = usedValue;
+        }
+        return await setTimetableSettings(timetableSettings);
     }
-    const asNumber = parseInt(amountDaysOnScreen) || 0;
-    return [asNumber, setAmountDaysOnScreen];
+    return [time, setTime];
+}
+
+export function usePersonalCourseTimetableAmountDaysOnScreen(): [number, (value: number | null) => void]{
+    const [timetableSettings, setTimetableSettings] = useSynchedCourseTimetableSettingsRaw();
+    const defaultValue = useBreakPointValue({
+        sm: 2.1,
+        md: 5.1,
+        lg: 5.1,
+    });
+    const amountDaysOnScreen = timetableSettings.amount_days_to_show || defaultValue;
+    const setAmountDaysOnScreen = async (value: number | null) => {
+        timetableSettings.amount_days_to_show = undefined
+        if(value){
+            timetableSettings.amount_days_to_show = value;
+        }
+        return await setTimetableSettings(timetableSettings);
+    }
+    return [amountDaysOnScreen, setAmountDaysOnScreen];
 }
 
 export function usePersonalCourseTimetableTitleIntelligent(): [boolean, (value: boolean) => void]{
-    const [jsonState, setJsonState] = usePersonalCourseTimetableSettings();
-    const field = "titleIntelligent";
+    const [timetableSettings, setTimetableSettings] = useSynchedCourseTimetableSettingsRaw();
     const defaultValue = true;
-    const fieldValue = jsonState?.[field];
-    const titleIntelligent = fieldValue!==undefined ? fieldValue : defaultValue;
+    const titleIntelligent = timetableSettings.intelligent_title || defaultValue;
     const setTitleIntelligent = async (value: boolean) => {
-        jsonState[field] = value;
-        return await setJsonState(jsonState);
+        timetableSettings.intelligent_title = value;
+        return await setTimetableSettings(timetableSettings);
     }
     return [titleIntelligent, setTitleIntelligent];
-}
-
-export function useTimetableViewMode(): [Weekday, (value: Weekday) => void]{
-    const [jsonState, setJsonState] = usePersonalCourseTimetableSettings();
-    const field = "firstDayOfWeek";
-    const firstDayOfWeek = jsonState?.[field] || Weekday.MONDAY;
-    const setFirstDayOfWeek = (value: Weekday) => {
-        jsonState[field] = value;
-        setJsonState(jsonState);
-    }
-    return [firstDayOfWeek, setFirstDayOfWeek];
 }

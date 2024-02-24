@@ -1,21 +1,12 @@
-// @ts-nocheck
 import React, {FunctionComponent, useEffect, useRef, useState} from "react";
-import {ScrollView, Text, View} from "native-base";
 import Timetable from "react-native-calendar-timetable";
-import {DateHelper, Weekday} from "../../helper/DateHelper";
 import {CourseTimetableItemCard} from "./CourseTimetableItemCard";
-import {DirectusTranslationHelper} from "../translations/DirectusTranslationHelper";
-
-type MarkerTime =`${number| ''}${number}:${number}${number}`
-export interface TimetableEvent {
-    id?: string,
-    title: string,
-    location: string,
-    color: string,
-    start: MarkerTime,
-    end: MarkerTime,
-    weekday: Weekday
-}
+import {CourseTimetableEventType} from "@/compositions/courseTimetable/CourseTimetableHelper";
+import {DateHelper, Weekday} from "@/helper/date/DateHelper";
+import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
+import {CardProps} from "react-native-calendar-timetable/lib/types";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {View, Text} from "@/components/Themed";
 
 interface AppState {
     renderHeader?: (date: Date, start: Date, end: Date) => any;
@@ -25,7 +16,7 @@ interface AppState {
     amountOfDaysToShowOnScreen?: number;
     weekStartsOn?: Weekday;
     currentWeekday?: Weekday;
-    events?: TimetableEvent[];
+    events?: CourseTimetableEventType[];
     fromHour?: number;
     toHour?: number;
     renderTime?: (fromHour, toHour) => any;
@@ -40,13 +31,14 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
 
     const backgroundColor = props?.backgroundColor || "transparent"
 
-    const locale = props?.locale || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+    const propsLocale: string | undefined = props?.locale;
+    const locale: string = propsLocale || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
 
     const fromWeekday = props?.weekStartsOn || Weekday.MONDAY;
 
     let indexToStart = 0;
     if (props?.currentWeekday) {
-        const currentWeekday = props?.currentWeekday;
+        const currentWeekday: Weekday = props?.currentWeekday as Weekday;
         let indexDifference = DateHelper.getWeekdayDifference(fromWeekday, currentWeekday);
         if(indexDifference < 0){ // if the current weekday is before the first weekday of the week
             indexDifference += 7; // add 7 to get the correct index
@@ -54,13 +46,15 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
         indexToStart = indexDifference;
     }
 
-    const [from] = React.useState(DateHelper.getDefaultWeekdayDate(fromWeekday));
+    const [fromIsoString] = React.useState(DateHelper.getDefaultWeekdayDate(fromWeekday).toISOString());
+    const from = new Date(fromIsoString);
     let amountOfDays = props?.amountOfDays || 7;
 
     const defaultAmountOfDaysToShowOnScreen = 7;
     let amountOfDaysToShowOnScreen = props?.amountOfDaysToShowOnScreen || defaultAmountOfDaysToShowOnScreen;
 
-    const [till] = React.useState(DateHelper.addDays(new Date(from), amountOfDays-1).toISOString());
+    const [tillIsoString] = React.useState(DateHelper.addDays(new Date(from), amountOfDays-1).toISOString());
+    const till = new Date(tillIsoString);
     const fromHour = props?.fromHour || 0;
     const toHour = props?.toHour || 24;
     const range = {from: from, till: till};
@@ -133,8 +127,7 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
         } else {
             // to fix inside view columnWidth = (width / amountOfDays)-(timeWidth/amountOfDays)-10/amountOfDays
             return (
-                <>
-                <ScrollView>
+                <MyScrollView>
                     <Timetable
                         scrollViewProps={{
                             ref: scrollViewRef,
@@ -156,7 +149,6 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
                         width={width}
                         // these two are required
                         items={items}
-                        cardComponent={CourseTimetableItemCard}
                         renderHeader={renderHeader}
                         enableSnapping={true}
                         fromHour={fromHour}
@@ -170,10 +162,14 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
                         range={range} // optional
                         columnWidth={columnWidth}
                         timeWidth={timeWidth}
+                         renderItem={
+                                ({style, item, dayIndex, daysTotal}: CardProps) => {
+                                    return <CourseTimetableItemCard dayIndex={dayIndex} daysTotal={daysTotal} item={item} style={style} />
+                                }
+                         }
                     />
                     {renderTimeColumns()}
-                </ScrollView>
-                </>
+                </MyScrollView>
             )
         }
     }
