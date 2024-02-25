@@ -239,6 +239,7 @@ export default function CourseTimetableScreen() {
             return (
                 <View style={{width: "100%", height: "100%", flex: 1}}>
                     <CourseTimetableSchedule
+                        key={amountOfDaysToShowOnScreen+"-"+firstDayOfWeek+"-"+startTime+"-"+endTime}
                         weekStartsOn={firstDayOfWeek}
                         currentWeekday={DateHelper.getWeekdayToday()}
                         amountOfDaysToShowOnScreen={amountOfDaysToShowOnScreen}
