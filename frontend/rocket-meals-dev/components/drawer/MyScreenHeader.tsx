@@ -8,6 +8,8 @@ import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Divider} from "@gluestack-ui/themed";
+import {IconNames} from "@/constants/IconNames";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -85,7 +87,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
      */
     const renderHeaderTitle = (props: HeaderTitleProps) => {
         const readOnlyStyle: any = options.headerStyle;
-        return <Heading style={readOnlyStyle}>{usedTitle}</Heading>;
+        return <Heading accessibilityRole={MyAccessibilityRoles.Header} style={readOnlyStyle}>{usedTitle}</Heading>;
     }
 
     /**
@@ -106,16 +108,12 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 
         // Adjust padding based on the drawer's position to align the icon appropriately.
         let paddingLeft: any = 10;
-        let paddingRight = undefined;
-        if(drawerPosition === DrawerConfigPosition.Right){
-            paddingRight = paddingLeft;
-            paddingLeft = undefined;
-        }
+        let paddingRight = 10;
         const paddingVertical = 10;
 
         // Returns a touchable component with an icon for toggling the drawer.
         return <MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_open_drawer} onPress={() => navigation.openDrawer()}>
-            <Icon name={"menu"} />
+            <Icon name={IconNames.drawer_menu_icon} />
         </MyTouchableOpacity>;
     }
 

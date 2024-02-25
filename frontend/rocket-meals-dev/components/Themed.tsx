@@ -20,6 +20,8 @@ import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {PlatformHelper} from "@/helper/PlatformHelper"; // Use the correct import for TextInput
+import {config} from "@gluestack-ui/config";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 type ThemeProps = {
   lightColor?: string;
@@ -41,6 +43,15 @@ export function Icon({name, size, family, ...props}: IconProps){
         useSize = size;
     }
   return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
+}
+
+const DEFAULT_TEXT_SIZE = "md";
+
+export function getFontSizeInPixelBySize(size: "sm" | "md" | "lg" | undefined){
+    let tokens = config.tokens;
+    let fontSize = tokens.fontSizes
+    let usedSize = size || DEFAULT_TEXT_SIZE;
+    return fontSize[usedSize];
 }
 
 type TextInputProps = {
@@ -78,7 +89,7 @@ export function TextInput(props: TextInputProps){
     defaultInputProps.variant = "outline";
   }
     if(defaultInputProps.size === undefined){
-        defaultInputProps.size = "md";
+        defaultInputProps.size = DEFAULT_TEXT_SIZE;
     }
 
     // set mask to password if isPassword is true
@@ -140,7 +151,7 @@ export function Heading({style,...props}: TextProps) {
     let mergedStyle = {color: textContrastColor}
 
     // @ts-ignore
-    return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
+    return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
 export function Text({style,...props}: TextProps) {
@@ -150,6 +161,7 @@ export function Text({style,...props}: TextProps) {
     // @ts-ignore
     let defaultStyle = {
         color: textContrastColor,
+        size: DEFAULT_TEXT_SIZE
     }
 
     if(isWeb){ // only for web since on mobile the text will break automatically

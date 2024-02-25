@@ -39,10 +39,10 @@ export enum BreakPoint {
  * Defines a type for a dictionary where 'sm' breakpoint is required and other breakpoints are optional.
  * @template T The type of values associated with each breakpoint.
  */
-type BreakPointsDictionary<T> = {
+export type BreakPointsDictionary<T> = {
     [P in Exclude<BreakPoint, BreakPoint.sm>]?: T;
 } & {
-    sm: T; // Making 'sm' required
+    [BreakPoint.sm]: T; // Making 'sm' required
 };
 
 /**

@@ -1,11 +1,12 @@
 import React, {FunctionComponent} from "react";
 import RenderHtml from 'react-native-render-html';
-import {View, Text} from "@/components/Themed";
+import {View, Text, getFontSizeInPixelBySize} from "@/components/Themed";
 
 import {useWindowDimensions} from "react-native";
 import {useTextContrastColor} from "@/components/Themed";
 
 import MarkdownIt from 'markdown-it';
+import {config} from "@gluestack-ui/config";
 
 interface AppState {
     darkmode?: boolean,
@@ -25,6 +26,8 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
     if(sourceContent===undefined && !props.hideSkeleton){
         return <Text>{"Loading"}</Text>
     }
+
+    console.log("config: ", config)
 
     /**
     let fontSize = theme["fontSizes"]["lg"]
@@ -77,10 +80,12 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
         }
     }
 
+    const fontSize = getFontSizeInPixelBySize("md");
+
     const defaultTextProps = {
         selectable: true,
         color: textColor,
-        //fontSize: fontSize+"px",
+        fontSize: fontSize+"px",
         fontStyle: "normal",
         //fontWeight: fontWeightNormal+"px", // as string because of iOS: NSNumber cannot be converted NSString
         //lineHeight: lineHeightNormal+"px", // as string because of iOS: NSNumber cannot be converted NSString

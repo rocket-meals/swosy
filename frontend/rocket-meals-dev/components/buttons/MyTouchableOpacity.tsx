@@ -14,6 +14,7 @@ import {useIsDebug} from "@/states/Debug";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {PressableStateCallbackType} from "react-native/Libraries/Components/Pressable/Pressable";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 
 // MyTouchableOpacityProps extends TouchableOpacityProps with
@@ -22,6 +23,7 @@ import {PressableStateCallbackType} from "react-native/Libraries/Components/Pres
 export type MyTouchableOpacityProps = {
     disabled?: boolean,
     accessibilityLabel: string,
+    tooltip?: string,
     accessibilityRole?: AccessibilityRole,
     accessibilityHint?: string,
     accessibilityState?: AccessibilityState,
@@ -94,20 +96,22 @@ export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLa
         </View>
     }
 
+    const tooltip = props?.tooltip || accessibilityLabel;
+
     return(
         // TODO: add tooltip support
         <Tooltip
             placement="top"
             trigger={(triggerProps) => {
                 return (
-                    <Pressable {...triggerProps} onPress={onPress} accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityRole={accessibilityRole ?? 'button'} accessibilityLabel={accessibilityLabel} style={getStyle} disabled={disabled}  {...props}>
+                    <Pressable {...triggerProps} onPress={onPress} accessibilityState={props?.accessibilityState} accessibilityHint={props?.accessibilityHint} accessibilityRole={accessibilityRole ?? MyAccessibilityRoles.Button} accessibilityLabel={accessibilityLabel} style={getStyle} disabled={disabled}  {...props}>
                         {children}
                     </Pressable>
                 )
             }}
         >
             <TooltipContent>
-                <TooltipText>{accessibilityLabel}</TooltipText>
+                <TooltipText>{tooltip}</TooltipText>
             </TooltipContent>
         </Tooltip>
     )

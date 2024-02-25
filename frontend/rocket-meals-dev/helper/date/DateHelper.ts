@@ -313,6 +313,12 @@ export class DateHelper {
         return tempDate;
     }
 
+    static addDays(date: Date, days: number){
+        // use addMinutes
+        let totalMinutesToAdd = days*24*60;
+        return DateHelper.addMinutes(date, totalMinutesToAdd);
+    }
+
     static formatToOfferDate(date: Date){
         let iso = date.toISOString();
         let trimmed = iso.slice(0, "YYYY-MM-DD".length);

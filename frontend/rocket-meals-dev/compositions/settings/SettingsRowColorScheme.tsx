@@ -70,10 +70,10 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
             icon: icon,
             active: active,
             accessibilityLabel: itemAccessibilityLabel,
-            onSelect: async (key: string) => {
+            onSelect: async (key: string, hide: () => void) => {
                 let nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
                 setColorSchemeOptionRaw(nextColorSchemeKey)
-                return true // close the actionsheet
+                hide()
             }
         })
     }

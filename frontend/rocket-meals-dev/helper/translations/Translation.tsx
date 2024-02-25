@@ -28,6 +28,40 @@ export class TranslationKeys {
   static nickname = createTranslationKey("nickname", "Spitzname")
   static account = createTranslationKey("account", "Account")
   static anonymous = createTranslationKey("anonymous", "Anonym")
+  static reset = createTranslationKey("reset", "Zurücksetzen")
+
+  static new = createTranslationKey("new", "Neu");
+
+  static animation = createTranslationKey("animation", "Animation");
+  static allergene = createTranslationKey("allergene", "Allergene");
+  static notification = createTranslationKey("notification", "Benachrichtigung");
+  static price_group = createTranslationKey("price_group", "Preisgruppe");
+  static under_construction = createTranslationKey("under_construction", "In Arbeit");
+  static not_allowed = createTranslationKey("not_allowed", "Nicht erlaubt");
+  static washing_machine = createTranslationKey("washing_machine", "Waschmaschine");
+  static active = createTranslationKey("active", "Aktiv");
+  static inactive = createTranslationKey("inactive", "Inaktiv");
+
+  static import = createTranslationKey("import", "Importieren");
+  static event = createTranslationKey("event", "Veranstaltung");
+  static create = createTranslationKey("create", "Erstellen");
+
+  static delete = createTranslationKey("delete", "Löschen");
+  static location = createTranslationKey("location", "Ort");
+  static title = createTranslationKey("title", "Titel");
+  static weekday = createTranslationKey("weekday", "Wochentag");
+  static startTime = createTranslationKey("startTime", "Startzeit");
+  static endTime = createTranslationKey("endTime", "Endzeit");
+  static color = createTranslationKey("color", "Farbe");
+  static cancel = createTranslationKey("cancel", "Abbrechen");
+
+  static courseTimetableDescriptionEmpty = createTranslationKey("courseTimetableDescriptionEmpty", "Du hast noch keinen **Stundenplan**?\n\nMit unserer Stundenplanfunktion kannst du dein Studium und deine Mahlzeiten wie ein Profi planen. Wenn du ein Profil hast, synchronisieren wir deinen Stundenplan automatisch.\n\n*Hinweis: Wir analysieren Profile mit Stundenplänen, um überfüllte Essensschlangen zu vermeiden - wir geben diese Daten nicht an Dritte weiter.*\n[Mehr darüber](https://nilsbaumgartner.de/homepage/2023/01/15/speiseprognose/)");
+
+  static nothing_found = createTranslationKey("nothing_found", "Nichts gefunden");
+
+  static seemsEmpty = createTranslationKey("seemsEmpty", "Es scheint leer zu sein");
+  static noFeedbacksFound = createTranslationKey("noFeedbacksFound", "Kein Feedback gefunden");
+  static somethingWentWrong = createTranslationKey("somethingWentWrong", "Etwas ist schief gelaufen");
 
   static date = createTranslationKey("date", "Datum");
   static year = createTranslationKey("year", "Jahr");
@@ -65,6 +99,8 @@ export class TranslationKeys {
   static canteen = createTranslationKey("canteen", "Mensa");
 
   static news = createTranslationKey("news", "News");
+
+  static course_timetable = createTranslationKey("course_timetable", "Stundenplan");
 
   static eating_habits = createTranslationKey("eating_habits", "Essgewohnheiten");
 

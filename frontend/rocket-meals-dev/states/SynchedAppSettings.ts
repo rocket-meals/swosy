@@ -48,6 +48,11 @@ export function useIsNewsEnabled(): boolean {
     return appSettings?.news_enabled || false;
 }
 
+export function useIsCourseTimetableEnabled(): boolean {
+    const [appSettings] = useSynchedAppSettings();
+    return appSettings?.course_timetable_enabled || false;
+}
+
 export function useIsUtilizationForecastEnabled(): boolean {
     const [appSettings] = useSynchedAppSettings();
     return appSettings?.utilization_forecast_enabled || false;
@@ -71,7 +76,7 @@ function getDemoAppSettings(): AppSettings {
     cashregisters_parsing_last_date: "",
     cashregisters_parsing_status: "",
     cashregisters_settings: "",
-    course_timetable_enabled: false,
+    course_timetable_enabled: true,
     course_timetable_settings: "",
     date_created: "",
     date_privacy_policy_updated: "",

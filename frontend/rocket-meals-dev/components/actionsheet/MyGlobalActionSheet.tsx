@@ -10,7 +10,7 @@ import {
 } from "@gluestack-ui/themed";
 import React from "react";
 import {DimensionValue, KeyboardAvoidingView, Platform} from "react-native";
-import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
+import {Heading, Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
 import {useSyncStateRaw} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {
@@ -40,7 +40,7 @@ export type MyGlobalActionSheetItem = {
     renderLeftIcon?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     icon?: string,
     active?: boolean,
-    onSelect?: (key: string) => Promise<boolean | void> | undefined // return false to not close the actionsheet
+    onSelect?: (key: string, hide: () => void) => void // return false to not close the actionsheet
     // onSelect: (key: string) => boolean | void // return true to close the actionsheet
 }
 
@@ -151,14 +151,9 @@ export const MyGlobalActionSheet = (props: any) => {
                 let onSelectMethod: any = undefined
                 if(item.onSelect){
                     onSelectMethod = async () => {
-                        let closeActionsheet = true;
                         if (!!item.onSelect) {
-                            let onSelectResult = await item.onSelect(item.key)
-                            if (onSelectResult === false) {
-                                closeActionsheet = false;
-                            }
-                        }
-                        if (closeActionsheet) {
+                            await item.onSelect(item.key, hide)
+                        } else {
                             hide()
                         }
                     }
@@ -224,7 +219,7 @@ export const MyGlobalActionSheet = (props: any) => {
                             }}
                         />
                     </ActionsheetDragIndicatorWrapper>
-                    <Text>{title}</Text>
+                    <Heading>{title}</Heading>
                     {content}
                 </ActionsheetContent>
             </Actionsheet>
