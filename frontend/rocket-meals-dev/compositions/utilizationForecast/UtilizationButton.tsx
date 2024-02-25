@@ -22,7 +22,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
     const accessibilityLabel = useTranslation(TranslationKeys.utilization_forecast)
     const tooltip = useTranslation(TranslationKeys.utilization_forecast)
     const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
-    const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[]>([])
+    const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[] | undefined>(undefined)
     const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
     const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();

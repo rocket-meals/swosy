@@ -254,6 +254,11 @@ export class DateHelper {
         return firstDayOfNextMonth;
     }
 
+    static getAmountDaysDifference(biggerDate: Date, smallerDate: Date){
+        let diff = biggerDate.getTime() - smallerDate.getTime();
+        return diff/(1000*60*60*24);
+    }
+
     static getDatesOfAmountNextDaysIncludingToday(startDate: Date, amount: number): [Date, Date][]{
         let dates: [Date, Date][] = [];
         let startOfTheDay = new Date(startDate); // copy the date

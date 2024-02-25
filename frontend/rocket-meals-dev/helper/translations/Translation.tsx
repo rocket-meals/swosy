@@ -32,6 +32,8 @@ export class TranslationKeys {
 
   static new = createTranslationKey("new", "Neu");
 
+  static no_data_currently_calculating = createTranslationKey("no_data_currently_calculating", "Keine Daten, werden gerade berechnet");
+
   static animation = createTranslationKey("animation", "Animation");
   static allergene = createTranslationKey("allergene", "Allergene");
   static notification = createTranslationKey("notification", "Benachrichtigung");

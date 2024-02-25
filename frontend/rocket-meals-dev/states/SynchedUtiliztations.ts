@@ -1,9 +1,10 @@
 import {UtilizationsEntries, UtilizationsGroups} from "@/helper/database/databaseTypes/types";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {DateHelper} from "@/helper/date/DateHelper";
 
-export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, date: Date, isDemo: boolean): Promise<UtilizationsEntries[]> {
+export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, date: Date, isDemo: boolean): Promise<UtilizationsEntries[] | undefined> {
 
-    let utilizationEntries: UtilizationsEntries[] = [];
+    let utilizationEntries: UtilizationsEntries[] | undefined = undefined;
     if(isDemo){
         utilizationEntries = getDemoUtilizationEntries(date);
         return utilizationEntries;
@@ -42,7 +43,14 @@ export async function loadUtilizationEntriesRemote(utilizationGroup: Utilization
 }
 
 
-function getDemoUtilizationEntries(date: Date) {
+function getDemoUtilizationEntries(date: Date): UtilizationsEntries[] | undefined {
+    let now = new Date();
+
+    // if date is further than 7 days in the future return undefined
+    if(DateHelper.getAmountDaysDifference(date, now) > 7){
+        return undefined;
+    }
+
     let utilizationEntries: UtilizationsEntries[] = [];
 
     // if saturday or sunday return empty array

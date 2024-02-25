@@ -6,13 +6,9 @@ import {CanteenGridList} from "@/compositions/resourceGridList/canteenGridList";
 import React from "react";
 import {UtilizationForecast} from "@/compositions/utilizationForecast/UtilizationForecast";
 
-export function useGlobalActionSheetUtilizationForecast(utilizationEntires: UtilizationsEntries[]){
+export function useGlobalActionSheetUtilizationForecast(utilizationEntires: UtilizationsEntries[] | undefined){
 
     const translation_title = useTranslation(TranslationKeys.utilization_forecast)
-    const label = translation_title
-
-
-    let items: MyGlobalActionSheetItem[] = [];
 
     const config = {
         onCancel: async () => {
@@ -21,9 +17,8 @@ export function useGlobalActionSheetUtilizationForecast(utilizationEntires: Util
         visible: true,
         title: translation_title,
         renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-            return <UtilizationForecast utilizationEntires={utilizationEntires} />
-        },
-        items: items
+            return <UtilizationForecast key={JSON.stringify(utilizationEntires)} utilizationEntires={utilizationEntires} />
+        }
     }
 
     const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()

@@ -2,20 +2,25 @@ import React from "react";
 import {UtilizationDictData, UtilizationForecastRow} from "./UtilizationForecastRow";
 import {UtilizationsEntries} from "@/helper/database/databaseTypes/types";
 import {DateHelper} from "@/helper/date/DateHelper";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
 
 export type UtilizationForecastProps = {
-	utilizationEntires: UtilizationsEntries[]
+	utilizationEntires: UtilizationsEntries[] | undefined
 }
 export const UtilizationForecast = (props: UtilizationForecastProps) => {
 
 	const translation_opens_at = useTranslation(TranslationKeys.opens_at)
 	const translation_closed_after = useTranslation(TranslationKeys.closed_after)
 
+	const translation_no_data_currently_calculating = useTranslation(TranslationKeys.no_data_currently_calculating);
+
 	let utilization: UtilizationDictData = {};
 
 	let utilizationEntries = props.utilizationEntires;
+
+
 	let sortedEntries: UtilizationsEntries[] = []
 	if (utilizationEntries) {
 		sortedEntries = utilizationEntries.sort((a, b) => {
@@ -51,9 +56,27 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 		}
 	}
 
+	let entriesUndefined = !utilizationEntries
+	let emptyListOfEntries = utilizationEntries && utilizationEntries.length === 0
+	let content = <UtilizationForecastRow data={utilization} translation_closedAfter={translation_closed_after} translation_openedFrom={translation_opens_at} />
+	if (entriesUndefined || emptyListOfEntries) { // TODO: maybe add another animation for emptyListOfEntries
+		content = (
+			<View style={{
+				width: "100%",
+				alignItems: "center",
+				justifyContent: "center"
+			}}>
+				<Text>{
+					translation_no_data_currently_calculating
+				}</Text>
+				<AnimationThinking />
+			</View>
+		)
+	}
+
 	return(
 		<View style={{width: "100%"}}>
-			<UtilizationForecastRow data={utilization} translation_closedAfter={translation_closed_after} translation_openedFrom={translation_opens_at} />
+			{content}
 		</View>
 	)
 }
