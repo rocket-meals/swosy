@@ -94,7 +94,6 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
         for(let i=0; i<keys.length; i++){
             let key = keys[i];
             let event = timetableEvents[key];
-            console.log("Event: "+key, event)
             if(!!event){
                 let parsedEvent = getEvent(event.id, event.start, event.end, event.weekday);
                 events.push(parsedEvent)

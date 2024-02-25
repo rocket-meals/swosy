@@ -2,9 +2,10 @@ import React, {Dispatch, FunctionComponent, SetStateAction, useEffect, useRef, u
 import {SettingsRowProps} from "./SettingsRow";
 import {TextInput, View} from "@/components/Themed";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
-import {MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
+import {MyGlobalActionSheetConfig, MyGlobalActionSheetItem} from "@/components/actionsheet/MyGlobalActionSheet";
 import {MyButton} from "@/components/buttons/MyButton";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
+import {IconNames} from "@/constants/IconNames";
 
 interface MyContentProps {
     initialValue: string | undefined | null,
@@ -90,12 +91,12 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
     )
 }
 
-interface AppState {
+interface SettingsRowTextEditSpeicificProps {
     accessibilityLabel: string,
     placeholder?: string,
     labelLeft: string,
     // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
-    onSave: (value: string | undefined | null) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
+    onSave: (value: string | undefined | null, hide?: () => void) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
     onTrackColor?: string,
     debug?: boolean,
     value?: string,
@@ -103,7 +104,9 @@ interface AppState {
     description?: string,
 }
 
-export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, labelLeft, rightIcon,...props}) => {
+export type SettingsRowTextEditProps = SettingsRowProps & SettingsRowTextEditSpeicificProps;
+
+export const SettingsRowTextEdit = ({accessibilityLabel, labelLeft, rightIcon,...props}: SettingsRowTextEditProps) => {
 
     const title = labelLeft;
 
@@ -116,35 +119,39 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
         labelRight = props.labelRight
     }
 
-    let items: MyGlobalActionSheetItem[] = [];
-
-
     async function onSaveChange(finalValue: string | undefined | null, hide: () => void){
         //console.log("Save Final Value: ", finalValue);
         let result: boolean = true;
+        // check if onSave is a function with one or two parameters
+        let hasTwoParameters = false;
+        if(props.onSave.length===2){
+            hasTwoParameters = true;
+        }
+
         if(props.onSave){
             //console.log("Has onSave")
-            let resultFromOnSave = await props.onSave(finalValue);
+            let resultFromOnSave = await props.onSave(finalValue, hide);
             //console.log("Result from onSave: ", resultFromOnSave);
             if(resultFromOnSave===false){
                 result = false;
             }
         }
-        if(result){
-            setInputValue(finalValue)
+
+        setInputValue(initialValue)
+
+        if(!hasTwoParameters && result){
             hide()
-        } else {
-            setInputValue(initialValue)
         }
     }
 
-    items.push({
-        key: "test",
-        label: labelLeft,
-        icon: "test",
-        active: false,
-        accessibilityLabel: "test",
-        render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+    const config: MyGlobalActionSheetConfig = {
+        onCancel: async () => {
+            setInputValue(initialValue)
+          return true;
+        },
+        visible: true,
+        title: title,
+        renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
             // Use the custom context provider to provide the input value and setter
             return <MyContent
                 initialValue={initialValue}
@@ -157,22 +164,12 @@ export const SettingsRowTextEdit: FunctionComponent<AppState & SettingsRowProps>
                 lighterOrDarkerTextColor={lighterOrDarkerTextColor}
                 hide={hide} />
         }
-    })
 
-
-    const config = {
-        onCancel: async () => {
-            setInputValue(initialValue)
-          return true;
-        },
-        visible: true,
-        title: title,
-        items: items
     }
 
     let usedIconRight = rightIcon;
     if(usedIconRight===undefined){
-        usedIconRight = "pencil"
+        usedIconRight = IconNames.edit
     }
 
     return(

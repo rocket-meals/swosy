@@ -7,6 +7,9 @@ import {
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {View, Text} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {AccessibilityRole} from "react-native";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 interface AppState {
     style: any,
@@ -19,6 +22,9 @@ export const CourseTimetableItemCard: FunctionComponent<AppState> = (props) => {
 
     let item: CourseTimetableEventType = props.item;
     const id = item?.id || "";
+
+    const translationEvent = useTranslation(TranslationKeys.event);
+    const translationEdit = useTranslation(TranslationKeys.edit);
 
     const [timetableEvents, setTimetableEvents] = useCourseTimetableEvents();
     const event = timetableEvents[id];
@@ -49,12 +55,14 @@ export const CourseTimetableItemCard: FunctionComponent<AppState> = (props) => {
 
     const title = getTitle(event, titleIntelligent) || location;
 
+    const accessibilityLabel = translationEvent + ": "+ translationEdit + ": " + title + " " + headerText;
+    const tooltip = translationEvent + ": "+ translationEdit
 
     return (
         <View style={{
             ...style, // apply calculated styles, be careful not to override these accidentally (unless you know what you are doing)
         }}>
-            <MyTouchableOpacity accessibilityLabel={title} style={{height: "100%", width: "100%"}} onPress={() => {
+            <MyTouchableOpacity tooltip={tooltip} accessibilityLabel={accessibilityLabel} style={{height: "100%", width: "100%"}} onPress={() => {
                 if(props.onPress) {
                     props.onPress(item);
                 }

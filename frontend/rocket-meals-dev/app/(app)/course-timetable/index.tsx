@@ -34,13 +34,14 @@ export default function CourseTimetableScreen() {
     const backgroundColor = useViewBackgroundColor()
 
     const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday()
-    const [timetableEvents, setTimetableEvents] = useCourseTimetableEvents();
     const [startTime, setStartTime] = usePersonalCourseTimetableTimeStart();
     const [endTime, setEndTime] = usePersonalCourseTimetableTimeEnd();
     const [amountDaysOnScreen, setAmountDaysOnScreen] = usePersonalCourseTimetableAmountDaysOnScreen();
+    const [timetableEvents, setTimetableEvents, addNewCourseTimetableEvent, removeCourseTimetableEvent] = useCourseTimetableEvents();
 
     const translation_event = useTranslation(TranslationKeys.event)
     const translation_create = useTranslation(TranslationKeys.create)
+    const translation_edit = useTranslation(TranslationKeys.edit)
 
     const translationCreateEvent = translation_event+" "+translation_create
 
@@ -71,24 +72,80 @@ export default function CourseTimetableScreen() {
         }
     }
 
+    function renderTimetableEventForEditOrCreate(item?: BaseCourseTimetableEvent | CourseTimetableEventType){
+        return (
+            <MyScrollView>
+                <CourseTimetableEvent item={item}
+                                      handleEditExisting={async (usedEvent: CourseTimetableEventType, hide: () => void) => {
+                                          console.log(usedEvent)
+                                          // update the event in the timetableEvents with the id
+                                          timetableEvents[usedEvent.id] = usedEvent;
+                                          await setTimetableEvents(timetableEvents)
+                                          handlePressOnEvent(usedEvent);
+                                      }}
+                                      handleEditTemplate={async (usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
+                                          handlePressOnEvent(usedEvent);
+                                      }}
+                                      handleDelete={async (itemToDelete: CourseTimetableEventType) => {
+                                          console.log("Delete")
+                                          console.log(itemToDelete)
+                                          await removeCourseTimetableEvent(itemToDelete)
+                                          hide()
+                                      }}
+                                      handleCreateNew={async (usedEvent: BaseCourseTimetableEvent) => {
+                                          console.log("Save")
+                                          console.log(usedEvent)
+                                          await addNewCourseTimetableEvent(usedEvent)
+                                          hide()
+                                      }}
+                />
+            </MyScrollView>
+        )
+    }
+
     function handlePressOnEvent(item: BaseCourseTimetableEvent){
         const configShowOnPressEvent: MyGlobalActionSheetConfig = {
             onCancel: undefined,
             visible: true,
-            title: "Event Item",
+            title: translation_event + ": " + translation_edit,
             renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-                return (
-                    <MyScrollView>
-                        <CourseTimetableEvent item={item} handleEdit={(usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
-                            console.log("usedEvent")
-                            console.log(usedEvent)
-                            handlePressOnEvent(usedEvent);
-                        }} />
-                    </MyScrollView>
-                );
+                return renderTimetableEventForEditOrCreate(item)
             }
         }
         show(configShowOnPressEvent);
+    }
+
+    function handlePressCreateEvent(){
+        const configShowCreateEvent: MyGlobalActionSheetConfig = {
+            onCancel: undefined,
+            visible: true,
+            title: translation_event + ": " + translation_create,
+            renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+                return renderTimetableEventForEditOrCreate(undefined)
+            }
+        }
+        show(configShowCreateEvent);
+    }
+
+    const importProviders: any[] = []
+
+    if(isDemo){
+        importProviders.push({
+            key: "demo",
+            label: "Demo",
+            icon: IconNames.demo_icon_on,
+            config: configShowDemoImportProvider,
+        })
+    }
+
+    const hasImportProviders = importProviders.length > 0;
+
+    const renderedImportProviders: React.ReactNode[] = []
+    for(let i=0; i<importProviders.length; i++){
+        let importProvider = importProviders[i];
+        renderedImportProviders.push(
+            <SettingsRowActionsheet key={importProvider.key} accessibilityLabel={importProvider.label} config={importProvider.config} labelLeft={importProvider.label} leftIcon={importProvider.icon} />
+        )
     }
 
     const configShowSelectImportProvider: MyGlobalActionSheetConfig = {
@@ -96,24 +153,7 @@ export default function CourseTimetableScreen() {
         visible: true,
         title: "Select Import Provider",
         renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-            const importProviders: any[] = []
 
-            if(isDemo){
-                importProviders.push({
-                    key: "demo",
-                    label: "Demo",
-                    icon: IconNames.demo_icon_on,
-                    config: configShowDemoImportProvider,
-                })
-            }
-
-            const renderedImportProviders = []
-            for(let i=0; i<importProviders.length; i++){
-                let importProvider = importProviders[i];
-                renderedImportProviders.push(
-                    <SettingsRowActionsheet key={importProvider.key} accessibilityLabel={importProvider.label} config={importProvider.config} labelLeft={importProvider.label} leftIcon={importProvider.icon} />
-                )
-            }
 
             return (
                     <MyScrollView>
@@ -147,25 +187,39 @@ export default function CourseTimetableScreen() {
         setTimetableEvents(newEvents)
     }
 
-    function renderActions(){
+    function renderImportAction(){
         let title_import = translation_import
+
+        if(hasImportProviders) {
+            return (
+                <>
+                    <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_import_icon}
+                              accessibilityLabel={title_import}
+                              text={title_import}
+                              onPress={() => {
+                                  show(configShowSelectImportProvider)
+                              }}
+                    />
+                    <View style={{
+                        width: 10
+                    }}/>
+                </>
+            )
+        } else {
+            return null;
+        }
+    }
+
+    function renderActions(){
+
 
         return(
             <View style={{width: "100%", flexDirection: "row", marginTop: 10, marginHorizontal: 10}}>
-                <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"calendar-import"}
-                          accessibilityLabel={title_import}
-                          text={title_import}
-                          onPress={() => {
-                              show(configShowSelectImportProvider)
-                          }}
-                />
-                <View style={{
-                    width: 10
-                }} />
-                    <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={"calendar-plus"} accessibilityLabel={translationCreateEvent} onPress={() => {
-                        console.log("Create event")
+                {renderImportAction()}
+                    <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={IconNames.course_timetable_event_create_icon} accessibilityLabel={translationCreateEvent} onPress={() => {
+                        handlePressCreateEvent()
                     }}
-                              text={translationCreateEvent}
+                          text={translationCreateEvent}
                     />
             </View>
         )

@@ -30,6 +30,8 @@ export class TranslationKeys {
   static anonymous = createTranslationKey("anonymous", "Anonym")
   static reset = createTranslationKey("reset", "Zurücksetzen")
 
+  static new = createTranslationKey("new", "Neu");
+
   static animation = createTranslationKey("animation", "Animation");
   static allergene = createTranslationKey("allergene", "Allergene");
   static notification = createTranslationKey("notification", "Benachrichtigung");

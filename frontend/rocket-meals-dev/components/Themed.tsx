@@ -21,6 +21,7 @@ import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {PlatformHelper} from "@/helper/PlatformHelper"; // Use the correct import for TextInput
 import {config} from "@gluestack-ui/config";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 type ThemeProps = {
   lightColor?: string;
@@ -150,7 +151,7 @@ export function Heading({style,...props}: TextProps) {
     let mergedStyle = {color: textContrastColor}
 
     // @ts-ignore
-    return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
+    return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
 export function Text({style,...props}: TextProps) {

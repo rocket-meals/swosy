@@ -17,18 +17,33 @@ export type BaseCourseTimetableEvent = {
     weekday: Weekday
 }
 
+export function getNewCourseTimetableEvent(title?: string): BaseCourseTimetableEvent {
+    return {
+        title: title || "New Event",
+        end: "10:00",
+        start: "08:00",
+        color: "#FF0000",
+        weekday: Weekday.MONDAY
+    };
+}
+
 // Derive the type for new events where 'id' is optional
 export type CourseTimetableEventNewType = BaseCourseTimetableEvent;
 
 // Derive the type for existing events where 'id' is required
 export type CourseTimetableEventType = Required<Pick<BaseCourseTimetableEvent, 'id'>> & BaseCourseTimetableEvent;
 
+// Type guard function to check if an object is a CourseTimetableEventType
+export function isCourseTimetableEventType(obj: any): obj is CourseTimetableEventType {
+    return obj && typeof obj.id === 'string'; // Add more checks as necessary
+}
+
 
 export type CourseTimetableDictType = {
     [id: string]: CourseTimetableEventType
 }
 
-export function useCourseTimetableEvents(): any{
+export function useCourseTimetableEvents(): [CourseTimetableDictType, (value: CourseTimetableDictType) => Promise<boolean>, (partialEvent: CourseTimetableEventNewType) => Promise<boolean>, (item: CourseTimetableEventType) => Promise<boolean>]{
     const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableDictType>(PersistentStore.course_timetable)
     let usedCourseTimetable = courseTimetableRaw || {};
 
@@ -63,8 +78,8 @@ export function useCourseTimetableEvents(): any{
         return success;
     }
 
-    const removeCourseTimetableEvent = async (id: string) => {
-        delete usedCourseTimetable[id];
+    const removeCourseTimetableEvent = async (item: CourseTimetableEventType) => {
+        delete usedCourseTimetable[item.id];
         let success = await setCourseTimetable(usedCourseTimetable);
         return success;
     }
