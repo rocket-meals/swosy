@@ -35,6 +35,12 @@ async function loadProfileRemoteByProfileId(id: string) {
     });
 }
 
+export async function deleteProfileRemote(id: string | number){
+    const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
+    await profileCollectionHelper.deleteItem(id);
+
+}
+
 export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
     console.log("loadProfileRemote");
     console.log("user", user)

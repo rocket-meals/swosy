@@ -4,6 +4,7 @@
 export enum IconNames {
   delete_icon = "delete",
   save_icon = "content-save",
+  confirm_icon = "check",
   drawer_menu_icon = "menu",
   canteen_icon = "warehouse",
   foodoffers_icon = "silverware-variant",
@@ -20,6 +21,7 @@ export enum IconNames {
   translate_icon = "translate",
   profile_nickname_icon = "account",
   settings_user_account_icon = "badge-account-horizontal",
+  user_account_delete_icon = "account-remove",
   logout_icon = "logout",
   sign_in_icon = "login",
   sign_in_with_mail_icon = "account-tie",
@@ -40,7 +42,6 @@ export enum IconNames {
   chevron_left_icon = "chevron-left",
 
   first_weekday_icon = "calendar-week",
-  first_weekday_system_icon = "autorenew",
   course_timetable_event_create_icon = "calendar-plus",
   identifier = "identifier",
   edit = "pencil",
@@ -48,4 +49,5 @@ export enum IconNames {
   calendar_import_icon = "calendar-import",
   time_start_icon = "clock-start",
   time_end_icon = "clock-end",
+  cancel_icon = "close"
 }

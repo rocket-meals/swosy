@@ -12,6 +12,7 @@ import {
     ReadProviderOutput,
     readProviders, readRoles,
     rest,
+    deleteUser,
     RestClient,
     serverInfo,
     ServerInfoOutput
@@ -278,8 +279,18 @@ export class ServerAPI {
 
     static async getMe(): Promise<any>{
         let directus = ServerAPI.getClient();
-        let me = await directus.request(readMe())
+        let me = await directus.request(readMe(
+            {
+                fields: ["*"]
+            }
+        ))
+        console.log("me", me)
         return me;
+    }
+
+    static async deleteMe(){
+        let me = await ServerAPI.getMe();
+        await ServerAPI.getClient().request(deleteUser(me.id));
     }
 
 }
