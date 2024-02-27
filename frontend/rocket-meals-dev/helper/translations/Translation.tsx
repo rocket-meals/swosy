@@ -58,6 +58,7 @@ export class TranslationKeys {
   static endTime = createTranslationKey("endTime", "Endzeit");
   static color = createTranslationKey("color", "Farbe");
   static cancel = createTranslationKey("cancel", "Abbrechen");
+  static for_example = createTranslationKey("for_example", "z.B.");
 
   static courseTimetableDescriptionEmpty = createTranslationKey("courseTimetableDescriptionEmpty", "Du hast noch keinen **Stundenplan**?\n\nMit unserer Stundenplanfunktion kannst du dein Studium und deine Mahlzeiten wie ein Profi planen. Wenn du ein Profil hast, synchronisieren wir deinen Stundenplan automatisch.\n\n*Hinweis: Wir analysieren Profile mit Stundenplänen, um überfüllte Essensschlangen zu vermeiden - wir geben diese Daten nicht an Dritte weiter.*\n[Mehr darüber](https://nilsbaumgartner.de/homepage/2023/01/15/speiseprognose/)");
 

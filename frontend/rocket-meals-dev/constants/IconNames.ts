@@ -40,6 +40,7 @@ export enum IconNames {
 
   chevron_right_icon = "chevron-right",
   chevron_left_icon = "chevron-left",
+  color_edit_icon = "palette",
 
   first_weekday_icon = "calendar-week",
   course_timetable_event_create_icon = "calendar-plus",

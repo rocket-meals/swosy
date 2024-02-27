@@ -20,6 +20,7 @@ import {
 import {useProjectColor} from "@/states/ProjectInfo";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 
 export type MyGlobalActionSheetConfig = {
@@ -220,7 +221,9 @@ export const MyGlobalActionSheet = (props: any) => {
                         />
                     </ActionsheetDragIndicatorWrapper>
                     <Heading>{title}</Heading>
-                    {content}
+                    <MySafeAreaView>
+                        {content}
+                    </MySafeAreaView>
                 </ActionsheetContent>
             </Actionsheet>
     )
