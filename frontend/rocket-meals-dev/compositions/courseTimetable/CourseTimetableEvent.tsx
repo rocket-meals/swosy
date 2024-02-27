@@ -15,6 +15,7 @@ import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
 import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
 import {MyButton} from "@/components/buttons/MyButton";
 import {SettingsRowTimeEdit} from "@/components/settings/SettingsRowTimeEdit";
+import {SettingsRowColorEdit} from "@/components/settings/SettingsRowColorEdit";
 
 interface AppState {
 	item?: BaseCourseTimetableEvent | CourseTimetableEventType
@@ -106,7 +107,12 @@ export const CourseTimetableEvent: FunctionComponent<AppState> = (props) => {
 	function renderColorEditRow(field, description, icon){
 		let initialColor = usedEvent?.[field];
 
-		return null
+		return (
+			<SettingsRowColorEdit allowCustomColor={false} leftIcon={icon} accessibilityLabel={translationEvent+": "+description} value={initialColor} labelLeft={description} onSave={(newValue, hide) => {
+				usedEvent[field] = newValue;
+				handleEdit(usedEvent, hide);
+			}} />
+		)
 	}
 
 	async function saveNewEvent(){
@@ -125,7 +131,7 @@ export const CourseTimetableEvent: FunctionComponent<AppState> = (props) => {
 
 	content.push(renderTextEditRow("title", translationTitle));
 	content.push(renderTextEditRow("location", translationLocation));
-	content.push(renderColorEditRow("color", translationColor, "color"));
+	content.push(renderColorEditRow("color", translationColor, IconNames.color_edit_icon));
 	content.push(renderTimeEditRow("start", translationStart, IconNames.time_start_icon));
 	content.push(renderTimeEditRow("end", translationEnd, IconNames.time_end_icon));
 	content.push(renderWeekdayEditRow());
