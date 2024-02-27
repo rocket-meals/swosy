@@ -16,6 +16,7 @@ import {useSynchedPermissionsDict} from "@/states/SynchedPermissions";
 import {LoadingScreenDatabase} from "@/compositions/loadingScreens/LoadingScreenDatabase";
 import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
 import {useSynchedNewsDict} from "@/states/SynchedNews";
+import {useSynchedDevices} from "@/states/SynchedDevices";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -24,7 +25,7 @@ export {
 
 export interface RootAuthUserFlowLoaderProps {
   children?: React.ReactNode;
-  syncForUserId: number | undefined
+  syncForUserId: string | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
@@ -32,7 +33,7 @@ export interface RootAuthUserFlowLoaderInnerProps {
   setSyncComplete: (finished: boolean) => void
 }
 
-export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) => {
+export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInnerProps) => {
 
   //console.log("AuthFlowUserCheck")
 
@@ -62,12 +63,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
   const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 
+  let synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
-  let synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
-
-  function addSynchedResource(label: string, resource: any, lastUpdate: number | undefined){
+  function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined){
     registeredItemsToLoad.push(resource);
-    synchedResources[label] = {
+    synchedResourcesToDownloadFirst[label] = {
       data: resource,
       lastUpdate: lastUpdate
     }
@@ -76,17 +76,17 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
   /**
    * Needs to be called before the useEffect
    */
-  addSynchedResource("app_settings", app_settings, lastUpdateAppSettings)
-  addSynchedResource("canteens", canteensDict, lastUpdateCanteens)
-  addSynchedResource("buildings", buildingsDict, lastUpdateBuildings)
-  addSynchedResource("profile", profile, lastUpdateProfile);
-  addSynchedResource("wikis", wikisDict, lastUpdateWikis)
-  addSynchedResource("languages", languagesDict, lastUpdateLanguages)
-  addSynchedResource("markings", markingsDict, lastUpdateMarkings);
-  addSynchedResource("apartments", apartmentsDict, lastUpdateApartments);
-  addSynchedResource("roles", rolesDict, lastUpdateRoles);
-  addSynchedResource("permissions", permissionsDict, lastUpdatePermissions);
-    addSynchedResource("news", newsDict, lastUpdateNews);
+  addSynchedResourceToDownloadFirst("app_settings", app_settings, lastUpdateAppSettings)
+  addSynchedResourceToDownloadFirst("canteens", canteensDict, lastUpdateCanteens)
+  addSynchedResourceToDownloadFirst("buildings", buildingsDict, lastUpdateBuildings)
+  addSynchedResourceToDownloadFirst("profile", profile, lastUpdateProfile);
+  addSynchedResourceToDownloadFirst("wikis", wikisDict, lastUpdateWikis)
+  addSynchedResourceToDownloadFirst("languages", languagesDict, lastUpdateLanguages)
+  addSynchedResourceToDownloadFirst("markings", markingsDict, lastUpdateMarkings);
+  addSynchedResourceToDownloadFirst("apartments", apartmentsDict, lastUpdateApartments);
+  addSynchedResourceToDownloadFirst("roles", rolesDict, lastUpdateRoles);
+  addSynchedResourceToDownloadFirst("permissions", permissionsDict, lastUpdatePermissions);
+  addSynchedResourceToDownloadFirst("news", newsDict, lastUpdateNews);
 
   function getDependencies(): DependencyList {
     return registeredItemsToLoad;
@@ -96,11 +96,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
 
   function checkSynchedResources(){
     //console.log("--- checkSynchedResources ---");
-    let synchedResourceKeys = Object.keys(synchedResources)
+    let synchedResourceKeys = Object.keys(synchedResourcesToDownloadFirst)
     for(let i = 0; i < synchedResourceKeys.length; i++){
       let isResourceSynched = false;
       let synchedResourceKey = synchedResourceKeys[i]
-      let synchedResourceInformation = synchedResources[synchedResourceKey]
+      let synchedResourceInformation = synchedResourcesToDownloadFirst[synchedResourceKey]
       let synchedResource = synchedResourceInformation?.data
       let synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
       //console.log("synchedResourceKey", synchedResourceKey)
@@ -184,11 +184,11 @@ export const RootSyncDatabaseInner = (props: RootAuthUserFlowLoaderInnerProps) =
     }
   }, itemsToLoad);
 
-  let key = JSON.stringify(synchedResources);
-  return <LoadingScreenDatabase nowInMs={nowInMs} key={key} synchedResources={synchedResources} />
+  let key = JSON.stringify(synchedResourcesToDownloadFirst);
+  return <LoadingScreenDatabase text={"Download"} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
 }
 
-export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
+export const RootSyncDatabaseDownload = (props: RootAuthUserFlowLoaderProps) => {
 
   const isServerOffline = useIsServerOffline()
 
@@ -209,7 +209,7 @@ export const RootSyncDatabase = (props: RootAuthUserFlowLoaderProps) => {
   }
 
   if(!syncComplete){
-    return <RootSyncDatabaseInner setSyncComplete={setSyncComplete} />
+    return <RootSyncDatabaseDownloadInner setSyncComplete={setSyncComplete} />
   }
 
     return(

@@ -14,7 +14,7 @@ import {RootServerStatusFlowLoader} from "@/components/rootLayout/RootServerStat
 import {RootAuthUserFlowLoader} from "@/components/rootLayout/RootAuthUserFlowLoader";
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from "@/components/rootLayout/RootThemeProvider";
-import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
+import {RootSyncDatabaseDownload} from "@/components/rootLayout/RootSyncDatabaseDownload";
 import Slot = Navigator.Slot;
 import {SecureStorageHelperAbstractClass} from "@/helper/storage/SecureStorageHelperAbstractClass";
 import {SecureStorageHelper} from "@/helper/storage/SecureStorageHelper";

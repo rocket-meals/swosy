@@ -17,10 +17,11 @@ import {
   useCurrentUser,
   useCurrentUserRaw
 } from "@/states/User";
-import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
+import {RootSyncDatabaseDownload} from "@/components/rootLayout/RootSyncDatabaseDownload";
 
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 // https://docs.expo.dev/versions/latest/sdk/notifications/#handle-push-notifications-with-navigation
 function useNotificationObserver() {
@@ -57,7 +58,9 @@ export interface RootNotificationDeepLinkProps {
   children?: React.ReactNode;
 }
 export const RootNotificationDeepLink = (props: RootNotificationDeepLinkProps) => {
+  if(PlatformHelper.isSmartPhone()){
     useNotificationObserver();
+  }
 
   // Show notification when app is in foreground
   // https://stackoverflow.com/questions/56689701/expo-dont-show-notification-if-app-is-open-in-foreground

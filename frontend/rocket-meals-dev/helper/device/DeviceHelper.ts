@@ -1,5 +1,10 @@
-import {useWindowDimensions} from "react-native";
+import {Dimensions, PixelRatio, useWindowDimensions} from "react-native";
 import {EdgeInsets, useSafeAreaInsets} from "react-native-safe-area-context";
+import {Devices} from "@/helper/database/databaseTypes/types";
+import * as DeviceInfo from 'expo-device';
+import {DeviceType} from 'expo-device';
+import {PlatformHelper} from "@/helper/PlatformHelper";
+import {NotificationHelper} from "@/helper/notification/NotificationHelper";
 
 /**
  * Defines the breakpoints for responsive design.
@@ -101,4 +106,40 @@ export function useInsets(): EdgeInsets {
         bottom: insets.bottom,
         left: insets.left,
     };
+}
+
+
+export async function getDeviceInformation(): Promise<Partial<Devices>>{ // Promise<DeviceInformationType>
+    const windowWidth = Dimensions.get('screen').width;
+    const windowHeight = Dimensions.get('screen').height;
+    const windowScale = Dimensions.get('screen').scale;
+    const isSimulator = !DeviceInfo.isDevice
+    const isTablet = DeviceInfo.deviceType === DeviceType.TABLET;
+    const brand = DeviceInfo.brand;
+    const platform = PlatformHelper.getPlatformDisplayName();
+    const systemVersion = DeviceInfo.osVersion;
+    let isLandscape = windowWidth > windowHeight;
+    if(PlatformHelper.isWeb()){
+        isLandscape = windowWidth > windowHeight;
+    }
+
+    let pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
+
+    return {
+        display_width: windowWidth,
+        display_height: windowHeight,
+        display_scale: windowScale,
+        display_pixelratio: PixelRatio.get(),
+        display_fontscale: PixelRatio.getFontScale(),
+        is_simulator: isSimulator,
+        is_tablet: isTablet,
+        is_landscape: isLandscape,
+        brand: brand,
+        platform: platform,
+        system_version: systemVersion,
+        is_ios: PlatformHelper.isIOS(),
+        is_android: PlatformHelper.isAndroid(),
+        is_web: PlatformHelper.isWeb(),
+        pushTokenObj: pushTokenObj
+    }
 }
