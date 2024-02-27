@@ -6,6 +6,7 @@ import {MyProjectColoredLottieAnimation} from "@/components/lottie/MyProjectColo
 
 interface AppState {
     children?: React.ReactNode;
+    text: string,
     nowInMs: number
     synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}}
 }
@@ -69,6 +70,7 @@ export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, no
                 alignItems: "center"
           }}>
               <MyProjectColoredLottieAnimation source={rocketSource} accessibilityLabel={"Test Rocket Colored"} style={{width: 200, height: 200}}/>
+              <Text>{props.text}</Text>
               {content}
               {children}
           </View>
