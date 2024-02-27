@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from "react";
-import {Icon, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
+import {Icon, useTextContrastColor, useViewBackgroundColor, View, Text} from "@/components/Themed";
 import {ActionsheetItem, ActionsheetItemText, Divider} from "@gluestack-ui/themed";
 import {AccessibilityRole} from "react-native";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
@@ -85,30 +85,77 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
         renderedChildren = children;
     }
 
+    let contentWithShrinkingSpace = (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+            <View style={{
+                flexShrink: 1,
+            }}>
+                <Text style={{ color: usedTextColor }}>{item.label}</Text>
+            </View>
+            <View style={{
+                flexShrink: 1,
+            }}>
+                <Text style={{ color: usedTextColor, textAlign: 'right' }}>{props.labelRight}</Text>
+            </View>
+        </View>
+    )
+
+    let contentWithShrinkingSpaceOnlyRight = (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+            <View style={{
+            }}>
+                <Text style={{ color: usedTextColor }}>{item.label}</Text>
+            </View>
+            <View style={{
+                flexShrink: 1,
+            }}>
+                <Text style={{ color: usedTextColor, textAlign: 'right' }}>{props.labelRight}</Text>
+            </View>
+        </View>
+    )
+
+    let contentWithWrap = (
+        <View style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between', // This will align the first child left and the last child right
+            flex: 1
+        }}>
+            <View style={{
+                // The red view
+                flexShrink: 1,
+                //marginRight: 'auto', // This ensures that the view stays left
+            }}>
+                <Text style={{ color: usedTextColor }}>{item.label}</Text>
+            </View>
+            <View style={{
+                flexShrink: 1,
+                // The blue view
+                //marginLeft: 'auto', // This ensures that the view stays right
+            }}>
+                <Text style={{ color: usedTextColor, textAlign: 'right'
+                }}>{props.labelRight}</Text>
+            </View>
+        </View>
+    )
+
+    let content = contentWithShrinkingSpaceOnlyRight;
+
     return <>
         <ActionsheetItem
             disabled={!item.onSelect || props.disabled}
-        accessibilityLabel={item.accessibilityLabel}
-        sx={{
-            bg: usedViewBackgroundColor,
-            ":hover": {
-                bg: lighterOrDarkerBackgroundColor,
-            },
-        }}
-        key={item.key} onPress={item.onSelect} >
-        <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-        <View style={{
-            flex: 1
-        }}>
-            <ActionsheetItemText selectable={true} sx={{
-                color: usedTextColor,
-            }}>{item.label}</ActionsheetItemText>
-        </View>
-            <ActionsheetItemText selectable={true} sx={{
-                color: usedTextColor,
-            }}>{props.labelRight}</ActionsheetItemText>
-        {renderRightContent(!!item.onSelect)}
-    </ActionsheetItem>
+            accessibilityLabel={item.accessibilityLabel}
+            sx={{
+                bg: usedViewBackgroundColor,
+                ":hover": {
+                    bg: lighterOrDarkerBackgroundColor,
+                },
+            }}
+            key={item.key} onPress={item.onSelect} >
+            <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+            {content}
+            {renderRightContent(!!item.onSelect)}
+        </ActionsheetItem>
         {renderedChildren}
-        </>
+    </>
 }
