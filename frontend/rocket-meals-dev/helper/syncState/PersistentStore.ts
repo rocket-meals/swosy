@@ -34,6 +34,8 @@ export class PersistentStore {
 
   static profile = "PersistentStore.profile"
 
+  static notificationPermission = "PersistentStore.notificationPermission"
+
   static firstWeekday = "PersistentStore.firstWeekday"
 
 }

@@ -2,14 +2,14 @@ name: Expo Update
 on:
   push:
     branches:
-      - 70-course-timetable
+      - 76-notification
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
   pull_request:
     types: [closed]
     branches:
-      - 70-course-timetable
+      - 76-notification
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
