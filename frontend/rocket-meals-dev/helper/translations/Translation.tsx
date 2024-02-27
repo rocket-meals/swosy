@@ -29,6 +29,8 @@ export class TranslationKeys {
   static account = createTranslationKey("account", "Account")
   static anonymous = createTranslationKey("anonymous", "Anonym")
   static reset = createTranslationKey("reset", "Zurücksetzen")
+  static confirm = createTranslationKey("confirm", "Bestätigen")
+  static are_you_sure_to_delete_your_account = createTranslationKey("are_you_sure_to_delete_your_account", "Sind Sie sicher, dass Sie Ihren Account löschen möchten?");
 
   static new = createTranslationKey("new", "Neu");
 

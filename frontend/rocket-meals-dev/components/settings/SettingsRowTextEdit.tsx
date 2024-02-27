@@ -6,6 +6,7 @@ import {MyGlobalActionSheetConfig, MyGlobalActionSheetItem} from "@/components/a
 import {MyButton} from "@/components/buttons/MyButton";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {IconNames} from "@/constants/IconNames";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 interface MyContentProps {
     initialValue: string | undefined | null,
@@ -21,6 +22,9 @@ interface MyContentProps {
 const MyContent: FunctionComponent<MyContentProps> = (props) => {
     const {setInputValue} = props;
     const [inputValueLocal, setInputValueLocal] = useState(props?.initialValue)
+
+    const translation_cancel = useTranslation(TranslationKeys.cancel)
+    const translation_save = useTranslation(TranslationKeys.save)
 
     const inputRef = useRef<any>(null);
 
@@ -78,14 +82,14 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
             <View style={{
                 width: "100%", flexDirection: "row", marginTop: 10, justifyContent: "flex-end", marginBottom: 10
             }}>
-                <MyButton useOnlyNecessarySpace={true} isActive={false} accessibilityLabel={"Cancel"} text={"Cancel"} onPress={async () => {
+                <MyButton useOnlyNecessarySpace={true} isActive={false} accessibilityLabel={translation_cancel} text={translation_cancel} onPress={async () => {
                     props?.hide()
-                }} leftIcon={"close"} />
+                }} leftIcon={IconNames.cancel_icon} />
                 <View style={{
                     // small space between the buttons
                     width: 10,
                 }} />
-                <MyButton useOnlyNecessarySpace={true} accessibilityLabel={"Save"} text={"Save"} onPress={handleOnSave} isActive={true} leftIcon={"content-save"} />
+                <MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_save} text={translation_save} onPress={handleOnSave} isActive={true} leftIcon={IconNames.save_icon} />
             </View>
         </View>
     )
@@ -173,6 +177,6 @@ export const SettingsRowTextEdit = ({accessibilityLabel, labelLeft, rightIcon,..
     }
 
     return(
-        <SettingsRowActionsheet rightIcon={usedIconRight} labelLeft={labelLeft} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={labelLeft} {...props}  />
+        <SettingsRowActionsheet rightIcon={usedIconRight} labelLeft={labelLeft} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} {...props}  />
     )
 }
