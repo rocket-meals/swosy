@@ -19,7 +19,6 @@ const ColorPickItem: FunctionComponent<{color: string, onPress: (color: string) 
 	const accessibilityLabel = translation_select + " " + translation_color + ": " + color;
 
 	return <View style={{
-		backgroundColor: "red",
 		width: "100%",
 		height: dimensions.width,
 		alignItems: "center",
@@ -51,7 +50,7 @@ export const SimpleColorPicker: FunctionComponent<SimpleColorPickerProps> = (pro
 		}
 	}
 
-	const steps = 20;
+	let steps = 20;
 	let colors = ColorHelper.getHueColors(steps)
 	type DataItem = { key: string; data: string }
 

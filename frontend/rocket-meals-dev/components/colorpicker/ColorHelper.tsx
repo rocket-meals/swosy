@@ -9,6 +9,7 @@ export class ColorHelper{
 		return tinycolor(color).isValid();
 	}
 
+	// TODO: We could use memoization here
 	static getHueColors(gradientSteps?: number, maximumValue?: number){
 		if(!gradientSteps){
 			gradientSteps = 20;

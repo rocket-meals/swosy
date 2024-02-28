@@ -9,7 +9,7 @@ import {
     ActionsheetItemText, Divider
 } from "@gluestack-ui/themed";
 import React from "react";
-import {DimensionValue, KeyboardAvoidingView, Platform} from "react-native";
+import {DimensionValue, KeyboardAvoidingView, Platform, SafeAreaView} from "react-native";
 import {Heading, Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
 import {useSyncStateRaw} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";

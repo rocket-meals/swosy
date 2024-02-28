@@ -10,6 +10,7 @@ export const NoCourseTimetableFound = () => {
     return (
         <View style={{
             width: "100%",
+            paddingHorizontal: 10,
         }}>
             <ThemedMarkdown>
                 {translationMarkdownEmptyDescription}

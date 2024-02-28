@@ -86,12 +86,12 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
     return(
         <View style={{
             width: "100%",
-            height: "100%",
+            flexShrink: 1,
             marginTop: 10,
         }}>
             <View style={{
                 width: "100%",
-                flex: 1,
+                flexShrink: 1,
             }}>
                 <SimpleColorPicker onColorChange={async (color) => {
                     setInputValueLocal(color);
