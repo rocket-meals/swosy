@@ -45,7 +45,7 @@ export type MyGlobalActionSheetItem = {
     // onSelect: (key: string) => boolean | void // return true to close the actionsheet
 }
 
-export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig]
+export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig, visible: boolean]
     = () => {
     const [actionsheetConfigRaw, setActionsheetConfigRaw] = useSyncStateRaw<MyGlobalActionSheetConfig>(NonPersistentStore.globalMyActionSheetConfig)
 
@@ -79,10 +79,13 @@ export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetC
         })
     }
 
+        const visible = usedShowActionsheetConfig?.visible
+
     return [
         show,
         hide,
-        usedShowActionsheetConfig
+        usedShowActionsheetConfig,
+        visible
     ]
 }
 
@@ -222,7 +225,7 @@ export const MyGlobalActionSheet = (props: any) => {
                     </ActionsheetDragIndicatorWrapper>
     
                     <MySafeAreaView>
-                        <Heading>{title}</Heading>
+                        <View style={{width: "100%, justifyContent: "center", alignItems: "center"}}><Heading>{title}</Heading></View>
                         {content}
                     </MySafeAreaView>
                 </ActionsheetContent>
