@@ -12,7 +12,7 @@ import {SafeAreaViewProps} from "react-native-safe-area-context";
  */
 export function MySafeAreaView({style, ...props}: SafeAreaViewProps){
 
-    let mergedStyle: StyleProp<ViewStyle> = [{width: "100%", flexShrink: 1}, style]
+    let mergedStyle: StyleProp<ViewStyle> = [{width: "100%", height: "100%"}, style]
 
     return(
         <SafeAreaView {...props} style={mergedStyle} />
