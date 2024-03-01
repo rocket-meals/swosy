@@ -220,8 +220,9 @@ export const MyGlobalActionSheet = (props: any) => {
                             }}
                         />
                     </ActionsheetDragIndicatorWrapper>
-                    <Heading>{title}</Heading>
+    
                     <MySafeAreaView>
+                        <Heading>{title}</Heading>
                         {content}
                     </MySafeAreaView>
                 </ActionsheetContent>
