@@ -258,7 +258,7 @@ export default function CourseTimetableScreen() {
     }
 
     return (
-        <MySafeAreaView style={{width: "100%", height: "100%"}}>
+        <MySafeAreaView>
             {renderActions()}
             {renderContent()}
         </MySafeAreaView>
