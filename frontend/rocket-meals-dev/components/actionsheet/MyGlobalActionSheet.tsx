@@ -225,7 +225,7 @@ export const MyGlobalActionSheet = (props: any) => {
                     </ActionsheetDragIndicatorWrapper>
     
                     <MySafeAreaView>
-                        <View style={{width: "100%, justifyContent: "center", alignItems: "center"}}><Heading>{title}</Heading></View>
+                        <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{title}</Heading></View>
                         {content}
                     </MySafeAreaView>
                 </ActionsheetContent>
