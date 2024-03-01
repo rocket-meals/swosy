@@ -227,7 +227,7 @@ export const CourseTimetableSchedule: FunctionComponent<AppState> = (props) => {
     }, [dimension]);
 
   return (
-       <View style={{width: "100%", height: "100%", backgroundColor: "green"}}>
+       <View style={{width: "100%", height: "100%"}}>
            <View style={{width: "100%", height: "100%"}} onLayout={(event) => {
                const {x, y, width, height} = event.nativeEvent.layout;
                setDimension({width: width, height: height})
