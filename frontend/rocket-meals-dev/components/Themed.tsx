@@ -47,7 +47,8 @@ export function Icon({name, size, family, ...props}: IconProps){
 
 const DEFAULT_TEXT_SIZE = "md";
 
-export function getFontSizeInPixelBySize(size: "sm" | "md" | "lg" | undefined){
+export type TextSizeType = "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl";
+export function getFontSizeInPixelBySize(size: TextSizeType | undefined){
     let tokens = config.tokens;
     let fontSize = tokens.fontSizes
     let usedSize = size || DEFAULT_TEXT_SIZE;
@@ -154,16 +155,25 @@ export function Heading({style,...props}: TextProps) {
     return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
-export function Text({style,...props}: TextProps) {
+export type MyTextProps = TextProps & {
+    size?: TextSizeType | undefined;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    isTruncated?: boolean;
+    highlight?: boolean;
+    sub?: boolean;
+    strikeThrough?: boolean;
+}
+export function Text({style, size,...props}: MyTextProps) {
     let textContrastColor = useTextContrastColor();
     const isWeb = PlatformHelper.isWeb();
 
-    const fontSize = getFontSizeInPixelBySize(DEFAULT_TEXT_SIZE);
+    const usedSize = size || DEFAULT_TEXT_SIZE;
 
     // @ts-ignore
     let defaultStyle = {
-        color: textContrastColor,
-        fontSize: fontSize
+        color: textContrastColor
     }
 
     if(isWeb){ // only for web since on mobile the text will break automatically
@@ -171,7 +181,7 @@ export function Text({style,...props}: TextProps) {
         defaultStyle["wordBreak"] = "break-word" // only for web since otherwise a long word would not break
     }
 
-  return <DefaultText selectable={true} style={[defaultStyle, style]} {...props} />;
+  return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
 }
 
 export function View({style, ...props}: ViewProps) {

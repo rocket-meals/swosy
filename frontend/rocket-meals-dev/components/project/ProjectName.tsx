@@ -15,7 +15,7 @@ export const ProjectName: FunctionComponent<AppState> = (props) => {
     function renderVersion(){
         return(
             <View style={{marginTop: 0, marginLeft: 0, justifyContent: "center"}}>
-                <Text style={{fontSize: 12}} >
+                <Text size={"sm"} >
                     {project_descriptor}
                 </Text>
             </View>
@@ -23,9 +23,9 @@ export const ProjectName: FunctionComponent<AppState> = (props) => {
     }
 
     return(
-        <View style={{marginTop: 0, marginLeft: 16, justifyContent: "center"}}>
+        <View style={{marginTop: 0, marginLeft: 8, justifyContent: "center"}}>
             <View style={{marginTop: 0, marginLeft: 0, justifyContent: "center"}}>
-                <Text style={{fontSize: 24, fontWeight: "bold"}} >
+                <Text size={"2xl"} bold={true} >
                     {project_name}
                 </Text>
             </View>
