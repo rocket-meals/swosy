@@ -27,8 +27,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     function renderSecondaryHeaderContent(props: any) {
         return (
             <View style={{
-                height: "100%",
-                width: "100%",
                 justifyContent: "flex-end",
                 alignItems: "center",
                 flexDirection: "row",

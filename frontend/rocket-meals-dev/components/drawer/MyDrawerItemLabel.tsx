@@ -30,9 +30,9 @@ export type MyCustomDrawerItemLabelProps = {
  * @returns A function that takes RequiredDrawerItemLabelProps and returns a JSX.Element representing the custom label.
  */
 export const getMyDrawerItemLabel = (label: string | undefined) => {
-    return (props: RequiredDrawerItemLabelProps) => (
-        <MyDrawerItemLabel label={label} {...props} />
-    );
+    return (props: RequiredDrawerItemLabelProps) => {
+        return <MyDrawerItemLabel label={label} {...props} />
+    }
 }
 
 /**

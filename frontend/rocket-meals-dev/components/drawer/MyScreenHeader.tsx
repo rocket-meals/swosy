@@ -5,11 +5,16 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {getHeaderTitle, Header, HeaderTitleProps} from "@react-navigation/elements";
 import {ParamListBase, RouteProp} from "@react-navigation/native";
 import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
-import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
+import {DrawerConfigPosition, useDrawerPosition, useIsDrawerPermanentVisible} from "@/states/DrawerSyncConfig";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Divider} from "@gluestack-ui/themed";
 import {IconNames} from "@/constants/IconNames";
 import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
+import {Platform, Text, View} from "react-native";
+import {useSafeAreaFrame, useSafeAreaInsets} from "react-native-safe-area-context";
+import HeaderShownContext from "@react-navigation/elements/src/Header/HeaderShownContext";
+import {useFocusEffect} from "expo-router";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -49,7 +54,7 @@ export const getMyScreenHeader: getMyScreenHeaderFunction = () => {
  * Type definition for a function that renders a header component.
  * This can be used for headerLeft, headerRight, or potentially other header components.
  */
-export type renderHeaderContentElement = ((props: {
+export type renderHeaderContentElement = ((props?: {
     tintColor?: string | undefined,
     pressColor?: string | undefined,
     pressOpacity?: number | undefined,
@@ -70,13 +75,19 @@ export type renderHeaderContentElement = ((props: {
  * @returns A React element representing the custom drawer header.
  */
 export const MyScreenHeader = ({ navigation, route, options, custom_title, custom_renderHeaderDrawerOpposite, hideDivider, ...props }: MyScreenHeaderProps) => {
-    const isLargeDevice = useIsLargeDevice(); // Determines if the device is considered large.
+    const isDrawerPermanentVisible = useIsDrawerPermanentVisible(); // Determine if the device is considered large.
+
     let [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Gets and sets the current drawer position (left/right).
 
     const translation_open_drawer = useTranslation(TranslationKeys.open_drawer);
 
     const default_title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
     const usedTitle = custom_title || default_title
+
+    // Adjust padding based on the drawer's position to align the icon appropriately.
+    let paddingLeft: any = 10;
+    let paddingRight = 10;
+    const paddingVertical = 10;
 
     /**
      * Renders the header title element.
@@ -85,9 +96,10 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
      * @param {HeaderTitleProps} props - Properties for the header title component.
      * @returns A React element representing the header title.
      */
-    const renderHeaderTitle = (props: HeaderTitleProps) => {
+    const renderHeaderTitle = (props?: HeaderTitleProps) => {
         const readOnlyStyle: any = options.headerStyle;
-        return <Heading accessibilityRole={MyAccessibilityRoles.Header} style={readOnlyStyle}>{usedTitle}</Heading>;
+        const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0
+        return <View style={{paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft}}><Heading accessibilityRole={MyAccessibilityRoles.Header} style={readOnlyStyle}>{usedTitle}</Heading></View>
     }
 
     /**
@@ -104,17 +116,17 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
         pressOpacity?: number;
         labelVisible?: boolean;
     }) {
-        if(isLargeDevice) return null; // Do not render icon on large devices.
+        if(isDrawerPermanentVisible) {
+            return null
+        }
 
-        // Adjust padding based on the drawer's position to align the icon appropriately.
-        let paddingLeft: any = 10;
-        let paddingRight = 10;
-        const paddingVertical = 10;
+
+
 
         // Returns a touchable component with an icon for toggling the drawer.
         return <MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_open_drawer} onPress={() => navigation.openDrawer()}>
             <Icon name={IconNames.drawer_menu_icon} />
-        </MyTouchableOpacity>;
+        </MyTouchableOpacity>
     }
 
     let headerLeft: renderHeaderContentElement = renderDrawerIcon; // Assign drawer toggle icon to the left or right header based on position.
@@ -135,15 +147,60 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 
     const renderedDivider = hideDivider? null : <Divider />;
 
+    const insets = useSafeAreaInsets();
+    const frame = useSafeAreaFrame();
+
+    const isParentHeaderShown = React.useContext(HeaderShownContext);
+
+    // On models with Dynamic Island the status bar height is smaller than the safe area top inset.
+    const hasDynamicIsland = Platform.OS === 'ios' && insets.top > 50;
+    const statusBarHeight = hasDynamicIsland ? insets.top - 5 : insets.top;
+    const headerStatusBarHeight = isParentHeaderShown ? 0 : statusBarHeight
+
+    /**
+     * Old Header had the problem that headerLeft and HeaderRight would not grow the header
+     <Header
+     // make the header grow if the headerLeft or headerRight is not null
+     // header title align right
+     headerStyle={{
+     flexGrow: 1,
+     backgroundColor: "green"
+     }}
+     headerBackgroundContainerStyle={{
+     flexGrow: 1,
+     backgroundColor: "blue"
+     }}
+     headerTransparent={true}
+     headerLeft={headerLeft}
+     headerRight={headerRight}
+     title={usedTitle}
+     />
+     */
+
+
     return <>
-        <Header
-            // header title align right
-            headerTransparent={true}
-            headerLeft={headerLeft}
-            headerTitle={(props: HeaderTitleProps) => renderHeaderTitle(props)}
-            headerRight={headerRight}
-            title={usedTitle}
-        />
+        <View style={{
+            marginLeft: insets.left,
+            marginRight: insets.right,
+            marginTop: headerStatusBarHeight,
+            flexDirection: "row",
+        }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+                <View style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                }}>
+                    {headerLeft()}
+                    {renderHeaderTitle()}
+                </View>
+                <View style={{
+                    flexShrink: 1,
+                    justifyContent: "center",
+                }}>
+                    {headerRight? headerRight() : null}
+                </View>
+            </View>
+        </View>
         {renderedDivider}
     </>
 }

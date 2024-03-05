@@ -10,7 +10,7 @@ import {useProjectColor} from "@/states/ProjectInfo";
 import {DimensionValue} from "react-native";
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {DrawerConfigPosition, useDrawerPosition} from "@/states/DrawerSyncConfig";
+import {DrawerConfigPosition, useIsDrawerPermanentVisible, useDrawerPosition} from "@/states/DrawerSyncConfig";
 import {DrawerContentComponentProps} from "@react-navigation/drawer/src/types";
 import {getMyDrawerItemIcon} from "@/components/drawer/MyDrawerItemIcon";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
@@ -101,7 +101,7 @@ export type MyDrawerProps = {
 
 // Main drawer component that renders the navigation drawer along with custom items.
 export const MyDrawer = (props: MyDrawerProps) => {
-    const isLargeDevice = useIsLargeDevice(); // Determine if the device has a large screen.
+    const isDrawerPermanentVisible = useIsDrawerPermanentVisible(); // Determine if the device is considered large.
     const customDrawerItems = props?.customDrawerItems; // Optional custom drawer items.
 
     const drawerWidth = useDrawerWidth(); // Calculate the dynamic width of the drawer.
@@ -115,7 +115,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
             }}
             screenOptions={{
                 drawerPosition: drawerPosition, // Set the drawer to appear on the left or right.
-                drawerType: isLargeDevice ? 'permanent' : 'front', // Use a permanent drawer on large devices.
+                drawerType: isDrawerPermanentVisible ? 'permanent' : 'front', // Use a permanent drawer on large devices.
                 drawerStyle: {
                     width: drawerWidth, // Apply the dynamically calculated width.
                 },
