@@ -120,8 +120,8 @@ export class TranslationKeys {
   static show_login_with_username_and_password = createTranslationKey("show_login_with_username_and_password", "Mitarbeiter-Login");
   static email = createTranslationKey("email", "E-Mail");
   static password = createTranslationKey("password", "Passwort");
-  static password_show = createTranslationKey("password_show", "Passwort anzeigen");
-  static password_hide = createTranslationKey("password_hide", "Passwort verstecken");
+  static show = createTranslationKey("show", "Anzeigen");
+  static hide = createTranslationKey("hide", "Verbergen");
   static confirm_password = createTranslationKey("confirm_password", "Passwort bestätigen");
   static continue_as_anonymous = createTranslationKey("continue_as_anonymous", "Anonym fortfahren");
   static sign_in_with = createTranslationKey("sign_in_with", "Fortfahren mit");
@@ -155,9 +155,6 @@ export class TranslationKeys {
   static color_scheme_light = createTranslationKey("color_scheme_light", "Hell");
   static color_scheme_dark = createTranslationKey("color_scheme_dark", "Dunkel");
   static color_scheme_system = createTranslationKey("color_scheme_system", "System");
-
-  static rushMinutes_openedFrom = createTranslationKey("rushMinutes_openedFrom", "Geöffnet von");
-  static rushMinutes_closedAfter = createTranslationKey("rushMinutes_closedAfter", "Geschlossen nach");
 
   static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey("by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy", "Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu");
 
