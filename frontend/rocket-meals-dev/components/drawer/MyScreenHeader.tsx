@@ -177,6 +177,12 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
      />
      */
 
+    // create a focusEffect to set the title of the window on web
+    useFocusEffect(() => {
+        if(PlatformHelper.isWeb()){
+            document.title = usedTitle
+        }
+    })
 
     return <>
         <View style={{
