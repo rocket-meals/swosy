@@ -72,6 +72,7 @@ type TextInputProps = {
 }
 export function TextInput(props: TextInputProps){
     let textContrastColor = useTextContrastColor();
+    const usedFontSize = getFontSizeInPixelBySize(props.size || DEFAULT_TEXT_SIZE);
     let usedColor = props.style?.color;
     if(usedColor === undefined){
         usedColor = textContrastColor;
@@ -79,7 +80,6 @@ export function TextInput(props: TextInputProps){
 
   let defaultInputProps: ComponentProps<typeof DefaultInput> = {
     variant: props.variant,
-    size: props.size,
     isDisabled: props.isDisabled,
     isInvalid: props.isInvalid,
     isReadOnly: props.isReadOnly,
@@ -88,9 +88,6 @@ export function TextInput(props: TextInputProps){
   if(defaultInputProps.variant === undefined){
     defaultInputProps.variant = "outline";
   }
-    if(defaultInputProps.size === undefined){
-        defaultInputProps.size = DEFAULT_TEXT_SIZE;
-    }
 
     // set mask to password if isPassword is true
     let type: "text" | "password" | undefined = "text";
@@ -128,6 +125,9 @@ export function TextInput(props: TextInputProps){
             onSubmitEditing={props?.onSubmitEditing}
             ref={props.myRef}
             {...defaultInputFieldProps}
+            style={{
+                fontSize: usedFontSize
+            }}
         />
       </DefaultInput>
   )
@@ -158,10 +158,12 @@ export function Text({style,...props}: TextProps) {
     let textContrastColor = useTextContrastColor();
     const isWeb = PlatformHelper.isWeb();
 
+    const fontSize = getFontSizeInPixelBySize(DEFAULT_TEXT_SIZE);
+
     // @ts-ignore
     let defaultStyle = {
         color: textContrastColor,
-        size: DEFAULT_TEXT_SIZE
+        fontSize: fontSize
     }
 
     if(isWeb){ // only for web since on mobile the text will break automatically
