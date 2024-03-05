@@ -10,6 +10,8 @@ import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {MarkdownHelper} from "@/helper/string/MarkdownHelper";
+import NewsCard from "@/compositions/news/NewsCard";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export default function NewsScreen() {
 
@@ -17,7 +19,10 @@ export default function NewsScreen() {
 
     const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
-  const initialAmountColumns = useMyGridListDefaultColumns();
+    const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
+    const translation_news = useTranslation(TranslationKeys.news)
+
+  const initialAmountColumns = 1
 
   let resources = [];
     if(newsDict){
@@ -70,30 +75,32 @@ export default function NewsScreen() {
             if(!!translated_title) {
                 heading = translated_title;
                 heading = MarkdownHelper.removeMarkdownTags(heading);
+                heading = heading.trim();
             }
             let translated_content = getDirectusTranslation(languageCode, translations, "content", false, "");
             if(!!translated_content && translated_content.length > 0) {
                 text = translated_content;
                 text = MarkdownHelper.removeMarkdownTags(text);
+                text = text.trim();
             }
         }
       }
 
+      const date_published = resource.date_created;
+
+      const accessiblityLabel = translation_navigate_to+": "+translation_news+" "+heading + " " + date_published;
 
       return (
-          <MyCardForResourcesWithImage
+          <NewsCard
               key={item.key}
-              heading={heading}
+              headline={heading}
+              date={date_published}
               text={text}
               thumbHash={thumb_hash}
               image_url={image_url}
               assetId={assetId}
-              onPress={() => {
-                  if(resource.url){
-                      CommonSystemActionHelper.openExternalURL(resource.url, true)
-                  }
-              }}
-              accessibilityLabel={heading}/>
+              url={resource.url}
+              accessibilityLabel={accessiblityLabel}/>
       );
     }
 
