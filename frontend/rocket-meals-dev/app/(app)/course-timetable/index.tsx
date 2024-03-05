@@ -192,7 +192,7 @@ export default function CourseTimetableScreen() {
 
         if(hasImportProviders) {
             return (
-                <>
+                <View style={{paddingBottom: 10, paddingRight: 10}}>
                     <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_import_icon}
                               accessibilityLabel={title_import}
                               text={title_import}
@@ -200,10 +200,7 @@ export default function CourseTimetableScreen() {
                                   show(configShowSelectImportProvider)
                               }}
                     />
-                    <View style={{
-                        width: 10
-                    }}/>
-                </>
+                </View>
             )
         } else {
             return null;
@@ -214,24 +211,26 @@ export default function CourseTimetableScreen() {
 
 
         return(
-            <View style={{width: "100%", flexDirection: "row", marginTop: 10, marginHorizontal: 10}}>
+            <View style={{flexDirection: "row", marginTop: 10, marginHorizontal: 10, flexWrap: "wrap"}}>
                 {renderImportAction()}
+                <View style={{paddingBottom: 10}}>
                     <MyButton leftIconColoredBox={true} useOnlyNecessarySpace={true} leftIcon={IconNames.course_timetable_event_create_icon} accessibilityLabel={translationCreateEvent} onPress={() => {
                         handlePressCreateEvent()
                     }}
-                          text={translationCreateEvent}
+                              text={translationCreateEvent}
                     />
+                </View>
             </View>
         )
     }
-
-    console.log("Index: timetableEvents", timetableEvents)
 
     function renderContent(){
         let coursesFound = Object.keys(timetableEvents).length > 0;
         if(!coursesFound){
             return (
-                <MyScrollView>
+                <MyScrollView style={{
+                    paddingHorizontal: 10
+                }}>
                     <NoCourseTimetableFound />
                 </MyScrollView>
             )
