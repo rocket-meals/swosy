@@ -3,6 +3,7 @@ import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {Text, View} from "@/components/Themed";
 import * as rocketSource from "@/assets/animations/rocket_purple.json";
 import {MyProjectColoredLottieAnimation} from "@/components/lottie/MyProjectColoredLottieAnimation";
+import {StringHelper} from "@/helper/string/StringHelper";
 
 interface AppState {
     children?: React.ReactNode;
@@ -11,8 +12,6 @@ interface AppState {
     synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}}
 }
 export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, nowInMs, synchedResources, ...props}) => {
-
-
 
     let synchedResourcesDataSynchedDict: {[key: string]: any}
         = {}
@@ -58,6 +57,7 @@ export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, no
     } else {
         content = <>
             <Text>{"All resources loaded"}</Text>
+            <Text>{StringHelper.EMPTY_SPACE}</Text>
         </>
     }
 
