@@ -1,3 +1,6 @@
+import {useSynchedAppTranslationsDict} from "@/states/SynchedTranslations";
+import {TranslationEntry, useDirectusTranslation} from "@/helper/translations/DirectusTranslationUseFunction";
+
 type GetTranslationFunction = ((key: string) => string) | string;
 
 interface TranslationKey {
@@ -13,12 +16,23 @@ function createTranslationKey(key: string, getTranslation: GetTranslationFunctio
 }
 
 export function useTranslation(key: TranslationKey): string{
-    // TODO: Implement Directus Translation API
+  const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
+  let fallback_text = key.getTranslation;
+  if(typeof key.getTranslation === "string"){
+    fallback_text = key.getTranslation;
+  } else {
+    fallback_text = key.getTranslation(key.key);
+  }
 
-    if(typeof key.getTranslation === "string"){
-        return key.getTranslation;
+  let translations: TranslationEntry[] = [];
+  if (translationsDict) {
+    let app_translation = translationsDict[key.key];
+    if (!!app_translation) {
+      translations = app_translation.translations as TranslationEntry[];
     }
-    return key.getTranslation(key.key);
+  }
+  const usedTranslation = useDirectusTranslation(translations, "text", false, fallback_text);
+  return usedTranslation;
 }
 
 export class TranslationKeys {
@@ -176,6 +190,7 @@ export class TranslationKeys {
   static cookie_policy_provider_we = createTranslationKey("cookie_policy_provider_we", "Wir als Cookie-Anbieter");
   static cookies = createTranslationKey("cookies", "Cookies");
 
+  // TODO: Not translated online in the demo, maybe use different translations at all for that
   static KEY_AUTH_REFRESH_TOKEN = createTranslationKey("KEY_AUTH_REFRESH_TOKEN", "Speichert den Refresh-Token");
   static KEY_AUTH_EXPIRES = createTranslationKey("KEY_AUTH_EXPIRES", "Speichert die Lebensdauer des Authentifizierungs-Tokens");
   static KEY_AUTH_EXPIRES_DATE = createTranslationKey("KEY_AUTH_EXPIRES_DATE", "Speichert das Ablaufdatum des Authentifizierungs-Tokens");

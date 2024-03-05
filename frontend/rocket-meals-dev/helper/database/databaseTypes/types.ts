@@ -15,21 +15,7 @@ export type Apartments = {
   washingmachines: any[] | Washingmachines[];
 };
 
-export type AppFeedbacks = {
-  comment?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  id: string;
-  profile?: string | Profiles | null;
-  rating?: number | null;
-  sort?: number | null;
-  status: string;
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
 export type AppSettings = {
-  api_version?: string | null;
   app_stores: string;
   app_url_to_apple_store?: string | null;
   app_url_to_google_store?: string | null;
@@ -85,7 +71,6 @@ export type AppSettings = {
   utilization_forecast_calculation_enabled?: boolean | null;
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
-  utilization_forecast_enabled?: boolean | null;
   utilization_settings: string;
 };
 
@@ -96,6 +81,27 @@ export type AppSettingsHousingTranslations = {
   id: number;
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
+  translation_settings: string;
+};
+
+export type AppTranslations = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | AppTranslationsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type AppTranslationsTranslations = {
+  app_translations_id?: string | AppTranslations | null;
+  be_source_for_translations?: boolean | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  text?: string | null;
   translation_settings: string;
 };
 
@@ -142,8 +148,7 @@ export type AutoTranslationSettings = {
 export type Buildings = {
   alias?: string | null;
   apartments: any[] | Apartments[];
-  canteens: any[] | Canteens[];
-  coordinates?: unknown | null;
+  coordinates?: string | null;
   date_created?: string | null;
   date_of_construction?: string | null;
   date_updated?: string | null;
@@ -191,6 +196,7 @@ export type Canteens = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
+  foodoffers: any[] | Foodoffers[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -617,7 +623,6 @@ export type DirectusUsers = {
   last_page?: string | null;
   location?: string | null;
   password?: string | null;
-  profile?: string | Profiles | null;
   provider: string;
   role?: string | DirectusRoles | null;
   status: string;
@@ -654,36 +659,6 @@ export type DirectusWebhooks = {
   name: string;
   status: string;
   url: string;
-};
-
-export type EatingHabitTemplates = {
-  alias?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  id: string;
-  markings: any[] | EatingHabitTemplatesMarkings[];
-  sort?: number | null;
-  status: string;
-  translations: any[] | EatingHabitTemplatesTranslations[];
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type EatingHabitTemplatesMarkings = {
-  dislikes?: boolean | null;
-  eating_habit_templates_id?: string | EatingHabitTemplates | null;
-  id: number;
-  markings_id?: string | Markings | null;
-};
-
-export type EatingHabitTemplatesTranslations = {
-  be_source_for_translations?: boolean | null;
-  eating_habit_templates_id?: string | EatingHabitTemplates | null;
-  id: number;
-  languages_code?: string | Languages | null;
-  let_be_translated?: boolean | null;
-  title?: string | null;
-  translatio_settings: string;
 };
 
 export type Foodoffers = {
@@ -751,7 +726,6 @@ export type FoodsFeedbacks = {
   date_updated?: string | null;
   food?: string | Foods | null;
   id: string;
-  labels: any[] | FoodsFeedbacksPredefinedFoodFeedbackLabels[];
   notify?: boolean | null;
   profile?: string | Profiles | null;
   rating?: number | null;
@@ -867,12 +841,9 @@ export type PredefinedFoodFeedbackLabelsTranslations = {
 };
 
 export type Profiles = {
-  apartment?: string | Apartments | null;
-  app_feedbacks: any[] | AppFeedbacks[];
   avatar?: string | null;
   buildings_favorites: any[] | ProfilesBuildingsFavorites[];
   buildings_last_visited: any[] | ProfilesBuildingsLastVisited[];
-  canteen?: string | Canteens | null;
   credit_balance?: number | null;
   date_created?: string | null;
   date_privacy_policy_accepted?: string | null;
@@ -1013,9 +984,10 @@ export type WikisTranslations = {
 
 export type CustomDirectusTypes = {
   apartments: Apartments[];
-  app_feedbacks: AppFeedbacks[];
   app_settings: AppSettings;
   app_settings_housing_translations: AppSettingsHousingTranslations[];
+  app_translations: AppTranslations[];
+  app_translations_translations: AppTranslationsTranslations[];
   auto_backup_settings: AutoBackupSettings;
   auto_translation_settings: AutoTranslationSettings;
   buildings: Buildings[];
@@ -1054,9 +1026,6 @@ export type CustomDirectusTypes = {
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];
   directus_webhooks: DirectusWebhooks[];
-  eating_habit_templates: EatingHabitTemplates[];
-  eating_habit_templates_markings: EatingHabitTemplatesMarkings[];
-  eating_habit_templates_translations: EatingHabitTemplatesTranslations[];
   foodoffers: Foodoffers[];
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];

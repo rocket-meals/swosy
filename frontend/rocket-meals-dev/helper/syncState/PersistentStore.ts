@@ -19,6 +19,7 @@ export class PersistentStore {
   static course_timetable_settings = "PersistentStore.course_timetable_settings"
   static course_timetable = "PersistentStore.course_timetable"
 
+  static app_translations = "PersistentStore.app_translations"
   static canteens = "PersistentStore.canteens"
   static languages = "PersistentStore.languages"
   static wikis = "PersistentStore.wikis"

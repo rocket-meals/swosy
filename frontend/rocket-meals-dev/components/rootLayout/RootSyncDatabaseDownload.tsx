@@ -17,6 +17,7 @@ import {LoadingScreenDatabase} from "@/compositions/loadingScreens/LoadingScreen
 import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
 import {useSynchedNewsDict} from "@/states/SynchedNews";
 import {useSynchedDevices} from "@/states/SynchedDevices";
+import {useSynchedAppTranslationsDict} from "@/states/SynchedTranslations";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -51,6 +52,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
   const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
   const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, lastUpdateCollectionsDates, updateCollectionsDatesFromServer] = useSynchedCollectionsDatesLastUpdateDict()
 
+  const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
   const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
   const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
   const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
@@ -76,6 +78,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
   /**
    * Needs to be called before the useEffect
    */
+
+  addSynchedResourceToDownloadFirst("translations", translationsDict, lastUpdateTranslations)
   addSynchedResourceToDownloadFirst("app_settings", app_settings, lastUpdateAppSettings)
   addSynchedResourceToDownloadFirst("canteens", canteensDict, lastUpdateCanteens)
   addSynchedResourceToDownloadFirst("buildings", buildingsDict, lastUpdateBuildings)
@@ -155,6 +159,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
       if(isServerOnline){ // if server is online, we can check if we are logged in
         if(!demo){
           // TODO: Improve by running all updates in parallel using Promise.all?
+          await updateTranslationsFromServer(nowInMs)
           await updateAppSettingsFromServer(nowInMs)
           await updateCanteensFromServer(nowInMs);
           await updateBuildingsFromServer(nowInMs);
