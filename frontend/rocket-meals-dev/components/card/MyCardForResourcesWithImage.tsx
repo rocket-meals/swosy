@@ -8,6 +8,7 @@ import {MyCardWithText, MyCardWithTextProps} from "@/components/card/MyCardWithT
 import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardProps} from "@/components/card/MyCard";
 import {Rectangle} from "@/components/shapes/Rectangle";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 export type MyCardForResourcesWithImageProps = {
     accessibilityLabel: string,
@@ -30,7 +31,7 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 
     if(onPress){
         topContent = (
-            <MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} >
+            <MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.ImageButton} accessibilityLabel={accessibilityLabel} onPress={onPress} >
                 {topContent}
             </MyTouchableOpacity>
         )

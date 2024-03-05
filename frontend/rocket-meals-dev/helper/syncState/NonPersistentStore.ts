@@ -8,6 +8,8 @@ export class NonPersistentStore {
 
   static foodOfferSelectedDate = "NonPersistentStore.foodOfferSelectedDate"
 
+  static foodOfferCache = "NonPersistentStore.foodOfferCache"
+
 
 }
 

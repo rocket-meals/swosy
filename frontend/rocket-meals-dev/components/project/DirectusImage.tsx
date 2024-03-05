@@ -8,9 +8,10 @@ import {thumbHashStringToDataURL} from "@/helper/image/ThumbHashHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSources";
 import {useIsDebug} from "@/states/Debug";
+import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 
 interface AppState {
-    assetId: string | undefined | null,
+    assetId: string | DirectusFiles | undefined | null;
     image_url?: string | undefined | null;
     style?: any;
     alt?: string;

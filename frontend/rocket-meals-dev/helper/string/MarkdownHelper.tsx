@@ -22,7 +22,6 @@ export class MarkdownHelper {
         // remove heading
         textCopy = textCopy.replace(/#/g, "");
         return textCopy;
-
     }
 
 }

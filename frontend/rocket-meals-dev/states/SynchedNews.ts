@@ -43,7 +43,7 @@ function getSingleDemoNews(index: number): News {
 
   let amountNewsTranslations = 1
 
-  const titles = ["# Demo Neueröffnung unseres Kantinengebäudes!", "# Immer frisch und lecker: Wir haben unsere Speisekarte erweitert!"]
+  const titles = ["Demo Neueröffnung unseres Kantinengebäudes!", "Immer frisch und lecker: Wir haben unsere Speisekarte erweitert!"]
   const contents = [
       "Wir freuen uns, die Eröffnung unseres brandneuen Kantinengebäudes ankündigen zu können! Ab dem 15. März 2024 heißen wir Sie herzlich willkommen, die Vielfalt unserer kulinarischen Angebote zu entdecken. Von klassischen Gerichten bis hin zu internationalen Spezialitäten – für jeden Geschmack ist etwas dabei.\n" +
       "\n" +
@@ -68,12 +68,17 @@ function getSingleDemoNews(index: number): News {
 
   let image_remote_urls = [
       "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG5ld3N8ZW58MHx8MHx8fDA%3D",
-    "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmV3c3xlbnwwfHwwfHx8MA%3D%3D"
+    "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmV3c3xlbnwwfHwwfHx8MA%3D%3D",
+      "https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YnVzaW5lc3MlMjBuZXdzfGVufDB8fDB8fHwy",
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGJ1c2luZXNzJTIwbmV3c3xlbnwwfHwwfHx8Mg%3D%3D",
+      "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGJ1c2luZXNzJTIwbmV3c3xlbnwwfHwwfHx8Mg%3D%3D"
   ]
+
+    const demoNewsUrl = "https://news.google.com";
 
   return {
       alias: "Demo News",
-      date_created: DateHelper.addMinutes(new Date(), -index*10).toISOString(),
+      date_created: DateHelper.addDays(new Date(), -index).toISOString(),
       date_updated: new Date().toISOString(),
       external_identifier: undefined,
       id: news_id,
@@ -83,7 +88,7 @@ function getSingleDemoNews(index: number): News {
       sort: undefined,
       status: "",
       translations: [newsTranslations],
-      url: undefined,
+      url: demoNewsUrl,
       user_created: undefined,
       user_updated: undefined
 
@@ -94,7 +99,7 @@ function getDemoNews(): Record<string, News> {
 
   let resourceDict: Record<string, News> = {}
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 13; i++) {
     let demoResource = getSingleDemoNews(i)
     resourceDict[demoResource.id] = demoResource
   }

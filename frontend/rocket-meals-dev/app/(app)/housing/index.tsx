@@ -1,15 +1,10 @@
-import {ListRenderItemInfo, StyleSheet} from 'react-native';
+import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {useFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {Apartments, Buildings, DirectusFiles, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Apartments, DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
-import {View} from "@/components/Themed";
-import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
-import {CanteenSelectionRequired, useIsValidCanteenSelected} from "@/compositions/foodoffers/CanteenSelectionRequired";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
-import {getDirectusTranslation} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 
 export default function HousingScreen() {

@@ -6,6 +6,30 @@ import {Canteens, Foodoffers, Foods} from "@/helper/database/databaseTypes/types
 import {getDemoFoods} from "@/states/SynchedFoods";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 
+export function useCachedFoodOffers(){
+    // Structure -
+        // Canteen
+            // Date
+                // How old the cache is?
+
+    // Or should we go by Date first, or either a combined key?
+
+    const [selectedDate, setSelectedDate] = useSyncState<any>(NonPersistentStore.foodOfferCache);
+
+    function getFoodOffer(foodOfferId: string){
+
+    }
+
+    function getFoodOffers(date: Date, canteen: Canteens){
+
+    }
+
+    function setFoodOffers(foodOffers: Foodoffers){
+
+    }
+
+}
+
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
     const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
@@ -13,6 +37,7 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
     let defaultDate = new Date();
     defaultDate.setHours(12,0,0,0); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
     let usedSelectedDate = selectedDate || defaultDate;
+    usedSelectedDate = new Date(usedSelectedDate);
 
     function changeAmountDays(days: number) {
         const nextDate = DateHelper.addDaysAndReturnNewDate(usedSelectedDate, days);
@@ -32,6 +57,21 @@ export async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foo
     }
 
     return await collectionHelper.readItem(foodoffer_id, query);
+}
+
+//export async function getFoodOffersForSelectedDate(date: Date, canteen: Canteens, cachedFoodOffers, setCachedFoodOffers){
+export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, canteen: Canteens){
+    // TODO: useCached Foodoffers
+    let copyDate = new Date(date);
+    // If in cache not too old, if we have internet connection
+
+    if(isDemo){
+        return getDemoFoodOffersForDate(copyDate);
+    }
+
+    // if not in cache, but has internet connection ==> loadFoodOffersFromServer, then save it in cache
+
+    return undefined;
 }
 
 export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
@@ -83,22 +123,6 @@ export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, am
 
     return await collectionHelper.readItems(query);
 }
-
-export function useFoodOffersForSelectedDate(): [Foodoffers[] | undefined, (newValue: Foodoffers[]) => void]
-{
-    const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
-    const copySelectedDate = new Date(selectedDate); // copy to avoid unwanted side effects
-
-    const isDemo = useIsDemo();
-    if(isDemo) {
-        return [getDemoFoodOffersForDate(copySelectedDate), () => {}];
-    }
-
-    return [undefined, () => {}];
-
-}
-
-
 
 function getDemoFoodOffersForDate(date: Date): Foodoffers[]
 {

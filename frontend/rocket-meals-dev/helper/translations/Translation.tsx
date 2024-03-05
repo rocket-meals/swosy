@@ -34,6 +34,8 @@ export class TranslationKeys {
 
   static new = createTranslationKey("new", "Neu");
 
+  static no_foodoffers_found_for_selection = createTranslationKey("no_foodoffers_found_for_selection", "Keine Angebote gefunden.");
+
   static no_data_currently_calculating = createTranslationKey("no_data_currently_calculating", "Keine Daten, werden gerade berechnet");
 
   static animation = createTranslationKey("animation", "Animation");
@@ -104,6 +106,7 @@ export class TranslationKeys {
   static canteen = createTranslationKey("canteen", "Mensa");
 
   static news = createTranslationKey("news", "News");
+  static read_more = createTranslationKey("read_more", "Mehr lesen");
 
   static course_timetable = createTranslationKey("course_timetable", "Stundenplan");
 

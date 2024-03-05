@@ -139,7 +139,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
 
     let rightIconViewStyle: StyleProp<ViewStyle> = {
         paddingRight: leftIconPaddingRight,
-        paddingLeft: leftIconPaddingLeft,
+        paddingLeft: (!!text || !!leftIcon) ? 0 : defaultPadding,
         paddingVertical: defaultPadding,
         justifyContent: "center",
     }
@@ -147,7 +147,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
     let rightItem: any = undefined
     if(rightIcon){
         rightItem = <View style={rightIconViewStyle}>
-            <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
+            <Icon color={usedIconBoxTextColor} name={rightIconUsed} />
         </View>
     }
 
@@ -219,6 +219,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                 }}>
                     {renderedText}
                 </View>
+                {rightItem}
             </Pressable>
     )
 
