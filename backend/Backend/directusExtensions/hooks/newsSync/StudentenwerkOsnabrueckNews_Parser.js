@@ -2,7 +2,7 @@ import axios from "axios";
 import JSSoup from 'jssoup';
 
 
-const baseUrl = 'https://www.studentenwerk-hannover.de';
+const baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
 const newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
 
 export class StudentenwerkOsnabrueckNews_Parser {
