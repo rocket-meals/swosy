@@ -9,7 +9,9 @@ const TABLENAME_CANTEENS = "canteens";
 const TABLENAME_MARKINGS = "markings";
 const TABLENAME_MEALFOFFERS_MARKINGS = "foodoffers_markings"
 
-const TABLENAME_FLOWHOOKS = "app_settings_foods";
+const TABLENAME_FLOWHOOKS = "app_settings";
+
+const SCHEDULE_NAME = "FoodParseSchedule";
 
 export class ParseSchedule {
 
@@ -32,7 +34,7 @@ export class ParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            parsing_status: status
+            foods_parsing_status: status
         });
     }
 
@@ -41,7 +43,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_enabled;
+                return flows?.foods_parsing_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -54,7 +56,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_status;
+                return flows?.foods_parsing_status;
             }
         } catch (err) {
             console.log(err);
@@ -63,21 +65,18 @@ export class ParseSchedule {
     }
 
     async parse() {
-        console.log("[Check] Meal Parse Schedule");
         this.foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
         this.markingsService = this.itemsServiceCreator.getItemsService(TABLENAME_MARKINGS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
-        let statusCheck = "check";
+        let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";
 
         if (enabled && status === statusCheck && this.finished) {
-            console.log("[Start] Meal Parse Schedule");
+            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
             await this.setStatus(statusRunning);
 

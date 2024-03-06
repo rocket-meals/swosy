@@ -21,7 +21,7 @@ export class StudentenwerkHannoverApartments_Parser {
     async getRealItem(apartmentUrl){
         let response = await axios.get(apartmentUrl);
         console.log("Fetched url")
-        let soup = new JSSoup(response.data);
+        let soup = new JSSoup.default(response.data);
 
         return {
 
@@ -50,7 +50,7 @@ export class StudentenwerkHannoverApartments_Parser {
             console.log("getRealItems")
             let response = await axios.get(apartmentsUrl);
             console.log("Fetched url")
-            let soup = new JSSoup(response.data);
+            let soup = new JSSoup.default(response.data);
 
             // Find all apartment divs
             let apartmentDivs = soup.findAll('div', 'wohnheimListView');
@@ -69,7 +69,7 @@ export class StudentenwerkHannoverApartments_Parser {
                     building: {
                         external_identifier: "building_" + name.replace(/\W+/g, '_'),
                         url: apartmentUrl,
-                        name: name,
+                        alias: name,
                         image_remote_url: baseUrl + imageUrl,
                         year_of_construction: null
                     }

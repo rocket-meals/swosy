@@ -52,7 +52,7 @@ export default async function ({filter, action, init, schedule}, {
     }
 
         try {
-            //await parseSchedule.init(getSchema, services, database, logger);
+            await parseSchedule.init(getSchema, services, database, logger);
         } catch (err) {
             let errMsg = err.toString();
             if (errMsg.includes("no such table: directus_collections")) {
@@ -66,17 +66,23 @@ export default async function ({filter, action, init, schedule}, {
             }
         }
 
-        let collection = "app_settings_housing";
+        let collection = "app_settings";
 
         filterFlowHookOnlyForMaster(filter, collection, isMaster, exceptions);
+
+        /**
+        console.log("DEBUG SCHEDULE")
+        let manualParser = new StudentenwerkHannoverApartments_Parser();
+        let items = await manualParser.getJSONList();
+        console.log("items")
+        console.log(JSON.stringify(items, null, 2))
+            */
 
         action(
             collection + ".items.update",
             async (meta, context) => {
-                console.log("Start News Parser Schedule to be checked");
-                //TODO check if field "parse_foods" is active
                 try {
-                    //await parseSchedule.parse(getSchema, services, database, logger);
+                    await parseSchedule.parse(getSchema, services, database, logger);
                 } catch (err) {
                     console.log(err);
                 }
