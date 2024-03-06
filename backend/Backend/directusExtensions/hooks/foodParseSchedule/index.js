@@ -1,10 +1,10 @@
 import {ParseSchedule} from "./ParseSchedule.js"; // in directus we need to add the filetype ... otherwise we get an error
-import {TL1Parser_Web} from "./TL1Parser_Web.js"; // in directus we need to add the filetype ... otherwise we get an error
+import {TL1Parser_Web_SWOSY} from "./TL1Parser_Web_SWOSY.js"; // in directus we need to add the filetype ... otherwise we get an error
 
 //const SWOSY_Osnabrueck_Web_Parser = require("./SWOSY_Osnabrueck_Web_Parser");
 //const StudiFutter_Web_Parser = require("./StudiFutter_Web_Parser");
 
-const parser = new TL1Parser_Web("https://share.sw-os.de/swosy");
+const parser = TL1Parser_Web_SWOSY.getInstance();
 const parseSchedule = new ParseSchedule(parser);
 
 
@@ -80,7 +80,7 @@ export default async function ({filter, action, init, schedule}, {
         async (meta, context) => {
             //TODO check if field "parse_foods" is active
             try {
-                await parseSchedule.parse(getSchema, services, database, logger);
+                await parseSchedule.parse(false);
             } catch (err) {
                 console.log(err);
             }

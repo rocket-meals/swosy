@@ -29,18 +29,26 @@ export default async function ({filter, action, init, schedule}, {
                 }
             });
 
-            // if the item with the id: collection exists in the collection "collections_dates_last_update"
-            if (items.length > 0) {
-                // update the item with the id: collection in the collection "collections_dates_last_update" with the current date
-                await collectionsDatesLastUpdateService.updateOne(collection, {
-                    date_updated: currentDate
-                });
-            } else {
-                // create a new item in the collection "collections_dates_last_update" with the id: collection and the current date
-                await collectionsDatesLastUpdateService.createOne({
-                    id: collection,
-                    date_updated: currentDate
-                });
+            try{
+                // if the item with the id: collection exists in the collection "collections_dates_last_update"
+                if (items.length > 0) {
+                    // update the item with the id: collection in the collection "collections_dates_last_update" with the current date
+                    await collectionsDatesLastUpdateService.updateOne(collection, {
+                        date_updated: currentDate
+                    });
+                } else {
+                    // create a new item in the collection "collections_dates_last_update" with the id: collection and the current date
+                    await collectionsDatesLastUpdateService.createOne({
+                        id: collection,
+                        date_updated: currentDate
+                    });
+                }
+            } catch (e) {
+                // TODO Check if the error was this
+                //WARN: An error was thrown while executing action "foods_translations.items.create"
+                //WARN: Value for field "id" in collection "collections_dates_last_update" has to be unique.
+                //console.error("Error while updating the collection 'collections_dates_last_update' for the collection: " + collection + " with the current date: " + currentDate);
+                //console.error(e);
             }
         }
     }
