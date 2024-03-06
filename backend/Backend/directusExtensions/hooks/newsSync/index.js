@@ -67,7 +67,7 @@ export default async function ({filter, action, init, schedule}, {
             }
         }
 
-        let collection = "app_settings_news";
+        let collection = "app_settings";
 
         filterFlowHookOnlyForMaster(filter, collection, isMaster, exceptions);
 

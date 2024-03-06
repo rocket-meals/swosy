@@ -22,7 +22,7 @@ export class StudentenwerkHannoverNews_Parser {
             console.log("getRealNewsItems")
             let response = await axios.get(newsUrl);
             console.log("Fetched url")
-            let soup = new JSSoup(response.data);
+            let soup = new JSSoup.default(response.data);
             let articles = soup.findAll('div', 'article');
 
             let data = articles.map((article, index) => {
@@ -52,6 +52,7 @@ export class StudentenwerkHannoverNews_Parser {
                 return {
                     external_identifier: "news_" + header.replace(/\W+/g, '_'),
                     image_remote_url: imageUrl,
+                    alias: header,
                     url: articleUrl,
                     translations: {
                         "de-DE": {
@@ -59,7 +60,6 @@ export class StudentenwerkHannoverNews_Parser {
                             content: content,
                             be_source_for_translations: true,
                             let_be_translated: false,
-                            create_translations_for_all_languages: true,
                         },
                     },
                     categories: categories

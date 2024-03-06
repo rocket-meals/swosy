@@ -54,7 +54,7 @@ export default async function ({filter, action, init, schedule}, {
         console.log("This is a worker instance.");
     }
 
-    let collection = "app_settings_foods";
+    let collection = "app_settings";
 
     try {
         console.log("foodParseSchedule init");

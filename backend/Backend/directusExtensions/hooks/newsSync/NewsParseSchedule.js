@@ -3,7 +3,9 @@ import {ItemsServiceCreator} from "../../helper/ItemsServiceCreator.js"; // in d
 
 
 const TABLENAME_NEWS = "news";
-const TABLENAME_FLOWHOOKS = "app_settings_news";
+const TABLENAME_FLOWHOOKS = "app_settings";
+
+const SCHEDULE_NAME = "NewsParseSchedule";
 
 export class NewsParseSchedule {
 
@@ -24,7 +26,7 @@ export class NewsParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            parsing_status: status
+            news_parsing_status: status
         });
     }
 
@@ -33,7 +35,7 @@ export class NewsParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_enabled;
+                return flows?.news_parsing_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -46,7 +48,7 @@ export class NewsParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_status;
+                return flows?.news_parsing_status;
             }
         } catch (err) {
             console.log(err);
@@ -55,20 +57,17 @@ export class NewsParseSchedule {
     }
 
     async parse() {
-        console.log("[Check] Meal Parse Schedule");
         this.newsService = this.itemsServiceCreator.getItemsService(TABLENAME_NEWS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
-        let statusCheck = "check";
+        let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";
 
         if (enabled && status === statusCheck && this.finished) {
-            console.log("[Start] Meal Parse Schedule");
+            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
             await this.setStatus(statusRunning);
 

@@ -1,7 +1,7 @@
 import moment from "moment"
 import {ItemsServiceCreator} from "../../helper/ItemsServiceCreator.js"
 
-const TABLENAME_FLOWHOOKS = "app_settings_utilizations";
+const TABLENAME_FLOWHOOKS = "app_settings";
 const TABLENAME_CANTEENS = "canteens";
 const TABLENAME_UTILIZATION_GROUS = "utilizations_groups";
 const TABLENAME_UTILIZATION_ENTRIES = "utilizations_entries";
@@ -10,6 +10,8 @@ const TABLENAME_BUSINESSHOURS = "businesshours";
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions";
 const TABLENAME_CASHREGISTERS = "cashregisters";
 
+
+const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 
@@ -30,7 +32,7 @@ export class ParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            forecast_calculation_status: status
+            utilization_forecast_calculation_status: status
         });
     }
 
@@ -39,7 +41,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.forecast_calculation_enabled;
+                return flows?.utilization_forecast_calculation_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -52,7 +54,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.forecast_calculation_status;
+                return flows?.utilization_forecast_calculation_status;
             }
         } catch (err) {
             console.log(err);
@@ -61,18 +63,15 @@ export class ParseSchedule {
     }
 
     async parse() {
-        console.log("[Check] UtilizationSchedule");
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        //console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
         let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";
 
         if (enabled && status === statusCheck && this.finished) {
-            //console.log("[Start] UtilizationSchedule");
+            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
             await this.setStatus(statusRunning);
 
