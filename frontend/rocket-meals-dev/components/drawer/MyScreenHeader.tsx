@@ -110,7 +110,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
      * @param {Object} props - Properties including tint color, press color, press opacity, and label visibility.
      * @returns A React element for the drawer toggle button, or null.
      */
-    function renderDrawerIcon(props: {
+    function renderDrawerIcon(props?: {
         tintColor?: string;
         pressColor?: string;
         pressOpacity?: number;
@@ -129,16 +129,29 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
         </MyTouchableOpacity>
     }
 
-    let headerLeft: renderHeaderContentElement = renderDrawerIcon; // Assign drawer toggle icon to the left or right header based on position.
-    let headerRight: renderHeaderContentElement = custom_renderHeaderDrawerOpposite; // Initialize headerRight as undefined.
+
+    const isFlipped = drawerPosition === DrawerConfigPosition.Right;
+    let primaryHeaderContent = <>
+        {renderDrawerIcon()}
+        {renderHeaderTitle()}
+    </>
+    if(isFlipped){
+        primaryHeaderContent = <>
+            {renderHeaderTitle()}
+            {renderDrawerIcon()}
+        </>
+    }
+
+    let secondaryHeaderContent: React.ReactNode = null; // Initialize headerRight as undefined.
+    if(custom_renderHeaderDrawerOpposite){
+        secondaryHeaderContent = custom_renderHeaderDrawerOpposite();
+    }
 
     // Swap header icons if the drawer is positioned on the right.
 
-    if(drawerPosition === DrawerConfigPosition.Right){
-        let swap = headerLeft;
-        headerLeft = headerRight;
-        headerRight = swap;
-    }
+
+    let headerLeft = isFlipped? secondaryHeaderContent : primaryHeaderContent;
+    let headerRight = isFlipped? primaryHeaderContent : secondaryHeaderContent;
 
     // TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
     // Consideration for future improvement to allow more flexible title positioning.
@@ -196,14 +209,14 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
                     flexDirection: "row",
                     alignItems: "center",
                 }}>
-                    {headerLeft()}
-                    {renderHeaderTitle()}
+                    {headerLeft}
                 </View>
                 <View style={{
                     flexShrink: 1,
-                    justifyContent: "center",
+                    alignItems: "center",
+                    flexDirection: "row",
                 }}>
-                    {headerRight? headerRight() : null}
+                    {headerRight}
                 </View>
             </View>
         </View>
