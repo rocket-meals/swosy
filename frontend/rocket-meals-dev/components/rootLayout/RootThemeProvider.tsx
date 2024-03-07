@@ -1,26 +1,33 @@
-import {ThemeProvider} from '@react-navigation/native';
 import React from 'react';
-import {useThemeDetermined} from "@/states/ColorScheme";
-import {MyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
+import {ThemeProvider} from '@react-navigation/native';
+import {StatusBar} from 'expo-status-bar';
+import {ErrorBoundary} from 'expo-router';
+import {useViewBackgroundColor, View} from "@/components/Themed"; // Import View from your themed components
+import {MyGlobalActionSheet, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {RootFabHolder} from "@/components/rootLayout/RootFabHolder";
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+import {useThemeDetermined, useIsDarkTheme} from "@/states/ColorScheme";
 
 export interface RootThemeProviderProps {
     children?: React.ReactNode;
 }
-export const RootThemeProvider = (props: RootThemeProviderProps) => {
-    const theme = useThemeDetermined()
 
-  return(
-      <ThemeProvider value={theme}>
-            {/* Render the children */}
-            {props?.children}
+export const RootThemeProvider = (props: RootThemeProviderProps) => {
+    const theme = useThemeDetermined();
+    const isDarkTheme = useIsDarkTheme();
+    const statusbarTextColorStyle = isDarkTheme ? "light" : "dark";
+    const [show, hide, showActionsheetConfig, visible] = useMyGlobalActionSheet();
+    const backgroundColor = useViewBackgroundColor();
+
+    return(
+        <ThemeProvider value={theme}>
+            <StatusBar style={statusbarTextColorStyle} />
+            {/* Set View to occupy all available space and control accessibility based on action sheet visibility */}
+            <View style={{height: "100%", width: "100%", backgroundColor: backgroundColor}} accessible={!visible} accessibilityElementsHidden={visible}>
+              {/* Render the children respecting the action sheet's visibility */}
+              {props.children}
+            </View>
             <RootFabHolder />
             <MyGlobalActionSheet />
-      </ThemeProvider>
-  )
+        </ThemeProvider>
+    );
 }

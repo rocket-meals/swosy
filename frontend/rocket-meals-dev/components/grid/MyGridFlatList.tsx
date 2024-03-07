@@ -40,6 +40,13 @@ interface GridListProps<T> {
     flatListProps?: FlatListProps<T>
 }
 
+export const DEFAULT_GRID_LIST_SPACING: GridListSpacing = {
+    marginTop: 10,
+    marginOuter: 5,
+    marginInner: 5,
+    marginRow: 10,
+}
+
 /**
  * A custom grid list component that renders items in a grid layout.
  * Internally, it uses a FlatList to render the items. Customize the FlatList by passing flatListProps.
@@ -66,6 +73,8 @@ export const MyGridFlatList = <T extends { key: string }>({
     const amountTotalItemsLastRow = data.length - amountCompleteRows * gridAmount;
     const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? gridAmount - amountTotalItemsLastRow : 0;
 
+    const usedSpacing = spacing || DEFAULT_GRID_LIST_SPACING;
+
     const dummyKey = 'dummy';
 
     const adjustedData = [...data, ...Array(amountDummyItemsNeeded).fill({ key: dummyKey, isDummy: true })];
@@ -82,35 +91,35 @@ export const MyGridFlatList = <T extends { key: string }>({
         };
 
         // row margin
-        if (spacing?.marginRow) {
-            itemStyle.marginBottom = spacing.marginRow;
+        if (usedSpacing?.marginRow) {
+            itemStyle.marginBottom = usedSpacing.marginRow;
         }
 
-        if(spacing?.marginTop && isFirstRow){
-            itemStyle.marginTop = spacing.marginTop;
+        if(usedSpacing?.marginTop && isFirstRow){
+            itemStyle.marginTop = usedSpacing.marginTop;
         }
 
         // outer margin only for the first item in a row
-        if (spacing?.marginOuter) {
+        if (usedSpacing?.marginOuter) {
             if (isFirstInRow) {
-                itemStyle.marginLeft = spacing.marginOuter;
+                itemStyle.marginLeft = usedSpacing.marginOuter;
             }
             if (isLastInRow) {
-                itemStyle.marginRight = spacing.marginOuter;
+                itemStyle.marginRight = usedSpacing.marginOuter;
             }
         }
 
         // inner margin
-        if (spacing?.marginInner) {
+        if (usedSpacing?.marginInner) {
             if (isInCenter) {
-                itemStyle.marginLeft = spacing.marginInner;
-                itemStyle.marginRight = spacing.marginInner;
+                itemStyle.marginLeft = usedSpacing.marginInner;
+                itemStyle.marginRight = usedSpacing.marginInner;
             }
             if(isFirstInRow){
-                itemStyle.marginRight = spacing.marginInner;
+                itemStyle.marginRight = usedSpacing.marginInner;
             }
             if(isLastInRow){
-                itemStyle.marginLeft = spacing.marginInner;
+                itemStyle.marginLeft = usedSpacing.marginInner;
             }
         }
 

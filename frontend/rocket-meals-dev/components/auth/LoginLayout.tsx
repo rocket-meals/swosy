@@ -64,9 +64,9 @@ export const LoginLayout = (props: any) => {
                 <MySafeAreaViewForScreensWithoutHeader>
                     <KeyboardAvoidingView
                         keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
-                        style={{flex: 1, width: "100%"}}
+                        style={{flexShrink: 1, width: "100%"}}
                         behavior={Platform.OS === "ios" ? "padding" : "height"} >
-                        <ScrollViewWithGradient style={{flex: 1}}>
+                        <ScrollViewWithGradient style={{flexShrink: 1}}>
                             <View style={{paddingHorizontal: padding, paddingTop: padding, width: "100%"}}>
                                 <View
                                     style={{

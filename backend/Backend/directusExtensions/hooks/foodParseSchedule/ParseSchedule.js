@@ -9,7 +9,9 @@ const TABLENAME_CANTEENS = "canteens";
 const TABLENAME_MARKINGS = "markings";
 const TABLENAME_MEALFOFFERS_MARKINGS = "foodoffers_markings"
 
-const TABLENAME_FLOWHOOKS = "app_settings_foods";
+const TABLENAME_FLOWHOOKS = "app_settings";
+
+const SCHEDULE_NAME = "FoodParseSchedule";
 
 export class ParseSchedule {
 
@@ -32,7 +34,7 @@ export class ParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            parsing_status: status
+            foods_parsing_status: status
         });
     }
 
@@ -41,7 +43,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_enabled;
+                return flows?.foods_parsing_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -54,7 +56,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_status;
+                return flows?.foods_parsing_status;
             }
         } catch (err) {
             console.log(err);
@@ -62,22 +64,19 @@ export class ParseSchedule {
         return undefined;
     }
 
-    async parse() {
-        console.log("[Check] Meal Parse Schedule");
+    async parse(force = false) {
         this.foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
         this.markingsService = this.itemsServiceCreator.getItemsService(TABLENAME_MARKINGS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
-        let statusCheck = "check";
+        let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";
 
-        if (enabled && status === statusCheck && this.finished) {
-            console.log("[Start] Meal Parse Schedule");
+        if ((enabled && status === statusCheck && this.finished) || force) {
+            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
             await this.setStatus(statusRunning);
 
@@ -184,7 +183,11 @@ export class ParseSchedule {
     }
 
     async updateCanteens(canteenJSONList) {
+        let amountOfCanteens = canteenJSONList.length;
+        let currentCanteen = 0;
         for (let canteenJSON of canteenJSONList) {
+            currentCanteen++;
+            console.log("Update Canteen " + currentCanteen + " / " + amountOfCanteens);
             let canteen = await this.findOrCreateCanteen(canteenJSON.external_identifier);
         }
     }
@@ -334,7 +337,11 @@ export class ParseSchedule {
     }
 
     async updateFoods(mealsJSONList) {
+        let amountOfMeals = mealsJSONList.length;
+        let currentMeal = 0;
         for (let mealJSON of mealsJSONList) {
+            currentMeal++;
+            console.log("Update Food " + currentMeal + " / " + amountOfMeals);
             let meal = await this.findOrCreateFood(mealJSON);
             if (!!meal && meal.id) {
                 let markingLabelsList = await this.parser.getMarkingLabelsForMealJSON(mealJSON) || [];
@@ -376,9 +383,11 @@ export class ParseSchedule {
     }
 
     async findOrCreateCanteen(canteenLabel) {
+        console.log("Find or create canteen: " + canteenLabel)
+
         let tablename = TABLENAME_CANTEENS;
         let canteenJSON = {
-            label: canteenLabel,
+            alias: canteenLabel,
             external_identifier: canteenLabel
         };
 
@@ -396,9 +405,12 @@ export class ParseSchedule {
 
         // Step 2: If canteen doesn't exist, create a new one
         if (!canteen) {
+            console.log("No canteen found, creating a new one")
             canteenJSON = this.setStatusPublished(canteenJSON);
             let createdCanteen_id = await itemService.createOne(canteenJSON);
             canteen = await itemService.readOne(createdCanteen_id);
+        } else {
+            console.log("Canteen found")
         }
 
         return canteen;
@@ -461,7 +473,11 @@ export class ParseSchedule {
     }
 
     async createFoodOffers(rawMealOffers) {
+        let amountOfRawMealOffers = rawMealOffers.length;
+        let currentRawMealOffer = 0;
         for (let rawMealOffer of rawMealOffers) {
+            currentRawMealOffer++;
+            console.log("Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
             await this.createFoodOffer(rawMealOffer);
         }
     }
@@ -470,7 +486,12 @@ export class ParseSchedule {
         let tablename = TABLENAME_MARKINGS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
 
+        let amountOfMarkings = markingsJSONList.length;
+        let currentMarking = 0;
         for (let markingJSON of markingsJSONList) {
+            currentMarking++;
+            console.log("Update Marking " + currentMarking + " / " + amountOfMarkings);
+
             let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
             delete markingJSONCopy.translations; // Remove meals translations, add it later
 

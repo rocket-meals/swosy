@@ -57,6 +57,15 @@ Similar steps can be made for local testing
             - "npm run schema-apply:latest"
     - `git clone <Forked RocketMeals Frontend Server>`
 
+
+## Configure Directus
+
+- `docker-compose build`
+- `docker-compose up`
+- Enable Extension: Types
+  - `http://127.0.0.1/rocket-meals/api/admin/settings/project`
+    - Check "Generate Types" Extension
+
 ## Configure Flows
 
 - See
@@ -81,6 +90,12 @@ Query : { "filter": { "_and": [] } }
   - 
 - open docker-compose.yaml
 - use Directus docks for adding new SSO https://docs.directus.io/configuration/config-options/#sso-oauth2-and-openid
+
+
+## Contributing - Database Schema
+
+- Read the file at ./Backend/README.md
+
 
 ### Apple SSO
 Since the SSO for Apple is a bit more to do, read the file: "SSO_APPLE.md"
@@ -107,15 +122,6 @@ run the `./permissionDatabase.sh` script.
 Server seems to be stopped during an transaction
 See for a "-journal.db" file and delete it.
 
-
-#### Tarball data for
-```
-npm WARN tarball tarball data for @directus/specs@file:directus-specs-9.8.0.tgz (null) seems to be corrupted. Trying again.
-```
-
-Run the `./cleanDocker.sh` script to remove all docker images and volumes for directus. Then run `docker-compose up` again.
-
-
 #### SSO Login error
 
 ```
@@ -127,12 +133,4 @@ Check if the RoleId for the SSO-User is set correctly in the `docker-compose.yam
 
 ## Project Settings
 
-```
-.sso-icon {
-    background: #EE581F !important;
-}
-
-.v-icon {
-    color: white !important;
-}
-```
+- Default Rocket Meals Color: #EE581F

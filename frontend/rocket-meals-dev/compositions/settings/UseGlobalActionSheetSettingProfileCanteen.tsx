@@ -4,6 +4,7 @@ import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from "@/components/acti
 import {Canteens} from "@/helper/database/databaseTypes/types";
 import {CanteenGridList} from "@/compositions/resourceGridList/canteenGridList";
 import React from "react";
+import {CanteenSelectGridList} from "@/compositions/resourceGridList/canteenSelectGridList";
 
 export function useGlobalActionSheetSettingProfileCanteen(){
 
@@ -15,13 +16,6 @@ export function useGlobalActionSheetSettingProfileCanteen(){
 
     let items: MyGlobalActionSheetItem[] = [];
 
-    const onSelectCanteen = (canteen: Canteens, hide: () => void) => {
-        console.log("onPress:")
-        console.log(canteen);
-        setProfileCanteen(canteen);
-        hide();
-    }
-
     items.push({
         key: "gridList",
         label: label,
@@ -29,11 +23,11 @@ export function useGlobalActionSheetSettingProfileCanteen(){
         accessibilityLabel: translation_title,
         render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
             // Use the custom context provider to provide the input value and setter
-            const onPress = (canteen: Canteens) => {
-                onSelectCanteen(canteen, hide)
+            const onPress = (canteen: Canteens | undefined) => {
+                hide();
             }
 
-            return <CanteenGridList onPress={onPress} />
+            return <CanteenSelectGridList onPress={onPress} />
         }
     })
 

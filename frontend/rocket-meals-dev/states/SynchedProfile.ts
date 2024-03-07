@@ -3,7 +3,7 @@ import {
     Canteens,
     Devices,
     DirectusUsers,
-    FoodsFeedbacks,
+    FoodsFeedbacks, Markings,
     Profiles,
     ProfilesBuildingsFavorites,
     ProfilesBuildingsLastVisited,
@@ -16,27 +16,39 @@ import {useIsCurrentUserAnonymous} from "@/states/User";
 import {useIsServerOnline} from "@/states/SyncStateServerInfo";
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 
-export async function loadProfileRemote(user: DirectusUsers | undefined) {
+async function loadProfileRemoteByProfileId(id: string) {
+    const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
+    const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
+
+    const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
+        acc[x] = { _limit: -1 };
+        return acc;
+    }, {} as Record<string, { _limit: number }>);
+
+    let usersProfileId: string = id;
+    console.log("usersProfileId: ",usersProfileId)
+    console.log("Okay lets load from remote")
+    const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
+    return await profileCollectionHelper.readItem(usersProfileId, {
+        fields: profileFields,
+        deep: deepFields,
+    });
+}
+
+export async function deleteProfileRemote(id: string | number){
+    const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
+    await profileCollectionHelper.deleteItem(id);
+
+}
+
+export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
     console.log("loadProfileRemote");
     console.log("user", user)
     if(!!user){
-        const profileRelations = ["markings", "foods_feedbacks", "devices", "buildings_favorites", "buildings_last_visited"]
-        const profileFields = profileRelations.map(x => x+".*").concat(["*"]);
-
-        const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
-            acc[x] = { _limit: -1 };
-            return acc;
-        }, {} as Record<string, { _limit: number }>);
-
         let usersProfileId: string = user.profile as unknown as string
         console.log("usersProfileId: ",usersProfileId)
         if (usersProfileId){
-            console.log("Okay lets load from remote")
-            const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
-            return await profileCollectionHelper.readItem(usersProfileId, {
-                fields: profileFields,
-                deep: deepFields,
-            });
+            return await loadProfileRemoteByProfileId(usersProfileId);
         }
     }
     return undefined;
@@ -47,9 +59,8 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
     console.log("id: ", id)
     console.log("profile: ", profile)
     const profileCollectionHelper = new CollectionHelper<Profiles>("profiles")
-    let answer = await profileCollectionHelper.updateItem(id, profile);
-    console.log("answer: ",answer)
-    return answer
+    await profileCollectionHelper.updateItem(id, profile);
+    return await loadProfileRemoteByProfileId(id as string);
 }
 
 export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)>), (number | undefined)] {
@@ -89,7 +100,7 @@ export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<P
     return [usedResource, usedSetResource, lastUpdate]
 }
 
-export function useNickname(): [string | undefined, ((newValue: string | undefined) => Promise<boolean | void>)]{
+export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => Promise<boolean | void>)]{
     const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
     async function setNickname(nextValue: string | undefined){
         console.log("SettingsRowProfileNickname onSave", nextValue)
@@ -101,12 +112,21 @@ export function useNickname(): [string | undefined, ((newValue: string | undefin
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)]{
     const [profile, setProfile] = useSynchedProfile();
-    let language = profile?.language || DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
     const setLanguage = (language: string) => {
         profile.language = language;
         return setProfile(profile);
     }
-    return [language, setLanguage];
+    let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+    let profileLanguage = profile?.language;
+    if(!!profileLanguage){
+        if(typeof profileLanguage !== "string"){
+            usedLanguage = profileLanguage.code
+        } else {
+            usedLanguage = profileLanguage;
+        }
+    }
+
+    return [usedLanguage, setLanguage];
 }
 
 export function useProfileLocaleForJsDate(): string {
@@ -123,7 +143,7 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
     const [profile, setProfile] = useSynchedProfile();
     const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
-    let canteen_id = profile?.canteen as number;
+    let canteen_id = profile?.canteen as string;
     let canteen = undefined
     if(canteenDict && canteen_id){
         canteen = canteenDict[canteen_id];
@@ -137,9 +157,10 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 }
 
 export function useIsProfileSetupComplete(): boolean {
-    const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+    const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen(); // We do not need a canteen to be set
+    // we should check if the user is first time user and has not set any data
 
-    const requiredSetVariables = [profileCanteen]
+    const requiredSetVariables: any[] = []
     for(let i=0; i<requiredSetVariables.length; i++){
         let requiredVariable = requiredSetVariables[i];
         if(!requiredVariable){
@@ -150,33 +171,53 @@ export function useIsProfileSetupComplete(): boolean {
     return true;
 }
 
-function getDemoResource(): Profiles {
-    const undefinedBuildingsFavorites: ProfilesBuildingsFavorites[] = [];
-    const undefinedBuildingsLastVisited: ProfilesBuildingsLastVisited[] = [];
-    const undefinedDevices: Devices[] = [];
-    const undefinedFoodsFeedbacks: FoodsFeedbacks[] = [];
-    const undefinedMarkings: ProfilesMarkings[] = [];
 
-    return {
-        //avatar?: unknown;
-        //canteen?: undefined
-        //course_timetable?: unknown;
-        credit_balance: 12.34,
-        date_created: new Date().toISOString(),
-        date_updated: new Date().toISOString(),
-        id: 123,
-        //language?: string;
-        nickname: "Demo User",
-        //sort?: number;
-        status: "",
-        //user_created?: string & DirectusUsers;
-        //user_updated?: string & DirectusUsers;
-        buildings_favorites: undefinedBuildingsFavorites,
-        buildings_last_visited: undefinedBuildingsLastVisited,
-        devices: undefinedDevices,
-        foods_feedbacks: undefinedFoodsFeedbacks,
-        markings: undefinedMarkings,
+export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking: Markings, dislikes: boolean) => void, (marking: Markings) => void]{
+    const [profile, setProfile] = useSynchedProfile();
+    let profileMarkingsList: ProfilesMarkings[] = profile?.markings || [];
+    let profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+    for(let i=0; i<profileMarkingsList.length; i++){
+        let profilesMarking = profileMarkingsList[i];
+        let markings_key = profilesMarking.markings_id;
+        if(!!markings_key && typeof profilesMarking.markings_id === "string"){
+            profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
+        }
     }
+
+    const privateSetMarkings = (marking: Markings, dislikes: boolean, remove: boolean) => {
+        let markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
+
+        let newProfileMarking: Partial<ProfilesMarkings> = {
+            markings_id: marking.id,
+            profiles_id: profile?.id,
+            dislikes: dislikes
+        };
+        markingsDictCopy[marking.id] = newProfileMarking;
+
+        if(remove){
+            delete markingsDictCopy[marking.id];
+        }
+
+        let markingsIds = Object.keys(markingsDictCopy);
+        let newMarkings: ProfilesMarkings[] = [];
+        for(let markingId of markingsIds){
+            newMarkings.push(markingsDictCopy[markingId]);
+        }
+
+        profile.markings = newMarkings;
+        setProfile(profile);
+    }
+
+    const setProfileMarking = (marking: Markings, dislikes: boolean) => {
+        privateSetMarkings(marking, dislikes, false);
+    }
+
+    const removeProfileMarking = (marking: Markings) => {
+        privateSetMarkings(marking, false, true);
+    }
+
+
+    return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
 }
 
 export function getEmptyProfile(): Partial<Profiles>{

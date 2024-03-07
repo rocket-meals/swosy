@@ -45,12 +45,10 @@ export default async function ({filter, action, init, schedule}, {
     const instanceId = process?.env?.INSTANCE_ID;
     let isMaster = instanceId === "master"
 
-    let collection = "app_settings_cashregisters";
+    let collection = "app_settings";
 
     try {
-        console.log("cashregisterSchedule init");
         await parseSchedule.init(getSchema, services, database, logger);
-        console.log("cashregisterSchedule master init finished");
     } catch (err) {
         let errMsg = err.toString();
         if (errMsg.includes("no such table: directus_collections")) {

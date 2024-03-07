@@ -36,7 +36,7 @@ export default function CardListTestScreen() {
         return (
                 <MyCardForResourcesWithImage
                     key={item.key}
-                    text={title}
+                    heading={title}
                     assetId={item.data.image}
                     onPress={() => console.log("Pressed")}
                     accessibilityLabel={title}/>

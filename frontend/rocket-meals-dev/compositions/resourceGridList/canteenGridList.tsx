@@ -36,14 +36,16 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
 
         let building = undefined;
         let imageAssetId = undefined
+        let image_url = undefined
         let thumbHash = undefined
         if(buildingsDict){
             building = buildingsDict[canteen?.id];
             imageAssetId = building?.image;
-            thumbHash = building?.thumbHash;
+            thumbHash = building?.image_thumb_hash
+            image_url = building?.image_remote_url
         }
 
-        let canteen_label: string = canteen.label || canteen_key+""
+        let canteen_label: string = canteen.alias || canteen_key+""
         let text = canteen_label
 
         const onPressCanteen = () => {
@@ -55,8 +57,9 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
         return (
             <MyCardForResourcesWithImage
                 key={item.key}
-                text={text}
+                heading={text}
                 assetId={imageAssetId}
+                image_url={image_url}
                 thumbHash={thumbHash}
                 onPress={onPressCanteen}
                 accessibilityLabel={text}/>

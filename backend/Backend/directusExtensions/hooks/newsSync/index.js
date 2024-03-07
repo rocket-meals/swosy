@@ -1,5 +1,6 @@
 import {NewsParseSchedule} from "./NewsParseSchedule.js"; // in directus we need to add the filetype ... otherwise we get an error
-import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser.js"; // in directus we need to add the filetype ... otherwise we get an error
+import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser.js";
+import {StudentenwerkOsnabrueckNews_Parser} from "./StudentenwerkOsnabrueckNews_Parser.js"; // in directus we need to add the filetype ... otherwise we get an error
 
 
 
@@ -67,9 +68,16 @@ export default async function ({filter, action, init, schedule}, {
             }
         }
 
-        let collection = "app_settings_news";
+        let collection = "app_settings";
 
         filterFlowHookOnlyForMaster(filter, collection, isMaster, exceptions);
+
+        /**
+        let osnabrueckParser = new StudentenwerkOsnabrueckNews_Parser();
+        let items = await osnabrueckParser.getJSONList();
+        console.log("Items: ")
+        console.log(JSON.stringify(items, null, 2));
+            */
 
         action(
             collection + ".items.update",

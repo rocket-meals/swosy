@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading, View, Text} from "@/components/Themed"
+import {Heading, View} from "@/components/Themed"
 import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
 import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
 import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -9,6 +9,8 @@ import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {Divider} from "@gluestack-ui/themed";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
+import {UtilizationButton} from "@/compositions/utilizationForecast/UtilizationButton";
+import {SettingsButtonProfileEatingHabits} from "@/compositions/settings/SettingsButtonProfileEatingHabits";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     const title = undefined //"TEST"
@@ -25,13 +27,14 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
     function renderSecondaryHeaderContent(props: any) {
         return (
             <View style={{
-                height: "100%",
-                width: "100%",
                 justifyContent: "flex-end",
                 alignItems: "center",
                 flexDirection: "row",
             }} >
-                <View>
+                <View style={{
+                    flexDirection: "row",
+                }}>
+                    <SettingsButtonProfileEatingHabits />
                     <SettingsButtonProfileCanteen />
                 </View>
             </View>
@@ -58,6 +61,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
                 justifyContent: "center",
                 alignItems: "center",
                 flexDirection: "row",
+                flexShrink: 1,
             }}>
                 {renderSwitchDate(false)}
                 <SimpleDatePicker currentDate={selectedDate} onSelectDate={(date) => {
@@ -67,12 +71,23 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
                 {renderSwitchDate(true)}
             </View>
             <View style={{
-                alignItems: "center",
-                flexDirection: "row",
+                flexDirection: "column",
+                justifyContent: "center",
+                flexShrink: 1,
+                flexWrap: "wrap",
             }}>
                 <Heading>{humanReadableDate}</Heading>
             </View>
+            <View style={{
+                // take the rest of the space
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+                flexDirection: "row",
+                flexGrow: 1,
 
+            }}>
+                <UtilizationButton />
+            </View>
         </View>
         <Divider />
     </View>

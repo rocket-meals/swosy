@@ -206,6 +206,12 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
             <View style={{width: "100%", flex: 1
             }}>
                 <MyGridFlatList
+                    spacing={{
+                        marginInner: 0,
+                        marginOuter: 0,
+                        marginRow: 0,
+                        marginTop: 0
+                    }}
                     data={outputWithKeys}
                     renderItem={(info: ListRenderItemInfo<DataItem>) => {
                         const {item, index} = info;
@@ -303,6 +309,9 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
                 <View style={{width: "100%"}}>
                     {renderSwitchYearRow(shownDate)}
                     {renderSwitchMonthRow(shownDate)}
+                    <View style={{
+                        height: 50,
+                    }}></View>
                     {renderRow(renderWeekdayRowForMonth())}
                     {renderAllDaysInMonth(shownDate)}
                 </View>

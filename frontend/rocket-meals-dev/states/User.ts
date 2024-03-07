@@ -4,6 +4,7 @@ import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {AuthenticationData} from "@directus/sdk";
 import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
 import {DirectusUsers} from "@/helper/database/databaseTypes/types";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,
@@ -12,6 +13,7 @@ export type CachedUserInformation = {
 
 export function useLogoutCallback(): () => void {
     return async () => {
+        ServerAPI.client = null
         await SyncState.getInstance().reset();
     }
 }

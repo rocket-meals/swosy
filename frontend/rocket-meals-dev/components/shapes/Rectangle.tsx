@@ -2,7 +2,7 @@ import React from 'react';
 import {View, ViewProps} from "react-native";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
-type AspectRatio = number | [number, number] | { width: number, height: number };
+export type AspectRatio = number | [number, number] | { width: number, height: number };
 
 //https://www.npmjs.com/package/react-rectangle/v/1.2.0
 export type MyCardForResourcesWithImageProps = {

@@ -42,7 +42,7 @@ export default async function ({filter, action, init, schedule}, {
     const instanceId = process?.env?.INSTANCE_ID;
     let isMaster = instanceId === "master"
 
-    let collection = "app_settings_utilizations";
+    let collection = "app_settings";
 
     try {
         console.log("foodParseSchedule init");

@@ -16,10 +16,12 @@ import {ComponentProps, MutableRefObject} from "react";
 import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import { TextInput as RNTextInput } from "react-native";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet"; // Use the correct import for TextInput
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
+import {PlatformHelper} from "@/helper/PlatformHelper"; // Use the correct import for TextInput
+import {config} from "@gluestack-ui/config";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 type ThemeProps = {
   lightColor?: string;
@@ -43,6 +45,16 @@ export function Icon({name, size, family, ...props}: IconProps){
   return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
 }
 
+const DEFAULT_TEXT_SIZE = "md";
+
+export type TextSizeType = "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl";
+export function getFontSizeInPixelBySize(size: TextSizeType | undefined){
+    let tokens = config.tokens;
+    let fontSize = tokens.fontSizes
+    let usedSize = size || DEFAULT_TEXT_SIZE;
+    return fontSize[usedSize];
+}
+
 type TextInputProps = {
     myRef?: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
     variant?: "outline" | "rounded" | "underlined" | undefined
@@ -61,6 +73,7 @@ type TextInputProps = {
 }
 export function TextInput(props: TextInputProps){
     let textContrastColor = useTextContrastColor();
+    const usedFontSize = getFontSizeInPixelBySize(props.size || DEFAULT_TEXT_SIZE);
     let usedColor = props.style?.color;
     if(usedColor === undefined){
         usedColor = textContrastColor;
@@ -68,7 +81,6 @@ export function TextInput(props: TextInputProps){
 
   let defaultInputProps: ComponentProps<typeof DefaultInput> = {
     variant: props.variant,
-    size: props.size,
     isDisabled: props.isDisabled,
     isInvalid: props.isInvalid,
     isReadOnly: props.isReadOnly,
@@ -77,9 +89,6 @@ export function TextInput(props: TextInputProps){
   if(defaultInputProps.variant === undefined){
     defaultInputProps.variant = "outline";
   }
-    if(defaultInputProps.size === undefined){
-        defaultInputProps.size = "md";
-    }
 
     // set mask to password if isPassword is true
     let type: "text" | "password" | undefined = "text";
@@ -117,6 +126,9 @@ export function TextInput(props: TextInputProps){
             onSubmitEditing={props?.onSubmitEditing}
             ref={props.myRef}
             {...defaultInputFieldProps}
+            style={{
+                fontSize: usedFontSize
+            }}
         />
       </DefaultInput>
   )
@@ -140,18 +152,36 @@ export function Heading({style,...props}: TextProps) {
     let mergedStyle = {color: textContrastColor}
 
     // @ts-ignore
-    return <DefaultHeading selectable={true} style={[mergedStyle, style]} {...props} />;
+    return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
-export function Text({style,...props}: TextProps) {
+export type MyTextProps = TextProps & {
+    size?: TextSizeType | undefined;
+    bold?: boolean;
+    italic?: boolean;
+    underline?: boolean;
+    isTruncated?: boolean;
+    highlight?: boolean;
+    sub?: boolean;
+    strikeThrough?: boolean;
+}
+export function Text({style, size,...props}: MyTextProps) {
     let textContrastColor = useTextContrastColor();
+    const isWeb = PlatformHelper.isWeb();
+
+    const usedSize = size || DEFAULT_TEXT_SIZE;
+
     // @ts-ignore
     let defaultStyle = {
-        color: textContrastColor,
-        wordBreak: "break-word" // only for web since otherwise a long word would not break
+        color: textContrastColor
     }
 
-  return <DefaultText selectable={true} style={[defaultStyle, style]} {...props} />;
+    if(isWeb){ // only for web since on mobile the text will break automatically
+        // @ts-ignore
+        defaultStyle["wordBreak"] = "break-word" // only for web since otherwise a long word would not break
+    }
+
+  return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
 }
 
 export function View({style, ...props}: ViewProps) {

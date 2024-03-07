@@ -1,0 +1,8 @@
+- Beim export Felder anpassen:
+	- User Created: entfernen
+	- User Updated: entfernen
+	- Translations: entfernen
+	- Translations -> Text: einfügen
+	- Translations -> Language Code: einfügen
+	- Translations -> Be Source for Translations: einfügen
+	- Translations -> Let Be Translated: einfügen

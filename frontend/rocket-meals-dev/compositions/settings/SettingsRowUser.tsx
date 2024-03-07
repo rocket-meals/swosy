@@ -3,7 +3,7 @@ import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {Text, View} from "@/components/Themed";
-import {useCurrentUser} from "@/states/User";
+import {useCurrentUser, useIsCurrentUserAnonymous} from "@/states/User";
 import {IconNames} from "@/constants/IconNames";
 
 interface AppState {
@@ -12,12 +12,17 @@ interface AppState {
 export const SettingsRowUser: FunctionComponent<AppState> = ({...props}) => {
 
     let [currentUser, setUserWithCache] = useCurrentUser();
+    const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
     const debug = useIsDebug();
 
     const leftIcon = IconNames.settings_user_account_icon
-    const translation_title = useTranslation(TranslationKeys.user)
+    const translation_title = useTranslation(TranslationKeys.account)
+    const translation_anonymous = useTranslation(TranslationKeys.anonymous)
     const label = translation_title
-    const labelRight = currentUser?.first_name || currentUser?.id
+    let labelRight = currentUser?.id
+    if(isCurrentUserAnonymous){
+        labelRight = translation_anonymous
+    }
 
     const accessibilityLabel = translation_title;
 

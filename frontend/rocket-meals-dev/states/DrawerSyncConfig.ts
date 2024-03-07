@@ -2,6 +2,7 @@ import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {useSynchedLanguageByCode} from "@/states/SynchedLanguages";
+import {useIsLargeDevice} from "@/helper/device/DeviceHelper";
 
 export enum DrawerConfigPosition {
     Left = "left",
@@ -45,6 +46,11 @@ export function useDrawerPositionRaw(): [DrawerConfigPosition | null, (newValue:
     }
 
     return [drawerConfigRaw?.position || null, setPosition]
+}
+
+export function useIsDrawerPermanentVisible(): boolean {
+    const isLargeDevice = useIsLargeDevice(); // Determine if the device has a large screen.
+    return isLargeDevice;
 }
 
 export function useDrawerPosition(): [DrawerConfigPosition.Left | DrawerConfigPosition.Right, (newValue: DrawerConfigPosition) => void] {

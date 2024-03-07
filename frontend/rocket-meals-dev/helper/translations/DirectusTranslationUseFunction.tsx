@@ -7,11 +7,7 @@ export type TranslationEntry = {
     [key: string]: any
 }
 
-export function useDirectusTranslation(translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string, params?: any): string {
-  let [languageCode, setLanguageCode] = useProfileLanguageCode();
-
-  console.log("translations", translations)
-
+export function getDirectusTranslation(languageCode: string, translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string, params?: any): string {
   const translationDict = getLanguageDict(translations);
 
   type TranslationDict = {[key: string]: TranslationEntry};
@@ -43,22 +39,20 @@ export function useDirectusTranslation(translations: TranslationEntry[], field: 
     return translation;
   }
 
-  console.log("translationDict", translationDict)
-
   let translation = getTranslation(translationDict, languageCode, params);
   if (!!translation) {
     return translation
   }
 
   // First fallback language
-  let default_language_code = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE;
+  let default_language_code = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
   let fallback_translation = getTranslation(translationDict, default_language_code, params);
   if (!!fallback_translation && !ignoreFallbackLanguage) { //TODO: maybe allow an user to set a proposal for his language
     return fallback_translation
   }
 
   // Second fallback language
-  default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE;
+  default_language_code = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
   fallback_translation = getTranslation(translationDict, default_language_code, params);
   if (!!fallback_translation && !ignoreFallbackLanguage) { //TODO: maybe allow an user to set a proposal for his language
     return fallback_translation
@@ -69,4 +63,10 @@ export function useDirectusTranslation(translations: TranslationEntry[], field: 
   }
 
   return "Missing translation";
+}
+
+
+export function useDirectusTranslation(translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string, params?: any): string {
+  let [languageCode, setLanguageCode] = useProfileLanguageCode();
+  return getDirectusTranslation(languageCode, translations, field, ignoreFallbackLanguage, fallback_text, params);
 }

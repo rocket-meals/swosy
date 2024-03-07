@@ -1,4 +1,4 @@
-import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
+import {MyDrawer, useRenderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import React from "react";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
@@ -6,13 +6,36 @@ import {useSyncState} from "@/helper/syncState/SyncState";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
 import {IconNames} from "@/constants/IconNames";
+import {Custom_Wiki_Ids, useSynchedWikisDict} from "@/states/SynchedWikis";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
+import {
+    useIsBuildingsEnabled, useIsCourseTimetableEnabled,
+    useIsFoodsEnabled,
+    useIsHousingEnabled,
+    useIsNewsEnabled
+} from "@/states/SynchedAppSettings";
 
 export const MyDrawerAuthenticated = (props: any) => {
     const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
 
+    const isFoodsEnabled = useIsFoodsEnabled();
+    const isHousingEnabled = useIsHousingEnabled();
+    const isBuildingsEnabled = useIsBuildingsEnabled();
+    const isNewsEnabled = useIsNewsEnabled();
+    const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
+
     const translation_home = useTranslation(TranslationKeys.home);
     const translation_settings = useTranslation(TranslationKeys.settings);
     const translation_canteens = useTranslation(TranslationKeys.canteens);
+    const translation_buildings = useTranslation(TranslationKeys.buildings);
+    const translation_housing = useTranslation(TranslationKeys.housing);
+    const translation_news = useTranslation(TranslationKeys.news);
+    const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
+
+    const customDrawerWikiItems = useMyDrawerWikiItems()
+    const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
 
     const customDrawerItems: MyDrawerCustomItemProps[] = [
         /**
@@ -27,37 +50,75 @@ export const MyDrawerAuthenticated = (props: any) => {
         */
     ]
 
+    if(!!customDrawerWikiItems) {
+        customDrawerItems.push(...customDrawerWikiItems)
+    }
+
+
     return(
         <MyDrawer
             customDrawerItems={customDrawerItems}
         >
-            {renderMyDrawerScreen({
+            {useRenderMyDrawerScreen({
                 routeName: "home/index",
                 label: translation_home,
                 title: translation_home,
                 icon: "home",
                 visibleInDrawer: false
             })}
-            {renderMyDrawerScreen({
+            {useRenderMyDrawerScreen({
                     routeName: "foodoffers/index",
                     label: translation_canteens,
                     title: translation_canteens,
                     icon: IconNames.foodoffers_icon,
-                    header: getMyScreenHeaderFoodOffers()
+                    header: getMyScreenHeaderFoodOffers(),
+                    visibleInDrawer: isFoodsEnabled
             })}
-            {renderMyDrawerScreen({
+            {useRenderMyDrawerScreen({
+                routeName: "buildings/index",
+                label: translation_buildings,
+                title: translation_buildings,
+                icon: IconNames.building_icon,
+                //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: isBuildingsEnabled
+            })}
+            {useRenderMyDrawerScreen({
+                routeName: "housing/index",
+                label: translation_housing,
+                title: translation_housing,
+                icon: IconNames.apartments_icon,
+                //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: isHousingEnabled
+            })}
+            {useRenderMyDrawerScreen({
+                routeName: "news/index",
+                label: translation_news,
+                title: translation_news,
+                icon: IconNames.news_icon,
+                //header: getMyScreenHeaderFoodOffers()
+                visibleInDrawer: isNewsEnabled
+            })}
+            {useRenderMyDrawerScreen({
+                routeName: "course-timetable/index",
+                label: translation_course_timetable,
+                title: translation_course_timetable,
+                icon: IconNames.course_timetable_icon,
+                visibleInDrawer: isCourseTimetableEnabled
+            })}
+            {useRenderMyDrawerScreen({
                 routeName: "settings/index",
                 label: translation_settings,
                 title: translation_settings,
                 icon: IconNames.settings_icon,
             })}
-            {renderMyDrawerScreen({
+            {useRenderMyDrawerScreen({
                 routeName: "components/index",
                 label: "Components",
                 title: "Components",
                 icon: "drawing-box",
                 visibleInDrawer: isDevelopMode
             })}
+            {renderedMyDrawerWikiItems}
         </MyDrawer>
     )
 }

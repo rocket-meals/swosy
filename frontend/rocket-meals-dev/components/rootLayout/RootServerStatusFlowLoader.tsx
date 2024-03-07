@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {SyncState, useSyncState} from "@/helper/syncState/SyncState";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {Text, View} from "@/components/Themed";
@@ -18,7 +18,8 @@ export interface ServerStatusFlowLoaderProps {
 
 export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) => {
 
-  const [serverInfoRaw, setServerInfoRaw
+    const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
+  const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
   ] = useServerInfoRaw();
   const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
@@ -42,34 +43,36 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
     // call anonymous function
     (async () => {
       let remote_server_info = await ServerAPI.downloadServerInfo();
+      console.log("ServerInfoRaw", remote_server_info)
+
       if(remote_server_info.status === "offline"){
         //console.log("Server is offline at fetching remote")
-          if(!!serverInfoRaw){
+          if(!!serverInfo){
             //console.log("Server is offline at fetching remote, but we have local data")
-            remote_server_info = serverInfoRaw;
+            remote_server_info = serverInfo;
             remote_server_info.status = "cached"
           }
       }
 
-      setServerInfoRaw(remote_server_info);
+      setServerInfo(remote_server_info, nowInMs);
     })();
   }, []);
 
     // 1. load server information
-  if(!serverInfoRaw){
+  if(serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo){
     return(
         <View>
           <Text>{"Loading server Info"}</Text>
-          <Text>{JSON.stringify(serverInfoRaw, null, 2)}</Text>
+          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
         </View>
     )
   }
 
-  if(serverInfoRaw.status === "offline"){
+  if(serverInfo.status === "offline"){
     return(
         <View>
           <Text>{"Server is offline and no data is cached"}</Text>
-          <Text>{JSON.stringify(serverInfoRaw, null, 2)}</Text>
+          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
         </View>
     )
   }

@@ -67,10 +67,10 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
             icon: icon,
             active: active,
             accessibilityLabel: itemAccessibilityLabel,
-            onSelect: async (key: string) => {
+            onSelect: async (key: string, hide: () => void) => {
                 let nextColorSchemeKey: DrawerConfigPosition = key as DrawerConfigPosition
                 setSavedOptionKey(nextColorSchemeKey)
-                return true // close the actionsheet
+                hide()
             }
         })
     }

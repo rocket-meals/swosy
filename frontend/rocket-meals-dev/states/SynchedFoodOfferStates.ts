@@ -2,14 +2,42 @@ import {useSyncState} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Canteens, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {getDemoFoods} from "@/states/SynchedFoods";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+
+export function useCachedFoodOffers(){
+    // Structure -
+        // Canteen
+            // Date
+                // How old the cache is?
+
+    // Or should we go by Date first, or either a combined key?
+
+    const [selectedDate, setSelectedDate] = useSyncState<any>(NonPersistentStore.foodOfferCache);
+
+    function getFoodOffer(foodOfferId: string){
+
+    }
+
+    function getFoodOffers(date: Date, canteen: Canteens){
+
+    }
+
+    function setFoodOffers(foodOffers: Foodoffers){
+
+    }
+
+}
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
     const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
 
-    let usedSelectedDate = selectedDate || new Date();
+    let defaultDate = new Date();
+    defaultDate.setHours(12,0,0,0); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
+    let usedSelectedDate = selectedDate || defaultDate;
+    usedSelectedDate = new Date(usedSelectedDate);
 
     function changeAmountDays(days: number) {
         const nextDate = DateHelper.addDaysAndReturnNewDate(usedSelectedDate, days);
@@ -19,18 +47,81 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
     return [usedSelectedDate, setSelectedDate, changeAmountDays]
 }
 
-export function useFoodOffersForSelectedDate(): [Foodoffers[] | undefined, (newValue: Foodoffers[]) => void]
-{
-    const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
-    const copySelectedDate = new Date(selectedDate); // copy to avoid unwanted side effects
+export async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
+    let collectionHelper = new CollectionHelper<Foodoffers>("foodoffers");
 
-    const isDemo = useIsDemo();
-    if(isDemo) {
-        return [getDemoFoodOffersForDate(copySelectedDate), () => {}];
+    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*'];
+
+    let query = {
+        fields: food_offer_fields
     }
 
-    return [undefined, () => {}];
+    return await collectionHelper.readItem(foodoffer_id, query);
+}
 
+//export async function getFoodOffersForSelectedDate(date: Date, canteen: Canteens, cachedFoodOffers, setCachedFoodOffers){
+export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, canteen: Canteens){
+    // TODO: useCached Foodoffers
+    let copyDate = new Date(date);
+    // If in cache not too old, if we have internet connection
+
+    if(isDemo){
+        return getDemoFoodOffersForDate(copyDate);
+    }
+
+    // if not in cache, but has internet connection ==> loadFoodOffersFromServer, then save it in cache
+
+    return undefined;
+}
+
+export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
+    let collectionHelper = new CollectionHelper<Foodoffers>("foodoffers");
+
+    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*'];
+
+    if(amountDays===undefined){
+        amountDays = 1;
+    }
+
+    let andFilters = [];
+
+    let paramDate = DateHelper.formatToOfferDate(date);
+    let formatedDate = new Date(paramDate);
+    let dateRanges = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountDays);
+
+    let startRange = dateRanges[0];
+    let start = new Date(startRange[0]);
+
+    let endRange = dateRanges[dateRanges.length-1];
+    let end = new Date(endRange[1]);
+
+    andFilters.push(
+        {
+            date: {
+                _between: [start.toISOString(), end.toISOString()]
+            }
+        }
+    );
+
+    andFilters.push(
+        {
+            canteen: {
+                _eq: canteen.id,
+            }
+        }
+    )
+
+    let dateFilter = {
+        _and: andFilters
+    }
+
+    let query = {
+        limit: -1,
+        filter: dateFilter,
+        fields: food_offer_fields
+    }
+
+    return await collectionHelper.readItems(query);
 }
 
 function getDemoFoodOffersForDate(date: Date): Foodoffers[]
@@ -62,7 +153,7 @@ function getDemoFoodOffersForDate(date: Date): Foodoffers[]
         demoFoodOffer.push({
             date: date.toISOString(),
             food: food,
-            id: i,
+            id: i+"",
             markings: food.markings,
             status: "active",
             user_created: undefined,

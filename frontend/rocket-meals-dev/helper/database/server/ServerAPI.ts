@@ -10,15 +10,21 @@ import {
     GraphqlClient,
     readMe,
     ReadProviderOutput,
-    readProviders,
+    readProviders, readRoles,
     rest,
+    deleteUser,
     RestClient,
     serverInfo,
-    ServerInfoOutput
+    ServerInfoOutput, serverHealth
 } from "@directus/sdk";
-import {CustomDirectusTypes, DirectusFiles} from "@/helper/database/databaseTypes/types";
+import {
+    CustomDirectusTypes,
+    DirectusFiles,
+    DirectusPermissions,
+    DirectusRoles
+} from "@/helper/database/databaseTypes/types";
 import {UrlHelper} from "@/helper/UrlHelper";
-
+import ServerConfiguration from "@/constants/ServerConfiguration";
 
 interface ExtendedProperties {
     project: {
@@ -37,6 +43,7 @@ type ExtendedServerInfoOutput = ServerInfoOutput & ExtendedProperties;
 export interface ServerInfo{
     // status can be "loading", "online" or "offline"
     status: "loading" | "online" | "offline" | "error" | "cached";
+
     info: ExtendedServerInfoOutput | null;
     errorMessage?: any;
 }
@@ -50,8 +57,10 @@ export class ServerAPI {
 
     static client: DirectusClient<any> & AuthenticationClient<any> & GraphqlClient<any> & RestClient<any> | null = null;
 
+    static serverUrlCustom: string | null = null;
+
     static getServerUrl(){
-        return 'https://rocket-meals.de/demo/api';
+        return ServerAPI.serverUrlCustom || ServerConfiguration.ServerUrl;
     }
 
     static ParamNameForAccessToken = "directus_refresh_token";
@@ -188,7 +197,20 @@ export class ServerAPI {
         }
     }
 
+    static async readRemoteRoles(){
+        let directus = ServerAPI.getClient();
+        let roles = await directus.request<DirectusRoles[]>(readRoles());
+        return roles;
+    }
+
+    static async readRemotePermissions(){
+        let directus = ServerAPI.getClient();
+        let permissions = await directus.request<DirectusPermissions[]>(readRoles());
+        return permissions;
+    }
+
     static async downloadServerInfo(): Promise<ServerInfo>{
+        console.log("ServerAPI.downloadServerInfo()");
         let result: ServerInfo = {
             status: "loading",
             info: null,
@@ -198,6 +220,13 @@ export class ServerAPI {
         try{
             let directus = ServerAPI.getPublicClient();
              let remote_info = await directus.request(serverInfo());
+             console.log("remote_info", JSON.stringify(remote_info, null, 2));
+
+             // ping the server to check if it is online
+            let remote_server_health = await directus.request(serverHealth());
+            console.log("remote_server_health", remote_server_health);
+
+
              result.status = "online";
              result.info = remote_info as ExtendedServerInfoOutput;
         } catch (err){
@@ -237,6 +266,11 @@ export class ServerAPI {
     static getAssetImageURL(imageID: string | null | undefined | DirectusFiles) {
         let usedImageId;
 
+        // maybe imageID is a http:// or https:// url that we can use directly
+        if (typeof imageID === 'string' && imageID.startsWith('http')) {
+            return imageID;
+        }
+
         // Assuming DirectusFiles is a type and we need to check if imageID is of that type
         if (typeof imageID === 'object' && imageID !== null && 'id' in imageID) {
             usedImageId = imageID.id;
@@ -256,8 +290,18 @@ export class ServerAPI {
 
     static async getMe(): Promise<any>{
         let directus = ServerAPI.getClient();
-        let me = await directus.request(readMe())
+        let me = await directus.request(readMe(
+            {
+                fields: ["*"]
+            }
+        ))
+        console.log("me", me)
         return me;
+    }
+
+    static async deleteMe(){
+        let me = await ServerAPI.getMe();
+        await ServerAPI.getClient().request(deleteUser(me.id));
     }
 
 }
