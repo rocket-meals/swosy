@@ -1,11 +1,10 @@
-import {useSyncState} from "@/helper/syncState/SyncState";
 import {ServerInfo} from "@/helper/database/server/ServerAPI";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {DEMO_ASSET_IDS} from "@/components/project/DirectusImageDemoSources";
+import {useSynchedResourceSingleRaw} from "@/states/SynchedResource";
 
 export function useServerInfoRaw(){
-  return useSyncState<ServerInfo>(PersistentStore.server_info);
+  return useSynchedResourceSingleRaw<ServerInfo>(PersistentStore.server_info);
 }
 
 export function useServerInfo(){

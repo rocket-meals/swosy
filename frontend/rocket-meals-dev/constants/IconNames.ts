@@ -51,5 +51,7 @@ export enum IconNames {
   calendar_import_icon = "calendar-import",
   time_start_icon = "clock-start",
   time_end_icon = "clock-end",
-  cancel_icon = "close"
+  cancel_icon = "close",
+
+  server_icon = "server",
 }

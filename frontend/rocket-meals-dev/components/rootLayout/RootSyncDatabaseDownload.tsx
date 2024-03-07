@@ -153,8 +153,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
   useEffect(() => {
     (async () => {
-      //console.log("AuthFlowUserCheck useEffect")
-      //console.log("refreshToken", refreshToken)
+      console.log("RootSyncDatabase: useEffect");
+      console.log("Is server online: ",isServerOnline);
 
       if(isServerOnline){ // if server is online, we can check if we are logged in
         if(!demo){

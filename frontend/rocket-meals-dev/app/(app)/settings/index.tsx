@@ -16,6 +16,7 @@ import {SettingsRowProfileEatingHabits} from "@/compositions/settings/SettingsRo
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
 import {SettingsRowUserDelete} from "@/compositions/settings/SettingsRowUserDelete";
+import {SettingsRowServerConfiguration} from "@/compositions/settings/SettingsRowServerConfiguration";
 
 export default function SettingsScreen() {
 
@@ -43,6 +44,7 @@ export default function SettingsScreen() {
                <SettingsRowSyncBooleanSwitch labelLeft={"Demo"} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={"Demo"} variable={PersistentStore.demo} />
                <SettingsRowSyncBooleanSwitch labelLeft={"Performance"} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={"Performance"} variable={PersistentStore.performance} />
                <SettingsRowSyncBooleanSwitch labelLeft={"Developer"} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={"Developer"} variable={PersistentStore.develop} />
+               <SettingsRowServerConfiguration />
            </SettingsRowGroup>
            <SettingsRowGroup>
                 <SettingsRowUserDelete />
