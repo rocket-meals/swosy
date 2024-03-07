@@ -2,8 +2,6 @@ import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser.js"
 
 import axios from "axios"
-import fs from "fs";
-import path from "path"
 
 export class TL1Parser_Web {
 
@@ -29,7 +27,7 @@ export class TL1Parser_Web {
         this.foodIdToRawMealOfferDict = null;
     }
 
-    async createNeededData(services, database, logger){
+    async createNeededData(){
         this.rawMealOffers = await TL1Parser_Web.createRawMealOffers(this.api_url);
         this.foodIdToRawMealOfferDict = TL1Parser_Web.createMealIdToRawMealOfferDict(this.rawMealOffers);
     }
@@ -40,7 +38,7 @@ export class TL1Parser_Web {
         for(let rawMealOffer of rawMealOffers){
             let markingsFromOffer = TL1Parser_Web.getGenerelMarkingsFromRawMealOffer(rawMealOffer);
             for(let marking of markingsFromOffer){
-                markingLabelsDict[marking.label] = marking;
+                markingLabelsDict[marking.alias] = marking;
             }
         }
         return TL1Parser_Web.getValueListFromDict(markingLabelsDict);
@@ -141,7 +139,7 @@ export class TL1Parser_Web {
         console.log("TL1Parser_Web: getRawReport");
         console.log("TL1Parser_Web: api_url= "+api_url)
         try{
-            const url = "https://share.sw-os.de/swosy";
+            const url = api_url;
             const resArBuffer = await axios.request({
                 method: 'GET',
                 url: url,
@@ -323,11 +321,13 @@ export class TL1Parser_Web {
     static getMealNutritionsFromRawMealOffer(rawMealOffer){
         /**
          * e. G.
+         * "Brennwert=2217 kJ (529 kcal), Fett=7,9g, davon gesättigte Fettsäuren=3,4g, Kohlenhydrate=70,5g, davon Zucker=6,0g, Ballaststoffe=0,9g, Eiweiß=36,7g, Salz=5,4g,"
          * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
          */
         let parsedReportItem = TL1Parser_Web.getParsedReportItemFromRawMealOffer(rawMealOffer);
         let nutritionValuesJSON = {};
         let nutritionValuesString = parsedReportItem[TL1Parser_Web.DEFAULT_NUTRITIONS_FIELD];
+
         if(!!nutritionValuesString){
             let kcalEndString = " kcal)";
             let match = nutritionValuesString.match(/\(.* kcal/gm);
@@ -358,10 +358,11 @@ export class TL1Parser_Web {
             let saltInGrams = TL1Parser_Web.parseNutritionValue(nutritionValuesString,"Salz");
             nutritionValuesJSON.sodium_g = saltInGrams;
         }
+
         return nutritionValuesJSON;
     }
 
-    parseFloatWithOneDecimal(str) {
+    static parseFloatWithOneDecimal(str) {
         let num = parseFloat(str);
         if (isNaN(num)) {
             return NaN; // or some other value to indicate the parse failed
@@ -378,10 +379,12 @@ export class TL1Parser_Web {
                 let matchString = match[0];
                 let valueString = matchString.slice(searchText.length);
                 valueString = valueString.replace(",",".");
-                let value = this.parseFloatWithOneDecimal(valueString);
+                let value = TL1Parser_Web.parseFloatWithOneDecimal(valueString);
                 return value;
             }
         } catch(err){
+            console.log("parseNutritionValue error: ")
+            console.log(err);
             return null;
         }
         return null;
@@ -448,8 +451,15 @@ export class TL1Parser_Web {
 
                 if(!!name && !!label){
                     markings.push({
-                        label: label,
+                        alias: label,
                         external_identifier: label,
+                        translations: {
+                            "de-DE": {
+                                name: name,
+                                be_source_for_translations: true,
+                                let_be_translated: false,
+                            },
+                        },
                     })
                 }
             }

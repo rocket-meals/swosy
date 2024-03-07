@@ -56,4 +56,8 @@ export class StringHelper {
         }
     }
 
+    static isNumber(value: string){
+        return !isNaN(Number(value));
+    }
+
 }

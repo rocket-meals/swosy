@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {ProjectLogo} from "./ProjectLogo";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 import {ProjectName} from "@/components/project/ProjectName";
 
 const titleBoxHeight = 64;
@@ -13,10 +13,20 @@ export const ProjectBanner: FunctionComponent<AppState> = (props) => {
 
     return(
         <View
-            style={{flexDirection: "row" ,height: boxHeight, alignItems: "center", width: "100%"}}
+            style={{flexDirection: "row" , alignItems: "center", width: "100%", justifyContent: "flex-start"
+        }}
         >
-            <ProjectLogo rounded={true} titleBoxHeight={boxHeight-4} />
-            <ProjectName />
+            <View style={{
+                alignSelf: "flex-start",
+            }}>
+                <ProjectLogo rounded={true} titleBoxHeight={boxHeight-4} />
+            </View>
+            <View style={{
+                alignSelf: "flex-start",
+                flexGrow: 1,
+            }}>
+                <ProjectName/>
+            </View>
         </View>
     )
 }

@@ -160,14 +160,23 @@ export class DateHelper {
         if(!weekdayName){
             weekdayName = Weekday.MONDAY;
         }
+
+        let date_monday = new Date().setFullYear(1995, 11, 25);
+        let date_tuesday = new Date().setFullYear(1995, 11, 26);
+        let date_wednesday = new Date().setFullYear(1995, 11, 27);
+        let date_thursday = new Date().setFullYear(1995, 11, 28);
+        let date_friday = new Date().setFullYear(1995, 11, 29);
+        let date_saturday = new Date().setFullYear(1995, 11, 30);
+        let date_sunday = new Date().setFullYear(1995, 11, 31);
+
         switch(weekdayName){
-            case Weekday.MONDAY: return new Date("December 25, 1995 23:15:30");
-            case Weekday.TUESDAY: return new Date("December 26, 1995 23:15:30");
-            case Weekday.WEDNESDAY: return new Date("December 27, 1995 23:15:30");
-            case Weekday.THURSDAY: return new Date("December 28, 1995 23:15:30");
-            case Weekday.FRIDAY: return new Date("December 29, 1995 23:15:30");
-            case Weekday.SATURDAY: return new Date("December 30, 1995 23:15:30");
-            case Weekday.SUNDAY: return new Date("December 31, 1995 23:15:30");
+            case Weekday.MONDAY: return new Date(date_monday);
+            case Weekday.TUESDAY: return new Date(date_tuesday);
+            case Weekday.WEDNESDAY: return new Date(date_wednesday);
+            case Weekday.THURSDAY: return new Date(date_thursday);
+            case Weekday.FRIDAY: return new Date(date_friday);
+            case Weekday.SATURDAY: return new Date(date_saturday);
+            case Weekday.SUNDAY: return new Date(date_sunday);
             default: return DateHelper.getDefaultWeekdayDate(Weekday.MONDAY);
         }
     }
@@ -245,6 +254,11 @@ export class DateHelper {
         return firstDayOfNextMonth;
     }
 
+    static getAmountDaysDifference(biggerDate: Date, smallerDate: Date){
+        let diff = biggerDate.getTime() - smallerDate.getTime();
+        return diff/(1000*60*60*24);
+    }
+
     static getDatesOfAmountNextDaysIncludingToday(startDate: Date, amount: number): [Date, Date][]{
         let dates: [Date, Date][] = [];
         let startOfTheDay = new Date(startDate); // copy the date
@@ -304,6 +318,12 @@ export class DateHelper {
         return tempDate;
     }
 
+    static addDays(date: Date, days: number){
+        // use addMinutes
+        let totalMinutesToAdd = days*24*60;
+        return DateHelper.addMinutes(date, totalMinutesToAdd);
+    }
+
     static formatToOfferDate(date: Date){
         let iso = date.toISOString();
         let trimmed = iso.slice(0, "YYYY-MM-DD".length);
@@ -317,7 +337,7 @@ export class DateHelper {
     // returns "Yesterday", "Today", "Tomorrow", or "Tuesday", "Wednesday" or the date in the format "DD.MM.YYYY"
     static useSmartReadableDate(date: Date, locale?: string){
         const dateCopy = new Date(date); // since the original date may be changed during the process of other functions we need to copy it in order have a reliable date
-        console.log("useSmartReadableDate", dateCopy, locale)
+        //console.log("useSmartReadableDate", dateCopy, locale)
         let today = new Date();
         let tomorrow = DateHelper.addDaysAndReturnNewDate(today, 1);
         let yesterday = DateHelper.addDaysAndReturnNewDate(today, -1);
@@ -326,7 +346,7 @@ export class DateHelper {
         let translationTomorrow = useTranslation(TranslationKeys.tomorrow);
         let translationYesterday = useTranslation(TranslationKeys.yesterday);
 
-        console.log("check if date is today, then return 'today'", today, dateCopy)
+        //console.log("check if date is today, then return 'today'", today, dateCopy)
         // check if date is today, then return "today"
         if(DateHelper.isSameDay(today, dateCopy)){
             return translationToday;

@@ -1,4 +1,4 @@
-import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
+import {MyDrawer, useRenderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import React from "react";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -23,7 +23,7 @@ export const MyDrawerSetup = (props: any) => {
         <MyDrawer
             customDrawerItems={customDrawerItems}
         >
-            {renderMyDrawerScreen({
+            {useRenderMyDrawerScreen({
                 routeName: "setup/index",
                 label: "Setup",
                 title: "Setup",

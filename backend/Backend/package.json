@@ -27,7 +27,6 @@
   "author": "Nils Baumgartner",
   "license": "ISC",
   "dependencies": {
-    "directus": "10.8.3",
-    "sharp": "^0.33.1"
+    "directus": "10.8.3"
   }
 }

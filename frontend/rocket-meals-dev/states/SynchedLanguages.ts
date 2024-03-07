@@ -6,12 +6,11 @@ import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 
 export async function loadLanguageRemoteDict() {
   const collectionHelper = new CollectionHelper<Languages>("languages")
-  let languagesList = await collectionHelper.readItems();
-  let languagesListDict = collectionHelper.convertListToDict(languagesList, "code")
-  return languagesListDict
+  return await collectionHelper.readItems();
 }
 
-export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefined), ((newValue: Record<string, Languages>, timestampe?: number) => void), (number | undefined)] {
+export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefined), ((newValue: Record<string, Languages>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+] {
   const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Languages>(PersistentStore.languages);
   const demo = useIsDemo()
   let lastUpdate = resourcesRaw?.lastUpdate;
@@ -19,7 +18,14 @@ export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefin
   if(demo) {
     usedResources = getDemoResources()
   }
-  return [usedResources, setResourcesOnly, lastUpdate]
+
+  async function updateFromServer(nowInMs?: number) {
+    let resourceAsList = await loadLanguageRemoteDict();
+    let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "code")
+    setResourcesOnly(resourceAsDict, nowInMs);
+  }
+
+  return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
 export function useSynchedLanguageByCode(code: string): Languages | undefined {

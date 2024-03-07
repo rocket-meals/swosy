@@ -5,16 +5,18 @@
 import {Platform} from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 export type MyExternalLinkProps = {
     _target?: string,
     href: string,
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    openInNewTab?: boolean,
     accessibilityLabel: string
 }
 
 // define the button component
-export const MyExternalLink = ({_target, href, accessibilityLabel, children}: MyExternalLinkProps) => {
+export const MyExternalLink = ({_target, openInNewTab, href, accessibilityLabel, children}: MyExternalLinkProps) => {
 
     const onPress = () => {
         if (Platform.OS !== 'web') {
@@ -25,7 +27,7 @@ export const MyExternalLink = ({_target, href, accessibilityLabel, children}: My
 
     let button = (
         (
-            <MyTouchableOpacity style={{width: "100%"}} onPress={onPress} accessibilityLabel={accessibilityLabel}>
+            <MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.Link} style={{width: "100%"}} onPress={onPress} accessibilityLabel={accessibilityLabel}>
                 {children}
             </MyTouchableOpacity>
         )
@@ -33,8 +35,12 @@ export const MyExternalLink = ({_target, href, accessibilityLabel, children}: My
 
     // TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
     if(Platform.OS === "web"){
+        let used_target = _target || "_self"
+        if(openInNewTab){
+            used_target = "_blank"
+        }
         return(
-            <a href={href} target={_target} style={{ textDecoration: 'none' }}>
+            <a href={href} target={used_target} style={{ textDecoration: 'none' }}>
                 {button}
             </a>
         )

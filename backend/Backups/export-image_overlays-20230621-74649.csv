@@ -1,7 +1,0 @@
-"id","color","icon","status","position","translations"
-"apartment_available","red","campaign","draft","top_left","[{""description"":""Es kann sich für diese Wohnung beworben werden. Zum Bewerben besuchen Sie: [https://www.google.de/](https://www.google.de/)"",""title"":""Frei ab %date"",""languages_code"":""de-DE""}]"
-"apartments_family_friendly",,"family_restroom","published","bottom_left","[{""description"":null,""title"":""Familienfreundlich"",""languages_code"":""de-DE""}]"
-"apartments_handicapped_accessible",,"accessible_forward","published","bottom_left","[{""description"":null,""title"":""Barrierefrei"",""languages_code"":""de-DE""}]"
-"apartments_singleflat",,"single_bed","published","bottom_left","[{""description"":null,""title"":""Einzelwohnung"",""languages_code"":""de-DE""}]"
-"visited_at",,"access_time","published","top_right","[{""description"":null,""title"":""Zugriff am %date"",""languages_code"":""de-DE""}]"
-"washingmachine_date_finished",,"access_time","published","bottom_right","[]"

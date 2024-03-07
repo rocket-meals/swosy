@@ -1,4 +1,16 @@
-import {DirectusClient, readItem, readItems, updateItem, updateItems, deleteItem, deleteItems, createItem, createItems, RestClient,} from "@directus/sdk";
+import {
+    DirectusClient,
+    readItem,
+    readItems,
+    updateItem,
+    updateItems,
+    deleteItem,
+    deleteItems,
+    createItem,
+    createItems,
+    RestClient,
+    readSingleton,
+} from "@directus/sdk";
 import {CustomDirectusTypes} from "@/helper/database/databaseTypes/types";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
 
@@ -19,6 +31,10 @@ export class CollectionHelper<CollectionScheme> {
         return {
             fields: fields,
         };
+    }
+
+    async readSingletonItem(){
+        return await this.client.request<CollectionScheme>(readSingleton(this.collection));
     }
 
     static getQueryWithRelatedFieldsAndTranslations(fields?: string[]){
@@ -61,6 +77,10 @@ export class CollectionHelper<CollectionScheme> {
     }
 
     convertListToDict(list: CollectionScheme[], key: string){
+        return CollectionHelper.convertListToDict(list, key);
+    }
+
+    static convertListToDict<CollectionScheme>(list: CollectionScheme[], key: string){
         let dict: Record<any, CollectionScheme> = {};
         for(let item of list){
             // @ts-ignore

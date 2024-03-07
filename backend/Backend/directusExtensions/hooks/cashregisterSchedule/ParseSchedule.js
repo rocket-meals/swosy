@@ -5,7 +5,7 @@ import {TimerHelper} from "../../helper/TimerHelper.js"; // in directus we need 
 
 const TABLENAME_CASHREGISTERS = "cashregisters";
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions";
-const TABLENAME_FLOWHOOKS = "app_settings_cashregisters";
+const TABLENAME_FLOWHOOKS = "app_settings";
 
 let SCHEDULE_NAME = "Cashregister"
 
@@ -29,7 +29,7 @@ export class ParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            parsing_status: status
+            cashregisters_parsing_status: status
         });
     }
 
@@ -38,7 +38,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_enabled;
+                return flows?.cashregisters_parsing_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -51,7 +51,7 @@ export class ParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_status;
+                return flows?.cashregisters_parsing_status;
             }
         } catch (err) {
             console.log(err);
@@ -91,13 +91,9 @@ export class ParseSchedule {
 
 
     async parse() {
-        console.log("[Check] "+SCHEDULE_NAME+" Schedule");
-
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
-        let statusCheck = "check";
+        let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";

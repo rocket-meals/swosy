@@ -1,12 +1,13 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import * as Linking from 'expo-linking';
-import {router, useLocalSearchParams} from "expo-router";
+import {router, useRouter, useLocalSearchParams} from "expo-router";
 import {Button} from "@gluestack-ui/themed";
 
 export default function HomeScreen() {
 
     const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
+    const routerFromUseRouter = useRouter();
 
   return (
       <View style={styles.container}>
@@ -26,6 +27,23 @@ export default function HomeScreen() {
           <Button
               onPress={() => {
                   router.setParams({test: undefined})
+              }}>
+              <Text>
+                  {"Clear Params"}
+              </Text>
+          </Button>
+            <Text>{"routerFromUseRouter: "}</Text>
+          <Button
+              onPress={() => {
+                  routerFromUseRouter.setParams({test: "123"})
+              }}>
+              <Text>
+                  {"Set Test"}
+              </Text>
+          </Button>
+          <Button
+              onPress={() => {
+                  routerFromUseRouter.setParams({test: undefined})
               }}>
               <Text>
                   {"Clear Params"}

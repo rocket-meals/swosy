@@ -9,8 +9,8 @@ import {
     ActionsheetItemText, Divider
 } from "@gluestack-ui/themed";
 import React from "react";
-import {DimensionValue, KeyboardAvoidingView, Platform} from "react-native";
-import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
+import {DimensionValue, KeyboardAvoidingView, Platform, SafeAreaView} from "react-native";
+import {Heading, Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
 import {useSyncStateRaw} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {
@@ -20,13 +20,15 @@ import {
 import {useProjectColor} from "@/states/ProjectInfo";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 
 export type MyGlobalActionSheetConfig = {
     visible: boolean,
     title: string,
     // description?: string,
-    items: MyGlobalActionSheetItem[]
+    items?: MyGlobalActionSheetItem[],
+    renderCustomContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     onCancel?: () => Promise<boolean>
     maxHeight?: DimensionValue
 }
@@ -39,11 +41,11 @@ export type MyGlobalActionSheetItem = {
     renderLeftIcon?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     icon?: string,
     active?: boolean,
-    onSelect?: (key: string) => Promise<boolean | void> // return false to not close the actionsheet
+    onSelect?: (key: string, hide: () => void) => void // return false to not close the actionsheet
     // onSelect: (key: string) => boolean | void // return true to close the actionsheet
 }
 
-export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig]
+export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetConfig) => void, hide: () => void, showActionsheetConfig: MyGlobalActionSheetConfig, visible: boolean]
     = () => {
     const [actionsheetConfigRaw, setActionsheetConfigRaw] = useSyncStateRaw<MyGlobalActionSheetConfig>(NonPersistentStore.globalMyActionSheetConfig)
 
@@ -77,10 +79,13 @@ export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetC
         })
     }
 
+        const visible = usedShowActionsheetConfig?.visible
+
     return [
         show,
         hide,
-        usedShowActionsheetConfig
+        usedShowActionsheetConfig,
+        visible
     ]
 }
 
@@ -147,6 +152,17 @@ export const MyGlobalActionSheet = (props: any) => {
                     renderedLeftIcon = item.renderLeftIcon(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
                 }
 
+                let onSelectMethod: any = undefined
+                if(item.onSelect){
+                    onSelectMethod = async () => {
+                        if (!!item.onSelect) {
+                            await item.onSelect(item.key, hide)
+                        } else {
+                            hide()
+                        }
+                    }
+                }
+
                 renderedItems.push(
                     <ActionsheetItem
                         disabled={!item.onSelect}
@@ -157,18 +173,7 @@ export const MyGlobalActionSheet = (props: any) => {
                                 bg: lighterOrDarkerBackgroundColor,
                             },
                         }}
-                        key={item.key} onPress={async () => {
-                            let closeActionsheet = true;
-                            if (!!item.onSelect) {
-                                let onSelectResult = await item.onSelect(item.key)
-                                if (onSelectResult === false) {
-                                    closeActionsheet = false;
-                                }
-                            }
-                            if (closeActionsheet) {
-                                hide()
-                            }
-                    }}>
+                        key={item.key} onPress={onSelectMethod}>
                         <ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
                         <View style={{
                             flex: 1
@@ -182,11 +187,6 @@ export const MyGlobalActionSheet = (props: any) => {
                 )
             }
 
-
-            renderedItems.push(
-                <Divider key={"divider"+item.key} />
-            )
-
             renderedItemsForStringify.push({
                 key: item.key,
                 label: item.label,
@@ -194,6 +194,16 @@ export const MyGlobalActionSheet = (props: any) => {
             })
         }
     }
+
+    let content = undefined
+    if(!!showActionsheetConfig.renderCustomContent){
+        content = showActionsheetConfig.renderCustomContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
+    } else {
+        content = <MyScrollView>
+            {renderedItems}
+        </MyScrollView>
+    }
+
 
     return (
             <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}
@@ -213,10 +223,11 @@ export const MyGlobalActionSheet = (props: any) => {
                             }}
                         />
                     </ActionsheetDragIndicatorWrapper>
-                    <Text>{title}</Text>
-                    <MyScrollView>
-                        {renderedItems}
-                    </MyScrollView>
+    
+                    <MySafeAreaView>
+                        <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{title}</Heading></View>
+                        {content}
+                    </MySafeAreaView>
                 </ActionsheetContent>
             </Actionsheet>
     )

@@ -6,6 +6,7 @@ import {
     useGlobalActionSheetSettingProfileCanteen
 } from "@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen";
 import {IconNames} from "@/constants/IconNames";
+import {useIsFoodsEnabled} from "@/states/SynchedAppSettings";
 
 interface AppState {
 
@@ -20,17 +21,22 @@ export function useEditProfileCanteenAccessibilityLabel(): string {
 export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props}) => {
 
     const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+    const isFoodsEnabled = useIsFoodsEnabled();
 
     const leftIcon = IconNames.canteen_icon
     const translation_title = useTranslation(TranslationKeys.canteen)
     const label = translation_title
     const canteenId = profileCanteen?.id;
     const canteenIdAsString = canteenId ? canteenId+"" : undefined;
-    const labelRight: string = profileCanteen?.label || canteenIdAsString || "unknown";
+    const labelRight: string = profileCanteen?.alias || canteenIdAsString || "unknown";
 
     const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 
     const onPress = useGlobalActionSheetSettingProfileCanteen();
+
+    if(!isFoodsEnabled){
+        return null;
+    }
 
     return(
         <>

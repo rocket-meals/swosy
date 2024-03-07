@@ -1,11 +1,10 @@
-import {useSyncState} from "@/helper/syncState/SyncState";
 import {ServerInfo} from "@/helper/database/server/ServerAPI";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {DEMO_ASSET_IDS} from "@/components/project/DirectusImageDemoSources";
+import {useSynchedResourceSingleRaw} from "@/states/SynchedResource";
 
 export function useServerInfoRaw(){
-  return useSyncState<ServerInfo>(PersistentStore.server_info);
+  return useSynchedResourceSingleRaw<ServerInfo>(PersistentStore.server_info);
 }
 
 export function useServerInfo(){
@@ -20,7 +19,7 @@ export function useServerInfo(){
           project_name: "SWOSY ",
           project_descriptor: "Studierendenwerk Osnabrück",
           default_language: "de-DE",
-          project_logo: DEMO_ASSET_IDS.SWOSY_LOGO,
+          project_logo: "https://play-lh.googleusercontent.com/BCBvebwBE5xppnKt-Y2-0ztIlXxhxl8jcfeldE05JLuildEkFla4tmTQNUuVk-1cQQ=w480-h960",
           project_color: "#FCDE18",
           public_foreground: null,
           public_background: null,
@@ -47,4 +46,9 @@ export function useIsServerOnline(){
 export function useIsServerCached(){
   const status = useServerStatus();
   return status === "cached"
+}
+
+export function useIsServerOffline(){
+  const status = useServerStatus();
+  return status === "offline" || status === "error" || status === undefined
 }

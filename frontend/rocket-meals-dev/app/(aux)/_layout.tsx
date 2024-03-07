@@ -1,6 +1,6 @@
 import React from "react";
 import {isUserLoggedIn} from "@/states/User";
-import {MyDrawer, renderMyDrawerScreen} from "@/components/drawer/MyDrawer";
+import {MyDrawer, useRenderMyDrawerScreen} from "@/components/drawer/MyDrawer";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItem";
 

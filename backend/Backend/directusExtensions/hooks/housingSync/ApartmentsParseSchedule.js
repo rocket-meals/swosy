@@ -3,11 +3,11 @@ import {ItemsServiceCreator} from "../../helper/ItemsServiceCreator.js"; // in d
 
 
 const TABLENAME_APARTMENTS = "apartments";
-const TABLENAME_FLOWHOOKS = "app_settings_housing";
+const TABLENAME_FLOWHOOKS = "app_settings";
+
+const SCHEDULE_NAME = "ApartmentsParseSchedule";
 
 export class ApartmentsParseSchedule {
-
-    //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
 
     constructor(ParserClass) {
         this.parser = new ParserClass();
@@ -24,7 +24,7 @@ export class ApartmentsParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            parsing_status: status
+            housing_parsing_status: status
         });
     }
 
@@ -33,7 +33,7 @@ export class ApartmentsParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_enabled;
+                return flows?.housing_parsing_enabled;
             }
         } catch (err) {
             console.log(err);
@@ -46,7 +46,7 @@ export class ApartmentsParseSchedule {
             let tablename = TABLENAME_FLOWHOOKS;
             let flows = await this.database(tablename).first();
             if (!!flows) {
-                return flows?.parsing_status;
+                return flows?.housing_parsing_status;
             }
         } catch (err) {
             console.log(err);
@@ -55,20 +55,17 @@ export class ApartmentsParseSchedule {
     }
 
     async parse() {
-        console.log("[Check] Meal Parse Schedule");
-        this.newsService = this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
+        this.itemService = this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        console.log("Status is currently: " + status);
-        console.log("this.finished: " + this.finished);
-        let statusCheck = "check";
+        let statusCheck = "start";
         let statusFinished = "finished";
         let statusRunning = "running";
         let statusFailed = "failed";
 
         if (enabled && status === statusCheck && this.finished) {
-            console.log("[Start] Meal Parse Schedule");
+            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
             await this.setStatus(statusRunning);
 
@@ -116,7 +113,7 @@ export class ApartmentsParseSchedule {
     }
 
     async updateApartmentTranslations(meal, newsJSON) {
-        await this.updateItemTranslations(meal, newsJSON, "news_id", this.newsService);
+        await this.updateItemTranslations(meal, newsJSON, "news_id", this.itemService);
     }
 
     async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {

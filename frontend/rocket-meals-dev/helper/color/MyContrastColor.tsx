@@ -1,6 +1,7 @@
 import Color from 'tinycolor2';
 import {useIsDarkTheme} from "@/states/ColorScheme";
 import {useMemo} from "react";
+import {useViewBackgroundColor} from "@/components/Themed";
 
 // TODO: memorize this function to reduce computation load and improve performance
 /**
@@ -79,7 +80,6 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold): string {
-
   let trueDarkText = '#000000';
   let trueLightText = '#FFFFFF';
 
@@ -116,8 +116,9 @@ function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: b
  */
 export function useMyContrastColor(trueBg: string | undefined) {
     const isDarkTheme = useIsDarkTheme();
+    const viewBackgroundColor = useViewBackgroundColor()
     if(trueBg==="transparent"){
-        trueBg = undefined;
+        trueBg = viewBackgroundColor;
     }
     return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
 }

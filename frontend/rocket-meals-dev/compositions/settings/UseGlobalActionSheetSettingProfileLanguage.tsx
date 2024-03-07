@@ -54,9 +54,9 @@ export function useGlobalActionSheetSettingProfileLanguage(){
                 }
                 return renderedContent
             },
-            onSelect: async (code: string) => {
+            onSelect: async (code: string, hide: () => void) => {
                 setSavedLanguageKey(code)
-                return true // close the actionsheet
+                hide();
             }
         })
     }

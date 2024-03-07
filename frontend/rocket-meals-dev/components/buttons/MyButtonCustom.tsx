@@ -5,6 +5,7 @@ import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {Pressable, ViewStyle} from "react-native";
 import {MyNewButtonProps} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import {useIsDebug} from "@/states/Debug";
 
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
@@ -21,6 +22,8 @@ export type MyNewButtonPropsCustom = {
 export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
+
+    const isDebug = useIsDebug()
 
     let usedViewBackgroundColor: string | undefined;
     let usedTextColor: string | undefined;
@@ -61,6 +64,10 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
             }
         }
         usedBorderColor = inactiveBorderColor
+    }
+
+    if(isDebug){
+        usedBorderColor = "red"
     }
 
 
@@ -132,7 +139,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
 
     let rightIconViewStyle: StyleProp<ViewStyle> = {
         paddingRight: leftIconPaddingRight,
-        paddingLeft: leftIconPaddingLeft,
+        paddingLeft: (!!text || !!leftIcon) ? 0 : defaultPadding,
         paddingVertical: defaultPadding,
         justifyContent: "center",
     }
@@ -140,7 +147,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
     let rightItem: any = undefined
     if(rightIcon){
         rightItem = <View style={rightIconViewStyle}>
-            <Icon color={usedIconBoxTextColor} name={leftIconUsed} />
+            <Icon color={usedIconBoxTextColor} name={rightIconUsed} />
         </View>
     }
 
@@ -212,6 +219,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                 }}>
                     {renderedText}
                 </View>
+                {rightItem}
             </Pressable>
     )
 

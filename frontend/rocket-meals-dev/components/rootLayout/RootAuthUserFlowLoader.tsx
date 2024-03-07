@@ -17,7 +17,9 @@ import {
   useCurrentUser,
   useCurrentUserRaw
 } from "@/states/User";
-import {RootSyncDatabase} from "@/components/rootLayout/RootSyncDatabase";
+import {RootSyncDatabaseDownload} from "@/components/rootLayout/RootSyncDatabaseDownload";
+import {RootNotificationDeepLink} from "@/components/rootLayout/RootNotificationDeepLink";
+import {RootSyncDatabaseUpload} from "@/components/rootLayout/RootSyncDatabaseUpload";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -95,8 +97,10 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
   console.log("AuthFlowUserCheck currentUserRaw: ", currentUserRaw)
 
     return(
-        <RootSyncDatabase userId={currentUser?.id} key={currentUser?.id+""}>
-          <Slot key={currentUser?.id+""} />
-        </RootSyncDatabase>
+        <RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+""}>
+          <RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+""}>
+            <RootNotificationDeepLink key={currentUser?.id+""} />
+          </RootSyncDatabaseUpload>
+        </RootSyncDatabaseDownload>
     )
 }
