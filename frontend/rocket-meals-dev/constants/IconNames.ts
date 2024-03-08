@@ -56,5 +56,5 @@ export enum IconNames {
   server_icon = "server",
 
   nutrition_icon = "food-apple",
-  comment_icon = "message",
+  comment_icon = "chat",
 }

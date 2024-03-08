@@ -22,6 +22,7 @@ import PricingBadge from "@/components/pricing/PricingBadge";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import useProfilePricing from "@/components/pricing/useProfilePricing";
 import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
+import NutritionList from "@/components/food/NutritionList";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -123,7 +124,16 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                       (active) => <MyButton icon={IconNames.comment_icon} centerItems={true} accessibilityLabel={"Comments"} isActive={active} onPress={() => {}} borderLeftRadius={0}/>,
                     ]} contents={[
                         <View>
-                            <Text>Nutritions</Text>
+                          <NutritionList
+                            protein_g={foodOfferData.protein_g}
+                            fat_g={foodOfferData.fat_g}
+                            carbohydrate_g={foodOfferData.carbohydrate_g}
+                            fiber_g={foodOfferData.fiber_g}
+                            sugar_g={foodOfferData.sugar_g}
+                            sodium_g={foodOfferData.sodium_g}
+                            calories_kcal={foodOfferData.calories_kcal}
+                            saturated_fat_g={foodOfferData.saturated_fat_g}
+                          />
                         </View>,
                         <View>
                             <Text>
