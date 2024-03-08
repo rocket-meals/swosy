@@ -21,6 +21,7 @@ import {useProjectColor} from "@/states/ProjectInfo";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {StringHelper} from "@/helper/string/StringHelper";
 
 
 export type MyGlobalActionSheetConfig = {
@@ -204,6 +205,7 @@ export const MyGlobalActionSheet = (props: any) => {
         </MyScrollView>
     }
 
+    const usedTitle = title+StringHelper.EMPTY_SPACE; // We add a space to the title to make sure the title is not empty and the actionsheet is not too small
 
     return (
             <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}
@@ -222,10 +224,10 @@ export const MyGlobalActionSheet = (props: any) => {
                                 backgroundColor: textColor,
                             }}
                         />
+                        <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{usedTitle}</Heading></View>
                     </ActionsheetDragIndicatorWrapper>
     
                     <MySafeAreaView>
-                        <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{title}</Heading></View>
                         {content}
                     </MySafeAreaView>
                 </ActionsheetContent>
