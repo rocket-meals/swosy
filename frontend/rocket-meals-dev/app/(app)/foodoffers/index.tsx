@@ -77,6 +77,9 @@ export default function FoodOfferScreen() {
       if (food?.alias) {
         title = food.alias
       }
+      if (foodOffer?.alias) {
+        title = foodOffer.alias
+      }
     }
 
 
