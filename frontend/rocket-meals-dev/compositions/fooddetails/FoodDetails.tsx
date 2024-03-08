@@ -10,20 +10,73 @@ import TabWrapper from "@/components/tab/TabWrapper";
 import {IconNames} from "@/constants/IconNames";
 import {RatingType, RatingValueIcon} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
+import {useSynchedProfileFoodFeedback, useSynchedProfileFoodFeedbacksDict} from "@/states/SynchedProfile";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
-export default function FoodDetails({ foodId }: { foodId: string }) {
+export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
+
+  const usedFoodId = typeof foodId === "string" ? foodId : foodId.id;
+  const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+
+  return(
+      <View style={{
+        width: "100%",
+
+      }}>
+        <MyScrollView>
+          <Text>{"foodId: "+usedFoodId}</Text>
+          <MyButton text={"Create a default comment: 'Tastes good'"}  leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
+            setComment("Tastes good");
+          }}/>
+          <MyButton text={"Create a default comment: 'Tastes bad'"} leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
+            setComment("Tastes bad");
+          }}/>
+          <MyButton text={"Remove comment"} leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
+            setComment(null);
+          }}/>
+          <MyButton text={"Set rating to 5"} leftIcon={"star"}  accessibilityLabel={"Rating"} onPress={() => {
+            setRating(5);
+          }}/>
+          <MyButton text={"Set rating to 1"} leftIcon={"star"}  accessibilityLabel={"Rating"}  onPress={() => {
+            setRating(1);
+          }}/>
+          <MyButton text={"Reset rating"} leftIcon={"star-off"}  accessibilityLabel={"Rating"}  onPress={() => {
+            setRating(null);
+          }}/>
+
+          <MyButton accessibilityLabel={"Notify"} text={"Notify"} leftIcon={"bell"}  isActive={true} onPress={() => {
+            setNotify(true);
+          } }/>
+          <MyButton accessibilityLabel={"Unnotify"} text={"Unnotify"} leftIcon={"bell-off"} isActive={true} onPress={() => {
+            setNotify(false);
+          } }/>
+          <Text>{"The raw foodFeedback"}</Text>
+          <Text>{JSON.stringify(foodFeedback, null, 2)}</Text>
+        </MyScrollView>
+      </View>
+  )
+}
+
+export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
   const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
 
+  const foodId = foodOfferData?.food;
+
   useEffect(() => {
-    loadFoodOfferFromServer(foodId)
+    loadFoodOfferFromServer(foodOfferId)
         .then(setFoodOfferData)
         .catch(console.error);
   }, []);
+
+
 
   return (
       <View style={{ padding: 0 }}>
         { foodOfferData &&
             <>
+            { foodId &&
+              <FoodFeedbackDetails foodId={foodId} />
+            }
                 <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
                     <View style={{width: "100%", display: "flex", flexGrow: 1}}>
                         <Rectangle>

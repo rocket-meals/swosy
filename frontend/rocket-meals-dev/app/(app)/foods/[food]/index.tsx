@@ -10,7 +10,7 @@ export default function FoodOfferDetails() {
 
   return (
       <MySafeAreaView>
-        <FoodDetails foodId={food}/>
+        <FoodDetails foodOfferId={food}/>
       </MySafeAreaView>
   )
 }
