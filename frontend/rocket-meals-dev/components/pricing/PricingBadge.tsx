@@ -1,16 +1,14 @@
-import {StyleProp, ViewStyle} from "react-native";
-import {Button, Divider, Text, View} from "@gluestack-ui/themed";
+import {Text, View} from "@gluestack-ui/themed";
 import {useProjectColor} from "@/states/ProjectInfo";
-import {useTextContrastColor} from "@/components/Themed";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export type PricingBadgeProps = {
   price: number;
-  currency: string;
+  color?: string;
 }
 
 export default function PricingBadge(props: PricingBadgeProps) {
-  const projectColor = useProjectColor();
+  const projectColor = props.color ?? useProjectColor();
   const projectContrastColor = useMyContrastColor(projectColor);
 
   const priceContent =new Intl.NumberFormat('de-DE', { style: 'currency', currency: "EUR" }).format(
@@ -22,7 +20,8 @@ export default function PricingBadge(props: PricingBadgeProps) {
       <View style={{
         backgroundColor: projectColor,
         padding: 5,
-        borderTopLeftRadius: 5,
+        borderTopLeftRadius: 14,
+        borderBottomLeftRadius: 14,
       }}>
         <Text color={projectContrastColor}>{priceContent}</Text>
       </View>

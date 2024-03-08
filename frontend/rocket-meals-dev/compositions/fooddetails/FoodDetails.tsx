@@ -21,6 +21,7 @@ import {Divider} from "@gluestack-ui/themed";
 import PricingBadge from "@/components/pricing/PricingBadge";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import useProfilePricing from "@/components/pricing/useProfilePricing";
+import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -72,9 +73,6 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
         .catch(console.error);
   }, []);
 
-  const price = useProfilePricing(foodOfferData);
-
-
   return (
       <View style={{ padding: 0 }}>
         { foodOfferData &&
@@ -89,7 +87,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                                 }}
                                 innerPadding={0}
                                 bottomRightComponent={
-                                  <PricingBadge price={price} currency={"€"}/>
+                                  <IndividualPricingBadge foodOffer={foodOfferData}/>
                                 }
                             />
                         </Rectangle>
