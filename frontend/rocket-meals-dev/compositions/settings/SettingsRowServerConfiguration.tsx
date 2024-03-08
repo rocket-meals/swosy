@@ -26,6 +26,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         System = "system",
         RocketMeals = "rocketmeals",
         SWOSY = "swosy",
+        LocalHost = "localhost"
     }
 
     const optionKeyToName: {[key in ServerConfigurationsOptions]: string}
@@ -33,6 +34,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         [ServerConfigurationsOptions.System]: "System",
         [ServerConfigurationsOptions.RocketMeals]: "Rocket-Meals",
         [ServerConfigurationsOptions.SWOSY]: "SWOSY",
+        [ServerConfigurationsOptions.LocalHost]: "http://127.0.0.1/rocket-meals/api"
     }
 
     const optionKeyToUrl: {[key in ServerConfigurationsOptions]: string}
@@ -40,6 +42,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         [ServerConfigurationsOptions.System]: ServerConfiguration.ServerUrl,
         [ServerConfigurationsOptions.RocketMeals]: "https://rocket-meals.de/demo/api",
         [ServerConfigurationsOptions.SWOSY]: "https://swosy.rocket-meals.de/rocket-meals/api",
+        [ServerConfigurationsOptions.LocalHost]: "http://127.0.0.1/rocket-meals/api"
     }
 
     let selectedName = optionKeyToName[ServerConfigurationsOptions.System]

@@ -5,6 +5,9 @@
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
+    "notification": {
+        "icon": "./assets/images/notification-icon.png"
+    },
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {

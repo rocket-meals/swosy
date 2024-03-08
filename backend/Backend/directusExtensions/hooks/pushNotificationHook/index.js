@@ -14,10 +14,10 @@ export default async function ({filter, action, init, schedule}, {
 
     // Trigger before the item is created or updated
     filter(collectionName+'.items.create', async (input, {collection}) => {
-        console.log("items.create")
-        console.log("input")
-        console.log(input)
-        if (input.status === 'publish') {
+        //console.log("items.create")
+        //console.log("input")
+        //console.log(input)
+        if (input.status === 'published') {
             await sendNotification(input, input);
             input.status = 'published';
         }
@@ -25,9 +25,9 @@ export default async function ({filter, action, init, schedule}, {
     });
 
     filter(collectionName+'.items.update', async (input, {keys, collection}) => {
-        console.log("items.update")
-        console.log("input")
-        console.log(input)
+        //console.log("items.update")
+        //console.log("input")
+        //console.log(input)
 
         let schema = await getSchema();
         const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
@@ -59,7 +59,7 @@ export default async function ({filter, action, init, schedule}, {
                 }
             }
 
-            if (currentItem.status === 'publish') {
+            if (currentItem.status === 'published') {
                 await sendNotification(currentItem, input);
                 input.status = 'published';
             }
@@ -70,30 +70,30 @@ export default async function ({filter, action, init, schedule}, {
 
     // Function to send Expo push notification
     async function sendNotification(payload, input) {
-        console.log("Sending notification...")
-        console.log("Payload:")
-        console.log(payload)
+        //console.log("Sending notification...")
+        //console.log("Payload:")
+        //console.log(payload)
         let expo_push_tokens_raw = payload.expo_push_tokens;
 
         let expoPushTokens = payload.expo_push_tokens;
 
         // check if expo_push_tokens is a string or an array of strings and convert to array of strings
         if (typeof expo_push_tokens_raw === 'string') { // this happens on update in directus admin panel
-            console.log("expo_push_tokens is a string")
+            //console.log("expo_push_tokens is a string")
             expoPushTokens = JSON.parse(expo_push_tokens_raw);
         } else if (typeof expo_push_tokens_raw === 'object') { // this happens on create in directus admin panel
-            console.log("expo_push_tokens is an object")
+            //console.log("expo_push_tokens is an object")
         }
 
         if(!expoPushTokens) {
-            console.log("expoPushTokens is empty")
+            //console.log("expoPushTokens is empty")
             input.status = 'failed';
             input.status_log = "expo_push_tokens is empty";
             throw new Error(`expo_push_tokens is empty`);
         }
 
-        console.log("expoPushTokens:")
-        console.log(expoPushTokens)
+        //console.log("expoPushTokens:")
+        //console.log(expoPushTokens)
 
         let title = undefined; // can't be null, otherwise it will result in an error from expo
         if(payload.message_title) { // check if message_title is set
@@ -110,6 +110,8 @@ export default async function ({filter, action, init, schedule}, {
             data = payload.message_data;
         }
 
+        // Every token should be: "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]" (with the ExponentPushToken prefix and square brackets)
+
         const messages = expoPushTokens.map(token => ({
             to: token,
             sound: 'default',
@@ -118,8 +120,8 @@ export default async function ({filter, action, init, schedule}, {
             data: data, // Replace with the actual field name
         }));
 
-        console.log("Messages:")
-        console.log(messages)
+        //console.log("Messages:")
+        //console.log(messages)
 
         try {
             await axios.post('https://exp.host/--/api/v2/push/send', messages);

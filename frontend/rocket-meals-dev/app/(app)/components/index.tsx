@@ -24,10 +24,10 @@ export default function HomeScreen() {
                 <MyButton accessibilityLabel={"Switch Active"} text={"Switch Active"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <View>
-                <MyButton disabled={true} leftIconColoredBox={false} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
+                <MyButton disabled={true} leftIconColoredBox={false} accessibilityLabel={"Disabled Button"} text={"Disabled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <View>
-                <MyButton key={"newStyleTest"} tooltip={"Test"} leftIconColoredBox={true} accessibilityLabel={"Disbaled Button"} text={"Disbaled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
+                <MyButton key={"newStyleTest"} tooltip={"Test"} leftIconColoredBox={true} accessibilityLabel={"Disabled Button"} text={"Disabled Button"} onPress={switchActive} leftIcon={"star-outline"} leftIconActive={"star"} rightIcon={"test-tube-empty"} isActive={active} />
             </View>
             <SettingsRowSpacer />
           <SettingsRowTextEdit labelRight={text} accessibilityLabel={"TestInput"} labelLeft={"Test"} onSave={setText} />

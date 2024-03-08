@@ -82,8 +82,6 @@ export default async function ({filter, action, init, schedule}, {
         action(
             collection + ".items.update",
             async (meta, context) => {
-                console.log("Start News Parser Schedule to be checked");
-                //TODO check if field "parse_foods" is active
                 try {
                     await parseSchedule.parse(getSchema, services, database, logger);
                 } catch (err) {

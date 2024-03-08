@@ -63,6 +63,8 @@ export type AppSettings = {
   news_settings: string;
   notifications_android_enabled?: boolean | null;
   notifications_email_enabled?: boolean | null;
+  notifications_foods_last_date?: string | null;
+  notifications_foods_status?: string | null;
   notifications_ios_enabled?: boolean | null;
   notifications_settings: string;
   status?: string | null;
@@ -148,7 +150,7 @@ export type AutoTranslationSettings = {
 export type Buildings = {
   alias?: string | null;
   apartments: any[] | Apartments[];
-  coordinates?: string | null;
+  coordinates?: unknown | null;
   date_created?: string | null;
   date_of_construction?: string | null;
   date_updated?: string | null;
@@ -792,6 +794,7 @@ export type MarkingsTranslations = {
 
 export type News = {
   alias?: string | null;
+  categories?: unknown | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
@@ -844,6 +847,7 @@ export type Profiles = {
   avatar?: string | null;
   buildings_favorites: any[] | ProfilesBuildingsFavorites[];
   buildings_last_visited: any[] | ProfilesBuildingsLastVisited[];
+  canteen?: string | Canteens | null;
   credit_balance?: number | null;
   date_created?: string | null;
   date_privacy_policy_accepted?: string | null;
