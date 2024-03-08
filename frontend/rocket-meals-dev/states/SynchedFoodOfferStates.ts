@@ -70,8 +70,7 @@ export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, 
     }
 
     // if not in cache, but has internet connection ==> loadFoodOffersFromServer, then save it in cache
-
-    return undefined;
+    return loadFoodOffersFromServer(canteen, copyDate, 1);
 }
 
 export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
@@ -159,7 +158,10 @@ function getDemoFoodOffersForDate(date: Date): Foodoffers[]
             user_created: undefined,
             user_updated: undefined,
             date_created: new Date().toISOString(),
-            date_updated: new Date().toISOString()
+            date_updated: new Date().toISOString(),
+            price_employee: 3.5,
+            price_guest: 4.5,
+            price_student: 2.5
         });
     }
 

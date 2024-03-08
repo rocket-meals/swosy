@@ -19,7 +19,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps // TODO change this to merge with MyButton
-export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -137,6 +137,18 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
         </View>
     }
 
+    if(icon) {
+        renderedText = <View style={{
+            marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+            flexDirection: 'row', flexWrap: 'wrap',
+
+        }}>
+            <Icon name={icon} color={usedTextColor} />
+        </View>
+    }
+
     let rightIconViewStyle: StyleProp<ViewStyle> = {
         paddingRight: leftIconPaddingRight,
         paddingLeft: (!!text || !!leftIcon) ? 0 : defaultPadding,
@@ -201,7 +213,11 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                         justifyContent: "flex-start",
                         alignSelf: useOnlyNecessarySpace ? "flex-start" : undefined,
                         overflow: "hidden",
-                        borderRadius: defaultBorderRadius,
+                        borderRadius: borderRadius ?? defaultBorderRadius,
+                        borderBottomLeftRadius: borderLeftRadius,
+                        borderTopLeftRadius: borderLeftRadius,
+                        borderBottomRightRadius: borderRightRadius,
+                        borderTopRightRadius: borderRightRadius,
                         flexDirection: "row",
                         //height: "100%",
                         flexShrink: 1,
@@ -212,7 +228,7 @@ export const MyButtonCustom = ({isActive, tooltip, disabled, leftIconColoredBox,
                 {leftItem}
                 <View style={{
                     justifyContent: "center",
-                    alignItems: "flex-start",
+                    alignItems: centerItems ? "center" : "flex-start",
                     // and make sure the text gets wrapped if it is too long
                     flexShrink: 1,
                     flexGrow: PlatformHelper.isWeb() ? 1 : useOnlyNecessarySpace ? 0 : 1,

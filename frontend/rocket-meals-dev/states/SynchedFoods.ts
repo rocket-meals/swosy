@@ -17,13 +17,13 @@ export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newVa
 export function getDemoFoods(): Record<string, Foods> {
 
   let demoNames = ["Fries", "Burger", "Lasagne", "Pizza", "Pasta", "Salad", "Soup", "Sushi", "Steak", "Chicken", "Fish", "Rice", "Noodles", "Dumplings", "Curry", "Tacos", "Burritos", "Sandwich", "Hotdog", "Kebab", "Doner", "Falafel", "Shawarma"]
-  let demoeResources: Record<string, Foods> = {}
+  let demoResources: Record<string, Foods> = {}
     demoNames.forEach((name, index) => {
       let demoResource: Foods = getDemoResource(index.toString(), "Demo "+name+" "+index.toString())
-        demoeResources[demoResource.id] = demoResource
+        demoResources[demoResource.id] = demoResource
     })
 
-  return demoeResources
+  return demoResources
 }
 
 function getDemoResource(id: string, name: string): Foods{
