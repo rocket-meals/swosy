@@ -1,11 +1,8 @@
 import React from 'react';
-import {Text} from "@/components/Themed";
-import {UrlHelper} from "@/helper/UrlHelper";
 import {AuthProvider, ServerAPI} from "@/helper/database/server/ServerAPI";
 import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
-import {MyExternalLink} from '@/components/link/MyExternalLink';
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {isInExpoGoDev} from "@/helper/device/DeviceRuntimeHelper";
 
