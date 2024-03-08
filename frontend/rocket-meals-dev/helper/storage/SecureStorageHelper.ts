@@ -4,7 +4,7 @@
 
 // Usage
 // https://docs.expo.dev/versions/latest/sdk/securestore/#usage
-// snorkel ai test
+
 import * as SecureStore from 'expo-secure-store';
 import {SecureStorageHelperAbstractClass,} from "@/helper/storage/SecureStorageHelperAbstractClass";
 import {Promise} from "ts-toolbelt/out/Any/Promise";

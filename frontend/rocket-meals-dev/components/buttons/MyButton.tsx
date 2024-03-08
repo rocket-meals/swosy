@@ -27,6 +27,11 @@ export type MyNewButtonProps = {
     useTransparentBorderColor?: boolean,
     useTransparentBackgroundColor?: boolean,
     backgroundColor?: string,
+    borderRadius?: number,
+    borderLeftRadius?: number,
+    borderRightRadius?: number,
+    icon?: string,
+    centerItems?: boolean
 }
 export const MyButton = (props: MyNewButtonProps) => {
     const viewBackgroundColor = useViewBackgroundColor()
