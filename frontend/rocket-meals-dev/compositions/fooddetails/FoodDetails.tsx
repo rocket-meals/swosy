@@ -10,12 +10,17 @@ import TabWrapper from "@/components/tab/TabWrapper";
 import {IconNames} from "@/constants/IconNames";
 import {RatingType, RatingValueIcon} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
-import {useSynchedProfileFoodFeedback, useSynchedProfileFoodFeedbacksDict} from "@/states/SynchedProfile";
+import {
+  useSynchedProfile,
+  useSynchedProfileFoodFeedback,
+  useSynchedProfileFoodFeedbacksDict
+} from "@/states/SynchedProfile";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {ScrollView} from "react-native";
 import {Divider} from "@gluestack-ui/themed";
 import PricingBadge from "@/components/pricing/PricingBadge";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
+import useProfilePricing from "@/components/pricing/useProfilePricing";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -67,6 +72,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
         .catch(console.error);
   }, []);
 
+  const price = useProfilePricing(foodOfferData);
 
 
   return (
@@ -83,7 +89,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                                 }}
                                 innerPadding={0}
                                 bottomRightComponent={
-                                  <PricingBadge price={10.50} currency={"€"}/>
+                                  <PricingBadge price={price} currency={"€"}/>
                                 }
                             />
                         </Rectangle>
@@ -93,7 +99,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                 <View style={{height: 100, padding: 4, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                     <View>
                         <Heading>
-                          {foodOfferData.food.alias}
+                          {foodOfferData.alias}
                         </Heading>
                     </View>
 
@@ -112,7 +118,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
                 <Divider/>
 
-                <View style={{ display: "flex", marginTop: 40, marginHorizontal: 10 }}>
+                <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
                       (active) => <MyButton icon={IconNames.nutrition_icon} centerItems={true} accessibilityLabel={"Nutritions"} isActive={active} onPress={() => {}} borderRightRadius={0}/>,
                       (active) => <MyButton icon={IconNames.eating_habit_icon} centerItems={true} accessibilityLabel={"Markings"} isActive={active} onPress={() => {}} borderLeftRadius={0} borderRightRadius={0}/>,
@@ -122,7 +128,9 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                             <Text>Nutritions</Text>
                         </View>,
                         <View>
-                            <Text>Markings</Text>
+                            <Text>
+                              {JSON.stringify(foodOfferData, null, 2)}
+                            </Text>
                         </View>,
                         <View>
                           { foodId &&
