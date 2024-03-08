@@ -12,6 +12,7 @@ import {RatingType, RatingValueIcon} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
 import {useSynchedProfileFoodFeedback, useSynchedProfileFoodFeedbacksDict} from "@/states/SynchedProfile";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {ScrollView} from "react-native";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -62,6 +63,8 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
   const foodId = foodOfferData?.food;
 
+  const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food.id);
+
   useEffect(() => {
     loadFoodOfferFromServer(foodOfferId)
         .then(setFoodOfferData)
@@ -73,10 +76,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
   return (
       <View style={{ padding: 0 }}>
         { foodOfferData &&
-            <>
-            { foodId &&
-              <FoodFeedbackDetails foodId={foodId} />
-            }
+            <ScrollView>
                 <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
                     <View style={{width: "100%", display: "flex", flexGrow: 1}}>
                         <Rectangle>
@@ -85,7 +85,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                     </View>
                 </View>
 
-                <View style={{height: 100, padding: 3, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+                <View style={{height: 100, padding: 4, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                     <View>
                         <Heading>
                           {foodOfferData.food.alias}
@@ -98,7 +98,9 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                             <FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
                         </View>
                         <View>
-                            <Icon name={"bell"}/>
+                          <MyButton useOnlyNecessarySpace={true} useTransparentBackgroundColor={true} useTransparentBorderColor={true} accessibilityLabel={"Notify"} icon={foodFeedback?.notify ? "bell" : "bell-off"} onPress={() => {
+                            setNotify(!foodFeedback?.notify);
+                          }}/>
                         </View>
                     </View>
                 </View>
@@ -115,9 +117,14 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                         <View>
                             <Text>Markings</Text>
                         </View>,
+                        <View>
+                          { foodId &&
+                              <FoodFeedbackDetails foodId={foodId} />
+                          }
+                        </View>
                     ]}/>
                 </View>
-            </>
+            </ScrollView>
         }
       </View>
   )
