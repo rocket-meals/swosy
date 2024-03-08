@@ -6,6 +6,8 @@ import {Pressable, ViewStyle} from "react-native";
 import {MyNewButtonProps} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDebug} from "@/states/Debug";
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
@@ -19,7 +21,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps // TODO change this to merge with MyButton
-export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -163,38 +165,27 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, b
         </View>
     }
 
+    const renderButton = (triggerProps: any) => {
+        const usedOnPress = async () => {
+            if(href) {
+                if(PlatformHelper.isWeb()){
+                    // on web we will use the
+                } else {
+                    await CommonSystemActionHelper.openExternalURL(href, openHrefInNewTab);
+                }
+            }
+            if(onPress) {
+                await onPress()
+            }
+        }
 
-    /**
-     <ActionsheetItem
-     {...triggerProps}
-     disabled={disabled}
-     onHoverIn={() => setHovered(true)}
-     onHoverOut={() => setHovered(false)}
-     onPressIn={() => setIsPressed(true)}
-     onPressOut={() => setIsPressed(false)}
+        let usedAccessibilityRole = accessibilityRole || MyAccessibilityRoles.Button
+        if(href){
+            usedAccessibilityRole = MyAccessibilityRoles.Link
+        }
 
-     accessibilityLabel={accessibilityLabel}
 
-     style={{
-     borderColor: usedBorderColor,
-     borderWidth: 1,
-     backgroundColor: usedViewBackgroundColor,
-     padding: 0,
-     margin: 0,
-     overflow: "hidden",
-     borderRadius: defaultBorderRadius,
-     }}
-     onPress={onPress}>
-     <View style={usedInnerViewStyle}>
-     {leftItem}
-     {renderedText}
-     {rightItem}
-     </View>
-     </ActionsheetItem>
-     * @param triggerProps
-     */
-
-    const renderButton = (triggerProps: any) => (
+        const renderedButton = (
             <Pressable
                 {...triggerProps}
                 disabled={disabled}
@@ -204,9 +195,10 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, b
                 onPressOut={() => setIsPressed(false)}
 
                 accessibilityLabel={accessibilityLabel}
+                accessibilityRole={usedAccessibilityRole}
 
                 style={
-                    [disabledStyle, pressedStyle,                 {
+                    [disabledStyle, pressedStyle, {
                         borderColor: usedBorderColor,
                         borderWidth: 1,
                         backgroundColor: usedViewBackgroundColor,
@@ -222,8 +214,8 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, b
                         //height: "100%",
                         flexShrink: 1,
                     }]
-            }
-                onPress={onPress}
+                }
+                onPress={usedOnPress}
             >
                 {leftItem}
                 <View style={{
@@ -237,7 +229,18 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, b
                 </View>
                 {rightItem}
             </Pressable>
-    )
+        )
+
+        if(PlatformHelper.isWeb() && href) {
+            return (
+                <a href={href} target={openHrefInNewTab ? "_blank" : "_self"} style={{textDecoration: 'none'}}>
+                    {renderedButton}
+                </a>
+            )
+        } else {
+            return renderedButton
+        }
+    }
 
     if(!!tooltip){
         return (

@@ -67,23 +67,33 @@ const NewsCard: React.FC<NewsItemProps> = ({ text, url, image_url, headline, ass
 
         let renderedDate: any = null;
         if(displayedDate){
-            renderedDate = <Text style={{ marginLeft: 10 }}>{displayedDate}</Text>
+            renderedDate = <Text size={"sm"}>{displayedDate}</Text>
         }
 
         // make a view which has the heading and the date, the date is on the right and take the required space, the heading takes the rest and wraps
         return (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Heading style={{ flex: 1, flexWrap: 'wrap' }}>{headline}</Heading>
-                {renderedDate}
+            <View style={{
+                width: "100%",
+                flexDirection: "row",
+            }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', width: "100%" }}>
+                    <Heading style={{ flex: 1, flexWrap: 'wrap' }}>{headline}</Heading>
+                    <View style={{
+                        paddingLeft: 10,
+                        flexDirection: "column",
+                        justifyContent: "flex-start",
+                        height: "100%",
+                    }}>
+                        {renderedDate}
+                    </View>
+                </View>
             </View>
         );
     }
 
     function renderReadMoreButton(){
         if(url){
-            return <MyExternalLink openInNewTab={true} href={url} accessibilityLabel={url}>
-                <MyButton rightIcon={IconNames.news_open_external_icon} useOnlyNecessarySpace={true} text={translation_read_more} accessibilityLabel={url} />
-            </MyExternalLink>
+            return <MyButton href={url} openHrefInNewTab={true} rightIcon={IconNames.news_open_external_icon} useOnlyNecessarySpace={true} text={translation_read_more} accessibilityLabel={url} />
         } else {
             return null;
         }
@@ -92,7 +102,9 @@ const NewsCard: React.FC<NewsItemProps> = ({ text, url, image_url, headline, ass
     return (
         <View style={{width: "100%", paddingBottom: 5}}>
             <View style={{flexDirection: flexDirection, width: "100%"}}>
-                <View style={{flex: 1, padding: 10}}>
+                <View style={{flex: 1, padding: 10, width: "100%"
+
+                }}>
                     {renderDateAndHeadline()}
                     <Text numberOfLines={3}>{text}</Text>
                     <View style={{

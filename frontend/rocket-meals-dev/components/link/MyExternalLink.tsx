@@ -6,6 +6,7 @@ import {Platform} from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 
 export type MyExternalLinkProps = {
     _target?: string,
@@ -19,9 +20,13 @@ export type MyExternalLinkProps = {
 export const MyExternalLink = ({_target, openInNewTab, href, accessibilityLabel, children}: MyExternalLinkProps) => {
 
     const onPress = () => {
+        console.log("MyExternalLink onPress")
         if (Platform.OS !== 'web') {
             // Prevent the default behavior of linking to the default browser on native.
-            WebBrowser.openBrowserAsync(href);
+            //WebBrowser.openBrowserAsync(href);
+            CommonSystemActionHelper.openExternalURL(href)
+        } else {
+
         }
     }
 

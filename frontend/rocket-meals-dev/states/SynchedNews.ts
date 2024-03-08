@@ -43,7 +43,7 @@ function getSingleDemoNews(index: number): News {
 
   let amountNewsTranslations = 1
 
-  const titles = ["Demo Neueröffnung unseres Kantinengebäudes!", "Immer frisch und lecker: Wir haben unsere Speisekarte erweitert!"]
+  const titles = ["Demo Neueröffnung unseres Kantinengebäudes!", "Immer frisch und lecker: Wir haben unsere Speisekarte erweitert!", "Hier kommt ein langer Titel, der sich über mehrere Zeilen erstreckt und so weiter und so fort, bis er schließlich endet."]
   const contents = [
       "Wir freuen uns, die Eröffnung unseres brandneuen Kantinengebäudes ankündigen zu können! Ab dem 15. März 2024 heißen wir Sie herzlich willkommen, die Vielfalt unserer kulinarischen Angebote zu entdecken. Von klassischen Gerichten bis hin zu internationalen Spezialitäten – für jeden Geschmack ist etwas dabei.\n" +
       "\n" +

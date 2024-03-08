@@ -6,11 +6,15 @@ import {useProjectColor} from "@/states/ProjectInfo";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native";
 import {MyButtonCustom} from "@/components/buttons/MyButtonCustom";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 export type MyNewButtonProps = {
     isActive?: boolean,
     onPress?: () => Promise<void> | void,
+    openHrefInNewTab?: boolean,
+    href?: string,
     accessibilityLabel: string,
+    accessibilityRole?: MyAccessibilityRoles,
     text?: string,
     leftIcon?: string,
     leftIconActive?: string,

@@ -1,12 +1,10 @@
 import React from 'react';
-import {Text} from "@/components/Themed";
-import {UrlHelper} from "@/helper/UrlHelper";
 import {AuthProvider, ServerAPI} from "@/helper/database/server/ServerAPI";
 import {useIsDebug} from "@/states/Debug";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
-import {MyExternalLink} from '@/components/link/MyExternalLink';
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+import {isInExpoGoDev} from "@/helper/device/DeviceRuntimeHelper";
 
 // Define the type for Single Sign-On (SSO) providers
 type SsoProvider = {
@@ -14,19 +12,12 @@ type SsoProvider = {
 }
 
 function isSsoLoginPossible() {
-    let urlToLogin = UrlHelper.getURLToLogin();
-    // check if we are in expo go on mobile
-    let isExpoGoWithSsoWorking = false;
-    if(urlToLogin.startsWith("exp://")) { // app is running in expo go
-        if(urlToLogin.startsWith("exp://u.expo.dev")) {
-            isExpoGoWithSsoWorking = true; // this is when the update is uploaded to expo for example via expo publish or our workflow
-        } else {
-            isExpoGoWithSsoWorking = false; // url is like: exp://192.168.178.35:8081 or something like that
-        }
-
-        return isExpoGoWithSsoWorking
+    if(isInExpoGoDev()) { // app is running in expo go but on local ip (192....),
+        // which means the redirect url would not trigger the deep link,
+        // resulting in not opening the app,
+        // so the SSO login does not work
+        return false;
     }
-
     return true;
 }
 
