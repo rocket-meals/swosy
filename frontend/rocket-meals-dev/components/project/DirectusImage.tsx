@@ -10,7 +10,7 @@ import {DirectusImageDemoSources} from "@/components/project/DirectusImageDemoSo
 import {useIsDebug} from "@/states/Debug";
 import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 
-interface AppState {
+export type DirectusImageProps = {
     assetId: string | DirectusFiles | undefined | null;
     image_url?: string | undefined | null;
     style?: any;
@@ -22,7 +22,7 @@ interface AppState {
     onPress?: () => {}
 }
 
-export const DirectusImage: FunctionComponent<AppState> = (props) => {
+export default function DirectusImage(props: DirectusImageProps) {
     const accessToken = useAccessToken();
     const isDemoMode = useIsDemo();
     const isDebug = useIsDebug();

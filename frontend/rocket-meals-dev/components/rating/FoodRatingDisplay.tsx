@@ -24,7 +24,7 @@ export const FoodRatingDisplay: FunctionComponent<AppState> = (props) => {
 
   const userRating = props.userRating;
   //const [foodSettings, setFoodSettings] = useSynchedSettingsFoods()
-  const foodSettings = {
+  const foodSettings = { //todo: replace with synched settings
     ratings_type: 3
   }
   const ratingType = props.ratingType || foodSettings?.ratings_type

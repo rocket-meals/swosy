@@ -1,7 +1,7 @@
 import React from 'react';
 import {useBreakPointValue, useIsLargeDevice} from "@/helper/device/DeviceHelper";
 import {MyCard} from "@/components/card/MyCard";
-import {DirectusImage} from "@/components/project/DirectusImage";
+import DirectusImage from "@/components/project/DirectusImage";
 import {AspectRatio, Rectangle} from "@/components/shapes/Rectangle";
 import {Heading, Text, View} from "@/components/Themed";
 import {Divider} from "@gluestack-ui/themed";

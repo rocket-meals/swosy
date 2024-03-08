@@ -3,7 +3,7 @@
 // also allow the content to be a component
 
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {DirectusImage} from "@/components/project/DirectusImage";
+import DirectusImage from "@/components/project/DirectusImage";
 import {MyCardWithText, MyCardWithTextProps} from "@/components/card/MyCardWithText";
 import {DirectusFiles} from "@/helper/database/databaseTypes/types";
 import {MyCardProps} from "@/components/card/MyCard";
