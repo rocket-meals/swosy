@@ -8,15 +8,6 @@ on:
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
-  pull_request:
-    types: [closed]
-    branches:
-      - expo
-      - master
-      - web
-    paths:
-      - 'frontend/rocket-meals-dev/**'
-      - ".github/workflows/frontend_native_expo.yml"
       
 jobs:
   gh-pages:
