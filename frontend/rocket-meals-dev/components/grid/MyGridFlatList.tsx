@@ -41,10 +41,10 @@ interface GridListProps<T> {
 }
 
 export const DEFAULT_GRID_LIST_SPACING: GridListSpacing = {
-    marginTop: 10,
+    marginTop: 6,
     marginOuter: 5,
-    marginInner: 5,
-    marginRow: 10,
+    marginInner: 3,
+    marginRow: 6,
 }
 
 /**

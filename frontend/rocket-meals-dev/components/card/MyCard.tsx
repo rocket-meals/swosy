@@ -2,7 +2,7 @@
 // also allow to set a callback for the button
 // also allow the content to be a component
 
-import {Box} from "@gluestack-ui/themed";
+import {Box, Text} from "@gluestack-ui/themed";
 import {useViewBackgroundColor, View} from "@/components/Themed";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 
@@ -15,15 +15,10 @@ export type MyCardProps = {
     style?: any,
 }
 
-export const MyCardDefaultBorderRadius = 20;
+export const MyCardDefaultBorderRadius = 10;
 
 // define the button component
 export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardProps) => {
-
-    const viewBackgroundColor = useViewBackgroundColor()
-    const viewBackgroundColorDark = useLighterOrDarkerColorForSelection(viewBackgroundColor)
-    const textContrastColor = useMyContrastColor(viewBackgroundColorDark)
-
     const borderRaidus = MyCardDefaultBorderRadius
 
     let renderedTopComponent = null;
@@ -50,7 +45,7 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
                 maxHeight="100%"
                 width="100%"
                 height="100%"
-                borderColor={textContrastColor}
+                borderColor={"transparent"}
                 borderRadius={borderRaidus}
                 borderWidth="$1"
                 overflow="hidden"
