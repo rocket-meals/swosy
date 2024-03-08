@@ -14,6 +14,8 @@ import {AnimationNoFoodOffersFound} from "@/compositions/animations/AnimationNoF
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {router} from "expo-router";
+import PricingBadge from "@/components/pricing/PricingBadge";
+import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
 
 export default function FoodOfferScreen() {
 
@@ -77,6 +79,9 @@ export default function FoodOfferScreen() {
       if (food?.alias) {
         title = food.alias
       }
+      if (foodOffer?.alias) {
+        title = foodOffer.alias
+      }
     }
 
 
@@ -88,10 +93,14 @@ export default function FoodOfferScreen() {
             image_url={image_url}
             assetId={assetId}
             onPress={() => {
-              console.log("Pressed on food offer", foodOffer)
               router.push(`/(app)/foods/${foodOffer.id}`)
             }}
-            accessibilityLabel={title}/>
+            accessibilityLabel={title}
+            innerPadding={0}
+            bottomRightComponent={
+              <IndividualPricingBadge foodOffer={foodOffer}/>
+            }
+        />
     );
   }
 

@@ -1,6 +1,6 @@
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {Heading, Icon, Text, View} from "@/components/Themed";
-import {DirectusImage} from "@/components/project/DirectusImage";
+import DirectusImage from "@/components/project/DirectusImage";
 
 import { Rectangle } from "@/components/shapes/Rectangle";
 import React, {useEffect, useState} from "react";
@@ -10,9 +10,19 @@ import TabWrapper from "@/components/tab/TabWrapper";
 import {IconNames} from "@/constants/IconNames";
 import {RatingType, RatingValueIcon} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
-import {useSynchedProfileFoodFeedback, useSynchedProfileFoodFeedbacksDict} from "@/states/SynchedProfile";
+import {
+  useSynchedProfile,
+  useSynchedProfileFoodFeedback,
+  useSynchedProfileFoodFeedbacksDict
+} from "@/states/SynchedProfile";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {ScrollView} from "react-native";
+import {Divider} from "@gluestack-ui/themed";
+import PricingBadge from "@/components/pricing/PricingBadge";
+import ImageWithComponents from "@/components/project/ImageWithComponents";
+import useProfilePricing from "@/components/pricing/useProfilePricing";
+import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
+import NutritionList from "@/components/food/NutritionList";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -24,7 +34,7 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
         width: "100%",
 
       }}>
-        <MyScrollView>
+        <View>
           <Text>{"foodId: "+usedFoodId}</Text>
           <MyButton text={"Create a default comment: 'Tastes good'"}  leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
             setComment("Tastes good");
@@ -44,16 +54,9 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
           <MyButton text={"Reset rating"} leftIcon={"star-off"}  accessibilityLabel={"Rating"}  onPress={() => {
             setRating(null);
           }}/>
-
-          <MyButton accessibilityLabel={"Notify"} text={"Notify"} leftIcon={"bell"}  isActive={true} onPress={() => {
-            setNotify(true);
-          } }/>
-          <MyButton accessibilityLabel={"Unnotify"} text={"Unnotify"} leftIcon={"bell-off"} isActive={true} onPress={() => {
-            setNotify(false);
-          } }/>
           <Text>{"The raw foodFeedback"}</Text>
           <Text>{JSON.stringify(foodFeedback, null, 2)}</Text>
-        </MyScrollView>
+        </View>
       </View>
   )
 }
@@ -71,8 +74,6 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
         .catch(console.error);
   }, []);
 
-
-
   return (
       <View style={{ padding: 0 }}>
         { foodOfferData &&
@@ -80,7 +81,16 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                 <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
                     <View style={{width: "100%", display: "flex", flexGrow: 1}}>
                         <Rectangle>
-                            <DirectusImage assetId={foodOfferData.food.image} image_url={foodOfferData.food.image_remote_url} style={{width: "100%", height: "100%"}}/>
+                            <ImageWithComponents
+                                image={{
+                                  assetId: foodOfferData.food.image,
+                                  image_url: foodOfferData.food.image_remote_url,
+                                }}
+                                innerPadding={0}
+                                bottomRightComponent={
+                                  <IndividualPricingBadge foodOffer={foodOfferData}/>
+                                }
+                            />
                         </Rectangle>
                     </View>
                 </View>
@@ -88,34 +98,47 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                 <View style={{height: 100, padding: 4, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
                     <View>
                         <Heading>
-                          {foodOfferData.food.alias}
+                          {foodOfferData.alias}
                         </Heading>
                     </View>
 
                     <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                        <View style={{ display: "flex", flexDirection: "row", backgroundColor: "blue", width: "50%" }}>
+                        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "50%" }}>
                             {/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
                             <FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
                         </View>
                         <View>
-                          <MyButton useOnlyNecessarySpace={true} useTransparentBackgroundColor={true} useTransparentBorderColor={true} accessibilityLabel={"Notify"} icon={foodFeedback?.notify ? "bell" : "bell-off"} onPress={() => {
+                          <MyButton useOnlyNecessarySpace={true} useTransparentBackgroundColor={true} useTransparentBorderColor={true} accessibilityLabel={foodFeedback?.notify ? "Unnotify" : "Notify"} icon={foodFeedback?.notify ? "bell" : "bell-off"} onPress={() => {
                             setNotify(!foodFeedback?.notify);
                           }}/>
                         </View>
                     </View>
                 </View>
 
-                <View style={{ display: "flex", marginTop: 40, marginHorizontal: 10 }}>
+                <Divider/>
+
+                <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
                       (active) => <MyButton icon={IconNames.nutrition_icon} centerItems={true} accessibilityLabel={"Nutritions"} isActive={active} onPress={() => {}} borderRightRadius={0}/>,
                       (active) => <MyButton icon={IconNames.eating_habit_icon} centerItems={true} accessibilityLabel={"Markings"} isActive={active} onPress={() => {}} borderLeftRadius={0} borderRightRadius={0}/>,
                       (active) => <MyButton icon={IconNames.comment_icon} centerItems={true} accessibilityLabel={"Comments"} isActive={active} onPress={() => {}} borderLeftRadius={0}/>,
                     ]} contents={[
                         <View>
-                            <Text>Nutritions</Text>
+                          <NutritionList
+                            protein_g={foodOfferData.protein_g}
+                            fat_g={foodOfferData.fat_g}
+                            carbohydrate_g={foodOfferData.carbohydrate_g}
+                            fiber_g={foodOfferData.fiber_g}
+                            sugar_g={foodOfferData.sugar_g}
+                            sodium_g={foodOfferData.sodium_g}
+                            calories_kcal={foodOfferData.calories_kcal}
+                            saturated_fat_g={foodOfferData.saturated_fat_g}
+                          />
                         </View>,
                         <View>
-                            <Text>Markings</Text>
+                            <Text>
+                              {JSON.stringify(foodOfferData, null, 2)}
+                            </Text>
                         </View>,
                         <View>
                           { foodId &&

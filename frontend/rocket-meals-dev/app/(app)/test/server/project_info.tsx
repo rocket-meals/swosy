@@ -6,7 +6,7 @@ import {
     useProjectLogoAssetId,
     useProjectName
 } from "@/states/ProjectInfo";
-import {DirectusImage} from "@/components/project/DirectusImage";
+import DirectusImage from "@/components/project/DirectusImage";
 import {ProjectLogo} from "@/components/project/ProjectLogo";
 
 export default function HomeScreen() {
