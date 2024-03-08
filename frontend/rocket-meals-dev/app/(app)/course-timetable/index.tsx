@@ -46,7 +46,6 @@ export default function CourseTimetableScreen() {
     const translationCreateEvent = translation_event+" "+translation_create
 
     const breakPointsAmountOfDaysToShowOnScreen = {
-        base: 1.1,
         sm: 2.1,
         md: 5.1,
         lg: 7,

@@ -15,7 +15,7 @@ export default function ImageWithComponents(props: ImageWithComponentProps) {
     const innerPadding = props.innerPadding ?? 10;
 
     return (
-        <View>
+        <View style={{width: "100%", height: "100%"}}>
           <DirectusImage {...props.image} style={{width: "100%", height: "100%"}}/>
           <View style={{
               position: "absolute",

@@ -1,28 +1,21 @@
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
-import {Heading, Icon, Text, View} from "@/components/Themed";
-import DirectusImage from "@/components/project/DirectusImage";
+import {Heading, Text, View} from "@/components/Themed";
 
-import { Rectangle } from "@/components/shapes/Rectangle";
+import {Rectangle} from "@/components/shapes/Rectangle";
 import React, {useEffect, useState} from "react";
 import {loadFoodOfferFromServer} from "@/states/SynchedFoodOfferStates";
 import {MyButton} from "@/components/buttons/MyButton";
 import TabWrapper from "@/components/tab/TabWrapper";
 import {IconNames} from "@/constants/IconNames";
-import {RatingType, RatingValueIcon} from "@/components/rating/RatingValueIcon";
+import {RatingType} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
-import {
-  useSynchedProfile,
-  useSynchedProfileFoodFeedback,
-  useSynchedProfileFoodFeedbacksDict
-} from "@/states/SynchedProfile";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
 import {ScrollView} from "react-native";
 import {Divider} from "@gluestack-ui/themed";
-import PricingBadge from "@/components/pricing/PricingBadge";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
-import useProfilePricing from "@/components/pricing/useProfilePricing";
 import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
 import NutritionList from "@/components/food/NutritionList";
+import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -68,6 +61,14 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
   const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food.id);
 
+  const breakPointsAmountOfDaysToShowOnScreen = {
+    sm: "100%",
+    md: "100%",
+    lg: "60%",
+    xl: "40%",
+  }
+  const imageWidthPercentage = useBreakPointValue<string>(breakPointsAmountOfDaysToShowOnScreen)
+
   useEffect(() => {
     loadFoodOfferFromServer(foodOfferId)
         .then(setFoodOfferData)
@@ -75,11 +76,11 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
   }, []);
 
   return (
-      <View style={{ padding: 0 }}>
+      <View style={{ padding: 0, width: "100%", height: "100%" }}>
         { foodOfferData &&
             <ScrollView>
                 <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
-                    <View style={{width: "100%", display: "flex", flexGrow: 1}}>
+                    <View style={{width: "100%", display: "flex"}}>
                         <Rectangle>
                             <ImageWithComponents
                                 image={{
