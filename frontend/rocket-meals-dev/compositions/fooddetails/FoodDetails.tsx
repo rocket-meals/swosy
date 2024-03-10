@@ -16,6 +16,7 @@ import ImageWithComponents from "@/components/project/ImageWithComponents";
 import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
 import NutritionList from "@/components/food/NutritionList";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -61,6 +62,10 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
   const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food.id);
 
+  const translations_nutritions = useTranslation(TranslationKeys.nutritions);
+  const translations_markings = useTranslation(TranslationKeys.markings);
+  const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
+
   const breakPointsAmountOfDaysToShowOnScreen = {
     sm: "100%",
     md: "100%",
@@ -79,7 +84,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
     let leftBorderRadius = leftRoundedBorder ? undefined : 0;
     let rightBorderRadius = rightRoundedBorder ? undefined : 0;
 
-    return <View style={{width: "100%"}}><MyButton icon={iconName} centerItems={true} text={text} accessibilityLabel={accessibilityLabel} isActive={active} onPress={() => {
+    return <View style={{width: "100%"}}><MyButton icon={iconName} centerItems={true} text={text} tooltip={text} accessibilityLabel={accessibilityLabel} isActive={active} onPress={() => {
             setActive();
       }} borderLeftRadius={leftBorderRadius} borderRightRadius={rightBorderRadius} /></View>
   }
@@ -129,9 +134,9 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
                 <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
-                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, "Nutrition", "Nutrition"),
-                      (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, "Markings", "Markings"),
-                      (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, "Comments", "Comments"),
+                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutritions, translations_nutritions),
+                      (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
+                      (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
                     ]} contents={[
                         <View>
                           <NutritionList

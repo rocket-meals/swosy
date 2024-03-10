@@ -205,7 +205,10 @@ export const MyGlobalActionSheet = (props: any) => {
         </MyScrollView>
     }
 
-    const usedTitle = title+StringHelper.EMPTY_SPACE; // We add a space to the title to make sure the title is not empty and the actionsheet is not too small
+    let usedTitle = title; // We add a space to the title to make sure the title is not empty and the actionsheet is not too small
+    if(!usedTitle){
+        usedTitle = StringHelper.EMPTY_SPACE
+    }
 
     return (
             <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}

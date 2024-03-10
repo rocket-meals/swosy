@@ -52,6 +52,8 @@ export class TranslationKeys {
 
   static no_data_currently_calculating = createTranslationKey("no_data_currently_calculating", "Keine Daten, werden gerade berechnet");
 
+  static food_feedbacks = createTranslationKey("food_feedbacks", "Essensbewertungen");
+
   static animation = createTranslationKey("animation", "Animation");
   static allergene = createTranslationKey("allergene", "Allergene");
   static notification = createTranslationKey("notification", "Benachrichtigung");
@@ -97,6 +99,17 @@ export class TranslationKeys {
   static tomorrow = createTranslationKey("tomorrow", "Morgen");
   static yesterday = createTranslationKey("yesterday", "Gestern");
 
+  static nutritions = createTranslationKey("nutritions", "Nährwerte");
+  static nutritions_disclaimer = createTranslationKey("nutritions_disclaimer", "Bei der Angabe von der Nährwerte habdelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten.");
+  static nutritions_calories = createTranslationKey("nutritions_calories", "Kalorien");
+  static nutritions_protein = createTranslationKey("nutritions_protein", "Protein");
+  static nutritions_fat = createTranslationKey("nutritions_fat", "Fett");
+  static nutritions_carbohydrate = createTranslationKey("nutritions_carbohydrate", "Kohlenhydrate");
+  static nutritions_fiber = createTranslationKey("nutritions_fiber", "Ballaststoffe");
+  static nutritions_sugar = createTranslationKey("nutritions_sugar", "Zucker");
+  static nutritions_sodium = createTranslationKey("nutritions_sodium", "Natrium");
+  static nutritions_saturated_fat = createTranslationKey("nutritions_saturated_fat", "Gesättigte Fettsäuren");
+
   static about_us = createTranslationKey("about_us", "Über uns");
   static license = createTranslationKey("license", "Lizenz");
   static accessibility = createTranslationKey("accessibility", "Barrierefreiheit");
@@ -125,6 +138,7 @@ export class TranslationKeys {
   static course_timetable = createTranslationKey("course_timetable", "Stundenplan");
 
   static eating_habits = createTranslationKey("eating_habits", "Essgewohnheiten");
+  static markings = createTranslationKey("markings", "Kennzeichnungen");
 
   static utilization_forecast = createTranslationKey("utilization_forecast", "Prognose der Auslastung");
   static utilization = createTranslationKey("utilization", "Auslastung");
