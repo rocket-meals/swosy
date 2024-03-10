@@ -107,16 +107,16 @@ export class TranslationKeys {
   static tomorrow = createTranslationKey("tomorrow", "Morgen");
   static yesterday = createTranslationKey("yesterday", "Gestern");
 
-  static nutritions = createTranslationKey("nutritions", "Nährwerte");
-  static nutritions_disclaimer = createTranslationKey("nutritions_disclaimer", "Bei der Angabe von der Nährwerte habdelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten.");
-  static nutritions_calories = createTranslationKey("nutritions_calories", "Kalorien");
-  static nutritions_protein = createTranslationKey("nutritions_protein", "Protein");
-  static nutritions_fat = createTranslationKey("nutritions_fat", "Fett");
-  static nutritions_carbohydrate = createTranslationKey("nutritions_carbohydrate", "Kohlenhydrate");
-  static nutritions_fiber = createTranslationKey("nutritions_fiber", "Ballaststoffe");
-  static nutritions_sugar = createTranslationKey("nutritions_sugar", "Zucker");
-  static nutritions_sodium = createTranslationKey("nutritions_sodium", "Natrium");
-  static nutritions_saturated_fat = createTranslationKey("nutritions_saturated_fat", "Gesättigte Fettsäuren");
+  static nutrition = createTranslationKey("nutrition", "Nährwerte");
+  static nutrition_disclaimer = createTranslationKey("nutrition_disclaimer", "Bei der Angabe von der Nährwerte habdelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten.");
+  static nutrition_calories = createTranslationKey("nutrition_calories", "Kalorien");
+  static nutrition_protein = createTranslationKey("nutrition_protein", "Protein");
+  static nutrition_fat = createTranslationKey("nutrition_fat", "Fett");
+  static nutrition_carbohydrate = createTranslationKey("nutrition_carbohydrate", "Kohlenhydrate");
+  static nutrition_fiber = createTranslationKey("nutrition_fiber", "Ballaststoffe");
+  static nutrition_sugar = createTranslationKey("nutrition_sugar", "Zucker");
+  static nutrition_sodium = createTranslationKey("nutrition_sodium", "Natrium");
+  static nutrition_saturated_fat = createTranslationKey("nutrition_saturated_fat", "Gesättigte Fettsäuren");
 
   static about_us = createTranslationKey("about_us", "Über uns");
   static license = createTranslationKey("license", "Lizenz");

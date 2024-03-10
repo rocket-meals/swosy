@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {View, Text} from "@/components/Themed";
+import {View} from "@/components/Themed";
 
 type setActiveType = () => void
 

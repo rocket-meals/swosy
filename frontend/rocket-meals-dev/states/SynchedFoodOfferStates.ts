@@ -50,7 +50,7 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 export async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
     let collectionHelper = new CollectionHelper<Foodoffers>("foodoffers");
 
-    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*'];
+    const food_offer_fields = ['*',"food.*","food.translations.*", 'markings.*', 'food.markings.*'];
 
     let query = {
         fields: food_offer_fields

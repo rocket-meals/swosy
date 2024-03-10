@@ -57,12 +57,12 @@ export enum IconNames {
 
     nutrition_icon = "food-apple",
     comment_icon = "chat",
-    nutritions_calories_icon = "fire",
-    nutritions_carbohydrate_icon = "corn",
-    nutritions_fat_icon = "water",
-    nutritions_fiber_icon = "leaf",
+    nutrition_calories_icon = "fire",
+    nutrition_carbohydrate_icon = "corn",
+    nutrition_fat_icon = "water",
+    nutrition_fiber_icon = "leaf",
     protein_icon = "fish",
-    nutritions_saturated_fat_icon = "water-circle",
+    nutrition_saturated_fat_icon = "water-circle",
     nutirtions_sodium_icom = "grain",
-    nutritions_sugar_icon = "cupcake"
+    nutrition_sugar_icon = "cupcake"
 }

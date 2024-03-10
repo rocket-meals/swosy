@@ -44,39 +44,40 @@ export default function NutritionList(props: NutritionListProps) {
     translation_sodium,
     translation_saturated_fat
   ] = useTranslations([
-      TranslationKeys.nutritions_calories,
-      TranslationKeys.nutritions_protein,
-      TranslationKeys.nutritions_fat,
-      TranslationKeys.nutritions_carbohydrate,
-      TranslationKeys.nutritions_fiber,
-      TranslationKeys.nutritions_sugar,
-      TranslationKeys.nutritions_sodium,
-      TranslationKeys.nutritions_saturated_fat
+      TranslationKeys.nutrition_calories,
+      TranslationKeys.nutrition_protein,
+      TranslationKeys.nutrition_fat,
+      TranslationKeys.nutrition_carbohydrate,
+      TranslationKeys.nutrition_fiber,
+      TranslationKeys.nutrition_sugar,
+      TranslationKeys.nutrition_sodium,
+      TranslationKeys.nutrition_saturated_fat
   ])
 
-  const translation_disclaimer = useTranslation(TranslationKeys.nutritions_disclaimer);
+  const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
+  const translation_nutrition = useTranslation(TranslationKeys.nutrition);
 
   const data: {
     key: string;
     data: {icon: string, label: string, value?: number | null}
   }[] = [
-    { key: "calories", data: {icon: IconNames.nutritions_calories_icon, label: translation_calories, value: props.calories_kcal} },
-    { key: "carbohydrates", data: {icon: IconNames.nutritions_carbohydrate_icon, label: translation_carbohydrate, value: props.carbohydrate_g} },
-    { key: "fiber", data: {icon: IconNames.nutritions_fiber_icon, label: translation_fiber, value: props.fiber_g} },
+    { key: "calories", data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.calories_kcal} },
+    { key: "carbohydrates", data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.carbohydrate_g} },
+    { key: "fiber", data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.fiber_g} },
     { key: "protein", data: {icon: IconNames.protein_icon, label: translation_protein, value: props.protein_g} },
     { key: "sodium", data: {icon: IconNames.nutirtions_sodium_icom, label: translation_sodium, value: props.sodium_g} },
-    { key: "fat", data: {icon: IconNames.nutritions_fat_icon, label: translation_fat, value: props.fat_g} },
-    { key: "sugar", data: {icon: IconNames.nutritions_sugar_icon, label: translation_sugar, value: props.sugar_g} },
-    { key: "saturatedFat", data: {icon: IconNames.nutritions_saturated_fat_icon, label: translation_saturated_fat, value: props.saturated_fat_g} },
+    { key: "fat", data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.fat_g} },
+    { key: "sugar", data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.sugar_g} },
+    { key: "saturatedFat", data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.saturated_fat_g} },
   ]
 
   return (
-    <View style={{ padding: 4 }}>
-      <Header title={useTranslation(TranslationKeys.nutritions)}/>
+    <>
+      <Header title={translation_nutrition}/>
       <MyGridFlatList gridAmount={2} data={data} renderItem={(item) => {
         return <NutritionListElement {...item.item.data}/>
       }}/>
       <Text>{translation_disclaimer}</Text>
-    </View>
+    </>
   )
 }

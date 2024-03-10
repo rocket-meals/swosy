@@ -17,6 +17,7 @@ import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge"
 import NutritionList from "@/components/food/NutritionList";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {Header} from "@react-navigation/elements";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -57,12 +58,17 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
 export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
   const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
+  useEffect(() => {
+    loadFoodOfferFromServer(foodOfferId)
+        .then(setFoodOfferData)
+        .catch(console.error);
+  }, [foodOfferId]);
 
   const foodId = foodOfferData?.food;
 
   const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food.id);
 
-  const translations_nutritions = useTranslation(TranslationKeys.nutritions);
+  const translations_nutrition = useTranslation(TranslationKeys.nutrition);
   const translations_markings = useTranslation(TranslationKeys.markings);
   const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
@@ -73,12 +79,6 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
     xl: "40%",
   }
   const imageWidthPercentage = useBreakPointValue<string>(breakPointsAmountOfDaysToShowOnScreen)
-
-  useEffect(() => {
-    loadFoodOfferFromServer(foodOfferId)
-        .then(setFoodOfferData)
-        .catch(console.error);
-  }, []);
 
   function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
     let leftBorderRadius = leftRoundedBorder ? undefined : 0;
@@ -134,11 +134,11 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
                 <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
-                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutritions, translations_nutritions),
+                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
                       (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
                       (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
                     ]} contents={[
-                        <View>
+                        <View style={{ padding: 4 }}>
                           <NutritionList
                             protein_g={foodOfferData.protein_g}
                             fat_g={foodOfferData.fat_g}
@@ -150,10 +150,11 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                             saturated_fat_g={foodOfferData.saturated_fat_g}
                           />
                         </View>,
-                        <View>
-                            <Text>
-                              {JSON.stringify(foodOfferData, null, 2)}
-                            </Text>
+                        <View style={{ padding: 4 }}>
+                          <Header title={translations_markings}/>
+                          <Text>
+                            {JSON.stringify(foodOfferData.food.markings, null, 2)}
+                          </Text>
                         </View>,
                         <View>
                           { foodId &&
