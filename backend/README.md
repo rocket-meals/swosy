@@ -27,8 +27,11 @@ Similar steps can be made for local testing
                   - `sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
                   - `sudo chmod +x /usr/local/bin/docker-compose`
     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      - Remove any other nodejs: sudo apt auto-remove nodejs
       - nvm install 18
       - nvm use 18
+      - nvm alias default 18
+        - If you get an error: Node not found, try: sudo ln -s /root/.nvm/versions/node/v18.19.1/bin/node /usr/local/bin/node
     - curl -o- -L https://yarnpkg.com/install.sh | bash
     - exit terminal and restart // no source will not help
     - sudo apt install git

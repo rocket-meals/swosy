@@ -1,7 +1,24 @@
 # rocket-meals
 
 
+# Setup for new customer
 
+- Fork the repo
+- Enable github actions
+- Add github secrets
+  - EXPO_TOKEN: https://docs.expo.dev/distribution/security/
+- Create new Expo project:
+  - https://expo.dev/accounts/baumgartner-software/projects
+  - Update app.json
+    - name
+    - slug
+    - projectId
+- Update the server url
+  - You need to have the backend setup
+  - in /rocket-meals-dev/constants/ServerConfiguration.ts
+- Enable Github Pages
+  - Set the homepage in package.json: "homepage": "/rocket-meals" to specify the sub-path
+  - After the first deployment, set the to be hosted by branch gh-pages
 
 
 ## Created:

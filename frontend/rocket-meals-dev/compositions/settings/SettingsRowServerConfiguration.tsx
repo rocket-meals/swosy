@@ -26,6 +26,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         System = "system",
         RocketMeals = "rocketmeals",
         SWOSY = "swosy",
+        StudiFutter = "studifutter",
         LocalHost = "localhost"
     }
 
@@ -34,6 +35,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         [ServerConfigurationsOptions.System]: "System",
         [ServerConfigurationsOptions.RocketMeals]: "Rocket-Meals",
         [ServerConfigurationsOptions.SWOSY]: "SWOSY",
+        [ServerConfigurationsOptions.StudiFutter]: "Studi|Futter",
         [ServerConfigurationsOptions.LocalHost]: "http://127.0.0.1/rocket-meals/api"
     }
 
@@ -42,6 +44,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
         [ServerConfigurationsOptions.System]: ServerConfiguration.ServerUrl,
         [ServerConfigurationsOptions.RocketMeals]: "https://rocket-meals.de/demo/api",
         [ServerConfigurationsOptions.SWOSY]: "https://swosy.rocket-meals.de/rocket-meals/api",
+        [ServerConfigurationsOptions.StudiFutter]: "https://studi-futter.rocket-meals.de/rocket-meals/api",
         [ServerConfigurationsOptions.LocalHost]: "http://127.0.0.1/rocket-meals/api"
     }
 

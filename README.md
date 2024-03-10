@@ -14,3 +14,4 @@ Product home page: https://rocket-meals.de
 # Kunden
 
 - Studentenwerk Osnabrück: #FFD500
+- Studentenwerk Hannover: #80BA27
