@@ -64,5 +64,10 @@ export enum IconNames {
     protein_icon = "fish",
     nutrition_saturated_fat_icon = "water-circle",
     nutirtions_sodium_icom = "grain",
-    nutrition_sugar_icon = "cupcake"
+    nutritions_sugar_icon = "cupcake",
+
+    price_group_icon = "currency-eur",
+    price_group_student = "school",
+    price_group_employee = "briefcase",
+    price_group_guest = "account-group",
 }

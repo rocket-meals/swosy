@@ -100,6 +100,32 @@ export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<P
     return [usedResource, usedSetResource, lastUpdate]
 }
 
+export enum PriceGroups {
+    Student = "student",
+    Employee = "employee",
+    Guest = "guest"
+}
+export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => void)]{
+    const [profile, setProfile] = useSynchedProfile();
+    const setPriceGroup = (priceGroup: string) => {
+        profile.price_group = priceGroup;
+        return setProfile(profile);
+    }
+
+    let usedPriceGroup = PriceGroups.Student;
+    let profilePriceGroup = profile?.price_group;
+    if(!!profilePriceGroup){
+        // check if profilePriceGroup is a valid PriceGroup
+        if(profilePriceGroup === PriceGroups.Student || profilePriceGroup === PriceGroups.Employee || profilePriceGroup === PriceGroups.Guest){
+            usedPriceGroup = profilePriceGroup;
+        }
+    }
+
+
+    return [usedPriceGroup, setPriceGroup];
+
+}
+
 export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => Promise<boolean | void>)]{
     const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
     async function setNickname(nextValue: string | undefined){

@@ -65,7 +65,12 @@ export class TranslationKeys {
   static animation = createTranslationKey("animation", "Animation");
   static allergene = createTranslationKey("allergene", "Allergene");
   static notification = createTranslationKey("notification", "Benachrichtigung");
+
   static price_group = createTranslationKey("price_group", "Preisgruppe");
+  static price_group_student = createTranslationKey("price_group_student", "Student");
+  static price_group_employee = createTranslationKey("price_group_employee", "Mitarbeiter");
+  static price_group_guest = createTranslationKey("price_group_guest", "Gast");
+
   static under_construction = createTranslationKey("under_construction", "In Arbeit");
   static not_allowed = createTranslationKey("not_allowed", "Nicht erlaubt");
   static washing_machine = createTranslationKey("washing_machine", "Waschmaschine");

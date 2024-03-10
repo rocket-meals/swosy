@@ -22,13 +22,15 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {StringHelper} from "@/helper/string/StringHelper";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 
 
 export type MyGlobalActionSheetConfig = {
     visible: boolean,
     title: string,
-    // description?: string,
+    renderPreItemsContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     items?: MyGlobalActionSheetItem[],
+    renderPostItemsContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined
     renderCustomContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
     onCancel?: () => Promise<boolean>
     maxHeight?: DimensionValue
@@ -167,6 +169,7 @@ export const MyGlobalActionSheet = (props: any) => {
                 renderedItems.push(
                     <ActionsheetItem
                         disabled={!item.onSelect}
+                        accessibilityRole={MyAccessibilityRoles.Radio}
                         accessibilityLabel={item.accessibilityLabel}
                         sx={{
                             bg: usedViewBackgroundColor,
@@ -196,13 +199,27 @@ export const MyGlobalActionSheet = (props: any) => {
         }
     }
 
-    let content = undefined
+    let content = []
     if(!!showActionsheetConfig.renderCustomContent){
         content = showActionsheetConfig.renderCustomContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
     } else {
-        content = <MyScrollView>
-            {renderedItems}
-        </MyScrollView>
+        let renderedPreItem = undefined
+        if(!!showActionsheetConfig.renderPreItemsContent){
+            renderedPreItem = showActionsheetConfig.renderPreItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
+        }
+        let renderedPostItem = undefined
+        if(!!showActionsheetConfig.renderPostItemsContent){
+            renderedPostItem = showActionsheetConfig.renderPostItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
+        }
+
+
+        content = (
+            <MyScrollView>
+                {renderedPreItem}
+                {renderedItems}
+                {renderedPostItem}
+            </MyScrollView>
+        )
     }
 
     let usedTitle = title; // We add a space to the title to make sure the title is not empty and the actionsheet is not too small
@@ -211,29 +228,28 @@ export const MyGlobalActionSheet = (props: any) => {
     }
 
     return (
-            <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}
+        <Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}>
+            <ActionsheetBackdrop onPress={onCancel} />
+            <ActionsheetContent
+                maxHeight={maxHeight}
+                 zIndex={999}
+                style={{
+                    backgroundColor: viewBackgroundColor,
+                }}
             >
-                <ActionsheetBackdrop onPress={onCancel} />
-                <ActionsheetContent
-                    maxHeight={maxHeight}
-                     zIndex={999}
-                    style={{
-                        backgroundColor: viewBackgroundColor,
-                    }}
-                >
-                    <ActionsheetDragIndicatorWrapper>
-                        <ActionsheetDragIndicator
-                            style={{
-                                backgroundColor: textColor,
-                            }}
-                        />
-                        <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{usedTitle}</Heading></View>
-                    </ActionsheetDragIndicatorWrapper>
-    
-                    <MySafeAreaView>
-                        {content}
-                    </MySafeAreaView>
-                </ActionsheetContent>
-            </Actionsheet>
+                <ActionsheetDragIndicatorWrapper>
+                    <ActionsheetDragIndicator
+                        style={{
+                            backgroundColor: textColor,
+                        }}
+                    />
+                    <View style={{width: "100%", justifyContent: "center", alignItems: "center"}}><Heading>{usedTitle}</Heading></View>
+                </ActionsheetDragIndicatorWrapper>
+
+                <MySafeAreaView>
+                    {content}
+                </MySafeAreaView>
+            </ActionsheetContent>
+        </Actionsheet>
     )
 }
