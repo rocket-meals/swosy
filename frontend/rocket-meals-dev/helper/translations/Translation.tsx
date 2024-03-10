@@ -35,6 +35,14 @@ export function useTranslation(key: TranslationKey): string{
   return usedTranslation;
 }
 
+export function useTranslations(keys: TranslationKey[]): string[]{
+  const translations: string[] = [];
+  for (let i = 0; i < keys.length; i++) {
+    translations.push(useTranslation(keys[i]));
+  }
+  return translations;
+}
+
 export class TranslationKeys {
   static sidebar_menu = createTranslationKey("sidebar_menu", "Menü");
   static profile_and_settings = createTranslationKey("profile_and_settings", "Profil und Einstellungen");
