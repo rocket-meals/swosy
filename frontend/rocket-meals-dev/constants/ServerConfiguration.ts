@@ -1,3 +1,3 @@
 export default {
-  ServerUrl: 'https://rocket-meals.de/demo/api',
+  ServerUrl: 'https://studi-futter.rocket-meals.de/demo/api',
 };
