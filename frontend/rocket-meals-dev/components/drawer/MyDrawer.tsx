@@ -6,7 +6,7 @@ import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGrad
 import {LegalRequiredLinks} from "@/components/legal/LegalRequiredLinks";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {useProjectColor} from "@/states/ProjectInfo";
+import {useProjectColor, useProjectLogoAssetId, useProjectPublicForegroundAssetId} from "@/states/ProjectInfo";
 import {DimensionValue} from "react-native";
 import {useThemeDetermined} from "@/states/ColorScheme";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -19,6 +19,7 @@ import {getMyDrawerItems} from "@/components/drawer/MyDrawerItems";
 import {MyDrawerSafeAreaView} from "@/components/drawer/MyDrawerSafeAreaView";
 import {DrawerHeaderProps} from "@react-navigation/drawer";
 import {IconNames} from "@/constants/IconNames";
+import {ProjectBackgroundImage} from "@/components/project/ProjectForegroundImage";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -93,12 +94,27 @@ function useDrawerWidth(): number | DimensionValue {
     }
 }
 
+
+export type MyDrawerTopProjectContentProps = {
+    showProjectLogo?: boolean;
+};
+export const MyDrawerTopProjectContent = (props: any) => {
+    const publicForegroundAssetId = useProjectPublicForegroundAssetId();
+    const projectLogoAssetId = useProjectLogoAssetId()
+
+    if(props.showProjectLogo){
+        return <ProjectBanner/>
+    } else {
+        return <ProjectBackgroundImage style={{width: "100%", height: 64}}/>
+    }
+}
+
+
 // Component type definition for custom drawer items.
 export type MyDrawerProps = {
     customDrawerItems?: MyDrawerCustomItemProps[];
     children?: React.ReactNode;
 };
-
 // Main drawer component that renders the navigation drawer along with custom items.
 export const MyDrawer = (props: MyDrawerProps) => {
     const isDrawerPermanentVisible = useIsDrawerPermanentVisible(); // Determine if the device is considered large.
@@ -132,6 +148,11 @@ function renderDrawerContentTop(props: DrawerContentComponentProps){
     const translation_home = useTranslation(TranslationKeys.home);
     const accessibilityLabel_home = translation_navigate_to + " " + translation_home;
 
+    const publicForegroundAssetId = useProjectPublicForegroundAssetId();
+    const projectLogoAssetId = useProjectLogoAssetId()
+
+    let showProjectLogo = true;
+
     return(
         <MyTouchableOpacity
             accessibilityLabel={accessibilityLabel_home}
@@ -142,7 +163,7 @@ function renderDrawerContentTop(props: DrawerContentComponentProps){
                 width: "100%",
                 padding: 10,
             }}>
-            <ProjectBanner/>
+            <MyDrawerTopProjectContent showProjectLogo={true}/>
         </MyTouchableOpacity>
     )
 }

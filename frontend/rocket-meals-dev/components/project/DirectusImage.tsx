@@ -17,7 +17,8 @@ export type DirectusImageProps = {
     alt?: string;
     placeholder?: string;
     thumbHash?: string | undefined | null;
-    showLoading?: boolean
+    showLoading?: boolean,
+    contentFit?: "cover" | "contain" | "fill" | "none" | "scale-down",
     fallbackElement?: any,
     onPress?: () => {}
 }
@@ -73,10 +74,12 @@ export default function DirectusImage(props: DirectusImageProps) {
     const thumbHashBase64 = props.thumbHash ? thumbHashStringToDataURL(props.thumbHash) : thumbHashStringToDataURL("93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48");
     const placeholder = props.placeholder || thumbHashBase64;
 
+    // with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio
     let content = <Image
         source={source}
         alt={props?.alt || "Image"}
         style={props.style}
+        contentFit={props.contentFit}
         placeholder={placeholder}
         onError={(e) => {
             console.log("DirectusImage onError", e);

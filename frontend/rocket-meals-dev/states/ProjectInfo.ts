@@ -36,3 +36,8 @@ export function useProjectPublicBackgroundAssetId(){
   let projectInfo = useProjectInfo();
   return projectInfo?.public_background
 }
+
+export function useProjectPublicForegroundAssetId(){
+  let projectInfo = useProjectInfo();
+  return projectInfo?.public_foreground
+}
