@@ -75,12 +75,21 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
         .catch(console.error);
   }, []);
 
+  function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
+    let leftBorderRadius = leftRoundedBorder ? undefined : 0;
+    let rightBorderRadius = rightRoundedBorder ? undefined : 0;
+
+    return <View style={{width: "100%"}}><MyButton icon={iconName} centerItems={true} text={text} accessibilityLabel={accessibilityLabel} isActive={active} onPress={() => {
+            setActive();
+      }} borderLeftRadius={leftBorderRadius} borderRightRadius={rightBorderRadius} /></View>
+  }
+
   return (
       <View style={{ padding: 0, width: "100%", height: "100%" }}>
         { foodOfferData &&
             <ScrollView>
                 <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
-                    <View style={{width: "100%", display: "flex"}}>
+                    <View style={{width: imageWidthPercentage, display: "flex"}}>
                         <Rectangle>
                             <ImageWithComponents
                                 image={{
@@ -120,9 +129,9 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
                 <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
-                      (active) => <MyButton icon={IconNames.nutrition_icon} centerItems={true} accessibilityLabel={"Nutritions"} isActive={active} onPress={() => {}} borderRightRadius={0}/>,
-                      (active) => <MyButton icon={IconNames.eating_habit_icon} centerItems={true} accessibilityLabel={"Markings"} isActive={active} onPress={() => {}} borderLeftRadius={0} borderRightRadius={0}/>,
-                      (active) => <MyButton icon={IconNames.comment_icon} centerItems={true} accessibilityLabel={"Comments"} isActive={active} onPress={() => {}} borderLeftRadius={0}/>,
+                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, "Nutrition", "Nutrition"),
+                      (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, "Markings", "Markings"),
+                      (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, "Comments", "Comments"),
                     ]} contents={[
                         <View>
                           <NutritionList
