@@ -2,7 +2,6 @@ import {Icon, Text, View} from "@/components/Themed";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {TranslationKeys, useTranslation, useTranslations} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
-import {Header} from "@react-navigation/elements";
 
 export type NutritionListProps = {
   calories_kcal?: number | null;
@@ -73,7 +72,6 @@ export default function NutritionList(props: NutritionListProps) {
 
   return (
     <>
-      <Header title={translation_nutrition}/>
       <MyGridFlatList gridAmount={2} data={data} renderItem={(item) => {
         return <NutritionListElement {...item.item.data}/>
       }}/>

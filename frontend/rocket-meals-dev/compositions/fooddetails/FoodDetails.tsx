@@ -17,7 +17,7 @@ import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge"
 import NutritionList from "@/components/food/NutritionList";
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {Header} from "@react-navigation/elements";
+import MarkingList from "@/components/food/MarkingList";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 
@@ -139,6 +139,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                       (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
                     ]} contents={[
                         <View style={{ padding: 4 }}>
+                          <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_nutrition}</Text>
                           <NutritionList
                             protein_g={foodOfferData.protein_g}
                             fat_g={foodOfferData.fat_g}
@@ -151,10 +152,8 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                           />
                         </View>,
                         <View style={{ padding: 4 }}>
-                          <Header title={translations_markings}/>
-                          <Text>
-                            {JSON.stringify(foodOfferData.food.markings, null, 2)}
-                          </Text>
+                          <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_markings}</Text>
+                          <MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
                         </View>,
                         <View>
                           { foodId &&
