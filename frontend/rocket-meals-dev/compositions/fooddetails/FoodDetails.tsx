@@ -130,8 +130,6 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                     </View>
                 </View>
 
-                <Divider/>
-
                 <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
                     <TabWrapper headers={[
                       (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
