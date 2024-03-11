@@ -1,16 +1,14 @@
 export class NonPersistentStore {
-  // the key is just for easier access, the value is the actual key in the storage or syncState
-  static test = "NonPersistentStore.test"
+	// the key is just for easier access, the value is the actual key in the storage or syncState
+	static test = 'NonPersistentStore.test'
 
-  static currentUser = "NonPersistentStore.currentUser"
+	static currentUser = 'NonPersistentStore.currentUser'
 
-  static globalMyActionSheetConfig = "NonPersistentStore.globalMyActionSheetConfig"
+	static globalMyActionSheetConfig = 'NonPersistentStore.globalMyActionSheetConfig'
 
-  static foodOfferSelectedDate = "NonPersistentStore.foodOfferSelectedDate"
+	static foodOfferSelectedDate = 'NonPersistentStore.foodOfferSelectedDate'
 
-  static foodOfferCache = "NonPersistentStore.foodOfferCache"
-
-
+	static foodOfferCache = 'NonPersistentStore.foodOfferCache'
 }
 
 type ValueOf<T> = T[keyof T];

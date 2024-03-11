@@ -1,8 +1,8 @@
-import React from "react";
-import {DimensionValue, Pressable} from "react-native";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {Text, View} from "@/components/Themed";
-import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
+import React from 'react';
+import {DimensionValue} from 'react-native';
+import {useMyContrastColor} from '@/helper/color/MyContrastColor';
+import {Text, View} from '@/components/Themed';
+import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
 
 const paddingLeft = 5;
 
@@ -20,60 +20,61 @@ export type UtilizationForecastBarProps = {
     tooltip?: string
 }
 export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
+	const width = props?.width;
+	const height = props?.height
+	const bgColor = props?.bgColor;
+	const textInside = props?.textInside;
+	const textBelow = props?.textBelow;
+	let isActive = props?.isActive
 
-    let width = props?.width;
-    let height = props?.height
-    let bgColor = props?.bgColor;
-    let textInside = props?.textInside;
-    let textBelow = props?.textBelow;
-    let isActive = props?.isActive
+	const bgContrast = useMyContrastColor(bgColor)
 
-    let bgContrast = useMyContrastColor(bgColor)
+	isActive = true;
+	const borderColor = isActive ? bgContrast : 'transparent';
 
-    isActive = true;
-    let borderColor = isActive ? bgContrast : "transparent";
+	const textStyle = {color: bgContrast}
 
-    let textStyle = {color: bgContrast}
+	return (
+		<Tooltip
+			placement="top"
+			trigger={(triggerProps) => {
+				return (
+					<View
+						{...triggerProps}
+						style={{alignItems: 'center', paddingRight: 0, paddingLeft: paddingLeft}}
+					>
+						<View
+							accessibilityLabel={props?.accessibilityLabel}
+							style={{
+								width: width,
+								height: height,
+								borderRadius: 10,
+								borderWidth: 2,
+								borderColor: borderColor,
+								backgroundColor: bgColor,
+								justifyContent: 'center',
+								alignItems: 'center',
+							}}
+						>
+							<View style={{
 
-    return (
-        <Tooltip
-            placement="top"
-            trigger={(triggerProps) => {
-                return (
-                    <View
-                        {...triggerProps}
-                        style={{alignItems: "center", paddingRight: 0, paddingLeft: paddingLeft}}
-                    >
-                        <View
-                            accessibilityLabel={props?.accessibilityLabel}
-                            style={{
-                                width: width,
-                                height: height,
-                                borderRadius: 10,
-                                borderWidth: 2,
-                                borderColor: borderColor,
-                                backgroundColor: bgColor,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <View style={{
-
-                                width: "100%",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                flex: 1
-                            }}>
-                                <Text>{textInside}</Text>
-                            </View></View>
-                        <Text >{textBelow}</Text>
-                    </View>
-                )
-            }}
-        >
-            <TooltipContent>
-                <TooltipText>{props.tooltip}</TooltipText>
-            </TooltipContent>
-        </Tooltip>
-    )
+								width: '100%',
+								justifyContent: 'center',
+								alignItems: 'center',
+								flex: 1
+							}}
+							>
+								<Text>{textInside}</Text>
+							</View>
+						</View>
+						<Text >{textBelow}</Text>
+					</View>
+				)
+			}}
+		>
+			<TooltipContent>
+				<TooltipText>{props.tooltip}</TooltipText>
+			</TooltipContent>
+		</Tooltip>
+	)
 }

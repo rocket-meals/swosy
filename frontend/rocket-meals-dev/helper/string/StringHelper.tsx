@@ -1,63 +1,61 @@
-import {Text, View} from "@/components/Themed";
+import {Text, View} from '@/components/Themed';
 
 export class StringHelper {
+	static EMPTY_SPACE = '\u200b'
+	static NONBREAKING_SPACE = '\u00a0'
 
-    static EMPTY_SPACE = "\u200b"
-    static NONBREAKING_SPACE = "\u00a0"
+	static renderZeroSpaceHeight(amount?: number) {
+		if (amount===undefined) {
+			amount=1;
+		}
 
-    static renderZeroSpaceHeight(amount?: number){
-        if(amount===undefined){
-            amount=1;
-        }
+		const content = [];
+		for (let i=0; i<amount; i++) {
+			content.push(<Text key={'zeroSpace_'+i}>{StringHelper.EMPTY_SPACE}</Text>);
+		}
 
-        let content = [];
-        for(let i=0; i<amount; i++){
-            content.push(<Text key={"zeroSpace_"+i}>{StringHelper.EMPTY_SPACE}</Text>);
-        }
+		return (
+			<View style={{flexDirection: 'column'}}>
+				{content}
+			</View>
+		)
+	}
 
-        return(
-            <View style={{flexDirection: "column"}}>
-        {content}
-        </View>
-    )
-    }
+	//https://stackoverflow.com/questions/30521224/javascript-convert-pascalcase-to-underscore-case-snake-case
+	static pascalCaseToUnder_Score(str: string) {
+		return str.split(/(?=[A-Z])/).join('_').toLowerCase();
+	}
 
-    //https://stackoverflow.com/questions/30521224/javascript-convert-pascalcase-to-underscore-case-snake-case
-    static pascalCaseToUnder_Score(str: string){
-        return str.split(/(?=[A-Z])/).join('_').toLowerCase();
-    }
+	static replaceAll(str: string, find: string, replace: string) {
+		return str.replace(new RegExp(find, 'g'), replace);
+	}
 
-    static replaceAll(str: string, find: string, replace: string) {
-        return str.replace(new RegExp(find, 'g'), replace);
-    }
+	static replaceAllLineBreaks(str: string, replace?: string) {
+		if (replace===undefined) {
+			replace = '';
+		}
+		let current = str;
+		const toReplace = ['\r', '\n']
+		for (let i=0; i<toReplace.length; i++) {
+			const find = toReplace[i];
+			current = StringHelper.replaceAll(current, find, replace);
+		}
+		return current;
+	}
 
-    static replaceAllLineBreaks(str: string, replace?: string){
-        if(replace===undefined){
-            replace = "";
-        }
-        let current = str;
-        let toReplace = ["\r", "\n"]
-        for(let i=0; i<toReplace.length; i++){
-            let find = toReplace[i];
-            current = StringHelper.replaceAll(current, find, replace);
-        }
-        return current;
-    }
+	static capitalizeFirstLetter(string: string) {
+		return string.charAt(0).toUpperCase() + string.slice(1);
+	}
 
-    static capitalizeFirstLetter(string: string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+	static enableReplaceAllOnOldDevices() {
+		if (typeof String.prototype.replaceAll === 'undefined') {
+			String.prototype.replaceAll = function(match, replace: any) {
+				return this.replace(new RegExp(match, 'g'), () => replace);
+			}
+		}
+	}
 
-    static enableReplaceAllOnOldDevices(){
-        if(typeof String.prototype.replaceAll === "undefined") {
-            String.prototype.replaceAll = function(match, replace: any) {
-                return this.replace(new RegExp(match, 'g'), () => replace);
-            }
-        }
-    }
-
-    static isNumber(value: string){
-        return !isNaN(Number(value));
-    }
-
+	static isNumber(value: string) {
+		return !isNaN(Number(value));
+	}
 }

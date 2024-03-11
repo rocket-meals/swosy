@@ -1,6 +1,6 @@
-import React, {FunctionComponent, useState} from "react";
-import {PixelRatio, StyleProp, ViewProps, ViewStyle} from "react-native";
-import { View } from "./Themed";
+import React, {FunctionComponent, useState} from 'react';
+import {PixelRatio, StyleProp, ViewProps, ViewStyle} from 'react-native';
+import { View } from './Themed';
 
 // Define a custom style type that extends ViewStyle with string values for borderRadius
 type CustomBorderStyle = {
@@ -21,7 +21,6 @@ interface ExtendedViewProps extends ViewProps {
 }
 
 export const ViewWithPercentageSupport: FunctionComponent<ExtendedViewProps> = ({ style, children, ...props }) => {
-
     interface DimensionState {
         x: number | undefined;
         y: number | undefined;
@@ -31,109 +30,112 @@ export const ViewWithPercentageSupport: FunctionComponent<ExtendedViewProps> = (
     }
 
     const [dimension, setDimension] = useState<DimensionState>({
-        x: undefined,
-        y: undefined,
-        width: undefined, height:
+    	x: undefined,
+    	y: undefined,
+    	width: undefined, height:
         undefined,
-        reloadNumber: 0
+    	reloadNumber: 0
     });
 
     let mergedStyle: ExtendedViewStyle = {};
-    if(Array.isArray(style)){
-        for(let innerStyle of style){
-            mergedStyle = {...mergedStyle, ...style};
-        }
+    if (Array.isArray(style)) {
+    	for (const innerStyle of style) {
+    		mergedStyle = {...mergedStyle, ...style};
+    	}
     } else {
-        mergedStyle = style || {};
+    	mergedStyle = style || {};
     }
 
     let copiedStyle: ExtendedViewStyle = JSON.parse(JSON.stringify(mergedStyle || {}));
 
-    function fixPercentage(copiedValue: string){
-        if(!!copiedValue && copiedValue.endsWith("%")){
-            let percentage = parseInt(copiedValue);
-            let width = dimension.width;
-            if(!!width && !!percentage){
-                let radiusAsInt = parseInt(""+(percentage*width/100))
-                return radiusAsInt;
-            } else {
-                return 0; // null works for ios & web but not on android: "android.graphics.Path.isEmpty()"
-            }
-        }
-        return copiedValue;
+    function fixPercentage(copiedValue: string) {
+    	if (!!copiedValue && copiedValue.endsWith('%')) {
+    		const percentage = parseInt(copiedValue);
+    		const width = dimension.width;
+    		if (!!width && !!percentage) {
+    			const radiusAsInt = parseInt(''+(percentage*width/100))
+    			return radiusAsInt;
+    		} else {
+    			return 0; // null works for ios & web but not on android: "android.graphics.Path.isEmpty()"
+    		}
+    	}
+    	return copiedValue;
     }
 
-    function fixBorderradiusStyleForFields(styles: ExtendedViewStyle, ...fieldnames: string[]){
-        let newStyles = styles;
+    function fixBorderradiusStyleForFields(styles: ExtendedViewStyle, ...fieldnames: string[]) {
+    	const newStyles = styles;
 
-        fieldnames.forEach(fieldname => {
-            // Handle the properties of CustomBorderStyle
-            if (fieldname in newStyles) {
-                const value = newStyles[fieldname as keyof CustomBorderStyle];
-                if (typeof value === 'string') {
-                    newStyles[fieldname as keyof CustomBorderStyle] = fixPercentage(value);
-                }
-            }
-        });
+    	fieldnames.forEach(fieldname => {
+    		// Handle the properties of CustomBorderStyle
+    		if (fieldname in newStyles) {
+    			const value = newStyles[fieldname as keyof CustomBorderStyle];
+    			if (typeof value === 'string') {
+    				newStyles[fieldname as keyof CustomBorderStyle] = fixPercentage(value);
+    			}
+    		}
+    	});
 
-        return newStyles;
+    	return newStyles;
     }
 
-    copiedStyle = fixBorderradiusStyleForFields(copiedStyle, "borderRadius", "borderRadius", "borderTopRightRadius", "borderTopLeftRadius", "borderBottomRightRadius", "borderBottomLeftRadius", "borderWidth")
+    copiedStyle = fixBorderradiusStyleForFields(copiedStyle, 'borderRadius', 'borderRadius', 'borderTopRightRadius', 'borderTopLeftRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius', 'borderWidth')
 
-    function fixAbsoluteValues(copiedValue: string){
-        if(!!copiedValue && !isNaN(Number(copiedValue)) && !copiedValue.endsWith("%")){
-            let absoluteValue = parseInt(copiedValue);
-            return PixelRatio.getPixelSizeForLayoutSize(absoluteValue)
-        }
-        return copiedValue;
+    function fixAbsoluteValues(copiedValue: string) {
+    	if (!!copiedValue && !isNaN(Number(copiedValue)) && !copiedValue.endsWith('%')) {
+    		const absoluteValue = parseInt(copiedValue);
+    		return PixelRatio.getPixelSizeForLayoutSize(absoluteValue)
+    	}
+    	return copiedValue;
     }
 
     function fixStyleForFields(styles: ExtendedViewStyle, ...fieldnames: string[]) {
-        // Create a new object to hold the modified styles
-        let newStyles: ExtendedViewStyle = {};
+    	// Create a new object to hold the modified styles
+    	let newStyles: ExtendedViewStyle = {};
 
-        newStyles = styles;
+    	newStyles = styles;
 
-        fieldnames.forEach(fieldname => {
-            // Handle the properties of CustomBorderStyle
-            if (fieldname in newStyles) {
-                const value = newStyles[fieldname as keyof CustomBorderStyle];
-                if (typeof value === 'string') {
-                    newStyles[fieldname as keyof CustomBorderStyle] = fixAbsoluteValues(value);
-                }
-            }
-        });
+    	fieldnames.forEach(fieldname => {
+    		// Handle the properties of CustomBorderStyle
+    		if (fieldname in newStyles) {
+    			const value = newStyles[fieldname as keyof CustomBorderStyle];
+    			if (typeof value === 'string') {
+    				newStyles[fieldname as keyof CustomBorderStyle] = fixAbsoluteValues(value);
+    			}
+    		}
+    	});
 
-        return newStyles;
+    	return newStyles;
     }
 
 
-    function getFieldVariations(basefield: string){
-        return [basefield, basefield+"Vertical", basefield+"Horizontal", basefield+"Left", basefield+"Right", basefield+"Top", basefield+"Bottom"]
+    function getFieldVariations(basefield: string) {
+    	return [basefield, basefield+'Vertical', basefield+'Horizontal', basefield+'Left', basefield+'Right', basefield+'Top', basefield+'Bottom']
     }
 
-    function getFieldsVariations(...basefields: string[]){
-        let variations: any[] = [];
-        for(let basefield of basefields){
-            variations = variations.concat(getFieldVariations(basefield));
-        }
-        return variations;
+    function getFieldsVariations(...basefields: string[]) {
+    	let variations: any[] = [];
+    	for (const basefield of basefields) {
+    		variations = variations.concat(getFieldVariations(basefield));
+    	}
+    	return variations;
     }
 
-    copiedStyle = fixStyleForFields(copiedStyle, ...getFieldsVariations("padding", "margin"))
+    copiedStyle = fixStyleForFields(copiedStyle, ...getFieldsVariations('padding', 'margin'))
 
-    let outerStyle: ExtendedViewStyle = JSON.parse(JSON.stringify(copiedStyle || {}));
-    if(!dimension?.width ||  !dimension?.height){
-        outerStyle.opacity = 0; // render first time invisible, since we dont know the size yet
+    const outerStyle: ExtendedViewStyle = JSON.parse(JSON.stringify(copiedStyle || {}));
+    if (!dimension?.width ||  !dimension?.height) {
+    	outerStyle.opacity = 0; // render first time invisible, since we dont know the size yet
     }
 
-    return(
-        <View {...props} style={[outerStyle]} onLayout={(event) => {
-                const {x, y, width, height} = event?.nativeEvent?.layout;
-                setDimension({x: x, y: y, width: width, height: height, reloadNumber: dimension.reloadNumber+1});
-        }}>
-            {children}
-        </View>
+    return (
+    	<View {...props}
+    		style={[outerStyle]}
+    		onLayout={(event) => {
+    			const {x, y, width, height} = event?.nativeEvent?.layout;
+    			setDimension({x: x, y: y, width: width, height: height, reloadNumber: dimension.reloadNumber+1});
+    		}}
+    	>
+    		{children}
+    	</View>
     )
 }

@@ -1,58 +1,57 @@
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {Apartments, Buildings, Markings} from "@/helper/database/databaseTypes/types";
-import {useSynchedResourceRaw} from "@/states/SynchedResource";
-import {useIsDemo} from "@/states/SynchedDemo";
-import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
-import {getDemoBuildings} from "@/states/SynchedBuildings";
+import {PersistentStore} from '@/helper/syncState/PersistentStore';
+import {Apartments} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useIsDemo} from '@/states/SynchedDemo';
+import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
+import {getDemoBuildings} from '@/states/SynchedBuildings';
 
 async function loadApartmentsFromServer(): Promise<Apartments[]> {
-  let collectionHelper = new CollectionHelper<Apartments>("apartments");
+	const collectionHelper = new CollectionHelper<Apartments>('apartments');
 
-  const fields = ['*'];
+	const fields = ['*'];
 
-  let query = {
-    limit: -1,
-    fields: fields
-  }
+	const query = {
+		limit: -1,
+		fields: fields
+	}
 
-  return await collectionHelper.readItems(query);
+	return await collectionHelper.readItems(query);
 }
 
 export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undefined), ((newValue: Record<string, Apartments>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-  const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Apartments>(PersistentStore.apartments);
-  const demo = useIsDemo()
-  let lastUpdate = resourcesRaw?.lastUpdate;
-  let usedResources = resourcesOnly;
-  if(demo) {
-    usedResources = getDemoApartments()
-  }
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Apartments>(PersistentStore.apartments);
+	const demo = useIsDemo()
+	const lastUpdate = resourcesRaw?.lastUpdate;
+	let usedResources = resourcesOnly;
+	if (demo) {
+		usedResources = getDemoApartments()
+	}
 
-  async function updateFromServer(nowInMs?: number) {
-    let resourceAsList = await loadApartmentsFromServer();
-    let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "id")
-    setResourcesOnly(resourceAsDict, nowInMs);
-  }
+	async function updateFromServer(nowInMs?: number) {
+		const resourceAsList = await loadApartmentsFromServer();
+		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
+		setResourcesOnly(resourceAsDict, nowInMs);
+	}
 
-  return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
 function getDemoApartments(): Record<string, Apartments> {
+	const buildingsDict = getDemoBuildings()
+	const demoBuildingsKeys = Object.keys(buildingsDict)
+	const amountApartments = 12
 
-  let buildingsDict = getDemoBuildings()
-  let demoBuildingsKeys = Object.keys(buildingsDict)
-  let amountApartments = 12
+	const demoResources: Record<string, Apartments> = {}
+	for (let i = 0; i < amountApartments; i++) {
+		const demoBuildingKey = demoBuildingsKeys[i%demoBuildingsKeys.length]
+		const demoResource: Apartments = {
+			id: i+'',
+			washingmachines: [],
+			building: demoBuildingKey
+		}
+		demoResources[demoResource.id] = demoResource
+	}
 
-let demoResources: Record<string, Apartments> = {}
-  for(let i = 0; i < amountApartments; i++) {
-    let demoBuildingKey = demoBuildingsKeys[i%demoBuildingsKeys.length]
-    let demoResource: Apartments = {
-      id: i+"",
-      washingmachines: [],
-      building: demoBuildingKey
-    }
-    demoResources[demoResource.id] = demoResource
-  }
-
-  return demoResources
+	return demoResources
 }

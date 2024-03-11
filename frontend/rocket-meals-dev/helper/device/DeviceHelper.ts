@@ -1,23 +1,23 @@
-import {Dimensions, PixelRatio, useWindowDimensions} from "react-native";
-import {EdgeInsets, useSafeAreaInsets} from "react-native-safe-area-context";
-import {Devices} from "@/helper/database/databaseTypes/types";
+import {Dimensions, PixelRatio, useWindowDimensions} from 'react-native';
+import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Devices} from '@/helper/database/databaseTypes/types';
 import * as DeviceInfo from 'expo-device';
 import {DeviceType} from 'expo-device';
-import {PlatformHelper} from "@/helper/PlatformHelper";
-import {NotificationHelper} from "@/helper/notification/NotificationHelper";
+import {PlatformHelper} from '@/helper/PlatformHelper';
+import {NotificationHelper} from '@/helper/notification/NotificationHelper';
 
 /**
  * Defines the breakpoints for responsive design.
  * @returns {BreakPointsDictionary<number>} An object with keys as breakpoint names and values as the corresponding widths in pixels.
  */
 export function getDimensionWidthBreakPoints(): BreakPointsDictionary<number> {
-    return {
-        [BreakPoint.sm]: 576,
-        [BreakPoint.md]: 768,
-        [BreakPoint.lg]: 992,
-        [BreakPoint.xl]: 1200,
-        [BreakPoint.xxl]: 1400
-    };
+	return {
+		[BreakPoint.sm]: 576,
+		[BreakPoint.md]: 768,
+		[BreakPoint.lg]: 992,
+		[BreakPoint.xl]: 1200,
+		[BreakPoint.xxl]: 1400
+	};
 }
 
 /**
@@ -25,10 +25,10 @@ export function getDimensionWidthBreakPoints(): BreakPointsDictionary<number> {
  * @returns {boolean} True if the screen width is greater than or equal to the large breakpoint, false otherwise.
  */
 export function useIsLargeDevice(): boolean {
-    return useBreakPointValue({
-        sm: false,
-        lg: true,
-    });
+	return useBreakPointValue({
+		sm: false,
+		lg: true,
+	});
 }
 
 // Enumeration of possible breakpoint names.
@@ -55,16 +55,16 @@ export type BreakPointsDictionary<T> = {
  * @returns {BreakPoint[]} An ordered array of breakpoints from smallest to largest width.
  */
 function getSmallestToLargestBreakPointList(): BreakPoint[] {
-    const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
-    let widthToBreakPoint: { width: number, breakPoint: BreakPoint }[] = [];
-    for (let breakPoint in widthBreakPoints) {
-        const width: number | undefined = widthBreakPoints[breakPoint as BreakPoint];
-        if(width !== undefined){
-            widthToBreakPoint.push({width, breakPoint: breakPoint as BreakPoint});
-        }
-    }
-    widthToBreakPoint.sort((a, b) => a.width - b.width);
-    return widthToBreakPoint.map(value => value.breakPoint);
+	const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
+	const widthToBreakPoint: { width: number, breakPoint: BreakPoint }[] = [];
+	for (const breakPoint in widthBreakPoints) {
+		const width: number | undefined = widthBreakPoints[breakPoint as BreakPoint];
+		if (width !== undefined) {
+			widthToBreakPoint.push({width, breakPoint: breakPoint as BreakPoint});
+		}
+	}
+	widthToBreakPoint.sort((a, b) => a.width - b.width);
+	return widthToBreakPoint.map(value => value.breakPoint);
 }
 
 /**
@@ -74,23 +74,23 @@ function getSmallestToLargestBreakPointList(): BreakPoint[] {
  * @returns {T} The value associated with the current screen width's breakpoint.
  */
 export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T {
-    const dimensions = useWindowDimensions();
-    const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
+	const dimensions = useWindowDimensions();
+	const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
 
-    let breakPointOrder = getSmallestToLargestBreakPointList().reverse(); // From largest to smallest for iteration.
+	const breakPointOrder = getSmallestToLargestBreakPointList().reverse(); // From largest to smallest for iteration.
 
-    for (let i = 0; i < breakPointOrder.length; i++) {
-        const breakPoint = breakPointOrder[i];
-        const width: number | undefined = widthBreakPoints[breakPoint];
-        if (width && dimensions.width >= width) {
-            const valueOfBreakPoint = breakPoints[breakPoint]
-            if(valueOfBreakPoint) {
-                return valueOfBreakPoint;
-            }
-        }
-    }
+	for (let i = 0; i < breakPointOrder.length; i++) {
+		const breakPoint = breakPointOrder[i];
+		const width: number | undefined = widthBreakPoints[breakPoint];
+		if (width && dimensions.width >= width) {
+			const valueOfBreakPoint = breakPoints[breakPoint]
+			if (valueOfBreakPoint) {
+				return valueOfBreakPoint;
+			}
+		}
+	}
 
-    return breakPoints[BreakPoint.sm];
+	return breakPoints[BreakPoint.sm];
 }
 
 /**
@@ -98,48 +98,48 @@ export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T 
  * @returns {EdgeInsets} An object representing the safe area insets of the screen.
  */
 export function useInsets(): EdgeInsets {
-    const insets = useSafeAreaInsets();
+	const insets = useSafeAreaInsets();
 
-    return {
-        top: insets.top,
-        right: insets.right,
-        bottom: insets.bottom,
-        left: insets.left,
-    };
+	return {
+		top: insets.top,
+		right: insets.right,
+		bottom: insets.bottom,
+		left: insets.left,
+	};
 }
 
 
-export async function getDeviceInformation(): Promise<Partial<Devices>>{ // Promise<DeviceInformationType>
-    const windowWidth = Dimensions.get('screen').width;
-    const windowHeight = Dimensions.get('screen').height;
-    const windowScale = Dimensions.get('screen').scale;
-    const isSimulator = !DeviceInfo.isDevice
-    const isTablet = DeviceInfo.deviceType === DeviceType.TABLET;
-    const brand = DeviceInfo.brand;
-    const platform = PlatformHelper.getPlatformDisplayName();
-    const systemVersion = DeviceInfo.osVersion;
-    let isLandscape = windowWidth > windowHeight;
-    if(PlatformHelper.isWeb()){
-        isLandscape = windowWidth > windowHeight;
-    }
+export async function getDeviceInformation(): Promise<Partial<Devices>> { // Promise<DeviceInformationType>
+	const windowWidth = Dimensions.get('screen').width;
+	const windowHeight = Dimensions.get('screen').height;
+	const windowScale = Dimensions.get('screen').scale;
+	const isSimulator = !DeviceInfo.isDevice
+	const isTablet = DeviceInfo.deviceType === DeviceType.TABLET;
+	const brand = DeviceInfo.brand;
+	const platform = PlatformHelper.getPlatformDisplayName();
+	const systemVersion = DeviceInfo.osVersion;
+	let isLandscape = windowWidth > windowHeight;
+	if (PlatformHelper.isWeb()) {
+		isLandscape = windowWidth > windowHeight;
+	}
 
-    let pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
+	const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
 
-    return {
-        display_width: windowWidth,
-        display_height: windowHeight,
-        display_scale: windowScale,
-        display_pixelratio: PixelRatio.get(),
-        display_fontscale: PixelRatio.getFontScale(),
-        is_simulator: isSimulator,
-        is_tablet: isTablet,
-        is_landscape: isLandscape,
-        brand: brand,
-        platform: platform,
-        system_version: systemVersion,
-        is_ios: PlatformHelper.isIOS(),
-        is_android: PlatformHelper.isAndroid(),
-        is_web: PlatformHelper.isWeb(),
-        pushTokenObj: pushTokenObj
-    }
+	return {
+		display_width: windowWidth,
+		display_height: windowHeight,
+		display_scale: windowScale,
+		display_pixelratio: PixelRatio.get(),
+		display_fontscale: PixelRatio.getFontScale(),
+		is_simulator: isSimulator,
+		is_tablet: isTablet,
+		is_landscape: isLandscape,
+		brand: brand,
+		platform: platform,
+		system_version: systemVersion,
+		is_ios: PlatformHelper.isIOS(),
+		is_android: PlatformHelper.isAndroid(),
+		is_web: PlatformHelper.isWeb(),
+		pushTokenObj: pushTokenObj
+	}
 }

@@ -1,43 +1,43 @@
-import {useServerInfo} from "@/states/SyncStateServerInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {useServerInfo} from '@/states/SyncStateServerInfo';
+import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 
-export function useProjectInfo(){
-  let serverInfo = useServerInfo();
-  return serverInfo?.info?.project;
+export function useProjectInfo() {
+	const serverInfo = useServerInfo();
+	return serverInfo?.info?.project;
 }
 
-export function useProjectName(){
-  let projectInfo = useProjectInfo();
-  return projectInfo?.project_name;
+export function useProjectName() {
+	const projectInfo = useProjectInfo();
+	return projectInfo?.project_name;
 }
 
-export function useProjectDescription(){
-  let projectInfo = useProjectInfo();
-  return projectInfo?.project_descriptor;
+export function useProjectDescription() {
+	const projectInfo = useProjectInfo();
+	return projectInfo?.project_descriptor;
 }
 
-export function useProjectColor(): string{
-  let projectInfo = useProjectInfo();
-  //return "#FDFDFD"
-  return projectInfo?.project_color || "transparent";
+export function useProjectColor(): string {
+	const projectInfo = useProjectInfo();
+	//return "#FDFDFD"
+	return projectInfo?.project_color || 'transparent';
 }
 
-export function useProjectColorContrast(): string{
-    let projectColor = useProjectColor();
-    return useMyContrastColor(projectColor);
+export function useProjectColorContrast(): string {
+	const projectColor = useProjectColor();
+	return useMyContrastColor(projectColor);
 }
 
-export function useProjectLogoAssetId(){
-  let projectInfo = useProjectInfo();
-  return projectInfo?.project_logo
+export function useProjectLogoAssetId() {
+	const projectInfo = useProjectInfo();
+	return projectInfo?.project_logo
 }
 
-export function useProjectPublicBackgroundAssetId(){
-  let projectInfo = useProjectInfo();
-  return projectInfo?.public_background
+export function useProjectPublicBackgroundAssetId() {
+	const projectInfo = useProjectInfo();
+	return projectInfo?.public_background
 }
 
-export function useProjectPublicForegroundAssetId(){
-  let projectInfo = useProjectInfo();
-  return projectInfo?.public_foreground
+export function useProjectPublicForegroundAssetId() {
+	const projectInfo = useProjectInfo();
+	return projectInfo?.public_foreground
 }

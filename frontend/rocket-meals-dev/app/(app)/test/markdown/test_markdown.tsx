@@ -1,10 +1,8 @@
-import {Heading, Text, View} from "@/components/Themed";
-import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {SettingsRowTextEdit} from "@/components/settings/SettingsRowTextEdit";
-import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {useState} from "react";
+import {Heading, View} from '@/components/Themed';
+import {ThemedMarkdown} from '@/components/markdown/ThemedMarkdown';
+import {MyScrollView} from '@/components/scrollview/MyScrollView';
+import {SettingsRowTextEdit} from '@/components/settings/SettingsRowTextEdit';
+import {useState} from 'react';
 
 
 const extensiveMarkdownTest = `
@@ -61,46 +59,50 @@ def hello_world():
 
 
 export default function ScreenMarkdownTest() {
+	const [mardkown, setMarkdown] = useState<string | undefined>(extensiveMarkdownTest)
 
-    const [mardkown, setMarkdown] = useState<string | undefined>(extensiveMarkdownTest)
-
-    return (
-        <View
-            style={{
-                width: "100%",
-                height: "100%",
-            }}
-        >
-            <View style={{
-                width: "100%",
-                paddingBottom: 10,
-            }}>
-                <Heading>{"Parameters"}</Heading>
-                <SettingsRowTextEdit
-                    value={mardkown}
-                    labelRight={"Edit Markdown"}
-                    leftIcon={"text"}
-                    accessibilityLabel={"Edit Markdown"} labelLeft={"Edit Markdown"} onSave={
-                    (value) => {
-                        if(value) {
-                            setMarkdown(value)
-                        } else {
-                            setMarkdown(undefined)
-                        }
-                    }
-                } />
-            </View>
-            <View style={{
-                width: "100%",
-                height: "100%",
-                flex: 1,
-            }}>
-                <MyScrollView>
-                    <ThemedMarkdown>
-                        {mardkown}
-                    </ThemedMarkdown>
-                </MyScrollView>
-            </View>
-        </View>
-    );
+	return (
+		<View
+			style={{
+				width: '100%',
+				height: '100%',
+			}}
+		>
+			<View style={{
+				width: '100%',
+				paddingBottom: 10,
+			}}
+			>
+				<Heading>{'Parameters'}</Heading>
+				<SettingsRowTextEdit
+					value={mardkown}
+					labelRight={'Edit Markdown'}
+					leftIcon={'text'}
+					accessibilityLabel={'Edit Markdown'}
+					labelLeft={'Edit Markdown'}
+					onSave={
+						(value) => {
+							if (value) {
+								setMarkdown(value)
+							} else {
+								setMarkdown(undefined)
+							}
+						}
+					}
+				/>
+			</View>
+			<View style={{
+				width: '100%',
+				height: '100%',
+				flex: 1,
+			}}
+			>
+				<MyScrollView>
+					<ThemedMarkdown>
+						{mardkown}
+					</ThemedMarkdown>
+				</MyScrollView>
+			</View>
+		</View>
+	);
 }

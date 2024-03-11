@@ -1,54 +1,54 @@
-import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
-import React from "react";
-import {Text, View} from "@/components/Themed";
-import {useAllSyncStates} from "@/helper/syncState/SyncState";
-import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
-import {MyGlobalActionSheetConfig} from "@/components/actionsheet/MyGlobalActionSheet";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
+import React from 'react';
+import {Text, View} from '@/components/Themed';
+import {useAllSyncStates} from '@/helper/syncState/SyncState';
+import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
+import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
+import {MyScrollView} from '@/components/scrollview/MyScrollView';
 
 export default function HomeScreen() {
+	const allSyncStates = useAllSyncStates();
 
-  const allSyncStates = useAllSyncStates();
+	const renderedRows: any[] = [];
+	const allSyncStatesKeys = Object.keys(allSyncStates);
+	for (let i = 0; i < allSyncStatesKeys.length; i++) {
+		const key = allSyncStatesKeys[i];
+		const value = allSyncStates[key];
 
-  let renderedRows: any[] = [];
-  let allSyncStatesKeys = Object.keys(allSyncStates);
-    for (let i = 0; i < allSyncStatesKeys.length; i++) {
-        let key = allSyncStatesKeys[i];
-        let value = allSyncStates[key];
+		const config: MyGlobalActionSheetConfig = {
+			onCancel: undefined,
+			visible: true,
+			title: key,
+			renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+				return (
+					<MySafeAreaView>
+						<MyScrollView>
+							<View style={{
+								width: '100%',
+								padding: 20,
+							}}
+							>
+								<Text>
+									{JSON.stringify(value, null, 2)}
+								</Text>
+							</View>
+						</MyScrollView>
+					</MySafeAreaView>
+				);
+			}
+		}
 
-        const config: MyGlobalActionSheetConfig = {
-            onCancel: undefined,
-            visible: true,
-            title: key,
-            renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-                return (
-                    <MySafeAreaView>
-                        <MyScrollView>
-                            <View style={{
-                                width: "100%",
-                                padding: 20,
-                            }}>
-                                <Text>
-                                    {JSON.stringify(value, null, 2)}
-                                </Text>
-                            </View>
-                        </MyScrollView>
-                    </MySafeAreaView>
-                );
-            }
-        }
+		renderedRows.push(
+			<SettingsRowActionsheet accessibilityLabel={key} config={config} labelLeft={key} />
+		);
+	}
 
-        renderedRows.push(
-            <SettingsRowActionsheet accessibilityLabel={key} config={config} labelLeft={key} />
-        );
-    }
-
-  return (
-      <MySafeAreaView>
-        <ScrollViewWithGradient>
-            {renderedRows}
-        </ScrollViewWithGradient>
-      </MySafeAreaView>
-  );
+	return (
+		<MySafeAreaView>
+			<ScrollViewWithGradient>
+				{renderedRows}
+			</ScrollViewWithGradient>
+		</MySafeAreaView>
+	);
 }

@@ -1,23 +1,22 @@
 import React from 'react';
-import {useProjectColorContrast} from "@/states/ProjectInfo";
-import {Image} from "expo-image";
+import {useProjectColorContrast} from '@/states/ProjectInfo';
+import {Image} from 'expo-image';
 
 // import from asset/logo the default logo RocketMealsLogoWhite
-let logoWhite = require('../../assets/logo/RocketMealsLogoWhite.png');
-let logoBlack = require('../../assets/logo/RocketMealsLogoBlack.png');
+const logoWhite = require('../../assets/logo/RocketMealsLogoWhite.png');
+const logoBlack = require('../../assets/logo/RocketMealsLogoBlack.png');
 
 interface ProjectLogoDefaultProps {
     style?: any;
 }
 export const ProjectLogoDefault = (props: ProjectLogoDefaultProps) => {
+	const projectColorContrast = useProjectColorContrast();
+	// projectColorContrast is a string either "#000000" or "#FFFFFF"
+	// so when #000000 we want to use the white logo and when #FFFFFF we want to use the black logo
+	const useWhiteLogo = projectColorContrast === '#FFFFFF';
 
-    const projectColorContrast = useProjectColorContrast();
-    // projectColorContrast is a string either "#000000" or "#FFFFFF"
-    // so when #000000 we want to use the white logo and when #FFFFFF we want to use the black logo
-    let useWhiteLogo = projectColorContrast === "#FFFFFF";
-
-    type CachePolicy = "none" | "disk" | "memory" | "memory-disk"
-    let cachePolicy: CachePolicy = "none"
+    type CachePolicy = 'none' | 'disk' | 'memory' | 'memory-disk'
+    const cachePolicy: CachePolicy = 'none'
     /** https://docs.expo.dev/versions/latest/sdk/image/#cachepolicy
      'none' - Image is not cached at all.
      'disk' - Image is queried from the disk cache if exists, otherwise it's downloaded and then stored on the disk.
@@ -26,15 +25,17 @@ export const ProjectLogoDefault = (props: ProjectLogoDefaultProps) => {
      */
 
     let source = logoBlack;
-    if(useWhiteLogo){
-        source = logoWhite;
+    if (useWhiteLogo) {
+    	source = logoWhite;
     }
 
-    return <Image
-        source={source}
-        alt={"Logo"}
-        contentFit={"contain"}
-        style={props.style}
-        cachePolicy={cachePolicy}
-    />
+    return (
+    	<Image
+    		source={source}
+    		alt={'Logo'}
+    		contentFit={'contain'}
+    		style={props.style}
+    		cachePolicy={cachePolicy}
+    	/>
+    )
 }

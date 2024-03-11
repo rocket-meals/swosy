@@ -1,95 +1,94 @@
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {Buildings, Wikis} from "@/helper/database/databaseTypes/types";
-import {useSynchedResourceRaw} from "@/states/SynchedResource";
-import {useIsDemo} from "@/states/SynchedDemo";
-import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {PersistentStore} from '@/helper/syncState/PersistentStore';
+import { Wikis} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useIsDemo} from '@/states/SynchedDemo';
+import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 export enum Custom_Wiki_Ids {
-    about_us = "about_us",
-    license = "license",
-    privacy_policy = "privacy_policy",
-    cookieComponentConsent = "cookieComponentConsent",
-    cookieComponentAbout = "cookieComponentAbout",
-    terms_of_service = "terms_of_service",
-    accessibility = "accessibility",
+    about_us = 'about_us',
+    license = 'license',
+    privacy_policy = 'privacy_policy',
+    cookieComponentConsent = 'cookieComponentConsent',
+    cookieComponentAbout = 'cookieComponentAbout',
+    terms_of_service = 'terms_of_service',
+    accessibility = 'accessibility',
 }
 
 async function loadWikisFromServer(): Promise<Wikis[]> {
-    let collectionHelper = new CollectionHelper<Wikis>("wikis");
+	const collectionHelper = new CollectionHelper<Wikis>('wikis');
 
-    const fields = ['*',"translations.*"];
+	const fields = ['*','translations.*'];
 
-    let query = {
-        limit: -1,
-        fields: fields
-    }
+	const query = {
+		limit: -1,
+		fields: fields
+	}
 
-    return await collectionHelper.readItems(query);
+	return await collectionHelper.readItems(query);
 }
 
 export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-  const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Wikis>(PersistentStore.wikis);
-  const demo = useIsDemo()
-  let lastUpdate = resourcesRaw?.lastUpdate;
-  let usedResources = resourcesOnly;
-  if(demo) {
-    usedResources = getDemoWikis()
-  }
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Wikis>(PersistentStore.wikis);
+	const demo = useIsDemo()
+	const lastUpdate = resourcesRaw?.lastUpdate;
+	let usedResources = resourcesOnly;
+	if (demo) {
+		usedResources = getDemoWikis()
+	}
 
-    async function updateFromServer(nowInMs?: number) {
-        let resourceAsList = await loadWikisFromServer();
-        let resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, "id")
-        setResourcesOnly(resourceAsDict, nowInMs);
-    }
+	async function updateFromServer(nowInMs?: number) {
+		const resourceAsList = await loadWikisFromServer();
+		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
+		setResourcesOnly(resourceAsDict, nowInMs);
+	}
 
-  return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
 export function useSynchedWikisDictByCustomId(): Record<string, Wikis> {
-  const [wikis, setWikis, lastUpdate] = useSynchedWikisDict();
-  let dictCustomIdToWiki: Record<string, Wikis> = {}
-    if(wikis) {
-      let wikiKeys = Object.keys(wikis)
-        for(let i = 0; i < wikiKeys.length; i++) {
-            let wiki = wikis[wikiKeys[i]]
-            if(wiki.custom_id){
-              dictCustomIdToWiki[wiki.custom_id] = wiki
-            }
-        }
-    }
-    return dictCustomIdToWiki;
+	const [wikis, setWikis, lastUpdate] = useSynchedWikisDict();
+	const dictCustomIdToWiki: Record<string, Wikis> = {}
+	if (wikis) {
+		const wikiKeys = Object.keys(wikis)
+		for (let i = 0; i < wikiKeys.length; i++) {
+			const wiki = wikis[wikiKeys[i]]
+			if (wiki.custom_id) {
+				dictCustomIdToWiki[wiki.custom_id] = wiki
+			}
+		}
+	}
+	return dictCustomIdToWiki;
 }
 
 export function useSynchedWikiByCustomId(customId: string): Wikis | undefined {
-    const dictCustomIdToWiki = useSynchedWikisDictByCustomId()
-    return dictCustomIdToWiki[customId]
+	const dictCustomIdToWiki = useSynchedWikisDictByCustomId()
+	return dictCustomIdToWiki[customId]
 }
 
 export function useSynchedWikiById(id: string): Wikis | undefined {
-    const [wikis, setWikis, lastUpdate] = useSynchedWikisDict();
-    if (wikis) {
-        return wikis[id]
-    }
-    return undefined
+	const [wikis, setWikis, lastUpdate] = useSynchedWikisDict();
+	if (wikis) {
+		return wikis[id]
+	}
+	return undefined
 }
 
 function getDemoWikis(): Record<string, Wikis> {
+	const demoResource: Wikis = {
+		roles_required: [],
+		children: [],
+		translations: [],
+		date_created: new Date().toISOString(),
+		date_updated: new Date().toISOString(),
+		id: 123+'',
+		sort: undefined,
+		status: '',
+		user_created: undefined,
+		user_updated: undefined
+	}
 
-  let demoResource: Wikis = {
-      roles_required: [],
-      children: [],
-    translations: [],
-    date_created: new Date().toISOString(),
-    date_updated: new Date().toISOString(),
-    id: 123+"",
-    sort: undefined,
-    status: "",
-    user_created: undefined,
-    user_updated: undefined
-  }
-
-  return {
-    [demoResource.id]: demoResource
-  }
+	return {
+		[demoResource.id]: demoResource
+	}
 }

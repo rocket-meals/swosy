@@ -1,7 +1,7 @@
 import Color from 'tinycolor2';
-import {useIsDarkTheme} from "@/states/ColorScheme";
-import {useMemo} from "react";
-import {useViewBackgroundColor} from "@/components/Themed";
+import {useIsDarkTheme} from '@/states/ColorScheme';
+import {useMemo} from 'react';
+import {useViewBackgroundColor} from '@/components/Themed';
 
 // TODO: memorize this function to reduce computation load and improve performance
 /**
@@ -15,45 +15,45 @@ import {useViewBackgroundColor} from "@/components/Themed";
  * @returns {number} - The contrast ratio between the foreground and background colors.
  */
 export function getContrastRatio(foreground: string | undefined, background: string): number {
-  const lumA = Color(foreground).getLuminance();
-  const lumB = Color(background).getLuminance();
-  return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+	const lumA = Color(foreground).getLuminance();
+	const lumB = Color(background).getLuminance();
+	return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
 }
 
 export function getColorAsHex(color: string | undefined): string | undefined {
-  if (!color) {
-    return undefined;
-  }
-  return Color(color).toHexString();
+	if (!color) {
+		return undefined;
+	}
+	return Color(color).toHexString();
 }
 
 export function useLighterOrDarkerColorForSelection(color: string | undefined): string {
-    return getLighterOrDarkerColorByContrast(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen);
+	return getLighterOrDarkerColorByContrast(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen);
 }
 
 function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRatio: number): string {
-    return useMemo(() => {
-        if (!color) {
-            return "transparent";
-        }
-        const backgroundColor = Color(color);
-        const isDark = backgroundColor.isDark();
-        let modifiedColor = backgroundColor.clone();
-        let step = 0.1; // Adjust step to be more precise
-        let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+	return useMemo(() => {
+		if (!color) {
+			return 'transparent';
+		}
+		const backgroundColor = Color(color);
+		const isDark = backgroundColor.isDark();
+		let modifiedColor = backgroundColor.clone();
+		const step = 0.1; // Adjust step to be more precise
+		let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
 
-        // Loop until the contrast ratio is met or improved
-        while (currentContrastRatio < contrastRatio) {
-            if(isDark){
-                modifiedColor = modifiedColor.lighten(step);
-            } else {
-                modifiedColor = modifiedColor.darken(step);
-            }
-            currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
-        }
+		// Loop until the contrast ratio is met or improved
+		while (currentContrastRatio < contrastRatio) {
+			if (isDark) {
+				modifiedColor = modifiedColor.lighten(step);
+			} else {
+				modifiedColor = modifiedColor.darken(step);
+			}
+			currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+		}
 
-        return modifiedColor.toHexString();
-    }, [color, contrastRatio]); // Only recompute if color or contrastRatio changes
+		return modifiedColor.toHexString();
+	}, [color, contrastRatio]); // Only recompute if color or contrastRatio changes
 }
 
 export enum ContrastThresholdSelectedItems {
@@ -80,29 +80,29 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold): string {
-  let trueDarkText = '#000000';
-  let trueLightText = '#FFFFFF';
+	const trueDarkText = '#000000';
+	const trueLightText = '#FFFFFF';
 
-  const darkTextConstrast = getContrastRatio(trueBg, trueDarkText);
-  const lightTextConstrast = getContrastRatio(trueBg, trueLightText);
+	const darkTextConstrast = getContrastRatio(trueBg, trueDarkText);
+	const lightTextConstrast = getContrastRatio(trueBg, trueLightText);
 
-  /**
+	/**
   if(darkTextConstrast >= lightTextConstrast){
       return trueDarkText;
   }
   return trueLightText;
       */
 
-  // if dark mode, return light text if contrast is good enough
-  if(isDarkMode && lightTextConstrast >= contrastThreshold){
-    return trueLightText;
-  }
-  // if light mode, return dark text if contrast is good enough
-  if(!isDarkMode && darkTextConstrast >= contrastThreshold){
-    return trueDarkText;
-  }
-  // otherwise return the text color with the highest contrast
-  return darkTextConstrast > lightTextConstrast ? trueDarkText : trueLightText;
+	// if dark mode, return light text if contrast is good enough
+	if (isDarkMode && lightTextConstrast >= contrastThreshold) {
+		return trueLightText;
+	}
+	// if light mode, return dark text if contrast is good enough
+	if (!isDarkMode && darkTextConstrast >= contrastThreshold) {
+		return trueDarkText;
+	}
+	// otherwise return the text color with the highest contrast
+	return darkTextConstrast > lightTextConstrast ? trueDarkText : trueLightText;
 }
 
 /**
@@ -115,10 +115,10 @@ function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: b
  * @returns {string} - The hex color code of the most readable contrast color, suitable for the current theme mode.
  */
 export function useMyContrastColor(trueBg: string | undefined) {
-    const isDarkTheme = useIsDarkTheme();
-    const viewBackgroundColor = useViewBackgroundColor()
-    if(trueBg==="transparent"){
-        trueBg = viewBackgroundColor;
-    }
-    return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
+	const isDarkTheme = useIsDarkTheme();
+	const viewBackgroundColor = useViewBackgroundColor()
+	if (trueBg==='transparent') {
+		trueBg = viewBackgroundColor;
+	}
+	return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
 }

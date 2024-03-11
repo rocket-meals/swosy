@@ -1,29 +1,29 @@
-import {useSyncState} from "@/helper/syncState/SyncState";
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {DarkTheme, DefaultTheme, Theme} from "@react-navigation/native";
-import {useColorScheme as useDefaultColorScheme} from "react-native";
-import {ColorSchemeName as RNColorSchemeName} from "react-native/Libraries/Utilities/Appearance";
+import {useSyncState} from '@/helper/syncState/SyncState';
+import {PersistentStore} from '@/helper/syncState/PersistentStore';
+import {DarkTheme, DefaultTheme, Theme} from '@react-navigation/native';
+import {useColorScheme as useDefaultColorScheme} from 'react-native';
+import {ColorSchemeName as RNColorSchemeName} from 'react-native/Libraries/Utilities/Appearance';
 
 const DarkBlueTheme: Theme = {
-    dark: true,
-    colors: {
-        primary: 'rgb(10, 132, 255)',
-        background: '#0f172a',
-        card: 'rgb(18, 18, 18)',
-        text: 'rgb(229, 229, 231)',
-        border: 'rgb(39, 39, 41)',
-        notification: 'rgb(255, 69, 58)',
-    },
+	dark: true,
+	colors: {
+		primary: 'rgb(10, 132, 255)',
+		background: '#0f172a',
+		card: 'rgb(18, 18, 18)',
+		text: 'rgb(229, 229, 231)',
+		border: 'rgb(39, 39, 41)',
+		notification: 'rgb(255, 69, 58)',
+	},
 };
 
 /**
  * Enum for raw color scheme names including system setting.
  */
 export enum MyColorSchemeKey {
-    Light = "light",
-    Dark = "dark",
-    DarkBlueTheme = "darkBlueTheme",
-    System = "system"
+    Light = 'light',
+    Dark = 'dark',
+    DarkBlueTheme = 'darkBlueTheme',
+    System = 'system'
     // TODO: Idea to automatically set the color scheme based on the time of day.
 }
 
@@ -32,7 +32,7 @@ export enum MyColorSchemeKey {
  * @returns Array of MyColorSchemeKey values.
  */
 export function getMyColorSchemeKeyOptions(): MyColorSchemeKey[] {
-    return Object.values(MyColorSchemeKey);
+	return Object.values(MyColorSchemeKey);
 }
 
 /**
@@ -40,42 +40,42 @@ export function getMyColorSchemeKeyOptions(): MyColorSchemeKey[] {
  * @returns Tuple containing color scheme raw value and setter function.
  */
 export function useMyColorSchemeKeySavedOption(): [MyColorSchemeKey | null, (newValue: MyColorSchemeKey) => void] {
-    const [colorSchemeRaw, setColorSchemeRaw] = useSyncState<MyColorSchemeKey>(PersistentStore.colorSchemeName)
-    return [colorSchemeRaw, setColorSchemeRaw]
+	const [colorSchemeRaw, setColorSchemeRaw] = useSyncState<MyColorSchemeKey>(PersistentStore.colorSchemeName)
+	return [colorSchemeRaw, setColorSchemeRaw]
 }
 
 function isColorSchemeKeyValid(colorSchemeKey: string | null): boolean {
-    if(!colorSchemeKey){
-        return false;
-    }
-    return getMyColorSchemeKeyOptions().includes(colorSchemeKey as MyColorSchemeKey);
+	if (!colorSchemeKey) {
+		return false;
+	}
+	return getMyColorSchemeKeyOptions().includes(colorSchemeKey as MyColorSchemeKey);
 }
 
 function getBestFittingSystemColorSchemeKey(systemColorScheme: RNColorSchemeName): MyColorSchemeKey {
-    if(!!systemColorScheme){
-        // @ts-ignore Ignore this error since the value of RNColorSchemeName might change in the future.
-        if(isColorSchemeKeyValid(systemColorScheme) && systemColorScheme !== MyColorSchemeKey.System){
-            return systemColorScheme as MyColorSchemeKey;
-        }
-    }
-    return MyColorSchemeKey.Light; // Default value
+	if (systemColorScheme) {
+		// @ts-ignore Ignore this error since the value of RNColorSchemeName might change in the future.
+		if (isColorSchemeKeyValid(systemColorScheme) && systemColorScheme !== MyColorSchemeKey.System) {
+			return systemColorScheme as MyColorSchemeKey;
+		}
+	}
+	return MyColorSchemeKey.Light; // Default value
 }
 
 export function useColorSchemeKeyToThemeDictionary(): Record<MyColorSchemeKey, Theme> {
-    let systemColorScheme: RNColorSchemeName = useDefaultColorScheme(); // light' | 'dark' | null | undefined;
+	const systemColorScheme: RNColorSchemeName = useDefaultColorScheme(); // light' | 'dark' | null | undefined;
 
-    let defaultMap = {
-        [MyColorSchemeKey.System]: DefaultTheme,
-        [MyColorSchemeKey.Light]: DefaultTheme,
-        [MyColorSchemeKey.DarkBlueTheme]: DarkBlueTheme,
-        [MyColorSchemeKey.Dark]: DarkTheme
-    }
+	const defaultMap = {
+		[MyColorSchemeKey.System]: DefaultTheme,
+		[MyColorSchemeKey.Light]: DefaultTheme,
+		[MyColorSchemeKey.DarkBlueTheme]: DarkBlueTheme,
+		[MyColorSchemeKey.Dark]: DarkTheme
+	}
 
-    let bestFittingSystemColorSchemeKey = getBestFittingSystemColorSchemeKey(systemColorScheme);
-    let bestFittingSystemColorSchemeTheme = defaultMap[bestFittingSystemColorSchemeKey];
-    defaultMap[MyColorSchemeKey.System] = bestFittingSystemColorSchemeTheme;
+	const bestFittingSystemColorSchemeKey = getBestFittingSystemColorSchemeKey(systemColorScheme);
+	const bestFittingSystemColorSchemeTheme = defaultMap[bestFittingSystemColorSchemeKey];
+	defaultMap[MyColorSchemeKey.System] = bestFittingSystemColorSchemeTheme;
 
-    return defaultMap;
+	return defaultMap;
 }
 
 /**
@@ -84,11 +84,11 @@ export function useColorSchemeKeyToThemeDictionary(): Record<MyColorSchemeKey, T
  * @returns MyColorSchemeKey based on system setting or user preference.
  */
 export function useMyColorSchemeKeyDetermined(): MyColorSchemeKey {
-    const [colorSchemeRaw, setColorSchemeRaw] = useMyColorSchemeKeySavedOption()
-    if(isColorSchemeKeyValid(colorSchemeRaw)){
-        return colorSchemeRaw as MyColorSchemeKey;
-    }
-    return MyColorSchemeKey.System;
+	const [colorSchemeRaw, setColorSchemeRaw] = useMyColorSchemeKeySavedOption()
+	if (isColorSchemeKeyValid(colorSchemeRaw)) {
+		return colorSchemeRaw as MyColorSchemeKey;
+	}
+	return MyColorSchemeKey.System;
 }
 
 /**
@@ -96,9 +96,9 @@ export function useMyColorSchemeKeyDetermined(): MyColorSchemeKey {
  * @returns Theme object based on the current color scheme.
  */
 export function useThemeDetermined(): Theme {
-    let colorSchemeKey = useMyColorSchemeKeyDetermined();
-    let colorSchemeKeyToThemeDictionary = useColorSchemeKeyToThemeDictionary();
-    return colorSchemeKeyToThemeDictionary[colorSchemeKey];
+	const colorSchemeKey = useMyColorSchemeKeyDetermined();
+	const colorSchemeKeyToThemeDictionary = useColorSchemeKeyToThemeDictionary();
+	return colorSchemeKeyToThemeDictionary[colorSchemeKey];
 }
 
 /**
@@ -106,6 +106,6 @@ export function useThemeDetermined(): Theme {
  * @returns Boolean indicating if the current theme is dark.
  */
 export function useIsDarkTheme(): boolean {
-    let theme = useThemeDetermined();
-    return theme.dark;
+	const theme = useThemeDetermined();
+	return theme.dark;
 }

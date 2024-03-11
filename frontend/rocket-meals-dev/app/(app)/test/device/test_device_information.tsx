@@ -1,14 +1,13 @@
 import {StyleSheet} from 'react-native';
-import {Text, TextInput, View} from '@/components/Themed';
-import {Button, Divider} from "@gluestack-ui/themed";
-import {useInsets} from "@/helper/device/DeviceHelper";
+import {Text, View} from '@/components/Themed';
+import { Divider} from '@gluestack-ui/themed';
+import {useInsets} from '@/helper/device/DeviceHelper';
 
 export default function HomeScreen() {
+	const insets = useInsets()
 
-    const insets = useInsets()
 
-
-    /**
+	/**
      * example insets
      * {
      *  "top": 44,
@@ -17,27 +16,27 @@ export default function HomeScreen() {
      *  "bottom": 34
      */
 
-  return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Device Information</Text>
-        <Divider />
-        <Text>{"insets"}</Text>
-        <Text>{JSON.stringify(insets, null, 2)}</Text>
-      </View>
-  );
+	return (
+		<View style={styles.container}>
+			<Text style={styles.title}>Device Information</Text>
+			<Divider />
+			<Text>{'insets'}</Text>
+			<Text>{JSON.stringify(insets, null, 2)}</Text>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+	container: {
+		flex: 1,
+	},
+	title: {
+		fontSize: 20,
+		fontWeight: 'bold',
+	},
+	separator: {
+		marginVertical: 30,
+		height: 1,
+		width: '80%',
+	},
 });

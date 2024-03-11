@@ -1,54 +1,54 @@
-import {ServerInfo} from "@/helper/database/server/ServerAPI";
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {useIsDemo} from "@/states/SynchedDemo";
-import {useSynchedResourceSingleRaw} from "@/states/SynchedResource";
+import {ServerInfo} from '@/helper/database/server/ServerAPI';
+import {PersistentStore} from '@/helper/syncState/PersistentStore';
+import {useIsDemo} from '@/states/SynchedDemo';
+import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
 
-export function useServerInfoRaw(){
-  return useSynchedResourceSingleRaw<ServerInfo>(PersistentStore.server_info);
+export function useServerInfoRaw() {
+	return useSynchedResourceSingleRaw<ServerInfo>(PersistentStore.server_info);
 }
 
-export function useServerInfo(){
-  const [serverInfo, setServerInfo] = useServerInfoRaw();
-  let usedServerInfo = serverInfo
-  const isDemoMode = useIsDemo()
-  if(isDemoMode){
-    usedServerInfo = {
-      status: "cached",
-      info: {
-        project: {
-          project_name: "SWOSY ",
-          project_descriptor: "Studierendenwerk Osnabrück",
-          default_language: "de-DE",
-          project_logo: "https://play-lh.googleusercontent.com/BCBvebwBE5xppnKt-Y2-0ztIlXxhxl8jcfeldE05JLuildEkFla4tmTQNUuVk-1cQQ=w480-h960",
-          project_color: "#FCDE18",
-          public_foreground: null,
-          public_background: null,
-          public_note: null,
-          custom_css: null,
-        }
-      },
-    }
-  }
+export function useServerInfo() {
+	const [serverInfo, setServerInfo] = useServerInfoRaw();
+	let usedServerInfo = serverInfo
+	const isDemoMode = useIsDemo()
+	if (isDemoMode) {
+		usedServerInfo = {
+			status: 'cached',
+			info: {
+				project: {
+					project_name: 'SWOSY ',
+					project_descriptor: 'Studierendenwerk Osnabrück',
+					default_language: 'de-DE',
+					project_logo: 'https://play-lh.googleusercontent.com/BCBvebwBE5xppnKt-Y2-0ztIlXxhxl8jcfeldE05JLuildEkFla4tmTQNUuVk-1cQQ=w480-h960',
+					project_color: '#FCDE18',
+					public_foreground: null,
+					public_background: null,
+					public_note: null,
+					custom_css: null,
+				}
+			},
+		}
+	}
 
-  return usedServerInfo;
+	return usedServerInfo;
 }
 
-export function useServerStatus(){
-  const serverInfo = useServerInfo();
-  return serverInfo?.status;
+export function useServerStatus() {
+	const serverInfo = useServerInfo();
+	return serverInfo?.status;
 }
 
-export function useIsServerOnline(){
-  const status = useServerStatus();
-  return status === "online"
+export function useIsServerOnline() {
+	const status = useServerStatus();
+	return status === 'online'
 }
 
-export function useIsServerCached(){
-  const status = useServerStatus();
-  return status === "cached"
+export function useIsServerCached() {
+	const status = useServerStatus();
+	return status === 'cached'
 }
 
-export function useIsServerOffline(){
-  const status = useServerStatus();
-  return status === "offline" || status === "error" || status === undefined
+export function useIsServerOffline() {
+	const status = useServerStatus();
+	return status === 'offline' || status === 'error' || status === undefined
 }

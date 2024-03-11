@@ -1,4 +1,3 @@
-import {AccessibilityRole} from "react-native"
 
 export enum MyAccessibilityRoles {
     None = 'none',

@@ -1,11 +1,11 @@
 import React, {FunctionComponent} from 'react';
 import {ListRenderItemInfo, View} from 'react-native';
-import {ColorHelper} from "@/components/colorpicker/ColorHelper";
-import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {useBreakPointValue} from "@/helper/device/DeviceHelper";
-import {ViewWithPercentageSupport} from "@/components/ViewWithPercentageSupport";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {ColorHelper} from '@/components/colorpicker/ColorHelper';
+import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
+import {useBreakPointValue} from '@/helper/device/DeviceHelper';
+import {ViewWithPercentageSupport} from '@/components/ViewWithPercentageSupport';
+import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
+import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 
 
 const ColorPickItem: FunctionComponent<{color: string, onPress: (color: string) => void}> = (props) => {
@@ -16,50 +16,54 @@ const ColorPickItem: FunctionComponent<{color: string, onPress: (color: string) 
 
 	const color = props.color;
 
-	const accessibilityLabel = translation_select + " " + translation_color + ": " + color;
+	const accessibilityLabel = translation_select + ' ' + translation_color + ': ' + color;
 
-	return <View style={{
-		width: "100%",
-		height: dimensions.width,
-		alignItems: "center",
-		justifyContent: "center",
-	}}
+	return (
+		<View style={{
+			width: '100%',
+			height: dimensions.width,
+			alignItems: 'center',
+			justifyContent: 'center',
+		}}
 		onLayout={event => {
 			const { width, height } = event.nativeEvent.layout;
 			setDimensions({ width, height });
 		}}
-	>
-		<MyTouchableOpacity style={{width: "100%", height: "100%", alignItems: "center", justifyContent: "center"}} onPress={() => {
-			props.onPress(color);
-		}} accessibilityLabel={accessibilityLabel}>
-			<ViewWithPercentageSupport style={{backgroundColor: color, borderColor: "black", borderWidth: 1, width: "100%", height: "100%"}} />
-		</MyTouchableOpacity>
-	</View>
+		>
+			<MyTouchableOpacity style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center'}}
+				onPress={() => {
+					props.onPress(color);
+				}}
+				accessibilityLabel={accessibilityLabel}
+			>
+				<ViewWithPercentageSupport style={{backgroundColor: color, borderColor: 'black', borderWidth: 1, width: '100%', height: '100%'}} />
+			</MyTouchableOpacity>
+		</View>
+	)
 }
 
 interface SimpleColorPickerProps {
 	onColorChange: (color: string) => void;
 }
 export const SimpleColorPicker: FunctionComponent<SimpleColorPickerProps> = (props) => {
-
 	const amountColumns = useBreakPointValue({sm: 5, md: 6, lg: 7, xl: 16});
 
-	async function onPress(color: string){
-		if(props?.onColorChange){
+	async function onPress(color: string) {
+		if (props?.onColorChange) {
 			await props.onColorChange(color);
 		}
 	}
 
-	let steps = 20;
-	let colors = ColorHelper.getHueColors(steps)
+	const steps = 20;
+	const colors = ColorHelper.getHueColors(steps)
 	type DataItem = { key: string; data: string }
 
-	let data: DataItem[] = []
-	if(colors) {
+	const data: DataItem[] = []
+	if (colors) {
 		for (let i = 0; i < colors.length; i++) {
 			const resource = colors[i];
 			data.push({
-				key: resource + "", data: resource
+				key: resource + '', data: resource
 			})
 		}
 	}

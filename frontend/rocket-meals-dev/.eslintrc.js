@@ -42,6 +42,11 @@ module.exports = {
         "react/no-array-index-key": "error",
         "camelcase": "warn",
         "keyword-spacing": "error",
+        // enforce a space after function parentheses
+        'space-after-function-paren': ['error', 'always'],
+
+        // enforce a space before blocks (opening curly braces)
+        'space-before-blocks': ['error', 'always'],
         "max-len": ["error", { "code": 80, "ignoreUrls": true }],
         "quotes": ["error", "single"],
         "sort-imports": "error",

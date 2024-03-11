@@ -1,6 +1,6 @@
-import {Text, View} from "@gluestack-ui/themed";
-import {useProjectColor} from "@/states/ProjectInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {Text, View} from '@gluestack-ui/themed';
+import {useProjectColor} from '@/states/ProjectInfo';
+import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 
 export type PricingBadgeProps = {
   price: number;
@@ -8,22 +8,23 @@ export type PricingBadgeProps = {
 }
 
 export default function PricingBadge(props: PricingBadgeProps) {
-  const projectColor = props.color ?? useProjectColor();
-  const projectContrastColor = useMyContrastColor(projectColor);
+	const projectColor = props.color ?? useProjectColor();
+	const projectContrastColor = useMyContrastColor(projectColor);
 
-  const priceContent =new Intl.NumberFormat('de-DE', { style: 'currency', currency: "EUR" }).format(
-      props.price,
-  )
+	const priceContent =new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
+		props.price,
+	)
 
 
-      return (
-      <View style={{
-        backgroundColor: projectColor,
-        padding: 5,
-        borderTopLeftRadius: 14,
-        borderBottomLeftRadius: 14,
-      }}>
-        <Text color={projectContrastColor}>{priceContent}</Text>
-      </View>
-  )
+	return (
+		<View style={{
+			backgroundColor: projectColor,
+			padding: 5,
+			borderTopLeftRadius: 14,
+			borderBottomLeftRadius: 14,
+		}}
+		>
+			<Text color={projectContrastColor}>{priceContent}</Text>
+		</View>
+	)
 }

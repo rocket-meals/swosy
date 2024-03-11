@@ -6,22 +6,22 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {Text as NativeText, View as NativeView} from 'react-native';
 import {
-    Heading as DefaultHeading,
-    Input as DefaultInput,
-    InputField as DefaultInputField,
-    Text as DefaultText,
-    View as DefaultView
+	Heading as DefaultHeading,
+	Input as DefaultInput,
+	InputField as DefaultInputField,
+	Text as DefaultText,
+	View as DefaultView
 } from '@gluestack-ui/themed';
-import {ComponentProps, MutableRefObject} from "react";
-import {IconProps as DefaultIconProps} from "@expo/vector-icons/build/createIconSet";
-import {useThemeDetermined} from "@/states/ColorScheme";
-import {getColorAsHex, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
-import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
-import {PlatformHelper} from "@/helper/PlatformHelper"; // Use the correct import for TextInput
-import {config} from "@gluestack-ui/config";
-import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
+import {ComponentProps, MutableRefObject} from 'react';
+import {IconProps as DefaultIconProps} from '@expo/vector-icons/build/createIconSet';
+import {useThemeDetermined} from '@/states/ColorScheme';
+import {getColorAsHex, useMyContrastColor} from '@/helper/color/MyContrastColor';
+import {ReturnKeyType} from '@/helper/input/ReturnKeyType';
+import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import {PlatformHelper} from '@/helper/PlatformHelper'; // Use the correct import for TextInput
+import {config} from '@gluestack-ui/config';
+import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
 type ThemeProps = {
   lightColor?: string;
@@ -36,29 +36,29 @@ export type IconProps = DefaultIconProps<any> & {
     family?: string;
 };
 
-export function Icon({name, size, family, ...props}: IconProps){
-    let defaultSize = 24
-    let useSize = defaultSize;
-    if(!!size){
-        useSize = size;
-    }
-  return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
+export function Icon({name, size, family, ...props}: IconProps) {
+	const defaultSize = 24
+	let useSize = defaultSize;
+	if (size) {
+		useSize = size;
+	}
+	return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
 }
 
-const DEFAULT_TEXT_SIZE = "md";
+const DEFAULT_TEXT_SIZE = 'md';
 
-export type TextSizeType = "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl";
-export function getFontSizeInPixelBySize(size: TextSizeType | undefined){
-    let tokens = config.tokens;
-    let fontSize = tokens.fontSizes
-    let usedSize = size || DEFAULT_TEXT_SIZE;
-    return fontSize[usedSize];
+export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
+export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {
+	const tokens = config.tokens;
+	const fontSize = tokens.fontSizes
+	const usedSize = size || DEFAULT_TEXT_SIZE;
+	return fontSize[usedSize];
 }
 
 type TextInputProps = {
     myRef?: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
-    variant?: "outline" | "rounded" | "underlined" | undefined
-    size?: "sm" | "md" | "lg";
+    variant?: 'outline' | 'rounded' | 'underlined' | undefined
+    size?: 'sm' | 'md' | 'lg';
     hidden?: boolean;
     isPassword?: boolean;
     isDisabled?: boolean;
@@ -71,39 +71,39 @@ type TextInputProps = {
     returnKeyType?: ReturnKeyType;
     style?: any;
 }
-export function TextInput(props: TextInputProps){
-    let textContrastColor = useTextContrastColor();
-    const usedFontSize = getFontSizeInPixelBySize(props.size || DEFAULT_TEXT_SIZE);
-    let usedColor = props.style?.color;
-    if(usedColor === undefined){
-        usedColor = textContrastColor;
-    }
+export function TextInput(props: TextInputProps) {
+	const textContrastColor = useTextContrastColor();
+	const usedFontSize = getFontSizeInPixelBySize(props.size || DEFAULT_TEXT_SIZE);
+	let usedColor = props.style?.color;
+	if (usedColor === undefined) {
+		usedColor = textContrastColor;
+	}
 
-  let defaultInputProps: ComponentProps<typeof DefaultInput> = {
-    variant: props.variant,
-    isDisabled: props.isDisabled,
-    isInvalid: props.isInvalid,
-    isReadOnly: props.isReadOnly,
-  }
+	const defaultInputProps: ComponentProps<typeof DefaultInput> = {
+		variant: props.variant,
+		isDisabled: props.isDisabled,
+		isInvalid: props.isInvalid,
+		isReadOnly: props.isReadOnly,
+	}
 
-  if(defaultInputProps.variant === undefined){
-    defaultInputProps.variant = "outline";
-  }
+	if (defaultInputProps.variant === undefined) {
+		defaultInputProps.variant = 'outline';
+	}
 
-    // set mask to password if isPassword is true
-    let type: "text" | "password" | undefined = "text";
-    if(props.isPassword){
-        type = "password";
-    }
+	// set mask to password if isPassword is true
+	let type: 'text' | 'password' | undefined = 'text';
+	if (props.isPassword) {
+		type = 'password';
+	}
 
-  let defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
-    value: props.value,
-    onChangeText: props.onChangeText,
-    placeholder: props.placeholder,
-      type: type
-  }
+	const defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
+		value: props.value,
+		onChangeText: props.onChangeText,
+		placeholder: props.placeholder,
+		type: type
+	}
 
-    /**
+	/**
     return(
         <RNTextInput
             ref={props.myRef}
@@ -112,47 +112,47 @@ export function TextInput(props: TextInputProps){
     )
         */
 
-  return(
-      <DefaultInput
-          sx={{
-              _input:{
-                  color: usedColor,
-              }
-          }}
-          {...defaultInputProps}
-      >
-        <DefaultInputField
-            returnKeyType={props?.returnKeyType}
-            onSubmitEditing={props?.onSubmitEditing}
-            ref={props.myRef}
-            {...defaultInputFieldProps}
-            style={{
-                fontSize: usedFontSize
-            }}
-        />
-      </DefaultInput>
-  )
+	return (
+		<DefaultInput
+			sx={{
+				_input:{
+					color: usedColor,
+				}
+			}}
+			{...defaultInputProps}
+		>
+			<DefaultInputField
+				returnKeyType={props?.returnKeyType}
+				onSubmitEditing={props?.onSubmitEditing}
+				ref={props.myRef}
+				{...defaultInputFieldProps}
+				style={{
+					fontSize: usedFontSize
+				}}
+			/>
+		</DefaultInput>
+	)
 }
 
 export function useViewBackgroundColor() {
-    const theme = useThemeDetermined();
-    const backgroundColor = theme?.colors?.background;
-    const asHex = getColorAsHex(backgroundColor);
-    return asHex
+	const theme = useThemeDetermined();
+	const backgroundColor = theme?.colors?.background;
+	const asHex = getColorAsHex(backgroundColor);
+	return asHex
 }
 
 export function useTextContrastColor() {
-    const backgroundColor = useViewBackgroundColor();
-    return useMyContrastColor(backgroundColor);
+	const backgroundColor = useViewBackgroundColor();
+	return useMyContrastColor(backgroundColor);
 }
 
 export function Heading({style,...props}: TextProps) {
-    let textContrastColor = useTextContrastColor();
-    // @ts-ignore
-    let mergedStyle = {color: textContrastColor}
+	const textContrastColor = useTextContrastColor();
+	// @ts-ignore
+	const mergedStyle = {color: textContrastColor}
 
-    // @ts-ignore
-    return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
+	// @ts-ignore
+	return <DefaultHeading accessibilityRole={MyAccessibilityRoles.Header} selectable={true} style={[mergedStyle, style]} {...props} />;
 }
 
 export type MyTextProps = TextProps & {
@@ -166,45 +166,44 @@ export type MyTextProps = TextProps & {
     strikeThrough?: boolean;
 }
 export function Text({style, size,...props}: MyTextProps) {
-    let textContrastColor = useTextContrastColor();
-    const isWeb = PlatformHelper.isWeb();
+	const textContrastColor = useTextContrastColor();
+	const isWeb = PlatformHelper.isWeb();
 
-    const usedSize = size || DEFAULT_TEXT_SIZE;
+	const usedSize = size || DEFAULT_TEXT_SIZE;
 
-    // @ts-ignore
-    let defaultStyle = {
-        color: textContrastColor
-    }
+	// @ts-ignore
+	const defaultStyle = {
+		color: textContrastColor
+	}
 
-    if(isWeb){ // only for web since on mobile the text will break automatically
-        // @ts-ignore
-        defaultStyle["wordBreak"] = "break-word" // only for web since otherwise a long word would not break
-    }
+	if (isWeb) { // only for web since on mobile the text will break automatically
+		// @ts-ignore
+		defaultStyle['wordBreak'] = 'break-word' // only for web since otherwise a long word would not break
+	}
 
-  return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
+	return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
 }
 
 export function View({style, ...props}: ViewProps) {
+	// copy the style to not mutate the original style
+	let styleCopy: StyleProp<ViewStyle> = {}
+	if (style === undefined) {
+		styleCopy = {}
+	} else {
+		if (Array.isArray(style)) {
+			styleCopy = [...style]
+		} else {
+			// @ts-ignore
+			styleCopy = {...style}
+		}
+	}
 
-    // copy the style to not mutate the original style
-    let styleCopy: StyleProp<ViewStyle> = {}
-    if(style === undefined){
-        styleCopy = {}
-    } else {
-        if(Array.isArray(style)){
-            styleCopy = [...style]
-        } else {
-            // @ts-ignore
-            styleCopy = {...style}
-        }
-    }
+	// set flexDirection to column if not set
+	// @ts-ignore
+	if (styleCopy?.flexDirection === undefined) {
+		// @ts-ignore
+		styleCopy.flexDirection = 'column'; // Fixes on web the padding issue
+	}
 
-    // set flexDirection to column if not set
-    // @ts-ignore
-    if(styleCopy?.flexDirection === undefined){
-        // @ts-ignore
-        styleCopy.flexDirection = "column"; // Fixes on web the padding issue
-    }
-
-  return <DefaultView style={styleCopy} {...props} />;
+	return <DefaultView style={styleCopy} {...props} />;
 }

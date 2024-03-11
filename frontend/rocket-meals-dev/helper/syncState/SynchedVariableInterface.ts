@@ -18,7 +18,7 @@ export interface AfterHookType {
 }
 
 export class SynchedVariableInterface {
-    public key: string;
+	public key: string;
 	public defaultValue: string | undefined;
 	// is a function that returns true if the action should be cancelled
 	public beforeHook: BeforeHookType | undefined;
@@ -31,5 +31,4 @@ export class SynchedVariableInterface {
 		this.beforeHook = beforeHook;
 		this.afterHook = afterHook;
 	}
-
 }

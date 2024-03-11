@@ -1,101 +1,98 @@
-import React, {FunctionComponent} from "react";
-import {useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
+import React, {FunctionComponent} from 'react';
+import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {
-    getMyColorSchemeKeyOptions, MyColorSchemeKey, useColorSchemeKeyToThemeDictionary, useMyColorSchemeKeyDetermined,
-    useMyColorSchemeKeySavedOption, useThemeDetermined
-} from "@/states/ColorScheme";
-import {useIsDebug} from "@/states/Debug";
-import {Text} from "@/components/Themed";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {IconNames} from "@/constants/IconNames";
+	MyColorSchemeKey, getMyColorSchemeKeyOptions, useColorSchemeKeyToThemeDictionary, useMyColorSchemeKeyDetermined,
+	useMyColorSchemeKeySavedOption, useThemeDetermined
+} from '@/states/ColorScheme';
+import {useIsDebug} from '@/states/Debug';
+import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {IconNames} from '@/constants/IconNames';
 
 interface AppState {
 
 }
 export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) => {
+	const colorSchemeIconName = IconNames.color_scheme_icon
 
-    const colorSchemeIconName = IconNames.color_scheme_icon
+	const title = useTranslation(TranslationKeys.color_scheme)
 
-    const title = useTranslation(TranslationKeys.color_scheme)
+	const availableColorSchemeKeys = getMyColorSchemeKeyOptions()
+	const [savedColorSchemeOptionRaw, setColorSchemeOptionRaw] = useMyColorSchemeKeySavedOption()
+	const selectedColorSchemeKey = useMyColorSchemeKeyDetermined()
+	const theme = useThemeDetermined()
+	const isDebug = useIsDebug()
 
-    let availableColorSchemeKeys = getMyColorSchemeKeyOptions()
-    let [savedColorSchemeOptionRaw, setColorSchemeOptionRaw] = useMyColorSchemeKeySavedOption()
-    const selectedColorSchemeKey = useMyColorSchemeKeyDetermined()
-    const theme = useThemeDetermined()
-    const isDebug = useIsDebug()
+	const colorSchemeKeyToThemeDict = useColorSchemeKeyToThemeDictionary()
 
-    const colorSchemeKeyToThemeDict = useColorSchemeKeyToThemeDictionary()
+	const color_scheme_light = useTranslation(TranslationKeys.color_scheme_light)
+	const color_scheme_dark = useTranslation(TranslationKeys.color_scheme_dark)
+	const color_scheme_system = useTranslation(TranslationKeys.color_scheme_system)
+	const translation_select = useTranslation(TranslationKeys.select)
 
-    const color_scheme_light = useTranslation(TranslationKeys.color_scheme_light)
-    const color_scheme_dark = useTranslation(TranslationKeys.color_scheme_dark)
-    const color_scheme_system = useTranslation(TranslationKeys.color_scheme_system)
-    const translation_select = useTranslation(TranslationKeys.select)
+	const translation_edit = useTranslation(TranslationKeys.edit)
 
-    const translation_edit = useTranslation(TranslationKeys.edit)
-
-    const colorSchemeKeyToName: {[key in MyColorSchemeKey]: string}
+	const colorSchemeKeyToName: {[key in MyColorSchemeKey]: string}
         = {
-        [MyColorSchemeKey.Light]: color_scheme_light,
-        [MyColorSchemeKey.Dark]: color_scheme_dark,
-        [MyColorSchemeKey.System]: color_scheme_system,
-        [MyColorSchemeKey.DarkBlueTheme]: "Dark Blue Theme",
-    }
-
-    let selectedThemeName = colorSchemeKeyToName[selectedColorSchemeKey]
-
-    const accessibilityLabel = translation_edit+": "+title + " " + selectedThemeName
-    const label = title
-
-    let items = []
-    for(let key of availableColorSchemeKeys){
-        let label: string = colorSchemeKeyToName[key]
-        let themeForKey = colorSchemeKeyToThemeDict[key]
-        let isDark = themeForKey.dark
-        let active = key === selectedColorSchemeKey
-
-        let icon = isDark ? IconNames.color_scheme_dark_icon : IconNames.color_scheme_light_icon
-        if(key === MyColorSchemeKey.System){
-            icon = IconNames.color_scheme_system_icon
-        }
-        if(key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined){
-            active = true
+        	[MyColorSchemeKey.Light]: color_scheme_light,
+        	[MyColorSchemeKey.Dark]: color_scheme_dark,
+        	[MyColorSchemeKey.System]: color_scheme_system,
+        	[MyColorSchemeKey.DarkBlueTheme]: 'Dark Blue Theme',
         }
 
-        let itemAccessibilityLabel = label+" "+translation_select
+	const selectedThemeName = colorSchemeKeyToName[selectedColorSchemeKey]
 
-        items.push({
-            key: key as string,
-            label: label,
-            icon: icon,
-            active: active,
-            accessibilityLabel: itemAccessibilityLabel,
-            onSelect: async (key: string, hide: () => void) => {
-                let nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
-                setColorSchemeOptionRaw(nextColorSchemeKey)
-                hide()
-            }
-        })
-    }
+	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedThemeName
+	const label = title
 
-    const config = {
-        onCancel: undefined,
-        visible: true,
-        title: title,
-        items: items
-    }
+	const items = []
+	for (const key of availableColorSchemeKeys) {
+		const label: string = colorSchemeKeyToName[key]
+		const themeForKey = colorSchemeKeyToThemeDict[key]
+		const isDark = themeForKey.dark
+		let active = key === selectedColorSchemeKey
 
-    function renderDebug(){
+		let icon = isDark ? IconNames.color_scheme_dark_icon : IconNames.color_scheme_light_icon
+		if (key === MyColorSchemeKey.System) {
+			icon = IconNames.color_scheme_system_icon
+		}
+		if (key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined) {
+			active = true
+		}
 
-    }
+		const itemAccessibilityLabel = label+' '+translation_select
 
-    let labelRight = selectedThemeName
+		items.push({
+			key: key as string,
+			label: label,
+			icon: icon,
+			active: active,
+			accessibilityLabel: itemAccessibilityLabel,
+			onSelect: async (key: string, hide: () => void) => {
+				const nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
+				setColorSchemeOptionRaw(nextColorSchemeKey)
+				hide()
+			}
+		})
+	}
+
+	const config = {
+		onCancel: undefined,
+		visible: true,
+		title: title,
+		items: items
+	}
+
+	function renderDebug() {
+
+	}
+
+	const labelRight = selectedThemeName
 
 
-    return(
-        <>
-            <SettingsRowActionsheet labelLeft={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={colorSchemeIconName} {...props}  />
-            {renderDebug()}
-        </>
-    )
+	return (
+		<>
+			<SettingsRowActionsheet labelLeft={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={colorSchemeIconName} {...props}  />
+			{renderDebug()}
+		</>
+	)
 }

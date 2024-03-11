@@ -1,101 +1,118 @@
-import React from "react";
-import {Heading, View} from "@/components/Themed"
-import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from "@/components/drawer/MyScreenHeader";
-import {SettingsButtonProfileCanteen} from "@/compositions/settings/SettingsButtonProfileCanteen";
-import {useFoodOfferSelectedDate} from "@/states/SynchedFoodOfferStates";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {DateHelper} from "@/helper/date/DateHelper";
-import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
-import {Divider} from "@gluestack-ui/themed";
-import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
-import {SimpleDatePicker} from "@/components/datePicker/SimpleDatePicker";
-import {UtilizationButton} from "@/compositions/utilizationForecast/UtilizationButton";
-import {SettingsButtonProfileEatingHabits} from "@/compositions/settings/SettingsButtonProfileEatingHabits";
+import React from 'react';
+import {Heading, View} from '@/components/Themed'
+import {MyScreenHeader, MyScreenHeaderProps, getMyScreenHeaderFunction} from '@/components/drawer/MyScreenHeader';
+import {SettingsButtonProfileCanteen} from '@/compositions/settings/SettingsButtonProfileCanteen';
+import {useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
+import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {DateHelper} from '@/helper/date/DateHelper';
+import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
+import {Divider} from '@gluestack-ui/themed';
+import {MyPreviousNextButton} from '@/components/buttons/MyPreviousNextButton';
+import {SimpleDatePicker} from '@/components/datePicker/SimpleDatePicker';
+import {UtilizationButton} from '@/compositions/utilizationForecast/UtilizationButton';
+import {SettingsButtonProfileEatingHabits} from '@/compositions/settings/SettingsButtonProfileEatingHabits';
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
-    const title = undefined //"TEST"
+	const title = undefined //"TEST"
 
-    let locale = useProfileLocaleForJsDate()
+	const locale = useProfileLocaleForJsDate()
 
-    const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
+	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 
-    const translation_day = useTranslation(TranslationKeys.day);
+	const translation_day = useTranslation(TranslationKeys.day);
 
-    const dateCopy = new Date(selectedDate);
-    const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
+	const dateCopy = new Date(selectedDate);
+	const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
 
-    function renderSecondaryHeaderContent(props: any) {
-        return (
-            <View style={{
-                justifyContent: "flex-end",
-                alignItems: "center",
-                flexDirection: "row",
-            }} >
-                <View style={{
-                    flexDirection: "row",
-                }}>
-                    <SettingsButtonProfileEatingHabits />
-                    <SettingsButtonProfileCanteen />
-                </View>
-            </View>
-        );
-    }
+	function renderSecondaryHeaderContent(props: any) {
+		return (
+			<View style={{
+				justifyContent: 'flex-end',
+				alignItems: 'center',
+				flexDirection: 'row',
+			}}
+			>
+				<View style={{
+					flexDirection: 'row',
+				}}
+				>
+					<SettingsButtonProfileEatingHabits />
+					<SettingsButtonProfileCanteen />
+				</View>
+			</View>
+		);
+	}
 
-    function renderSwitchDate(forward: boolean){
-        let translation = translation_day;
-        return <MyPreviousNextButton useTransparentBorderColor={true} translation={translation} forward={forward} onPress={() => {
-            changeAmountDays(forward ? 1 : -1);
-        }} />
-    }
+	function renderSwitchDate(forward: boolean) {
+		const translation = translation_day;
+		return (
+			<MyPreviousNextButton useTransparentBorderColor={true}
+				translation={translation}
+				forward={forward}
+				onPress={() => {
+					changeAmountDays(forward ? 1 : -1);
+				}}
+			/>
+		)
+	}
 
-    return <View style={{
-        width: "100%",
-    }}>
-        <MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
-        <View style={{
-            width: "100%",
-            flexDirection: "row",
-            flexWrap: "wrap",
-        }}>
-            <View style={{
-                justifyContent: "center",
-                alignItems: "center",
-                flexDirection: "row",
-                flexShrink: 1,
-            }}>
-                {renderSwitchDate(false)}
-                <SimpleDatePicker currentDate={selectedDate} onSelectDate={(date) => {
-                    setSelectedDate(date);
-                } }>
-                </SimpleDatePicker>
-                {renderSwitchDate(true)}
-            </View>
-            <View style={{
-                flexDirection: "column",
-                justifyContent: "center",
-                flexShrink: 1,
-                flexWrap: "wrap",
-            }}>
-                <Heading>{humanReadableDate}</Heading>
-            </View>
-            <View style={{
-                // take the rest of the space
-                justifyContent: "flex-end",
-                alignItems: "flex-end",
-                flexDirection: "row",
-                flexGrow: 1,
+	return (
+		<View style={{
+			width: '100%',
+		}}
+		>
+			<MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+			<View style={{
+				width: '100%',
+				flexDirection: 'row',
+				flexWrap: 'wrap',
+			}}
+			>
+				<View style={{
+					justifyContent: 'center',
+					alignItems: 'center',
+					flexDirection: 'row',
+					flexShrink: 1,
+				}}
+				>
+					{renderSwitchDate(false)}
+					<SimpleDatePicker currentDate={selectedDate}
+						onSelectDate={(date) => {
+							setSelectedDate(date);
+						} }
+					>
+					</SimpleDatePicker>
+					{renderSwitchDate(true)}
+				</View>
+				<View style={{
+					flexDirection: 'column',
+					justifyContent: 'center',
+					flexShrink: 1,
+					flexWrap: 'wrap',
+				}}
+				>
+					<Heading>{humanReadableDate}</Heading>
+				</View>
+				<View style={{
+					// take the rest of the space
+					justifyContent: 'flex-end',
+					alignItems: 'flex-end',
+					flexDirection: 'row',
+					flexGrow: 1,
 
-            }}>
-                <UtilizationButton />
-            </View>
-        </View>
-        <Divider />
-    </View>
+				}}
+				>
+					<UtilizationButton />
+				</View>
+			</View>
+			<Divider />
+		</View>
+	)
 }
 
 
 export const getMyScreenHeaderFoodOffers: getMyScreenHeaderFunction = () => {
-    return (props: MyScreenHeaderProps) => {
-        return <MyScreenHeaderFoodOffers {...props} />
-    }
+	return (props: MyScreenHeaderProps) => {
+		return <MyScreenHeaderFoodOffers {...props} />
+	}
 }

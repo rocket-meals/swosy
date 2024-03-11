@@ -1,7 +1,7 @@
-import React from "react";
-import {Text} from "@/components/Themed";
-import {useProjectColor} from "@/states/ProjectInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import React from 'react';
+import {Text} from '@/components/Themed';
+import {useProjectColor} from '@/states/ProjectInfo';
+import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 
 /**
  * Defines the required properties for a drawer item label component.
@@ -30,9 +30,9 @@ export type MyCustomDrawerItemLabelProps = {
  * @returns A function that takes RequiredDrawerItemLabelProps and returns a JSX.Element representing the custom label.
  */
 export const getMyDrawerItemLabel = (label: string | undefined) => {
-    return (props: RequiredDrawerItemLabelProps) => {
-        return <MyDrawerItemLabel label={label} {...props} />
-    }
+	return (props: RequiredDrawerItemLabelProps) => {
+		return <MyDrawerItemLabel label={label} {...props} />
+	}
 }
 
 /**
@@ -43,11 +43,11 @@ export const getMyDrawerItemLabel = (label: string | undefined) => {
  * @returns A JSX.Element representing the custom label, styled based on focus state.
  */
 export const MyDrawerItemLabel = ({ focused, color, label }: MyCustomDrawerItemLabelProps) => {
-    let projectColor = useProjectColor(); // Fetch the current project color for theme consistency.
-    let contrastColor = useMyContrastColor(projectColor); // Calculate a contrasting color based on the project color for better visibility.
+	const projectColor = useProjectColor(); // Fetch the current project color for theme consistency.
+	const contrastColor = useMyContrastColor(projectColor); // Calculate a contrasting color based on the project color for better visibility.
 
-    // Render the label within a Text component, dynamically adjusting its color based on the focus state.
-    return (
-        <Text style={{ color: focused ? contrastColor : color }}>{label}</Text>
-    );
+	// Render the label within a Text component, dynamically adjusting its color based on the focus state.
+	return (
+		<Text style={{ color: focused ? contrastColor : color }}>{label}</Text>
+	);
 }

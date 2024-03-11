@@ -1,15 +1,15 @@
 import {useEffect, useState} from 'react';
-import {SyncState, useSyncState} from "@/helper/syncState/SyncState";
-import {ServerAPI} from "@/helper/database/server/ServerAPI";
-import {Text, View} from "@/components/Themed";
-import {useServerInfoRaw} from "@/states/SyncStateServerInfo";
-import {PersistentSecureStore} from "@/helper/syncState/PersistentSecureStore";
-import {AuthenticationData} from "@directus/sdk";
-import {SecureStorageHelperAbstractClass} from "@/helper/storage/SecureStorageHelperAbstractClass"; // Optional if you want to use default theme
+import { useSyncState} from '@/helper/syncState/SyncState';
+import {ServerAPI} from '@/helper/database/server/ServerAPI';
+import {Text, View} from '@/components/Themed';
+import {useServerInfoRaw} from '@/states/SyncStateServerInfo';
+import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
+import {AuthenticationData} from '@directus/sdk';
+import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass'; // Optional if you want to use default theme
 
 export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+	// Catch any errors thrown by the Layout component.
+	ErrorBoundary,
 } from 'expo-router';
 
 export interface ServerStatusFlowLoaderProps {
@@ -17,69 +17,67 @@ export interface ServerStatusFlowLoaderProps {
 }
 
 export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) => {
+	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
+	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
+	] = useServerInfoRaw();
+	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
-    const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
-  const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
-  ] = useServerInfoRaw();
-  const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+	// TODO: move this to a helper function
+	ServerAPI.createAuthentificationStorage(async () => {
+		// We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
+		// So we have to fetch the data from the storage directly
+		const authDataRaw = await SecureStorageHelperAbstractClass.getItem(PersistentSecureStore.authentificationData)
+		if (!authDataRaw) {
+			return null;
+		} else {
+			return JSON.parse(authDataRaw)
+		}
+	}, async (newAuthData) => {
+		setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
+		await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
+	})
 
-  // TODO: move this to a helper function
-  ServerAPI.createAuthentificationStorage(async () => {
+	useEffect(() => {
+		// call anonymous function
+		(async () => {
+			let remote_server_info = await ServerAPI.downloadServerInfo();
+			console.log('ServerInfoRaw', remote_server_info)
 
-    // We can't use the authData directly, because it is a hook and the data is not updated yet when we call this function
-    // So we have to fetch the data from the storage directly
-    let authDataRaw = await SecureStorageHelperAbstractClass.getItem(PersistentSecureStore.authentificationData)
-    if(!authDataRaw){
-      return null;
-    } else {
-        return JSON.parse(authDataRaw)
-    }
-  }, async (newAuthData) => {
-    setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
-    await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
-  })
+			if (remote_server_info.status === 'offline') {
+				//console.log("Server is offline at fetching remote")
+				if (serverInfo) {
+					//console.log("Server is offline at fetching remote, but we have local data")
+					remote_server_info = serverInfo;
+					remote_server_info.status = 'cached'
+				}
+			}
 
-  useEffect(() => {
-    // call anonymous function
-    (async () => {
-      let remote_server_info = await ServerAPI.downloadServerInfo();
-      console.log("ServerInfoRaw", remote_server_info)
+			setServerInfo(remote_server_info, nowInMs);
+		})();
+	}, []);
 
-      if(remote_server_info.status === "offline"){
-        //console.log("Server is offline at fetching remote")
-          if(!!serverInfo){
-            //console.log("Server is offline at fetching remote, but we have local data")
-            remote_server_info = serverInfo;
-            remote_server_info.status = "cached"
-          }
-      }
+	// 1. load server information
+	if (serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo) {
+		return (
+			<View>
+				<Text>{'Loading server Info'}</Text>
+				<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+			</View>
+		)
+	}
 
-      setServerInfo(remote_server_info, nowInMs);
-    })();
-  }, []);
+	if (serverInfo.status === 'offline') {
+		return (
+			<View>
+				<Text>{'Server is offline and no data is cached'}</Text>
+				<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+			</View>
+		)
+	}
 
-    // 1. load server information
-  if(serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo){
-    return(
-        <View>
-          <Text>{"Loading server Info"}</Text>
-          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
-        </View>
-    )
-  }
+	// in case server is offline, but we have cached data or server is online we can continue
 
-  if(serverInfo.status === "offline"){
-    return(
-        <View>
-          <Text>{"Server is offline and no data is cached"}</Text>
-          <Text>{JSON.stringify(serverInfo, null, 2)}</Text>
-        </View>
-    )
-  }
-
-  // in case server is offline, but we have cached data or server is online we can continue
-
-  return (
-      props.children
-  )
+	return (
+		props.children
+	)
 }

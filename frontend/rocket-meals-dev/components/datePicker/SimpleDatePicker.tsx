@@ -1,14 +1,14 @@
-import React, {FunctionComponent} from "react";
-import {SimpleDatePickerComponent} from "./SimpleDatePickerComponent";
-import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {DateHelper} from "@/helper/date/DateHelper";
-import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
-import {useProjectColor, useProjectColorContrast} from "@/states/ProjectInfo";
-import {View} from "@/components/Themed";
-import {MyButton} from "@/components/buttons/MyButton";
-import {IconNames} from "@/constants/IconNames";
-import {useSynchedFirstWeekday} from "@/states/SynchedFirstWeekday";
+import React, {FunctionComponent} from 'react';
+import {SimpleDatePickerComponent} from './SimpleDatePickerComponent';
+import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
+import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {DateHelper} from '@/helper/date/DateHelper';
+import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
+import {useProjectColor, useProjectColorContrast} from '@/states/ProjectInfo';
+import {View} from '@/components/Themed';
+import {MyButton} from '@/components/buttons/MyButton';
+import {IconNames} from '@/constants/IconNames';
+import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -19,94 +19,95 @@ export interface SimpleDatePickerProps {
     children?: React.ReactNode
 }
 export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props) => {
+	const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday();
 
-    const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday();
+	const translation_select = useTranslation(TranslationKeys.select);
+	const translation_date = useTranslation(TranslationKeys.date);
+	const selectDateTranslation = translation_select + ': ' + translation_date;
+	const yearTranslation = useTranslation(TranslationKeys.year);
+	const monthTranslation = useTranslation(TranslationKeys.month);
+	const selectedTranslation = useTranslation(TranslationKeys.selected);
+	const translation_edit = useTranslation(TranslationKeys.edit);
 
-    const translation_select = useTranslation(TranslationKeys.select);
-    const translation_date = useTranslation(TranslationKeys.date);
-    const selectDateTranslation = translation_select + ": " + translation_date;
-    const yearTranslation = useTranslation(TranslationKeys.year);
-    const monthTranslation = useTranslation(TranslationKeys.month);
-    const selectedTranslation = useTranslation(TranslationKeys.selected);
-    const translation_edit = useTranslation(TranslationKeys.edit);
+	const currentDateFromProps = props?.currentDate;
+	const currentDate = currentDateFromProps ? new Date(currentDateFromProps) : new Date(); // make a copy if currentDateFromProps is a hookValue and to remove side effects
+	const formatedSelectedDate = DateHelper.formatOfferDateToReadable(new Date(currentDate), true);
+	const defaultAccessibilityLabel = translation_edit + ': ' + translation_date + ': ' + formatedSelectedDate;
+	const accessibilityLabel = props?.accessibilityLabel || defaultAccessibilityLabel;
 
-    const currentDateFromProps = props?.currentDate;
-    const currentDate = currentDateFromProps ? new Date(currentDateFromProps) : new Date(); // make a copy if currentDateFromProps is a hookValue and to remove side effects
-    const formatedSelectedDate = DateHelper.formatOfferDateToReadable(new Date(currentDate), true);
-    const defaultAccessibilityLabel = translation_edit + ": " + translation_date + ": " + formatedSelectedDate;
-    const accessibilityLabel = props?.accessibilityLabel || defaultAccessibilityLabel;
+	const weekStartsAtDay = firstDayOfWeek
 
-    const weekStartsAtDay = firstDayOfWeek
+	const locale = useProfileLocaleForJsDate();
 
-    const locale = useProfileLocaleForJsDate();
+	const selectedDateColor = useProjectColor();
+	const selectedTextColor = useProjectColorContrast();
 
-    const selectedDateColor = useProjectColor();
-    const selectedTextColor = useProjectColorContrast();
+	const weekdayBackgroundColor = useProjectColor();
+	const weekdayTextColor = useProjectColorContrast();
 
-    const weekdayBackgroundColor = useProjectColor();
-    const weekdayTextColor = useProjectColorContrast();
+	const items: MyGlobalActionSheetItem[] = [];
 
-    let items: MyGlobalActionSheetItem[] = [];
+	items.push({
+		key: 'gridList',
+		label: selectDateTranslation,
+		//icon: "test",
+		accessibilityLabel: selectDateTranslation,
+		render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+			// Use the custom context provider to provide the input value and setter
+			const onSelectDate = (date: Date) => {
+				if (props.onSelectDate) {
+					props.onSelectDate(date);
+				}
+				hide();
+			}
 
-    items.push({
-        key: "gridList",
-        label: selectDateTranslation,
-        //icon: "test",
-        accessibilityLabel: selectDateTranslation,
-        render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+			return (
+				<>
+					<SimpleDatePickerComponent
+						currentDate={props.currentDate}
+						textColor={textColor}
+						selectedTextColor={selectedTextColor}
+						selectedDateColor={selectedDateColor}
+						weekdayBackgroundColor={weekdayBackgroundColor}
+						weekdayTextColor={weekdayTextColor}
+						weekStartsAtDay={weekStartsAtDay}
+						onSelectDate={onSelectDate}
+						renderDate={props.renderDate}
+						locale={locale}
+						yearTranslation={yearTranslation}
+						monthTranslation={monthTranslation}
+						selectedTranslation={selectedTranslation}
+					/>
+					<View style={{
+						height: 20, width: '100%'
+					}}
+					>
 
-            // Use the custom context provider to provide the input value and setter
-            const onSelectDate = (date: Date) => {
-                if(props.onSelectDate){
-                    props.onSelectDate(date);
-                }
-                hide();
-            }
+					</View>
+				</>
+			)
+		}
+	})
 
-            return <>
-                <SimpleDatePickerComponent
-                    currentDate={props.currentDate}
-                    textColor={textColor}
-                    selectedTextColor={selectedTextColor}
-                    selectedDateColor={selectedDateColor}
-                    weekdayBackgroundColor={weekdayBackgroundColor}
-                    weekdayTextColor={weekdayTextColor}
-                    weekStartsAtDay={weekStartsAtDay}
-                    onSelectDate={onSelectDate}
-                    renderDate={props.renderDate}
-                    locale={locale}
-                    yearTranslation={yearTranslation}
-                    monthTranslation={monthTranslation}
-                    selectedTranslation={selectedTranslation}
-                />
-                <View style={{
-                    height: 20, width: "100%"
-                }}>
+	const config = {
+		onCancel: async () => {
+			if (props.onCancel) {
+				return await props.onCancel();
+			}
+			return true;
+		},
+		visible: true,
+		title: selectDateTranslation,
+		items: items
+	}
 
-                </View>
-            </>
-        }
-    })
+	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 
-    const config = {
-        onCancel: async () => {
-            if(props.onCancel){
-                return await props.onCancel();
-            }
-            return true;
-        },
-        visible: true,
-        title: selectDateTranslation,
-        items: items
-    }
+	const onPress = () => {
+		show(config)
+	}
 
-    const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
-    const onPress = () => {
-        show(config)
-    }
-
-    return(
-        <MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
-    )
+	return (
+		<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
+	)
 }

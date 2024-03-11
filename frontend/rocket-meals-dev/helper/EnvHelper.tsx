@@ -1,18 +1,16 @@
-import * as appJson from "@/components/../app.json";
+import * as appJson from '@/components/../app.json';
 
 export class EnvHelper {
-
-	static isProduction(){
-		let env = EnvHelper.getEnv();
-		return env.NODE_ENV === "production";
+	static isProduction() {
+		const env = EnvHelper.getEnv();
+		return env.NODE_ENV === 'production';
 	}
 
-	static getBaseUrl(){
+	static getBaseUrl() {
 		return appJson.expo.experiments.baseUrl;
 	}
 
-	static getEnv(){
+	static getEnv() {
 		return process.env;
 	}
-
 }
