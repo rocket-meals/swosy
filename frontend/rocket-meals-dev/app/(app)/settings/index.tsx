@@ -17,6 +17,7 @@ import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRowSpacer} from "@/components/settings/SettingsRowSpacer";
 import {SettingsRowUserDelete} from "@/compositions/settings/SettingsRowUserDelete";
 import {SettingsRowServerConfiguration} from "@/compositions/settings/SettingsRowServerConfiguration";
+import {SettingsRowPriceGroup} from "@/compositions/settings/SettingsRowPriceGroup";
 
 export default function SettingsScreen() {
 
@@ -30,6 +31,7 @@ export default function SettingsScreen() {
                <SettingsRowProfileLanguage />
                <SettingsRowProfileCanteen />
                <SettingsRowProfileEatingHabits />
+               <SettingsRowPriceGroup />
            </SettingsRowGroup>
            <SettingsRowGroup>
                <SettingsRowColorScheme />

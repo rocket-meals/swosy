@@ -1,18 +1,18 @@
 import {Foodoffers} from "@/helper/database/databaseTypes/types";
-import {useSynchedProfile} from "@/states/SynchedProfile";
+import {PriceGroups, useProfilePriceGroup} from "@/states/SynchedProfile";
 
 export default function useProfilePricing(foodOfferData: Foodoffers | undefined) {
-  const [profileData] = useSynchedProfile();
+  const [priceGroup, setPriceGroup] = useProfilePriceGroup();
 
   let price = foodOfferData?.price_student;
-  switch (profileData?.price_group) {
-    case "student":
+  switch (priceGroup) {
+    case PriceGroups.Student:
       price = foodOfferData?.price_student;
       break;
-    case "employee":
+    case PriceGroups.Employee:
       price = foodOfferData?.price_employee;
       break;
-    case "guest":
+    case PriceGroups.Guest:
       price = foodOfferData?.price_guest;
       break;
   }

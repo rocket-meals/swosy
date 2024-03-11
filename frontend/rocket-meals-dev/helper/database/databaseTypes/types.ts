@@ -625,6 +625,7 @@ export type DirectusUsers = {
   last_page?: string | null;
   location?: string | null;
   password?: string | null;
+  profile?: string | Profiles | null;
   provider: string;
   role?: string | DirectusRoles | null;
   status: string;
