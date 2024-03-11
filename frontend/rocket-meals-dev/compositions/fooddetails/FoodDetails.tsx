@@ -1,5 +1,5 @@
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
-import {Heading, Text, View} from "@/components/Themed";
+import {Heading, Text, TextInput, View} from "@/components/Themed";
 
 import {Rectangle} from "@/components/shapes/Rectangle";
 import React, {useEffect, useState} from "react";
@@ -10,8 +10,7 @@ import {IconNames} from "@/constants/IconNames";
 import {RatingType} from "@/components/rating/RatingValueIcon";
 import {FoodRatingDisplay} from "@/components/rating/FoodRatingDisplay";
 import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
-import {ScrollView} from "react-native";
-import {Divider} from "@gluestack-ui/themed";
+import {KeyboardAvoidingView, Platform, ScrollView} from "react-native";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import IndividualPricingBadge from "@/components/pricing/IndividualPricingBadge";
 import NutritionList from "@/components/food/NutritionList";
@@ -24,34 +23,30 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
   const usedFoodId = typeof foodId === "string" ? foodId : foodId.id;
   const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
 
+  const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
+  const onChangeText = (text: string) => {
+    if (text === "") {
+      setStateComment(null);
+      return;
+    }
+
+    setStateComment(text);
+  }
+
+  const onSubmit = () => {
+    setComment(comment);
+  }
+
   return(
-      <View style={{
-        width: "100%",
-      }}>
-        <View>
-          <Text>{"foodId: "+usedFoodId}</Text>
-          <MyButton text={"Create a default comment: 'Tastes good'"}  leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
-            setComment("Tastes good");
+      <KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <View style={{ marginBottom: 100 }}>
+          <TextInput placeholder={"Comment"} value={comment ?? ""} onChangeText={onChangeText} />
+
+          <MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment} borderTopRadius={0} accessibilityLabel={"Send feedback"} text={"Send feedback"} leftIcon={IconNames.comment_send_icon} onPress={() => {
+            onSubmit();
           }}/>
-          <MyButton text={"Create a default comment: 'Tastes bad'"} leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
-            setComment("Tastes bad");
-          }}/>
-          <MyButton text={"Remove comment"} leftIcon={IconNames.comment_icon} accessibilityLabel={"Comments"} isActive={true} onPress={() => {
-            setComment(null);
-          }}/>
-          <MyButton text={"Set rating to 5"} leftIcon={"star"}  accessibilityLabel={"Rating"} onPress={() => {
-            setRating(5);
-          }}/>
-          <MyButton text={"Set rating to 1"} leftIcon={"star"}  accessibilityLabel={"Rating"}  onPress={() => {
-            setRating(1);
-          }}/>
-          <MyButton text={"Reset rating"} leftIcon={"star-off"}  accessibilityLabel={"Rating"}  onPress={() => {
-            setRating(null);
-          }}/>
-          <Text>{"The raw foodFeedback"}</Text>
-          <Text>{JSON.stringify(foodFeedback, null, 2)}</Text>
         </View>
-      </View>
+      </KeyboardAvoidingView>
   )
 }
 
@@ -148,7 +143,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                               (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
                               (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
                               (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
-                            ]} contents={[
+                            ]} defaultActive={2} contents={[
                               <View style={{ padding: 4, display: "flex", flexGrow: 1 }}>
                                 <View style={{ justifyContent: "space-between", display: "flex", flexGrow: 1 }}>
                                   <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_nutrition}</Text>
@@ -169,8 +164,11 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                                 <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_markings}</Text>
                                 <MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
                               </View>,
-                              <View>
-                                { foodId &&
+                              <View style={{ paddingTop: 4 }}>
+                                <View style={{ padding: 4 }}>
+                                  <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_food_feedbacks}</Text>
+                                </View>
+                                  { foodId &&
                                     <FoodFeedbackDetails foodId={foodId} />
                                 }
                               </View>

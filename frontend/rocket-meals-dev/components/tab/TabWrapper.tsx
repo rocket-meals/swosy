@@ -6,10 +6,11 @@ type setActiveType = () => void
 export type TabWrapperProps = {
   headers: ((active: boolean, setActive: setActiveType) => ReactNode)[],
   contents: ReactNode[],
+  defaultActive?: number
 }
 
 export default function TabWrapper(props: TabWrapperProps) {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(props.defaultActive ?? 0);
 
   return (
       <View style={{display: "flex", flexDirection: "column", flexGrow: 1}}>

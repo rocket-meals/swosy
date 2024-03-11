@@ -30,6 +30,8 @@ export type MyNewButtonProps = {
     borderRadius?: number,
     borderLeftRadius?: number,
     borderRightRadius?: number,
+    borderTopRadius?: number,
+    borderBottomRadius?: number,
     icon?: string,
     centerItems?: boolean
 }

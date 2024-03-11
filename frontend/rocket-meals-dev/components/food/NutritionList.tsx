@@ -61,7 +61,7 @@ export default function NutritionList(props: NutritionListProps) {
     { key: "carbohydrates", data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.carbohydrate_g} },
     { key: "fiber", data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.fiber_g} },
     { key: "protein", data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.protein_g} },
-    { key: "sodium", data: {icon: IconNames.nutirtion_sodium_icom, label: translation_sodium, value: props.sodium_g} },
+    { key: "sodium", data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.sodium_g} },
     { key: "fat", data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.fat_g} },
     { key: "sugar", data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.sugar_g} },
     { key: "saturatedFat", data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.saturated_fat_g} },

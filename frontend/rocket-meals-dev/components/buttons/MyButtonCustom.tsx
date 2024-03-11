@@ -21,7 +21,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps // TODO change this to merge with MyButton
-export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
     const [hovered, setHovered] = useState<boolean>(false)
     const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -206,10 +206,10 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderLeftRadius, b
                         alignSelf: useOnlyNecessarySpace ? "flex-start" : undefined,
                         overflow: "hidden",
                         borderRadius: borderRadius ?? defaultBorderRadius,
-                        borderBottomLeftRadius: borderLeftRadius,
-                        borderTopLeftRadius: borderLeftRadius,
-                        borderBottomRightRadius: borderRightRadius,
-                        borderTopRightRadius: borderRightRadius,
+                        borderBottomLeftRadius: borderLeftRadius ?? borderBottomRadius,
+                        borderTopLeftRadius: borderLeftRadius ?? borderTopRadius,
+                        borderBottomRightRadius: borderRightRadius ?? borderBottomRadius,
+                        borderTopRightRadius: borderRightRadius ?? borderTopRadius,
                         flexDirection: "row",
                         //height: "100%",
                         flexShrink: 1,
