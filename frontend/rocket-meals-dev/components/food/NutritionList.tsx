@@ -53,8 +53,6 @@ export default function NutritionList(props: NutritionListProps) {
       TranslationKeys.nutrition_saturated_fat
   ])
 
-  const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
-
   const data: {
     key: string;
     data: {icon: string, label: string, value?: number | null}
@@ -74,7 +72,6 @@ export default function NutritionList(props: NutritionListProps) {
       <MyGridFlatList gridAmount={2} data={data} renderItem={(item) => {
         return <NutritionListElement {...item.item.data}/>
       }}/>
-      <Text>{translation_disclaimer}</Text>
     </>
   )
 }

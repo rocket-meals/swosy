@@ -12,7 +12,7 @@ export default function TabWrapper(props: TabWrapperProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-      <View style={{display: "flex", flexDirection: "column"}}>
+      <View style={{display: "flex", flexDirection: "column", flexGrow: 1}}>
         <View style={{display: "flex", flexDirection: "row"}}>
           {props.headers.map((header, index) => {
               let isActive = activeTab === index;
@@ -25,7 +25,7 @@ export default function TabWrapper(props: TabWrapperProps) {
             )
           })}
         </View>
-        <View>
+        <View style={{ display: "flex", flexGrow: 1 }}>
           {props.contents[activeTab]}
         </View>
       </View>

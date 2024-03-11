@@ -27,7 +27,6 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
   return(
       <View style={{
         width: "100%",
-
       }}>
         <View>
           <Text>{"foodId: "+usedFoodId}</Text>
@@ -71,14 +70,28 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
   const translations_nutrition = useTranslation(TranslationKeys.nutrition);
   const translations_markings = useTranslation(TranslationKeys.markings);
   const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
+  const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
 
-  const breakPointsAmountOfDaysToShowOnScreen = {
+  const imageWidthPercentage = useBreakPointValue<string>({
     sm: "100%",
     md: "100%",
     lg: "60%",
     xl: "40%",
-  }
-  const imageWidthPercentage = useBreakPointValue<string>(breakPointsAmountOfDaysToShowOnScreen)
+  })
+
+  const showAsRowOrColumn = useBreakPointValue<string>({
+    sm: "column",
+    md: "column",
+    lg: "row",
+    xl: "row",
+  })
+
+  const nutritionColumns = useBreakPointValue<number>({
+    sm: 2,
+    md: 2,
+    lg: 1,
+    xl: 2,
+  })
 
   function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
     let leftBorderRadius = leftRoundedBorder ? undefined : 0;
@@ -93,7 +106,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
       <View style={{ padding: 0, width: "100%", height: "100%" }}>
         { foodOfferData &&
             <ScrollView>
-                <View style={{width: "100%", display: "flex", flexDirection: "row"}}>
+                <View style={{width: "100%", display: "flex", flexDirection: showAsRowOrColumn}}>
                     <View style={{width: imageWidthPercentage, display: "flex"}}>
                         <Rectangle>
                             <ImageWithComponents
@@ -108,57 +121,62 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
                             />
                         </Rectangle>
                     </View>
-                </View>
 
-                <View style={{height: 100, padding: 4, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
-                    <View>
-                        <Heading>
-                          {foodOfferData.alias}
-                        </Heading>
+                    <View style={{ display: "flex", flexGrow: 1 }}>
+                        <View style={{height: 100, padding: 4, display: "flex", flexDirection: "column", justifyContent: "space-between"}}>
+                            <View>
+                                <Heading>
+                                  {foodOfferData.alias}
+                                </Heading>
+                            </View>
+
+                            <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "50%" }}>
+                                  {/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
+                                    <FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
+                                </View>
+                                <View>
+                                    <MyButton useOnlyNecessarySpace={true} useTransparentBackgroundColor={true} useTransparentBorderColor={true} accessibilityLabel={foodFeedback?.notify ? "Unnotify" : "Notify"} icon={foodFeedback?.notify ? "bell" : "bell-off"} onPress={() => {
+                                      setNotify(!foodFeedback?.notify);
+                                    }}/>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10, flexGrow: 1 }}>
+                            <TabWrapper headers={[
+                              (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
+                              (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
+                              (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
+                            ]} contents={[
+                              <View style={{ padding: 4, display: "flex", flexGrow: 1 }}>
+                                <View style={{ justifyContent: "space-between", display: "flex", flexGrow: 1 }}>
+                                  <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_nutrition}</Text>
+                                  <NutritionList
+                                      protein_g={foodOfferData.protein_g}
+                                      fat_g={foodOfferData.fat_g}
+                                      carbohydrate_g={foodOfferData.carbohydrate_g}
+                                      fiber_g={foodOfferData.fiber_g}
+                                      sugar_g={foodOfferData.sugar_g}
+                                      sodium_g={foodOfferData.sodium_g}
+                                      calories_kcal={foodOfferData.calories_kcal}
+                                      saturated_fat_g={foodOfferData.saturated_fat_g}
+                                  />
+                                </View>
+                                <Text>{translation_disclaimer}</Text>
+                              </View>,
+                              <View style={{ padding: 4 }}>
+                                <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_markings}</Text>
+                                <MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
+                              </View>,
+                              <View>
+                                { foodId &&
+                                    <FoodFeedbackDetails foodId={foodId} />
+                                }
+                              </View>
+                            ]}/>
+                        </View>
                     </View>
-
-                    <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                        <View style={{ display: "flex", flexDirection: "row", alignItems: "center", width: "50%" }}>
-                            {/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
-                            <FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
-                        </View>
-                        <View>
-                          <MyButton useOnlyNecessarySpace={true} useTransparentBackgroundColor={true} useTransparentBorderColor={true} accessibilityLabel={foodFeedback?.notify ? "Unnotify" : "Notify"} icon={foodFeedback?.notify ? "bell" : "bell-off"} onPress={() => {
-                            setNotify(!foodFeedback?.notify);
-                          }}/>
-                        </View>
-                    </View>
-                </View>
-
-                <View style={{ display: "flex", marginTop: 10, marginHorizontal: 10 }}>
-                    <TabWrapper headers={[
-                      (active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
-                      (active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
-                      (active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
-                    ]} contents={[
-                        <View style={{ padding: 4 }}>
-                          <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_nutrition}</Text>
-                          <NutritionList
-                            protein_g={foodOfferData.protein_g}
-                            fat_g={foodOfferData.fat_g}
-                            carbohydrate_g={foodOfferData.carbohydrate_g}
-                            fiber_g={foodOfferData.fiber_g}
-                            sugar_g={foodOfferData.sugar_g}
-                            sodium_g={foodOfferData.sodium_g}
-                            calories_kcal={foodOfferData.calories_kcal}
-                            saturated_fat_g={foodOfferData.saturated_fat_g}
-                          />
-                        </View>,
-                        <View style={{ padding: 4 }}>
-                          <Text size={"md"} style={{ textAlign: "center", fontWeight: "bold", marginBottom: 8 }}>{translations_markings}</Text>
-                          <MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
-                        </View>,
-                        <View>
-                          { foodId &&
-                              <FoodFeedbackDetails foodId={foodId} />
-                          }
-                        </View>
-                    ]}/>
                 </View>
             </ScrollView>
         }
