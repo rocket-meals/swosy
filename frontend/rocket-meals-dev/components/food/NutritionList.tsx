@@ -54,7 +54,6 @@ export default function NutritionList(props: NutritionListProps) {
   ])
 
   const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
-  const translation_nutrition = useTranslation(TranslationKeys.nutrition);
 
   const data: {
     key: string;
