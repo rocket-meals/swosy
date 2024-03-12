@@ -17,6 +17,7 @@ import Slot = Navigator.Slot;
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {SecureStorageHelper} from '@/helper/storage/SecureStorageHelper';
 import {KeyboardAvoidingView, Platform} from 'react-native';
+import {RootAppUpdateChecker} from "@/components/rootLayout/RootAppUpdateChecker";
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -77,22 +78,24 @@ export default function RootLayout() {
 
 	const store = SyncState.getInstance().getStore();
 
-	// Render the Root Layout
-	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'height' : 'height'}
-			style={{ flex: 1, zIndex: 999 }}
-		>
-			<StoreProvider store={store} key={reloadNumber+''}>
-				<GluestackUIProvider config={config} key={reloadNumber+''}>
-					<RootThemeProvider key={reloadNumber+''}>
-						<RootServerStatusFlowLoader key={reloadNumber+''} >
-							<RootAuthUserFlowLoader key={reloadNumber+''}>
-							</RootAuthUserFlowLoader>
-						</RootServerStatusFlowLoader>
-					</RootThemeProvider>
-				</GluestackUIProvider>
-			</StoreProvider>
-		</KeyboardAvoidingView>
-	);
+  // Render the Root Layout
+  return (
+      <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "height" : "height"}
+          style={{ flex: 1, zIndex: 999 }}
+      >
+      <StoreProvider store={store} key={reloadNumber+""}>
+        <GluestackUIProvider config={config} key={reloadNumber+""}>
+          <RootThemeProvider key={reloadNumber+""}>
+            <RootAppUpdateChecker key={reloadNumber+""}>
+              <RootServerStatusFlowLoader key={reloadNumber+""} >
+                <RootAuthUserFlowLoader key={reloadNumber+""}>
+                </RootAuthUserFlowLoader>
+              </RootServerStatusFlowLoader>
+            </RootAppUpdateChecker>
+          </RootThemeProvider>
+        </GluestackUIProvider>
+      </StoreProvider>
+      </KeyboardAvoidingView>
+  );
 }

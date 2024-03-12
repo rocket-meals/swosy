@@ -2,11 +2,15 @@
   "expo": {
     "name": "rocket-meals-dev",
     "slug": "rocket-meals-dev",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
-        "icon": "./assets/images/notification-icon.png"
+      "icon": "./assets/images/notification-icon.png"
+    },
+    "updates": {
+      "enabled": true,
+      "url": "https://u.expo.dev/36f72583-5997-4602-8609-05f39444f2e7"
     },
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -19,7 +23,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.baumgartnersoftware.rocketmealsdev",
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +41,13 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-updates",
+        {
+          "username": "jack5496"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -49,6 +61,9 @@
         "projectId": "36f72583-5997-4602-8609-05f39444f2e7"
       }
     },
-    "owner": "baumgartner-software"
+    "owner": "baumgartner-software",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

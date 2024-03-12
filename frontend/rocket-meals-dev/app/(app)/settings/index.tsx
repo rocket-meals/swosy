@@ -18,6 +18,7 @@ import {SettingsRowSpacer} from '@/components/settings/SettingsRowSpacer';
 import {SettingsRowUserDelete} from '@/compositions/settings/SettingsRowUserDelete';
 import {SettingsRowServerConfiguration} from '@/compositions/settings/SettingsRowServerConfiguration';
 import {SettingsRowPriceGroup} from '@/compositions/settings/SettingsRowPriceGroup';
+import {SettingsRowAppUpdate} from "@/compositions/settings/SettingsRowAppUpdate";
 
 export default function SettingsScreen() {
 	return (
@@ -46,6 +47,7 @@ export default function SettingsScreen() {
 					<SettingsRowSyncBooleanSwitch labelLeft={'Performance'} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={'Performance'} variable={PersistentStore.performance} />
 					<SettingsRowSyncBooleanSwitch labelLeft={'Developer'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Developer'} variable={PersistentStore.develop} />
 					<SettingsRowServerConfiguration />
+                    <SettingsRowAppUpdate />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowUserDelete />
