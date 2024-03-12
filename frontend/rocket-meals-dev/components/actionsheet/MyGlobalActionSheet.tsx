@@ -219,9 +219,7 @@ export const MyGlobalActionSheet = (props: any) => {
 
 		content = (
 			<MyScrollView>
-				{renderedPreItem}
 				{renderedItems}
-				{renderedPostItem}
 			</MyScrollView>
 		)
 	}
@@ -239,20 +237,31 @@ export const MyGlobalActionSheet = (props: any) => {
 				zIndex={999}
 				style={{
 					backgroundColor: viewBackgroundColor,
+					flexGrow: 1
 				}}
 			>
-				<ActionsheetDragIndicatorWrapper>
-					<ActionsheetDragIndicator
-						style={{
-							backgroundColor: textColor,
-						}}
-					/>
-					<View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}><Heading>{usedTitle}</Heading></View>
-				</ActionsheetDragIndicatorWrapper>
+				<View style={{
 
-				<MySafeAreaView>
-					{content}
-				</MySafeAreaView>
+				}}>
+					<ActionsheetDragIndicatorWrapper>
+						<ActionsheetDragIndicator
+							style={{
+								backgroundColor: textColor,
+							}}
+						/>
+						<View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}><Heading>{usedTitle}</Heading></View>
+					</ActionsheetDragIndicatorWrapper>
+				</View>
+
+				<View style={{
+					width: "100%",
+					flexGrow: 1, // werde so groß wie möglich
+					flexShrink: 1 // aber lass them action sheet drag indicator platz
+				}}>
+					<MySafeAreaView>
+						{content}
+					</MySafeAreaView>
+				</View>
 			</ActionsheetContent>
 		</Actionsheet>
 	)
