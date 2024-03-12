@@ -71,6 +71,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
+	const translation_markings_disclaimer = useTranslation(TranslationKeys.markings_disclaimer)
 
 	const imageWidthPercentage = useBreakPointValue<string>({
 		sm: '100%',
@@ -183,11 +184,12 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 												saturated_fat_g={foodOfferData.saturated_fat_g}
 											/>
 										</View>
-										<Text>{translation_disclaimer}</Text>
+										<Text italic={true}>{translation_disclaimer}</Text>
 									</View>,
 									<View style={{ padding: 4 }}>
 										<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_markings}</Text>
 										<MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
+										<Text italic={true}>{translation_markings_disclaimer}</Text>
 									</View>,
 									<View style={{ paddingTop: 4 }}>
 										<View style={{ padding: 4 }}>

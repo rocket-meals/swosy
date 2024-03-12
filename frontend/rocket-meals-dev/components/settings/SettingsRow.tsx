@@ -17,6 +17,7 @@ export interface SettingsRowProps {
     leftIcon?: any | string,
     rightIcon?: string,
     onPress?: any,
+	padding?: number
     color?: any
     hideLeftContent?: boolean,
     expandable?: boolean,
@@ -156,6 +157,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	return (
 		<>
 			<ActionsheetItem
+				padding={props.padding}
 				disabled={!item.onSelect || props.disabled}
 				accessibilityLabel={item.accessibilityLabel}
 				sx={{

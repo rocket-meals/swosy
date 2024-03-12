@@ -152,6 +152,7 @@ export class TranslationKeys {
 
 	static eating_habits = createTranslationKey('eating_habits', 'Essgewohnheiten');
 	static markings = createTranslationKey('markings', 'Kennzeichnungen');
+	static markings_disclaimer = createTranslationKey("markings_disclaimer", "Diese Angaben sind ohne Gewähr. Es gilt die Kennzeichnung vor Ort.")
 
 	static utilization_forecast = createTranslationKey('utilization_forecast', 'Prognose der Auslastung');
 	static utilization = createTranslationKey('utilization', 'Auslastung');

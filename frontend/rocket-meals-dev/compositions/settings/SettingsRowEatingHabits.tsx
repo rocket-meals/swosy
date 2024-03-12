@@ -6,6 +6,8 @@ import {IconNames} from '@/constants/IconNames';
 import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
 import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowTriStateLikeDislike';
+import MarkingListItem from "@/components/food/MarkingListItem";
+import {View, Text} from "@/components/Themed";
 
 interface AppState {
 
@@ -25,8 +27,6 @@ export function useGlobalActionSheetSettingProfileEatingHabits() {
 		for (let i = 0; i < markingKeys.length; i++) {
 			const markingKey = markingKeys[i];
 			const marking = markingsDict[markingKey];
-			const markingFromProfile = profilesMarkingsDict[marking.id]
-			const status = markingFromProfile?.dislikes;
 
 			items.push({
 				key: 'gridList',
@@ -37,17 +37,7 @@ export function useGlobalActionSheetSettingProfileEatingHabits() {
 				render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
 					// Use the custom context provider to provide the input value and setter
 
-					const onPress = (nextStatus: boolean | undefined) => {
-						if (nextStatus===true) {
-							setProfileMarking(marking, true)
-						} else if (nextStatus===false) {
-							setProfileMarking(marking, false)
-						} else {
-							removeProfileMarking(marking)
-						}
-					}
-
-					return <SettingsRowTriStateLikeDislike onPress={onPress} accessibilityLabel={marking.alias || marking.id} labelLeft={marking.alias || marking.id} value={status}/>
+					return <MarkingListItem markingId={marking.id} />
 				}
 			})
 		}
