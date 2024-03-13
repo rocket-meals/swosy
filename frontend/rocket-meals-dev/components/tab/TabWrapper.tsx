@@ -13,12 +13,12 @@ export default function TabWrapper(props: TabWrapperProps) {
 	const [activeTab, setActiveTab] = useState(props.defaultActive ?? 0);
 
 	return (
-		<View style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
-			<View style={{display: 'flex', flexDirection: 'row'}}>
+		<View style={{flexDirection: 'column', flexGrow: 1}}>
+			<View style={{flexDirection: 'row'}}>
 				{props.headers.map((header, index) => {
 					const isActive = activeTab === index;
 					return (
-						<View key={index} style={{flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}} onTouchEnd={() => setActiveTab(index)}>
+						<View key={index} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onTouchEnd={() => setActiveTab(index)}>
 							{header(isActive, () => {
 								setActiveTab(index);
 							})}
@@ -26,7 +26,7 @@ export default function TabWrapper(props: TabWrapperProps) {
 					)
 				})}
 			</View>
-			<View style={{ display: 'flex', flexGrow: 1 }}>
+			<View style={{ flexGrow: 1 }}>
 				{props.contents[activeTab]}
 			</View>
 		</View>

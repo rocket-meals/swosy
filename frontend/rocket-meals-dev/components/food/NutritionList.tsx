@@ -17,8 +17,8 @@ export type NutritionListProps = {
 
 export function NutritionListElement(props: {icon: string, label: string, value?: number | null}) {
 	return (
-		<View style={{ display: 'flex', flexDirection: 'row', paddingBottom: 12 }}>
-			<View style={{ display: 'flex', flexDirection: 'column' }}>
+		<View style={{ flex: 1, flexDirection: 'row', paddingBottom: 12 }}>
+			<View style={{ flexDirection: 'column' }}>
 				<Icon name={props.icon}/>
 			</View>
 			<View style={{ marginLeft: 4, flex: 1}}>

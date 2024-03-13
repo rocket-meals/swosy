@@ -21,7 +21,7 @@ export const Rectangle = ({aspectRatio, children, style, ...props}: MyCardForRes
 
 	return (
 		<View style={[{ position: 'relative'}, style]} {...props}>
-			<View style={{ display: 'flex', paddingTop: (100 * multiplier + '%') as DimensionValue }} />
+			<View style={{ paddingTop: (100 * multiplier + '%') as DimensionValue }} />
 			<View style={{ position: 'absolute', bottom: 0, left: 0, top: 0, right: 0 }}>{children}</View>
 		</View>
 	);

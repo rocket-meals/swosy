@@ -47,7 +47,7 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 					text={'Send feedback'}
 					leftIcon={IconNames.comment_send_icon}
 					onPress={() => {
-						onSubmit();
+				    	onSubmit();
 					}}
 				/>
 			</View>
@@ -110,7 +110,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 				}}
 				borderLeftRadius={leftBorderRadius}
 				borderRightRadius={rightBorderRadius}
-			                              />
+				/>
 			</View>
 		)
 	}
@@ -119,8 +119,8 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		<View style={{ padding: 0, width: '100%', height: '100%' }}>
 			{ foodOfferData && (
 				<ScrollView>
-					<View style={{width: '100%', display: 'flex', flexDirection: showAsRowOrColumn}}>
-						<View style={{width: imageWidthPercentage, display: 'flex'}}>
+					<View style={{width: '100%', flex: 1, flexDirection: showAsRowOrColumn}}>
+						<View style={{width: imageWidthPercentage}}>
 							<Rectangle>
 								<ImageWithComponents
 									image={{
@@ -135,43 +135,43 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 							</Rectangle>
 						</View>
 
-						<View style={{ display: 'flex', flexGrow: 1 }}>
-							<View style={{height: 100, padding: 4, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+						<View style={{ flex: 1}}>
+							<View style={{height: 100, padding: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
 								<View>
 									<Heading>
 										{foodOfferData.alias}
 									</Heading>
 								</View>
 
-								<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-									<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '50%' }}>
+								<View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+									<View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
 										{/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
 										<FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
 									</View>
 									<View>
 										<MyButton useOnlyNecessarySpace={true}
-											useTransparentBackgroundColor={true}
-											useTransparentBorderColor={true}
-											accessibilityLabel={foodFeedback?.notify ? 'Unnotify' : 'Notify'}
-											icon={foodFeedback?.notify ? 'bell' : 'bell-off'}
-											onPress={() => {
-												setNotify(!foodFeedback?.notify);
-											}}
+												  useTransparentBackgroundColor={true}
+												  useTransparentBorderColor={true}
+												  accessibilityLabel={foodFeedback?.notify ? 'Unnotify' : 'Notify'}
+												  icon={foodFeedback?.notify ? 'bell' : 'bell-off'}
+												  onPress={() => {
+													  setNotify(!foodFeedback?.notify);
+												  }}
 										/>
 									</View>
 								</View>
 							</View>
 
-							<View style={{ display: 'flex', marginTop: 10, marginHorizontal: 10, flexGrow: 1 }}>
+							<View style={{ marginTop: 10, marginHorizontal: 10, flex: 1 }}>
 								<TabWrapper headers={[
 									(active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
 									(active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
 									(active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
 								]}
-								defaultActive={2}
+								defaultActive={0}
 								contents={[
-									<View style={{ padding: 4, display: 'flex', flexGrow: 1 }}>
-										<View style={{ justifyContent: 'space-between', display: 'flex', flexGrow: 1 }}>
+									<View style={{ padding: 4 }}>
+										<View style={{ justifyContent: 'space-between' }}>
 											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_nutrition}</Text>
 											<NutritionList
 												columnAmount={nutritionColumns}
@@ -185,7 +185,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 												saturated_fat_g={foodOfferData.saturated_fat_g}
 											/>
 										</View>
-										<Text italic={true}>{translation_disclaimer}</Text>
+										<Text>{translation_disclaimer}</Text>
 									</View>,
 									<View style={{ padding: 4 }}>
 										<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_markings}</Text>
@@ -197,7 +197,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_food_feedbacks}</Text>
 										</View>
 										{ foodId &&
-                                    <FoodFeedbackDetails foodId={foodId} />
+											<FoodFeedbackDetails foodId={foodId} />
 										}
 									</View>
 								]}
