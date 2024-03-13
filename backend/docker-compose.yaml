@@ -15,8 +15,7 @@ services:
   cache:
     image: redis:6.2.6
     networks:
-      custom_network:
-        ipv4_address: 123.123.123.123
+      - custom_network
 
 # Redundant, but needed for scaling. Check x-common-params: &common-params to reduce redundancy
 
@@ -71,7 +70,7 @@ services:
 
       CACHE_ENABLED: "true"
       CACHE_STORE: "redis"
-      REDIS: "redis://123.123.123.123:6379"
+      REDIS: "redis://cache:6379"
       CACHE_AUTO_PURGE: 'true'
 
       ADMIN_EMAIL: 'admin@example.com'
@@ -128,12 +127,7 @@ services:
       AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt"
 
 networks:
-  custom_network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "123.123.123.123/16"
+  custom_network: {}
   directus:
   topDomainProxy:
     external: true
