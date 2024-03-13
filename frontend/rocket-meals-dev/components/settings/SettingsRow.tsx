@@ -17,7 +17,7 @@ export interface SettingsRowProps {
     leftIcon?: any | string,
     rightIcon?: string,
     onPress?: any,
-	padding?: number
+	padding?: number | undefined
     color?: any
     hideLeftContent?: boolean,
     expandable?: boolean,
@@ -154,10 +154,12 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
 	const content = contentWithShrinkingSpaceOnlyRight;
 
+	const DEFAULT_PADDING = 12;
+
 	return (
 		<>
 			<ActionsheetItem
-				padding={props.padding}
+				padding={props.padding || DEFAULT_PADDING}
 				disabled={!item.onSelect || props.disabled}
 				accessibilityLabel={item.accessibilityLabel}
 				sx={{

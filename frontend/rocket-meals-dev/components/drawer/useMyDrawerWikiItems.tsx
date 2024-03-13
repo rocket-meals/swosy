@@ -58,7 +58,7 @@ export function useMyDrawerWikiItems() {
 
 				const translations = wiki.translations as TranslationEntry[]
 				const fallback_text = wiki.id
-				const label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
+				let label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
 
 				customDrawerItems.push({
 					label: label,

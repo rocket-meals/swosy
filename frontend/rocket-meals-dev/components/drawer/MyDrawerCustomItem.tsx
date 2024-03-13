@@ -29,7 +29,7 @@ export const MyDrawerCustomItem = (customItem: MyDrawerCustomItemProps) => {
 	const projectColor = useProjectColor()
 
 	// @ts-ignore
-	const label = getMyDrawerItemLabel(customItem.label);
+	let label = getMyDrawerItemLabel(customItem.label);
 	const drawer_item_accessibility_label = translation_navigate_to + ' ' + customItem.label
 	const key = customItem?.key || customItem?.label
 	const isFocused = customItem.isFocused;
@@ -40,6 +40,9 @@ export const MyDrawerCustomItem = (customItem: MyDrawerCustomItemProps) => {
 		onPress = customItem.onPress;
 	}
 
+	let asLink = false;
+	let to = undefined
+
 	if (!onPress) {
 		if (customItem.onPressInternalRouteTo) {
 			onPress = () => {
@@ -48,9 +51,14 @@ export const MyDrawerCustomItem = (customItem: MyDrawerCustomItemProps) => {
 				router.navigate(customItem.onPressInternalRouteTo)
 			};
 		}
-		if (customItem.onPressExternalRouteTo) {
+
+		const externalHref = customItem.onPressExternalRouteTo
+		if (externalHref) {
+			to = externalHref
+			label += ' (External) '+externalHref
+			asLink = true;
 			onPress = () => {
-				CommonSystemActionHelper.openExternalURL(customItem.onPressExternalRouteTo);
+				CommonSystemActionHelper.openExternalURL(externalHref, true);
 			};
 		}
 	}
@@ -61,6 +69,6 @@ export const MyDrawerCustomItem = (customItem: MyDrawerCustomItemProps) => {
 	}
 
 	return (
-		<DrawerItem accessibilityLabel={drawer_item_accessibility_label} label={label} key={key} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={renderIcon}/>
+		<DrawerItem to={to} accessibilityLabel={drawer_item_accessibility_label} label={label} key={key} focused={isFocused} onPress={onPress} style={{backgroundColor: backgroundColor}} icon={renderIcon}/>
 	);
 }

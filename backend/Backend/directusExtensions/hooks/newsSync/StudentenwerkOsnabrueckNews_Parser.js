@@ -51,6 +51,7 @@ export class StudentenwerkOsnabrueckNews_Parser {
                     external_identifier: "news_" + header.replace(/\W+/g, '_'),
                     image_remote_url: imageUrl,
                     alias: header,
+                    date: new Date(),
                     url: articleUrl,
                     translations: {
                         "de-DE": {

@@ -81,7 +81,7 @@ export default function NewsScreen() {
   		}
   	}
 
-  	const date_published = resource.date_created;
+  	const date_published = resource?.date || resource.date_created;
 
   	const accessiblityLabel = translation_navigate_to+': '+translation_news+' '+heading + ' ' + date_published;
 
