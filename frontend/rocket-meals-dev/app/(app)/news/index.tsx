@@ -105,7 +105,7 @@ export default function NewsScreen() {
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
-  			gridAmount={initialAmountColumns}
+  			amountColumns={initialAmountColumns}
   		/>
   	</MySafeAreaView>
   );

@@ -90,8 +90,8 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const nutritionColumns = useBreakPointValue<number>({
 		sm: 2,
 		md: 2,
-		lg: 1,
-		xl: 2,
+		lg: 3,
+		xl: 3,
 	})
 
 	function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
@@ -174,6 +174,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 										<View style={{ justifyContent: 'space-between', display: 'flex', flexGrow: 1 }}>
 											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_nutrition}</Text>
 											<NutritionList
+												columnAmount={nutritionColumns}
 												protein_g={foodOfferData.protein_g}
 												fat_g={foodOfferData.fat_g}
 												carbohydrate_g={foodOfferData.carbohydrate_g}

@@ -81,7 +81,7 @@ export default function HousingScreen() {
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
-  			gridAmount={initialAmountColumns}
+  			amountColumns={initialAmountColumns}
   		/>
   	</MySafeAreaView>
   );

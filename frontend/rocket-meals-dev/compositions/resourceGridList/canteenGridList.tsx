@@ -66,6 +66,6 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     }
 
     return (
-    	<MyGridFlatList data={data} renderItem={renderCanteen} gridAmount={amountColumns} />
+    	<MyGridFlatList data={data} renderItem={renderCanteen} amountColumns={amountColumns} />
     );
 }

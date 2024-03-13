@@ -128,7 +128,7 @@ export default function FoodOfferScreen() {
   				<MyGridFlatList
   					data={data}
   					renderItem={renderItem}
-  					gridAmount={initialAmountColumns}
+  					amountColumns={initialAmountColumns}
   				/>
   			</MySafeAreaView>
   		);

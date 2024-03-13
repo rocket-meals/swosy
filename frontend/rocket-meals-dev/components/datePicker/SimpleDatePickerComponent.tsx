@@ -224,7 +224,7 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
         					return renderDayInMonth(index, dateToRender, shownDate, false)
         				}
         			}}
-        			gridAmount={amountDaysPerWeek}
+        			amountColumns={amountDaysPerWeek}
         		>
         		</MyGridFlatList>
         	</View>
