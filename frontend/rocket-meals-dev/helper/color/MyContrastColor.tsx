@@ -15,9 +15,19 @@ import {useViewBackgroundColor} from '@/components/Themed';
  * @returns {number} - The contrast ratio between the foreground and background colors.
  */
 export function getContrastRatio(foreground: string | undefined, background: string): number {
+	const start = performance.now();
+
 	const lumA = Color(foreground).getLuminance();
 	const lumB = Color(background).getLuminance();
-	return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+	let contrastRation = (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+
+	const end = performance.now();
+	let duration = end - start;
+	if(duration>5) {
+		console.log("WARNING - getContrastRatio: foreground: ", foreground, "duration: ", duration, "ms")
+	}
+
+	return contrastRation;
 }
 
 export function getColorAsHex(color: string | undefined): string | undefined {
@@ -32,14 +42,20 @@ export function useLighterOrDarkerColorForSelection(color: string | undefined): 
 }
 
 function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRatio: number): string {
-	return useMemo(() => {
+	const start = performance.now();
+
+	const dependencyKey = ""+color + contrastRatio;
+	let steps = 0;
+
+	let result = useMemo(() => {
 		if (!color) {
 			return 'transparent';
 		}
+
 		const backgroundColor = Color(color);
 		const isDark = backgroundColor.isDark();
 		let modifiedColor = backgroundColor.clone();
-		const step = 0.1; // Adjust step to be more precise
+		const step = 1; // Adjust step to be more precise
 		let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
 
 		// Loop until the contrast ratio is met or improved
@@ -50,10 +66,20 @@ function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRa
 				modifiedColor = modifiedColor.darken(step);
 			}
 			currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+			steps++;
 		}
 
 		return modifiedColor.toHexString();
-	}, [color, contrastRatio]); // Only recompute if color or contrastRatio changes
+	}, [dependencyKey]); // Only recompute if color or contrastRatio changes
+
+	const end = performance.now();
+	let duration = end - start;
+	if(duration>5) {
+		console.log("WARNING - getLighterOrDarkerColorByContrast: color: ", color, "duration: ", duration, "ms", "contrastRatio: ", contrastRatio, "result: ", result, "steps: ", steps)
+	}
+
+	return result;
+
 }
 
 export enum ContrastThresholdSelectedItems {
@@ -80,7 +106,10 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 const useMyContrastColorByColorMode = (trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold) => {
-	return useMemo(() => {
+
+	const start = performance.now();
+
+	let result = useMemo(() => {
 		const trueDarkText = '#000000';
 		const trueLightText = '#FFFFFF';
 
@@ -98,6 +127,15 @@ const useMyContrastColorByColorMode = (trueBg: string | undefined, isDarkMode: b
 		// otherwise return the text color with the highest contrast
 		return darkTextContrast > lightTextContrast ? trueDarkText : trueLightText;
 	}, [trueBg, isDarkMode, contrastThreshold]); // Dependencies
+
+	const end = performance.now();
+	let duration = end - start;
+
+	if(duration>5) {
+		console.warn("useMyContrastColorByColorMode: trueBg: ", trueBg, "duration: ", duration, "ms")
+	}
+
+	return result
 };
 
 

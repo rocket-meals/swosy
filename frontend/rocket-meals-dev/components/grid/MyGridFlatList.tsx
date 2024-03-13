@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
+import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
 import {View} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -71,6 +71,8 @@ export const MyGridFlatList = <T extends { key: string }>({
 	const amountCompleteRows = Math.floor(data.length / amountColumns);
 	const amountTotalItemsLastRow = data.length - amountCompleteRows * amountColumns;
 	const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? amountColumns - amountTotalItemsLastRow : 0;
+
+	const [endReached, setEndReached] = React.useState(false);
 
 	const usedSpacing = spacing || DEFAULT_GRID_LIST_SPACING;
 
@@ -152,11 +154,23 @@ export const MyGridFlatList = <T extends { key: string }>({
 	// Force a fresh render of the FlatList by changing the key
 	const flatListKey = 'horizontal:'+usedHorizontal+'-gridAmount:'+amountColumns;
 
+	// Render footer to show a loading spinner when more items are being loaded
+	const renderFooter = () => {
+		if (endReached) {
+			return null;
+		}
+		return (
+			<View style={{ paddingVertical: 20, borderTopWidth: 1, borderColor: "#CED0CE" }}>
+				<ActivityIndicator animating size="large" />
+			</View>
+		);
+	};
+
 	return (
 		<View
 			style={{
 				width: '100%',
-				height: '100%',
+				maxHeight: "100%"
 				//backgroundColor: "green",
 			}}
 		>
@@ -166,6 +180,11 @@ export const MyGridFlatList = <T extends { key: string }>({
 				data={adjustedData}
 				renderItem={renderItemsWithFillUpDummies}
 				numColumns={numColumns}
+				onEndReached={() => {
+					setEndReached(true);
+				}}
+				onEndReachedThreshold={0.5} // How far from the end (in terms of list length) the bottom edge of the list must be from the end of the content to trigger the onEndReached callback.
+				ListFooterComponent={renderFooter}
 				{...flatListProps}
 			/>
 		</View>

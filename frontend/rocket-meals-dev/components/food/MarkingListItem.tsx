@@ -7,8 +7,28 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {TouchableOpacity} from "react-native";
+import {LoadingRectThemed} from "@/components/food/MarkingList";
 
 export default function MarkingListItem({ markingId }: { markingId: string}) {
+	const [loading, setLoading] = React.useState(true);
+	const useLazyLoading = false;
+
+	useEffect(() => {
+		// small delay to prevent flickering
+		setTimeout(() => {
+			if (markingId) {
+				setLoading(false)
+			}
+		}, 50);
+	}, [markingId])
+
+	if(loading && useLazyLoading){
+		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
+	}
+	return <MarkingListItemReal markingId={markingId} />
+}
+
+function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const marking: Markings | undefined = markingsDict?.[markingId];
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
@@ -16,6 +36,8 @@ export default function MarkingListItem({ markingId }: { markingId: string}) {
 	const markingFromProfile = profilesMarkingsDict[markingId]
 	const status = markingFromProfile?.dislikes;
 	const translation_marking = useTranslation(TranslationKeys.markings);
+
+	const [loading, setLoading] = React.useState(true);
 
 	if(!marking){
 		return null;

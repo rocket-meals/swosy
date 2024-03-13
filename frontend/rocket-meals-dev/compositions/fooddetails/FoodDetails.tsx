@@ -18,10 +18,12 @@ import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MarkingListSelective} from '@/components/food/MarkingList';
 import {useIsDemo} from "@/states/SynchedDemo";
+import {useIsDebug} from "@/states/Debug";
 
 export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 	const usedFoodId = typeof foodId === 'string' ? foodId : foodId.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+
 
 	const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
 	const onChangeText = (text: string) => {
@@ -59,6 +61,7 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
 	const isDemo = useIsDemo()
+	const isDebug = useIsDebug()
 
 	useEffect(() => {
 		loadFoodOffer(isDemo, foodOfferId)
@@ -118,6 +121,19 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		)
 	}
 
+	const markingIds: string[] = [];
+	let foodOfferMarkings = foodOfferData?.markings || [];
+	foodOfferMarkings.forEach((marking) => {
+		markingIds.push(marking.markings_id);
+	});
+
+	let debugMarkings = undefined
+	if(isDebug){
+		debugMarkings = <View>
+			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
+		</View>
+	}
+
 	return (
 		<View style={{ padding: 0, width: '100%', height: '100%' }}>
 			{ foodOfferData && (
@@ -173,27 +189,32 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 								]}
 								defaultActive={0}
 								contents={[
-									<View style={{ padding: 4 }}>
+									<View style={{ padding: 4, flex: 1 }}>
 										<View style={{ justifyContent: 'space-between' }}>
 											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_nutrition}</Text>
-											<NutritionList
-												columnAmount={nutritionColumns}
-												protein_g={foodOfferData.protein_g}
-												fat_g={foodOfferData.fat_g}
-												carbohydrate_g={foodOfferData.carbohydrate_g}
-												fiber_g={foodOfferData.fiber_g}
-												sugar_g={foodOfferData.sugar_g}
-												sodium_g={foodOfferData.sodium_g}
-												calories_kcal={foodOfferData.calories_kcal}
-												saturated_fat_g={foodOfferData.saturated_fat_g}
-											/>
+											<View>
+												<NutritionList
+													columnAmount={nutritionColumns}
+													protein_g={foodOfferData.protein_g}
+													fat_g={foodOfferData.fat_g}
+													carbohydrate_g={foodOfferData.carbohydrate_g}
+													fiber_g={foodOfferData.fiber_g}
+													sugar_g={foodOfferData.sugar_g}
+													sodium_g={foodOfferData.sodium_g}
+													calories_kcal={foodOfferData.calories_kcal}
+													saturated_fat_g={foodOfferData.saturated_fat_g}
+												/>
+											</View>
 										</View>
-										<Text>{translation_disclaimer}</Text>
+										<View>
+											<Text>{translation_disclaimer}</Text>
+										</View>
 									</View>,
 									<View style={{ padding: 4 }}>
 										<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_markings}</Text>
-										<MarkingListSelective markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
+										<MarkingListSelective markingIds={markingIds}/>
 										<Text italic={true}>{translation_markings_disclaimer}</Text>
+										{debugMarkings}
 									</View>,
 									<View style={{ paddingTop: 4 }}>
 										<View style={{ padding: 4 }}>

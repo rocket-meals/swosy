@@ -15,6 +15,7 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
+import { Spinner } from '@gluestack-ui/themed';
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -41,7 +42,12 @@ export default function FoodOfferScreen() {
 
 
 	useEffect(() => {
-		loadFoodOffers()
+		// wait half a second before loading the food offers
+		// to prevent the screen from flickering
+		setFoodOffers(undefined)
+		const timeout = setTimeout(async () => {
+			await loadFoodOffers();
+		}, 500);
 	}, [dateAsString, profileCanteen?.id]);
 
   type DataItem = { key: string; data: Foodoffers }
@@ -111,6 +117,14 @@ export default function FoodOfferScreen() {
   } else {
   	if (foodOffers === undefined) {
   		// Show loading
+		return <View style={{
+			height: '100%',
+			width: '100%',
+			justifyContent: "center",
+			alignItems: "center"
+		}}>
+			<Spinner size={"large"} />
+		</View>
   	} else if (foodOffers.length === 0) {
   		return (
   			<MySafeAreaView>
