@@ -39,7 +39,7 @@ export const MyExternalLink = ({_target, onPress, openInNewTab, href, accessibil
 
 	const button = (
 		(
-			<MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.Link} style={{width: '100%'}} onPress={usedOnPress} accessibilityLabel={accessibilityLabel}>
+			<MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.Link} onPress={usedOnPress} accessibilityLabel={accessibilityLabel}>
 				{children}
 			</MyTouchableOpacity>
 		)
