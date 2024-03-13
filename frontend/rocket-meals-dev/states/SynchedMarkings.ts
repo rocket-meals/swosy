@@ -4,6 +4,7 @@ import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
+import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 
 async function loadMarkingsFromServer(): Promise<Markings[]> {
 	const collectionHelper = new CollectionHelper<Markings>('markings');
@@ -25,16 +26,23 @@ function getDemoMarking(index: number): Markings {
 		"Nuss", "Fleisch", "Erdnüsse", "Fisch", "Soja", "Milch", "Ei", "Weizen", "Schalenfrüchte", "Sellerie", "Senf", "Sesam", "Schwefeldioxid und Sulfite", "Lupinen", "Weichtiere", "Krebstiere", "Glutenhaltiges Getreide", "Gerste", "Hafer", "Dinkel", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut"
 	]
 	let name: string = names[index%names.length]
+
+	let languages = getDemoLanguagesDict();
+
+	let translations = []
+	for (let languageKey in languages) {
+		let language = languages[languageKey]
+		translations.push({
+			name: language.code+" - "+name,
+			id: id,
+			markings_id: id,
+			languages_code: language.code
+		})
+	}
+
 	const marking: Markings = {
 		id: id,
-		translations: [
-			{
-				name: name,
-				id: index,
-				markings_id: id,
-				languages_code: DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN
-			}
-		]
+		translations: translations
 	}
 
 	return marking

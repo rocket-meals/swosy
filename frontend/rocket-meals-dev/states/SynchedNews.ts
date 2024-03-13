@@ -5,6 +5,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DateHelper} from '@/helper/date/DateHelper';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
+import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 
 async function loadNewsFromServer(): Promise<News[]> {
 	const collectionHelper = new CollectionHelper<News>('news');
@@ -56,14 +57,20 @@ function getSingleDemoNews(index: number): News {
 		'Hier bei Rocket Meals legen wir großen Wert auf Vielfalt und Qualität. Deshalb haben wir unsere Speisekarte um einige neue, leckere Gerichte erweitert.'
 	]
 
-	const newsTranslations: NewsTranslations = {
-		translation_settings: '',
-		be_source_for_translations: false,
-		title: titles[index%titles.length],
-		content: contents[index%contents.length],
-		id: amountNewsTranslations*index,
-		news_id: news_id,
-		languages_code: DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN
+	let languages = getDemoLanguagesDict();
+
+	let translations = []
+	for (let languageKey in languages) {
+		let language = languages[languageKey]
+		translations.push({
+			translation_settings: '',
+			be_source_for_translations: false,
+			title: language.code+" - "+titles[index%titles.length],
+			content: language.code+" - "+contents[index%contents.length],
+			id: amountNewsTranslations*index,
+			news_id: news_id,
+			languages_code: language.code
+		})
 	}
 
 	const image_remote_urls = [
@@ -87,7 +94,7 @@ function getSingleDemoNews(index: number): News {
 		image_thumb_hash: undefined,
 		sort: undefined,
 		status: '',
-		translations: [newsTranslations],
+		translations: translations,
 		url: demoNewsUrl,
 		user_created: undefined,
 		user_updated: undefined

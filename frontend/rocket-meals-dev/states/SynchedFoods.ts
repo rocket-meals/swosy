@@ -2,6 +2,7 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import { Foods} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
+import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 
 export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestampe?: number) => void), (number | undefined)] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Foods>(PersistentStore.foods);
@@ -26,6 +27,19 @@ export function getDemoFoods(): Record<string, Foods> {
 }
 
 function getDemoResource(id: string, name: string): Foods {
+	let languages = getDemoLanguagesDict();
+
+	let translations = []
+	for (let languageKey in languages) {
+		let language = languages[languageKey]
+		translations.push({
+			name: language.code+" - "+name,
+			id: id,
+			foods_id: id,
+			languages_code: language.code
+		})
+	}
+
 	return (
 		{
 			date_created: new Date().toISOString(),
@@ -37,10 +51,7 @@ function getDemoResource(id: string, name: string): Foods {
 			status: '',
 			user_created: undefined,
 			user_updated: undefined,
-			canteen: undefined,
-			price: undefined,
-			food_category: undefined,
-			food_category_id: undefined
+			translations: translations,
 		}
 	)
 }
