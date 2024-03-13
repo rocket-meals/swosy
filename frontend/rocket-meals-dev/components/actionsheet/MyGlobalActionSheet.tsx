@@ -7,8 +7,8 @@ import {
 	ActionsheetItem,
 	ActionsheetItemText
 } from '@gluestack-ui/themed';
-import React from 'react';
-import {DimensionValue} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {DimensionValue, FlatListProps} from 'react-native';
 import {Heading, Icon, View, useTextContrastColor, useViewBackgroundColor} from '@/components/Themed';
 import {useSyncStateRaw} from '@/helper/syncState/SyncState';
 import {NonPersistentStore} from '@/helper/syncState/NonPersistentStore';
@@ -22,7 +22,8 @@ import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {StringHelper} from '@/helper/string/StringHelper';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
-
+import { Spinner } from "@gluestack-ui/themed"
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 
 export type MyGlobalActionSheetConfig = {
     visible: boolean,
@@ -121,89 +122,66 @@ export const MyGlobalActionSheet = (props: any) => {
 		}
 	}
 
-	const renderedItems = []
-	const renderedItemsForStringify = []
-
-	if (showActionsheetConfig.items) {
-		for (const item of showActionsheetConfig.items) {
-			const isActive = item.active || false;
-
-			let usedViewBackgroundColor: string = 'transparent';
-			let usedTextColor = textColor;
-			if (isActive && projectColor) {
-				usedViewBackgroundColor = projectColor
-				usedTextColor = projectColorContrast
-			}
-			if (!isActive && viewBackgroundColor) {
-				usedViewBackgroundColor = viewBackgroundColor
-				usedTextColor = lighterOrDarkerTextColor
-			}
-
-			const customRender = item.render;
-			if (customRender) {
-				renderedItems.push(
-					customRender(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
-				)
-			} else {
-				const checkboxIconName = isActive ? 'checkbox-blank-circle' : 'checkbox-blank-circle-outline'
-				const renderedCheckboxIcon = <Icon color={usedTextColor} name={checkboxIconName} />
-
-				let renderedLeftIcon: any = <Icon color={usedTextColor} name={item.icon} />
-				if (item.renderLeftIcon) {
-					renderedLeftIcon = item.renderLeftIcon(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide)
-				}
-
-				let onSelectMethod: any = undefined
-				if (item.onSelect) {
-					onSelectMethod = async () => {
-						if (item.onSelect) {
-							await item.onSelect(item.key, hide)
-						} else {
-							hide()
-						}
-					}
-				}
-
-				renderedItems.push(
-					<ActionsheetItem
-						disabled={!item.onSelect}
-						accessibilityRole={MyAccessibilityRoles.Radio}
-						accessibilityLabel={item.accessibilityLabel}
-						sx={{
-							bg: usedViewBackgroundColor,
-							':hover': {
-								bg: lighterOrDarkerBackgroundColor,
-							},
-						}}
-						key={item.key}
-						onPress={onSelectMethod}
-					>
-						<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-						<View style={{
-							flex: 1
-						}}
-						>
-							<ActionsheetItemText selectable={true}
-								sx={{
-									color: usedTextColor,
-								}}
-							>{item.label}
-							</ActionsheetItemText>
-						</View>
-						<ActionsheetItemText>{renderedCheckboxIcon}</ActionsheetItemText>
-					</ActionsheetItem>
-				)
-			}
-
-			renderedItemsForStringify.push({
-				key: item.key,
-				label: item.label,
-				icon: item.icon,
-			})
+	let flatListData = showActionsheetConfig.items?.map(item => {
+		const isActive = item.active || false;
+		let usedViewBackgroundColor = 'transparent';
+		let usedTextColor = textColor;
+		if (isActive && projectColor) {
+			usedViewBackgroundColor = projectColor;
+			usedTextColor = projectColorContrast;
+		} else if (!isActive && viewBackgroundColor) {
+			usedViewBackgroundColor = viewBackgroundColor;
+			usedTextColor = lighterOrDarkerTextColor;
 		}
-	}
+		return {
+			...item,
+			usedViewBackgroundColor,
+			usedTextColor,
+			lighterOrDarkerBackgroundColor,
+			lighterOrDarkerTextColor
+		};
+	});
 
-	let content = []
+	const renderItem = ({ item }) => {
+		let onSelectMethod = undefined;
+		if (item.onSelect) {
+			onSelectMethod = async () => {
+				await item.onSelect(item.key, hide);
+			};
+		}
+
+		let renderedLeftIcon = item.renderLeftIcon ? item.renderLeftIcon(item.usedViewBackgroundColor, item.lighterOrDarkerBackgroundColor, item.usedTextColor, item.lighterOrDarkerTextColor, hide) : <Icon color={item.usedTextColor} name={item.icon} />;
+
+		let content = item.render ? item.render(item.usedViewBackgroundColor, item.lighterOrDarkerBackgroundColor, item.usedTextColor, item.lighterOrDarkerTextColor, hide) : (
+			<ActionsheetItem
+				disabled={!item.onSelect}
+				accessibilityRole={MyAccessibilityRoles.Radio}
+				accessibilityLabel={item.accessibilityLabel}
+				sx={{
+					bg: item.usedViewBackgroundColor,
+					':hover': {
+						bg: item.lighterOrDarkerBackgroundColor,
+					},
+				}}
+				key={item.key}
+				onPress={onSelectMethod}
+			>
+				<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+				<View style={{ flex: 1 }}>
+					<ActionsheetItemText selectable={true}
+										 sx={{
+											 color: item.usedTextColor,
+										 }}
+					>{item.label}</ActionsheetItemText>
+				</View>
+				<ActionsheetItemText>{<Icon color={item.usedTextColor} name={item.active ? 'checkbox-blank-circle' : 'checkbox-blank-circle-outline'} />}</ActionsheetItemText>
+			</ActionsheetItem>
+		);
+
+		return content;
+	};
+
+	let content: any = undefined
 	if (showActionsheetConfig.renderCustomContent) {
 		content = showActionsheetConfig.renderCustomContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
 	} else {
@@ -216,11 +194,15 @@ export const MyGlobalActionSheet = (props: any) => {
 			renderedPostItem = showActionsheetConfig.renderPostItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
 		}
 
-
 		content = (
-			<MyScrollView>
-				{renderedItems}
-			</MyScrollView>
+			<MyGridFlatList
+				data={flatListData}
+				renderItem={renderItem}
+				keyExtractor={item => item.key}
+				ListHeaderComponent={showActionsheetConfig.renderPreItemsContent ? () => showActionsheetConfig.renderPreItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide) : null}
+				ListFooterComponent={showActionsheetConfig.renderPostItemsContent ? () => showActionsheetConfig.renderPostItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide) : null}
+				amountColumns={1}
+			/>
 		)
 	}
 
@@ -228,6 +210,16 @@ export const MyGlobalActionSheet = (props: any) => {
 	if (!usedTitle) {
 		usedTitle = StringHelper.EMPTY_SPACE
 	}
+
+	useEffect(() => {
+		if (!showActionsheet) {
+			setDisplayContent(false)
+		}
+	}, [showActionsheetConfig]);
+
+	const [displayContent, setDisplayContent] = useState(false);
+
+	let renderedContent = content;
 
 	return (
 		<Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}>
@@ -259,7 +251,7 @@ export const MyGlobalActionSheet = (props: any) => {
 					flexShrink: 1 // aber lass them action sheet drag indicator platz
 				}}>
 					<MySafeAreaView>
-						{content}
+						{renderedContent}
 					</MySafeAreaView>
 				</View>
 			</ActionsheetContent>

@@ -1,39 +1,43 @@
 import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
 import {View} from '@/components/Themed';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
-import React, {useMemo} from 'react';
+import React, {FunctionComponent, useMemo} from 'react';
 import MarkingListItem from "@/components/food/MarkingListItem";
 import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
+import {Markings} from "@/helper/database/databaseTypes/types";
+import {ListRenderItemInfo} from "react-native";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 
-export default function MarkingList({ markingIds }: { markingIds: string[] }) {
+
+export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	let usedDict = markingsDict || {}
+	const all_marking_keys = Object.keys(usedDict);
 
-	const markingData = useMemo(() => {
-		if (!markingsDict) {
-			return [];
+	return <MarkingListSelective markingIds={all_marking_keys} />
+}
+
+export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	type DataItem = { key: string; data: Markings }
+	const data: DataItem[] = []
+	if (markingsDict && props.markingIds) {
+		for (let i=0; i<props.markingIds.length; i++) {
+			const canteen_key = props.markingIds[i];
+			const marking = markingsDict[canteen_key]
+			data.push({key: canteen_key, data: marking})
 		}
+	}
 
-		return markingIds.map((x) => {
-			return {
-				data: markingsDict[x]
-			}
-		})
-	}, [markingsDict, markingIds, languageCode])
-
-	const items = markingData.map((x) => {
-		const marking = x.data;
+	const renderMarking = (info: ListRenderItemInfo<DataItem>) => {
+		const {item, index} = info;
+		const marking = item.data;
+		const marking_key = marking.id
 
 		return (
-			<View key={marking.id} accessibilityRole={MyAccessibilityRoles.List}>
-				<MarkingListItem marking={marking} />
-			</View>
-		)
-	})
+			<MarkingListItem markingId={marking.id} />
+		);
+	}
 
-	return (
-		<View>
-			{items}
-		</View>
-	)
+	return <MyGridFlatList data={data} renderItem={renderMarking} amountColumns={1} />
 }

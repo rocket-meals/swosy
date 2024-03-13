@@ -45,16 +45,29 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 	return [usedSelectedDate, setSelectedDate, changeAmountDays]
 }
 
-export async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
+async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
 	const collectionHelper = new CollectionHelper<Foodoffers>('foodoffers');
 
-	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*', 'food.markings.*'];
+	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];
 
 	const query = {
 		fields: food_offer_fields
 	}
 
 	return await collectionHelper.readItem(foodoffer_id, query);
+}
+
+export async function loadFoodOffer(isDemo: boolean, foodoffer_id: string): Promise<Foodoffers> {
+	if(isDemo){
+		let foodOffers = getDemoFoodOffersForDate(new Date());
+		for(let foodOffer of foodOffers){
+			if(foodOffer.id === foodoffer_id){
+				return foodOffer;
+			}
+		}
+	}
+
+	return await loadFoodOfferFromServer(foodoffer_id);
 }
 
 //export async function getFoodOffersForSelectedDate(date: Date, canteen: Canteens, cachedFoodOffers, setCachedFoodOffers){
@@ -71,7 +84,13 @@ export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, 
 	return loadFoodOffersFromServer(canteen, copyDate, 1);
 }
 
-export async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
+/**
+ * Please use getFoodOffersForSelectedDate instead
+ * @param canteen
+ * @param date
+ * @param amountDays
+ */
+async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
 	const collectionHelper = new CollectionHelper<Foodoffers>('foodoffers');
 
 	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];

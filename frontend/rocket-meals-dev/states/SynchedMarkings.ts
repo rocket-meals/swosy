@@ -48,10 +48,12 @@ function getDemoMarking(index: number): Markings {
 	return marking
 }
 
-function getDemoMarkings(): Record<string, Markings> {
+export function getDemoMarkings(): Record<string, Markings> {
 	const resourceDict: Record<string, Markings> = {}
 
-	for (let i = 0; i < 500; i++) {
+	// extreme = 500;
+	let amount_realistic = 50;
+	for (let i = 0; i < amount_realistic; i++) {
 		const demoResource = getDemoMarking(i)
 		resourceDict[demoResource.id] = demoResource
 	}
