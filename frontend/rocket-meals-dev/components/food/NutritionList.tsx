@@ -4,6 +4,7 @@ import {TranslationKeys, useTranslations} from '@/helper/translations/Translatio
 import {IconNames} from '@/constants/IconNames';
 
 export type NutritionListProps = {
+	columnAmount?: number;
   calories_kcal?: number | null;
   carbohydrate_g?: number | null;
   fat_g?: number | null;
@@ -16,17 +17,21 @@ export type NutritionListProps = {
 
 export function NutritionListElement(props: {icon: string, label: string, value?: number | null}) {
 	return (
-		<View style={{ display: 'flex', flexDirection: 'row' }}>
+		<View style={{ display: 'flex', flexDirection: 'row', paddingBottom: 12 }}>
 			<View style={{ display: 'flex', flexDirection: 'column' }}>
 				<Icon name={props.icon}/>
 			</View>
-			<View style={{ marginLeft: 4 }}>
+			<View style={{ marginLeft: 4, flex: 1}}>
 				<Text>
 					{props.value ? props.value + 'g' : 'N/A'}
 				</Text>
-				<Text>
-					{props.label}
-				</Text>
+				<View style={{
+					flex: 1
+				}}>
+					<Text>
+						{props.label}
+					</Text>
+				</View>
 			</View>
 		</View>
 	);
@@ -67,14 +72,18 @@ export default function NutritionList(props: NutritionListProps) {
   	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.saturated_fat_g} },
   ]
 
+	const amountColumns = props.columnAmount || 2;
+
 	return (
-		<>
-			<MyGridFlatList gridAmount={2}
+		<View style={{
+			width: "100%",
+		}}>
+			<MyGridFlatList amountColumns={amountColumns}
 				data={data}
 				renderItem={(item) => {
 					return <NutritionListElement {...item.item.data}/>
 				}}
 			/>
-		</>
+		</View>
 	)
 }
