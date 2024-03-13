@@ -131,7 +131,7 @@ function getDemoFoodOffersForDate(date: Date): Foodoffers[]
 	const demoFoodOffer: Foodoffers[] = [];
 	const demoFoodsKeys = Object.keys(demoFoods);
 
-	let amount = 10 + date.getDay() // add day to get different amount of foods for each day
+	let amount = 500 + date.getDay() // add day to get different amount of foods for each day
 	if (amount > demoFoodsKeys.length) {
 		amount = demoFoodsKeys.length;
 	}

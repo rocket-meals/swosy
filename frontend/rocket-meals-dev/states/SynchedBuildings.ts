@@ -49,7 +49,7 @@ function getDemoResource(index: number): Buildings {
 
 export function getDemoBuildings(): Record<string, Buildings> {
 	const demoResources: Record<string, Buildings> = {}
-	for (let i = 0; i < 12; i++) {
+	for (let i = 0; i < 500; i++) {
 		const demoResource = getDemoResource(i)
 		demoResources[demoResource.id] = demoResource
 	}

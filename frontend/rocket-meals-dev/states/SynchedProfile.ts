@@ -296,7 +296,7 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 		}
 	}
 
-	const privateSetMarkings = (marking: Markings, dislikes: boolean, remove: boolean) => {
+	const privateSetMarkings = async (marking: Markings, dislikes: boolean, remove: boolean) => {
 		const markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
 
 		const newProfileMarking: Partial<ProfilesMarkings> = {
@@ -330,6 +330,22 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 
 
 	return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
+}
+
+export function useSynchedProfileMarking(marking: Markings): [ProfilesMarkings, ((nextStatus: boolean) => Promise<void>), (() => Promise<void>)] {
+	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+	const markingFromProfile = profilesMarkingsDict[marking.id]
+
+	const setMarking = async (nextStatus: boolean) => {
+		return setProfileMarking(marking, nextStatus)
+	}
+
+	const removeMarking = async () => {
+		return removeProfileMarking(marking)
+	}
+
+	return [markingFromProfile, setMarking, removeMarking];
+
 }
 
 export function getEmptyProfile(): Partial<Profiles> {

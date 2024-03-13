@@ -98,7 +98,7 @@ function getSingleDemoNews(index: number): News {
 function getDemoNews(): Record<string, News> {
 	const resourceDict: Record<string, News> = {}
 
-	for (let i = 0; i < 13; i++) {
+	for (let i = 0; i < 500; i++) {
 		const demoResource = getSingleDemoNews(i)
 		resourceDict[demoResource.id] = demoResource
 	}

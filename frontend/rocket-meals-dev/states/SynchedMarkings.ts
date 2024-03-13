@@ -1,8 +1,9 @@
-import { Markings} from '@/helper/database/databaseTypes/types';
+import {Markings, News} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
+import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 
 async function loadMarkingsFromServer(): Promise<Markings[]> {
 	const collectionHelper = new CollectionHelper<Markings>('markings');
@@ -17,14 +18,47 @@ async function loadMarkingsFromServer(): Promise<Markings[]> {
 	return await collectionHelper.readItems(query);
 }
 
+function getDemoMarking(index: number): Markings {
+	let id = 'demo-marking'+index
+
+	let names = [
+		"Nuss", "Fleisch", "Erdnüsse", "Fisch", "Soja", "Milch", "Ei", "Weizen", "Schalenfrüchte", "Sellerie", "Senf", "Sesam", "Schwefeldioxid und Sulfite", "Lupinen", "Weichtiere", "Krebstiere", "Glutenhaltiges Getreide", "Gerste", "Hafer", "Dinkel", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut", "Grünkern", "Emmer", "Einkorn", "Buchweizen", "Reis", "Mais", "Hirse", "Quinoa", "Amarant", "Teff", "Triticale", "Gerste", "Roggen", "Weizen", "Kamut"
+	]
+	let name: string = names[index%names.length]
+	const marking: Markings = {
+		id: id,
+		translations: [
+			{
+				name: name,
+				id: index,
+				markings_id: id,
+				languages_code: DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN
+			}
+		]
+	}
+
+	return marking
+}
+
+function getDemoMarkings(): Record<string, Markings> {
+	const resourceDict: Record<string, Markings> = {}
+
+	for (let i = 0; i < 500; i++) {
+		const demoResource = getDemoMarking(i)
+		resourceDict[demoResource.id] = demoResource
+	}
+
+	return resourceDict
+}
+
 export function useSynchedMarkingsDict(): [(Record<string, Markings> | undefined), ((newValue: Record<string, Markings>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Markings>(PersistentStore.markings);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
-	const usedResources = resourcesOnly;
+	let usedResources = resourcesOnly;
 	if (demo) {
-		//usedResources = getDemoBuildings()
+		usedResources = getDemoMarkings()
 	}
 
 	async function updateFromServer(nowInMs?: number) {

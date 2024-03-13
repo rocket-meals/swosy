@@ -40,7 +40,7 @@ export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undef
 function getDemoApartments(): Record<string, Apartments> {
 	const buildingsDict = getDemoBuildings()
 	const demoBuildingsKeys = Object.keys(buildingsDict)
-	const amountApartments = 12
+	const amountApartments = 500
 
 	const demoResources: Record<string, Apartments> = {}
 	for (let i = 0; i < amountApartments; i++) {
