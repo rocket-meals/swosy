@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
-import {View} from '@/components/Themed';
+import {Spinner, View} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -160,8 +160,8 @@ export const MyGridFlatList = <T extends { key: string }>({
 			return null;
 		}
 		return (
-			<View style={{ paddingVertical: 20, borderTopWidth: 1, borderColor: "#CED0CE" }}>
-				<ActivityIndicator animating size="large" />
+			<View style={{ paddingVertical: 20 }}>
+				<Spinner />
 			</View>
 		);
 	};
@@ -183,7 +183,6 @@ export const MyGridFlatList = <T extends { key: string }>({
 				onEndReached={() => {
 					setEndReached(true);
 				}}
-				onEndReachedThreshold={0.5} // How far from the end (in terms of list length) the bottom edge of the list must be from the end of the content to trigger the onEndReached callback.
 				ListFooterComponent={renderFooter}
 				{...flatListProps}
 			/>

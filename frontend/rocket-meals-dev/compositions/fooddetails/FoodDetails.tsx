@@ -3,7 +3,7 @@ import {Heading, Text, TextInput, View} from '@/components/Themed';
 
 import {Rectangle} from '@/components/shapes/Rectangle';
 import React, {useEffect, useState} from 'react';
-import {loadFoodOffer, loadFoodOfferFromServer} from '@/states/SynchedFoodOfferStates';
+import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import TabWrapper from '@/components/tab/TabWrapper';
 import {IconNames} from '@/constants/IconNames';

@@ -8,14 +8,13 @@ import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefau
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {useEffect, useState} from 'react';
-import {Text, View} from '@/components/Themed';
+import {Spinner, Text, View} from '@/components/Themed';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
-import { Spinner } from '@gluestack-ui/themed';
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -123,7 +122,7 @@ export default function FoodOfferScreen() {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<Spinner size={"large"} />
+			<Spinner />
 		</View>
   	} else if (foodOffers.length === 0) {
   		return (

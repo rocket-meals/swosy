@@ -6,6 +6,7 @@ export enum IconNames {
     save_icon = 'content-save',
     confirm_icon = 'check',
     drawer_menu_icon = 'menu',
+    drawe_menu_go_back_icon = 'arrow-left',
     canteen_icon = 'warehouse',
     foodoffers_icon = 'silverware-variant',
     building_icon = 'home-city',

@@ -23,6 +23,8 @@ import {PlatformHelper} from '@/helper/PlatformHelper'; // Use the correct impor
 import {config} from '@gluestack-ui/config';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
+import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
+
 type ThemeProps = {
   lightColor?: string;
   darkColor?: string;
@@ -206,4 +208,9 @@ export function View({style, ...props}: ViewProps) {
 	}
 
 	return <DefaultView style={styleCopy} {...props} />;
+}
+
+export function Spinner() {
+	const textContrastColor = useTextContrastColor();
+	return <DefaultSpinner size={"large"} color={textContrastColor} />
 }

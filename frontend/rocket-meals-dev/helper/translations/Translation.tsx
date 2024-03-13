@@ -142,6 +142,7 @@ export class TranslationKeys {
 
 	static navigate_to = createTranslationKey('navigate_to', 'Navigiere zu');
 	static open_drawer = createTranslationKey('open_drawer', 'Seitenleiste öffnen')
+	static navigate_back = createTranslationKey('navigate_back', 'Zurück navigieren');
 
 	static canteen = createTranslationKey('canteen', 'Mensa');
 

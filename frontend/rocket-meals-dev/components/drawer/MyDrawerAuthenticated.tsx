@@ -85,7 +85,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_housing,
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
-				//header: getMyScreenHeaderFoodOffers()
 				visibleInDrawer: isHousingEnabled
 			})}
 			{useRenderMyDrawerScreen({
@@ -93,7 +92,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_news,
 				title: translation_news,
 				icon: IconNames.news_icon,
-				//header: getMyScreenHeaderFoodOffers()
 				visibleInDrawer: isNewsEnabled
 			})}
 			{useRenderMyDrawerScreen({
@@ -120,6 +118,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'foods/[food]/index',
 				title: translation_food_details,
 				label: translation_food_details,
+				showBackButton: true,
 				icon: null,
 				visibleInDrawer: false
 			})}

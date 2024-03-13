@@ -27,6 +27,7 @@ export type MyDrawerItemProps = {
     title: string;
     icon: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
+	showBackButton?: boolean | null | undefined;
     header?: ((props: DrawerHeaderProps) => ReactNode) | undefined
     params?: any
 };
@@ -44,7 +45,7 @@ export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
+export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
 	let usedVisible = true;
 	if (visibleInDrawer!==undefined) {
 		usedVisible = !!visibleInDrawer;
@@ -59,6 +60,7 @@ export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDr
 				// @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
 				visible: usedVisible, // This custom property is used to conditionally render drawer items.
 				label: label,
+				showBackButton: showBackButton,
 				title: title,
 				drawerIcon: getMyDrawerItemIcon(icon),
 				drawerActiveBackgroundColor: drawerActiveBackgroundColor, // Customize the background color of the active drawer item.
