@@ -713,6 +713,8 @@ export type Foods = {
   image_thumb_hash?: string | null;
   markings: any[] | FoodsMarkings[];
   protein_g?: number | null;
+  rating_amount?: number | null;
+  rating_average?: number | null;
   saturated_fat_g?: number | null;
   sodium_g?: number | null;
   sort?: number | null;
@@ -796,6 +798,7 @@ export type MarkingsTranslations = {
 export type News = {
   alias?: string | null;
   categories?: unknown | null;
+  date?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
@@ -959,15 +962,18 @@ export type Wikis = {
   id: string;
   notice_private?: string | null;
   parent?: string | Wikis | null;
+  position?: number | null;
   public?: boolean | null;
   roles_required: any[] | WikisDirectusRoles[];
   show_in_drawer?: boolean | null;
+  show_in_drawer_as_bottom_item?: boolean | null;
   sort?: number | null;
   status: string;
   translations: any[] | WikisTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  visibility_settings: string;
 };
 
 export type WikisDirectusRoles = {
