@@ -79,31 +79,27 @@ enum ContrastThreshold {
  * @param contrastThreshold {number}
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
-function useMyContrastColorByColorMode(trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold): string {
-	const trueDarkText = '#000000';
-	const trueLightText = '#FFFFFF';
+const useMyContrastColorByColorMode = (trueBg: string | undefined, isDarkMode: boolean, contrastThreshold: ContrastThreshold) => {
+	return useMemo(() => {
+		const trueDarkText = '#000000';
+		const trueLightText = '#FFFFFF';
 
-	const darkTextConstrast = getContrastRatio(trueBg, trueDarkText);
-	const lightTextConstrast = getContrastRatio(trueBg, trueLightText);
+		const darkTextContrast = getContrastRatio(trueBg, trueDarkText);
+		const lightTextContrast = getContrastRatio(trueBg, trueLightText);
 
-	/**
-  if(darkTextConstrast >= lightTextConstrast){
-      return trueDarkText;
-  }
-  return trueLightText;
-      */
+		// if dark mode, return light text if contrast is good enough
+		if (isDarkMode && lightTextContrast >= contrastThreshold) {
+			return trueLightText;
+		}
+		// if light mode, return dark text if contrast is good enough
+		if (!isDarkMode && darkTextContrast >= contrastThreshold) {
+			return trueDarkText;
+		}
+		// otherwise return the text color with the highest contrast
+		return darkTextContrast > lightTextContrast ? trueDarkText : trueLightText;
+	}, [trueBg, isDarkMode, contrastThreshold]); // Dependencies
+};
 
-	// if dark mode, return light text if contrast is good enough
-	if (isDarkMode && lightTextConstrast >= contrastThreshold) {
-		return trueLightText;
-	}
-	// if light mode, return dark text if contrast is good enough
-	if (!isDarkMode && darkTextConstrast >= contrastThreshold) {
-		return trueDarkText;
-	}
-	// otherwise return the text color with the highest contrast
-	return darkTextConstrast > lightTextConstrast ? trueDarkText : trueLightText;
-}
 
 /**
  * Custom hook that returns the most readable contrast color for a given background color,
