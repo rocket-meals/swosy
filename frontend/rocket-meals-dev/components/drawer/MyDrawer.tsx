@@ -98,10 +98,7 @@ function useDrawerWidth(): number | DimensionValue {
 export type MyDrawerTopProjectContentProps = {
     showProjectLogo?: boolean;
 };
-export const MyDrawerTopProjectContent = (props: any) => {
-	const publicForegroundAssetId = useProjectPublicForegroundAssetId();
-	const projectLogoAssetId = useProjectLogoAssetId()
-
+export const MyDrawerTopProjectContent = (props: MyDrawerTopProjectContentProps) => {
 	if (props.showProjectLogo) {
 		return <ProjectBanner/>
 	} else {
@@ -148,9 +145,6 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 	const translation_home = useTranslation(TranslationKeys.home);
 	const accessibilityLabel_home = translation_navigate_to + ' ' + translation_home;
 
-	const publicForegroundAssetId = useProjectPublicForegroundAssetId();
-	const projectLogoAssetId = useProjectLogoAssetId()
-
 	const showProjectLogo = true;
 
 	return (
@@ -164,7 +158,7 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 				padding: 10,
 			}}
 		>
-			<MyDrawerTopProjectContent showProjectLogo={true}/>
+			<MyDrawerTopProjectContent showProjectLogo={showProjectLogo}/>
 		</MyTouchableOpacity>
 	)
 }
