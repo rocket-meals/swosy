@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import RenderHtml from 'react-native-render-html';
+import RenderHtml, {CustomTagRendererRecord} from 'react-native-render-html';
 import {Icon, Text, getFontSizeInPixelBySize, View} from '@/components/Themed';
 
 import {Linking, TouchableOpacity, useWindowDimensions} from 'react-native';
@@ -11,6 +11,11 @@ import {ExternalLinkIcon, MailIcon} from "@gluestack-ui/themed";
 import {IconNames} from "@/constants/IconNames";
 import {MyExternalLink} from "@/components/link/MyExternalLink";
 import {MyButton} from "@/components/buttons/MyButton";
+import {
+	CustomBlockRenderer,
+	CustomMixedRenderer,
+	CustomTextualRenderer
+} from "react-native-render-html/src/render/render-types";
 
 interface AppState {
     darkmode?: boolean,
@@ -92,8 +97,11 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 		//lineHeight: lineHeightNormal+"px", // as string because of iOS: NSNumber cannot be converted NSString
 	};
 
-	const customRenderers = {
-		a: (props) => {
+	const customRenderers: Record<
+		string,
+		CustomBlockRenderer | CustomTextualRenderer | CustomMixedRenderer
+	> = {
+		"a": (props: any) => {
 
 			const {href, ...restProps} = props.tnode.attributes;
 			// get the "data" attribute from the node

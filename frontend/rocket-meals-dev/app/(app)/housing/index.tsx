@@ -96,10 +96,8 @@ export default function HousingScreen() {
 	  if(!!additionalInformationMarkdown){
 		  const borderRaidus = MyCardDefaultBorderRadius
 		  return (
-			  <View style={{width: '100%'}}>
-				  <View style={{backgroundColor: undefined, padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
-					<ThemedMarkdown markdown={additionalInformationMarkdown} />
-				  </View>
+			  <View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
+				  <ThemedMarkdown markdown={additionalInformationMarkdown} />
 			  </View>
 		  )
 	  }

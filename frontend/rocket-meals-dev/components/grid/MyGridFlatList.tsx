@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
-import {Spinner, View} from '@/components/Themed';
+import {Spinner, View, Text} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -154,10 +154,17 @@ export const MyGridFlatList = <T extends { key: string }>({
 	// Force a fresh render of the FlatList by changing the key
 	const flatListKey = 'horizontal:'+usedHorizontal+'-gridAmount:'+amountColumns;
 
+	const {ListHeaderComponent, ListFooterComponent, ...restFlatListProps} = flatListProps || {};
+
 	// Render footer to show a loading spinner when more items are being loaded
 	const renderFooter = () => {
 		if (endReached) {
 			return null;
+		}
+		if(ListFooterComponent){
+			return <View style={{flex: 1}}>
+				{ListFooterComponent}
+			</View>
 		}
 		return (
 			<View style={{ paddingVertical: 20 }}>
@@ -165,6 +172,14 @@ export const MyGridFlatList = <T extends { key: string }>({
 			</View>
 		);
 	};
+
+	function renderHeader() {
+		if(ListHeaderComponent){
+			return <View style={{flex: 1}}>
+				{ListHeaderComponent}
+			</View>
+		}
+	}
 
 	return (
 		<View
@@ -183,9 +198,9 @@ export const MyGridFlatList = <T extends { key: string }>({
 				onEndReached={() => {
 					setEndReached(true);
 				}}
-				ListHeaderComponent={flatListProps?.ListHeaderComponent}
+				ListHeaderComponent={renderHeader}
 				ListFooterComponent={renderFooter}
-				{...flatListProps}
+				{...restFlatListProps}
 			/>
 		</View>
 	);
