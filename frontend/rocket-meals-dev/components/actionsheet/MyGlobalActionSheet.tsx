@@ -185,11 +185,11 @@ export const MyGlobalActionSheet = (props: any) => {
 	if (showActionsheetConfig.renderCustomContent) {
 		content = showActionsheetConfig.renderCustomContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
 	} else {
-		let renderedPreItem = undefined
+		let renderedPreItem: any = undefined
 		if (showActionsheetConfig.renderPreItemsContent) {
 			renderedPreItem = showActionsheetConfig.renderPreItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
 		}
-		let renderedPostItem = undefined
+		let renderedPostItem: any = undefined
 		if (showActionsheetConfig.renderPostItemsContent) {
 			renderedPostItem = showActionsheetConfig.renderPostItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide)
 		}
@@ -199,8 +199,10 @@ export const MyGlobalActionSheet = (props: any) => {
 				data={flatListData}
 				renderItem={renderItem}
 				keyExtractor={item => item.key}
-				ListHeaderComponent={showActionsheetConfig.renderPreItemsContent ? () => showActionsheetConfig.renderPreItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide) : null}
-				ListFooterComponent={showActionsheetConfig.renderPostItemsContent ? () => showActionsheetConfig.renderPostItemsContent(viewBackgroundColor, lighterOrDarkerBackgroundColor, textColor, lighterOrDarkerTextColor, hide) : null}
+				flatListProps={{
+					ListHeaderComponent: () => {return renderedPreItem},
+					ListFooterComponent: () => {return renderedPostItem},
+				}}
 				amountColumns={1}
 			/>
 		)
