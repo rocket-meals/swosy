@@ -3,6 +3,7 @@ import React, {FunctionComponent} from 'react';
 
 export enum RatingType{
   disabled='disabled',
+  favorite='favorite',
   hearts = 'hearts',
   likes = 'likes',
   stars= 'stars',
@@ -14,7 +15,7 @@ export interface AppState{
   isActive: boolean,
   color?: string
 }
-export const MAX_RATING_VALUE = 5;
+
 export const RatingValueIcon: FunctionComponent<AppState> = (props) => {
 	const ratingType = props.ratingType;
 	const isActive = props.isActive;

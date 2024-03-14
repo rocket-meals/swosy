@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {View} from '@/components/Themed';
+import {View, Text} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
@@ -13,9 +13,9 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {DrawerConfigPosition, useDrawerPosition, useIsDrawerPermanentVisible} from '@/states/DrawerSyncConfig';
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
 import {getMyDrawerItemIcon} from '@/components/drawer/MyDrawerItemIcon';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyScreenHeader} from '@/components/drawer/MyScreenHeader';
-import {getMyDrawerItems} from '@/components/drawer/MyDrawerItems';
+import {getMyDrawerItemsBottom, getMyDrawerItemsCenter} from '@/components/drawer/MyDrawerItems';
 import {MyDrawerSafeAreaView} from '@/components/drawer/MyDrawerSafeAreaView';
 import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
@@ -165,14 +165,6 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 	)
 }
 
-function renderDrawerContentBottom() {
-	return (
-		<View style={{width: '100%'}}>
-			<LegalRequiredLinks/>
-		</View>
-	)
-}
-
 // Wrapper component for the content inside the drawer.
 // It manages the layout of custom drawer items, the project banner, and legal links.
 type DrawerContentWrapperProps = {
@@ -183,7 +175,7 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 	const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
 	const gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
 
-	const renderedDrawerItemsWithSeparator = getMyDrawerItems(props); // Get the list of drawer items to render.
+	const renderedDrawerItemsWithSeparator = getMyDrawerItemsCenter(props); // Get the list of drawer items to render.
 
 	return (
 		<View style={{width: '100%', height: '100%', overflow: 'hidden'}}>
@@ -202,7 +194,7 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 						</View>
 					</ScrollViewWithGradient>
 				</View>
-				{renderDrawerContentBottom()}
+				{getMyDrawerItemsBottom(props)}
 			</MyDrawerSafeAreaView>
 		</View>
 	);

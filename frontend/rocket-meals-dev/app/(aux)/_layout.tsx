@@ -2,7 +2,7 @@ import React from 'react';
 import {isUserLoggedIn} from '@/states/User';
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyScreenHeaderWikisByCustomId, useMyDrawerWikiItems} from "@/components/drawer/useMyDrawerWikiItems";
 import {IconNames} from "@/constants/IconNames";
 import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
@@ -41,6 +41,7 @@ export default function AppLayout() {
 				label: translation_sign_in,
 				onPress: undefined,
 				onPressInternalRouteTo: '(auth)/login',
+				visibleInDrawer: true,
 				onPressExternalRouteTo: undefined,
 				icon: 'chevron-left',
 				position: 0
@@ -53,6 +54,7 @@ export default function AppLayout() {
 				label: translation_home,
 				onPress: undefined,
 				onPressInternalRouteTo: '/(app)/home',
+				visibleInDrawer: true,
 				onPressExternalRouteTo: undefined,
 				icon: 'chevron-left',
 				position: 0
@@ -64,28 +66,6 @@ export default function AppLayout() {
 		<MyDrawer
 			customDrawerItems={customDrawerItems}
 		>
-			{useRenderMyDrawerScreen({
-				routeName: 'about-us',
-				header: getMyScreenHeaderWikisByCustomId(Custom_Wiki_Ids.about_us),
-				visibleInDrawer: false
-			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'privacy-policy',
-				header: getMyScreenHeaderWikisByCustomId(Custom_Wiki_Ids.privacy_policy),
-				visibleInDrawer: false
-			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'license',
-				header: getMyScreenHeaderWikisByCustomId(Custom_Wiki_Ids.license),
-				visibleInDrawer: false
-			})}
-
-			{useRenderMyDrawerScreen({
-				routeName: 'accessibility',
-				header: getMyScreenHeaderWikisByCustomId(Custom_Wiki_Ids.accessibility),
-				visibleInDrawer: false
-			})}
-
 		</MyDrawer>
 	)
 }

@@ -1,7 +1,7 @@
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import React from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHeaderFoodOffers';

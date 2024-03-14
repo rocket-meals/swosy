@@ -1,7 +1,11 @@
 import React from 'react';
-import {View} from '@/components/Themed'
+import {Text, View} from '@/components/Themed'
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
-import {MyDrawerCustomItemProps, getMyDrawerCustomItem} from '@/components/drawer/MyDrawerCustomItem';
+import {
+	MyDrawerCustomItemProps,
+	getMyDrawerCustomItemCenter,
+	MyDrawerCustomItemBottom
+} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyDrawerItemExpoGenerated} from '@/components/drawer/MyDrawerItemExpoGenerated';
 import {ParamListBase, RouteProp} from '@react-navigation/native';
 
@@ -62,17 +66,73 @@ function configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem: MyDraw
 	return customItem;
 }
 
+export const getMyDrawerItemsBottom = (props: DrawerContentWrapperProps) => {
+	const customDrawerItems: MyDrawerCustomItemProps[] = props.customDrawerItems || [];
+
+	const filteredCustomDrawerItems = customDrawerItems.filter((item) => {
+		// if item.visibleInDrawer is true then we will show the item in the drawer
+		return item.visibleInBottomDrawer !== false;
+	});
+
+	const sortedCustomDrawerItems = (filteredCustomDrawerItems).sort((a, b) => {
+		// Assuming items without a position should be placed at the end
+		const positionA = a.position !== undefined ? a.position : Number.MAX_VALUE;
+		const positionB = b.position !== undefined ? b.position : Number.MAX_VALUE;
+		return positionA - positionB;
+	});
+
+	const PADDING = 5;
+
+	function renderSpacer(key: string) {
+		return (
+			<View key={key} style={{flexDirection: 'row', padding: PADDING}}>
+				<Text style={{fontSize: 12}}>{' | '}</Text>
+			</View>
+		)
+	}
+
+	const renderedContent = [];
+	for (let i = 0; i < sortedCustomDrawerItems.length; i++) {
+		let customItem = sortedCustomDrawerItems[i];
+		const last = i === sortedCustomDrawerItems.length - 1;
+		const first = i === 0;
+		if (first) {
+			renderedContent.push(renderSpacer('legalRequiredLinksSpacerFirst-'+i));
+		}
+		renderedContent.push(<MyDrawerCustomItemBottom {...customItem} />);
+		if (!last) {
+			renderedContent.push(renderSpacer('legalRequiredLinksSpacerLast-'+i));
+		}
+		if (last) {
+			renderedContent.push(renderSpacer('legalRequiredLinksSpacerLast-'+i));
+		}
+	}
+
+	return (
+		<View style={{width: "100%", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", alignItems: "center"}}>
+			{renderedContent}
+		</View>
+	);
+
+}
 
 type DrawerContentWrapperProps = {
     customDrawerItems?: MyDrawerCustomItemProps[]
 } & DrawerContentComponentProps
-export const getMyDrawerItems = (props: DrawerContentWrapperProps) => {
+export const getMyDrawerItemsCenter = (props: DrawerContentWrapperProps) => {
 	const generatedDrawerItems = props.state.routes.map((route: any, index: number) => {
 		return getMyDrawerItemExpoGenerated(route, index, props);
 	})
 
+	const customDrawerItems: MyDrawerCustomItemProps[] = props.customDrawerItems || [];
+
+	const filteredCustomDrawerItems = customDrawerItems.filter((item) => {
+		// if item.visibleInDrawer is true then we will show the item in the drawer
+		return item.visibleInDrawer !== false;
+	});
+
 	// Step 1: Sort customDrawerItems by position
-	const sortedCustomDrawerItems = (props.customDrawerItems || []).sort((a, b) => {
+	const sortedCustomDrawerItems = (filteredCustomDrawerItems).sort((a, b) => {
 		// Assuming items without a position should be placed at the end
 		const positionA = a.position !== undefined ? a.position : Number.MAX_VALUE;
 		const positionB = b.position !== undefined ? b.position : Number.MAX_VALUE;
@@ -89,7 +149,7 @@ export const getMyDrawerItems = (props: DrawerContentWrapperProps) => {
 		while (customItemIndex < sortedCustomDrawerItems.length && sortedCustomDrawerItems[customItemIndex].position === index) {
 			let customItem = sortedCustomDrawerItems[customItemIndex];
 			customItem = configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem, props);
-			finalDrawerItems.push(getMyDrawerCustomItem(customItem)); // Assuming renderCustomDrawerItem is a function that returns a DrawerItem for a customDrawerItem
+			finalDrawerItems.push(getMyDrawerCustomItemCenter(customItem)); // Assuming renderCustomDrawerItem is a function that returns a DrawerItem for a customDrawerItem
 			customItemIndex++;
 		}
 		finalDrawerItems.push(item);
@@ -99,7 +159,7 @@ export const getMyDrawerItems = (props: DrawerContentWrapperProps) => {
 	while (customItemIndex < sortedCustomDrawerItems.length) {
 		let customItem = sortedCustomDrawerItems[customItemIndex];
 		customItem = configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem, props);
-		finalDrawerItems.push(getMyDrawerCustomItem(customItem));
+		finalDrawerItems.push(getMyDrawerCustomItemCenter(customItem));
 		customItemIndex++;
 	}
 

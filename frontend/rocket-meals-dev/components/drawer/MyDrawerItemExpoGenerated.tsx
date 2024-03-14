@@ -1,5 +1,5 @@
 import {DrawerNavigationOptions} from '@react-navigation/drawer';
-import {MyDrawerCustomItem} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemCenter} from '@/components/drawer/MyDrawerCustomItemCenter';
 import React from 'react';
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
 import {useIsDebug} from '@/states/Debug';
@@ -49,5 +49,5 @@ export const getMyDrawerItemExpoGenerated = (route: any, index: number, props: D
 	};
 
 	// Return a custom drawer item component with the determined properties.
-	return <MyDrawerCustomItem label={label} innerKey={index} isFocused={isFocused} drawerIcon={options.drawerIcon} onPress={onPress} />;
+	return <MyDrawerCustomItemCenter label={label} innerKey={index} isFocused={isFocused} drawerIcon={options.drawerIcon} onPress={onPress} />;
 }
