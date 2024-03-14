@@ -8,6 +8,7 @@ import {PlatformHelper} from '@/helper/PlatformHelper';
 import {useIsDebug} from '@/states/Debug';
 import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
@@ -24,6 +25,8 @@ export type MyNewButtonPropsCustom = {
 export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
 	const [hovered, setHovered] = useState<boolean>(false)
 	const [isPressed, setIsPressed] = useState<boolean>(false)
+
+	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
 
 	const isDebug = useIsDebug()
 
@@ -192,10 +195,11 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 		}
 
 		let usedAccessibilityRole = accessibilityRole || MyAccessibilityRoles.Button
+		let usedAccessibilityLabel = accessibilityLabel
 		if (href) {
 			usedAccessibilityRole = MyAccessibilityRoles.Link
+			usedAccessibilityLabel = translation_navigate_to + ': ' + accessibilityLabel
 		}
-
 
 		const renderedButton = (
 			<Pressable
@@ -206,7 +210,7 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 				onPressIn={() => setIsPressed(true)}
 				onPressOut={() => setIsPressed(false)}
 
-				accessibilityLabel={accessibilityLabel}
+				accessibilityLabel={usedAccessibilityLabel}
 				accessibilityRole={usedAccessibilityRole}
 
 				style={

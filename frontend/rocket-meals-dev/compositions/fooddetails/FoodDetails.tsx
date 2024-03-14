@@ -7,10 +7,8 @@ import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import TabWrapper from '@/components/tab/TabWrapper';
 import {IconNames} from '@/constants/IconNames';
-import {RatingType} from '@/components/foodfeedback/RatingValueIcon';
-import {FoodRatingDisplay} from '@/components/foodfeedback/FoodRatingDisplay';
 import {useSynchedProfileFoodFeedback} from '@/states/SynchedProfile';
-import {KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
+import {DimensionValue, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import ImageWithComponents from '@/components/project/ImageWithComponents';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import NutritionList from '@/components/food/NutritionList';
@@ -20,11 +18,66 @@ import {MarkingListSelective} from '@/components/food/MarkingList';
 import {useIsDemo} from "@/states/SynchedDemo";
 import {useIsDebug} from "@/states/Debug";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
-import {useFoodTranslation} from "@/helper/food/FoodTranslation";
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 
-export const FoodFeedbackDetails = ({food}: {food:  Foods}) => {
+export enum FeedbackCommentType {
+	disabled='disabled',
+	write='write',
+	read='read',
+	readAndWrite='readAndWrite'
+}
+
+
+export const useFeedbackCommentType = (): FeedbackCommentType => {
+	const [appSettings] = useSynchedAppSettings();
+	const commentType = appSettings?.foods_feedbacks_comments_type;
+	let feedbackCommentType: FeedbackCommentType = FeedbackCommentType.disabled
+	if(commentType === 'write'){
+		feedbackCommentType = FeedbackCommentType.write
+	} else if(commentType === 'read'){
+		feedbackCommentType = FeedbackCommentType.read
+	} else if(commentType === 'readAndWrite'){
+		feedbackCommentType = FeedbackCommentType.readAndWrite
+	}
+	return feedbackCommentType
+}
+
+export enum FeedbackLabelsType {
+	disabled='disabled',
+	use='use',
+	useAndRead='useAndRead'
+}
+
+export const useFeedbackLabelsType = (): FeedbackLabelsType => {
+	const [appSettings] = useSynchedAppSettings();
+	const labelsType = appSettings?.foods_feedbacks_labels_type;
+	let feedbackLabelsType: FeedbackLabelsType = FeedbackLabelsType.disabled
+	if(labelsType === 'use'){
+		feedbackLabelsType = FeedbackLabelsType.use
+	} else if(labelsType === 'useAndRead'){
+		feedbackLabelsType = FeedbackLabelsType.useAndRead
+	}
+	return feedbackLabelsType
+}
+
+
+export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	const usedFoodId = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+
+	const translation_to_the_forum = useTranslation(TranslationKeys.to_the_forum);
+
+	// get app_settings
+	const [appSettings] = useSynchedAppSettings();
+
+	const foods_feedbacks_comments_type = useFeedbackCommentType()
+	const foods_feedbacks_custom_url = appSettings?.foods_feedbacks_custom_url;
+
+	const foods_feedbacks_labels_type = appSettings?.foods_feedbacks_labels_type;
+	const foods_ratings_amount_display = appSettings?.foods_ratings_amount_display;
+	const foods_ratings_average_display = appSettings?.foods_ratings_average_display;
+
 
 	const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
 	const onChangeText = (text: string) => {
@@ -40,22 +93,35 @@ export const FoodFeedbackDetails = ({food}: {food:  Foods}) => {
 		setComment(comment);
 	}
 
-	return (
-		<KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-			<View style={{ marginBottom: 100 }}>
-				<TextInput placeholder={'Comment'} value={comment ?? ''} onChangeText={onChangeText} />
+	let commentContent = undefined;
 
-				<MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment}
-					borderTopRadius={0}
-					accessibilityLabel={'Send feedback'}
-					text={'Send feedback'}
-					leftIcon={IconNames.comment_send_icon}
-					onPress={() => {
-				    	onSubmit();
-					}}
-				/>
-			</View>
-		</KeyboardAvoidingView>
+	if(!!foods_feedbacks_custom_url){
+		commentContent = <MyButton openHrefInNewTab={true} href={foods_feedbacks_custom_url} accessibilityLabel={translation_to_the_forum} tooltip={translation_to_the_forum} text={translation_to_the_forum} leftIcon={IconNames.comment_icon} rightIcon={IconNames.open_link_icon} />
+	} else {
+		commentContent = (
+			<KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+				<View style={{ marginBottom: 100 }}>
+					<TextInput placeholder={'Comment'} value={comment ?? ''} onChangeText={onChangeText} />
+
+					<MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment}
+							  borderTopRadius={0}
+							  accessibilityLabel={'Send feedback'}
+							  text={'Send feedback'}
+							  leftIcon={IconNames.comment_send_icon}
+							  onPress={() => {
+								  onSubmit();
+							  }}
+					/>
+				</View>
+			</KeyboardAvoidingView>
+		)
+	}
+
+	return (
+		<View>
+			<FoodFeedbackRating food={food} showOnlyMax={false}/>
+			{commentContent}
+		</View>
 	)
 }
 
@@ -145,14 +211,15 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
-	const imageWidthPercentage = useBreakPointValue<string>({
+	const imageWidthPercentage = useBreakPointValue<DimensionValue | undefined>({
 		sm: '100%',
 		md: '100%',
 		lg: '60%',
 		xl: '40%',
 	})
 
-	const showAsRowOrColumn = useBreakPointValue<string>({
+	type flexDirectionTypes = 'row' | 'column' | 'row-reverse' | 'column-reverse' | undefined;
+	const showAsRowOrColumn = useBreakPointValue<flexDirectionTypes>({
 		sm: 'column',
 		md: 'column',
 		lg: 'row',
@@ -213,17 +280,16 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 						</View>
 
 						<View style={{ flex: 1}}>
-							<View style={{height: 100, padding: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
+							<View style={{padding: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
 								<View>
 									<Heading>
 										{foodOfferData.alias}
 									</Heading>
 								</View>
 
-								<View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-									<View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
-										{/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
-										<FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
+								<View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
+									<View style={{ flex: 1, flexDirection: "row" }}>
+										<FoodFeedbackRating food={food} showOnlyMax={true}/>
 									</View>
 									<View>
 										<FoodNotifyButton food={food}/>

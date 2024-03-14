@@ -61,6 +61,11 @@ export class TranslationKeys {
 	static no_data_currently_calculating = createTranslationKey('no_data_currently_calculating', 'Keine Daten, werden gerade berechnet');
 
 	static food_feedbacks = createTranslationKey('food_feedbacks', 'Essensbewertungen');
+	static to_the_forum = createTranslationKey('to_the_forum', 'Zum Forum');
+	static reset_rating = createTranslationKey('reset_rating', 'Bewertung zurücksetzen');
+	static set_rating_to = createTranslationKey('set_rating_to', 'Bewertung auf');
+	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
+	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');

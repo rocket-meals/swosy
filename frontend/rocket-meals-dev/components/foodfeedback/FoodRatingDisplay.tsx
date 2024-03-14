@@ -1,109 +1,39 @@
-import React, {FunctionComponent} from 'react';
-import {View} from 'react-native';
-import {Icon, Text} from '@/components/Themed';
-import {FoodRatingConstant} from '@/components/foodfeedback/FoodRatingConstant';
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {Foods} from "@/helper/database/databaseTypes/types";
+import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
+import React from "react";
+import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
 
-export enum RatingType{
-  disabled='disabled',
-  hearts = 'hearts',
-  likes = 'likes',
-  stars= 'stars',
-  smilies='smilies'
+export const useFeedbackRatingType = (): RatingType => {
+	const [appSettings] = useSynchedAppSettings();
+	const ratingType = appSettings?.foods_ratings_type;
+	let feedbackRatingType: RatingType = RatingType.disabled
+	if(ratingType === 'favorite'){
+		feedbackRatingType = RatingType.favorite
+	} else if(ratingType === 'hearts'){
+		feedbackRatingType = RatingType.hearts
+	} else if(ratingType === 'likes'){
+		feedbackRatingType = RatingType.likes
+	} else if(ratingType === 'stars'){
+		feedbackRatingType = RatingType.stars
+	}
+	return feedbackRatingType
 }
-export interface AppState{
-  userRating?: number,
-  text?: any,
-  isActive?: boolean,
-  ratingType?: RatingType,
-}
-export const FoodRatingDisplay: FunctionComponent<AppState> = (props) => {
-	if (props.userRating === undefined || props.userRating === null) {
-		return <Icon style={{color: 'transparent'}} name={'thumb-up'} />; //render placeholder
-	}
-
-	const userRating = props.userRating;
-	//const [foodSettings, setFoodSettings] = useSynchedSettingsFoods()
-	const foodSettings = { //todo: replace with synched settings
-		ratings_type: 3
-	}
-	const ratingType = props.ratingType || foodSettings?.ratings_type
 
 
-	function renderOnlyLikes() {
-		const icon = FoodRatingConstant.isRatingAboveAvg(userRating) ? 'heart' : 'heart-outline';
-		return (
-			<View style={{flexDirection: 'row', width: '100%'}}>
-				<Icon name={icon}>{props.text}</Icon>
-			</View>
-		)
-	}
 
-	function renderLikeAndDislike() {
-		if (FoodRatingConstant.isRatingAboveAvg(userRating)) {
-			return (
-				<View style={{flexDirection: 'row', width: '100%'}}>
-					<Icon name={'thumb-up'}>{props.text}</Icon>
-				</View>
-			)
-		} else {
-			return (
-				<View style={{flexDirection: 'row', width: '100%'}}>
-					<Icon name={'thumb-down'}>{props.text}</Icon>
-				</View>
-			)
-		}
-	}
+/**
+ *
+ * @param food
+ * @param showOnlyMax if true, only the max button is shown
+ * @constructor
+ */
+export const FoodFeedbackRating = ({food, showOnlyMax}: {food: Foods, showOnlyMax: boolean}) => {
+	let foods_ratings_type = useFeedbackRatingType();
+	
+	const usedFoodId = food.id;
+	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+	const rating: number | undefined | null = foodFeedback?.rating;
 
-	function renderSmily(ratingValue: number) {
-		const smily_5 = 'emoticon';
-		const smily_4 = 'emoticon-happy';
-		const smily_3 = 'emoticon-neutral';
-		const smily_2 = 'emoticon-sad';
-		const smily_1 = 'emoticon-cry';
-
-		let name = 'emoticon-cool';
-
-		switch (ratingValue) {
-		case 5: name = smily_5; break;
-		case 4: name = smily_4; break;
-		case 3: name = smily_3; break;
-		case 2: name = smily_2; break;
-		case 1: name = smily_1; break;
-		}
-
-		if (!props.isActive) {
-			name+='-outline';
-		}
-
-		return (
-			<Icon name={name}>{props?.text}</Icon>
-		)
-	}
-
-	function renderStar(ratingValue: number) {
-		let name = 'star-outline';
-		if (props.isActive) {
-			name = 'star';
-		}
-
-		return (
-			<Text>
-				<Icon name={name}/>
-				{props?.text || ratingValue}
-			</Text>
-		)
-	}
-
-	function renderRatingType() {
-		switch (ratingType) {
-		case RatingType.disabled: return null;
-		case RatingType.hearts: return renderOnlyLikes();
-		case RatingType.likes: return renderLikeAndDislike();
-		case RatingType.stars: return renderStar(userRating);
-		case RatingType.smilies: return renderSmily(userRating);
-		default: return null
-		}
-	}
-
-	return renderRatingType()
+	return <MyRatingButton rating={rating} showOnlyMax={showOnlyMax} ratingType={foods_ratings_type} setRating={setRating} />
 }
