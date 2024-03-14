@@ -1,12 +1,16 @@
 import React, {FunctionComponent} from 'react';
 import RenderHtml from 'react-native-render-html';
-import { Text, getFontSizeInPixelBySize} from '@/components/Themed';
+import {Icon, Text, getFontSizeInPixelBySize, View} from '@/components/Themed';
 
-import {useWindowDimensions} from 'react-native';
+import {Linking, TouchableOpacity, useWindowDimensions} from 'react-native';
 import {useTextContrastColor} from '@/components/Themed';
 
 import MarkdownIt from 'markdown-it';
 import {config} from '@gluestack-ui/config';
+import {ExternalLinkIcon, MailIcon} from "@gluestack-ui/themed";
+import {IconNames} from "@/constants/IconNames";
+import {MyExternalLink} from "@/components/link/MyExternalLink";
+import {MyButton} from "@/components/buttons/MyButton";
 
 interface AppState {
     darkmode?: boolean,
@@ -25,8 +29,6 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 	if (sourceContent===undefined && !props.hideSkeleton) {
 		return <Text>{'Loading'}</Text>
 	}
-
-	console.log('config: ', config)
 
 	/**
     let fontSize = theme["fontSizes"]["lg"]
@@ -90,6 +92,53 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 		//lineHeight: lineHeightNormal+"px", // as string because of iOS: NSNumber cannot be converted NSString
 	};
 
+	const customRenderers = {
+		a: (props) => {
+
+			const {href, ...restProps} = props.tnode.attributes;
+			// get the "data" attribute from the node
+			const {data} = props.tnode;
+			const text = data || props.children[0]?.data;
+			let icon = IconNames.open_link_icon
+			if (href?.startsWith('tel:')) {
+				icon = IconNames.phone_icon
+			} else if (href?.startsWith('mailto:')) {
+				icon = IconNames.mail_icon
+			}
+			// Return default renderer or your custom component
+			return <MyButton accessibilityLabel={text} text={text} href={href} useOnlyNecessarySpace={true} leftIcon={icon} leftIconColoredBox={true} />
+
+			/**
+			const { href } = htmlAttribs;
+			if (href.startsWith('tel:')) {
+				// Handle phone links
+				return (
+					<TouchableOpacity onPress={() => Linking.openURL(href)}>
+						<Icon name={"phone"} />
+						<Text style={[{ color: textColor }]}>{children}</Text>
+					</TouchableOpacity>
+				);
+			} else if (href.startsWith('mailto:')) {
+				// Handle mail links
+				return (
+					<TouchableOpacity onPress={() => Linking.openURL(href)}>
+						<MailIcon />
+						<Text style={[{ color: textColor }]}>{children}</Text>
+					</TouchableOpacity>
+				);
+			} else {
+				// Handle regular links
+				return (
+					<TouchableOpacity onPress={() => Linking.openURL(href)} >
+						<ExternalLinkIcon />
+						<Text style={[{ color: textColor }]}>{children}</Text>
+					</TouchableOpacity>
+				);
+			}
+			*/
+		}
+	};
+
 	if (props?.debug) {
 		return (
 		// @ts-ignore
@@ -103,6 +152,7 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 				contentWidth={width}
 				// @ts-ignore
 				baseStyle={defaultTextProps}
+				renderers={customRenderers}
 				defaultTextProps={defaultTextProps}
 				source={source}
 			/>

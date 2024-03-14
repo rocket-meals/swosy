@@ -32,8 +32,8 @@ export class CollectionHelper<CollectionScheme> {
 		};
 	}
 
-	async readSingletonItem() {
-		return await this.client.request<CollectionScheme>(readSingleton(this.collection));
+	async readSingletonItem(query?: any) {
+		return await this.client.request<CollectionScheme>(readSingleton(this.collection, query));
 	}
 
 	static getQueryWithRelatedFieldsAndTranslations(fields?: string[]) {

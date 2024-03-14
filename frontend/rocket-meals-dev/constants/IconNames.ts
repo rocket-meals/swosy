@@ -44,6 +44,10 @@ export enum IconNames {
     color_edit_icon = 'palette',
     news_open_external_icon = 'open-in-new',
 
+    open_link_icon = 'open-in-new',
+    phone_icon = 'phone',
+    mail_icon = 'email',
+
     first_weekday_icon = 'calendar-week',
     course_timetable_event_create_icon = 'calendar-plus',
     identifier = 'identifier',

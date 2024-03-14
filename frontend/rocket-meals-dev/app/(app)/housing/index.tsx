@@ -6,10 +6,26 @@ import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesW
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {useSynchedBuildingsDict} from '@/states/SynchedBuildings';
 import {useSynchedApartmentsDict} from '@/states/SynchedApartments';
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {View, Text} from "@/components/Themed";
+import {VStack} from "@gluestack-ui/themed";
+import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+
+function useHousingAdditionalInformationMarkdown(): string {
+	const [appSettings] = useSynchedAppSettings();
+	let [languageCode, setLanguage] = useProfileLanguageCode();
+	let translations = appSettings?.housing_translations
+	let usedTranslations = translations || [] as TranslationEntry[]
+	return getDirectusTranslation(languageCode, usedTranslations, "content")
+}
 
 export default function HousingScreen() {
 	const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict()
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+	const additionalInformationMarkdown = useHousingAdditionalInformationMarkdown()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
@@ -76,9 +92,25 @@ export default function HousingScreen() {
   	);
   }
 
+  function renderAdditionalInformation() {
+	  if(!!additionalInformationMarkdown){
+		  const borderRaidus = MyCardDefaultBorderRadius
+		  return (
+			  <View style={{width: '100%'}}>
+				  <View style={{backgroundColor: undefined, padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
+					<ThemedMarkdown markdown={additionalInformationMarkdown} />
+				  </View>
+			  </View>
+		  )
+	  }
+  }
+
   return (
   	<MySafeAreaView>
   		<MyGridFlatList
+			flatListProps={{
+				ListHeaderComponent: renderAdditionalInformation()
+			}}
   			data={data}
   			renderItem={renderItem}
   			amountColumns={initialAmountColumns}

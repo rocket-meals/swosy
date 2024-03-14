@@ -33,7 +33,7 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
 	let renderedText = null;
 	if (text) {
 		renderedText = (
-			<Text style={{color: viewBackgroundColor}} my="$1.5"  fontSize="$xs">
+			<Text style={{color: viewBackgroundColor}} my="$1.5" fontSize="$xs">
 				{text}
 			</Text>
 		)

@@ -1,12 +1,13 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import { AppSettings} from '@/helper/database/databaseTypes/types';
-import { useSynchedResourceSingleRaw} from '@/states/SynchedResource';
+import {AppSettings} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	const collectionHelper = new CollectionHelper<AppSettings>('app_settings');
-	return await collectionHelper.readSingletonItem();
+	const query = CollectionHelper.getQueryWithRelatedFields(['*', "housing_translations.*"]);
+	return await collectionHelper.readSingletonItem(query);
 }
 
 export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue: AppSettings, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
