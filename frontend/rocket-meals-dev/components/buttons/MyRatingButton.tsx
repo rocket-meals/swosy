@@ -65,9 +65,12 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 
 		if(!showOnlyMax){
 			const accessibilityLabel = isDislikeActive ? translation_reset_rating : translation_set_rate_as_not_favorite
+			const borderRightRadius = 0
 
 			renderedOptions.push(
-				<MyButton borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
+				<MyButton
+					borderRightRadius={borderRightRadius}
+					borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
 					if (isDislikeActive) {
 						setRating(null)
 					} else {
@@ -78,8 +81,15 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 		}
 
 		const accessibilityLabel = isLikeActive ? translation_reset_rating : translation_set_rate_as_favorite
+		let borderLeftRadius = undefined
+		if(!showOnlyMax){ // only the first one should have a border radius on the left
+			borderLeftRadius = 0
+		}
+
 		renderedOptions.push(
-			<MyButton borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
+			<MyButton
+				borderLeftRadius={borderLeftRadius}
+				borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
 				if (isLikeActive) {
 					setRating(null)
 				} else {
@@ -111,10 +121,24 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 					}
 				}
 
+				let isTheLastOne = i === MAX_RATING
+				let borderRightRadius = undefined
+				if(!isTheLastOne){ // only the last one should have a border radius on the right
+					borderRightRadius = 0
+				}
+
+				let isTheFirstOne = i === MIN_RATING
+				let borderLeftRadius = undefined
+				if(!isTheFirstOne && !showOnlyMax){ // only the first one should have a border radius on the left
+					borderLeftRadius = 0
+				}
 
 				let icon = isRatingEqualOrHigher ? IconNames.star_active_icon : IconNames.star_inactive_icon
 				renderedOptions.push(
-					<MyButton borderRadius={borderRadius} isActive={isRatingEqualOrHigher} onPress={() => {
+					<MyButton
+						borderLeftRadius={borderLeftRadius}
+						borderRightRadius={borderRightRadius}
+						borderRadius={borderRadius} isActive={isRatingEqualOrHigher} onPress={() => {
 						if(isRatingEqual){
 							setRating(null)
 						} else {

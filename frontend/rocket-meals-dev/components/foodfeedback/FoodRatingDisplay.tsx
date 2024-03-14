@@ -3,7 +3,6 @@ import {Foods} from "@/helper/database/databaseTypes/types";
 import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
 import React from "react";
 import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
-import {useIsCurrentUserAnonymous} from "@/states/User";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 
 export const useFeedbackRatingType = (): RatingType => {

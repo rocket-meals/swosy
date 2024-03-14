@@ -3,6 +3,7 @@ import {AppSettings} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
+import {RatingType} from "@/components/buttons/MyRatingButton";
 
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	const collectionHelper = new CollectionHelper<AppSettings>('app_settings');
@@ -89,7 +90,7 @@ function getDemoAppSettings(): AppSettings {
 		foods_placeholder_image_thumb_hash: '',
 		foods_ratings_amount_display: false,
 		foods_ratings_average_display: false,
-		foods_ratings_type: '',
+		foods_ratings_type: RatingType.stars,
 		foods_settings: '',
 		housing_enabled: true,
 		housing_maps_enabled: false,

@@ -6,6 +6,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Text, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 
 
 export type AccountRequiredTouchableOpacityProps = {
@@ -29,19 +30,25 @@ export const AccountRequiredTouchableOpacity = ({children}: AccountRequiredTouch
 		title: title,
 		renderCustomContent: () => {
 			return(
-				<View>
+				<MySafeAreaView>
 					<NotAllowed />
 					<View style={{
 						width: "100%",
-						paddingBottom: 20,
+						paddingHorizontal: 20,
 					}}>
-						<Text>{translation_please_create_an_account+"."}</Text>
+						<View style={{
+							width: "100%",
+							paddingBottom: 20,
+						}}>
+							<Text>{translation_please_create_an_account+"."}</Text>
+						</View>
+						<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
+							logout()
+							hide()
+						}} />
 					</View>
-					<MyButton accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
-						logout()
-						hide()
-					}} />
-				</View>
+
+				</MySafeAreaView>
 			)
 		}
 	}
