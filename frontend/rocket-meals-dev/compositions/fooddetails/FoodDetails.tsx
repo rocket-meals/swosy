@@ -141,12 +141,9 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
 	const isDebug = useIsDebug()
 
-	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(food.id);
-
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
-	const food_name = useFoodTranslation(food);
 
 	const imageWidthPercentage = useBreakPointValue<string>({
 		sm: '100%',

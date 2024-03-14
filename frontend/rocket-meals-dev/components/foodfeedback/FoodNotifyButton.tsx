@@ -11,73 +11,20 @@ import {IconNames} from "@/constants/IconNames";
 import {useIsCurrentUserAnonymous, useLogoutCallback} from "@/states/User";
 import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {NotAllowed} from "@/compositions/animations/NotAllowed";
+import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
+import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 
 export type FoodNotifyButtonProps = {
 	food: Foods;
 }
 
-export const TouchableOpacityIgnoreChildEvents = ({onPress, style, useDefaultOpacity,children, ...props}) => {
-	const opacity = useDefaultOpacity ? 0.3 : 1;
-
-	let isStyleArray = Array.isArray(style);
-	const opacityStyle = {opacity: opacity};
-	let mergedStyle = {...opacityStyle, ...style };
-	if(isStyleArray){
-		mergedStyle = [opacityStyle ,...style];
-	}
-
-	return(
-		<TouchableOpacity {...props} style={mergedStyle} onPress={() => {
-			if(onPress){
-				onPress();
-			}
-		}}>
-			<View pointerEvents={"none"}>
-				{children}
-			</View>
-		</TouchableOpacity>
-	)
-
-}
-
-
 export const FoodNotifyButton : FunctionComponent<FoodNotifyButtonProps> = (props) => {
-	const isAnonymous = useIsCurrentUserAnonymous()
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-	const logout = useLogoutCallback()
-
-	const translationNoPermission = "Keine Berechtigung";
-	const translationCreateAnAccount = "Erstelle einen Account";
-
-	const config: MyGlobalActionSheetConfig = {
-		visible: true,
-		title: translationNoPermission+". "+translationCreateAnAccount,
-		renderCustomContent: () => {
-			return(
-				<View>
-					<NotAllowed />
-					<MyButton accessibilityLabel={"Account erstellen"} tooltip={"Account erstellen"} text={"Accpimt erstellen"} onPress={() => {
-						logout()
-					}} />
-				</View>
-			)
-		}
-	}
-
-	if(isAnonymous) {
-		return <TouchableOpacityIgnoreChildEvents
-			style={{}}
-			useDefaultOpacity={true}
-			onPress={() => {
-				show(config);
-			}}>
-			<Text>{"BELL"}</Text>
-		</TouchableOpacityIgnoreChildEvents>
-	}
-	return <FoodNotifyButtonWithPermission food={props.food} />
+	return <AccountRequiredTouchableOpacity>
+		<FoodNotifyButtonWithPermission food={props.food} />
+	</AccountRequiredTouchableOpacity>
 }
 
-export const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> = (props) => {
+const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> = (props) => {
 	const food = props.food;
 	const food_id = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(food_id);

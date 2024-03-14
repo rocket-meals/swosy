@@ -72,7 +72,10 @@ export class TranslationKeys {
 	static price_group_guest = createTranslationKey('price_group_guest', 'Gast');
 
 	static under_construction = createTranslationKey('under_construction', 'In Arbeit');
-	static not_allowed = createTranslationKey('not_allowed', 'Nicht erlaubt');
+	static no_permission = createTranslationKey('no_permission', 'Keine Berechtigung');
+	static please_create_an_account = createTranslationKey('please_create_an_account', 'Bitte erstelle einen Account');
+	static create_account = createTranslationKey('create_account', 'Account erstellen');
+
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
 	static active = createTranslationKey('active', 'Aktiv');
 	static activate = createTranslationKey('activate', 'Aktiveren');
