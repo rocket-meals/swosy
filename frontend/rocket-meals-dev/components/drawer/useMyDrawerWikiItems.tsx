@@ -1,10 +1,11 @@
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
-import {Custom_Wiki_Ids, useSynchedWikisDict} from '@/states/SynchedWikis';
+import {Custom_Wiki_Ids, useSynchedWikiByCustomId, useSynchedWikisDict} from '@/states/SynchedWikis';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
 import {TranslationEntry, getDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
 import React from 'react';
 import {
-	MyScreenHeader,
+	getMyScreenHeaderFunction,
+	MyScreenHeader, MyScreenHeaderProps,
 	MyScreenHeaderPropsRequired
 } from '@/components/drawer/MyScreenHeader';
 import {Wikis} from '@/helper/database/databaseTypes/types';
@@ -96,6 +97,39 @@ function MyWikiHeader(props: MyScreenHeaderPropsRequired) {
 	return <MyScreenHeader custom_title={custom_title} {...props} />
 }
 
+type MyWikiHeaderByCustomIdProps = MyScreenHeaderPropsRequired & {
+	customId: string
+}
+function MyWikiHeaderByCustomId(props: MyWikiHeaderByCustomIdProps) {
+	const wiki = useSynchedWikiByCustomId(props.customId);
+	const [languageCode, setLanguageCode] = useProfileLanguageCode();
+
+	let custom_title = props.customId
+
+	if (!!wiki) {
+		const translations = wiki.translations as TranslationEntry[]
+		const fallback_text = wiki.id
+		const label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
+		if (label) {
+			custom_title = label
+		}
+	}
+
+	return <MyScreenHeader custom_title={custom_title} {...props} />
+}
+
+export const getMyScreenHeaderWikisByCustomId: any = (customId: string) => {
+	return (props: MyScreenHeaderProps) => {
+		return <MyWikiHeaderByCustomId customId={customId} {...props} />
+	}
+}
+
+const getMyScreenHeaderWikis: getMyScreenHeaderFunction = () => {
+	return (props: MyScreenHeaderProps) => {
+		return <MyWikiHeader {...props} />
+	}
+}
+
 export function useRenderedMyDrawerWikiScreens() {
 	const drawerActiveBackgroundColor = useDrawerActiveBackgroundColor()
 
@@ -105,9 +139,7 @@ export function useRenderedMyDrawerWikiScreens() {
 		title: 'Test',
 		icon: 'home',
 		visibleInDrawer: false,
-		header: (props: MyScreenHeaderPropsRequired) => {
-			return <MyWikiHeader {...props} />
-		}
+		header: getMyScreenHeaderWikis(),
 	},
 	drawerActiveBackgroundColor
 	);

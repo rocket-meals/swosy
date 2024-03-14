@@ -5,12 +5,12 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 export enum Custom_Wiki_Ids {
-    about_us = 'about_us',
+    about_us = 'about-us',
     license = 'license',
-    privacy_policy = 'privacy_policy',
+    privacy_policy = 'privacy-policy',
     cookieComponentConsent = 'cookieComponentConsent',
     cookieComponentAbout = 'cookieComponentAbout',
-    terms_of_service = 'terms_of_service',
+    terms_of_service = 'terms-of-service',
     accessibility = 'accessibility',
 }
 
