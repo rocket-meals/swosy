@@ -75,7 +75,9 @@ export class TranslationKeys {
 	static not_allowed = createTranslationKey('not_allowed', 'Nicht erlaubt');
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
 	static active = createTranslationKey('active', 'Aktiv');
+	static activate = createTranslationKey('activate', 'Aktiveren');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');
+	static deactivate = createTranslationKey('deactivate', 'Deaktivieren');
 
 	static import = createTranslationKey('import', 'Importieren');
 	static event = createTranslationKey('event', 'Veranstaltung');

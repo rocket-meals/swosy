@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {View} from 'react-native';
 import {Icon, Text} from '@/components/Themed';
-import {FoodRatingConstant} from '@/components/rating/FoodRatingConstant';
+import {FoodRatingConstant} from '@/components/foodfeedback/FoodRatingConstant';
 
 export enum RatingType{
   disabled='disabled',

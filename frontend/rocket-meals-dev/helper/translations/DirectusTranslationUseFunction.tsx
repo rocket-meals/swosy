@@ -7,7 +7,7 @@ export type TranslationEntry = {
     [key: string]: any
 }
 
-export function getDirectusTranslation(languageCode: string, translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string, params?: any): string {
+export function getDirectusTranslation(languageCode: string, translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string | null | undefined, params?: any): string {
 	const translationDict = getLanguageDict(translations);
 
   type TranslationDict = {[key: string]: TranslationEntry};

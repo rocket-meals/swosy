@@ -77,4 +77,6 @@ export enum IconNames {
     price_group_student = 'school',
     price_group_employee = 'briefcase',
     price_group_guest = 'account-group',
+    notification_active = "bell",
+    notification_inactive = "bell-off",
 }

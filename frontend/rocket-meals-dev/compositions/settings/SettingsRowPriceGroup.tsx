@@ -7,6 +7,7 @@ import {PriceGroups, useProfilePriceGroup} from '@/states/SynchedProfile';
 import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
 import {View} from '@/components/Themed';
 import {MoneyConfident} from '@/compositions/animations/accountBalance/MoneyConfident';
+import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup";
 
 export type AvailableOption = {
     value: string | null | undefined | Weekday
@@ -97,7 +98,7 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 				width: '100%',
 			}}
 			>
-				<MoneyConfident />
+				<AnimationPriceGroup />
 			</View>
 		)
 	}

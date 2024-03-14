@@ -7,8 +7,8 @@ import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import TabWrapper from '@/components/tab/TabWrapper';
 import {IconNames} from '@/constants/IconNames';
-import {RatingType} from '@/components/rating/RatingValueIcon';
-import {FoodRatingDisplay} from '@/components/rating/FoodRatingDisplay';
+import {RatingType} from '@/components/foodfeedback/RatingValueIcon';
+import {FoodRatingDisplay} from '@/components/foodfeedback/FoodRatingDisplay';
 import {useSynchedProfileFoodFeedback} from '@/states/SynchedProfile';
 import {KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import ImageWithComponents from '@/components/project/ImageWithComponents';
@@ -19,11 +19,12 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {MarkingListSelective} from '@/components/food/MarkingList';
 import {useIsDemo} from "@/states/SynchedDemo";
 import {useIsDebug} from "@/states/Debug";
+import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
+import {useFoodTranslation} from "@/helper/food/FoodTranslation";
 
-export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
-	const usedFoodId = typeof foodId === 'string' ? foodId : foodId.id;
+export const FoodFeedbackDetails = ({food}: {food:  Foods}) => {
+	const usedFoodId = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
-
 
 	const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
 	const onChangeText = (text: string) => {
@@ -58,10 +59,72 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 	)
 }
 
+const FoodMarkingDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, title: string}) => {
+	const isDebug = useIsDebug()
+
+	const markingIds: string[] = [];
+	let foodOfferMarkings = foodOfferData?.markings || [];
+	foodOfferMarkings.forEach((marking) => {
+		markingIds.push(marking.markings_id);
+	});
+
+	const translation_markings_disclaimer = useTranslation(TranslationKeys.markings_disclaimer)
+
+	let debugMarkings = undefined
+	if(isDebug){
+		debugMarkings = <View>
+			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
+		</View>
+	}
+
+	return(
+		<>
+			<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{title}</Text>
+			<MarkingListSelective markingIds={markingIds}/>
+			<Text italic={true}>{translation_markings_disclaimer}</Text>
+			{debugMarkings}
+		</>
+	)
+}
+
+const FoodNutritionDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, title: string}) => {
+	const nutritionColumns = useBreakPointValue<number>({
+		sm: 2,
+		md: 2,
+		lg: 3,
+		xl: 3,
+	})
+
+	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
+
+	return(
+		<>
+			<View style={{ justifyContent: 'space-between' }}>
+				<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{title}</Text>
+				<View>
+					<NutritionList
+						columnAmount={nutritionColumns}
+						protein_g={foodOfferData.protein_g}
+						fat_g={foodOfferData.fat_g}
+						carbohydrate_g={foodOfferData.carbohydrate_g}
+						fiber_g={foodOfferData.fiber_g}
+						sugar_g={foodOfferData.sugar_g}
+						sodium_g={foodOfferData.sodium_g}
+						calories_kcal={foodOfferData.calories_kcal}
+						saturated_fat_g={foodOfferData.saturated_fat_g}
+					/>
+				</View>
+			</View>
+			<View>
+				<Text italic={true}>{translation_disclaimer}</Text>
+			</View>
+		</>
+	)
+}
+
 export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
 	const isDemo = useIsDemo()
-	const isDebug = useIsDebug()
 
 	useEffect(() => {
 		loadFoodOffer(isDemo, foodOfferId)
@@ -69,15 +132,21 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 			.catch(console.error);
 	}, [foodOfferId]);
 
-	const foodId = foodOfferData?.food;
+	const food = foodOfferData?.food;
+	if(foodOfferData && food && typeof food === 'object'){
+		return <FoodDetailsWithFoodOfferAndFood foodOfferData={foodOfferData} food={food}/>
+	}
+}
 
-	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food?.id);
+function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
+	const isDebug = useIsDebug()
+
+	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(food.id);
 
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
-	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
-	const translation_markings_disclaimer = useTranslation(TranslationKeys.markings_disclaimer)
+	const food_name = useFoodTranslation(food);
 
 	const imageWidthPercentage = useBreakPointValue<string>({
 		sm: '100%',
@@ -93,12 +162,17 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		xl: 'row',
 	})
 
-	const nutritionColumns = useBreakPointValue<number>({
-		sm: 2,
-		md: 2,
-		lg: 3,
-		xl: 3,
-	})
+	function renderDebug() {
+		if(isDebug){
+			return(
+				<View>
+					<Text>{JSON.stringify(foodOfferData, null, 2)}</Text>
+				</View>
+			)
+		}
+	}
+
+
 
 	function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
 		const leftBorderRadius = leftRoundedBorder ? undefined : 0;
@@ -121,30 +195,17 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		)
 	}
 
-	const markingIds: string[] = [];
-	let foodOfferMarkings = foodOfferData?.markings || [];
-	foodOfferMarkings.forEach((marking) => {
-		markingIds.push(marking.markings_id);
-	});
-
-	let debugMarkings = undefined
-	if(isDebug){
-		debugMarkings = <View>
-			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
-		</View>
-	}
-
 	return (
 		<View style={{ padding: 0, width: '100%', height: '100%' }}>
-			{ foodOfferData && (
+			{(
 				<ScrollView>
 					<View style={{width: '100%', flex: 1, flexDirection: showAsRowOrColumn}}>
 						<View style={{width: imageWidthPercentage}}>
 							<Rectangle>
 								<ImageWithComponents
 									image={{
-										assetId: foodOfferData.food.image,
-										image_url: foodOfferData.food.image_remote_url,
+										assetId: food.image,
+										image_url: food.image_remote_url,
 									}}
 									innerPadding={0}
 									bottomRightComponent={
@@ -168,15 +229,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 										<FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
 									</View>
 									<View>
-										<MyButton useOnlyNecessarySpace={true}
-												  useTransparentBackgroundColor={true}
-												  useTransparentBorderColor={true}
-												  accessibilityLabel={foodFeedback?.notify ? 'Unnotify' : 'Notify'}
-												  icon={foodFeedback?.notify ? 'bell' : 'bell-off'}
-												  onPress={() => {
-													  setNotify(!foodFeedback?.notify);
-												  }}
-										/>
+										<FoodNotifyButton food={food}/>
 									</View>
 								</View>
 							</View>
@@ -190,43 +243,21 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 								defaultActive={0}
 								contents={[
 									<View style={{ padding: 4, flex: 1 }}>
-										<View style={{ justifyContent: 'space-between' }}>
-											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_nutrition}</Text>
-											<View>
-												<NutritionList
-													columnAmount={nutritionColumns}
-													protein_g={foodOfferData.protein_g}
-													fat_g={foodOfferData.fat_g}
-													carbohydrate_g={foodOfferData.carbohydrate_g}
-													fiber_g={foodOfferData.fiber_g}
-													sugar_g={foodOfferData.sugar_g}
-													sodium_g={foodOfferData.sodium_g}
-													calories_kcal={foodOfferData.calories_kcal}
-													saturated_fat_g={foodOfferData.saturated_fat_g}
-												/>
-											</View>
-										</View>
-										<View>
-											<Text>{translation_disclaimer}</Text>
-										</View>
+										<FoodNutritionDetails foodOfferData={foodOfferData} title={translations_nutrition}/>
 									</View>,
 									<View style={{ padding: 4 }}>
-										<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_markings}</Text>
-										<MarkingListSelective markingIds={markingIds}/>
-										<Text italic={true}>{translation_markings_disclaimer}</Text>
-										{debugMarkings}
+										<FoodMarkingDetails foodOfferData={foodOfferData} title={translations_markings}/>
 									</View>,
 									<View style={{ paddingTop: 4 }}>
 										<View style={{ padding: 4 }}>
 											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_food_feedbacks}</Text>
 										</View>
-										{ foodId &&
-											<FoodFeedbackDetails foodId={foodId} />
-										}
+										<FoodFeedbackDetails food={food} />
 									</View>
 								]}
 								/>
 							</View>
+							{renderDebug()}
 						</View>
 					</View>
 				</ScrollView>
