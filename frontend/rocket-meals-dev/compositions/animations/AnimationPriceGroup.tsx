@@ -13,15 +13,16 @@ export const AnimationPriceGroup = ({children,...props}: any) => {
 	const accessibilityLabel = translation_animation + ': ' + translation_nameOfTheAnimation;
 
 	const noFoundWidths: BreakPointsDictionary<DimensionValue> = {
-		[BreakPoint.sm]: '70%',
-		[BreakPoint.md]: '30%',
+		[BreakPoint.sm]: '50%',
+		[BreakPoint.md]: '20%',
+		[BreakPoint.lg]: '10%',
 	}
 	const noFoundWidth = useBreakPointValue<DimensionValue>(noFoundWidths);
 
 	return (
 		<View style={{width: '100%', alignItems: 'center'}}>
 			<View style={{width: noFoundWidth}}>
-				<Rectangle aspectRatio={1343/964}>
+				<Rectangle>
 					<MyProjectColoredLottieAnimation style={{
 						width: '100%',
 						height: '100%'

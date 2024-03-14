@@ -10,8 +10,7 @@ import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
-import {View, Text} from "@/components/Themed";
-import {VStack} from "@gluestack-ui/themed";
+import {View} from "@/components/Themed";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 
 function useHousingAdditionalInformationMarkdown(): string {

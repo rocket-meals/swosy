@@ -30,15 +30,25 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 	const innerPadding = props.innerPadding ?? 10;
 	const usedImageHeight = imageHeight || '100%';
 
-	const image = (
+	let image = <DirectusImage image_url={image_url} assetId={assetId} thumbHash={thumbHash} style={{width: '100%', height: usedImageHeight}} />
+
+	if (onPress) {
+		image = (
+			<MyTouchableOpacity style={{width: '100%', height: usedImageHeight}} accessibilityRole={MyAccessibilityRoles.ImageButton} accessibilityLabel={accessibilityLabel} onPress={onPress} >
+				{image}
+			</MyTouchableOpacity>
+		)
+	}
+
+	const topContent = (
 		<Rectangle>
-			<DirectusImage image_url={image_url} assetId={assetId} thumbHash={thumbHash} style={{width: '100%', height: usedImageHeight}} />
+			{image}
 			<View style={{
 				position: 'absolute',
 				bottom: 0,
 				right: 0,
 				padding: innerPadding,
-			}}
+			}} pointerEvents="none"
 			>
 				{props.bottomRightComponent}
 			</View>
@@ -47,7 +57,7 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 				top: 0,
 				right: 0,
 				padding: innerPadding,
-			}}
+			}} pointerEvents="box-none"
 			>
 				{props.topRightComponent}
 			</View>
@@ -56,7 +66,7 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 				bottom: 0,
 				left: 0,
 				padding: innerPadding,
-			}}
+			}} pointerEvents="none"
 			>
 				{props.bottomLeftComponent}
 			</View>
@@ -65,21 +75,12 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 				top: 0,
 				left: 0,
 				padding: innerPadding,
-			}}
+			}} pointerEvents="none"
 			>
 				{props.topLeftComponent}
 			</View>
 		</Rectangle>
 	)
-	let topContent = image;
-
-	if (onPress) {
-		topContent = (
-			<MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.ImageButton} accessibilityLabel={accessibilityLabel} onPress={onPress} >
-				{topContent}
-			</MyTouchableOpacity>
-		)
-	}
 
 	return (
 		<MyCardWithText topComponent={topContent} heading={heading} onPress={onPress} {...props} />

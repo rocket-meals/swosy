@@ -96,7 +96,6 @@ export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLa
 	const tooltip = props?.tooltip || accessibilityLabel;
 
 	return (
-	// TODO: add tooltip support
 		<Tooltip
 			placement="top"
 			trigger={(triggerProps) => {
