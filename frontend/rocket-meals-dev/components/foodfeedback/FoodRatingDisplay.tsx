@@ -3,6 +3,8 @@ import {Foods} from "@/helper/database/databaseTypes/types";
 import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
 import React from "react";
 import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
+import {useIsCurrentUserAnonymous} from "@/states/User";
+import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 
 export const useFeedbackRatingType = (): RatingType => {
 	const [appSettings] = useSynchedAppSettings();
@@ -26,14 +28,17 @@ export const useFeedbackRatingType = (): RatingType => {
  *
  * @param food
  * @param showOnlyMax if true, only the max button is shown
+ * @param borderRadius the border radius
  * @constructor
  */
-export const FoodFeedbackRating = ({food, showOnlyMax}: {food: Foods, showOnlyMax: boolean}) => {
+export const FoodFeedbackRating = ({food, showOnlyMax, borderRadius}: {food: Foods, showOnlyMax: boolean, borderRadius?: number}) => {
 	let foods_ratings_type = useFeedbackRatingType();
-	
 	const usedFoodId = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+
 	const rating: number | undefined | null = foodFeedback?.rating;
 
-	return <MyRatingButton rating={rating} showOnlyMax={showOnlyMax} ratingType={foods_ratings_type} setRating={setRating} />
+	return <AccountRequiredTouchableOpacity>
+		<MyRatingButton borderRadius={borderRadius} rating={rating} showOnlyMax={showOnlyMax} ratingType={foods_ratings_type} setRating={setRating} />
+	</AccountRequiredTouchableOpacity>
 }

@@ -15,6 +15,8 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
+import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
+import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -69,7 +71,8 @@ export default function FoodOfferScreen() {
   	let assetId: string | DirectusFiles | null | undefined = undefined
   	let image_url: string | undefined = undefined
   	let thumb_hash: string | undefined = undefined
-  	if (typeof food !== 'string') {
+
+  	if (typeof food === 'object' && food !== null) {
   		if (food?.image) {
   			assetId = food.image
   		}
@@ -85,26 +88,30 @@ export default function FoodOfferScreen() {
   		if (foodOffer?.alias) {
   			title = foodOffer.alias
   		}
+
+		return (
+			<MyCardForResourcesWithImage
+				key={item.key}
+				heading={title}
+				thumbHash={thumb_hash}
+				image_url={image_url}
+				assetId={assetId}
+				onPress={() => {
+					router.push(`/(app)/foods/${foodOffer.id}`)
+				}}
+				accessibilityLabel={title}
+				innerPadding={0}
+				bottomRightComponent={
+					<IndividualPricingBadge foodOffer={foodOffer}/>
+				}
+				topRightComponent={
+					<FoodFeedbackRating food={food} showOnlyMax={true} borderRadius={MyCardDefaultBorderRadius}/>
+				}
+			/>
+		);
   	}
 
-
-  	return (
-  		<MyCardForResourcesWithImage
-  			key={item.key}
-  			heading={title}
-  			thumbHash={thumb_hash}
-  			image_url={image_url}
-  			assetId={assetId}
-  			onPress={() => {
-  				router.push(`/(app)/foods/${foodOffer.id}`)
-  			}}
-  			accessibilityLabel={title}
-  			innerPadding={0}
-  			bottomRightComponent={
-  				<IndividualPricingBadge foodOffer={foodOffer}/>
-  			}
-  		/>
-  	);
+	  return null;
   }
 
   if (!isValidCanteenSelected) {

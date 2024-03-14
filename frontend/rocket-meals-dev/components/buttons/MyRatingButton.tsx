@@ -19,9 +19,10 @@ export enum RatingType{
  * @param showOnlyMax if true, only the max button is shown
  * @param ratingType the rating type
  * @param setRating the callback to set the rating
+ * @param borderRadius the border radius
  * @constructor
  */
-export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating}: {rating: number | undefined | null, showOnlyMax: boolean, ratingType: RatingType, setRating: (rating: number | null) => void}) => {
+export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, borderRadius}: {borderRadius?: number, rating: number | undefined | null, showOnlyMax: boolean, ratingType: RatingType, setRating: (rating: number | null) => void}) => {
 	let foods_ratings_type = ratingType
 	const translation_set_rating_to = useTranslation(TranslationKeys.set_rating_to);
 	const translation_reset_rating = useTranslation(TranslationKeys.reset_rating);
@@ -47,7 +48,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating}: {ra
 		let accessibilityLabel = isActive ? translation_reset_rating : translation_set_rate_as_favorite;
 
 		renderedOptions.push(
-			<MyButton isActive={rating === MAX_RATING} onPress={() => {
+			<MyButton borderRadius={borderRadius} isActive={rating === MAX_RATING} onPress={() => {
 				if(isActive){
 					setRating(null)
 				} else {
@@ -66,7 +67,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating}: {ra
 			const accessibilityLabel = isDislikeActive ? translation_reset_rating : translation_set_rate_as_not_favorite
 
 			renderedOptions.push(
-				<MyButton isActive={isDislikeActive} onPress={() => {
+				<MyButton borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
 					if (isDislikeActive) {
 						setRating(null)
 					} else {
@@ -78,7 +79,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating}: {ra
 
 		const accessibilityLabel = isLikeActive ? translation_reset_rating : translation_set_rate_as_favorite
 		renderedOptions.push(
-			<MyButton isActive={isLikeActive} onPress={() => {
+			<MyButton borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
 				if (isLikeActive) {
 					setRating(null)
 				} else {
@@ -113,7 +114,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating}: {ra
 
 				let icon = isRatingEqualOrHigher ? IconNames.star_active_icon : IconNames.star_inactive_icon
 				renderedOptions.push(
-					<MyButton isActive={isRatingEqualOrHigher} onPress={() => {
+					<MyButton borderRadius={borderRadius} isActive={isRatingEqualOrHigher} onPress={() => {
 						if(isRatingEqual){
 							setRating(null)
 						} else {
