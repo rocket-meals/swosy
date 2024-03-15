@@ -17,6 +17,7 @@ import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+import {useServerInfo} from "@/states/SyncStateServerInfo";
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -24,6 +25,7 @@ export default function FoodOfferScreen() {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [foodOffers, setFoodOffers] = useState<Foodoffers[] | undefined>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
+	const server = useServerInfo();
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 
@@ -88,6 +90,12 @@ export default function FoodOfferScreen() {
   		if (foodOffer?.alias) {
   			title = foodOffer.alias
   		}
+
+	    //TODO: This is a temporary "fix" for the SWOSY project
+		if (server?.info.project.project_name === "SWOSY") {
+			//replace the url with the server url
+			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
+		}
 
 		return (
 			<MyCardForResourcesWithImage
