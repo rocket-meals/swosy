@@ -118,8 +118,15 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	}
 
 	return (
-		<View>
-			<FoodFeedbackRating food={food} showOnlyMax={false}/>
+		<View style={{
+			width: "100%",
+		}}>
+			<View style={{
+				width: "100%",
+				flexDirection: "row",
+			}}>
+				<FoodFeedbackRating food={food} showOnlyMax={false}/>
+			</View>
 			<View style={{width: "100%", height: 10}} />
 			{commentContent}
 		</View>

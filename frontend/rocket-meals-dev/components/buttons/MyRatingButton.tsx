@@ -152,7 +152,6 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 
 	return (
 		<View style={{
-			width: "100%",
 			flexDirection: "row",
 		}}>
 			{renderedOptions}
