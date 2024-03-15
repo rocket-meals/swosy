@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "studi-futter",
-    "slug": "rocket-meals-studi-futter",
-    "version": "1.0.0",
+    "name": "rocket-meals-dev",
+    "slug": "rocket-meals-dev",
+    "version": "1.0.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
@@ -61,7 +61,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "461671f9-774f-4bc4-80a8-5601313539b0"
+        "projectId": "36f72583-5997-4602-8609-05f39444f2e7"
       }
     },
     "owner": "baumgartner-software",
