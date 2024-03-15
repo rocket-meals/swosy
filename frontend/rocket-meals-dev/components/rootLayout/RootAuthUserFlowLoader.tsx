@@ -95,7 +95,9 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	return (
 		<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 			<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
-				<RootNotificationDeepLink key={currentUser?.id+''} />
+				<RootNotificationDeepLink key={currentUser?.id+''}>
+					{props.children}
+				</RootNotificationDeepLink>
 			</RootSyncDatabaseUpload>
 		</RootSyncDatabaseDownload>
 	)
