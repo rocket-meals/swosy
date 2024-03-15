@@ -37,7 +37,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     	let image_url = undefined
     	let thumbHash = undefined
     	if (buildingsDict) {
-    		building = buildingsDict[canteen?.id];
+    		building = buildingsDict[canteen?.building as string];
     		imageAssetId = building?.image;
     		thumbHash = building?.image_thumb_hash
     		image_url = building?.image_remote_url
