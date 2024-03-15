@@ -139,7 +139,11 @@ export default function Login() {
 		if (directus_token) {
 			console.log('login.tsx useEffect directus_token: '+directus_token);
 			ServerAPI.authenticate_with_access_token(directus_token).then((result) => {
-				handleSuccessfulAuthenticationNonAnonymous(result)
+				if(result){
+					handleSuccessfulAuthenticationNonAnonymous(result)
+				} else {
+					handleFailedAuthentication('No result')
+				}
 			}).catch((e) => {
 				handleFailedAuthentication(e)
 			})
@@ -149,7 +153,11 @@ export default function Login() {
 	async function authenticate_with_email_and_password(email: string, password: string) {
 		console.log('login.tsx useEffect email: '+email+' password: '+password);
 		ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
-			handleSuccessfulAuthenticationNonAnonymous(result)
+			if(result){
+				handleSuccessfulAuthenticationNonAnonymous(result)
+			} else {
+				handleFailedAuthentication('No result')
+			}
 		}).catch((e) => {
 			handleFailedAuthentication(e)
 		})
