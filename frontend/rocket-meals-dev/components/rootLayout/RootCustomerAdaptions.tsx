@@ -11,27 +11,8 @@ export const RootCustomerAdaptions = (props: RootCustomerAdaptionsProps) => {
 	/**
 	 * Implement customer specific adaptions here
 	 */
-	
-	return props.children
-}
 
-/**
- * For Example
- return <View style={{
- width: '100%',
- height: '100%',
- flexDirection: 'row',
- }}>
- <View style={{
- width: 10,
- height: "100%",
- backgroundColor: projectColor,
- }} />
- <View style={{
- flexGrow: 1,
- flex: 1
- }}>
- {props.children}
- </View>
- </View>
- */
+	return 	<>
+		{props.children}
+	</>
+}

@@ -53,6 +53,6 @@ export const RootNotificationDeepLink = (props: RootNotificationDeepLinkProps) =
 	Notifications.setNotificationHandler(null);
 
 	return (
-		<Slot />
+		props.children
 	)
 }
