@@ -290,7 +290,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 
 								<View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
 									<View style={{ flex: 1, flexDirection: "row" }}>
-										<FoodFeedbackRating food={food} showOnlyMax={true}/>
+										<FoodFeedbackRating food={food} showOnlyMax={false}/>
 									</View>
 									<View>
 										<FoodNotifyButton food={food}/>
