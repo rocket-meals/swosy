@@ -4,7 +4,7 @@ import {IconNames} from '@/constants/IconNames';
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {DirectusTranslatedMarkdown} from "@/components/markdown/DirectusTranslatedMarkdown";
 import {TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
-import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {DetailsComponent, TabProps} from "@/components/detailsComponent/DetailsComponent";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {SettingsRowUser} from "@/compositions/settings/SettingsRowUser";
@@ -97,10 +97,28 @@ function BuildingNavigationButton({ building }: { building: Buildings }) {
 	return null;
 }
 
-function BuildingDetailsWithObject({ building }: { building: Buildings }) {
+export function BuildingDetailsWithObject({ building, additionalTabs }: { building: Buildings, additionalTabs?: TabProps[] }) {
 
 	const translation_description = useTranslation(TranslationKeys.description)
 	const translation_information = useTranslation(TranslationKeys.information)
+
+	let tabs: TabProps[] = [
+		{
+			iconName: IconNames.description_icon,
+			accessibilityLabel: translation_description,
+			text: translation_description,
+			content: <BuildingDetailsDescription building={building} />
+		},
+		{
+			iconName: IconNames.fact_icon,
+			accessibilityLabel: translation_information,
+			text: translation_information,
+			content: <BuildingsInformation building={building} />
+		},
+	]
+	if(additionalTabs){
+		tabs.push(...additionalTabs)
+	}
 
 	return (
 		<DetailsComponent item={building} heading={
@@ -116,22 +134,7 @@ function BuildingDetailsWithObject({ building }: { building: Buildings }) {
 			  </View>
 		  </View>
 		}
-	  tabs={
-		  [
-			  {
-				  iconName: IconNames.description_icon,
-				  accessibilityLabel: translation_description,
-				  text: translation_description,
-				  content: <BuildingDetailsDescription building={building} />
-			  },
-			  {
-				  iconName: IconNames.fact_icon,
-				  accessibilityLabel: translation_information,
-				  text: translation_information,
-				  content: <BuildingsInformation building={building} />
-			  },
-		  ]
-	  }
+	  tabs={tabs}
 		/>
 	)
 }

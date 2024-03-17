@@ -96,6 +96,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isHousingEnabled
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'housing/[apartment]/index',
+				title: "Apartment Details",
+				label: "Apartment Details",
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'news/index',
 				label: translation_news,
 				title: translation_news,

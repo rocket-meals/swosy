@@ -12,6 +12,7 @@ import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/Di
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {View} from "@/components/Themed";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+import {router} from "expo-router";
 
 function useHousingAdditionalInformationMarkdown(): string {
 	const [appSettings] = useSynchedAppSettings();
@@ -85,7 +86,9 @@ export default function HousingScreen() {
   			thumbHash={thumb_hash}
   			image_url={image_url}
   			assetId={assetId}
-  			onPress={() => console.log('Pressed')}
+  			onPress={() => {
+				router.push(`/(app)/housing/${resource.id}`)
+			}}
   			accessibilityLabel={title}
   		/>
   	);

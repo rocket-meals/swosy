@@ -18,6 +18,22 @@ async function loadApartmentsFromServer(): Promise<Apartments[]> {
 	return await collectionHelper.readItems(query);
 }
 
+export async function loadApartmentWithWashingMachinesFromServer(apartmentId: string): Promise<Apartments> {
+	const collectionHelper = new CollectionHelper<Apartments>('apartments');
+
+	const fields = ['*', "washingmachines.*"];
+
+	const query = {
+		limit: -1,
+		fields: fields,
+		filter: {
+			id: apartmentId
+		}
+	}
+
+	return await collectionHelper.readItem(apartmentId, query);
+}
+
 export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undefined), ((newValue: Record<string, Apartments>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Apartments>(PersistentStore.apartments);

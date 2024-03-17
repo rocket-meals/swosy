@@ -98,6 +98,12 @@ export class TranslationKeys {
 	static create_account = createTranslationKey('create_account', 'Account erstellen');
 
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
+	static washing_machines = createTranslationKey('washing_machines', 'Waschmaschinen');
+	static washingmachine_state_finished = createTranslationKey('washingmachine_state_finished', 'Waschen beendet');
+	static washingmachine_state_running = createTranslationKey('washingmachine_state_running', 'Wäscht gerade');
+	static washingmachine_estimate_finished_at = createTranslationKey("washingmachine_estimate_finished", "Voraussichtlich fertig um");
+	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
+
 	static active = createTranslationKey('active', 'Aktiv');
 	static activate = createTranslationKey('activate', 'Aktiveren');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');

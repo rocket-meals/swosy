@@ -21,8 +21,8 @@ export const MyButtonNavigation = (props: MyNewButtonProps) => {
 
 	return(
 		<MyButton useOnlyNecessarySpace={true}
-				  useTransparentBackgroundColor={true}
-				  useTransparentBorderColor={true}
+				  useTransparentBackgroundColor={false}
+				  useTransparentBorderColor={false}
 				  accessibilityLabel={translation_open_navitation_to_location}
 				  tooltip={translation_open_navitation_to_location}
 				  icon={IconNames.location_open_icon}

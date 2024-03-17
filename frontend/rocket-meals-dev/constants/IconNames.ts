@@ -95,5 +95,7 @@ export enum IconNames {
     copy_icon = "content-copy",
 
     location_icon = "map-marker",
-    location_open_icon = "navigation-variant"
+    location_open_icon = "navigation-variant",
+
+    washing_machine_icon = "washing-machine",
 }
