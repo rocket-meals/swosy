@@ -13,21 +13,25 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {router} from 'expo-router';
+import {Link, router, useNavigation} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
+import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [foodOffers, setFoodOffers] = useState<Foodoffers[] | undefined>(undefined);
+	const [foodOffers, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
 	const server = useServerInfo();
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
+	const translation_error = useTranslation(TranslationKeys.error);
+
+	const navigation = useNavigation();
 
 	const dateAsString = selectedDate.toISOString();
 
@@ -36,8 +40,12 @@ export default function FoodOfferScreen() {
 	async function loadFoodOffers() {
 		console.log('loadFoodOffers');
 		if (isValidCanteenSelected && !!profileCanteen) {
-			const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
-			setFoodOffers(downloadedFoodOffers);
+			try{
+				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
+				setFoodOffers(downloadedFoodOffers);
+			} catch (err){
+				setFoodOffers(null);
+			}
 		} else {
 			console.log('No valid canteen selected')
 		}
@@ -130,15 +138,26 @@ export default function FoodOfferScreen() {
   	)
   } else {
   	if (foodOffers === undefined) {
-  		// Show loading
+		// Show loading
 		return <View style={{
 			height: '100%',
 			width: '100%',
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<Spinner />
+			<Spinner/>
 		</View>
+	} else if (foodOffers === null) {
+		return (
+			<MySafeAreaView>
+				<MyScrollView>
+					<View style={{width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 30}}>
+						<Text>{translation_error}</Text>
+						<AnimationThinking />
+					</View>
+				</MyScrollView>
+			</MySafeAreaView>
+		);
   	} else if (foodOffers.length === 0) {
   		return (
   			<MySafeAreaView>

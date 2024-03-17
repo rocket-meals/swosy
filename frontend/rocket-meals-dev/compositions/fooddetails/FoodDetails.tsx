@@ -1,26 +1,22 @@
 import {Foodoffers, Foods} from '@/helper/database/databaseTypes/types';
-import {Heading, Text, TextInput, View} from '@/components/Themed';
-
-import {Rectangle} from '@/components/shapes/Rectangle';
+import {Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
 import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
-import TabWrapper from '@/components/tab/TabWrapper';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedProfileFoodFeedback} from '@/states/SynchedProfile';
-import {DimensionValue, KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
-import ImageWithComponents from '@/components/project/ImageWithComponents';
-import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
+import {KeyboardAvoidingView, Platform} from 'react-native';
 import NutritionList from '@/components/food/NutritionList';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MarkingListSelective} from '@/components/food/MarkingList';
 import {useIsDemo} from "@/states/SynchedDemo";
 import {useIsDebug} from "@/states/Debug";
-import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
+import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -134,7 +130,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	)
 }
 
-const FoodMarkingDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, title: string}) => {
+const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	const isDebug = useIsDebug()
 
 	const markingIds: string[] = [];
@@ -154,7 +150,6 @@ const FoodMarkingDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, 
 
 	return(
 		<>
-			<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{title}</Text>
 			<MarkingListSelective markingIds={markingIds}/>
 			<Text italic={true}>{translation_markings_disclaimer}</Text>
 			{debugMarkings}
@@ -162,7 +157,7 @@ const FoodMarkingDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, 
 	)
 }
 
-const FoodNutritionDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers, title: string}) => {
+const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	const nutritionColumns = useBreakPointValue<number>({
 		sm: 2,
 		md: 2,
@@ -175,7 +170,6 @@ const FoodNutritionDetails = ({foodOfferData, title}: {foodOfferData: Foodoffers
 	return(
 		<>
 			<View style={{ justifyContent: 'space-between' }}>
-				<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{title}</Text>
 				<View>
 					<NutritionList
 						columnAmount={nutritionColumns}
@@ -224,126 +218,50 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 }
 
 function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
-	const isDebug = useIsDebug()
-
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
-	const imageWidthPercentage = useBreakPointValue<DimensionValue | undefined>({
-		sm: '100%',
-		md: '100%',
-		lg: '60%',
-		xl: '40%',
-	})
-
-	type flexDirectionTypes = 'row' | 'column' | 'row-reverse' | 'column-reverse' | undefined;
-	const showAsRowOrColumn = useBreakPointValue<flexDirectionTypes>({
-		sm: 'column',
-		md: 'column',
-		lg: 'row',
-		xl: 'row',
-	})
-
-	function renderDebug() {
-		if(isDebug){
-			return(
-				<View>
-					<Text>{JSON.stringify(foodOfferData, null, 2)}</Text>
-				</View>
-			)
-		}
-	}
-
-
-
-	function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
-		const leftBorderRadius = leftRoundedBorder ? undefined : 0;
-		const rightBorderRadius = rightRoundedBorder ? undefined : 0;
-
-		return (
-			<View style={{width: '100%'}}><MyButton icon={iconName}
-				centerItems={true}
-				text={text}
-				tooltip={text}
-				accessibilityLabel={accessibilityLabel}
-				isActive={active}
-				onPress={() => {
-					setActive();
-				}}
-				borderLeftRadius={leftBorderRadius}
-				borderRightRadius={rightBorderRadius}
-				/>
-			</View>
-		)
-	}
-
-	return (
-		<View style={{ padding: 0, width: '100%', height: '100%' }}>
-			{(
-				<ScrollView>
-					<View style={{width: '100%', flex: 1, flexDirection: showAsRowOrColumn}}>
-						<View style={{width: imageWidthPercentage}}>
-							<Rectangle>
-								<ImageWithComponents
-									image={{
-										assetId: food.image,
-										image_url: food.image_remote_url,
-									}}
-									innerPadding={0}
-									bottomRightComponent={
-										<IndividualPricingBadge foodOffer={foodOfferData}/>
-									}
-								/>
-							</Rectangle>
-						</View>
-
-						<View style={{ flex: 1}}>
-							<View style={{padding: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
-								<View>
-									<Heading>
-										{foodOfferData.alias}
-									</Heading>
-								</View>
-
-								<View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
-									<View style={{ flex: 1, flexDirection: "row" }}>
-										<FoodFeedbackRating food={food} showOnlyMax={false}/>
-									</View>
-									<View>
-										<FoodNotifyButton food={food}/>
-									</View>
-								</View>
-							</View>
-
-							<View style={{ marginTop: 10, marginHorizontal: 10, flex: 1 }}>
-								<TabWrapper headers={[
-									(active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
-									(active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
-									(active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
-								]}
-								defaultActive={0}
-								contents={[
-									<View style={{ padding: 4, flex: 1 }}>
-										<FoodNutritionDetails foodOfferData={foodOfferData} title={translations_nutrition}/>
-									</View>,
-									<View style={{ padding: 4 }}>
-										<FoodMarkingDetails foodOfferData={foodOfferData} title={translations_markings}/>
-									</View>,
-									<View style={{ paddingTop: 4 }}>
-										<View style={{ padding: 4 }}>
-											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_food_feedbacks}</Text>
-										</View>
-										<FoodFeedbackDetails food={food} />
-									</View>
-								]}
-								/>
-							</View>
-							{renderDebug()}
-						</View>
-					</View>
-				</ScrollView>
-			)}
+	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
+		<View style={{ flex: 1, flexDirection: "row" }}>
+			<FoodFeedbackRating food={food} showOnlyMax={false}/>
 		</View>
+		<View>
+			<FoodNotifyButton food={food}/>
+		</View>
+	</View>
+
+	return(
+		<DetailsComponent item={food} heading={
+			food.alias
+		}
+						  subHeadingComponent={quickActions}
+						  image={{
+							  assetId: food.image,
+							  image_url: food.image_remote_url,
+						  }}
+						  tabs={
+							  [
+								  {
+									  iconName: IconNames.nutrition_icon,
+									  accessibilityLabel: translations_nutrition,
+									  text: translations_nutrition,
+									  content: <FoodNutritionDetails foodOfferData={foodOfferData}/>
+								  },
+								  {
+									  iconName: IconNames.eating_habit_icon,
+									  accessibilityLabel: translations_markings,
+									  text: translations_markings,
+									  content: <FoodMarkingDetails foodOfferData={foodOfferData}/>
+								  },
+								  {
+									  iconName: IconNames.comment_icon,
+									  accessibilityLabel: translations_food_feedbacks,
+									  text: translations_food_feedbacks,
+									  content: <FoodFeedbackDetails food={food} />
+								  },
+							  ]
+						  }
+		/>
 	)
 }

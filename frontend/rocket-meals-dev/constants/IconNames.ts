@@ -89,4 +89,11 @@ export enum IconNames {
     like_inactive_icon = "thumb-up-outline",
     star_active_icon = "star",
     star_inactive_icon = "star-outline",
+
+    description_icon = "text",
+    fact_icon = "information",
+    copy_icon = "content-copy",
+
+    location_icon = "map-marker",
+    location_open_icon = "navigation-variant"
 }

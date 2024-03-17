@@ -5,11 +5,13 @@ import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {useSynchedBuildingsDict} from '@/states/SynchedBuildings';
+import {router, useNavigation} from "expo-router";
 
 export default function BuildingsScreen() {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
+	const navigation = useNavigation();
 
 	const resources = [];
 	if (buildingsDict) {
@@ -56,7 +58,6 @@ export default function BuildingsScreen() {
   		}
   	}
 
-
   	return (
   		<MyCardForResourcesWithImage
   			key={item.key}
@@ -64,7 +65,9 @@ export default function BuildingsScreen() {
   			thumbHash={thumb_hash}
   			image_url={image_url}
   			assetId={assetId}
-  			onPress={() => console.log('Pressed')}
+  			onPress={() => {
+				  router.push(`/(app)/buildings/${resource.id}`)
+			}}
   			accessibilityLabel={title}
   		/>
   	);

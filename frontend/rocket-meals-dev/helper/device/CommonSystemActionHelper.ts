@@ -6,8 +6,6 @@ const isAndroid = PlatformHelper.isAndroid();
 const isIOS = PlatformHelper.isIOS();
 const isMobile = isAndroid || isIOS;
 
-const ANDROID_PARAM_NEW_ACTIVITY = {flags: 268435456};
-
 export class CommonSystemActionHelper {
 	static async openExternalURL(url: string, newWindow = false) {
 		if (isMobile) {
@@ -44,6 +42,6 @@ export class CommonSystemActionHelper {
 			}
 		}
 
-		await CommonSystemActionHelper.openExternalURL(url);
+		await CommonSystemActionHelper.openExternalURL(url, true);
 	}
 }

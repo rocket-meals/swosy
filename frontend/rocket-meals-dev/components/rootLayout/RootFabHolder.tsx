@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
 	MyColorSchemeKey, useIsDarkTheme,
 	useMyColorSchemeKeySavedOption
 } from '@/states/ColorScheme';
-import {Icon, View} from '@/components/Themed';
+import {Icon, View, Text} from '@/components/Themed';
 import {MyFab} from '@/components/fab/MyFab';
 import {useIsDevelop} from '@/states/Develop';
+import {useNavigation} from "expo-router";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MyButton} from "@/components/buttons/MyButton";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -14,6 +17,26 @@ export {
 
 export interface RootFabHolderProps {
     children?: React.ReactNode;
+}
+
+const HistoryFab = () => {
+	const navigation = useNavigation()
+
+	return (
+		<MyFab
+			accessibilityLabel={'history'}
+		>
+			<View style={{
+				width: 400,
+				height: 200,
+				backgroundColor: 'white',
+			}}>
+				<MyButton accessibilityLabel={'history'} onPress={() => {
+					console.log(navigation.getState());
+				}} text={'History'} />
+			</View>
+		</MyFab>
+	)
 }
 
 const DevelopThemeSwitch = () => {
@@ -43,6 +66,7 @@ export const RootFabHolder = (props: RootFabHolderProps) => {
 	const developHelperComponents = []
 	if (isDevelopMode) {
 		developHelperComponents.push(<DevelopThemeSwitch />)
+		developHelperComponents.push(<HistoryFab />)
 	}
 
 	return (

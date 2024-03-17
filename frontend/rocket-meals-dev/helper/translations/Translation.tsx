@@ -61,6 +61,11 @@ export class TranslationKeys {
 
 	static no_foodoffers_found_for_selection = createTranslationKey('no_foodoffers_found_for_selection', 'Keine Angebote gefunden.');
 
+	static error = createTranslationKey("error", "Fehler");
+
+	static description = createTranslationKey('description', 'Beschreibung');
+	static information = createTranslationKey('information', 'Informationen');
+
 	static no_data_currently_calculating = createTranslationKey('no_data_currently_calculating', 'Keine Daten, werden gerade berechnet');
 
 	static food_feedbacks = createTranslationKey('food_feedbacks', 'Essensbewertungen');
@@ -69,6 +74,14 @@ export class TranslationKeys {
 	static set_rating_to = createTranslationKey('set_rating_to', 'Bewertung auf');
 	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
+
+	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
+	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
+	static copy_url = createTranslationKey('copy_url', 'URL kopieren');
+	static copy = createTranslationKey('copy', 'Kopieren');
+	static copied = createTranslationKey('copied', 'Kopiert');
+	static year_of_construction = createTranslationKey('year_of_construction', 'Baujahr');
+	static unknown = createTranslationKey('unknown', 'Unbekannt');
 
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');
