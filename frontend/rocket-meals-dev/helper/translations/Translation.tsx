@@ -56,6 +56,9 @@ export class TranslationKeys {
 
 	static new = createTranslationKey('new', 'Neu');
 
+	static attention = createTranslationKey('attention', 'Achtung!');
+	static anonymous_limitations = createTranslationKey('anonymous_limitations', 'Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.');
+
 	static no_foodoffers_found_for_selection = createTranslationKey('no_foodoffers_found_for_selection', 'Keine Angebote gefunden.');
 
 	static no_data_currently_calculating = createTranslationKey('no_data_currently_calculating', 'Keine Daten, werden gerade berechnet');

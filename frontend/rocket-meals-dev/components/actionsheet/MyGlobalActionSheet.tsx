@@ -25,13 +25,14 @@ import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles'
 import { Spinner } from "@gluestack-ui/themed"
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 
+export type RenderCustomContent = (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined
 export type MyGlobalActionSheetConfig = {
     visible: boolean,
     title: string,
-    renderPreItemsContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
+    renderPreItemsContent?: RenderCustomContent,
     items?: MyGlobalActionSheetItem[],
-    renderPostItemsContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined
-    renderCustomContent?: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
+    renderPostItemsContent?: RenderCustomContent,
+    renderCustomContent?: RenderCustomContent,
     onCancel?: () => Promise<boolean>
     maxHeight?: DimensionValue
 }
@@ -40,8 +41,8 @@ export type MyGlobalActionSheetItem = {
     key: string,
     label: string,
     accessibilityLabel: string,
-    render?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
-    renderLeftIcon?: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => React.ReactNode | undefined,
+    render?: RenderCustomContent
+    renderLeftIcon?: RenderCustomContent
     icon?: string,
     active?: boolean,
     onSelect?: (key: string, hide: () => void) => void // return false to not close the actionsheet
@@ -200,8 +201,8 @@ export const MyGlobalActionSheet = (props: any) => {
 				renderItem={renderItem}
 				keyExtractor={item => item.key}
 				flatListProps={{
-					ListHeaderComponent: () => {return renderedPreItem},
-					ListFooterComponent: () => {return renderedPostItem},
+					ListHeaderComponent: renderedPreItem,
+					ListFooterComponent: renderedPostItem,
 				}}
 				amountColumns={1}
 			/>
