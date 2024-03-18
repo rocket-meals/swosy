@@ -40,10 +40,9 @@ export const DisabledTouchableOpacity = ({children, reason}: DisabledTouchableOp
 							width: "100%",
 							paddingBottom: 20,
 						}}>
-							<Text>{reason+"."}</Text>
+							<Text>{reason}</Text>
 						</View>
 						<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_okay} tooltip={translation_okay} text={translation_okay} onPress={() => {
-							logout()
 							hide()
 						}} />
 					</View>
