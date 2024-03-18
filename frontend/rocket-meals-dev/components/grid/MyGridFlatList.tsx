@@ -198,6 +198,7 @@ export const MyGridFlatList = <T extends { key: string }>({
 				onEndReached={() => {
 					setEndReached(true);
 				}}
+				onEndReachedThreshold={0.5}
 				ListHeaderComponent={renderHeader}
 				ListFooterComponent={renderFooter}
 				{...restFlatListProps}
