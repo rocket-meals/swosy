@@ -15,7 +15,7 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
 	const horizontal: boolean | undefined | null = !!props?.scrollViewProps?.horizontal;
 
 	const hideGradient = props.hideGradient;
-	const renderedGradient = hideGradient ? null : <ShowMoreGradient gradientHeight={props?.gradientHeight} horizontal={horizontal} gradientBackgroundColor={props?.gradientBackgroundColor} />
+	const renderedGradient = hideGradient ? null : <ShowMoreGradient amountOfGradientSteps={20} gradientHeight={props?.gradientHeight} horizontal={horizontal} gradientBackgroundColor={props?.gradientBackgroundColor} />
 	const renderedPlaceholder = hideGradient ? null : <ShowMoreGradientPlaceholder gradientHeight={props?.gradientHeight} />
 
 

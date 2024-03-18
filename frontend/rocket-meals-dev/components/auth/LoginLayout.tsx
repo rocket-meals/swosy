@@ -1,13 +1,14 @@
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DimensionValue, KeyboardAvoidingView, Platform} from 'react-native';
 import {useIsLargeDevice} from '@/helper/device/DeviceHelper';
-import {Text, View} from '@/components/Themed';
+import {Text, useViewBackgroundColor, View} from '@/components/Themed';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {ProjectBanner} from '@/components/project/ProjectBanner';
 import {LegalRequiredLinks} from '@/components/legal/LegalRequiredLinks';
 import {ProjectBackgroundImage} from '@/components/project/ProjectBackgroundImage';
 import {MySafeAreaViewForScreensWithoutHeader} from '@/components/MySafeAreaViewForScreensWithoutHeader';
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export const LoginLayout = (props: any) => {
 	/**
@@ -59,30 +60,53 @@ export const LoginLayout = (props: any) => {
 	function renderLeftSide() {
 		const padding = isSmallDevice ? 20: 80;
 		const width: DimensionValue = isSmallDevice ? '100%' : 500;
-		return (
+
+		const viewBackgroundColor = useViewBackgroundColor()
+		const contrastBackgroundColor = useMyContrastColor(viewBackgroundColor)
+
+		const leftSizeContent = (
 			<View style={{width: width, height: '100%'}}>
 				<MySafeAreaViewForScreensWithoutHeader>
 					<KeyboardAvoidingView
 						keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
-						style={{flexShrink: 1, width: '100%'}}
+						style={{flexShrink: 1, width: '100%', height: '100%'}}
 						behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 					>
 						<ScrollViewWithGradient style={{flexShrink: 1}}>
-							<View style={{paddingHorizontal: padding, paddingTop: padding, width: '100%'}}>
-								<View
-									style={{
-										flexDirection: 'row',
-										justifyContent: 'space-between',
-									}}
-								>
-									<ProjectBanner />
+							<View style={{width: '100%'}}>
+								<View style={{
+									position: 'absolute',
+									width: '100%',
+									height: '100%',
+									backgroundColor: "transparent",
+									paddingHorizontal: padding/2, paddingTop: padding/2,
+								}}>
+									<View style={{
+										position: 'relative',
+										width: '100%',
+										height: '100%',
+										backgroundColor: viewBackgroundColor,
+										borderRadius: 10,
+
+									}}>
+									</View>
 								</View>
-								{renderSpaceBetweenLogoAndSignIn()}
-								{props.children}
+								<View style={{paddingHorizontal: padding, paddingTop: padding, width: '100%'}}>
+									<View
+										style={{
+											flexDirection: 'row',
+											justifyContent: 'space-between',
+										}}
+									>
+										<ProjectBanner />
+									</View>
+									{renderSpaceBetweenLogoAndSignIn()}
+									{props.children}
+								</View>
 							</View>
 						</ScrollViewWithGradient>
 					</KeyboardAvoidingView>
-					<View style={{paddingHorizontal: padding, width: '100%'}}>
+					<View style={{paddingHorizontal: padding, width: '100%', backgroundColor: viewBackgroundColor}}>
 						{renderConsentTermsOfUseAndPrivacyPolicy()}
 						<View
 							style={{
@@ -96,6 +120,26 @@ export const LoginLayout = (props: any) => {
 				</MySafeAreaViewForScreensWithoutHeader>
 			</View>
 		);
+
+		let leftItem = leftSizeContent;
+
+		if(isSmallDevice) {
+			leftItem = <View style={{
+				width: '100%',
+				height: '100%',
+			}}>
+				<ProjectBackgroundImage />
+				<View style={{
+					position: 'absolute',
+					width: '100%',
+					height: '100%',
+				}}>
+					{leftSizeContent}
+				</View>
+			</View>
+		}
+
+		return leftItem;
 	}
 
 	function renderRightSide() {

@@ -259,7 +259,6 @@ export default function Login() {
 			{renderWhenLoggedIn()}
 			{renderWhenNotLoggedIn()}
 			<View style={{height: 16}}></View>
-			<Divider />
 		</LoginLayout>
 	);
 }
