@@ -1,17 +1,44 @@
-import React from 'react';
-import {DimensionValue, View, ViewProps} from 'react-native';
+import React, {ReactNode, useEffect, useState} from 'react';
+import {DimensionValue, LayoutChangeEvent, ViewProps} from 'react-native';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import {aspectRatio} from "nativewind/dist/postcss/to-react-native/properties/aspect-ratio";
+import { View, Text } from '../Themed';
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 
 export type AspectRatio = number | [number, number] | { width: number, height: number };
 
 //https://www.npmjs.com/package/react-rectangle/v/1.2.0
 export type MyCardForResourcesWithImageProps = {
-    children?: React.ReactNode,
-    aspectRatio?: AspectRatio,
-    style?: StyleProp<ViewProps>
+	children?: React.ReactNode,
+	aspectRatio?: AspectRatio,
+	style?: StyleProp<ViewProps>
 }
 
 const defaultAspectRatio = 1;
+interface RectangleProps {
+	onLayoutChange?: (layout: { width: number; height: number }) => void;
+	children?: ReactNode;
+	aspectRatio?: AspectRatio;
+}
+
+interface RectanglePropsWithCharactersWide {
+	amountOfCharactersWide: number;
+	children?: ReactNode;
+}
+export const RectangleWithLayoutCharactersWide: React.FC<RectanglePropsWithCharactersWide> = ({  amountOfCharactersWide, children }) => {
+	// Render amountOfCharactersWide characters wide which are invisible and not selectable and not focusable and not readable by screen readers
+	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
+	const width = textDimensions?.width || 0;
+	const widthByCharacters = amountOfCharactersWide * 10;
+
+	return <View style={{
+		width: widthByCharacters,
+		height: widthByCharacters,
+	}}>
+		{children}
+	</View>
+}
 
 // define the button component
 export const Rectangle = ({aspectRatio, children, style, ...props}: MyCardForResourcesWithImageProps) => {
@@ -20,7 +47,7 @@ export const Rectangle = ({aspectRatio, children, style, ...props}: MyCardForRes
 	const multiplier = calculateAspectRatio(usedAspectRatio);
 
 	return (
-		<View style={[{ position: 'relative'}, style]} {...props}>
+		<View style={[{ position: 'relative', width: "100%"}, style]} {...props}>
 			<View style={{ paddingTop: (100 * multiplier + '%') as DimensionValue }} />
 			<View style={{ position: 'absolute', bottom: 0, left: 0, top: 0, right: 0 }}>{children}</View>
 		</View>

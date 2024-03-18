@@ -59,6 +59,8 @@ export class TranslationKeys {
 	static attention = createTranslationKey('attention', 'Achtung!');
 	static anonymous_limitations = createTranslationKey('anonymous_limitations', 'Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.');
 
+	static not_useable = createTranslationKey('not_useable', 'Nicht nutzbar');
+
 	static no_foodoffers_found_for_selection = createTranslationKey('no_foodoffers_found_for_selection', 'Keine Angebote gefunden.');
 
 	static error = createTranslationKey("error", "Fehler");
@@ -161,6 +163,8 @@ export class TranslationKeys {
 	static terms_and_conditions = createTranslationKey('terms_and_conditions', 'Nutzungsbedingungen');
 	static cookie_policy = createTranslationKey('cookie_policy', 'Cookie-Richtlinie');
 	static privacy_policy = createTranslationKey('privacy_policy', 'Datenschutzerklärung');
+
+	static okay = createTranslationKey('okay', 'Okay');
 
 	static currently_logged_in_as = createTranslationKey('currently_logged_in_as', 'Angemeldet als');
 	static if_you_want_to_login_with_this_account_please_press = createTranslationKey('if_you_want_to_login_with_this_account_please_press', 'Wenn Sie sich mit diesem Konto anmelden möchten, drücken Sie bitte');

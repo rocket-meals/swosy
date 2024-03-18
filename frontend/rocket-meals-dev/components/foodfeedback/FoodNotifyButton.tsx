@@ -13,6 +13,7 @@ import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/ac
 import {NotAllowed} from "@/compositions/animations/NotAllowed";
 import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
+import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 
 export type FoodNotifyButtonProps = {
 	food: Foods;
@@ -34,39 +35,9 @@ const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> 
 	const notify = foodFeedback?.notify;
 	const active = !!notify;
 
-	const translation_notify = useTranslation(TranslationKeys.notification);
-	const translation_active = useTranslation(TranslationKeys.active);
-	const translation_activate = useTranslation(TranslationKeys.activate);
-	const translation_inactive = useTranslation(TranslationKeys.inactive);
-	const translation_deactivate = useTranslation(TranslationKeys.deactivate);
-
-	let accessibilityLabel = translation_notify;
-	if (active) {
-		accessibilityLabel += ': ' + translation_active;
-	} else {
-		accessibilityLabel += ': ' + translation_inactive;
-	}
-	accessibilityLabel += ': ' + food_name;
-
-	let tooltip = translation_notify;
-	if(active) {
-		tooltip += ': ' + translation_deactivate;
-	} else {
-		tooltip += ': ' + translation_activate;
-	}
-
-	const icon = active ? IconNames.notification_active : IconNames.notification_inactive;
-
 	return(
-		<MyButton useOnlyNecessarySpace={true}
-				  useTransparentBackgroundColor={true}
-				  useTransparentBorderColor={true}
-				  accessibilityLabel={accessibilityLabel}
-				  tooltip={tooltip}
-				  icon={icon}
-				  onPress={() => {
-					  setNotify(!foodFeedback?.notify);
-				  }}
-		/>
+		<MyButtonNotify tooltip={food_name} accessibilityLabel={food_name} active={active} onPress={() => {
+			setNotify(!foodFeedback?.notify);
+		}} />
 	)
 }
