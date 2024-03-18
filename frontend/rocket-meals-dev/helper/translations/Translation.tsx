@@ -221,6 +221,12 @@ export class TranslationKeys {
 	static save = createTranslationKey('save', 'Speichern');
 	static button_disabled = createTranslationKey('button_disabled', 'Knopf deaktiviert');
 	static select = createTranslationKey('select', 'Auswählen');
+	static upload = createTranslationKey('upload', 'Hochladen');
+
+	static camera = createTranslationKey('camera', 'Kamera');
+	static gallery = createTranslationKey('gallery', 'Galerie');
+
+	static image = createTranslationKey('image', 'Bild');
 
 	static language = createTranslationKey('language', 'Sprache');
 

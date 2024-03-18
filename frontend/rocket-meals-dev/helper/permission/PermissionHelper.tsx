@@ -34,14 +34,18 @@ export class PermissionHelper {
             return true;
         }
 
-        const rolePublic = null;
+        //const rolePublic = null;
 
         if(!!permissions && permissions.length>=0){
             for(let permission of permissions){
                 let collectionInPermission = permission.collection;
                 let permissionsAction = permission.action;
                 let fields = permission.fields;
-                if(collectionInPermission===collection && permissionsAction===action && !!fields){
+                const isSameCollection = collectionInPermission===collection;
+                const isSameAction = permissionsAction===action;
+                const isSameRole = role?.id===permission.role;
+
+                if(isSameCollection && isSameAction && isSameRole && !!fields){
                     const fieldsAsArray = fields as string[] || [];
                     if(fieldsAsArray.includes(field) || fieldsAsArray.includes("*")){
                         return true;

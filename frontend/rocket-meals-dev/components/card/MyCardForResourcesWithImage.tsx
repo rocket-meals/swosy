@@ -2,7 +2,7 @@ import {MyCardWithText, MyCardWithTextProps} from '@/components/card/MyCardWithT
 import {DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {Rectangle} from '@/components/shapes/Rectangle';
 import React, {ReactNode} from 'react';
-import {View, Text} from '@/components/Themed';
+import {Spinner, Text, View} from '@/components/Themed';
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {MyButton} from "@/components/buttons/MyButton";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
@@ -14,6 +14,15 @@ import {
 	useMyGlobalActionSheet
 } from "@/components/actionsheet/MyGlobalActionSheet";
 import {useMyActionSheetConfigConfirmer} from "@/components/actionsheet/usePredefinedActionSheetConfigs";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import * as ImagePicker from 'expo-image-picker';
+import {ImagePickerAsset} from 'expo-image-picker';
+import {PlatformHelper} from "@/helper/PlatformHelper";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
+import {updateField, updateFile, uploadFiles} from "@directus/sdk";
+import {Platform} from "react-native";
+
 
 export type MyCardForResourcesWithImageProps = {
     accessibilityLabel: string,
@@ -32,10 +41,28 @@ export type MyCardForResourcesWithImageProps = {
 
 export type ImageUploaderComponentProps = {
 	resourceId: string | number
-	resourceCollectionName: string
+	resourceCollectionName: string,
+	onImageUpdated: () => void,
+	aspect?: [number, number],
 }
 function ImageUploaderComponent(props: ImageUploaderComponentProps) {
-	const accessibilityLabel = 'Edit image';
+	const onImageUpdated = props?.onImageUpdated;
+
+	const [permissionForCamera, requestPermissionForCamera] = ImagePicker.useCameraPermissions();
+	const [permissionForMediaLibrary, requestPermissionForMediaLibrary] = ImagePicker.useMediaLibraryPermissions();
+
+	const translation_edit = useTranslation(TranslationKeys.edit);
+	const translation_upload = useTranslation(TranslationKeys.upload);
+	const translation_delete = useTranslation(TranslationKeys.delete);
+	const translation_cancel = useTranslation(TranslationKeys.cancel);
+	const translation_image = useTranslation(TranslationKeys.image);
+
+	const translation_camera = useTranslation(TranslationKeys.camera);
+	const translation_gallery = useTranslation(TranslationKeys.gallery);
+
+	const title = translation_edit + " " + translation_image;
+
+	const accessibilityLabel = title;
 
 	const canUpdateImageField = PermissionHelper.useCanUpdate(props.resourceCollectionName, 'image');
 	const canUpdateImageRemoteUrlField = PermissionHelper.useCanUpdate(props.resourceCollectionName, 'image_remote_url');
@@ -45,12 +72,154 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet();
 
-	function handleUploadImage() {
-		console.log('upload image');
+	const pleaseWaitConfig: MyGlobalActionSheetConfig = {
+		visible: true,
+		title: "Please wait",
+		renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+			return <View style={{
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
+				padding: 20,
+			}}>
+				<Text>{"Please wait"}</Text>
+				<Spinner />
+				<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
+					hide()
+				} } />
+			</View>
+		}
+
 	}
 
-	function handleDeleteImage() {
+	async function handleSelectImageForUpload(useCamera: boolean) {
+		try{
+			const usedPermission = useCamera ? permissionForCamera : permissionForMediaLibrary;
+			const usedGranted = usedPermission?.granted;
+			const canRequest = usedPermission?.canAskAgain;
+
+			const usedAspects = props.aspect || [4, 3];
+
+			if (usedGranted) {
+				const result = await ImagePicker.launchImageLibraryAsync({
+					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: usedAspects,
+					quality: 1,
+					// only 1
+					selectionLimit: 1,
+				});
+
+				if (!result.canceled) {
+					show(pleaseWaitConfig);
+					const assets: ImagePickerAsset[] | null = result.assets;
+					if (assets) {
+						console.log("Found assets to upload")
+						const asset = assets[0];
+						console.log("asset");
+						console.log(asset);
+						const uri = asset.uri;
+						console.log("uri: "+uri);
+
+						const formData = new FormData();
+
+						const file_name = props.resourceCollectionName + "_" + props.resourceId
+
+						if(PlatformHelper.isWeb()){
+							// https://github.com/expo/examples/blob/master/with-firebase-storage-upload/App.js
+							// Why are we using XMLHttpRequest? See:
+							// https://github.com/expo/expo/issues/2402#issuecomment-443726662
+							const blob: Blob = await new Promise((resolve, reject) => {
+								const xhr = new XMLHttpRequest();
+								xhr.onload = function () {
+									resolve(xhr.response);
+								};
+								xhr.onerror = function (e) {
+									console.log(e);
+									reject(new TypeError("Network request failed"));
+								};
+								xhr.responseType = "blob";
+								xhr.open("GET", uri, true);
+								xhr.send(null);
+							});
+
+							console.log("Web: blob size: "+blob.size);
+							formData.append('title', file_name);
+							formData.append('image', blob);
+						} else {
+							// Form Upload for mobile generated by Copilot
+							// get the file extension
+							const uriParts = uri.split('.');
+							const fileType = uriParts[uriParts.length - 1];
+							const fileExtension = `.${fileType}`;
+							// create the file
+							const file = {
+								uri,
+								name: file_name + fileExtension,
+								type: `image/${fileType}`,
+							};
+							formData.append('title', file_name);
+							formData.append('image', file);
+						}
+
+
+
+						const client = ServerAPI.getClient();
+
+
+
+						const resultFileUpload = await client.request(uploadFiles(formData));
+
+						console.log("resultFileUpload");
+						console.log(resultFileUpload);
+
+						const file_id = resultFileUpload.id;
+
+						// link the file to the resource
+						const collectionHelper = new CollectionHelper(props.resourceCollectionName);
+						let resultImageLinked = await collectionHelper.updateItem(props.resourceId, {
+							image: file_id,
+						})
+
+						if (result) {
+							if (onImageUpdated) {
+								onImageUpdated()
+							}
+						}
+					}
+
+				} else {
+				}
+				hide()
+			} else if (canRequest && !usedGranted) {
+				if (useCamera) {
+					await requestPermissionForCamera()
+				} else {
+					await requestPermissionForMediaLibrary()
+				}
+				handleSelectImageForUpload(useCamera)
+			}
+		} catch (e) {
+			console.log("Error in handleSelectImageForUpload");
+			console.log(e);
+			hide()
+		}
+	}
+
+	async function handleDeleteImage() {
 		console.log('delete image');
+		const collectionHelper = new CollectionHelper(props.resourceCollectionName);
+		show(pleaseWaitConfig);
+		let result = await collectionHelper.updateItem(props.resourceId, {
+			image: null,
+			image_remote_url: null
+		})
+		hide()
+		if (result) {
+			if (onImageUpdated) {
+				onImageUpdated()
+			}
+		}
 	}
 
 	const configDelete: MyGlobalActionSheetConfig = useMyActionSheetConfigConfirmer({
@@ -77,57 +246,68 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		return null;
 	}
 
+	const items: MyGlobalActionSheetItem[] = []
 
-	const items: MyGlobalActionSheetItem[] = [
-		{
-			key: 'change_image',
-			label: 'Change image',
-			accessibilityLabel: 'Change image',
-			icon: IconNames.upload_icon,
-			onSelect: (key, hide) => {
-				console.log('change image');
-				return true;
+	if(PlatformHelper.isSmartPhone()){
+		items.push(
+			{
+				key: 'change_image_camera',
+				label: translation_camera,
+				accessibilityLabel: translation_camera+": "+translation_upload+": "+translation_image,
+				icon: IconNames.camera_icon,
+				onSelect: (key, hide) => {
+					handleSelectImageForUpload(true)
+				}
 			}
-		},
+		)
+	}
+
+	items.push(
+		{
+			key: 'change_image_gallery',
+			label: translation_gallery,
+			accessibilityLabel: translation_gallery+": "+translation_upload+": "+translation_image,
+			icon: IconNames.gallery_icon,
+			onSelect: (key, hide) => {
+				handleSelectImageForUpload(false)
+			}
+		}
+	)
+
+	items.push(
 		{
 			key: 'delete_image',
-			label: 'Delete image',
-			accessibilityLabel: 'Delete image',
+			label: translation_delete,
+			accessibilityLabel: translation_delete+": "+translation_image,
 			icon: IconNames.delete_icon,
 			onSelect: (key, hide) => {
 				show(configDelete);
 				return true;
 			}
-		},
+		}
+	)
+	items.push(
 		{
 			key: 'cancel',
 			icon: IconNames.cancel_icon,
-			label: 'Cancel',
-			accessibilityLabel: 'Cancel',
+			label: translation_cancel,
+			accessibilityLabel: translation_cancel,
 			onSelect: (key, hide) => {
 				hide();
 				return true;
 			}
 		}
-		]
+	)
 
-	return <View style={{
-		width: '100%',
-		height: '100%',
-	}}>
-		<Text>{"image: "+canUpdateImageField}</Text>
-		<Text>{"image_remote_url: "+canUpdateImageRemoteUrlField}</Text>
-		<Text>{"file: "+canCreateFile}</Text>
-		<MyButton
-			borderRadius={MyCardDefaultBorderRadius}
-			onPress={() => {
-				show({
-					visible: true,
-					title: 'Image',
-					items: items
-				})
-			}} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={IconNames.change_image_icon} />
-	</View>
+	return <MyButton
+		borderRadius={MyCardDefaultBorderRadius}
+		onPress={() => {
+			show({
+				visible: true,
+				title: title,
+				items: items
+			})
+		}} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={IconNames.change_image_icon} />
 }
 
 // define the button component

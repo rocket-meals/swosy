@@ -40,6 +40,7 @@ export default function FoodOfferScreen() {
 
 	async function loadFoodOffers() {
 		console.log('loadFoodOffers');
+		setFoodOffers(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
@@ -126,7 +127,10 @@ export default function FoodOfferScreen() {
 				}
 				imageUploaderConfig={{
 					resourceId: food.id,
-					resourceCollectionName: 'foods'
+					resourceCollectionName: 'foods',
+					onImageUpdated: () => {
+						loadFoodOffers();
+					}
 				}}
 			/>
 		);

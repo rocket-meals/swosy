@@ -13,6 +13,8 @@ import {
 import {CustomDirectusTypes} from '@/helper/database/databaseTypes/types';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 
+
+
 export class CollectionHelper<CollectionScheme> {
 	private collection: string;
 	private client: (DirectusClient<CustomDirectusTypes> & RestClient<any>);

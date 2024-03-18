@@ -99,5 +99,7 @@ export enum IconNames {
 
     washing_machine_icon = "washing-machine",
     change_image_icon = "image-edit",
-    upload_icon = "upload",
+
+    camera_icon = "camera",
+    gallery_icon = "folder-image",
 }
