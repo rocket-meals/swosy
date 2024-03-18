@@ -7,7 +7,7 @@ import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesW
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Spinner, Text, View} from '@/components/Themed';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
@@ -19,6 +19,7 @@ import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
+import {useProjectName} from "@/states/ProjectInfo";
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -26,7 +27,7 @@ export default function FoodOfferScreen() {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [foodOffers, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
-	const server = useServerInfo();
+	const projectName = useProjectName()
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
@@ -39,6 +40,7 @@ export default function FoodOfferScreen() {
 
 	async function loadFoodOffers() {
 		console.log('loadFoodOffers');
+		setFoodOffers(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
@@ -100,7 +102,7 @@ export default function FoodOfferScreen() {
   		}
 
 	    //TODO: This is a temporary "fix" for the SWOSY project
-		if (server?.info.project.project_name === "SWOSY") {
+		if (projectName === "SWOSY") {
 			//replace the url with the server url
 			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
 		}
@@ -123,6 +125,13 @@ export default function FoodOfferScreen() {
 				topRightComponent={
 					<FoodFeedbackRating food={food} showOnlyMax={true} borderRadius={MyCardDefaultBorderRadius}/>
 				}
+				imageUploaderConfig={{
+					resourceId: food.id,
+					resourceCollectionName: 'foods',
+					onImageUpdated: () => {
+						loadFoodOffers();
+					}
+				}}
 			/>
 		);
   	}

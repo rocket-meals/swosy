@@ -98,4 +98,8 @@ export enum IconNames {
     location_open_icon = "navigation-variant",
 
     washing_machine_icon = "washing-machine",
+    change_image_icon = "image-edit",
+
+    camera_icon = "camera",
+    gallery_icon = "folder-image",
 }

@@ -37,10 +37,7 @@ export const useMyActionSheetConfigConfirmer = (props: MyActionSheetConfirmerPro
 				const usedCancelLabel = props.cancelLabel || translation_cancel
 				items.push(<View style={{width: 10}} />)
 				items.push(<MyButton useOnlyNecessarySpace={true} leftIcon={IconNames.cancel_icon} accessibilityLabel={usedCancelLabel} tooltip={usedCancelLabel} text={usedCancelLabel} onPress={async () => {
-					const result = await props.onConfirm()
-					if(result!==false){
-						hide()
-					}
+					hide()
 				} } />)
 			}
 

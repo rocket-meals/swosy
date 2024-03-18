@@ -6,7 +6,6 @@ import {Box} from '@gluestack-ui/themed';
 import { View} from '@/components/Themed';
 
 export type MyCardProps = {
-    onPress?: () => void,
     children?: React.ReactNode,
     borderRaidus?: number,
     topComponent?: React.ReactNode,

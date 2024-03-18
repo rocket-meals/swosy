@@ -3,8 +3,9 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {NonPersistentStore} from '@/helper/syncState/NonPersistentStore';
 import {AuthenticationData} from '@directus/sdk';
 import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
-import {DirectusUsers} from '@/helper/database/databaseTypes/types';
+import {DirectusRoles, DirectusUsers} from '@/helper/database/databaseTypes/types';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
+import {useSynchedRolesDict} from "@/states/SynchedRoles";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,
@@ -89,6 +90,20 @@ export function useCurrentUser(): [DirectusUsers | undefined, (newValue: any) =>
 	const currentUser = currentUserRaw?.data
 
 	return [currentUser, setUserWithCache]
+}
+
+export function useCurrentRole(): DirectusRoles | null {
+	const [currentUser, setCurrentUser] = useCurrentUser()
+	const [rolesDict, setRolesDict] = useSynchedRolesDict()
+	const role_id = currentUser?.role
+	if(!role_id){
+		return null
+	}
+	if(typeof role_id !== 'string'){
+		return role_id
+	}
+	const role = rolesDict?.[role_id]
+	return role || null
 }
 
 export function isUserLoggedIn(): boolean {
