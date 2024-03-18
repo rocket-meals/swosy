@@ -72,6 +72,21 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet();
 
+	const configErrorOnUpload: MyGlobalActionSheetConfig = useMyActionSheetConfigConfirmer({
+		renderPreItemsContent: () => {
+			return <View style={{
+				width: '100%',
+				padding: 20,
+			}}>
+				<Text>{"Error on upload"}</Text>
+			</View>
+		},
+		onConfirm: async () => {
+			return true
+			hide()
+		},
+	})
+
 	const pleaseWaitConfig: MyGlobalActionSheetConfig = {
 		visible: true,
 		title: "Please wait",
@@ -114,16 +129,14 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 					show(pleaseWaitConfig);
 					const assets: ImagePickerAsset[] | null = result.assets;
 					if (assets) {
-						console.log("Found assets to upload")
 						const asset = assets[0];
-						console.log("asset");
-						console.log(asset);
 						const uri = asset.uri;
-						console.log("uri: "+uri);
 
 						const formData = new FormData();
 
 						const file_name = props.resourceCollectionName + "_" + props.resourceId
+
+						let fileSizes: number | undefined = undefined
 
 						if(PlatformHelper.isWeb()){
 							// https://github.com/expo/examples/blob/master/with-firebase-storage-upload/App.js
@@ -144,6 +157,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 							});
 
 							console.log("Web: blob size: "+blob.size);
+							fileSizes = blob.size;
 							formData.append('title', file_name);
 							formData.append('image', blob);
 						} else {
@@ -160,9 +174,13 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 							};
 							formData.append('title', file_name);
 							formData.append('image', file);
+
+							// set the file size
+							const response = await fetch(uri);
+							const blob = await response.blob();
+							// Sadly this Blob is not the same as the one from the web ...
+							fileSizes = blob.size;
 						}
-
-
 
 						const client = ServerAPI.getClient();
 
@@ -202,7 +220,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		} catch (e) {
 			console.log("Error in handleSelectImageForUpload");
 			console.log(e);
-			hide()
+			show(configErrorOnUpload);
 		}
 	}
 
@@ -239,6 +257,8 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 			return false
 		}
 	})
+
+
 
 	const hasPermission = canUpdateImageField || canUpdateImageRemoteUrlField || canCreateFile;
 
