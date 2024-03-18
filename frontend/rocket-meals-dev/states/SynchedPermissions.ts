@@ -25,3 +25,8 @@ export function useSynchedPermissionsDict(): [(Record<string, DirectusPermission
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
+
+export function useSynchedPermissionsList(): DirectusPermissions[] {
+	const [resourcesOnly] = useSynchedPermissionsDict();
+	return Object.values(resourcesOnly || {})
+}
