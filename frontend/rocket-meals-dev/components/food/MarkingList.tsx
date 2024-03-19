@@ -10,6 +10,7 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
+import {ActionsheetItem, ActionsheetItemText, ActionsheetVirtualizedList} from "@gluestack-ui/themed";
 
 
 export const LoadingRectThemed = (props: {
@@ -75,6 +76,25 @@ const LoadingRect = (props: {
 export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const [loading, setLoading] = React.useState(true);
+	const useLazyLoading = true;
+
+	/**
+
+	useEffect(() => {
+		// small delay to prevent flickering
+		setTimeout(() => {
+			setLoading(false)
+		}, 250);
+		// when component unloads, set loading to true
+		return () => {
+			setLoading(true)
+		}
+	}, [])
+
+	if(loading && useLazyLoading){
+		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
+	}
+		*/
 
 	let usedDict = markingsDict || {}
 	const all_marking_keys = Object.keys(usedDict);
@@ -83,6 +103,57 @@ export const MarkingList = ({...props}) => {
 }
 
 export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [showActionsheet, setShowActionsheet] = React.useState(false)
+	const handleClose = () => setShowActionsheet(!showActionsheet)
+	/**
+	const data = React.useMemo(
+		() =>
+			Array(50)
+				.fill(0)
+				.map((_, index) => "Item" + index),
+		[]
+	)
+		*/
+
+	const data: DataItem[] = []
+	if (markingsDict && props.markingIds) {
+		for (let i=0; i<props.markingIds.length; i++) {
+			const canteen_key = props.markingIds[i];
+			const marking = markingsDict[canteen_key]
+			if(!!marking){
+				data.push({key: canteen_key, data: marking})
+			}
+		}
+	}
+
+
+	const getItem = (_data, index) => ({
+		id: Math.random().toString(12).substring(0),
+		title: _data[index].key,
+	})
+	const getItemCount = (_data) => _data.length
+	const Item = React.useCallback(
+		({ title }) => {
+			return (
+				<MarkingListItem markingId={title} />
+			)
+		},
+		[handleClose]
+	)
+	return (
+		<ActionsheetVirtualizedList
+			height={"100%"}
+			data={data}
+			initialNumToRender={1}
+			renderItem={({ item }) => <Item title={item.title} />}
+			keyExtractor={(item) => item.id}
+			getItemCount={getItemCount}
+			getItem={getItem}
+		/>
+	)
+
+/**
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	type DataItem = { key: string; data: Markings }
 	const data: DataItem[] = []
@@ -107,4 +178,6 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 	}
 
 	return <MyGridFlatList data={data} renderItem={renderMarking} amountColumns={1} />
+
+		*/
 }

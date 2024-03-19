@@ -2,20 +2,15 @@ import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {
-	DirectusFiles,
-	Foodoffers, FoodoffersMarkings,
-	Foods,
-	FoodsFeedbacks,
-	ProfilesMarkings
-} from '@/helper/database/databaseTypes/types';
+import {DirectusFiles, Foodoffers, FoodsFeedbacks, ProfilesMarkings} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
 import {
 	useProfileLanguageCode,
 	useSynchedProfileCanteen,
-	useSynchedProfileFoodFeedbacksDict, useSynchedProfileMarking, useSynchedProfileMarkingsDict
+	useSynchedProfileFoodFeedbacksDict,
+	useSynchedProfileMarkingsDict
 } from '@/states/SynchedProfile';
 import React, {useEffect, useState} from 'react';
 import {Spinner, Text, View} from '@/components/Themed';
@@ -31,7 +26,6 @@ import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
 import {useProjectName} from "@/states/ProjectInfo";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {getFoodName} from "@/helper/food/FoodTranslation";
