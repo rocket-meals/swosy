@@ -40,7 +40,7 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 function getDemoCanteens(): Record<string, Canteens> {
 	const resources: Record<string, Canteens> = {};
 
-	for (let i=0; i<7; i++) {
+	for (let i=0; i<500; i++) {
 		const demoResource: Canteens = {
 			building: undefined,
 			date_created: new Date().toISOString(),

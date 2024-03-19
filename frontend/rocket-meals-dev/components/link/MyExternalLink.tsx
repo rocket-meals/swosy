@@ -9,17 +9,20 @@ import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper
 
 export type MyExternalLinkProps = {
     _target?: string,
-    href: string,
+    href?: string | null | undefined,
+	onPress?: () => void,
     children?: React.ReactNode,
-    openInNewTab?: boolean,
+    openInNewTab: boolean,
     accessibilityLabel: string
 }
 
 // define the button component
-export const MyExternalLink = ({_target, openInNewTab, href, accessibilityLabel, children}: MyExternalLinkProps) => {
-	const onPress = () => {
+export const MyExternalLink = ({_target, onPress, openInNewTab, href, accessibilityLabel, children}: MyExternalLinkProps) => {
+	let onPressForLinks = () => {
+
+
 		console.log('MyExternalLink onPress')
-		if (Platform.OS !== 'web') {
+		if (Platform.OS !== 'web' && href) {
 			// Prevent the default behavior of linking to the default browser on native.
 			//WebBrowser.openBrowserAsync(href);
 			CommonSystemActionHelper.openExternalURL(href)
@@ -27,17 +30,23 @@ export const MyExternalLink = ({_target, openInNewTab, href, accessibilityLabel,
 
 		}
 	}
+	let usedOnPress = onPressForLinks
+
+	if(onPress) {
+		usedOnPress = onPress
+	}
+
 
 	const button = (
 		(
-			<MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.Link} style={{width: '100%'}} onPress={onPress} accessibilityLabel={accessibilityLabel}>
+			<MyTouchableOpacity accessibilityRole={MyAccessibilityRoles.Link} onPress={usedOnPress} accessibilityLabel={accessibilityLabel}>
 				{children}
 			</MyTouchableOpacity>
 		)
 	)
 
 	// TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
-	if (Platform.OS === 'web') {
+	if (Platform.OS === 'web' && !onPress && href) {
 		let used_target = _target || '_self'
 		if (openInNewTab) {
 			used_target = '_blank'

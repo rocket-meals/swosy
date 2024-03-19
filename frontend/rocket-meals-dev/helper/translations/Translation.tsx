@@ -54,13 +54,42 @@ export class TranslationKeys {
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
 
+	static sort = createTranslationKey('sort', 'Sortieren');
+	static sort_option_none = createTranslationKey('none', 'Keine');
+	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
+	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
+	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
+
 	static new = createTranslationKey('new', 'Neu');
 
+	static attention = createTranslationKey('attention', 'Achtung!');
+	static anonymous_limitations = createTranslationKey('anonymous_limitations', 'Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.');
+
+	static not_useable = createTranslationKey('not_useable', 'Nicht nutzbar');
+
 	static no_foodoffers_found_for_selection = createTranslationKey('no_foodoffers_found_for_selection', 'Keine Angebote gefunden.');
+
+	static error = createTranslationKey("error", "Fehler");
+
+	static description = createTranslationKey('description', 'Beschreibung');
+	static information = createTranslationKey('information', 'Informationen');
 
 	static no_data_currently_calculating = createTranslationKey('no_data_currently_calculating', 'Keine Daten, werden gerade berechnet');
 
 	static food_feedbacks = createTranslationKey('food_feedbacks', 'Essensbewertungen');
+	static to_the_forum = createTranslationKey('to_the_forum', 'Zum Forum');
+	static reset_rating = createTranslationKey('reset_rating', 'Bewertung zurücksetzen');
+	static set_rating_to = createTranslationKey('set_rating_to', 'Bewertung auf');
+	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
+	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
+
+	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
+	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
+	static copy_url = createTranslationKey('copy_url', 'URL kopieren');
+	static copy = createTranslationKey('copy', 'Kopieren');
+	static copied = createTranslationKey('copied', 'Kopiert');
+	static year_of_construction = createTranslationKey('year_of_construction', 'Baujahr');
+	static unknown = createTranslationKey('unknown', 'Unbekannt');
 
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');
@@ -72,10 +101,21 @@ export class TranslationKeys {
 	static price_group_guest = createTranslationKey('price_group_guest', 'Gast');
 
 	static under_construction = createTranslationKey('under_construction', 'In Arbeit');
-	static not_allowed = createTranslationKey('not_allowed', 'Nicht erlaubt');
+	static no_permission = createTranslationKey('no_permission', 'Keine Berechtigung');
+	static please_create_an_account = createTranslationKey('please_create_an_account', 'Bitte erstelle einen Account');
+	static create_account = createTranslationKey('create_account', 'Account erstellen');
+
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
+	static washing_machines = createTranslationKey('washing_machines', 'Waschmaschinen');
+	static washingmachine_state_finished = createTranslationKey('washingmachine_state_finished', 'Waschen beendet');
+	static washingmachine_state_running = createTranslationKey('washingmachine_state_running', 'Wäscht gerade');
+	static washingmachine_estimate_finished_at = createTranslationKey("washingmachine_estimate_finished", "Voraussichtlich fertig um");
+	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
+
 	static active = createTranslationKey('active', 'Aktiv');
+	static activate = createTranslationKey('activate', 'Aktiveren');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');
+	static deactivate = createTranslationKey('deactivate', 'Deaktivieren');
 
 	static import = createTranslationKey('import', 'Importieren');
 	static event = createTranslationKey('event', 'Veranstaltung');
@@ -130,6 +170,8 @@ export class TranslationKeys {
 	static cookie_policy = createTranslationKey('cookie_policy', 'Cookie-Richtlinie');
 	static privacy_policy = createTranslationKey('privacy_policy', 'Datenschutzerklärung');
 
+	static okay = createTranslationKey('okay', 'Okay');
+
 	static currently_logged_in_as = createTranslationKey('currently_logged_in_as', 'Angemeldet als');
 	static if_you_want_to_login_with_this_account_please_press = createTranslationKey('if_you_want_to_login_with_this_account_please_press', 'Wenn Sie sich mit diesem Konto anmelden möchten, drücken Sie bitte');
 	static logout = createTranslationKey('logout', 'Abmelden');
@@ -142,6 +184,7 @@ export class TranslationKeys {
 
 	static navigate_to = createTranslationKey('navigate_to', 'Navigiere zu');
 	static open_drawer = createTranslationKey('open_drawer', 'Seitenleiste öffnen')
+	static navigate_back = createTranslationKey('navigate_back', 'Zurück navigieren');
 
 	static canteen = createTranslationKey('canteen', 'Mensa');
 
@@ -152,6 +195,7 @@ export class TranslationKeys {
 
 	static eating_habits = createTranslationKey('eating_habits', 'Essgewohnheiten');
 	static markings = createTranslationKey('markings', 'Kennzeichnungen');
+	static markings_disclaimer = createTranslationKey("markings_disclaimer", "Diese Angaben sind ohne Gewähr. Es gilt die Kennzeichnung vor Ort.")
 
 	static utilization_forecast = createTranslationKey('utilization_forecast', 'Prognose der Auslastung');
 	static utilization = createTranslationKey('utilization', 'Auslastung');
@@ -183,6 +227,12 @@ export class TranslationKeys {
 	static save = createTranslationKey('save', 'Speichern');
 	static button_disabled = createTranslationKey('button_disabled', 'Knopf deaktiviert');
 	static select = createTranslationKey('select', 'Auswählen');
+	static upload = createTranslationKey('upload', 'Hochladen');
+
+	static camera = createTranslationKey('camera', 'Kamera');
+	static gallery = createTranslationKey('gallery', 'Galerie');
+
+	static image = createTranslationKey('image', 'Bild');
 
 	static language = createTranslationKey('language', 'Sprache');
 

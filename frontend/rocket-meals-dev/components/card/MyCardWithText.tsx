@@ -8,7 +8,7 @@ import { useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {MyCard, MyCardDefaultBorderRadius, MyCardProps} from '@/components/card/MyCard';
 
 export type MyCardWithTextProps = {
-    heading?: string,
+    heading?: string | null | undefined,
     text?: string,
 } & MyCardProps
 
@@ -33,7 +33,7 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
 	let renderedText = null;
 	if (text) {
 		renderedText = (
-			<Text style={{color: viewBackgroundColor}} my="$1.5"  fontSize="$xs">
+			<Text style={{color: viewBackgroundColor}} my="$1.5" fontSize="$xs">
 				{text}
 			</Text>
 		)

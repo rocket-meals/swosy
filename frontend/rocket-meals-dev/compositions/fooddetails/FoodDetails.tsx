@@ -1,26 +1,80 @@
 import {Foodoffers, Foods} from '@/helper/database/databaseTypes/types';
-import {Heading, Text, TextInput, View} from '@/components/Themed';
-
-import {Rectangle} from '@/components/shapes/Rectangle';
+import {Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
-import {loadFoodOfferFromServer} from '@/states/SynchedFoodOfferStates';
+import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
-import TabWrapper from '@/components/tab/TabWrapper';
 import {IconNames} from '@/constants/IconNames';
-import {RatingType} from '@/components/rating/RatingValueIcon';
-import {FoodRatingDisplay} from '@/components/rating/FoodRatingDisplay';
 import {useSynchedProfileFoodFeedback} from '@/states/SynchedProfile';
-import {KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
-import ImageWithComponents from '@/components/project/ImageWithComponents';
-import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
+import {KeyboardAvoidingView, Platform} from 'react-native';
 import NutritionList from '@/components/food/NutritionList';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import MarkingList from '@/components/food/MarkingList';
+import {MarkingListSelective} from '@/components/food/MarkingList';
+import {useIsDemo} from "@/states/SynchedDemo";
+import {useIsDebug} from "@/states/Debug";
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
+import {useServerInfo} from "@/states/SyncStateServerInfo";
+import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 
-export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
-	const usedFoodId = typeof foodId === 'string' ? foodId : foodId.id;
+export enum FeedbackCommentType {
+	disabled='disabled',
+	write='write',
+	read='read',
+	readAndWrite='readAndWrite'
+}
+
+
+export const useFeedbackCommentType = (): FeedbackCommentType => {
+	const [appSettings] = useSynchedAppSettings();
+	const commentType = appSettings?.foods_feedbacks_comments_type;
+	let feedbackCommentType: FeedbackCommentType = FeedbackCommentType.disabled
+	if(commentType === 'write'){
+		feedbackCommentType = FeedbackCommentType.write
+	} else if(commentType === 'read'){
+		feedbackCommentType = FeedbackCommentType.read
+	} else if(commentType === 'readAndWrite'){
+		feedbackCommentType = FeedbackCommentType.readAndWrite
+	}
+	return feedbackCommentType
+}
+
+export enum FeedbackLabelsType {
+	disabled='disabled',
+	use='use',
+	useAndRead='useAndRead'
+}
+
+export const useFeedbackLabelsType = (): FeedbackLabelsType => {
+	const [appSettings] = useSynchedAppSettings();
+	const labelsType = appSettings?.foods_feedbacks_labels_type;
+	let feedbackLabelsType: FeedbackLabelsType = FeedbackLabelsType.disabled
+	if(labelsType === 'use'){
+		feedbackLabelsType = FeedbackLabelsType.use
+	} else if(labelsType === 'useAndRead'){
+		feedbackLabelsType = FeedbackLabelsType.useAndRead
+	}
+	return feedbackLabelsType
+}
+
+
+export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
+	const usedFoodId = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+
+	const translation_to_the_forum = useTranslation(TranslationKeys.to_the_forum);
+
+	// get app_settings
+	const [appSettings] = useSynchedAppSettings();
+
+	const foods_feedbacks_comments_type = useFeedbackCommentType()
+	const foods_feedbacks_custom_url = appSettings?.foods_feedbacks_custom_url;
+
+	const foods_feedbacks_labels_type = appSettings?.foods_feedbacks_labels_type;
+	const foods_ratings_amount_display = appSettings?.foods_ratings_amount_display;
+	const foods_ratings_average_display = appSettings?.foods_ratings_average_display;
+
 
 	const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
 	const onChangeText = (text: string) => {
@@ -36,174 +90,178 @@ export const FoodFeedbackDetails = ({foodId}: {foodId:  string | Foods}) => {
 		setComment(comment);
 	}
 
-	return (
-		<KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-			<View style={{ marginBottom: 100 }}>
-				<TextInput placeholder={'Comment'} value={comment ?? ''} onChangeText={onChangeText} />
+	let commentContent = undefined;
 
-				<MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment}
-					borderTopRadius={0}
-					accessibilityLabel={'Send feedback'}
-					text={'Send feedback'}
-					leftIcon={IconNames.comment_send_icon}
-					onPress={() => {
-						onSubmit();
-					}}
-				/>
+	if(!!foods_feedbacks_custom_url){
+		commentContent = <MyButton openHrefInNewTab={true} href={foods_feedbacks_custom_url} accessibilityLabel={translation_to_the_forum} tooltip={translation_to_the_forum} text={translation_to_the_forum} leftIcon={IconNames.comment_icon} rightIcon={IconNames.open_link_icon} />
+	} else {
+		commentContent = (
+			<KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+				<View style={{ marginBottom: 100 }}>
+					<TextInput placeholder={'Comment'} value={comment ?? ''} onChangeText={onChangeText} />
+
+					<MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment}
+							  borderTopRadius={0}
+							  accessibilityLabel={'Send feedback'}
+							  text={'Send feedback'}
+							  leftIcon={IconNames.comment_send_icon}
+							  onPress={() => {
+								  onSubmit();
+							  }}
+					/>
+				</View>
+			</KeyboardAvoidingView>
+		)
+	}
+
+	return (
+		<View style={{
+			width: "100%",
+		}}>
+			<View style={{
+				width: "100%",
+				flexDirection: "row",
+			}}>
+				<FoodFeedbackRating food={food} showQuickAction={false}/>
 			</View>
-		</KeyboardAvoidingView>
+			<View style={{width: "100%", height: 10}} />
+			{commentContent}
+		</View>
+	)
+}
+
+const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
+	const isDebug = useIsDebug()
+
+	const markingIds: string[] = [];
+	let foodOfferMarkings = foodOfferData?.markings || [];
+	foodOfferMarkings.forEach((marking) => {
+		markingIds.push(marking.markings_id);
+	});
+
+	const translation_markings_disclaimer = useTranslation(TranslationKeys.markings_disclaimer)
+
+	let debugMarkings = undefined
+	if(isDebug){
+		debugMarkings = <View>
+			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
+		</View>
+	}
+
+	return(
+		<>
+			<MarkingListSelective markingIds={markingIds}/>
+			<Text italic={true}>{translation_markings_disclaimer}</Text>
+			{debugMarkings}
+		</>
+	)
+}
+
+const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
+	const nutritionColumns = useBreakPointValue<number>({
+		sm: 2,
+		md: 2,
+		lg: 3,
+		xl: 3,
+	})
+
+	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
+
+	return(
+		<>
+			<View style={{ justifyContent: 'space-between' }}>
+				<View>
+					<NutritionList
+						columnAmount={nutritionColumns}
+						protein_g={foodOfferData.protein_g}
+						fat_g={foodOfferData.fat_g}
+						carbohydrate_g={foodOfferData.carbohydrate_g}
+						fiber_g={foodOfferData.fiber_g}
+						sugar_g={foodOfferData.sugar_g}
+						sodium_g={foodOfferData.sodium_g}
+						calories_kcal={foodOfferData.calories_kcal}
+						saturated_fat_g={foodOfferData.saturated_fat_g}
+					/>
+				</View>
+			</View>
+			<View>
+				<Text italic={true}>{translation_disclaimer}</Text>
+			</View>
+		</>
 	)
 }
 
 export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
+	const isDemo = useIsDemo()
+	const server = useServerInfo();
+
 	useEffect(() => {
-		loadFoodOfferFromServer(foodOfferId)
+		loadFoodOffer(isDemo, foodOfferId)
 			.then(setFoodOfferData)
 			.catch(console.error);
 	}, [foodOfferId]);
 
-	const foodId = foodOfferData?.food;
+	const food = foodOfferData?.food;
 
-	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(foodOfferData?.food.id);
+	//TODO: This is a temporary "fix" for the SWOSY project
+	if (server?.info?.project.project_name === "SWOSY" && food) {
+		//replace the url with the server url
+		// @ts-ignore
+		food.image_remote_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
+	}
 
+
+	if(foodOfferData && food && typeof food === 'object'){
+		return <FoodDetailsWithFoodOfferAndFood foodOfferData={foodOfferData} food={food}/>
+	}
+}
+
+function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
-	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
 
-	const imageWidthPercentage = useBreakPointValue<string>({
-		sm: '100%',
-		md: '100%',
-		lg: '60%',
-		xl: '40%',
-	})
-
-	const showAsRowOrColumn = useBreakPointValue<string>({
-		sm: 'column',
-		md: 'column',
-		lg: 'row',
-		xl: 'row',
-	})
-
-	const nutritionColumns = useBreakPointValue<number>({
-		sm: 2,
-		md: 2,
-		lg: 1,
-		xl: 2,
-	})
-
-	function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
-		const leftBorderRadius = leftRoundedBorder ? undefined : 0;
-		const rightBorderRadius = rightRoundedBorder ? undefined : 0;
-
-		return (
-			<View style={{width: '100%'}}><MyButton icon={iconName}
-				centerItems={true}
-				text={text}
-				tooltip={text}
-				accessibilityLabel={accessibilityLabel}
-				isActive={active}
-				onPress={() => {
-					setActive();
-				}}
-				borderLeftRadius={leftBorderRadius}
-				borderRightRadius={rightBorderRadius}
-			                              />
-			</View>
-		)
-	}
-
-	return (
-		<View style={{ padding: 0, width: '100%', height: '100%' }}>
-			{ foodOfferData && (
-				<ScrollView>
-					<View style={{width: '100%', display: 'flex', flexDirection: showAsRowOrColumn}}>
-						<View style={{width: imageWidthPercentage, display: 'flex'}}>
-							<Rectangle>
-								<ImageWithComponents
-									image={{
-										assetId: foodOfferData.food.image,
-										image_url: foodOfferData.food.image_remote_url,
-									}}
-									innerPadding={0}
-									bottomRightComponent={
-										<IndividualPricingBadge foodOffer={foodOfferData}/>
-									}
-								/>
-							</Rectangle>
-						</View>
-
-						<View style={{ display: 'flex', flexGrow: 1 }}>
-							<View style={{height: 100, padding: 4, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
-								<View>
-									<Heading>
-										{foodOfferData.alias}
-									</Heading>
-								</View>
-
-								<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-									<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '50%' }}>
-										{/*<RatingValueIcon ratingType={RatingType.smilies} ratingValue={1} isActive={true}/>*/}
-										<FoodRatingDisplay userRating={3} ratingType={RatingType.smilies} isActive={true}/>
-									</View>
-									<View>
-										<MyButton useOnlyNecessarySpace={true}
-											useTransparentBackgroundColor={true}
-											useTransparentBorderColor={true}
-											accessibilityLabel={foodFeedback?.notify ? 'Unnotify' : 'Notify'}
-											icon={foodFeedback?.notify ? 'bell' : 'bell-off'}
-											onPress={() => {
-												setNotify(!foodFeedback?.notify);
-											}}
-										/>
-									</View>
-								</View>
-							</View>
-
-							<View style={{ display: 'flex', marginTop: 10, marginHorizontal: 10, flexGrow: 1 }}>
-								<TabWrapper headers={[
-									(active, setActive) => renderTapHeader(active, setActive, true, false, IconNames.nutrition_icon, translations_nutrition, translations_nutrition),
-									(active, setActive) => renderTapHeader(active, setActive, false, false, IconNames.eating_habit_icon, translations_markings, translations_markings),
-									(active, setActive) => renderTapHeader(active, setActive, false, true, IconNames.comment_icon, translations_food_feedbacks, translations_food_feedbacks),
-								]}
-								defaultActive={2}
-								contents={[
-									<View style={{ padding: 4, display: 'flex', flexGrow: 1 }}>
-										<View style={{ justifyContent: 'space-between', display: 'flex', flexGrow: 1 }}>
-											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_nutrition}</Text>
-											<NutritionList
-												protein_g={foodOfferData.protein_g}
-												fat_g={foodOfferData.fat_g}
-												carbohydrate_g={foodOfferData.carbohydrate_g}
-												fiber_g={foodOfferData.fiber_g}
-												sugar_g={foodOfferData.sugar_g}
-												sodium_g={foodOfferData.sodium_g}
-												calories_kcal={foodOfferData.calories_kcal}
-												saturated_fat_g={foodOfferData.saturated_fat_g}
-											/>
-										</View>
-										<Text>{translation_disclaimer}</Text>
-									</View>,
-									<View style={{ padding: 4 }}>
-										<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_markings}</Text>
-										<MarkingList markingIds={foodOfferData.markings.map((x) => x.markings_id)}/>
-									</View>,
-									<View style={{ paddingTop: 4 }}>
-										<View style={{ padding: 4 }}>
-											<Text size={'md'} style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: 8 }}>{translations_food_feedbacks}</Text>
-										</View>
-										{ foodId &&
-                                    <FoodFeedbackDetails foodId={foodId} />
-										}
-									</View>
-								]}
-								/>
-							</View>
-						</View>
-					</View>
-				</ScrollView>
-			)}
+	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
+		<View style={{ flex: 1, flexDirection: "row" }}>
+			<FoodFeedbackRating food={food} showQuickAction={false}/>
 		</View>
+		<View>
+			<FoodNotifyButton food={food}/>
+		</View>
+	</View>
+
+	return(
+		<DetailsComponent item={food} heading={
+			food.alias
+		}
+						  subHeadingComponent={quickActions}
+						  image={{
+							  assetId: food.image,
+							  image_url: food.image_remote_url,
+						  }}
+						  tabs={
+							  [
+								  {
+									  iconName: IconNames.nutrition_icon,
+									  accessibilityLabel: translations_nutrition,
+									  text: translations_nutrition,
+									  content: <FoodNutritionDetails foodOfferData={foodOfferData}/>
+								  },
+								  {
+									  iconName: IconNames.eating_habit_icon,
+									  accessibilityLabel: translations_markings,
+									  text: translations_markings,
+									  content: <FoodMarkingDetails foodOfferData={foodOfferData}/>
+								  },
+								  {
+									  iconName: IconNames.comment_icon,
+									  accessibilityLabel: translations_food_feedbacks,
+									  text: translations_food_feedbacks,
+									  content: <FoodFeedbackDetails food={food} />
+								  },
+							  ]
+						  }
+		/>
 	)
 }

@@ -3,6 +3,7 @@ import {Buildings} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
+import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 
 async function loadBuildingsFromServer(): Promise<Buildings[]> {
 	const collectionHelper = new CollectionHelper<Buildings>('buildings');
@@ -37,19 +38,34 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
 }
 
 function getDemoResource(index: number): Buildings {
+	let languages = getDemoLanguagesDict();
+
+	const name = 'Demo Building '+index
+
+	let translations = []
+	for (let languageKey in languages) {
+		let language = languages[languageKey]
+		translations.push({
+			name: language.code+" - "+name,
+			id: index,
+			content: language.code,
+			buildings_id: index+"",
+			languages_code: language.code
+		})
+	}
+
 	return {
-		canteens: [],
-		alias: 'Demo Building '+index,
+		alias: name,
 		apartments: [],
 		id: index+'',
 		status: '',
-		translations: []
+		translations: translations
 	}
 }
 
 export function getDemoBuildings(): Record<string, Buildings> {
 	const demoResources: Record<string, Buildings> = {}
-	for (let i = 0; i < 12; i++) {
+	for (let i = 0; i < 500; i++) {
 		const demoResource = getDemoResource(i)
 		demoResources[demoResource.id] = demoResource
 	}

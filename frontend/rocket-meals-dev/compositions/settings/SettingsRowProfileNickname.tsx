@@ -26,21 +26,10 @@ export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...prop
 
 	const accessibilityLabel = translation_title;
 
-	function renderDebug() {
-		if (debug) {
-			return (
-				<View style={{width: '100%'}}>
-					<Text>{JSON.stringify(profile, null, 2)}</Text>
-				</View>
-			)
-		}
-	}
-
 	return (
 		<>
 			<SettingsRowTextEdit onSave={onSave} labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
 			</SettingsRowTextEdit>
-			{renderDebug()}
 		</>
 	)
 }

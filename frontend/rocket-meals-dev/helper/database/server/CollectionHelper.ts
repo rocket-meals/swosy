@@ -13,6 +13,8 @@ import {
 import {CustomDirectusTypes} from '@/helper/database/databaseTypes/types';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 
+
+
 export class CollectionHelper<CollectionScheme> {
 	private collection: string;
 	private client: (DirectusClient<CustomDirectusTypes> & RestClient<any>);
@@ -32,8 +34,8 @@ export class CollectionHelper<CollectionScheme> {
 		};
 	}
 
-	async readSingletonItem() {
-		return await this.client.request<CollectionScheme>(readSingleton(this.collection));
+	async readSingletonItem(query?: any) {
+		return await this.client.request<CollectionScheme>(readSingleton(this.collection, query));
 	}
 
 	static getQueryWithRelatedFieldsAndTranslations(fields?: string[]) {

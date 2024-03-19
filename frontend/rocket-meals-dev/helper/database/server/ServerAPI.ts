@@ -15,7 +15,7 @@ import {
 	readProviders,
 	readRoles,
 	rest,
-	serverHealth, serverInfo
+	serverHealth, serverInfo, readPermissions
 } from '@directus/sdk';
 import {
 	CustomDirectusTypes,
@@ -204,7 +204,7 @@ export class ServerAPI {
 
 	static async readRemotePermissions() {
 		const directus = ServerAPI.getClient();
-		const permissions = await directus.request<DirectusPermissions[]>(readRoles());
+		const permissions = await directus.request<DirectusPermissions[]>(readPermissions());
 		return permissions;
 	}
 

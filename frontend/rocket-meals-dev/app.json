@@ -23,6 +23,9 @@
       "**/*"
     ],
     "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.baumgartnersoftware.rocketmealsdev",
       "buildNumber": "3"
@@ -42,6 +45,13 @@
       "expo-router",
       "expo-secure-store",
       "expo-notifications",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with the world.",
+          "cameraPermission": "The app accesses your camera to let you share photos with the world."
+        }
+      ],
       [
         "expo-updates",
         {

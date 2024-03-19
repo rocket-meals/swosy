@@ -1,54 +1,110 @@
 import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
-import { View} from '@/components/Themed';
-import {getDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
-import {useProfileLanguageCode, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
-import React, {useMemo} from 'react';
-import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowTriStateLikeDislike';
+import {View, Text, useViewBackgroundColor} from '@/components/Themed';
+import {useProfileLanguageCode} from '@/states/SynchedProfile';
+import React, {FunctionComponent, useEffect, useMemo, useRef} from 'react';
+import MarkingListItem from "@/components/food/MarkingListItem";
+import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
+import {Markings} from "@/helper/database/databaseTypes/types";
+import {Animated, Easing, ListRenderItemInfo} from "react-native";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
+import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
+import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
 
-export default function MarkingList({ markingIds }: { markingIds: string[] }) {
-	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
-	const markingData = useMemo(() => {
-		if (!markingsDict) {
-			return [];
-		}
+export const LoadingRectThemed = (props: {
+	width: string | number;
+	height: string | number;
+	style?: StyleProp<ViewStyle>;
+}) => {
+	const backgroundColor = useViewBackgroundColor()
+	const darkerBackgroundColor = useLighterOrDarkerColorForSelection(backgroundColor)
+	return <LoadingRect width={props.width} height={props.height} style={[{backgroundColor: darkerBackgroundColor}, props.style]} />
+};
 
-		return markingIds.map((x) => {
-			return {
-				displayName: getDirectusTranslation(languageCode, markingsDict[x].translations, 'name'),
-				data: markingsDict[x]
-			}
-		})
-	}, [markingsDict, markingIds, languageCode])
 
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+const LoadingRect = (props: {
+	width: string | number;
+	height: string | number;
+	style?: StyleProp<ViewStyle>;
+}) => {
+	const pulseAnim = useRef(new Animated.Value(0)).current;
 
-	const items = markingData.map((x) => {
-		const marking = x.data;
-		const markingFromProfile = profilesMarkingsDict[marking.id]
-		const status = markingFromProfile?.dislikes;
+	useEffect(() => {
+		const sharedAnimationConfig = {
+			duration: 1000,
+			useNativeDriver: true,
+		};
+		Animated.loop(
+			Animated.sequence([
+				Animated.timing(pulseAnim, {
+					...sharedAnimationConfig,
+					toValue: 1,
+					easing: Easing.out(Easing.ease),
+				}),
+				Animated.timing(pulseAnim, {
+					...sharedAnimationConfig,
+					toValue: 0,
+					easing: Easing.in(Easing.ease),
+				}),
+			])
+		).start();
 
-		const onPress = (nextStatus: boolean | undefined) => {
-			if (nextStatus === true) {
-				setProfileMarking(x.data, true)
-			} else if (nextStatus === false) {
-				setProfileMarking(x.data, false)
-			} else {
-				removeProfileMarking(x.data)
-			}
-		}
+		return () => {
+			// cleanup
+			pulseAnim.stopAnimation();
+		};
+	}, []);
 
-		return (
-			<View key={marking.id}>
-				<SettingsRowTriStateLikeDislike onPress={onPress} accessibilityLabel={marking.alias || marking.id} labelLeft={marking.alias || marking.id} value={status}/>
-			</View>
-		)
-	})
+	const opacityAnim = pulseAnim.interpolate({
+		inputRange: [0, 1],
+		outputRange: [0.05, 0.15],
+	});
 
 	return (
-		<View>
-			{items}
-		</View>
-	)
+		<Animated.View
+			style={[
+				{ width: props.width, height: props.height },
+				{ opacity: opacityAnim },
+				props.style,
+			]}
+		/>
+	);
+};
+
+export const MarkingList = ({...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [loading, setLoading] = React.useState(true);
+
+	let usedDict = markingsDict || {}
+	const all_marking_keys = Object.keys(usedDict);
+
+	return <MarkingListSelective markingIds={all_marking_keys} />
+}
+
+export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	type DataItem = { key: string; data: Markings }
+	const data: DataItem[] = []
+	if (markingsDict && props.markingIds) {
+		for (let i=0; i<props.markingIds.length; i++) {
+			const canteen_key = props.markingIds[i];
+			const marking = markingsDict[canteen_key]
+			if(!!marking){
+				data.push({key: canteen_key, data: marking})
+			}
+		}
+	}
+
+	const renderMarking = (info: ListRenderItemInfo<DataItem>) => {
+		const {item, index} = info;
+		const marking = item.data;
+		const marking_key = marking.id
+
+		return (
+			<MarkingListItem markingId={marking.id} />
+		);
+	}
+
+	return <MyGridFlatList data={data} renderItem={renderMarking} amountColumns={1} />
 }

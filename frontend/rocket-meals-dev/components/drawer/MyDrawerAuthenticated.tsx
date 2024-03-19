@@ -1,7 +1,7 @@
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import React from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHeaderFoodOffers';
@@ -81,19 +81,33 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isBuildingsEnabled
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'buildings/[building]/index',
+				title: "Building Details",
+				label: "Building Details",
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'housing/index',
 				label: translation_housing,
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
-				//header: getMyScreenHeaderFoodOffers()
 				visibleInDrawer: isHousingEnabled
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'housing/[apartment]/index',
+				title: "Apartment Details",
+				label: "Apartment Details",
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'news/index',
 				label: translation_news,
 				title: translation_news,
 				icon: IconNames.news_icon,
-				//header: getMyScreenHeaderFoodOffers()
 				visibleInDrawer: isNewsEnabled
 			})}
 			{useRenderMyDrawerScreen({
@@ -120,6 +134,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'foods/[food]/index',
 				title: translation_food_details,
 				label: translation_food_details,
+				showBackButton: true,
 				icon: null,
 				visibleInDrawer: false
 			})}

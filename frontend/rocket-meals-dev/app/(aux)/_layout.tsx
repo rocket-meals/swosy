@@ -1,8 +1,12 @@
 import React from 'react';
 import {isUserLoggedIn} from '@/states/User';
-import {MyDrawer} from '@/components/drawer/MyDrawer';
+import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
+import {getMyScreenHeaderWikisByCustomId, useMyDrawerWikiItems} from "@/components/drawer/useMyDrawerWikiItems";
+import {IconNames} from "@/constants/IconNames";
+import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
+import {Custom_Wiki_Ids} from "@/states/SynchedWikis";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
@@ -15,6 +19,8 @@ export default function AppLayout() {
 
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_sign_in = useTranslation(TranslationKeys.sign_in);
+
+	const customDrawerWikiItems = useMyDrawerWikiItems()
 
 	const customDrawerItems: MyDrawerCustomItemProps[] = [
 		/**
@@ -35,6 +41,7 @@ export default function AppLayout() {
 				label: translation_sign_in,
 				onPress: undefined,
 				onPressInternalRouteTo: '(auth)/login',
+				visibleInDrawer: true,
 				onPressExternalRouteTo: undefined,
 				icon: 'chevron-left',
 				position: 0
@@ -47,6 +54,7 @@ export default function AppLayout() {
 				label: translation_home,
 				onPress: undefined,
 				onPressInternalRouteTo: '/(app)/home',
+				visibleInDrawer: true,
 				onPressExternalRouteTo: undefined,
 				icon: 'chevron-left',
 				position: 0

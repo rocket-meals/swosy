@@ -36,6 +36,9 @@ export type AppSettings = {
   date_privacy_policy_updated?: string | null;
   date_updated?: string | null;
   foods_enabled?: boolean | null;
+  foods_feedbacks_comments_type?: string | null;
+  foods_feedbacks_custom_url?: string | null;
+  foods_feedbacks_labels_type?: string | null;
   foods_parsing_enabled?: boolean | null;
   foods_parsing_last_date?: string | null;
   foods_parsing_status?: string | null;
@@ -198,7 +201,6 @@ export type Canteens = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
-  foodoffers: any[] | Foodoffers[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -713,6 +715,8 @@ export type Foods = {
   image_thumb_hash?: string | null;
   markings: any[] | FoodsMarkings[];
   protein_g?: number | null;
+  rating_amount?: number | null;
+  rating_average?: number | null;
   saturated_fat_g?: number | null;
   sodium_g?: number | null;
   sort?: number | null;
@@ -729,6 +733,7 @@ export type FoodsFeedbacks = {
   date_updated?: string | null;
   food?: string | Foods | null;
   id: string;
+  labels: any[] | FoodsFeedbacksFoodsFeedbacksLabels[];
   notify?: boolean | null;
   profile?: string | Profiles | null;
   rating?: number | null;
@@ -736,6 +741,34 @@ export type FoodsFeedbacks = {
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type FoodsFeedbacksFoodsFeedbacksLabels = {
+  foods_feedbacks_id?: string | FoodsFeedbacks | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  id: number;
+};
+
+export type FoodsFeedbacksLabels = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | FoodsFeedbacksLabelsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FoodsFeedbacksLabelsTranslations = {
+  be_source_for_translations?: boolean | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  text?: string | null;
+  translation_settings: string;
 };
 
 export type FoodsFeedbacksPredefinedFoodFeedbackLabels = {
@@ -796,6 +829,7 @@ export type MarkingsTranslations = {
 export type News = {
   alias?: string | null;
   categories?: unknown | null;
+  date?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
@@ -959,15 +993,18 @@ export type Wikis = {
   id: string;
   notice_private?: string | null;
   parent?: string | Wikis | null;
+  position?: number | null;
   public?: boolean | null;
   roles_required: any[] | WikisDirectusRoles[];
   show_in_drawer?: boolean | null;
+  show_in_drawer_as_bottom_item?: boolean | null;
   sort?: number | null;
   status: string;
   translations: any[] | WikisTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  visibility_settings: string;
 };
 
 export type WikisDirectusRoles = {
@@ -1035,6 +1072,9 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
+  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
+  foods_feedbacks_labels: FoodsFeedbacksLabels[];
+  foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
   foods_feedbacks_predefined_food_feedback_labels: FoodsFeedbacksPredefinedFoodFeedbackLabels[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];

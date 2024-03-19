@@ -34,5 +34,5 @@ export const SettingsRowFirstDayOfWeek: FunctionComponent<AppState> = ({...props
 		hide()
 	}
 
-	return <SettingsRowSelectDayOfWeek icon={IconNames.first_weekday_icon} title={title} onSelect={onSelect} selectedValue={firstDayOfWeek} additionalOptions={additionalOptions} />
+	return <SettingsRowSelectDayOfWeek icon={IconNames.first_weekday_icon} title={title} onSelect={onSelect} selectedValue={firstDayOfWeekRaw} additionalOptions={additionalOptions} />
 }

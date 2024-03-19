@@ -71,7 +71,8 @@ export default function DirectusImage(props: DirectusImageProps) {
 		}
 	}
 
-	const thumbHashBase64 = props.thumbHash ? thumbHashStringToDataURL(props.thumbHash) : thumbHashStringToDataURL('93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48');
+	const thumbHashRaw = props.thumbHash || '93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48';
+	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
 	const placeholder = props.placeholder || thumbHashBase64;
 
 	// with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio

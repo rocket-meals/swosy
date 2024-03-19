@@ -5,12 +5,12 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 export enum Custom_Wiki_Ids {
-    about_us = 'about_us',
+    about_us = 'about-us',
     license = 'license',
-    privacy_policy = 'privacy_policy',
+    privacy_policy = 'privacy-policy',
     cookieComponentConsent = 'cookieComponentConsent',
     cookieComponentAbout = 'cookieComponentAbout',
-    terms_of_service = 'terms_of_service',
+    terms_of_service = 'terms-of-service',
     accessibility = 'accessibility',
 }
 
@@ -74,21 +74,28 @@ export function useSynchedWikiById(id: string): Wikis | undefined {
 	return undefined
 }
 
-function getDemoWikis(): Record<string, Wikis> {
+function getDemoWiki(index: number){
 	const demoResource: Wikis = {
 		roles_required: [],
 		children: [],
 		translations: [],
 		date_created: new Date().toISOString(),
 		date_updated: new Date().toISOString(),
-		id: 123+'',
+		id: (1000+index)+'',
+		drawer_position: (index*2),
 		sort: undefined,
 		status: '',
 		user_created: undefined,
 		user_updated: undefined
 	}
+	return demoResource;
+}
 
-	return {
-		[demoResource.id]: demoResource
+function getDemoWikis(): Record<string, Wikis> {
+	const demoResources: Record<string, Wikis> = {}
+	for(let i = 0; i < 10; i++){
+		const demoResource = getDemoWiki(i)
+		demoResources[demoResource.id] = demoResource
 	}
+	return demoResources
 }

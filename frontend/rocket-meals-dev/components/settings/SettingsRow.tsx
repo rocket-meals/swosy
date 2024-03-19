@@ -17,6 +17,7 @@ export interface SettingsRowProps {
     leftIcon?: any | string,
     rightIcon?: string,
     onPress?: any,
+	padding?: number | undefined
     color?: any
     hideLeftContent?: boolean,
     expandable?: boolean,
@@ -88,23 +89,6 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		renderedChildren = children;
 	}
 
-	const contentWithShrinkingSpace = (
-		<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-			<View style={{
-				flexShrink: 1,
-			}}
-			>
-				<Text style={{ color: usedTextColor }}>{item.label}</Text>
-			</View>
-			<View style={{
-				flexShrink: 1,
-			}}
-			>
-				<Text style={{ color: usedTextColor, textAlign: 'right' }}>{props.labelRight}</Text>
-			</View>
-		</View>
-	)
-
 	const contentWithShrinkingSpaceOnlyRight = (
 		<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
 			<View style={{
@@ -153,9 +137,12 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
 	const content = contentWithShrinkingSpaceOnlyRight;
 
+	const DEFAULT_PADDING = 12;
+
 	return (
 		<>
 			<ActionsheetItem
+				padding={props.padding || DEFAULT_PADDING}
 				disabled={!item.onSelect || props.disabled}
 				accessibilityLabel={item.accessibilityLabel}
 				sx={{

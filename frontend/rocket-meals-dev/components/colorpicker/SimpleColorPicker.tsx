@@ -74,5 +74,5 @@ export const SimpleColorPicker: FunctionComponent<SimpleColorPickerProps> = (pro
 		return <ColorPickItem color={color} onPress={onPress} />
 	}
 
-	return <MyGridFlatList data={data} renderItem={renderItem} gridAmount={amountColumns} />
+	return <MyGridFlatList data={data} renderItem={renderItem} amountColumns={amountColumns} />
 }

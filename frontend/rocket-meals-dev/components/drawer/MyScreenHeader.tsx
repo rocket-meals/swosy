@@ -1,5 +1,5 @@
 import React from 'react';
-import {Heading, Icon} from '@/components/Themed'
+import {Heading, Icon, Text} from '@/components/Themed'
 import {DrawerHeaderProps, DrawerNavigationOptions, DrawerNavigationProp} from '@react-navigation/drawer';
 import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
 import { HeaderTitleProps, getHeaderTitle} from '@react-navigation/elements';
@@ -77,8 +77,11 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 	const isDrawerPermanentVisible = useIsDrawerPermanentVisible(); // Determine if the device is considered large.
 
 	const [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Gets and sets the current drawer position (left/right).
+	// @ts-ignore this field might be undefined
+	const showBackButton = options?.showBackButton;
 
 	const translation_open_drawer = useTranslation(TranslationKeys.open_drawer);
+	const translation_navigate_back = useTranslation(TranslationKeys.navigate_back);
 
 	const default_title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
 	const usedTitle = custom_title || default_title
@@ -115,12 +118,24 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
         pressOpacity?: number;
         labelVisible?: boolean;
     }) {
+		if(showBackButton){
+			// Returns a touchable component with an icon for toggling the drawer.
+			return (
+				<MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_navigate_back} onPress={() => {
+					if(navigation.canGoBack()){
+						navigation.goBack()
+					} else {
+						navigation.openDrawer()
+					}
+				}}>
+					<Icon name={IconNames.drawe_menu_go_back_icon} />
+				</MyTouchableOpacity>
+			)
+		}
+
 		if (isDrawerPermanentVisible) {
 			return null
 		}
-
-
-
 
 		// Returns a touchable component with an icon for toggling the drawer.
 		return (

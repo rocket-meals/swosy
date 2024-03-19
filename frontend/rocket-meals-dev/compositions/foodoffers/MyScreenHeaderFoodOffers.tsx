@@ -5,19 +5,26 @@ import {SettingsButtonProfileCanteen} from '@/compositions/settings/SettingsButt
 import {useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DateHelper} from '@/helper/date/DateHelper';
-import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
+import {useProfileLocaleForJsDate, useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {Divider} from '@gluestack-ui/themed';
 import {MyPreviousNextButton} from '@/components/buttons/MyPreviousNextButton';
 import {SimpleDatePicker} from '@/components/datePicker/SimpleDatePicker';
 import {UtilizationButton} from '@/compositions/utilizationForecast/UtilizationButton';
 import {SettingsButtonProfileEatingHabits} from '@/compositions/settings/SettingsButtonProfileEatingHabits';
+import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {sortTypesForFood} from "@/states/SynchedSortType";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
-	const title = undefined //"TEST"
+	let title = undefined //"TEST"
 
 	const locale = useProfileLocaleForJsDate()
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
+	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+	if(!!profileCanteen && profileCanteen.alias){
+		title = profileCanteen.alias;
+	}
 
 	const translation_day = useTranslation(TranslationKeys.day);
 
@@ -36,6 +43,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					flexDirection: 'row',
 				}}
 				>
+					<SettingsButtonSort synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
 					<SettingsButtonProfileCanteen />
 				</View>

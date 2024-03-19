@@ -7,6 +7,7 @@ interface AppState {
     horizontal?: boolean | undefined | null
     gradientBackgroundColor?: string
     gradientHeight?: number
+	amountOfGradientSteps?: number
 }
 export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
 	const horizontal = props?.horizontal;
@@ -36,8 +37,9 @@ export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {
 
          */
 
+		const usedAmountOfGradientSteps = props?.amountOfGradientSteps || 5;
 		// Custom LinearGradient
-		const steps = new Array(5).fill(0);
+		const steps = new Array(usedAmountOfGradientSteps).fill(0);
 
 
 		return (

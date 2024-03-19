@@ -1,6 +1,6 @@
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import React from 'react';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {useLogoutCallback} from '@/states/User';
 

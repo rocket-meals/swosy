@@ -6,6 +6,7 @@ export enum IconNames {
     save_icon = 'content-save',
     confirm_icon = 'check',
     drawer_menu_icon = 'menu',
+    drawe_menu_go_back_icon = 'arrow-left',
     canteen_icon = 'warehouse',
     foodoffers_icon = 'silverware-variant',
     building_icon = 'home-city',
@@ -43,6 +44,10 @@ export enum IconNames {
     color_edit_icon = 'palette',
     news_open_external_icon = 'open-in-new',
 
+    open_link_icon = 'open-in-new',
+    phone_icon = 'phone',
+    mail_icon = 'email',
+
     first_weekday_icon = 'calendar-week',
     course_timetable_event_create_icon = 'calendar-plus',
     identifier = 'identifier',
@@ -72,4 +77,34 @@ export enum IconNames {
     price_group_student = 'school',
     price_group_employee = 'briefcase',
     price_group_guest = 'account-group',
+    notification_active = "bell",
+    notification_inactive = "bell-off",
+    favorite_active_icon = "star",
+    favorite_inactive_icon = "star-outline",
+    heart_active_icon = "heart",
+    heart_inactive_icon = "heart-outline",
+    dislike_active_icon = "thumb-down",
+    dislike_inactive_icon = "thumb-down-outline",
+    like_active_icon = "thumb-up",
+    like_inactive_icon = "thumb-up-outline",
+    star_active_icon = "star",
+    star_inactive_icon = "star-outline",
+
+    description_icon = "text",
+    fact_icon = "information",
+    copy_icon = "content-copy",
+
+    location_icon = "map-marker",
+    location_open_icon = "navigation-variant",
+
+    washing_machine_icon = "washing-machine",
+    change_image_icon = "image-edit",
+
+    camera_icon = "camera",
+    gallery_icon = "folder-image",
+    sort_icon = "sort",
+    sort_none_icon = "sort-variant-remove",
+    sort_alphabetical_icon = "sort-alphabetical-ascending",
+    sort_favorite_icon = "star",
+    sort_intelligent_icon = "brain",
 }

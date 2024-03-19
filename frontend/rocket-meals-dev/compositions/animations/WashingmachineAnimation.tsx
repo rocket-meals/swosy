@@ -1,7 +1,4 @@
-import {BreakPoint, BreakPointsDictionary, useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {View} from '@/components/Themed';
-import {Rectangle} from '@/components/shapes/Rectangle';
-import {DimensionValue} from 'react-native';
 import washingmachine from '@/assets/animations/washingmachine/washingmachine.json';
 import washingmachineEmpty from '@/assets/animations/washingmachine/washingmachineEmpty.json';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
@@ -17,25 +14,16 @@ export const WashingmachineAnimation = ({children, active,...props}: any) => {
 	const usedTranslationState = active ? translation_active : translation_inactive;
 	const accessibilityLabel = translation_animation + ': ' + translation_nameOfTheAnimation + ' ' + usedTranslationState;
 
-	const noFoundWidths: BreakPointsDictionary<DimensionValue> = {
-		[BreakPoint.sm]: '70%',
-		[BreakPoint.md]: '30%',
-	}
-	const noFoundWidth = useBreakPointValue<DimensionValue>(noFoundWidths);
+	/**
+
+	 */
 
 	return (
-		<View style={{width: '100%', alignItems: 'center'}}>
-			<View style={{width: noFoundWidth}}>
-				<Rectangle aspectRatio={1343/964}>
-					<MyProjectColoredLottieAnimation style={{
-						width: '100%',
-						height: '100%'
-					}}
-					source={animationSource}
-					accessibilityLabel={accessibilityLabel}
-					/>
-				</Rectangle>
-			</View>
+		<View style={{width: '100%', height: "100%"}}>
+			<MyProjectColoredLottieAnimation zoom={1.5} loop={active} autoPlay={active}
+											 source={animationSource}
+											 accessibilityLabel={accessibilityLabel}
+			/>
 		</View>
 	)
 }

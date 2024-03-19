@@ -6,7 +6,7 @@ import {View} from '@/components/Themed';
 import {ViewWithProjectColor} from '@/components/project/ViewWithProjectColor';
 
 interface AppState {
-
+	children?: any
 }
 export const ProjectBackgroundImage: FunctionComponent<AppState & ViewProps> = ({style, ...props}) => {
 	const defaultStyle: ViewStyle = {width: '100%', height: '100%'}

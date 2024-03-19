@@ -93,6 +93,6 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 	)
 
 	return (
-		<SettingsRow labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={'switch'} {...props} rightContent={rightContent} onPress={onPress} />
+		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={'switch'} {...props} rightContent={rightContent} onPress={onPress} />
 	)
 }

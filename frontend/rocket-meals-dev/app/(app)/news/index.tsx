@@ -81,7 +81,7 @@ export default function NewsScreen() {
   		}
   	}
 
-  	const date_published = resource.date_created;
+  	const date_published = resource?.date || resource.date_created;
 
   	const accessiblityLabel = translation_navigate_to+': '+translation_news+' '+heading + ' ' + date_published;
 
@@ -105,7 +105,7 @@ export default function NewsScreen() {
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
-  			gridAmount={initialAmountColumns}
+  			amountColumns={initialAmountColumns}
   		/>
   	</MySafeAreaView>
   );

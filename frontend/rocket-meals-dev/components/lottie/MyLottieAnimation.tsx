@@ -18,6 +18,7 @@ export type MyLottieAnimationProps = {
     loop?: boolean,
     autoPlay?: boolean,
     animationRef?: any,
+	zoom?: number,
 }
 
 export const DEFAULT_COLOR_TO_BE_REPLACED = '#FF00FF';
@@ -36,7 +37,7 @@ export const DEFAULT_COLOR_TO_REPLACE_WITH = '#EE581F';
  * @param {MyLottieAnimationProps} props - Component props including styles, animation URL/source, and configurations.
  */
 export const MyLottieAnimation = ({
-	style, url, source, animationRef, colorReplaceMap, loop, ...props
+	style, url, source, animationRef, colorReplaceMap, loop, zoom, ...props
 }: MyLottieAnimationProps) => {
 	// State to manage performance mode.
 	const isPerformanceMode = useIsPerformanceMode();
@@ -56,11 +57,15 @@ export const MyLottieAnimation = ({
 	const [usedSource, setUsedSource] = useState(source);
 	const [reloadnumber, setReloadnumber] = useState(0);
 
+	const [dimensions, setDimensions] = useState({width: 0, height: 0});
+
 	// Styles for the animation container.
 	const styleAnimationContainer: StyleProp<ViewStyle> = {
-		overflow: 'hidden',
+			width: "100%",
+			height: "100%",
+		overflow: "hidden",
 	}
-	const mergedStyle: StyleProp<ViewStyle> = [style, styleAnimationContainer];
+	const mergedStyle: StyleProp<ViewStyle> = [styleAnimationContainer, style];
 
 	// Styles used when in performance mode.
 	const mergedPerformanceStyle: StyleProp<ViewStyle> = [style, {
@@ -173,16 +178,41 @@ export const MyLottieAnimation = ({
 	const lottieJSONCopy = usedSource ? JSON.parse(JSON.stringify(usedSource)) : {};
 	const coloredSource = replaceColorsInLottie(lottieJSONCopy, usedColorReplaceMapAfter);
 
+	const usedZoom = zoom || 1;
+
 	return (
-		<View style={mergedStyle}>
-			<LottieView
-				key={reloadnumber + ''}
-				autoPlay={usedAutoPlay}
-				loop={usedLoop}
-				ref={animation}
-				style={style}
-				source={coloredSource}
-			/>
+		<View style={mergedStyle} onLayout={(event) => {
+			setDimensions({
+				width: event.nativeEvent.layout.width,
+				height: event.nativeEvent.layout.height,
+			});
+		}}>
+			<View style={{
+				position: "absolute",
+				justifyContent: "center",
+				alignItems: "center",
+				left: dimensions.width/2-usedZoom*dimensions.width/2, // Center the animation
+				top: dimensions.height/2-usedZoom*dimensions.height/2, // Center the animation
+				width: dimensions.width*usedZoom,
+				height: dimensions.height*usedZoom,
+			}}>
+				<LottieView
+					key={reloadnumber + ''}
+					autoPlay={usedAutoPlay}
+					loop={usedLoop}
+					ref={animation}
+					resizeMode={"contain"}
+					webStyle={{
+						height: dimensions.height*usedZoom,
+						width: dimensions.width*usedZoom,
+					}}
+					style={{
+						height: dimensions.height*usedZoom,
+						width: dimensions.width*usedZoom,
+					}}
+					source={coloredSource}
+				/>
+			</View>
 		</View>
 	)
 }

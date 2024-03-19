@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {View} from '@/components/Themed';
+import {View, Text} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
@@ -13,9 +13,9 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {DrawerConfigPosition, useDrawerPosition, useIsDrawerPermanentVisible} from '@/states/DrawerSyncConfig';
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
 import {getMyDrawerItemIcon} from '@/components/drawer/MyDrawerItemIcon';
-import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItem';
+import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyScreenHeader} from '@/components/drawer/MyScreenHeader';
-import {getMyDrawerItems} from '@/components/drawer/MyDrawerItems';
+import {getMyDrawerItemsBottom, getMyDrawerItemsCenter} from '@/components/drawer/MyDrawerItems';
 import {MyDrawerSafeAreaView} from '@/components/drawer/MyDrawerSafeAreaView';
 import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
@@ -27,6 +27,7 @@ export type MyDrawerItemProps = {
     title: string;
     icon: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
+	showBackButton?: boolean | null | undefined;
     header?: ((props: DrawerHeaderProps) => ReactNode) | undefined
     params?: any
 };
@@ -44,7 +45,7 @@ export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
+export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
 	let usedVisible = true;
 	if (visibleInDrawer!==undefined) {
 		usedVisible = !!visibleInDrawer;
@@ -59,6 +60,7 @@ export function renderMyDrawerScreen({routeName, label, title, icon, visibleInDr
 				// @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
 				visible: usedVisible, // This custom property is used to conditionally render drawer items.
 				label: label,
+				showBackButton: showBackButton,
 				title: title,
 				drawerIcon: getMyDrawerItemIcon(icon),
 				drawerActiveBackgroundColor: drawerActiveBackgroundColor, // Customize the background color of the active drawer item.
@@ -98,10 +100,7 @@ function useDrawerWidth(): number | DimensionValue {
 export type MyDrawerTopProjectContentProps = {
     showProjectLogo?: boolean;
 };
-export const MyDrawerTopProjectContent = (props: any) => {
-	const publicForegroundAssetId = useProjectPublicForegroundAssetId();
-	const projectLogoAssetId = useProjectLogoAssetId()
-
+export const MyDrawerTopProjectContent = (props: MyDrawerTopProjectContentProps) => {
 	if (props.showProjectLogo) {
 		return <ProjectBanner/>
 	} else {
@@ -148,9 +147,6 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 	const translation_home = useTranslation(TranslationKeys.home);
 	const accessibilityLabel_home = translation_navigate_to + ' ' + translation_home;
 
-	const publicForegroundAssetId = useProjectPublicForegroundAssetId();
-	const projectLogoAssetId = useProjectLogoAssetId()
-
 	const showProjectLogo = true;
 
 	return (
@@ -164,16 +160,8 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 				padding: 10,
 			}}
 		>
-			<MyDrawerTopProjectContent showProjectLogo={true}/>
+			<MyDrawerTopProjectContent showProjectLogo={showProjectLogo}/>
 		</MyTouchableOpacity>
-	)
-}
-
-function renderDrawerContentBottom() {
-	return (
-		<View style={{width: '100%'}}>
-			<LegalRequiredLinks/>
-		</View>
 	)
 }
 
@@ -187,7 +175,7 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 	const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
 	const gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
 
-	const renderedDrawerItemsWithSeparator = getMyDrawerItems(props); // Get the list of drawer items to render.
+	const renderedDrawerItemsWithSeparator = getMyDrawerItemsCenter(props); // Get the list of drawer items to render.
 
 	return (
 		<View style={{width: '100%', height: '100%', overflow: 'hidden'}}>
@@ -206,7 +194,7 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 						</View>
 					</ScrollViewWithGradient>
 				</View>
-				{renderDrawerContentBottom()}
+				{getMyDrawerItemsBottom(props)}
 			</MyDrawerSafeAreaView>
 		</View>
 	);

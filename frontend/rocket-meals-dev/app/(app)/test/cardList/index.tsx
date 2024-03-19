@@ -96,7 +96,7 @@ export default function CardListTestScreen() {
     			<MyGridFlatList
     				data={data}
     				renderItem={renderItem}
-    				gridAmount={amountColumns}
+    				amountColumns={amountColumns}
     			/>
     		</View>
     	</View>

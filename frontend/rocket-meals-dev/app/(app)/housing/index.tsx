@@ -6,10 +6,26 @@ import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesW
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {useSynchedBuildingsDict} from '@/states/SynchedBuildings';
 import {useSynchedApartmentsDict} from '@/states/SynchedApartments';
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {View} from "@/components/Themed";
+import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+import {router} from "expo-router";
+
+function useHousingAdditionalInformationMarkdown(): string {
+	const [appSettings] = useSynchedAppSettings();
+	let [languageCode, setLanguage] = useProfileLanguageCode();
+	let translations = appSettings?.housing_translations
+	let usedTranslations = translations || [] as TranslationEntry[]
+	return getDirectusTranslation(languageCode, usedTranslations, "content")
+}
 
 export default function HousingScreen() {
 	const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict()
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+	const additionalInformationMarkdown = useHousingAdditionalInformationMarkdown()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
@@ -70,18 +86,34 @@ export default function HousingScreen() {
   			thumbHash={thumb_hash}
   			image_url={image_url}
   			assetId={assetId}
-  			onPress={() => console.log('Pressed')}
+  			onPress={() => {
+				router.push(`/(app)/housing/${resource.id}`)
+			}}
   			accessibilityLabel={title}
   		/>
   	);
   }
 
+  function renderAdditionalInformation() {
+	  if(!!additionalInformationMarkdown){
+		  const borderRaidus = MyCardDefaultBorderRadius
+		  return (
+			  <View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
+				  <ThemedMarkdown markdown={additionalInformationMarkdown} />
+			  </View>
+		  )
+	  }
+  }
+
   return (
   	<MySafeAreaView>
   		<MyGridFlatList
+			flatListProps={{
+				ListHeaderComponent: renderAdditionalInformation()
+			}}
   			data={data}
   			renderItem={renderItem}
-  			gridAmount={initialAmountColumns}
+  			amountColumns={initialAmountColumns}
   		/>
   	</MySafeAreaView>
   );

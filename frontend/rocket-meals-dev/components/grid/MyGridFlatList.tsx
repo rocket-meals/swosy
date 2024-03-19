@@ -1,6 +1,6 @@
 import React from 'react';
-import {FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
-import {View} from '@/components/Themed';
+import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
+import {Spinner, View, Text} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -25,7 +25,7 @@ type GridListSpacing = {
  *
  * @property {T[]} data - The data array to be rendered.
  * @property {ListRenderItem<T>} renderItem - The function that renders each item.
- * @property {number} gridAmount - The number of items per row.
+ * @property {number} amountColumns - The number of items per row.
  * @property {boolean} [horizontal] - If true, the list is horizontally scrollable.
  * @property {StyleProp<ViewStyle>} [contentContainerStyle] - Style for the list's content container.
  * @property {GridListSpacing} [spacing] - Spacing configuration for margins between items and rows.
@@ -33,7 +33,7 @@ type GridListSpacing = {
 interface GridListProps<T> {
     data: T[];
     renderItem: ListRenderItem<T>;
-    gridAmount: number;
+    amountColumns: number;
     horizontal?: boolean;
     contentContainerStyle?: StyleProp<ViewStyle>;
     spacing?: GridListSpacing;
@@ -63,14 +63,16 @@ export const DEFAULT_GRID_LIST_SPACING: GridListSpacing = {
 export const MyGridFlatList = <T extends { key: string }>({
 	data,
 	renderItem,
-	gridAmount,
+	amountColumns,
 	horizontal,
 	spacing,
 	flatListProps,
 }: GridListProps<T>): React.ReactElement => {
-	const amountCompleteRows = Math.floor(data.length / gridAmount);
-	const amountTotalItemsLastRow = data.length - amountCompleteRows * gridAmount;
-	const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? gridAmount - amountTotalItemsLastRow : 0;
+	const amountCompleteRows = Math.floor(data.length / amountColumns);
+	const amountTotalItemsLastRow = data.length - amountCompleteRows * amountColumns;
+	const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? amountColumns - amountTotalItemsLastRow : 0;
+
+	const [endReached, setEndReached] = React.useState(false);
 
 	const usedSpacing = spacing || DEFAULT_GRID_LIST_SPACING;
 
@@ -80,9 +82,9 @@ export const MyGridFlatList = <T extends { key: string }>({
 	// We need to add dummy items. If we don't, the last row will be max width stretched to fill the container, which is not what we want.
 
 	const renderSingleItem = (content: any, key: string, index: number) => {
-		const isFirstRow = index < gridAmount;
-		const isFirstInRow = (index % gridAmount) === 0;
-		const isLastInRow = (index % gridAmount) === gridAmount - 1;
+		const isFirstRow = index < amountColumns;
+		const isFirstInRow = (index % amountColumns) === 0;
+		const isLastInRow = (index % amountColumns) === amountColumns - 1;
 		const isInCenter = !isFirstInRow && !isLastInRow;
 
 		const itemStyle: StyleProp<ViewStyle>= {
@@ -145,18 +147,45 @@ export const MyGridFlatList = <T extends { key: string }>({
 	};
 
 	const usedHorizontal = horizontal;
-	const numColumns = !usedHorizontal ? gridAmount : undefined // numColumns does not support horizontal
+	const numColumns = !usedHorizontal ? amountColumns : undefined // numColumns does not support horizontal
 
 	// FlatList: Changing numColumns on the fly is not supported
 	// FlatList: Changing horizontal on the fly is not supported
 	// Force a fresh render of the FlatList by changing the key
-	const flatListKey = 'horizontal:'+usedHorizontal+'-gridAmount:'+gridAmount;
+	const flatListKey = 'horizontal:'+usedHorizontal+'-gridAmount:'+amountColumns;
+
+	const {ListHeaderComponent, ListFooterComponent, ...restFlatListProps} = flatListProps || {};
+
+	// Render footer to show a loading spinner when more items are being loaded
+	const renderFooter = () => {
+		if (endReached) {
+			return null;
+		}
+		if(ListFooterComponent){
+			return <View style={{flex: 1}}>
+				{ListFooterComponent}
+			</View>
+		}
+		return (
+			<View style={{ paddingVertical: 20 }}>
+				<Spinner />
+			</View>
+		);
+	};
+
+	function renderHeader() {
+		if(ListHeaderComponent){
+			return <View style={{flex: 1}}>
+				{ListHeaderComponent}
+			</View>
+		}
+	}
 
 	return (
 		<View
 			style={{
 				width: '100%',
-				height: '100%',
+				maxHeight: "100%"
 				//backgroundColor: "green",
 			}}
 		>
@@ -166,7 +195,13 @@ export const MyGridFlatList = <T extends { key: string }>({
 				data={adjustedData}
 				renderItem={renderItemsWithFillUpDummies}
 				numColumns={numColumns}
-				{...flatListProps}
+				onEndReached={() => {
+					setEndReached(true);
+				}}
+				onEndReachedThreshold={0.5}
+				ListHeaderComponent={renderHeader}
+				ListFooterComponent={renderFooter}
+				{...restFlatListProps}
 			/>
 		</View>
 	);
