@@ -1,6 +1,6 @@
-import {Text, View} from '@gluestack-ui/themed';
 import {useProjectColor} from '@/states/ProjectInfo';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
+import {View, Text} from "@/components/Themed";
 
 export type PricingBadgeProps = {
   price: number;
@@ -24,7 +24,7 @@ export default function PricingBadge(props: PricingBadgeProps) {
 			borderBottomLeftRadius: 14,
 		}}
 		>
-			<Text color={projectContrastColor}>{priceContent}</Text>
+			<Text style={{color: projectContrastColor}}>{priceContent}</Text>
 		</View>
 	)
 }

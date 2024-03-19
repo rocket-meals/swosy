@@ -27,6 +27,7 @@ import {Platform} from "react-native";
 export type MyCardForResourcesWithImageProps = {
     accessibilityLabel: string,
     thumbHash?: string | undefined | null,
+	borderColor?: string,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined | null,
     image_url?: string | undefined | null,

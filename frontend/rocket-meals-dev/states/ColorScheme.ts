@@ -78,6 +78,14 @@ export function useColorSchemeKeyToThemeDictionary(): Record<MyColorSchemeKey, T
 	return defaultMap;
 }
 
+export function useDislikeColor(): string {
+	return "#ff0000";
+}
+
+export function useLikeColor(): string {
+	return "#00ff00";
+}
+
 /**
  * Custom hook to determine the color scheme name based on system setting and saved user preference.
  * It first checks if the user has saved a preference. If not, it checks the system setting.

@@ -8,11 +8,10 @@ interface AppState {
     value: boolean | undefined | null,
     accessibilityLabel: string,
     labelLeft: string,
-    onPress?: (nextValue: boolean | undefined) => void,
+	onSetState?: (like: boolean | undefined) => void,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
-
 }
 export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, labelLeft,...props}) => {
 	const debug = props?.debug
@@ -58,8 +57,8 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 		}
 
 		setIsChecked(nextValue)
-		if (props.onPress) {
-			props.onPress(nextValue);
+		if (props.onSetState) {
+			props.onSetState(nextValue);
 		}
 	}
 
@@ -71,15 +70,7 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 			flexDirection: 'row'
 		}}
 		>
-			<MyButton leftIcon={'thumb-up'}
-				isActive={isLikeButtonActive}
-				useOnlyNecessarySpace={true}
-				useTransparentBorderColor={true}
-				accessibilityLabel={'like'}
-				onPress={() => {
-					onPress(true)
-				}}
-			/>
+
 			<MyButton leftIcon={'thumb-down'}
 				isActive={isDislikeButtonActive}
 				useOnlyNecessarySpace={true}
@@ -89,10 +80,19 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 					onPress(false)
 				}}
 			/>
+			<MyButton leftIcon={'thumb-up'}
+						isActive={isLikeButtonActive}
+						useOnlyNecessarySpace={true}
+						useTransparentBorderColor={true}
+						accessibilityLabel={'like'}
+						onPress={() => {
+							onPress(true)
+						}}
+		/>
 		</View>
 	)
 
 	return (
-		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={'switch'} {...props} rightContent={rightContent} onPress={onPress} />
+		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={'switch'} {...props} rightContent={rightContent} />
 	)
 }

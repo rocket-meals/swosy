@@ -33,6 +33,10 @@ import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
+import {MarkingHelper} from "@/helper/food/MarkingHelper";
+import {getFoodName} from "@/helper/food/FoodTranslation";
+import {MarkingBadge} from "@/components/food/MarkingBadge";
+import {useDislikeColor} from "@/states/ColorScheme";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -49,8 +53,6 @@ function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
 	});
 	return foodOffers;
 }
-
-
 
 function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
 	foodOffers.sort((a, b) => {
@@ -108,67 +110,13 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 
 }
 
-function areDislikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
-	for(const marking_id of marking_ids){
-		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
-		if(marking){
-			const dislikes = marking.dislikes;
-			if(dislikes !== null && dislikes !== undefined && dislikes){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-function areLikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
-	for(const marking_id of marking_ids){
-		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
-		if(marking){
-			const dislikes = marking.dislikes;
-			if(dislikes !== null && dislikes !== undefined && !dislikes){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
 	foodOffers.sort((a, b) => {
-		const aMarkingsRelation = a?.markings as FoodoffersMarkings[]
-		let aMarkingsIds: string[] = [];
-		if(aMarkingsRelation){
-			for(const marking of aMarkingsRelation){
-				const markingIsOrMarking = marking.markings_id;
-				if(typeof markingIsOrMarking === 'string'){
-					aMarkingsIds.push(markingIsOrMarking);
-				}
-				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
-					aMarkingsIds.push(markingIsOrMarking.id);
-				}
-			}
-		}
+		const aDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		const aLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
 
-		const bMarkingsRelation = b?.markings as FoodoffersMarkings[]
-		let bMarkingsIds = [];
-		if(bMarkingsRelation){
-			for(const marking of bMarkingsRelation){
-				const markingIsOrMarking = marking.markings_id;
-				if(typeof markingIsOrMarking === 'string'){
-					bMarkingsIds.push(markingIsOrMarking);
-				}
-				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
-					bMarkingsIds.push(markingIsOrMarking.id);
-				}
-			}
-		}
-
-		const aDislikedEatingHabitsFound = areDislikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
-		const aLikedEatingHabitsFound = areLikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
-
-		const bDislikedEatingHabitsFound = areDislikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
-		const bLikedEatingHabitsFound = areLikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
+		const bDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		const bLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
 
 		const returnAShouldBeFirst = -1;
 		const returnNoOrder = 0;
@@ -224,24 +172,6 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	return copiedFoodOffers;
 }
 
-function getFoodName(food: string | Foods | null | undefined, languageCode: string) {
-	if (typeof food === 'object' && food !== null) {
-		let translations = food.translations as TranslationEntry[]
-		if (translations) {
-			let translation = getDirectusTranslation(languageCode, translations, 'name', false, undefined, undefined);
-			if (translation) {
-				return translation;
-			}
-		}
-
-		if (food?.alias) {
-			return food.alias
-		}
-	}
-	return null
-}
-
-
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
@@ -249,6 +179,7 @@ export default function FoodOfferScreen() {
 	const [foodOffersDownloaded, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
 	const projectName = useProjectName()
+	const dislikeColor = useDislikeColor();
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
@@ -329,16 +260,22 @@ export default function FoodOfferScreen() {
   		}
 		title = getFoodName(food, languageCode)
 
+		const unwantedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(foodOffer, profilesMarkingsDict);
+		const borderColor = unwantedEatingHabitsFound ? dislikeColor : undefined;
+
 	    //TODO: This is a temporary "fix" for the SWOSY project
 		if (projectName === "SWOSY") {
 			//replace the url with the server url
 			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
 		}
 
+		const markingBadge = unwantedEatingHabitsFound ? <MarkingBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
+
 		return (
 			<MyCardForResourcesWithImage
 				key={item.key}
 				heading={title}
+				borderColor={borderColor}
 				thumbHash={thumb_hash}
 				image_url={image_url}
 				assetId={assetId}
@@ -351,7 +288,12 @@ export default function FoodOfferScreen() {
 					<IndividualPricingBadge foodOffer={foodOffer}/>
 				}
 				topRightComponent={
-					<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+					<View style={{
+						flexDirection: 'row',
+					}}>
+						{markingBadge}
+						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+					</View>
 				}
 				imageUploaderConfig={{
 					resourceId: food.id,
