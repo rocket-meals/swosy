@@ -8,8 +8,10 @@ import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {TouchableOpacity} from "react-native";
 import {LoadingRectThemed} from "@/components/food/MarkingList";
+import {SettingsRow} from "@/components/settings/SettingsRow";
 
 export default function MarkingListItem({ markingId }: { markingId: string}) {
+	/**
 	const [loading, setLoading] = React.useState(true);
 	const useLazyLoading = false;
 
@@ -25,6 +27,7 @@ export default function MarkingListItem({ markingId }: { markingId: string}) {
 	if(loading && useLazyLoading){
 		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
 	}
+		*/
 	return <MarkingListItemReal markingId={markingId} />
 }
 
@@ -59,9 +62,21 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 		}
 	}
 
-	return(
-		<View key={marking.id}>
-			<SettingsRowTriStateLikeDislike onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
+	const performance = false;
+
+	if(performance){
+		return <View style={{
+			height: 40, width: '100%', justifyContent: 'center', alignItems: 'center'
+		}}>
+			<Text>{text}</Text>
 		</View>
-	)
+	} else {
+		return(
+			<View key={marking.id}>
+				<SettingsRowTriStateLikeDislike onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
+			</View>
+		)
+	}
+
+
 }
