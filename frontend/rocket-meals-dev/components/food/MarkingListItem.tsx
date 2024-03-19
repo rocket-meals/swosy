@@ -35,6 +35,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const markingFromProfile = profilesMarkingsDict[markingId]
 	const status = markingFromProfile?.dislikes;
+	const likes = status ? !status : undefined;
 	const translation_marking = useTranslation(TranslationKeys.markings);
 
 	const [loading, setLoading] = React.useState(true);
@@ -48,19 +49,19 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const text = translated_name || marking.alias || marking.id;
 	const accessibilityLabel = translation_marking+": "+text;
 
-	const onPress = (nextStatus: boolean | undefined) => {
-		if (nextStatus === true) {
-			setProfileMarking(marking, true)
-		} else if (nextStatus === false) {
-			setProfileMarking(marking, false)
-		} else {
+	const onPress = (like: boolean | undefined) => {
+		const removeMarking = like === undefined;
+		if(removeMarking){
 			removeProfileMarking(marking)
+		} else {
+			const dislikes = like === false;
+			setProfileMarking(marking, dislikes)
 		}
 	}
 
 	return(
 		<View key={marking.id}>
-			<SettingsRowTriStateLikeDislike onPress={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={status}/>
+			<SettingsRowTriStateLikeDislike onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
 		</View>
 	)
 }
