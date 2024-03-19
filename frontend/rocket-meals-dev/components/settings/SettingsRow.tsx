@@ -5,6 +5,7 @@ import {AccessibilityRole, TouchableOpacity} from 'react-native';
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {useProjectColor} from '@/states/ProjectInfo';
 import {IconNames} from '@/constants/IconNames';
+import {MyActionsheetItem} from "@/components/settings/MyActionsheetItem";
 
 export interface SettingsRowProps {
     key?: any;
@@ -60,18 +61,20 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		leftIcon: props.leftIcon,
 	}
 
-	/**
-	return (
-		<>
-			<View style={{
-				padding: DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
-			}}>
-				<Text>{item.label}</Text>
-			</View>
+	const ultraPerformance = false
 
-		</>
-	)
-	*/
+	if(ultraPerformance) {
+		return (
+			<>
+				<View style={{
+					padding: DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
+				}}>
+					<Text>{item.label}</Text>
+				</View>
+
+			</>
+		)
+	}
 
 	function renderRightContent(showPress: boolean): React.ReactNode {
 		const rightIcon = props?.rightIcon
@@ -138,25 +141,27 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
 	const performance = true;
 
+	const renderLeftIcon = (icon: any) => {
+		return <View style={{
+			paddingLeft: 8,
+			paddingRight: 8,
+		}}>
+			{icon}
+		</View>
+	}
+
 	if(performance){
 		return (
 			<>
-				<TouchableOpacity
-					style={{
-						padding: props.padding || DEFAULT_PADDING,
-						backgroundColor: isHovered ? lighterOrDarkerBackgroundColor : usedViewBackgroundColor,
-					}}
+				<MyActionsheetItem
 					accessibilityLabel={item.accessibilityLabel}
 					onPress={item.onSelect}
 					key={item.key}
-					activeOpacity={0.6}
-					onMouseEnter={handleMouseEnter}
-					onMouseLeave={handleMouseLeave}
 				>
-					<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+					{renderLeftIcon(renderedLeftIcon)}
 					{content}
 					{renderRightContent(!!item.onSelect)}
-				</TouchableOpacity>
+				</MyActionsheetItem>
 				{/* Your rendered children go here */}
 			</>
 		);

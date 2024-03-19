@@ -27,6 +27,7 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 	const tooltip = useEditProfileEatingHabitsAccessibilityLabel();
 
 	const [showActionsheet, setShowActionsheet] = useState(false)
+	const onPressLegacy = useGlobalActionSheetSettingProfileEatingHabits()
 
 	const onPress = () => {
 		setShowActionsheet(!showActionsheet)
@@ -37,12 +38,15 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 
 	}
 
-	//                <MyButton
-	//                     useOnlyNecessarySpace={true} accessibilityLabel={"Canteen"} leftIcon={IconNames.canteen_icon} {...props} onPress={onPress} />
+	const useLegacy = true;
+	let usedOnPress: any = onPress;
+	if(useLegacy){
+		usedOnPress = onPressLegacy;
+	}
 
 	return (
 		<>
-		<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.eating_habit_icon} {...props} onPress={onPress} />
+		<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.eating_habit_icon} {...props} onPress={usedOnPress} />
 			<Actionsheet isOpen={showActionsheet} onClose={onCancel} zIndex={999}>
 				<ActionsheetBackdrop onPress={onCancel} />
 				<ActionsheetContent

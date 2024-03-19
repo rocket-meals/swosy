@@ -8,7 +8,7 @@ import {
 	ActionsheetItemText
 } from '@gluestack-ui/themed';
 import React, {useEffect, useState} from 'react';
-import {DimensionValue, FlatListProps} from 'react-native';
+import {DimensionValue, FlatListProps, TouchableOpacity} from 'react-native';
 import {Heading, Icon, View, useTextContrastColor, useViewBackgroundColor} from '@/components/Themed';
 import {useSyncStateRaw} from '@/helper/syncState/SyncState';
 import {NonPersistentStore} from '@/helper/syncState/NonPersistentStore';
@@ -93,6 +93,78 @@ export const useMyGlobalActionSheet: () => [show: (config?: MyGlobalActionSheetC
     	]
     }
 
+const MyGlobalActionSheetItem = ({item}: {item: MyGlobalActionSheetItem}) => {
+	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const viewBackgroundColor = useViewBackgroundColor()
+	const textColor = useTextContrastColor()
+	const lighterOrDarkerBackgroundColor = useLighterOrDarkerColorForSelection(viewBackgroundColor)
+	const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
+	const projectColor = useProjectColor()
+	const projectColorContrast = useMyContrastColor(projectColor)
+
+	let onSelectMethod = undefined;
+	if (item.onSelect) {
+		onSelectMethod = async () => {
+			await item.onSelect(item.key, hide);
+		};
+	}
+
+	const [isHovered, setIsHovered] = useState(false);
+
+	// Function to handle mouse enter event
+	const handleMouseEnter = () => {
+		setIsHovered(true);
+	};
+
+	// Function to handle mouse leave event
+	const handleMouseLeave = () => {
+		setIsHovered(false);
+	};
+
+	const isActive = item.active || false;
+	let usedViewBackgroundColor = 'transparent';
+	let usedTextColor = textColor;
+	if (isActive && projectColor) {
+		usedViewBackgroundColor = projectColor;
+		usedTextColor = projectColorContrast;
+	} else if (!isActive && viewBackgroundColor) {
+		usedViewBackgroundColor = viewBackgroundColor;
+		usedTextColor = lighterOrDarkerTextColor;
+	}
+
+	let renderedLeftIcon = item.renderLeftIcon ? item.renderLeftIcon(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide) : <Icon color={usedTextColor} name={item.icon} />;
+
+	let content = item.render ? item.render(usedViewBackgroundColor, lighterOrDarkerBackgroundColor, usedTextColor, lighterOrDarkerTextColor, hide) : (
+		<TouchableOpacity
+			style={{
+				minHeight: 50,
+				width: '100%',
+				flexDirection: 'row',
+				alignItems: 'center',
+				padding: 10,
+				backgroundColor: isHovered ? lighterOrDarkerBackgroundColor : usedViewBackgroundColor,
+			}}
+			accessibilityLabel={item.accessibilityLabel}
+			onPress={onSelectMethod}
+			activeOpacity={0.6}
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+		>
+			<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+			<View style={{ flex: 1 }}>
+				<ActionsheetItemText selectable={true}
+									 sx={{
+										 color: usedTextColor,
+									 }}
+				>{item.label}</ActionsheetItemText>
+			</View>
+			<ActionsheetItemText>{<Icon color={usedTextColor} name={item.active ? 'checkbox-blank-circle' : 'checkbox-blank-circle-outline'} />}</ActionsheetItemText>
+		</TouchableOpacity>
+	);
+	return content;
+}
+
+
 export const MyGlobalActionSheet = (props: any) => {
 	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 	const viewBackgroundColor = useViewBackgroundColor()
@@ -124,62 +196,15 @@ export const MyGlobalActionSheet = (props: any) => {
 	}
 
 	let flatListData = showActionsheetConfig.items?.map(item => {
-		const isActive = item.active || false;
-		let usedViewBackgroundColor = 'transparent';
-		let usedTextColor = textColor;
-		if (isActive && projectColor) {
-			usedViewBackgroundColor = projectColor;
-			usedTextColor = projectColorContrast;
-		} else if (!isActive && viewBackgroundColor) {
-			usedViewBackgroundColor = viewBackgroundColor;
-			usedTextColor = lighterOrDarkerTextColor;
-		}
 		return {
 			...item,
-			usedViewBackgroundColor,
-			usedTextColor,
-			lighterOrDarkerBackgroundColor,
-			lighterOrDarkerTextColor
 		};
 	});
 
 	const renderItem = ({ item }) => {
-		let onSelectMethod = undefined;
-		if (item.onSelect) {
-			onSelectMethod = async () => {
-				await item.onSelect(item.key, hide);
-			};
-		}
-
-		let renderedLeftIcon = item.renderLeftIcon ? item.renderLeftIcon(item.usedViewBackgroundColor, item.lighterOrDarkerBackgroundColor, item.usedTextColor, item.lighterOrDarkerTextColor, hide) : <Icon color={item.usedTextColor} name={item.icon} />;
-
-		let content = item.render ? item.render(item.usedViewBackgroundColor, item.lighterOrDarkerBackgroundColor, item.usedTextColor, item.lighterOrDarkerTextColor, hide) : (
-			<ActionsheetItem
-				disabled={!item.onSelect}
-				accessibilityRole={MyAccessibilityRoles.Radio}
-				accessibilityLabel={item.accessibilityLabel}
-				sx={{
-					bg: item.usedViewBackgroundColor,
-					':hover': {
-						bg: item.lighterOrDarkerBackgroundColor,
-					},
-				}}
-				key={item.key}
-				onPress={onSelectMethod}
-			>
-				<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-				<View style={{ flex: 1 }}>
-					<ActionsheetItemText selectable={true}
-										 sx={{
-											 color: item.usedTextColor,
-										 }}
-					>{item.label}</ActionsheetItemText>
-				</View>
-				<ActionsheetItemText>{<Icon color={item.usedTextColor} name={item.active ? 'checkbox-blank-circle' : 'checkbox-blank-circle-outline'} />}</ActionsheetItemText>
-			</ActionsheetItem>
+		return (
+			<MyGlobalActionSheetItem item={item} />
 		);
-
-		return content;
 	};
 
 	let content: any = undefined
@@ -236,7 +261,7 @@ export const MyGlobalActionSheet = (props: any) => {
 				}}
 			>
 				<View style={{
-
+					width: "100%",
 				}}>
 					<ActionsheetDragIndicatorWrapper>
 						<ActionsheetDragIndicator
