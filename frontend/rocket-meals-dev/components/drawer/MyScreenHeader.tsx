@@ -84,7 +84,18 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 	const translation_navigate_back = useTranslation(TranslationKeys.navigate_back);
 
 	const default_title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
-	const usedTitle = custom_title || default_title
+	let usedTitle = custom_title || default_title
+
+	// simulate long title
+	let simulatedLongTitle = false
+	if(simulatedLongTitle){
+		let newTitle = ""
+		for(let i=0; i<40; i++){
+			newTitle += usedTitle+" "
+		}
+		usedTitle = newTitle
+	}
+
 
 	// Adjust padding based on the drawer's position to align the icon appropriately.
 	const paddingLeft: any = 10;
@@ -173,6 +184,9 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 	const headerLeft = isFlipped? secondaryHeaderContent : primaryHeaderContent;
 	const headerRight = isFlipped? primaryHeaderContent : secondaryHeaderContent;
 
+	const headerLeftFlex = isFlipped? 1 : 2;
+	const headerRightFlex = isFlipped? 2 : 1;
+
 	// TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
 	// Consideration for future improvement to allow more flexible title positioning.
 
@@ -228,19 +242,22 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 			>
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
 					<View style={{
-						flexDirection: 'row',
-						alignItems: 'center',
+						flex: headerLeftFlex,
 					}}
 					>
 						{headerLeft}
 					</View>
 					<View style={{
-						flexShrink: 1,
-						alignItems: 'center',
-						flexDirection: 'row',
+						flex: headerRightFlex,
 					}}
 					>
-						{headerRight}
+						<View style={{
+							flexDirection: 'row',
+							flexWrap: 'wrap',
+							justifyContent: isFlipped? 'flex-start' : 'flex-end',
+						}} >
+							{headerRight}
+						</View>
 					</View>
 				</View>
 			</View>
