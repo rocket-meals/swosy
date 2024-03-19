@@ -122,7 +122,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 				width: "100%",
 				flexDirection: "row",
 			}}>
-				<FoodFeedbackRating food={food} showOnlyMax={false}/>
+				<FoodFeedbackRating food={food} showQuickAction={false}/>
 			</View>
 			<View style={{width: "100%", height: 10}} />
 			{commentContent}
@@ -224,7 +224,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 
 	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
 		<View style={{ flex: 1, flexDirection: "row" }}>
-			<FoodFeedbackRating food={food} showOnlyMax={false}/>
+			<FoodFeedbackRating food={food} showQuickAction={false}/>
 		</View>
 		<View>
 			<FoodNotifyButton food={food}/>

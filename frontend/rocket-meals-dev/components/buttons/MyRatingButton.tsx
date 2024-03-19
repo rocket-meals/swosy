@@ -12,6 +12,17 @@ export enum RatingType{
 	stars= 'stars'
 }
 
+const MAX_RATING = 5;
+const MIN_RATING = 1;
+const MINIMUM_RATING_AS_FAVORITE = (MAX_RATING+MIN_RATING)/2;
+
+export function isRatingPositive(rating: number | null | undefined): boolean {
+	return rating !== null && rating !== undefined && rating >= MINIMUM_RATING_AS_FAVORITE;
+}
+
+export function isRatingNegative(rating: number | null | undefined): boolean {
+	return rating !== null && rating !== undefined && rating < MINIMUM_RATING_AS_FAVORITE;
+}
 
 /**
  * The raw rating component, without any context or food specific logic
@@ -22,7 +33,7 @@ export enum RatingType{
  * @param borderRadius the border radius
  * @constructor
  */
-export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, borderRadius}: {borderRadius?: number, rating: number | undefined | null, showOnlyMax: boolean, ratingType: RatingType, setRating: (rating: number | null) => void}) => {
+export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, borderRadius}: {borderRadius?: number, rating: number | undefined | null, showQuickAction: boolean, ratingType: RatingType, setRating: (rating: number | null) => void}) => {
 	let foods_ratings_type = ratingType
 	const translation_set_rating_to = useTranslation(TranslationKeys.set_rating_to);
 	const translation_reset_rating = useTranslation(TranslationKeys.reset_rating);
@@ -35,11 +46,10 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 
 	let renderedOptions = [];
 
-	const MAX_RATING = 5;
-	const MIN_RATING = 1;
+
 
 	if(foods_ratings_type === RatingType.favorite || foods_ratings_type === RatingType.hearts){
-		let isActive = rating === MAX_RATING;
+		let isActive = isRatingPositive(rating)
 		let icon = isActive ? IconNames.favorite_active_icon : IconNames.favorite_inactive_icon
 		if(foods_ratings_type === RatingType.hearts){
 			icon = isActive ? IconNames.heart_active_icon : IconNames.heart_inactive_icon
@@ -58,49 +68,70 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 		)
 	}
 	if(foods_ratings_type === RatingType.likes){
-		let isLikeActive = rating === MAX_RATING;
-		const isDislikeActive = rating === MIN_RATING
+		let isLikeActive = isRatingPositive(rating)
+		let isDislikeActive = isRatingNegative(rating)
 		let dislike_icon = isDislikeActive ? IconNames.dislike_active_icon : IconNames.dislike_inactive_icon
 		let like_icon = isLikeActive ? IconNames.like_active_icon : IconNames.like_inactive_icon
 
-		if(!showOnlyMax){
-			const accessibilityLabel = isDislikeActive ? translation_reset_rating : translation_set_rate_as_not_favorite
-			const borderRightRadius = 0
 
+		const accessibilityLabelDislike = isDislikeActive ? translation_reset_rating : translation_set_rate_as_not_favorite
+		const accessibilityLabelLike = isLikeActive ? translation_reset_rating : translation_set_rate_as_favorite
+
+		if(!showQuickAction){
 			renderedOptions.push(
 				<MyButton
-					borderRightRadius={borderRightRadius}
+					borderRightRadius={0}
 					borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
 					if (isDislikeActive) {
 						setRating(null)
 					} else {
 						setRating(MIN_RATING)
 					}
-				}} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={dislike_icon} />
+				}} accessibilityLabel={accessibilityLabelDislike} tooltip={accessibilityLabelDislike} icon={dislike_icon} />
 			)
+
+			renderedOptions.push(
+				<MyButton
+					borderLeftRadius={0}
+					borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
+					if (isLikeActive) {
+						setRating(null)
+					} else {
+						setRating(MAX_RATING)
+					}
+				}} accessibilityLabel={accessibilityLabelLike} tooltip={accessibilityLabelLike} icon={like_icon} />
+			)
+		} else {
+			if(isDislikeActive){
+				renderedOptions.push(
+					<MyButton
+						borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
+						if (isDislikeActive) {
+							setRating(null)
+						} else {
+							setRating(MIN_RATING)
+						}
+					}} accessibilityLabel={accessibilityLabelDislike} tooltip={accessibilityLabelDislike} icon={dislike_icon} />
+				)
+			} else {
+				renderedOptions.push(
+					<MyButton
+						borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
+						if (isLikeActive) {
+							setRating(null)
+						} else {
+							setRating(MAX_RATING)
+						}
+					}} accessibilityLabel={accessibilityLabelLike} tooltip={accessibilityLabelLike} icon={like_icon} />
+				)
+			}
 		}
 
-		const accessibilityLabel = isLikeActive ? translation_reset_rating : translation_set_rate_as_favorite
-		let borderLeftRadius = undefined
-		if(!showOnlyMax){ // only the first one should have a border radius on the left
-			borderLeftRadius = 0
-		}
 
-		renderedOptions.push(
-			<MyButton
-				borderLeftRadius={borderLeftRadius}
-				borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
-				if (isLikeActive) {
-					setRating(null)
-				} else {
-					setRating(MAX_RATING)
-				}
-			}} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={like_icon} />
-		)
 	}
 	if(foods_ratings_type === RatingType.stars){
 		for(let i = MIN_RATING; i <= MAX_RATING; i++){
-			let skipRating = showOnlyMax && i !== MAX_RATING
+			let skipRating = showQuickAction && i !== MAX_RATING
 
 			if(!skipRating){
 				let isRatingEqualOrHigher = false
@@ -114,7 +145,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 				if(isRatingEqual){
 					accessibilityLabel = translation_reset_rating;
 				}
-				if(showOnlyMax && i === MAX_RATING){
+				if(showQuickAction && i === MAX_RATING){
 					accessibilityLabel = translation_set_rate_as_favorite
 					if(isRatingEqual){
 						accessibilityLabel = translation_reset_rating;
@@ -129,7 +160,7 @@ export const MyRatingButton = ({rating, showOnlyMax, ratingType, setRating, bord
 
 				let isTheFirstOne = i === MIN_RATING
 				let borderLeftRadius = undefined
-				if(!isTheFirstOne && !showOnlyMax){ // only the first one should have a border radius on the left
+				if(!isTheFirstOne && !showQuickAction){ // only the first one should have a border radius on the left
 					borderLeftRadius = 0
 				}
 

@@ -25,21 +25,10 @@ export const SettingsRowUser: FunctionComponent<AppState> = ({...props}) => {
 
 	const accessibilityLabel = translation_title;
 
-	function renderDebug() {
-		if (debug) {
-			return (
-				<View style={{width: '100%'}}>
-					<Text>{JSON.stringify(currentUser, null, 2)}</Text>
-				</View>
-			)
-		}
-	}
-
 	return (
 		<>
 			<SettingsRow labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
 			</SettingsRow>
-			{renderDebug()}
 		</>
 	)
 }

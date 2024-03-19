@@ -2,35 +2,167 @@ import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {DirectusFiles, Foodoffers} from '@/helper/database/databaseTypes/types';
+import {
+	DirectusFiles,
+	Foodoffers,
+	Foods,
+	FoodsFeedbacks,
+	ProfilesMarkings
+} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
-import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
+import {
+	useProfileLanguageCode,
+	useSynchedProfileCanteen,
+	useSynchedProfileFoodFeedbacksDict, useSynchedProfileMarking, useSynchedProfileMarkingsDict
+} from '@/states/SynchedProfile';
 import React, {useEffect, useState} from 'react';
 import {Spinner, Text, View} from '@/components/Themed';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {Link, router, useNavigation} from 'expo-router';
+import {router, useNavigation} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
-import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
 import {useProjectName} from "@/states/ProjectInfo";
+import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
+
+
+function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
+	foodOffers.sort((a, b) => {
+		let nameA = getFoodName(a.food, languageCode);
+		let nameB = getFoodName(b.food, languageCode);
+		if(nameA && nameB){
+			return nameA.localeCompare(nameB);
+		} else if (nameA){
+			return -1;
+		} else if (nameB){
+			return 1;
+		}
+	});
+	return foodOffers;
+}
+
+
+
+function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
+	foodOffers.sort((a, b) => {
+		const aFoodId = a?.food?.id;
+		const bFoodId = b?.food?.id;
+		const aFeedback = foodFeedbacksDict[aFoodId];
+		const bFeedback = foodFeedbacksDict[bFoodId];
+		const aRating = aFeedback?.rating;
+		const bRating = bFeedback?.rating;
+
+		const aRatingPositive = isRatingPositive(aRating);
+		const aRatingNegative = isRatingNegative(aRating);
+		const aRatingUnknown = aRating === null || aRating === undefined;
+
+		const bRatingPositive = isRatingPositive(bRating);
+		const bRatingNegative = isRatingNegative(bRating);
+		const bRatingUnknown = bRating === null || bRating === undefined;
+
+		const returnAShouldBeFirst = -1;
+		const returnNoOrder = 0;
+		const returnBShouldBeFirst = 1;
+
+		if(aRatingPositive && bRatingPositive){
+			return returnNoOrder
+		}
+		if(aRatingPositive && bRatingNegative){
+			return returnAShouldBeFirst
+		}
+		if(aRatingPositive && bRatingUnknown){
+			return returnBShouldBeFirst
+		}
+
+		if(aRatingNegative && bRatingPositive){
+			return returnBShouldBeFirst
+		}
+		if(aRatingNegative && bRatingNegative){
+			return returnNoOrder
+		}
+		if(aRatingNegative && bRatingUnknown){
+			return returnBShouldBeFirst
+		}
+
+		if(aRatingUnknown && bRatingPositive){
+			return returnBShouldBeFirst
+		}
+		if(aRatingUnknown && bRatingNegative){
+			return returnAShouldBeFirst
+		}
+		if(aRatingUnknown && bRatingUnknown){
+			return returnNoOrder
+		}
+		return 0;
+	});
+	return foodOffers;
+
+}
+
+function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>, profileMarkingsDict: Record<string, ProfilesMarkings>, sortType: SortType, languageCode: string) {
+	let copiedFoodOffers = [...foodOffers];
+	if(sortType === SortType.intelligent){
+		// sort first by name, then by eating habits, then by favorite
+		let sortOrders = [SortType.alphabetical, SortType.favorite];
+		for(const sortOrder of sortOrders){
+			copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode);
+		}
+	} else if(sortType === SortType.alphabetical){
+		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
+	} else if(sortType === SortType.favorite){
+		copiedFoodOffers = sortByFavorite(foodOffers, foodFeedbacksDict);
+	}
+	return copiedFoodOffers;
+}
+
+function getFoodName(food: string | Foods | null | undefined, languageCode: string) {
+	if (typeof food === 'object' && food !== null) {
+		let translations = food.translations as TranslationEntry[]
+		if (translations) {
+			let translation = getDirectusTranslation(languageCode, translations, 'name', false, undefined, undefined);
+			if (translation) {
+				return translation;
+			}
+		}
+
+		if (food?.alias) {
+			return food.alias
+		}
+	}
+	return null
+}
+
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [foodOffers, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
+	const [foodOffersDownloaded, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
 	const projectName = useProjectName()
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
+
+	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const [foodFeedbacksDict, setFoodFeedbacksDict] = useSynchedProfileFoodFeedbacksDict()
+	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+
+	let foodOffersSorted = foodOffersDownloaded
+	if (foodOffersSorted) {
+		foodOffersSorted = sortFoodOffers(foodOffersSorted, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
+	}
+
 
 	const navigation = useNavigation();
 
@@ -39,7 +171,6 @@ export default function FoodOfferScreen() {
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
 	async function loadFoodOffers() {
-		console.log('loadFoodOffers');
 		setFoodOffers(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
@@ -66,9 +197,9 @@ export default function FoodOfferScreen() {
   type DataItem = { key: string; data: Foodoffers }
 
   const data: DataItem[] = []
-  if (foodOffers) {
-  	for (let i = 0; i < foodOffers.length; i++) {
-  		const foodOffer = foodOffers[i];
+  if (foodOffersSorted) {
+  	for (let i = 0; i < foodOffersSorted.length; i++) {
+  		const foodOffer = foodOffersSorted[i];
   		data.push({
   			key: foodOffer.id + '', data: foodOffer
   		})
@@ -94,12 +225,7 @@ export default function FoodOfferScreen() {
   		if (food?.image_thumb_hash) {
   			thumb_hash = food.image_thumb_hash
   		}
-  		if (food?.alias) {
-  			title = food.alias
-  		}
-  		if (foodOffer?.alias) {
-  			title = foodOffer.alias
-  		}
+		title = getFoodName(food, languageCode)
 
 	    //TODO: This is a temporary "fix" for the SWOSY project
 		if (projectName === "SWOSY") {
@@ -123,7 +249,7 @@ export default function FoodOfferScreen() {
 					<IndividualPricingBadge foodOffer={foodOffer}/>
 				}
 				topRightComponent={
-					<FoodFeedbackRating food={food} showOnlyMax={true} borderRadius={MyCardDefaultBorderRadius}/>
+					<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
 				}
 				imageUploaderConfig={{
 					resourceId: food.id,
@@ -146,7 +272,7 @@ export default function FoodOfferScreen() {
   		</MySafeAreaView>
   	)
   } else {
-  	if (foodOffers === undefined) {
+  	if (foodOffersSorted === undefined) {
 		// Show loading
 		return <View style={{
 			height: '100%',
@@ -156,7 +282,7 @@ export default function FoodOfferScreen() {
 		}}>
 			<Spinner/>
 		</View>
-	} else if (foodOffers === null) {
+	} else if (foodOffersSorted === null) {
 		return (
 			<MySafeAreaView>
 				<MyScrollView>
@@ -167,7 +293,7 @@ export default function FoodOfferScreen() {
 				</MyScrollView>
 			</MySafeAreaView>
 		);
-  	} else if (foodOffers.length === 0) {
+  	} else if (foodOffersSorted.length === 0) {
   		return (
   			<MySafeAreaView>
   				<MyScrollView>
@@ -178,7 +304,7 @@ export default function FoodOfferScreen() {
   				</MyScrollView>
   			</MySafeAreaView>
   		);
-  	} else if (foodOffers.length > 0) {
+  	} else if (foodOffersSorted.length > 0) {
   		return (
   			<MySafeAreaView>
   				<MyGridFlatList

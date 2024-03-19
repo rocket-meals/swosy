@@ -54,6 +54,12 @@ export class TranslationKeys {
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
 
+	static sort = createTranslationKey('sort', 'Sortieren');
+	static sort_option_none = createTranslationKey('none', 'Keine');
+	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
+	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
+	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
+
 	static new = createTranslationKey('new', 'Neu');
 
 	static attention = createTranslationKey('attention', 'Achtung!');
