@@ -4,7 +4,7 @@ import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/S
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {
 	DirectusFiles,
-	Foodoffers,
+	Foodoffers, FoodoffersMarkings,
 	Foods,
 	FoodsFeedbacks,
 	ProfilesMarkings
@@ -108,11 +108,109 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 
 }
 
+function areDislikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
+	for(const marking_id of marking_ids){
+		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
+		if(marking){
+			const dislikes = marking.dislikes;
+			if(dislikes !== null && dislikes !== undefined && dislikes){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function areLikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
+	for(const marking_id of marking_ids){
+		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
+		if(marking){
+			const dislikes = marking.dislikes;
+			if(dislikes !== null && dislikes !== undefined && !dislikes){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
+	foodOffers.sort((a, b) => {
+		const aMarkingsRelation = a?.markings as FoodoffersMarkings[]
+		let aMarkingsIds: string[] = [];
+		if(aMarkingsRelation){
+			for(const marking of aMarkingsRelation){
+				const markingIsOrMarking = marking.markings_id;
+				if(typeof markingIsOrMarking === 'string'){
+					aMarkingsIds.push(markingIsOrMarking);
+				}
+				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
+					aMarkingsIds.push(markingIsOrMarking.id);
+				}
+			}
+		}
+
+		const bMarkingsRelation = b?.markings as FoodoffersMarkings[]
+		let bMarkingsIds = [];
+		if(bMarkingsRelation){
+			for(const marking of bMarkingsRelation){
+				const markingIsOrMarking = marking.markings_id;
+				if(typeof markingIsOrMarking === 'string'){
+					bMarkingsIds.push(markingIsOrMarking);
+				}
+				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
+					bMarkingsIds.push(markingIsOrMarking.id);
+				}
+			}
+		}
+
+		const aDislikedEatingHabitsFound = areDislikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
+		const aLikedEatingHabitsFound = areLikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
+
+		const bDislikedEatingHabitsFound = areDislikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
+		const bLikedEatingHabitsFound = areLikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
+
+		const returnAShouldBeFirst = -1;
+		const returnNoOrder = 0;
+		const returnBShouldBeFirst = 1;
+
+		const likeSortWeight = 1;
+		const dislikeSortWeight = likeSortWeight*2;
+
+		let aSortValue = 0;
+		if(aDislikedEatingHabitsFound){
+			aSortValue -= dislikeSortWeight // add a penalty for disliked eating habits
+		}
+		if(aLikedEatingHabitsFound){
+			aSortValue += likeSortWeight // add a bonus for liked eating habits
+		}
+
+		let bSortValue = 0;
+		if(bDislikedEatingHabitsFound){
+			bSortValue -= dislikeSortWeight // add a penalty for disliked eating habits
+		}
+		if(bLikedEatingHabitsFound){
+			bSortValue += likeSortWeight // add a bonus for liked eating habits
+		}
+
+		if(aSortValue > bSortValue){
+			return returnBShouldBeFirst;
+		} else if(aSortValue < bSortValue){
+			return returnAShouldBeFirst;
+		} else {
+			return returnNoOrder;
+		}
+
+	});
+	return foodOffers;
+
+}
+
 function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>, profileMarkingsDict: Record<string, ProfilesMarkings>, sortType: SortType, languageCode: string) {
 	let copiedFoodOffers = [...foodOffers];
 	if(sortType === SortType.intelligent){
 		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.alphabetical, SortType.favorite];
+		let sortOrders = [SortType.alphabetical, SortType.eatingHabits, SortType.favorite];
 		for(const sortOrder of sortOrders){
 			copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode);
 		}
@@ -120,6 +218,8 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
 		copiedFoodOffers = sortByFavorite(foodOffers, foodFeedbacksDict);
+	} else if(sortType === SortType.eatingHabits){
+		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
 	}
 	return copiedFoodOffers;
 }
@@ -159,6 +259,8 @@ export default function FoodOfferScreen() {
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
 	let foodOffersSorted = foodOffersDownloaded
+	console.log("foodOffersDownloaded", foodOffersDownloaded)
+
 	if (foodOffersSorted) {
 		foodOffersSorted = sortFoodOffers(foodOffersSorted, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
 	}
