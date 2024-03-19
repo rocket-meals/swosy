@@ -196,7 +196,7 @@ export function useIsProfileSetupComplete(): boolean {
 }
 
 
-export function useSynchedProfileFoodFeedbacksDict(): [Record<string, FoodsFeedbacks>, ((food_id: string) => (FoodsFeedbacks | undefined)), ((food_id: string, rating: (number | null)) => Promise<boolean | void>), ((food_id: string, notify: (boolean | null)) => Promise<boolean | void>), ((food_id: string, comment: (string | null)) => Promise<boolean | void>)]
+export function useSynchedProfileFoodFeedbacksDict(): [Record<string, FoodsFeedbacks | undefined>, ((food_id: string) => (FoodsFeedbacks | undefined)), ((food_id: string, rating: (number | null)) => Promise<boolean | void>), ((food_id: string, notify: (boolean | null)) => Promise<boolean | void>), ((food_id: string, comment: (string | null)) => Promise<boolean | void>)]
 {
 	const [profile, setProfile] = useSynchedProfile();
 	const profileFoodFeedbacksList: FoodsFeedbacks[] = profile?.foods_feedbacks || [];

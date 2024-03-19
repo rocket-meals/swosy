@@ -102,4 +102,9 @@ export enum IconNames {
 
     camera_icon = "camera",
     gallery_icon = "folder-image",
+    sort_icon = "sort",
+    sort_none_icon = "sort-variant-remove",
+    sort_alphabetical_icon = "sort-alphabetical-ascending",
+    sort_favorite_icon = "star",
+    sort_intelligent_icon = "brain",
 }

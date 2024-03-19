@@ -30,7 +30,7 @@ export const useFeedbackRatingType = (): RatingType => {
  * @param borderRadius the border radius
  * @constructor
  */
-export const FoodFeedbackRating = ({food, showOnlyMax, borderRadius}: {food: Foods, showOnlyMax: boolean, borderRadius?: number}) => {
+export const FoodFeedbackRating = ({food, showQuickAction, borderRadius}: {food: Foods, showQuickAction: boolean, borderRadius?: number}) => {
 	let foods_ratings_type = useFeedbackRatingType();
 	const usedFoodId = food.id;
 	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
@@ -38,6 +38,6 @@ export const FoodFeedbackRating = ({food, showOnlyMax, borderRadius}: {food: Foo
 	const rating: number | undefined | null = foodFeedback?.rating;
 
 	return <AccountRequiredTouchableOpacity>
-		<MyRatingButton borderRadius={borderRadius} rating={rating} showOnlyMax={showOnlyMax} ratingType={foods_ratings_type} setRating={setRating} />
+		<MyRatingButton borderRadius={borderRadius} rating={rating} showQuickAction={showQuickAction} ratingType={foods_ratings_type} setRating={setRating} />
 	</AccountRequiredTouchableOpacity>
 }

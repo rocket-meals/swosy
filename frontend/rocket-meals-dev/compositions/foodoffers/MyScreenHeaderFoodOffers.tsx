@@ -11,6 +11,9 @@ import {MyPreviousNextButton} from '@/components/buttons/MyPreviousNextButton';
 import {SimpleDatePicker} from '@/components/datePicker/SimpleDatePicker';
 import {UtilizationButton} from '@/compositions/utilizationForecast/UtilizationButton';
 import {SettingsButtonProfileEatingHabits} from '@/compositions/settings/SettingsButtonProfileEatingHabits';
+import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {sortTypesForFood} from "@/states/SynchedSortType";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
@@ -40,6 +43,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					flexDirection: 'row',
 				}}
 				>
+					<SettingsButtonSort synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
 					<SettingsButtonProfileCanteen />
 				</View>

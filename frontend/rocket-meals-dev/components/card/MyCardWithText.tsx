@@ -8,7 +8,7 @@ import { useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {MyCard, MyCardDefaultBorderRadius, MyCardProps} from '@/components/card/MyCard';
 
 export type MyCardWithTextProps = {
-    heading?: string,
+    heading?: string | null | undefined,
     text?: string,
 } & MyCardProps
 

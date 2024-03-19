@@ -33,6 +33,8 @@ export class PersistentStore {
 	static foods = 'PersistentStore.foods'
 	static foodOffers = 'PersistentStore.foodOffers'
 
+	static sortConfigFoodoffers = 'PersistentStore.sortConfigFoodoffers'
+
 	static profile = 'PersistentStore.profile'
 
 	static notificationPermission = 'PersistentStore.notificationPermission'
