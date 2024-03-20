@@ -337,13 +337,35 @@ export class ParseSchedule {
         // Get the day of the week from the date
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         let currentDate = new Date(date);
-        let dayOfWeek = dayNames[currentDate.getDay()];
+        const day = currentDate.getDay();
+        //let dayOfWeek = dayNames[currentDate.getDay()];
 
         let businessObjsForCurrentDay = [];
 
         for (const businessHour of businessHoursForCanteen) {
             // Continue only if the day of the week matches
-            if (businessHour.dayOfTheWeek === dayOfWeek) {
+            //if (businessHour.dayOfTheWeek === dayOfWeek) {
+            //    businessObjsForCurrentDay.push(businessHour);
+            //}
+            if(businessHour?.monday === true && day === 1){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.tuesday === true && day === 2){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.wednesday === true && day === 3){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.thursday === true && day === 4){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.friday === true && day === 5){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.saturday === true && day === 6){
+                businessObjsForCurrentDay.push(businessHour);
+            }
+            if(businessHour?.sunday === true && day === 0){
                 businessObjsForCurrentDay.push(businessHour);
             }
         }
@@ -403,7 +425,14 @@ export class ParseSchedule {
              date_updated: null,
              date_valid_from: null,
              date_valid_till: null,
-             dayOfTheWeek: 'Saturday',
+             //dayOfTheWeek: 'Saturday',
+                 monday: false,
+                tuesday: false,
+                wednesday: false,
+                thursday: false,
+                friday: false,
+                saturday: true,
+                sunday: false,
              id: 5,
              sort: null,
              status: 'draft',
