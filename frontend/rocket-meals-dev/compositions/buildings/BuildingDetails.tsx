@@ -4,7 +4,7 @@ import {IconNames} from '@/constants/IconNames';
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {DirectusTranslatedMarkdown} from "@/components/markdown/DirectusTranslatedMarkdown";
 import {TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
-import {DetailsComponent, TabProps} from "@/components/detailsComponent/DetailsComponent";
+import {DetailsComponent, DetailsComponentTabProps} from "@/components/detailsComponent/DetailsComponent";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {SettingsRowUser} from "@/compositions/settings/SettingsRowUser";
@@ -97,12 +97,12 @@ function BuildingNavigationButton({ building }: { building: Buildings }) {
 	return null;
 }
 
-export function BuildingDetailsWithObject({ building, additionalTabs }: { building: Buildings, additionalTabs?: TabProps[] }) {
+export function BuildingDetailsWithObject({ building, additionalTabs }: { building: Buildings, additionalTabs?: DetailsComponentTabProps[] }) {
 
 	const translation_description = useTranslation(TranslationKeys.description)
 	const translation_information = useTranslation(TranslationKeys.information)
 
-	let tabs: TabProps[] = [
+	let tabs: DetailsComponentTabProps[] = [
 		{
 			iconName: IconNames.description_icon,
 			accessibilityLabel: translation_description,
