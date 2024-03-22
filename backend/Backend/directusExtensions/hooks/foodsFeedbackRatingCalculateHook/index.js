@@ -17,13 +17,13 @@ export default async function ({filter, action, init, schedule}, {
 
 
     async function recalculateFoodFeedbackIdsRatings(food_feedback_ids){
-        console.log("recalculateFoodFeedbackIdsRatings: food_feedback_ids: "+food_feedback_ids.length);
+        //console.log("recalculateFoodFeedbackIdsRatings: food_feedback_ids: "+food_feedback_ids.length);
         // so maybe a lot off food_feedback for the same food are deleted.
         // we should therefore just get the unique food_ids which we need to recalculate the rating for
         let food_id_dict = {}
 
         for(let food_feedback_id of food_feedback_ids){
-            console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
+            //console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
             let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
             let food_id = food_feedback?.food;
             if(!!food_id){
@@ -32,7 +32,7 @@ export default async function ({filter, action, init, schedule}, {
         }
 
         let uniqueFoodIds = Object.keys(food_id_dict)
-        console.log("Amount unique food ids: "+uniqueFoodIds.length);
+        //console.log("Amount unique food ids: "+uniqueFoodIds.length);
 
         for(let food_id of uniqueFoodIds){
             await recalculateFoodRating(food_id);
@@ -40,7 +40,7 @@ export default async function ({filter, action, init, schedule}, {
     }
 
     async function recalculateFoodRating(food_id){
-        console.log("recalculateFoodRating: food_id: "+food_id);
+        //console.log("recalculateFoodRating: food_id: "+food_id);
 
         let food_feedbacks = await foodfeedbacksService.readByQuery({
             filter: {
@@ -83,8 +83,8 @@ export default async function ({filter, action, init, schedule}, {
         collection + ".items.update",
         async (meta, context) => {
             // get the collection which was updated
-            console.log("UPDATE FOOD FEEDBACKS");
-            console.log(meta);
+            //console.log("UPDATE FOOD FEEDBACKS");
+            //console.log(meta);
 
             let food_feedbacks_ids = meta.keys;
             await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
@@ -102,10 +102,10 @@ export default async function ({filter, action, init, schedule}, {
         collection + ".items.create",
         async (meta, context) => {
             // get the collection which was created
-            console.log("CREATE FOOD FEEDBACKS");
-            console.log(meta);
+            //console.log("CREATE FOOD FEEDBACKS");
+            //console.log(meta);
             let food_feedback_id = meta.key;
-            let food_feedback_ids = [food_feedback_id];
+            let food_feedbacks_ids = [food_feedback_id];
             await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
             //{
             //  |   event: 'foods_feedbacks.items.create',
@@ -121,10 +121,10 @@ export default async function ({filter, action, init, schedule}, {
         collection + ".items.delete",
         async (meta, context) => {
             // get the collection which was deleted
-            console.log("DELETE FOOD FEEDBACKS");
-            console.log(meta);
+            //console.log("DELETE FOOD FEEDBACKS");
+            //console.log(meta);
 
-            let food_feedback_ids = meta.keys;
+            let food_feedbacks_ids = meta.keys;
             await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
             // {
             //   event: 'foods_feedbacks.items.delete',

@@ -280,7 +280,8 @@ export class NotifySchedule {
                     {food: food_id},
                     {notify: true}
                 ]
-        }});
+        },
+            limit: -1});
         return foodFeedbacks;
     }
 
@@ -296,7 +297,8 @@ export class NotifySchedule {
             date: {
                 _between: [startOfTheDay.toISOString(), endOfTheDay.toISOString()]
             }
-        }});
+        },
+            limit: -1});
         return foodOffers;
     }
 

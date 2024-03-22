@@ -184,7 +184,8 @@ export class ParseSchedule {
                         }
                     ]
                 },
-                fields: ['*']
+                fields: ['*'],
+                limit: -1
             }
         );
         //console.log(allFoundEntries)
@@ -505,7 +506,8 @@ export class ParseSchedule {
                     _gt: currentDate
                 }
             },
-            fields: ['*']
+            fields: ['*'],
+            limit: -1
         })
 
         let idsToDelete = itemsToDelete.map(item => item.id);
@@ -521,7 +523,8 @@ export class ParseSchedule {
     async getAllCanteens(){
         let tablename = TABLENAME_CANTEENS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename)
-        let list = await itemService.readByQuery({});
+        let list = await itemService.readByQuery({
+            limit: -1});
         return list;
     }
 
@@ -532,7 +535,8 @@ export class ParseSchedule {
 
         let list_of_cashregisters = await itemService.readByQuery({filter: {
                 canteen: canteen?.id
-            }});
+            },
+            limit: -1});
         //console.log("list_of_cashregisters");
         //console.log(list_of_cashregisters)
 
