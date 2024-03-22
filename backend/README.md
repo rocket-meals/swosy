@@ -61,6 +61,23 @@ Similar steps can be made for local testing
     - `git clone <Forked RocketMeals Frontend Server>`
 
 
+## Configure Email
+
+- 1. Zunächst müssen Sie in Ihrem Gmail-Account die Zweifaktor-Authentifizierung "Bestätigung in zwei Schritten" aktivieren.
+- 2. Danach können Sie ein App-Passwort für lexoffice generieren: https://myaccount.google.com/apppasswords Wählen Sie hier einen Namen und generieren Sie das Passwort.
+- 3. Das generierte 16-stellige Passwort müssen Sie nun nur noch abspeichern
+
+==> Weitere Mail Adressen:
+- Google Admin Console: Neuen E-Mail Alias hinzufügen
+  - Admin Console --> Nutzer --> Alternative E-Mail-Adressen hinzufügen
+- In den Kontoeinstellungen den Alias aktivieren: https://support.google.com/mail/answer/22370
+  - Öffnen Sie Gmail auf dem Computer.
+  - Klicken Sie rechts oben auf "Einstellungen" Einstellungen und dann Alle Einstellungen aufrufen.
+  - Klicken Sie auf den Tab Konten & Import oder Konten.
+  - Klicken Sie im Abschnitt "Senden als" auf Weitere E-Mail-Adresse hinzufügen.
+  - Geben Sie Ihren Namen und die E-Mail-Adresse ein, über die Sie E-Mails senden möchten.
+
+
 ## Configure Directus
 
 - `docker-compose build`

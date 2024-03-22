@@ -76,15 +76,15 @@ services:
       ADMIN_EMAIL: 'admin@example.com'
       ADMIN_PASSWORD: 'd1r3ctu5'
 
-#      EMAIL_FROM: "no-reply@nilsbaumgartner.de"
-#      EMAIL_TRANSPORT: "smtp"
-#      EMAIL_SMTP_HOST: "smtp.strato.de"
-#      EMAIL_SMTP_PORT: "587"
-#      EMAIL_SMTP_USER: "no-reply@nilsbaumgartner.de"
-#      EMAIL_SMTP_PASSWORD: "${MAIL_PASSWORD}"
-#      EMAIL_SMTP_POOL: ""
-#      EMAIL_SMTP_SECURE: "true"
-#      EMAIL_SMTP_IGNORE_TLS: "true"
+      EMAIL_FROM: "${EMAIL_FROM}"
+      EMAIL_TRANSPORT: "${EMAIL_TRANSPORT}"
+      EMAIL_SMTP_HOST: "${EMAIL_SMTP_HOST}"
+      EMAIL_SMTP_PORT: "${EMAIL_SMTP_PORT}"
+      EMAIL_SMTP_USER: "${EMAIL_SMTP_USER}"
+      EMAIL_SMTP_PASSWORD: "${EMAIL_SMTP_PASSWORD}"
+      EMAIL_SMTP_POOL: ""
+      EMAIL_SMTP_SECURE: "true"
+      EMAIL_SMTP_IGNORE_TLS: "true"
 
       CORS_ENABLED: "true"
       CORS_ORIGIN: "true"
