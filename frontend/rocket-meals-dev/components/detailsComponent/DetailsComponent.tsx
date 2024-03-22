@@ -6,19 +6,19 @@ import ImageWithComponents from '@/components/project/ImageWithComponents';
 import {Heading, Text, View} from '@/components/Themed';
 import {useBreakPointValue} from "@/helper/device/DeviceHelper";
 import {MyButton} from "@/components/buttons/MyButton";
-import TabWrapper from "@/components/tab/TabWrapper";
+import TabWrapper, {TabProps} from "@/components/tab/TabWrapper";
 import {DirectusImageProps} from "@/components/project/DirectusImage";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 
-export type TabProps = {
+export type DetailsComponentTabProps = {
 	iconName: string;
 	accessibilityLabel: string;
 	text: string;
 	content: React.ReactNode;
 };
 
-export function DetailsComponent({ heading, item, image, tabs, subHeadingComponent }: { subHeadingComponent?: React.ReactNode, heading: string |undefined |null, item: any, image: DirectusImageProps, tabs: TabProps[] }) {
+export function DetailsComponent({ heading, item, image, tabs, subHeadingComponent }: { subHeadingComponent?: React.ReactNode, heading: string |undefined |null, item: any, image: DirectusImageProps, tabs: DetailsComponentTabProps[] }) {
 	const isDebug = useIsDebug()
 
 	const imageWidthPercentage = useBreakPointValue<DimensionValue | undefined>({
@@ -36,7 +36,7 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 		xl: 'row',
 	})
 
-	function renderTapHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
+	function renderTabHeader(active: boolean, setActive: () => void, leftRoundedBorder: boolean, rightRoundedBorder: boolean ,iconName: string, accessibilityLabel: string, text: string) {
 		const leftBorderRadius = leftRoundedBorder ? undefined : 0;
 		const rightBorderRadius = rightRoundedBorder ? undefined : 0;
 
@@ -57,38 +57,37 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 		)
 	}
 
-	function renderTapHeaders(){
-		let headers = []
+	function renderTabs(): TabProps[]{
+		let tabWrapperTabs: TabProps[] = []
 		for(let i = 0; i < tabs.length; i++){
-			headers.push((active: boolean, setActive: () => void) => renderTapHeader(active, setActive, i === 0, i === tabs.length - 1, tabs[i].iconName, tabs[i].accessibilityLabel, tabs[i].text))
-		}
-		if(isDebug){
-			headers.push((active: boolean, setActive: () => void) => renderTapHeader(active, setActive, false, false, 'bug', 'Debug', 'Debug'))
-		}
-		return headers
-	}
+			let tab = tabs[i];
 
-	function renderTabs(){
-		let contents = []
-		for(let i = 0; i < tabs.length; i++){
-			let tab = tabs[i]
-
-			let tabCopyWithoutContent = {...tab}
-			delete tabCopyWithoutContent.content
-
+			let contents = []
 			contents.push(<View style={{width: "100%"}}>
 				<View style={{width: "100%", padding: 4, marginBottom: 8}}>
 					<Heading style={{ textAlign: 'left'}}>{tab.text}</Heading>
 				</View>
 				{tab.content}
 			</View>)
+
+
+			tabWrapperTabs.push({
+				content: contents,
+				header: (active: boolean, setActive: () => void) => renderTabHeader(active, setActive, i === 0, i === tabs.length - 1, tabs[i].iconName, tabs[i].accessibilityLabel, tabs[i].text)
+			})
 		}
 		if(isDebug){
+			let contents = []
 			contents.push(<View style={{width: "100%"}}>
 				<Text>{JSON.stringify(item, null, 4)}</Text>
 			</View>)
+
+			tabWrapperTabs.push({
+				content: contents,
+				header: (active: boolean, setActive: () => void) => renderTabHeader(active, setActive, false, false, 'bug', 'Debug', 'Debug')
+			})
 		}
-		return contents
+		return tabWrapperTabs
 	}
 
 	const MARGIN_HORIZONTAL = 10;
@@ -118,13 +117,10 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 							</View>
 
 							<View style={{ marginTop: 10, marginHorizontal: MARGIN_HORIZONTAL, flex: 1 }}>
-								<TabWrapper headers={
-									renderTapHeaders()
-								}
-								defaultActive={0}
-								contents={
+								<TabWrapper tabs={
 									renderTabs()
 								}
+								defaultActive={0}
 								/>
 							</View>
 						</View>

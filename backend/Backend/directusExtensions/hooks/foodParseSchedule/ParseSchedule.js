@@ -366,7 +366,8 @@ export class ParseSchedule {
                 filter: {
                     date: date
                 },
-                fields: ['id'] // Assuming 'id' is the primary key field
+                fields: ['id'], // Assuming 'id' is the primary key field
+                limit: -1
             });
 
             let idsToDelete = itemsToDelete.map(item => item.id);
