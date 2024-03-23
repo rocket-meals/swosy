@@ -14,6 +14,8 @@ import {SettingsButtonProfileEatingHabits} from '@/compositions/settings/Setting
 import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesForFood} from "@/states/SynchedSortType";
+import {UtilizationCanteenButton} from "@/compositions/utilizationForecast/UtilizationCanteenButton";
+import {BusinesshoursCanteenButton} from "@/compositions/businesshours/BusinesshoursCanteenButton";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
@@ -110,7 +112,8 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
 				}}
 				>
-					<UtilizationButton />
+					<BusinesshoursCanteenButton />
+					<UtilizationCanteenButton />
 				</View>
 			</View>
 			<Divider />

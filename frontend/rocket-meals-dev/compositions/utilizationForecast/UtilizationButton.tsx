@@ -6,30 +6,31 @@ import {
 } from '@/compositions/utilizationForecast/UseGlobalActionSheetUtilizationForecast';
 import {UtilizationsEntries, UtilizationsGroups} from '@/helper/database/databaseTypes/types';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {useIsUtilizationForecastEnabled, useSynchedAppSettings} from '@/states/SynchedAppSettings';
+import {useIsUtilizationForecastEnabled} from '@/states/SynchedAppSettings';
 import {loadUtilizationEntriesRemote} from '@/states/SynchedUtiliztations';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
-import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
+
+export const useTranslationUtilizationForecast = () => {
+	const translation_forecast = useTranslation(TranslationKeys.forecast)
+	const translation_utilization = useTranslation(TranslationKeys.utilization)
+	return translation_forecast + ': ' + translation_utilization;
+}
 
 interface AppState {
-
+	utilizationGroup: string | UtilizationsGroups | null | undefined;
 }
-export const UtilizationButton: FunctionComponent<AppState> = ({...props}) => {
+export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup, ...props}) => {
 	const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();
-	const accessibilityLabel = useTranslation(TranslationKeys.utilization_forecast)
-	const tooltip = useTranslation(TranslationKeys.utilization_forecast)
-	const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
+	const accessibilityLabel = useTranslationUtilizationForecast();
+	const tooltip = accessibilityLabel
 	const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[] | undefined>(undefined)
-	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const selectedDateCopy = new Date(selectedDate);
 	const [refreshDate, setRefreshDate] = useState<string>(new Date().toISOString());
 	const isDemo = useIsDemo();
 	const refreshDependencyKey: string = refreshDate+selectedDateCopy.toISOString()+isDemo;
-
-	const utilizationGroup: string | UtilizationsGroups | null | undefined = profileCanteen?.utilization_group;
 
 	const onPress = useGlobalActionSheetUtilizationForecast(utilizationEntries);
 

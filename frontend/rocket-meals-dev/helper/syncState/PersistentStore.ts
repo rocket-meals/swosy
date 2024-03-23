@@ -21,6 +21,7 @@ export class PersistentStore {
 
 	static app_translations = 'PersistentStore.app_translations'
 	static canteens = 'PersistentStore.canteens'
+	static businesshours = 'PersistentStore.businesshours'
 	static languages = 'PersistentStore.languages'
 	static wikis = 'PersistentStore.wikis'
 	static news = 'PersistentStore.news'

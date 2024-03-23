@@ -3,9 +3,12 @@ import { useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSh
 import { UtilizationsEntries} from '@/helper/database/databaseTypes/types';
 import React from 'react';
 import {UtilizationForecast} from '@/compositions/utilizationForecast/UtilizationForecast';
+import {useTranslationUtilizationForecast} from "@/compositions/utilizationForecast/UtilizationButton";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export function useGlobalActionSheetUtilizationForecast(utilizationEntires: UtilizationsEntries[] | undefined) {
-	const translation_title = useTranslation(TranslationKeys.utilization_forecast)
+	const translation_title = useTranslationUtilizationForecast();
 
 	const config = {
 		onCancel: async () => {
@@ -14,7 +17,11 @@ export function useGlobalActionSheetUtilizationForecast(utilizationEntires: Util
 		visible: true,
 		title: translation_title,
 		renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-			return <UtilizationForecast key={JSON.stringify(utilizationEntires)} utilizationEntires={utilizationEntires} />
+			return <MySafeAreaView>
+				<MyScrollView>
+					<UtilizationForecast key={JSON.stringify(utilizationEntires)} utilizationEntires={utilizationEntires} />
+				</MyScrollView>
+			</MySafeAreaView>
 		}
 	}
 
