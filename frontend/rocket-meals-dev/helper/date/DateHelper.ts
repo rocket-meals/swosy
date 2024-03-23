@@ -35,7 +35,7 @@ export class DateHelper {
 		return date;
 	}
 
-	static getWeekdayEnumsValues(firstDayOfWeek?: Weekday) {
+	static getWeekdayEnumsValues(firstDayOfWeek?: Weekday): Weekday[]{
 		const useFirstDayOfWeek = firstDayOfWeek || Weekday.MONDAY;
 
 		const weekOrder = [

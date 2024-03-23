@@ -1,14 +1,15 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Canteens} from '@/helper/database/databaseTypes/types';
+import {Businesshours, Canteens, CanteensBusinesshours} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup} from '@/states/SynchedUtiliztations';
+import {getDemoBusinesshoursDict, useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
 
 async function loadCanteensFromServer(): Promise<Canteens[]> {
 	const collectionHelper = new CollectionHelper<Canteens>('canteens');
 
-	const fields = ['*', 'utilization_group.*'];
+	const fields = ['*', 'utilization_group.*', "businesshours.*"];
 
 	const query = {
 		limit: -1,
@@ -40,7 +41,7 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 function getDemoCanteens(): Record<string, Canteens> {
 	const resources: Record<string, Canteens> = {};
 
-	for (let i=0; i<500; i++) {
+	for (let i=0; i<100; i++) {
 		const demoResource: Canteens = {
 			building: undefined,
 			date_created: new Date().toISOString(),
@@ -58,4 +59,46 @@ function getDemoCanteens(): Record<string, Canteens> {
 	}
 
 	return resources
+}
+
+
+/**
+ * Returns a dictionary of canteen businesshours
+ * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
+ */
+export function useSynchedCanteensBusinesshours(): Record<string, Businesshours[] | undefined>
+ {
+	 const isDemo = useIsDemo()
+	 const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
+	 const [businesshoursDict, setBusinesshoursDict] = useSynchedBusinesshoursDict()
+	 const demoBusinesshoursDict = getDemoBusinesshoursDict()
+
+	 const canteensBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
+
+	 for (const canteenId in canteensDict) {
+		 const canteen_id_as_string: string = canteenId
+		 const canteen = canteensDict[canteenId]
+		 if (canteen.businesshours) {
+			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.businesshours as CanteensBusinesshours[]
+			 let businesshours: Businesshours[] = []
+			 if(isDemo) {
+				 let demoKeys = Object.keys(demoBusinesshoursDict)
+				 demoKeys.forEach((key) => {
+					 businesshours.push(demoBusinesshoursDict[key])
+				 })
+			 } else {
+				 canteensBusinesshours.forEach((canteensBusinesshours) => {
+					 let businesshoursId = canteensBusinesshours.businesshours_id
+					 let businesshoursEntry = businesshoursDict?.[businesshoursId]
+					 if (businesshoursEntry) {
+						 businesshours.push(businesshoursEntry)
+					 }
+				 })
+			 }
+
+			 canteensBusinesshoursDict[canteen_id_as_string] = businesshours
+		 }
+	 }
+	 return canteensBusinesshoursDict
+
 }

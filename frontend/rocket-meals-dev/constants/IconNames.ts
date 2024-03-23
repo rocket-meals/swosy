@@ -38,6 +38,7 @@ export enum IconNames {
     calendar_icon = 'calendar-month',
 
     utilization_icon = 'human-queue',
+    businesshours_icon = 'clock-time-eight',
 
     chevron_right_icon = 'chevron-right',
     chevron_left_icon = 'chevron-left',

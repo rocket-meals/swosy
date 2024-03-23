@@ -77,6 +77,8 @@ export const MyActionsheetItem: FunctionComponent<SettingsRowProps> = (props) =>
 	} else {
 		return (
 			<View
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
 				style={{
 					minHeight: 40,
 					width: '100%',

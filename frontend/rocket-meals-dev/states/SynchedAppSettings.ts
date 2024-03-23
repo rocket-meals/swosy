@@ -57,7 +57,7 @@ export function useIsCourseTimetableEnabled(): boolean {
 
 export function useIsUtilizationForecastEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
-	return appSettings?.utilization_forecast_enabled || false;
+	return appSettings?.utilization_forecast_calculation_enabled || false;
 }
 
 function getDemoAppSettings(): AppSettings {

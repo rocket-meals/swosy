@@ -147,6 +147,9 @@ export class TranslationKeys {
 	static next = createTranslationKey('next', 'Weiter');
 	static previous = createTranslationKey('previous', 'Zurück');
 
+	static businesshours = createTranslationKey('businesshours', 'Geschäftszeiten');
+	static until = createTranslationKey('until', "bis");
+
 	static day = createTranslationKey('day', 'Tag');
 	static today = createTranslationKey('today', 'Heute');
 	static tomorrow = createTranslationKey('tomorrow', 'Morgen');
@@ -197,7 +200,7 @@ export class TranslationKeys {
 	static markings = createTranslationKey('markings', 'Kennzeichnungen');
 	static markings_disclaimer = createTranslationKey("markings_disclaimer", "Diese Angaben sind ohne Gewähr. Es gilt die Kennzeichnung vor Ort.")
 
-	static utilization_forecast = createTranslationKey('utilization_forecast', 'Prognose der Auslastung');
+	static forecast = createTranslationKey('forecast', 'Prognose');
 	static utilization = createTranslationKey('utilization', 'Auslastung');
 	static opens_at = createTranslationKey('opend_at', 'Öffnet um');
 	static closed_after = createTranslationKey('closed_after', 'Geschlossen ab');
