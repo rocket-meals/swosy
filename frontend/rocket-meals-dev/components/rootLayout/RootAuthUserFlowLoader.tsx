@@ -17,6 +17,7 @@ import {
 import {RootSyncDatabaseDownload} from '@/components/rootLayout/RootSyncDatabaseDownload';
 import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotificationDeepLink';
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
+import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -87,7 +88,11 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 
 	if (!currentUserRaw) {
 		console.log('AuthFlowUserCheck useEffect currentUserRaw is null')
-		return <Text>{'app/_layout.tsx: Authenthication flow waiting'}</Text>
+		return(
+			<LoadingScreen>
+				<Text>{'Authenthication flow waiting'}</Text>
+			</LoadingScreen>
+		)
 	}
 
 	console.log('AuthFlowUserCheck currentUserRaw: ', currentUserRaw)

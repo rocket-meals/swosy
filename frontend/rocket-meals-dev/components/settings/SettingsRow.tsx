@@ -154,6 +154,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		return (
 			<>
 				<MyActionsheetItem
+					disabled={!item.onSelect || props.disabled}
 					accessibilityLabel={item.accessibilityLabel}
 					onPress={item.onSelect}
 					key={item.key}

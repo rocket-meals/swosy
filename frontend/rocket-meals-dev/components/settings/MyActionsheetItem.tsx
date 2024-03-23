@@ -56,6 +56,7 @@ export const MyActionsheetItem: FunctionComponent<SettingsRowProps> = (props) =>
 	if(props.onPress){
 		return (
 			<TouchableOpacity
+				disabled={props.disabled}
 				style={{
 					minHeight: 40,
 					width: '100%',

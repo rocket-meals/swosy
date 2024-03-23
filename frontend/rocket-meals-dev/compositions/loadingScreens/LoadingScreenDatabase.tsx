@@ -4,6 +4,8 @@ import {Text, View} from '@/components/Themed';
 import * as rocketSource from '@/assets/animations/rocket_purple.json';
 import {MyProjectColoredLottieAnimation} from '@/components/lottie/MyProjectColoredLottieAnimation';
 import {StringHelper} from '@/helper/string/StringHelper';
+import {LoadingLogo} from "@/compositions/loadingScreens/LoadingLogo";
+import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 
 interface AppState {
     children?: React.ReactNode;
@@ -65,20 +67,10 @@ export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, no
 	}
 
 	return (
-		<MySafeAreaView>
-			<View style={{
-				width: '100%',
-				height: '100%',
-				justifyContent: 'center',
-				alignItems: 'center'
-			}}
-			>
-				<MyProjectColoredLottieAnimation source={rocketSource} accessibilityLabel={'Test Rocket Colored'} style={{width: 200, height: 200}}/>
-				<Text>{props.text}</Text>
-				{content}
-				{children}
-			</View>
-
-		</MySafeAreaView>
+		<LoadingScreen>
+			<Text>{props.text}</Text>
+			{content}
+			{children}
+		</LoadingScreen>
 	);
 }
