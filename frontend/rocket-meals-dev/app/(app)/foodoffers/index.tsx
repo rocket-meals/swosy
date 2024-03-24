@@ -54,10 +54,10 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		const bFoodId = b?.food?.id;
 		const aFeedback = foodFeedbacksDict[aFoodId];
 		const bFeedback = foodFeedbacksDict[bFoodId];
-		const aRating = aFeedback?.rating;
-		const bRating = bFeedback?.rating;
+		const aRating = aFeedback?.rating
+		const bRating = bFeedback?.rating
 
-		const aRatingPositive = isRatingPositive(aRating);
+		const aRatingPositive = isRatingPositive(aRating)
 		const aRatingNegative = isRatingNegative(aRating);
 		const aRatingUnknown = aRating === null || aRating === undefined;
 
@@ -69,36 +69,34 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		const returnNoOrder = 0;
 		const returnBShouldBeFirst = 1;
 
-		if(aRatingPositive && bRatingPositive){
-			return returnNoOrder
-		}
-		if(aRatingPositive && bRatingNegative){
-			return returnAShouldBeFirst
-		}
-		if(aRatingPositive && bRatingUnknown){
-			return returnBShouldBeFirst
-		}
+		// negative ratings should be last, then unknown, then positive
+		// complete cases aRatingNegative, aRatingUnknown, aRatingPositive and bRatingNegative, bRatingUnknown, bRatingPositive
 
-		if(aRatingNegative && bRatingPositive){
-			return returnBShouldBeFirst
-		}
 		if(aRatingNegative && bRatingNegative){
-			return returnNoOrder
-		}
-		if(aRatingNegative && bRatingUnknown){
-			return returnBShouldBeFirst
+			return returnNoOrder;
+		} else if(aRatingNegative){
+			return returnBShouldBeFirst;
+		} else if(bRatingNegative){
+			return returnAShouldBeFirst;
 		}
 
-		if(aRatingUnknown && bRatingPositive){
-			return returnBShouldBeFirst
-		}
-		if(aRatingUnknown && bRatingNegative){
-			return returnAShouldBeFirst
-		}
 		if(aRatingUnknown && bRatingUnknown){
-			return returnNoOrder
+			return returnNoOrder;
+		} else if(aRatingUnknown){
+			return returnBShouldBeFirst;
+		} else if(bRatingUnknown){
+			return returnAShouldBeFirst;
 		}
-		return 0;
+
+		if(aRatingPositive && bRatingPositive){
+			return returnNoOrder;
+		} else if(aRatingPositive){
+			return returnAShouldBeFirst;
+		} else if(bRatingPositive){
+			return returnBShouldBeFirst;
+		}
+
+
 	});
 	return foodOffers;
 
