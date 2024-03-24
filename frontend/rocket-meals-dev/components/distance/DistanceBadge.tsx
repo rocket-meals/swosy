@@ -26,6 +26,8 @@ export default function DistanceBadge(props: DistanceBadgeProps) {
 	let distanceInMeter = props.distanceInMeter
 	let distanceText = distanceInMeter+"";
 	if(distanceInMeter<1000){
+		// round up to 50m
+		distanceInMeter = Math.ceil(distanceInMeter/50)*50;
 		distanceText = distanceInMeter+" m";
 	} else {
 		// to fixed 1
