@@ -22,12 +22,14 @@ import {CourseTimetableSchedule} from '@/compositions/courseTimetable/CourseTime
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {IconNames} from '@/constants/IconNames';
 import {CourseTimetableEvent} from '@/compositions/courseTimetable/CourseTimetableEvent';
+import {useIsDebug} from "@/states/Debug";
 
 export default function CourseTimetableScreen() {
 	const translation_import = useTranslation(TranslationKeys.import);
 	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
 
 	const isDemo = useIsDemo()
+	const isDebug = useIsDebug()
 
 	const locale = useProfileLocaleForJsDate();
 	const backgroundColor = useViewBackgroundColor()
@@ -128,7 +130,7 @@ export default function CourseTimetableScreen() {
 
 	const importProviders: any[] = []
 
-	if (isDemo) {
+	if (isDemo || isDebug) {
 		importProviders.push({
 			key: 'demo',
 			label: 'Demo',

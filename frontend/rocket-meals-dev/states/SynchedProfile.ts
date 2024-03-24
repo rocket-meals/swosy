@@ -3,7 +3,8 @@ import {
 	Canteens,
 	Devices,
 	DirectusUsers,
-	FoodsFeedbacks, Markings,
+	FoodsFeedbacks,
+	Markings,
 	Profiles,
 	ProfilesBuildingsFavorites,
 	ProfilesBuildingsLastVisited,
@@ -81,8 +82,17 @@ export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<P
 			console.log('profile_id: ', profile_id)
 			if (profile_id) {
 				try {
-					const remoteAnswer = await updateProfileRemote(profile_id, newValue);
-					console.log('remoteAnswer: ', remoteAnswer)
+
+					// Sync with remote
+					//const remoteAnswer = await updateProfileRemote(profile_id, newValue);
+					//console.log('remoteAnswer: ', remoteAnswer)
+
+					updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+						console.log('remoteAnswer: ', remoteAnswer)
+					}).catch((err) => {
+						console.log(err)
+					})
+
 					setResource(newValue, timestamp);
 					return true;
 				} catch (err) {
