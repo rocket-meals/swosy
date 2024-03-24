@@ -11,7 +11,7 @@ export function getFoodName(food: string | Foods | null | undefined, languageCod
 	if (typeof food === 'object' && food !== null) {
 		let translations = food.translations as TranslationEntry[]
 		if (translations) {
-			let translation = getDirectusTranslation(languageCode, translations, 'name', false, undefined, undefined);
+			let translation = getDirectusTranslation(languageCode, translations, 'name', false, food.alias, undefined);
 			if (translation) {
 				return translation;
 			}
