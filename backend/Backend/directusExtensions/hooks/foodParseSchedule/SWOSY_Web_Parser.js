@@ -26,6 +26,12 @@ export class SWOSY_Web_Parser {
         return this.api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
     }
 
+    private_getImageRemoteUrlForCanteen(canteen_json){
+        let building_id = canteen_json.BuildingId;
+        // https://swosy.sw-os.de/api/buildings/1/photos?resTag=medium&webp=false
+        return this.api_url + "/buildings/" + building_id + "/photos?resTag=low&webp=false";
+    }
+
     async getMarkingsJSONList(){
         let download = await axios.get(this.api_url+"/markings");
         let remoteItems = download.data;
@@ -50,6 +56,7 @@ export class SWOSY_Web_Parser {
             let canteen = canteens[canteenId];
             itemJSONList.push({
                 alias: canteen.name,
+                image_remote_url: this.private_getImageRemoteUrlForCanteen(canteen),
                 external_identifier: canteen.name
             })
         }
