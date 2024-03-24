@@ -10,6 +10,7 @@ import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 
 interface AppState {
 	synchKey: string
+	itemToSort: string
 	availableSortTypes?: SortType[]
 }
 export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
@@ -25,11 +26,13 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 	const translation_sort_option_alphabetical = useTranslation(TranslationKeys.sort_option_alphabetical)
 	const translation_sort_option_favorite = useTranslation(TranslationKeys.sort_option_favorite)
 	const translation_sort_option_intelligent = useTranslation(TranslationKeys.sort_option_intelligent)
+	const translation_sort_option_distance = useTranslation(TranslationKeys.sort_option_distance)
+	const translation_sort_option_free_rooms = useTranslation(TranslationKeys.free_rooms)
 
 	const translation_sort_eating_habits = useTranslation(TranslationKeys.eating_habits)
 
-	const tooltip = translation_title;
-	const accessibilityLabel = translation_title;
+	const tooltip = translation_title+": "+props.itemToSort
+	const accessibilityLabel = translation_title+": "+props.itemToSort
 
 	const items: MyGlobalActionSheetItem[] = [];
 	const availableSortTypes = props.availableSortTypes;
@@ -60,6 +63,14 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			label = translation_sort_eating_habits;
 			icon = IconNames.eating_habit_icon;
 			key = 'sortOptionEatingHabits';
+		} else if(sortType === SortType.distance){
+			label = translation_sort_option_distance;
+			icon = IconNames.sort_distance_icon;
+			key = 'sortOptionDistance';
+		} else if(sortType === SortType.freeRooms){
+			label = translation_sort_option_free_rooms;
+			icon = IconNames.sort_free_rooms_icon;
+			key = 'sortOptionFreeRooms';
 		}
 		items.push({
 			key: key,

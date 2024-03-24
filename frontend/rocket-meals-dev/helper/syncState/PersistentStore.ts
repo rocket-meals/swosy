@@ -35,6 +35,8 @@ export class PersistentStore {
 	static foodOffers = 'PersistentStore.foodOffers'
 
 	static sortConfigFoodoffers = 'PersistentStore.sortConfigFoodoffers'
+	static sortConfigBuildings = 'PersistentStore.sortConfigBuildings'
+	static sortConfigApartments = 'PersistentStore.sortConfigApartments'
 
 	static profile = 'PersistentStore.profile'
 

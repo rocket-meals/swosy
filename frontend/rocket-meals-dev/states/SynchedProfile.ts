@@ -15,6 +15,9 @@ import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsCurrentUserAnonymous} from '@/states/User';
 import {useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
+import {LocationType} from "@/helper/geo/LocationType";
+import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
+import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 
 async function loadProfileRemoteByProfileId(id: string) {
 	const profileRelations = ['markings', 'foods_feedbacks', 'devices', 'buildings_favorites', 'buildings_last_visited']
@@ -132,6 +135,16 @@ export function useNickname(): [string | null | undefined, ((newValue: string | 
 	}
 	const nickname = profile?.nickname
 	return [nickname, setNickname]
+}
+
+export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
+	let [canteen, setCanteen] = useSynchedProfileCanteen();
+	const [buildingDict, setBuildingDict] = useSynchedBuildingsDict()
+	let building_id = canteen?.building;
+	let building = buildingDict[building_id];
+	let coordinates = building?.coordinates;
+	let location = CoordinateHelper.getLocation(coordinates);
+	return location;
 }
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {

@@ -59,6 +59,11 @@ export class TranslationKeys {
 	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
 	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
 	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
+	static sort_option_distance = createTranslationKey('distance', 'Distanz');
+	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
+
+	static foods = createTranslationKey('foods', 'Speisen');
+	static apartments = createTranslationKey('apartments', 'Wohnungen');
 
 	static new = createTranslationKey('new', 'Neu');
 

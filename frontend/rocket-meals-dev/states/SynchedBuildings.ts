@@ -1,9 +1,11 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Buildings} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
+import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
+import {LocationType} from "@/helper/geo/LocationType";
 
 async function loadBuildingsFromServer(): Promise<Buildings[]> {
 	const collectionHelper = new CollectionHelper<Buildings>('buildings');
@@ -59,8 +61,15 @@ function getDemoResource(index: number): Buildings {
 		apartments: [],
 		id: index+'',
 		status: '',
+		coordinates: CoordinateHelper.getDemoDirectusCoordinates(index*0.01, index*0.01),
 		translations: translations
 	}
+}
+
+export function getBuildingLocationType(building: Buildings): LocationType | null {
+	let coordinatesA = building?.coordinates;
+	let locationA = CoordinateHelper.getLocation(coordinatesA);
+	return locationA;
 }
 
 export function getDemoBuildings(): Record<string, Buildings> {

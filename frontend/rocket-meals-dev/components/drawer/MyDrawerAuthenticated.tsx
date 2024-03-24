@@ -13,6 +13,8 @@ import {
 	useIsHousingEnabled,
 	useIsNewsEnabled
 } from '@/states/SynchedAppSettings';
+import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
+import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
@@ -77,7 +79,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_buildings,
 				title: translation_buildings,
 				icon: IconNames.building_icon,
-				//header: getMyScreenHeaderFoodOffers()
+				header: getMyScreenHeaderBuildings(),
 				visibleInDrawer: isBuildingsEnabled
 			})}
 			{useRenderMyDrawerScreen({
@@ -93,6 +95,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_housing,
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
+				header: getMyScreenHeaderHousing(),
 				visibleInDrawer: isHousingEnabled
 			})}
 			{useRenderMyDrawerScreen({

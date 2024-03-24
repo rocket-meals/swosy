@@ -159,7 +159,7 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	} else if(sortType === SortType.alphabetical){
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
-		copiedFoodOffers = sortByFavorite(foodOffers, foodFeedbacksDict);
+		copiedFoodOffers = sortByFavorite(copiedFoodOffers, foodFeedbacksDict);
 	} else if(sortType === SortType.eatingHabits){
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
 	}

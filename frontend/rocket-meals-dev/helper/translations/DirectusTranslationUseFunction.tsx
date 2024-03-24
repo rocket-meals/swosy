@@ -7,6 +7,16 @@ export type TranslationEntry = {
     [key: string]: any
 }
 
+export const MISSING_TRANSLATION = 'Missing translation';
+
+export function getDirectusTranslationUnsafe(languageCode: string, translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string | null | undefined, params?: any): string | null {
+	let translation = getDirectusTranslation(languageCode, translations, field, ignoreFallbackLanguage, fallback_text, params);
+	if (translation.startsWith(MISSING_TRANSLATION)) {
+		return null;
+	}
+	return translation;
+}
+
 export function getDirectusTranslation(languageCode: string, translations: TranslationEntry[], field: string, ignoreFallbackLanguage?: boolean, fallback_text?: string | null | undefined, params?: any): string {
 	const translationDict = getLanguageDict(translations);
 
@@ -62,7 +72,7 @@ export function getDirectusTranslation(languageCode: string, translations: Trans
   	return fallback_text;
   }
 
-  return 'Missing translation';
+  return MISSING_TRANSLATION + "(" + field + ")";
 }
 
 
