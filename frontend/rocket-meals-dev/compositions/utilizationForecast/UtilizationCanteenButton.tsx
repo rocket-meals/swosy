@@ -8,7 +8,7 @@ interface AppState {
 }
 export const UtilizationCanteenButton: FunctionComponent<AppState> = ({...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	
+
 	if(!profileCanteen){
 		return null;
 	}

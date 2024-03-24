@@ -67,12 +67,12 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 		)
 	}
 
-	return (
-		<View style={{
-			width: '100%',
-		}}
-		>
-			<MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+	function renderSubHeaderContent() {
+		if(!profileCanteen){
+			return null;
+		}
+
+		return (
 			<View style={{
 				width: '100%',
 				flexDirection: 'row',
@@ -88,9 +88,9 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				>
 					{renderSwitchDate(false)}
 					<SimpleDatePicker currentDate={selectedDate}
-						onSelectDate={(date) => {
-							setSelectedDate(date);
-						} }
+									  onSelectDate={(date) => {
+										  setSelectedDate(date);
+									  } }
 					>
 					</SimpleDatePicker>
 					{renderSwitchDate(true)}
@@ -117,6 +117,16 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					<UtilizationCanteenButton />
 				</View>
 			</View>
+		)
+	}
+
+	return (
+		<View style={{
+			width: '100%',
+		}}
+		>
+			<MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+			{renderSubHeaderContent()}
 			<Divider />
 		</View>
 	)
