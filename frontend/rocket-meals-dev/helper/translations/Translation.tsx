@@ -89,6 +89,7 @@ export class TranslationKeys {
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
 	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
+	static distance_based_canteen_selection_or_if_asked_on_real_location = createTranslationKey('distance_based_canteen_selection_or_if_asked_on_real_location', 'Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.');
 	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
 	static copy_url = createTranslationKey('copy_url', 'URL kopieren');
 	static copy = createTranslationKey('copy', 'Kopieren');

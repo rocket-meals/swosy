@@ -13,8 +13,6 @@ export class CoordinateHelper{
     }
 
     static getLocation(coordinatesDirectusObj: unknown | null | any): LocationType | null {
-        console.log("CoordinateHelper.getLocation", coordinatesDirectusObj);
-
         /**
          * {
          *     "coordinates": [
@@ -36,10 +34,10 @@ export class CoordinateHelper{
         //https://gis.stackexchange.com/questions/244651/leafletgeojson-why-are-lat-lng-coordinates-in-the-wrong-order
         //GeoJSON is in [lon, lat] order, while the normal order is [lat, lon].
         //https://en.wikipedia.org/wiki/ISO_6709 says that the order is [lat, lon].
-        console.log("CoordinateHelper.getLocation - coordinates", coordinates);
+        //console.log("CoordinateHelper.getLocation - coordinates", coordinates);
         let latitude = coordinates?.[1];
         let longitude = coordinates?.[0];
-        console.log("CoordinateHelper.getLocation", latitude, longitude);
+        //console.log("CoordinateHelper.getLocation", latitude, longitude);
         if(!latitude || !longitude){
             return null;
         }

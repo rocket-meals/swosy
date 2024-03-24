@@ -48,6 +48,7 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
         setUpdateSize(null)
         try {
             setStatus("Checking for updates")
+            console.log("await Updates.checkForUpdateAsync();")
             const updateCheckResult: Updates.UpdateCheckResult = await Updates.checkForUpdateAsync();
             setStatus("Checked for updates")
             setUpdateIsAvailable(updateCheckResult.isAvailable)
@@ -68,6 +69,7 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
         setDownloadedUpdateIsNew(false);
         try {
             setStatus("Downloading updates")
+            console.log("await Updates.fetchUpdateAsync();");
             let updateResult: Updates.UpdateFetchResult = await Updates.fetchUpdateAsync();
             if (updateResult.isNew) {
                 setStatus("Downloaded update is new");
@@ -84,6 +86,7 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
 
     async function reloadUpdates() {
         try{
+            console.log("await Updates.reloadAsync();")
             await Updates.reloadAsync();
             setStatus("Reloading updates")
         } catch (error) {

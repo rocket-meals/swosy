@@ -42,6 +42,7 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
         setReloadInProgress(false)
 
         try{
+            console.log("await Updates.checkForUpdateAsync();")
             const updateCheckResult: Updates.UpdateCheckResult = await Updates.checkForUpdateAsync();
             setUpdateIsAvailable(updateCheckResult.isAvailable)
             if(updateCheckResult.isAvailable) {
@@ -53,6 +54,7 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
                 let updateFetchPromise = Updates.fetchUpdateAsync();
 
                 // This will return only one Promise
+                console.log("Promise.race([updateFetchPromise, timeoutPromise])")
                 Promise.race([updateFetchPromise, timeoutPromise])
                     .then(() => {
                         if(initialCheckFinished){

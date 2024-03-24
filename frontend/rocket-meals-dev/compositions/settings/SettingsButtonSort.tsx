@@ -3,7 +3,11 @@ import React, {FunctionComponent} from 'react';
 
 import {IconNames} from '@/constants/IconNames';
 import {MyButton} from '@/components/buttons/MyButton';
-import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
+import {
+	MyGlobalActionSheetConfig,
+	MyGlobalActionSheetItem,
+	useMyGlobalActionSheet
+} from "@/components/actionsheet/MyGlobalActionSheet";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 
@@ -87,7 +91,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 
 
 
-	const config = {
+	const config: MyGlobalActionSheetConfig = {
 		onCancel: async () => {
 			return true;
 		},

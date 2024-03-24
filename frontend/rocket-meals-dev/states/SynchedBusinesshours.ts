@@ -15,6 +15,7 @@ async function loadBusinesshoursFromServer(): Promise<Businesshours[]> {
 		fields: fields
 	}
 
+	console.log("await collectionHelper.readItems(query);")
 	return await collectionHelper.readItems(query);
 }
 
@@ -29,8 +30,9 @@ export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours> |
 	}
 
 	async function updateFromServer(nowInMs?: number) {
-		const usinesshoursList = await loadBusinesshoursFromServer()
-		const businesshoursDict = CollectionHelper.convertListToDict(usinesshoursList, 'id')
+		console.log("await loadBusinesshoursFromServer()");
+		const businesshoursList = await loadBusinesshoursFromServer()
+		const businesshoursDict = CollectionHelper.convertListToDict(businesshoursList, 'id')
 		setResourcesOnly(businesshoursDict, nowInMs);
 	}
 
