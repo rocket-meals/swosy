@@ -191,7 +191,7 @@ export class SWOSY_Web_Parser {
         return foundPrice;
     }
 
-    async getMarkingLabelsFromRawMealOffer(rawMealOffer){
+    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
         let totalMarkings = rawMealOffer["totalMarkings"];
         let splits = totalMarkings.split(",");
         let markingLabels = [];
