@@ -29,8 +29,8 @@ export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...
 	let borderRadius = usedHeight/6
 
 	return (
-		<View style={{height: usedHeight, width: usedWidth, borderRadius: borderRadius, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
-			<DirectusImage contentFit={
+		<View key={projectLogoAssetId} style={{height: usedHeight, width: usedWidth, borderRadius: borderRadius, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
+			<DirectusImage key={projectLogoAssetId} contentFit={
 				'contain'
 			} assetId={projectLogoAssetId} fallbackElement={fallbackElement} style={{
 				position: 'relative',

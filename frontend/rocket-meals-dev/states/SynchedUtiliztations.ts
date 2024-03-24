@@ -37,6 +37,8 @@ export async function loadUtilizationEntriesRemote(utilizationGroup: Utilization
 			},
 			limit: -1
 		});
+		console.log('loadUtilizationEntriesRemote', utilizationEntries);
+
 		return utilizationEntries;
 	}
 }

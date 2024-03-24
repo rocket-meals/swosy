@@ -32,7 +32,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	const isDemo = useIsDemo();
 	const refreshDependencyKey: string = refreshDate+selectedDateCopy.toISOString()+isDemo;
 
-	const onPress = useGlobalActionSheetUtilizationForecast(utilizationEntries);
+	const onPress = useGlobalActionSheetUtilizationForecast(utilizationGroup, selectedDateCopy);
 
 	const refreshEvery5MinutesInterval = 5 * 60 * 1000;
 	// create a useEffect which updates every 5 minutes the date
@@ -46,7 +46,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	async function updateUtilizationEntries() {
 		// and type of utilizationGroup is UtilizationsGroups
 		if (utilizationGroup !== null && utilizationGroup !== undefined && typeof utilizationGroup !== 'string') {
-			const utilizationEntriesRemote = await loadUtilizationEntriesRemote(utilizationGroup, selectedDateCopy, isDemo);
+			const utilizationEntriesRemote = await loadUtilizationEntriesRemote(utilizationGroup, selectedDateCopy.toISOString(), isDemo);
 			setUtilizationEntries(utilizationEntriesRemote)
 		}
 	}
