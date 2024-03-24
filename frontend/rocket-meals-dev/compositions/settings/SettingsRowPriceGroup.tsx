@@ -4,10 +4,11 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {IconNames} from '@/constants/IconNames';
 import {Weekday} from '@/helper/date/DateHelper';
 import {PriceGroups, useProfilePriceGroup} from '@/states/SynchedProfile';
-import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
+import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {View} from '@/components/Themed';
 import {MoneyConfident} from '@/compositions/animations/accountBalance/MoneyConfident';
 import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup";
+import {SettingsRow} from "@/components/settings/SettingsRow";
 
 export type AvailableOption = {
     value: string | null | undefined | Weekday
@@ -15,10 +16,26 @@ export type AvailableOption = {
     icon?: string,
 }
 
-interface AppState {
+export function usePriceGroupSelectedName(){
+	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
 
+	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
+	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
+	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
+
+	const priceGroupToName: {[key in PriceGroups]: string}
+		= {
+		[PriceGroups.Student]: translation_price_group_student,
+		[PriceGroups.Employee]: translation_price_group_employee,
+		[PriceGroups.Guest]: translation_price_group_guest,
+	}
+
+	let selectedOptionName = priceGroupToName[priceGroup]
+
+	return selectedOptionName;
 }
-export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) => {
+
+export function useGlobalActionSheetSettingPriceGroup(){
 	const usedIconName: string = IconNames.price_group_icon
 
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
@@ -34,18 +51,18 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
 
 	const priceGroupToName: {[key in PriceGroups]: string}
-        = {
-        	[PriceGroups.Student]: translation_price_group_student,
-        	[PriceGroups.Employee]: translation_price_group_employee,
-        	[PriceGroups.Guest]: translation_price_group_guest,
-        }
+		= {
+		[PriceGroups.Student]: translation_price_group_student,
+		[PriceGroups.Employee]: translation_price_group_employee,
+		[PriceGroups.Guest]: translation_price_group_guest,
+	}
 
 	const priceGroupToIcon: {[key in PriceGroups]: string}
-        = {
-        	[PriceGroups.Student]: IconNames.price_group_student,
-        	[PriceGroups.Employee]: IconNames.price_group_employee,
-        	[PriceGroups.Guest]: IconNames.price_group_guest,
-        }
+		= {
+		[PriceGroups.Student]: IconNames.price_group_student,
+		[PriceGroups.Employee]: IconNames.price_group_employee,
+		[PriceGroups.Guest]: IconNames.price_group_guest,
+	}
 
 	const availableOptions: { [key: string]: AvailableOption } = {
 	}
@@ -83,14 +100,13 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 			icon: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
-			onSelect: (value: string, hide: () => void) => {
-				setPriceGroup(value as PriceGroups)
+			onSelect: async (value: string, hide: () => void) => {
+				await setPriceGroup(value as PriceGroups)
+				hide()
 			}
 		})
 	}
 
-	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedOptionName
-	const label = title
 
 	function renderPriceAnimation() {
 		return (
@@ -113,17 +129,52 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 		items: items
 	}
 
-	function renderDebug() {
-		return null
+
+
+	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+
+	const onPress = () => {
+		show(config)
 	}
+
+	return onPress;
+}
+
+interface AppState {
+
+}
+export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) => {
+	const usedIconName: string = IconNames.price_group_icon
+
+	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
+
+	const title = useTranslation(TranslationKeys.price_group)
+
+	const onPress = useGlobalActionSheetSettingPriceGroup();
+
+	const translation_edit = useTranslation(TranslationKeys.edit)
+
+	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
+	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
+	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
+
+	const priceGroupToName: {[key in PriceGroups]: string}
+        = {
+        	[PriceGroups.Student]: translation_price_group_student,
+        	[PriceGroups.Employee]: translation_price_group_employee,
+        	[PriceGroups.Guest]: translation_price_group_guest,
+        }
+
+	let selectedOptionName = priceGroupToName[priceGroup]
+
+	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedOptionName
+	const label = title
+
 
 	const labelRight = selectedOptionName
 
 
 	return (
-		<>
-			<SettingsRowActionsheet labelLeft={label} labelRight={labelRight} config={config} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
-			{renderDebug()}
-		</>
+		<SettingsRow labelLeft={label} labelRight={labelRight} onPress={onPress} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
 	)
 }

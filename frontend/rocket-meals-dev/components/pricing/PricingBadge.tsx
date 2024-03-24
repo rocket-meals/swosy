@@ -2,6 +2,8 @@ import {useProjectColor} from '@/states/ProjectInfo';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {View, Text} from "@/components/Themed";
 import SimpleBadge from "@/components/badge/SimpleBadge";
+import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {useGlobalActionSheetSettingPriceGroup} from "@/compositions/settings/SettingsRowPriceGroup";
 
 export type PricingBadgeProps = {
   price: number;
@@ -20,7 +22,7 @@ function toFixedNoRounding(number: number, fractions: number) {
 	return b > 0 ? (a + "0".repeat(b)) : a;
 }
 
-function formatPrice(price: number | undefined | null): string {
+export function formatPrice(price: number | undefined | null): string {
 	let currency = "€";
 
 	//TODO? What about different currencies? Should we transform/calculate it?
@@ -42,6 +44,6 @@ export default function PricingBadge(props: PricingBadgeProps) {
 	const priceContent: string = formatPrice(props.price);
 
 	return (
-		<SimpleBadge borderBottomLeft={true} borderTopLeft={true} text={priceContent} />
+			<SimpleBadge borderBottomLeft={true} borderTopLeft={true} text={priceContent} />
 	)
 }
