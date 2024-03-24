@@ -3,7 +3,7 @@ import {useProjectLogoAssetId} from '@/states/ProjectInfo';
 import DirectusImage from '@/components/project/DirectusImage';
 import {ViewProps} from 'react-native';
 import {ProjectLogoDefault} from '@/components/project/ProjectLogoDefault';
-import {View} from '@/components/Themed';
+import {View, Text} from '@/components/Themed';
 import {ViewWithProjectColor} from '@/components/project/ViewWithProjectColor';
 
 interface AppState {
@@ -27,10 +27,9 @@ export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...
 	//let fallbackElement = undefined
 
 	let borderRadius = usedHeight/6
-	let padding = borderRadius*2
 
 	return (
-		<View style={{height: usedHeight, width: usedWidth, borderRadius: borderRadius, backgroundColor: "red", alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
+		<View style={{height: usedHeight, width: usedWidth, borderRadius: borderRadius, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
 			<DirectusImage contentFit={
 				'contain'
 			} assetId={projectLogoAssetId} fallbackElement={fallbackElement} style={{
