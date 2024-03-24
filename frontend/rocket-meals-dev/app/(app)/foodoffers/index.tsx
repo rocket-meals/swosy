@@ -178,31 +178,34 @@ export default function FoodOfferScreen() {
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
 
-	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [foodFeedbacksDict, setFoodFeedbacksDict] = useSynchedProfileFoodFeedbacksDict()
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
-
-	let foodOffersSorted = foodOffersDownloaded
-	console.log("foodOffersDownloaded", foodOffersDownloaded)
-
-	if (foodOffersSorted) {
-		foodOffersSorted = sortFoodOffers(foodOffersSorted, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
-	}
-
-
-	const navigation = useNavigation();
 
 	const dateAsString = selectedDate.toISOString();
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
+	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const [foodFeedbacksDict, setFoodFeedbacksDict] = useSynchedProfileFoodFeedbacksDict()
+	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+
+
+	let [foodOffersSorted, setFoodoffersSorted] = useState<Foodoffers[] | undefined | null>(undefined);
+
+	if (foodOffersDownloaded && !foodOffersSorted) {
+		foodOffersSorted = sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
+		setFoodoffersSorted(foodOffersSorted)
+	}
+
+
 	async function loadFoodOffers() {
 		setFoodOffers(undefined)
+		setFoodoffersSorted(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
 				setFoodOffers(downloadedFoodOffers);
+				// sort the food offers
+				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 			} catch (err){
 				setFoodOffers(null);
 			}
@@ -211,15 +214,26 @@ export default function FoodOfferScreen() {
 		}
 	}
 
-
+	// wait half a second before loading the food offers but reset the timeout if any dependencies change
+	let depsReloadFood = [dateAsString, profileCanteen?.id]
 	useEffect(() => {
-		// wait half a second before loading the food offers
-		// to prevent the screen from flickering
 		setFoodOffers(undefined)
-		const timeout = setTimeout(async () => {
-			await loadFoodOffers();
+		setFoodoffersSorted(undefined)
+		const timeout = setTimeout(() => {
+			loadFoodOffers();
 		}, 500);
-	}, [dateAsString, profileCanteen?.id]);
+		return () => { // but clear the timeout if the dependencies change so when we skip through days we don't load the food offers unnecessarily
+			clearTimeout(timeout);
+		}
+	}, depsReloadFood);
+
+
+	// Call useEffect when the sortType changes and the screen gets mounted
+	useEffect(() => {
+		if (foodOffersDownloaded) {
+			setFoodoffersSorted(sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
+		}
+	}, [sortType])
 
   type DataItem = { key: string; data: Foodoffers }
 
