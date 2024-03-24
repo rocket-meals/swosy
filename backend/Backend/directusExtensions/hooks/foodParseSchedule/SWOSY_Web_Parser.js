@@ -22,6 +22,10 @@ export class SWOSY_Web_Parser {
         this.canteens = await this.downloadCanteensDictIdToCanteen();
     }
 
+    private_getImageRemoteUrlForMealId(meal_id){
+        return this.api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
+    }
+
     async getMarkingsJSONList(){
         let download = await axios.get(this.api_url+"/markings");
         let remoteItems = download.data;
@@ -61,6 +65,7 @@ export class SWOSY_Web_Parser {
             itemJSONList.push({
                 id: food.id,
                 alias: food?.name,
+                image_remote_url: this.private_getImageRemoteUrlForMealId(food.id),
 //                name: food.name,
                 translations: {
                     "de-DE": {"name": food?.name},
