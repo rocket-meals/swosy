@@ -28,7 +28,7 @@ export class SWOSY_Web_Parser {
         let itemJSONList = [];
         for(let remoteItem of remoteItems){
             itemJSONList.push({
-                label: remoteItem.label,
+                alias: remoteItem.label,
                 external_identifier: remoteItem.label,
                 translations: {
                     "de-DE": {"name": remoteItem.description}
@@ -45,7 +45,7 @@ export class SWOSY_Web_Parser {
         for(let canteenId of canteenIds){
             let canteen = canteens[canteenId];
             itemJSONList.push({
-                label: canteen.name,
+                alias: canteen.name,
                 external_identifier: canteen.name
             })
         }

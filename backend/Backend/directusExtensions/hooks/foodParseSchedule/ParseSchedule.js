@@ -383,13 +383,13 @@ export class ParseSchedule {
         }
     }
 
-    async findOrCreateCanteen(canteenLabel) {
-        console.log("Find or create canteen: " + canteenLabel)
+    async findOrCreateCanteen(external_identifier) {
+        console.log("Find or create canteen: " + external_identifier)
 
         let tablename = TABLENAME_CANTEENS;
         let canteenJSON = {
-            alias: canteenLabel,
-            external_identifier: canteenLabel
+            alias: external_identifier,
+            external_identifier: external_identifier
         };
 
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
