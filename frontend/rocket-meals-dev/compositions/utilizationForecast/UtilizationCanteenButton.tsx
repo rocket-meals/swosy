@@ -8,6 +8,11 @@ interface AppState {
 }
 export const UtilizationCanteenButton: FunctionComponent<AppState> = ({...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+	
+	if(!profileCanteen){
+		return null;
+	}
+
 	const utilizationGroup: string | UtilizationsGroups | null | undefined = profileCanteen?.utilization_group;
 
 	return <UtilizationButton utilizationGroup={utilizationGroup} {...props} />
