@@ -37,6 +37,10 @@ export class StudiFutter_Web_Parser {
         return await this.swosy_parser.getMealNutritionsForMealJSON(foodJSON);
     }
 
+    async getMealNutritionsForRawMealOffer(rawMealOffer){
+        return await this.swosy_parser.getMealNutritionsForRawMealOffer(rawMealOffer);
+    }
+
     async getMealOffersISOStringDatesToDelete(){
         return await this.swosy_parser.getMealOffersISOStringDatesToDelete();
     }
