@@ -37,10 +37,10 @@ export class ReportSchedule {
     }
 
     async run() {
-        //console.log("[Run] " + SCHEDULE_NAME)
+        console.log("[Run] " + SCHEDULE_NAME)
         let enabled = await this.isEnabled();
         if (enabled && this.finished) {
-            //console.log("[Start] " + SCHEDULE_NAME);
+            console.log("[Start] " + SCHEDULE_NAME);
             this.finished = false;
 
             let reportGenerator = new ReportGenerator(this.itemsServiceCreator);
@@ -52,7 +52,9 @@ export class ReportSchedule {
                 // 2. check for every recipient if a report is needed to be sent
                 for (let recipientEntry of recipientEntries) {
 
+                    console.log("recipientEntry.id: "+recipientEntry.id)
                     let generateReportForDate = await this.getDateForWhichTheReportShouldBeSend(recipientEntry);
+                    console.log("generateReportForDate: "+generateReportForDate)
                     if (generateReportForDate) {
 
                         let recipientEmailList = await this.getRecipientEntryEmailList(recipientEntry);
@@ -86,7 +88,7 @@ export class ReportSchedule {
                     }
                 }
 
-                //console.log("Finished " + SCHEDULE_NAME);
+                console.log("Finished " + SCHEDULE_NAME);
             } catch (err) {
                 console.log("Error in " + SCHEDULE_NAME);
                 console.log(err);
@@ -202,10 +204,10 @@ export class ReportSchedule {
         let now = new Date();
         let now_moment_date = moment(now);
 
-        let send_once_now_for_today = recipientEntry?.send_once_now_for_today;
-        if(send_once_now_for_today){
-            await itemService.updateOne(recipientEntry.id, {send_once_now_for_today: false});
-            return now;
+        let send_once_now_for_date = recipientEntry?.send_once_now_for_date;
+        if(send_once_now_for_date){
+            await itemService.updateOne(recipientEntry.id, {send_once_now_for_date: null});
+            return new Date(send_once_now_for_date);
         }
 
         let send_report_at_hh_mm = recipientEntry.send_report_at_hh_mm; // format: 12:00:00 or 12:00
@@ -282,7 +284,9 @@ export class ReportSchedule {
             if(now_moment_date.isAfter(date_next_report_is_due)){
                 //console.log("Report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
                 //console.log("Report is due: "+date_for_which_the_report_should_be_generated_moment_date.toString());
-                return date_for_which_the_report_should_be_generated_moment_date;
+                // date_for_which_the_report_should_be_generated_moment_date; to iso string
+                let date_for_which_the_report_should_be_generated_iso = moment(date_for_which_the_report_should_be_generated_moment_date).toISOString();
+                return new Date(date_for_which_the_report_should_be_generated_iso);
             } else {
                 return null; // we do not want to send a report now
             }
