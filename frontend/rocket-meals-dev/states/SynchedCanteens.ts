@@ -5,6 +5,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup} from '@/states/SynchedUtiliztations';
 import {getDemoBusinesshoursDict, useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
+import {getDemoBuildings} from "@/states/SynchedBuildings";
 
 async function loadCanteensFromServer(): Promise<Canteens[]> {
 	const collectionHelper = new CollectionHelper<Canteens>('canteens');
@@ -41,9 +42,14 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 function getDemoCanteens(): Record<string, Canteens> {
 	const resources: Record<string, Canteens> = {};
 
+	const buildingsDict = getDemoBuildings()
+	const demoBuildingsKeys = Object.keys(buildingsDict)
+
 	for (let i=0; i<100; i++) {
+		let demo_building_id = demoBuildingsKeys[i % demoBuildingsKeys.length]
+
 		const demoResource: Canteens = {
-			building: undefined,
+			building: demo_building_id,
 			date_created: new Date().toISOString(),
 			date_updated: new Date().toISOString(),
 			id: 'demoCanteen'+(i),

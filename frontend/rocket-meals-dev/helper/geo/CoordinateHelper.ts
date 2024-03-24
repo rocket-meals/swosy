@@ -1,6 +1,17 @@
 import {LocationType} from "@/helper/geo/LocationType";
 
 export class CoordinateHelper{
+
+    static getDemoDirectusCoordinates(latitudeAdd?: number, longitudeAdd?: number): any {
+        return {
+            "coordinates": [
+                13.388818685699732 + (longitudeAdd || 0),
+                52.534529900904914 + (latitudeAdd || 0)
+            ],
+            "type": "Point"
+        }
+    }
+
     static getLocation(coordinatesDirectusObj: unknown | null | any): LocationType | null {
         console.log("CoordinateHelper.getLocation", coordinatesDirectusObj);
 

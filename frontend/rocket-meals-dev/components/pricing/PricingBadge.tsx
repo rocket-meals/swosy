@@ -1,6 +1,7 @@
 import {useProjectColor} from '@/states/ProjectInfo';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {View, Text} from "@/components/Themed";
+import SimpleBadge from "@/components/badge/SimpleBadge";
 
 export type PricingBadgeProps = {
   price: number;
@@ -19,7 +20,7 @@ function toFixedNoRounding(number: number, fractions: number) {
 	return b > 0 ? (a + "0".repeat(b)) : a;
 }
 
-function formatPrice(price: number | undefined | null): string | number {
+function formatPrice(price: number | undefined | null): string {
 	let currency = "€";
 
 	//TODO? What about different currencies? Should we transform/calculate it?
@@ -34,29 +35,13 @@ function formatPrice(price: number | undefined | null): string | number {
 	} catch (err){
 		//console.log(err);
 	}
-	return price;
+	return price+"";
 }
 
 export default function PricingBadge(props: PricingBadgeProps) {
-	const projectColor = props.color ?? useProjectColor();
-	const projectContrastColor = useMyContrastColor(projectColor);
-
-	// Does not work on android
-	// new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
-	// 		props.price,
-	// 	)
-	const priceContent = formatPrice(props.price);
-
+	const priceContent: string = formatPrice(props.price);
 
 	return (
-		<View style={{
-			backgroundColor: projectColor,
-			padding: 5,
-			borderTopLeftRadius: 14,
-			borderBottomLeftRadius: 14,
-		}}
-		>
-			<Text style={{color: projectContrastColor}}>{priceContent}</Text>
-		</View>
+		<SimpleBadge borderBottomLeft={true} borderTopLeft={true} text={priceContent} />
 	)
 }

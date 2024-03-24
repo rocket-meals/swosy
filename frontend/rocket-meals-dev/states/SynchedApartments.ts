@@ -1,9 +1,11 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
-import {getDemoBuildings} from '@/states/SynchedBuildings';
+import {getBuildingLocationType, getDemoBuildings} from '@/states/SynchedBuildings';
+import {LocationType} from "@/helper/geo/LocationType";
+import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 
 async function loadApartmentsFromServer(): Promise<Apartments[]> {
 	const collectionHelper = new CollectionHelper<Apartments>('apartments');
@@ -53,17 +55,34 @@ export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undef
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
+export function getApartmentLocationType(apartment: Apartments, buildingsDict: Record<string, Buildings> | undefined): LocationType | null {
+	let buildingA = buildingsDict?.[apartment.building];
+	return getBuildingLocationType(buildingA);
+}
+
 function getDemoApartments(): Record<string, Apartments> {
 	const buildingsDict = getDemoBuildings()
 	const demoBuildingsKeys = Object.keys(buildingsDict)
 	const amountApartments = 500
 
 	const demoResources: Record<string, Apartments> = {}
+
+	let amountFreeApartments = 5
+	let amountFreeApartmentsCounter = 0;
 	for (let i = 0; i < amountApartments; i++) {
 		const demoBuildingKey = demoBuildingsKeys[i%demoBuildingsKeys.length]
+		let availableFrom = null;
+		if(i%2===0 && amountFreeApartmentsCounter < amountFreeApartments){
+			// add i days to the current date
+			const date = new Date();
+			date.setDate(date.getDate() + i*10);
+			availableFrom = date.toISOString();
+			amountFreeApartmentsCounter++;
+		}
 		const demoResource: Apartments = {
 			id: i+'',
 			washingmachines: [],
+			available_from: availableFrom,
 			building: demoBuildingKey
 		}
 		demoResources[demoResource.id] = demoResource

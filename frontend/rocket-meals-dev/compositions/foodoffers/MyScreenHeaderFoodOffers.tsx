@@ -21,6 +21,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
 
 	const locale = useProfileLocaleForJsDate()
+	const translation_foods = useTranslation(TranslationKeys.foods);
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
@@ -45,7 +46,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					flexDirection: 'row',
 				}}
 				>
-					<SettingsButtonSort synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
+					<SettingsButtonSort itemToSort={translation_foods} synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
 					<SettingsButtonProfileCanteen />
 				</View>
