@@ -11,6 +11,7 @@ import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
 import {ActionsheetItem, ActionsheetItemText, ActionsheetVirtualizedList} from "@gluestack-ui/themed";
+import {AnimationAllergene} from "@/compositions/animations/AnimationAllergene";
 
 
 export const LoadingRectThemed = (props: {
@@ -75,31 +76,13 @@ const LoadingRect = (props: {
 
 export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-	const [loading, setLoading] = React.useState(true);
-	const useLazyLoading = true;
-
-	/**
-
-	useEffect(() => {
-		// small delay to prevent flickering
-		setTimeout(() => {
-			setLoading(false)
-		}, 250);
-		// when component unloads, set loading to true
-		return () => {
-			setLoading(true)
-		}
-	}, [])
-
-	if(loading && useLazyLoading){
-		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
-	}
-		*/
 
 	let usedDict = markingsDict || {}
 	const all_marking_keys = Object.keys(usedDict);
 
-	return <MarkingListSelective markingIds={all_marking_keys} />
+	return <View>
+		<MarkingListSelective markingIds={all_marking_keys} />
+	</View>
 }
 
 export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
