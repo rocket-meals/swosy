@@ -12,8 +12,8 @@ export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...prop
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [canteensDict, setCanteendDict] = useSynchedCanteensDict()
 	const canteensBusinesshours = useSynchedCanteensBusinesshours();
-	//console.log("canteensBusinesshours", canteensBusinesshours);
-	//console.log("canteensDict", canteensDict);
+	console.log("canteensBusinesshours", canteensBusinesshours);
+	console.log("canteensDict", canteensDict);
 	let canteen_id = profileCanteen?.id;
 	if(!canteen_id){
 		return null;

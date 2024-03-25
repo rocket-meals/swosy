@@ -15,11 +15,9 @@ import {
 	ActionsheetDragIndicator,
 	ActionsheetDragIndicatorWrapper
 } from "@gluestack-ui/themed";
-import {Heading, View, Text, useViewBackgroundColor} from "@/components/Themed";
+import {Heading, View, Text} from "@/components/Themed";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MarkingList} from "@/components/food/MarkingList";
-import {Modal} from "react-native";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 
 interface AppState {
 
@@ -27,10 +25,8 @@ interface AppState {
 export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({...props}) => {
 	const accessibilityLabel = useEditProfileEatingHabitsAccessibilityLabel();
 	const tooltip = useEditProfileEatingHabitsAccessibilityLabel();
-	const viewBackgroundColor = useViewBackgroundColor();
 
 	const [showActionsheet, setShowActionsheet] = useState(false)
-	const [showModal, setShowModal] = useState(false)
 	const onPressLegacy = useGlobalActionSheetSettingProfileEatingHabits()
 
 	const onPress = () => {
@@ -42,15 +38,10 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 
 	}
 
-	const useLegacy = false;
+	const useLegacy = true;
 	let usedOnPress: any = onPress;
 	if(useLegacy){
 		usedOnPress = onPressLegacy;
-	}
-	if(true){
-		usedOnPress = () => {
-			setShowModal(true)
-		}
 	}
 
 	return (
@@ -62,20 +53,20 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 					maxHeight={"80%"}
 					zIndex={999}
 					style={{
-						backgroundColor: "white",
+						backgroundColor: "red",
 						flexGrow: 1
 					}}
 				>
 					<View style={{
-						width: "100%",
+
 					}}>
 						<ActionsheetDragIndicatorWrapper>
 							<ActionsheetDragIndicator
 								style={{
-									backgroundColor: "black",
+									backgroundColor: "green",
 								}}
 							/>
-							<View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}><Heading>{"Test"}</Heading></View>
+							<View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}><Heading>{tooltip}</Heading></View>
 						</ActionsheetDragIndicatorWrapper>
 					</View>
 
@@ -90,39 +81,6 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 					</View>
 				</ActionsheetContent>
 			</Actionsheet>
-			{showModal && <Modal animationType={"none"} onRequestClose={() => {
-				setShowModal(false)
-			}} presentationStyle={"overFullScreen"} visible={showModal} style={{
-			}} transparent={true}>
-				<View style={{
-					width: "100%",
-					height: "100%",
-				}} onLayout={() => {
-					console.log("Layout MODAL")
-				}}>
-					<MyTouchableOpacity accessibilityLabel={"Close"} onPress={() => {
-						setShowModal(false)
-					}} style={{
-						height: "20%",
-						width: "100%",
-						// background should dim the background
-						backgroundColor: "rgba(0,0,0,0.5)",
-					}} />
-					<View style={{
-						width: "100%",
-						height: "80%",
-						backgroundColor: viewBackgroundColor,
-						borderTopLeftRadius: 20,
-						borderTopRightRadius: 20,
-						overflow: "hidden",
-						paddingTop: 20,
-					}}>
-						<MySafeAreaView>
-							<MarkingList />
-						</MySafeAreaView>
-					</View>
-				</View>
-			</Modal>}
-		</>
+			</>
 	)
 }

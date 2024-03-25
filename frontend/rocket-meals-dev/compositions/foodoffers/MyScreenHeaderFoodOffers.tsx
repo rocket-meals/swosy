@@ -67,7 +67,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				>
 					<SettingsButtonSort itemToSort={translation_foods} synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
-					<MyButton useOnlyNecessarySpace={true} onPress={() => {
+					<MyButton onPress={() => {
 						router.push('/(app)/eatinghabits')
 					}} icon={IconNames.debug_icon} accessibilityLabel={"Eating Habits"} />
 					<SettingsButtonProfileCanteen />
