@@ -141,6 +141,15 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: null,
 				visibleInDrawer: false
 			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'eatinghabits/index',
+				title: "Eating Habits",
+				label: "Eating Habits",
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+
 			{renderedMyDrawerWikiItems}
 		</MyDrawer>
 	)

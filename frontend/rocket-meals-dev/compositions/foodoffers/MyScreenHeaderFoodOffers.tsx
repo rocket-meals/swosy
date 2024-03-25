@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Heading, View} from '@/components/Themed'
 import {MyScreenHeader, MyScreenHeaderProps, getMyScreenHeaderFunction} from '@/components/drawer/MyScreenHeader';
 import {SettingsButtonProfileCanteen} from '@/compositions/settings/SettingsButtonProfileCanteen';
@@ -16,6 +16,10 @@ import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesForFood} from "@/states/SynchedSortType";
 import {UtilizationCanteenButton} from "@/compositions/utilizationForecast/UtilizationCanteenButton";
 import {BusinesshoursCanteenButton} from "@/compositions/businesshours/BusinesshoursCanteenButton";
+import {MyButtonNavigation} from "@/components/buttons/MyButtonNavigation";
+import {MyButton} from "@/components/buttons/MyButton";
+import {useRouter} from "expo-router";
+import {IconNames} from "@/constants/IconNames";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
@@ -24,6 +28,8 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	const translation_foods = useTranslation(TranslationKeys.foods);
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
+	const [tempSelectedDate, setTempSelectedDate] = React.useState(selectedDate);
+
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	if(!!profileCanteen && profileCanteen.alias){
 		title = profileCanteen.alias;
@@ -31,8 +37,21 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
 	const translation_day = useTranslation(TranslationKeys.day);
 
-	const dateCopy = new Date(selectedDate);
+	const router = useRouter()
+
+	const dateCopy = new Date(tempSelectedDate);
 	const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
+
+	// whenever tempSelectedDate changes, update the selectedDate but wait 500ms and clear the timeout if tempSelectedDate changes again
+	// do not update selectedDate if tempSelectedDate is the same as selectedDate
+	useEffect(() => {
+		if(tempSelectedDate !== selectedDate){
+			const timeout = setTimeout(() => {
+				setSelectedDate(tempSelectedDate);
+			}, 500);
+			return () => clearTimeout(timeout);
+		}
+	}, [tempSelectedDate]);
 
 	function renderSecondaryHeaderContent(props: any) {
 		return (
@@ -48,6 +67,9 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				>
 					<SettingsButtonSort itemToSort={translation_foods} synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
+					<MyButton onPress={() => {
+						router.push('/(app)/eatinghabits')
+					}} icon={IconNames.debug_icon} accessibilityLabel={"Eating Habits"} />
 					<SettingsButtonProfileCanteen />
 				</View>
 			</View>
@@ -61,7 +83,8 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				translation={translation}
 				forward={forward}
 				onPress={() => {
-					changeAmountDays(forward ? 1 : -1);
+					const newDate = DateHelper.addDays(tempSelectedDate, forward ? 1 : -1);
+					setTempSelectedDate(newDate);
 				}}
 			/>
 		)
@@ -89,6 +112,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					{renderSwitchDate(false)}
 					<SimpleDatePicker currentDate={selectedDate}
 									  onSelectDate={(date) => {
+										  setTempSelectedDate(date);
 										  setSelectedDate(date);
 									  } }
 					>
