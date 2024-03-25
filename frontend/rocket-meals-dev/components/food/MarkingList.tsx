@@ -129,7 +129,7 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 
 
 	const getItem = (_data, index) => ({
-		id: Math.random().toString(12).substring(0),
+		id: _data[index].key,
 		title: _data[index].key,
 	})
 	const getItemCount = (_data) => _data.length
