@@ -217,12 +217,7 @@ export default function FoodOfferScreen() {
 	useEffect(() => {
 		setFoodOffers(undefined)
 		setFoodoffersSorted(undefined)
-		const timeout = setTimeout(() => {
-			loadFoodOffers();
-		}, 500);
-		return () => { // but clear the timeout if the dependencies change so when we skip through days we don't load the food offers unnecessarily
-			clearTimeout(timeout);
-		}
+		loadFoodOffers();
 	}, depsReloadFood);
 
 
