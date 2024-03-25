@@ -21,8 +21,6 @@ export default function AppLayout() {
 	//https://stackoverflow.com/questions/76828511/expo-router-error-attempted-to-navigate-before-mounting-the-root-layout-compone
 	const isLoading = !rootNavigationState?.key
 
-	const isProfileSetupComplete = useIsProfileSetupComplete();
-
 	// AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
 
 	// You can keep the splash screen open, or render a loading screen like we do here.
@@ -38,17 +36,6 @@ export default function AppLayout() {
 		// in the headless Node process that the pages are rendered in.
 		// @ts-ignore
 		return <Redirect href="/(auth)/login" />;
-	}
-
-	if (!isProfileSetupComplete) {
-		console.log('(app)_layout.tsx: pathName: '+pathName);
-		if (pathName!=='/setup') {
-			return <Redirect href="/setup/" />;
-		} else {
-			return <MyDrawerSetup />
-		}
-	} else if (isProfileSetupComplete) {
-
 	}
 
 	// This layout can be deferred because it's not the root layout.
