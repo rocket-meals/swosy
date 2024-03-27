@@ -39,6 +39,7 @@ function DrawerWrapper(props: any) {
 	const isLargeDevice = useIsLargeDevice();
 	return (
 		<Drawer
+			backBehavior={"history"}
 			drawerContent={DrawerContentWrapper}
 			screenOptions={{
 				drawerType: isLargeDevice ? 'front' : 'front',

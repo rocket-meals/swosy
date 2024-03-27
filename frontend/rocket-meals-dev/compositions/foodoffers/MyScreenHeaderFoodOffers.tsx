@@ -37,8 +37,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
 	const translation_day = useTranslation(TranslationKeys.day);
 
-	const router = useRouter()
-
 	const dateCopy = new Date(tempSelectedDate);
 	const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
 
@@ -67,9 +65,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				>
 					<SettingsButtonSort itemToSort={translation_foods} synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
-					<MyButton useOnlyNecessarySpace={true} onPress={() => {
-						router.push('/(app)/eatinghabits')
-					}} icon={IconNames.debug_icon} accessibilityLabel={"Eating Habits"} />
 					<SettingsButtonProfileCanteen />
 				</View>
 			</View>
