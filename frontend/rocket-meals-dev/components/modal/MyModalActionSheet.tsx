@@ -66,7 +66,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		}
 		const onSelect = async (key: string) => {
 			if(item.onSelect){
-				await item.onSelect(key);
+				await item.onSelect(key, hide);
 				if(props.setVisible){
 					props.setVisible(false);
 				}

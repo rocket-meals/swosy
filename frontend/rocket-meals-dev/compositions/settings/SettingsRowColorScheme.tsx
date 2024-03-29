@@ -50,30 +50,30 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 	const label = title
 
 	const items: MyModalActionSheetItem[] = []
-	for (const key of availableColorSchemeKeys) {
-		const label: string = colorSchemeKeyToName[key]
-		const themeForKey = colorSchemeKeyToThemeDict[key]
+	for (const colorSchemeKey of availableColorSchemeKeys) {
+		const label: string = colorSchemeKeyToName[colorSchemeKey]
+		const themeForKey = colorSchemeKeyToThemeDict[colorSchemeKey]
 		const isDark = themeForKey.dark
-		let active = key === selectedColorSchemeKey
+		let active = colorSchemeKey === selectedColorSchemeKey
 
 		let icon = isDark ? IconNames.color_scheme_dark_icon : IconNames.color_scheme_light_icon
-		if (key === MyColorSchemeKey.System) {
+		if (colorSchemeKey === MyColorSchemeKey.System) {
 			icon = IconNames.color_scheme_system_icon
 		}
-		if (key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined) {
+		if (colorSchemeKey === MyColorSchemeKey.System && selectedColorSchemeKey === undefined) {
 			active = true
 		}
 
 		const itemAccessibilityLabel = label+' '+translation_select
 
 		items.push({
-			key: key as string,
+			key: colorSchemeKey as string,
 			label: label,
 			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
-				const nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
+				const nextColorSchemeKey: MyColorSchemeKey = colorSchemeKey as MyColorSchemeKey
 				setColorSchemeOptionRaw(nextColorSchemeKey)
 				hide()
 			}
