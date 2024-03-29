@@ -49,6 +49,7 @@ export default function RootLayout() {
 		if (!storageLoaded) {
 			const instance = SyncState.getInstance();
 			SyncState.setLoadState(reset);
+			console.log("await instance.init()")
 			await instance.init();
 			setReloadNumber(reloadNumber+1)
 		}

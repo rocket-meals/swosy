@@ -1,17 +1,7 @@
 import React, {FunctionComponent} from 'react';
-import {TouchableOpacity, View} from 'react-native';
-import {Icon, Text} from '@/components/Themed';
-import {FoodRatingConstant} from '@/components/foodfeedback/FoodRatingConstant';
 import {Foods} from "@/helper/database/databaseTypes/types";
 import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
-import {MyButton} from "@/components/buttons/MyButton";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useFoodTranslation} from "@/helper/food/FoodTranslation";
-import {IconNames} from "@/constants/IconNames";
-import {useIsCurrentUserAnonymous, useLogoutCallback} from "@/states/User";
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {NotAllowed} from "@/compositions/animations/NotAllowed";
-import {Tooltip, TooltipContent, TooltipText} from "@gluestack-ui/themed";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 

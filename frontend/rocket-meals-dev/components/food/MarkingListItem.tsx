@@ -6,10 +6,9 @@ import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowT
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {TouchableOpacity} from "react-native";
-import {LoadingRectThemed} from "@/components/food/MarkingList";
 
 export default function MarkingListItem({ markingId }: { markingId: string}) {
+	/**
 	const [loading, setLoading] = React.useState(true);
 	const useLazyLoading = false;
 
@@ -25,6 +24,7 @@ export default function MarkingListItem({ markingId }: { markingId: string}) {
 	if(loading && useLazyLoading){
 		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
 	}
+		*/
 	return <MarkingListItemReal markingId={markingId} />
 }
 
@@ -35,9 +35,9 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const markingFromProfile = profilesMarkingsDict[markingId]
 	const status = markingFromProfile?.dislikes;
+	let statusSet = status === true || status === false;
+	const likes = statusSet ? !status : undefined;
 	const translation_marking = useTranslation(TranslationKeys.markings);
-
-	const [loading, setLoading] = React.useState(true);
 
 	if(!marking){
 		return null;
@@ -48,19 +48,31 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const text = translated_name || marking.alias || marking.id;
 	const accessibilityLabel = translation_marking+": "+text;
 
-	const onPress = (nextStatus: boolean | undefined) => {
-		if (nextStatus === true) {
-			setProfileMarking(marking, true)
-		} else if (nextStatus === false) {
-			setProfileMarking(marking, false)
-		} else {
+	const onPress = (like: boolean | undefined) => {
+		const removeMarking = like === undefined;
+		if(removeMarking){
 			removeProfileMarking(marking)
+		} else {
+			const dislikes = like === false;
+			setProfileMarking(marking, dislikes)
 		}
 	}
 
-	return(
-		<View key={marking.id}>
-			<SettingsRowTriStateLikeDislike onPress={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={status}/>
+	const performance = false;
+
+	if(performance){
+		return <View style={{
+			height: 40, width: '100%', justifyContent: 'center', alignItems: 'center'
+		}}>
+			<Text>{text}</Text>
 		</View>
-	)
+	} else {
+		return(
+			<View key={marking.id}>
+				<SettingsRowTriStateLikeDislike onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
+			</View>
+		)
+	}
+
+
 }

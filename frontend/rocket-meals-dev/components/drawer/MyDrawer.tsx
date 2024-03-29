@@ -124,6 +124,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
 
 	return (
 		<Drawer
+			backBehavior={"history"} // in order to have even a history stack in the drawer https://github.com/expo/expo/issues/27889
 			drawerContent={(props: DrawerContentComponentProps) => {
 				// Render custom drawer content, passing through custom items and props.
 				return <DrawerContentWrapper customDrawerItems={customDrawerItems} {...props} />;

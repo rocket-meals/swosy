@@ -26,6 +26,8 @@ export type AppSettings = {
   buildings_parsing_last_date?: string | null;
   buildings_parsing_status?: string | null;
   buildings_settings: string;
+  canteen_reports_enabled?: boolean | null;
+  canteen_reports_settings: string;
   cashregisters_parsing_enabled?: boolean | null;
   cashregisters_parsing_last_date?: string | null;
   cashregisters_parsing_status?: string | null;
@@ -185,11 +187,45 @@ export type Businesshours = {
   date_updated?: string | null;
   date_valid_from?: string | null;
   date_valid_till?: string | null;
+  friday?: boolean | null;
   id: string;
+  monday?: boolean | null;
+  saturday?: boolean | null;
   sort?: number | null;
   status?: string | null;
+  sunday?: boolean | null;
+  thursday?: boolean | null;
   time_end?: string | null;
   time_start?: string | null;
+  tuesday?: boolean | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  valid_days: string;
+  valid_range: string;
+  wednesday?: boolean | null;
+};
+
+export type CanteenFoodFeedbackReportRecipients = {
+  canteen?: string | Canteens | null;
+  date_created?: string | null;
+  date_next_report_is_due?: string | null;
+  date_updated?: string | null;
+  enabled?: boolean | null;
+  id: string;
+  last_saved_send_amount_days_before_offer_date?: number | null;
+  last_saved_send_report_at_hh_mm?: string | null;
+  recipient_settings: string;
+  report_feedback_period_days?: number | null;
+  report_information: string;
+  report_status_log?: string | null;
+  report_time_settings: string;
+  send_amount_days_before_offer_date?: number | null;
+  send_once_now_for_today?: boolean | null;
+  send_report_at_hh_mm?: string | null;
+  sort?: number | null;
+  status: string;
+  to_recipient_email?: string | null;
+  to_recipient_user?: string | DirectusUsers | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -728,10 +764,12 @@ export type Foods = {
 };
 
 export type FoodsFeedbacks = {
+  canteen?: string | Canteens | null;
   comment?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   food?: string | Foods | null;
+  foodoffer?: string | Foodoffers | null;
   id: string;
   labels: any[] | FoodsFeedbacksFoodsFeedbacksLabels[];
   notify?: boolean | null;
@@ -769,12 +807,6 @@ export type FoodsFeedbacksLabelsTranslations = {
   let_be_translated?: boolean | null;
   text?: string | null;
   translation_settings: string;
-};
-
-export type FoodsFeedbacksPredefinedFoodFeedbackLabels = {
-  foods_feedbacks_id?: string | FoodsFeedbacks | null;
-  id: number;
-  predefined_food_feedback_labels_id?: string | PredefinedFoodFeedbackLabels | null;
 };
 
 export type FoodsMarkings = {
@@ -854,28 +886,6 @@ export type NewsTranslations = {
   news_id?: string | News | null;
   title?: string | null;
   translation_settings: string;
-};
-
-export type PredefinedFoodFeedbackLabels = {
-  alias?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  id: string;
-  sort?: number | null;
-  status: string;
-  translations: any[] | PredefinedFoodFeedbackLabelsTranslations[];
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type PredefinedFoodFeedbackLabelsTranslations = {
-  be_source_for_translations?: boolean | null;
-  id: number;
-  languages_code?: string | Languages | null;
-  let_be_translated?: boolean | null;
-  predefined_food_feedback_labels_id?: string | PredefinedFoodFeedbackLabels | null;
-  title?: string | null;
-  translatio_settings: string;
 };
 
 export type Profiles = {
@@ -1035,6 +1045,7 @@ export type CustomDirectusTypes = {
   buildings: Buildings[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
+  canteen_food_feedback_report_recipients: CanteenFoodFeedbackReportRecipients[];
   canteens: Canteens[];
   canteens_businesshours: CanteensBusinesshours[];
   cashregisters: Cashregisters[];
@@ -1075,7 +1086,6 @@ export type CustomDirectusTypes = {
   foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
-  foods_feedbacks_predefined_food_feedback_labels: FoodsFeedbacksPredefinedFoodFeedbackLabels[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];
   languages: Languages[];
@@ -1083,8 +1093,6 @@ export type CustomDirectusTypes = {
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];
-  predefined_food_feedback_labels: PredefinedFoodFeedbackLabels[];
-  predefined_food_feedback_labels_translations: PredefinedFoodFeedbackLabelsTranslations[];
   profiles: Profiles[];
   profiles_buildings_favorites: ProfilesBuildingsFavorites[];
   profiles_buildings_last_visited: ProfilesBuildingsLastVisited[];

@@ -1,10 +1,8 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useState} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {useSynchedLanguagesDict} from '@/states/SynchedLanguages';
-import {
-	useGlobalActionSheetSettingProfileLanguage
-} from '@/compositions/settings/UseGlobalActionSheetSettingProfileLanguage';
+import {useProfileLanguageModal,} from '@/compositions/settings/UseGlobalActionSheetSettingProfileLanguage';
 import {SettingsRow} from '@/components/settings/SettingsRow';
 import {IconNames} from '@/constants/IconNames';
 
@@ -15,6 +13,7 @@ export const SettingsRowProfileLanguage: FunctionComponent<AppState> = ({...prop
 	const colorSchemeIconName = IconNames.translate_icon
 
 	const translation_edit = useTranslation(TranslationKeys.edit)
+	const [show, setShow] = useState<boolean>(false);
 
 	const title = useTranslation(TranslationKeys.language)
 
@@ -31,7 +30,7 @@ export const SettingsRowProfileLanguage: FunctionComponent<AppState> = ({...prop
 	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedName
 	const label = title
 
-	const onPress = useGlobalActionSheetSettingProfileLanguage();
+	const onPress = useProfileLanguageModal();
 
 	return (
 		<>

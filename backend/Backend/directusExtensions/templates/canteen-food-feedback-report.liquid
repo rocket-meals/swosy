@@ -1,0 +1,38 @@
+{% layout "base-german" %} {% block content %}
+<h1>{{projectName}} - Bericht</h1>
+
+<h2>Bericht für {{canteen}}</h2>
+<p>Dieser Bericht enthält detaillierte Informationen über die in Ihrer Kantine angebotenen Speisen, einschließlich Bewertungen und Kundenkommentare. Sehen Sie sich die Liste unten an, um zu erfahren, was unsere Kunden dazu sagen.</p>
+
+<div>
+    {% for food in foods %}
+        <div>
+            <h3>{{ food.alias }}</h3>
+            <div>
+                <img src="{{ food.image_url }}" alt="{{ food.alias }}" style="width: 200px; height: auto;">
+            </div>
+            <div>
+                Durchschnittliche Bewertungen: {{ food.rating_average }} ({{ food.rating_amount }} Bewertungen)
+            </div>
+            <div>
+                Labels:
+                <ul>
+                {% for label in food.labels %}
+                    <li>{{ label.alias }} ({{ label.count }})</li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div>
+                Kommentare:
+                <ul>
+                    {% for comment in food.comments %}
+                        <li>{{ comment }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<p style="padding-top: 30px">Dies ist ein automatisch generierter Bericht.</p>
+{% endblock %}

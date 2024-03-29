@@ -37,6 +37,10 @@ export class StudiFutter_Web_Parser {
         return await this.swosy_parser.getMealNutritionsForMealJSON(foodJSON);
     }
 
+    async getMealNutritionsForRawMealOffer(rawMealOffer){
+        return await this.swosy_parser.getMealNutritionsForRawMealOffer(rawMealOffer);
+    }
+
     async getMealOffersISOStringDatesToDelete(){
         return await this.swosy_parser.getMealOffersISOStringDatesToDelete();
     }
@@ -61,8 +65,8 @@ export class StudiFutter_Web_Parser {
         return await this.swosy_parser.getPriceForGroupFromRawMealOffer(group, rawMealOffer);
     }
 
-    async getMarkingLabelsFromRawMealOffer(rawMealOffer){
-        return await this.swosy_parser.getMarkingLabelsFromRawMealOffer(rawMealOffer);
+    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
+        return await this.swosy_parser.getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer);
     }
 
 }

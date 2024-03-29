@@ -7,6 +7,7 @@ import { View} from '@/components/Themed';
 
 export type MyCardProps = {
     children?: React.ReactNode,
+	borderColor?: string,
     borderRaidus?: number,
     topComponent?: React.ReactNode,
     bottomComponent?: React.ReactNode,
@@ -16,7 +17,7 @@ export type MyCardProps = {
 export const MyCardDefaultBorderRadius = 10;
 
 // define the button component
-export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardProps) => {
+export const MyCard = ({borderColor, topComponent, bottomComponent, children, style}: MyCardProps) => {
 	const borderRaidus = MyCardDefaultBorderRadius
 
 	let renderedTopComponent = null;
@@ -36,6 +37,23 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
 	usedStyle.width = usedStyle?.width || '100%'
 	usedStyle.flex = usedStyle?.flex || 1
 
+	let borderOverlay = undefined;
+	if(borderColor){
+		borderOverlay = <View style={{
+			height: "100%",
+			width: "100%",
+			position: "absolute",
+			borderRadius: borderRaidus,
+			pointerEvents: "box-none", //for web PointerEvents is a style not a prop
+			borderWidth: 2,
+			borderColor: borderColor
+		}}
+		  pointerEvents="box-none"
+		>
+
+		</View>
+	}
+
 	return (
 		<View style={usedStyle}>
 			<Box
@@ -43,9 +61,9 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
 				maxHeight="100%"
 				width="100%"
 				height="100%"
-				borderColor={'transparent'}
+				borderColor={borderColor}
 				borderRadius={borderRaidus}
-				borderWidth="$1"
+				//borderWidth="$1"
 				overflow="hidden"
 				$dark-bg="$backgroundDark900"
 				$dark-borderColor="$borderDark800"
@@ -53,6 +71,7 @@ export const MyCard = ({topComponent, bottomComponent, children, style}: MyCardP
 				{renderedTopComponent}
 				{renderedBottomComponent}
 				{children}
+				{borderOverlay}
 			</Box>
 		</View>
 	)

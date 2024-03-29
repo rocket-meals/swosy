@@ -1,12 +1,17 @@
 import React, {FunctionComponent} from 'react';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {
-	MyColorSchemeKey, getMyColorSchemeKeyOptions, useColorSchemeKeyToThemeDictionary, useMyColorSchemeKeyDetermined,
-	useMyColorSchemeKeySavedOption, useThemeDetermined
+	getMyColorSchemeKeyOptions,
+	MyColorSchemeKey,
+	useColorSchemeKeyToThemeDictionary,
+	useMyColorSchemeKeyDetermined,
+	useMyColorSchemeKeySavedOption,
+	useThemeDetermined
 } from '@/states/ColorScheme';
 import {useIsDebug} from '@/states/Debug';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface AppState {
 
@@ -44,40 +49,41 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedThemeName
 	const label = title
 
-	const items = []
-	for (const key of availableColorSchemeKeys) {
-		const label: string = colorSchemeKeyToName[key]
-		const themeForKey = colorSchemeKeyToThemeDict[key]
+	const items: MyModalActionSheetItem[] = []
+	for (const colorSchemeKey of availableColorSchemeKeys) {
+		const label: string = colorSchemeKeyToName[colorSchemeKey]
+		const themeForKey = colorSchemeKeyToThemeDict[colorSchemeKey]
 		const isDark = themeForKey.dark
-		let active = key === selectedColorSchemeKey
+		let active = colorSchemeKey === selectedColorSchemeKey
 
 		let icon = isDark ? IconNames.color_scheme_dark_icon : IconNames.color_scheme_light_icon
-		if (key === MyColorSchemeKey.System) {
+		if (colorSchemeKey === MyColorSchemeKey.System) {
 			icon = IconNames.color_scheme_system_icon
 		}
-		if (key === MyColorSchemeKey.System && selectedColorSchemeKey === undefined) {
+		if (colorSchemeKey === MyColorSchemeKey.System && selectedColorSchemeKey === undefined) {
 			active = true
 		}
 
 		const itemAccessibilityLabel = label+' '+translation_select
 
 		items.push({
-			key: key as string,
+			key: colorSchemeKey as string,
 			label: label,
-			icon: icon,
+			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
-				const nextColorSchemeKey: MyColorSchemeKey = key as MyColorSchemeKey
+				const nextColorSchemeKey: MyColorSchemeKey = colorSchemeKey as MyColorSchemeKey
 				setColorSchemeOptionRaw(nextColorSchemeKey)
 				hide()
 			}
 		})
 	}
 
-	const config = {
-		onCancel: undefined,
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		label: title,
+		accessibilityLabel: accessibilityLabel,
+		key: 'color_scheme',
 		title: title,
 		items: items
 	}

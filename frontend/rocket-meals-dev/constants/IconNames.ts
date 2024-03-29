@@ -38,6 +38,10 @@ export enum IconNames {
     calendar_icon = 'calendar-month',
 
     utilization_icon = 'human-queue',
+    businesshours_icon = 'clock-time-eight',
+
+    select_option_active_icon = 'check-circle',
+    select_option_inactive_icon = 'checkbox-blank-circle-outline',
 
     chevron_right_icon = 'chevron-right',
     chevron_left_icon = 'chevron-left',
@@ -107,4 +111,6 @@ export enum IconNames {
     sort_alphabetical_icon = "sort-alphabetical-ascending",
     sort_favorite_icon = "star",
     sort_intelligent_icon = "brain",
+    sort_distance_icon = "map-marker-distance",
+    sort_free_rooms_icon = "door-open",
 }

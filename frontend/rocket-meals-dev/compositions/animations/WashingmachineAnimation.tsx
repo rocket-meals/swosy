@@ -14,10 +14,6 @@ export const WashingmachineAnimation = ({children, active,...props}: any) => {
 	const usedTranslationState = active ? translation_active : translation_inactive;
 	const accessibilityLabel = translation_animation + ': ' + translation_nameOfTheAnimation + ' ' + usedTranslationState;
 
-	/**
-
-	 */
-
 	return (
 		<View style={{width: '100%', height: "100%"}}>
 			<MyProjectColoredLottieAnimation zoom={1.5} loop={active} autoPlay={active}

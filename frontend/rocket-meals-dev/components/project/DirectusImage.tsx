@@ -61,6 +61,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 
 	let source = {
 		uri: imageUrl,
+		cacheKy: imageUrl,
 		headers: headers,
 	};
 
@@ -75,6 +76,9 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
 	const placeholder = props.placeholder || thumbHashBase64;
 
+	// Will only cache the image on mobile devices - not in the browser
+	let cachePolicy: "none" | "disk" | "memory" | "memory-disk" | null | undefined = 'disk';
+
 	// with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio
 	let content = (
 		<Image
@@ -88,7 +92,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 				setImageLoadedFailed(true);
 			}}
 			// Assuming cachePolicy is determined elsewhere or is static
-			cachePolicy="none"
+			cachePolicy={cachePolicy}
 		/>
 	);
 

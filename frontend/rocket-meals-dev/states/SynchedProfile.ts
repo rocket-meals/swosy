@@ -3,7 +3,8 @@ import {
 	Canteens,
 	Devices,
 	DirectusUsers,
-	FoodsFeedbacks, Markings,
+	FoodsFeedbacks,
+	Markings,
 	Profiles,
 	ProfilesBuildingsFavorites,
 	ProfilesBuildingsLastVisited,
@@ -15,6 +16,9 @@ import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsCurrentUserAnonymous} from '@/states/User';
 import {useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
+import {LocationType} from "@/helper/geo/LocationType";
+import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
+import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 
 async function loadProfileRemoteByProfileId(id: string) {
 	const profileRelations = ['markings', 'foods_feedbacks', 'devices', 'buildings_favorites', 'buildings_last_visited']
@@ -78,8 +82,17 @@ export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<P
 			console.log('profile_id: ', profile_id)
 			if (profile_id) {
 				try {
-					const remoteAnswer = await updateProfileRemote(profile_id, newValue);
-					console.log('remoteAnswer: ', remoteAnswer)
+
+					// Sync with remote
+					//const remoteAnswer = await updateProfileRemote(profile_id, newValue);
+					//console.log('remoteAnswer: ', remoteAnswer)
+
+					updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+						console.log('remoteAnswer: ', remoteAnswer)
+					}).catch((err) => {
+						console.log(err)
+					})
+
 					setResource(newValue, timestamp);
 					return true;
 				} catch (err) {
@@ -132,6 +145,16 @@ export function useNickname(): [string | null | undefined, ((newValue: string | 
 	}
 	const nickname = profile?.nickname
 	return [nickname, setNickname]
+}
+
+export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
+	let [canteen, setCanteen] = useSynchedProfileCanteen();
+	const [buildingDict, setBuildingDict] = useSynchedBuildingsDict()
+	let building_id = canteen?.building;
+	let building = buildingDict[building_id];
+	let coordinates = building?.coordinates;
+	let location = CoordinateHelper.getLocation(coordinates);
+	return location;
 }
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {

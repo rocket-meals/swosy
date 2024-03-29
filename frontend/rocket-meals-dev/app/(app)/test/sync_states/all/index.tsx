@@ -4,8 +4,8 @@ import React from 'react';
 import {Text, View} from '@/components/Themed';
 import {useAllSyncStates} from '@/helper/syncState/SyncState';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
-import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 export default function HomeScreen() {
 	const allSyncStates = useAllSyncStates();
@@ -16,11 +16,12 @@ export default function HomeScreen() {
 		const key = allSyncStatesKeys[i];
 		const value = allSyncStates[key];
 
-		const config: MyGlobalActionSheetConfig = {
-			onCancel: undefined,
-			visible: true,
+		const config: MyModalActionSheetItem = {
+			accessibilityLabel: key,
+			key: key,
+			label: key,
 			title: key,
-			renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return (
 					<MySafeAreaView>
 						<MyScrollView>

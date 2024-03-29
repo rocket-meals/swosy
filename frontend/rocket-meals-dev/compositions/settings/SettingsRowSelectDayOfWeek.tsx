@@ -4,6 +4,7 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {IconNames} from '@/constants/IconNames';
 import {DateHelper, Weekday} from '@/helper/date/DateHelper';
 import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 export type AvailableOption = {
     value: string | null | undefined | Weekday
@@ -73,7 +74,7 @@ export const SettingsRowSelectDayOfWeek: FunctionComponent<AppState> = ({...prop
 		}
 	}
 
-	const items = []
+	const items: MyModalActionSheetItem[] = []
 
 	let selectedOptionName = 'undefined';
 	const availableOptionKeys: string[] = Object.keys(availableOptions);
@@ -91,7 +92,7 @@ export const SettingsRowSelectDayOfWeek: FunctionComponent<AppState> = ({...prop
 		items.push({
 			key: optionKey,
 			label: option.name,
-			icon: icon,
+			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: (value: string, hide: () => void) => {
@@ -103,9 +104,10 @@ export const SettingsRowSelectDayOfWeek: FunctionComponent<AppState> = ({...prop
 	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedOptionName
 	const label = title
 
-	const config = {
-		onCancel: undefined,
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		accessibilityLabel: accessibilityLabel,
+		label: title,
+		key: 'select_day_of_week',
 		title: title,
 		items: items
 	}

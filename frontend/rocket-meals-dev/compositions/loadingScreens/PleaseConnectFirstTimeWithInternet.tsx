@@ -16,8 +16,8 @@ export const PleaseConnectFirstTimeWithInternet: FunctionComponent<AppState> = (
 	let useText = defaultText
 
 	switch (language) {
-	case DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN: useText = 'Bitte verbinden Sie sich das erste Mal mit dem Internet';
-	case DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH: useText = 'Please connect first time with internet';
+		case DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN: useText = 'Bitte verbinden Sie sich das erste Mal mit dem Internet';
+		case DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH: useText = 'Please connect first time with internet';
 	}
 
 	const languageCode = language.toLowerCase()

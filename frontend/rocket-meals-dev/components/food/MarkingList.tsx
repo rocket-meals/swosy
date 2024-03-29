@@ -1,80 +1,12 @@
 import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
-import {View, Text, useViewBackgroundColor} from '@/components/Themed';
-import {useProfileLanguageCode} from '@/states/SynchedProfile';
-import React, {FunctionComponent, useEffect, useMemo, useRef} from 'react';
+import React, {FunctionComponent} from 'react';
 import MarkingListItem from "@/components/food/MarkingListItem";
-import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
 import {Markings} from "@/helper/database/databaseTypes/types";
-import {Animated, Easing, ListRenderItemInfo} from "react-native";
+import {ListRenderItemInfo} from "react-native";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
-import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
-
-
-export const LoadingRectThemed = (props: {
-	width: string | number;
-	height: string | number;
-	style?: StyleProp<ViewStyle>;
-}) => {
-	const backgroundColor = useViewBackgroundColor()
-	const darkerBackgroundColor = useLighterOrDarkerColorForSelection(backgroundColor)
-	return <LoadingRect width={props.width} height={props.height} style={[{backgroundColor: darkerBackgroundColor}, props.style]} />
-};
-
-
-const LoadingRect = (props: {
-	width: string | number;
-	height: string | number;
-	style?: StyleProp<ViewStyle>;
-}) => {
-	const pulseAnim = useRef(new Animated.Value(0)).current;
-
-	useEffect(() => {
-		const sharedAnimationConfig = {
-			duration: 1000,
-			useNativeDriver: true,
-		};
-		Animated.loop(
-			Animated.sequence([
-				Animated.timing(pulseAnim, {
-					...sharedAnimationConfig,
-					toValue: 1,
-					easing: Easing.out(Easing.ease),
-				}),
-				Animated.timing(pulseAnim, {
-					...sharedAnimationConfig,
-					toValue: 0,
-					easing: Easing.in(Easing.ease),
-				}),
-			])
-		).start();
-
-		return () => {
-			// cleanup
-			pulseAnim.stopAnimation();
-		};
-	}, []);
-
-	const opacityAnim = pulseAnim.interpolate({
-		inputRange: [0, 1],
-		outputRange: [0.05, 0.15],
-	});
-
-	return (
-		<Animated.View
-			style={[
-				{ width: props.width, height: props.height },
-				{ opacity: opacityAnim },
-				props.style,
-			]}
-		/>
-	);
-};
 
 export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-	const [loading, setLoading] = React.useState(true);
 
 	let usedDict = markingsDict || {}
 	const all_marking_keys = Object.keys(usedDict);
@@ -83,6 +15,36 @@ export const MarkingList = ({...props}) => {
 }
 
 export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+
+	type DataItem = { key: string; data: Markings }
+	const data: DataItem[] = []
+	if (markingsDict && props.markingIds) {
+		for (let i=0; i<props.markingIds.length; i++) {
+			const resource_id = props.markingIds[i];
+			const marking = markingsDict[resource_id]
+			if(!!marking){
+				data.push({key: resource_id, data: marking})
+			}
+		}
+	}
+
+	const renderCanteen = (info: ListRenderItemInfo<DataItem>) => {
+		const {item, index} = info;
+		const marking = item.data;
+		const marking_id = marking.id
+		return (
+			<MarkingListItem markingId={marking.id} />
+		);
+
+	}
+	return (
+		<MyGridFlatList
+			data={data} renderItem={renderCanteen} amountColumns={1}
+		/>
+	)
+
+/**
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	type DataItem = { key: string; data: Markings }
 	const data: DataItem[] = []
@@ -107,4 +69,6 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 	}
 
 	return <MyGridFlatList data={data} renderItem={renderMarking} amountColumns={1} />
+
+		*/
 }

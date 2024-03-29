@@ -59,6 +59,11 @@ export class TranslationKeys {
 	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
 	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
 	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
+	static sort_option_distance = createTranslationKey('distance', 'Distanz');
+	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
+
+	static foods = createTranslationKey('foods', 'Speisen');
+	static apartments = createTranslationKey('apartments', 'Wohnungen');
 
 	static new = createTranslationKey('new', 'Neu');
 
@@ -84,6 +89,7 @@ export class TranslationKeys {
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
 	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
+	static distance_based_canteen_selection_or_if_asked_on_real_location = createTranslationKey('distance_based_canteen_selection_or_if_asked_on_real_location', 'Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.');
 	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
 	static copy_url = createTranslationKey('copy_url', 'URL kopieren');
 	static copy = createTranslationKey('copy', 'Kopieren');
@@ -147,6 +153,9 @@ export class TranslationKeys {
 	static next = createTranslationKey('next', 'Weiter');
 	static previous = createTranslationKey('previous', 'Zurück');
 
+	static businesshours = createTranslationKey('businesshours', 'Geschäftszeiten');
+	static until = createTranslationKey('until', "bis");
+
 	static day = createTranslationKey('day', 'Tag');
 	static today = createTranslationKey('today', 'Heute');
 	static tomorrow = createTranslationKey('tomorrow', 'Morgen');
@@ -197,7 +206,7 @@ export class TranslationKeys {
 	static markings = createTranslationKey('markings', 'Kennzeichnungen');
 	static markings_disclaimer = createTranslationKey("markings_disclaimer", "Diese Angaben sind ohne Gewähr. Es gilt die Kennzeichnung vor Ort.")
 
-	static utilization_forecast = createTranslationKey('utilization_forecast', 'Prognose der Auslastung');
+	static forecast = createTranslationKey('forecast', 'Prognose');
 	static utilization = createTranslationKey('utilization', 'Auslastung');
 	static opens_at = createTranslationKey('opend_at', 'Öffnet um');
 	static closed_after = createTranslationKey('closed_after', 'Geschlossen ab');

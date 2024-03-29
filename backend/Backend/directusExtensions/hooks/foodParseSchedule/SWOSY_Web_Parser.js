@@ -22,13 +22,17 @@ export class SWOSY_Web_Parser {
         this.canteens = await this.downloadCanteensDictIdToCanteen();
     }
 
+    private_getImageRemoteUrlForMealId(meal_id){
+        return this.api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
+    }
+
     async getMarkingsJSONList(){
         let download = await axios.get(this.api_url+"/markings");
         let remoteItems = download.data;
         let itemJSONList = [];
         for(let remoteItem of remoteItems){
             itemJSONList.push({
-                label: remoteItem.label,
+                alias: remoteItem.label,
                 external_identifier: remoteItem.label,
                 translations: {
                     "de-DE": {"name": remoteItem.description}
@@ -45,7 +49,7 @@ export class SWOSY_Web_Parser {
         for(let canteenId of canteenIds){
             let canteen = canteens[canteenId];
             itemJSONList.push({
-                label: canteen.name,
+                alias: canteen.name,
                 external_identifier: canteen.name
             })
         }
@@ -61,6 +65,7 @@ export class SWOSY_Web_Parser {
             itemJSONList.push({
                 id: food.id,
                 alias: food?.name,
+                image_remote_url: this.private_getImageRemoteUrlForMealId(food.id),
 //                name: food.name,
                 translations: {
                     "de-DE": {"name": food?.name},
@@ -191,7 +196,7 @@ export class SWOSY_Web_Parser {
         return foundPrice;
     }
 
-    async getMarkingLabelsFromRawMealOffer(rawMealOffer){
+    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
         let totalMarkings = rawMealOffer["totalMarkings"];
         let splits = totalMarkings.split(",");
         let markingLabels = [];

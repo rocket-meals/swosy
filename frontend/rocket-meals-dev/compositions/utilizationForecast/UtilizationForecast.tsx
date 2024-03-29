@@ -5,6 +5,7 @@ import {DateHelper} from '@/helper/date/DateHelper';
 import {Text, View} from '@/components/Themed';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {AnimationThinking} from '@/compositions/animations/AnimationThinking';
+import {useIsDebug} from "@/states/Debug";
 
 export type UtilizationForecastProps = {
 	utilizationEntires: UtilizationsEntries[] | undefined
@@ -12,6 +13,7 @@ export type UtilizationForecastProps = {
 export const UtilizationForecast = (props: UtilizationForecastProps) => {
 	const translation_opens_at = useTranslation(TranslationKeys.opens_at)
 	const translation_closed_after = useTranslation(TranslationKeys.closed_after)
+	const isDebug = useIsDebug()
 
 	const translation_no_data_currently_calculating = useTranslation(TranslationKeys.no_data_currently_calculating);
 
@@ -75,9 +77,20 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 		)
 	}
 
+	function renderDebug() {
+		if(isDebug || true) {
+			return <View style={{
+				width: '100%',
+			}}>
+				<Text>{JSON.stringify(utilizationEntries, null, 2)}</Text>
+			</View>
+		}
+	}
+
 	return (
 		<View style={{width: '100%'}}>
 			{content}
+			{renderDebug()}
 		</View>
 	)
 }

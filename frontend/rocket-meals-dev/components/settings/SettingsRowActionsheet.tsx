@@ -1,18 +1,19 @@
 import React, {FunctionComponent} from 'react';
 import {SettingsRow, SettingsRowProps} from './SettingsRow';
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 interface AppState {
     accessibilityLabel: string,
     debug?: boolean,
     disabled?: boolean
-    config: MyGlobalActionSheetConfig
+    config: MyModalActionSheetItem
 }
 export const SettingsRowActionsheet: FunctionComponent<AppState & SettingsRowProps> = ({config, accessibilityLabel,...props}) => {
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const onPress = () => {
-		show(config)
+		setModalConfig(config);
 	}
 
 	return (

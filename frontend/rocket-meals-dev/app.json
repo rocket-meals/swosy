@@ -2,7 +2,7 @@
   "expo": {
     "name": "rocket-meals-dev",
     "slug": "rocket-meals-dev",
-    "version": "1.0.1",
+    "version": "0.9.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
@@ -28,7 +28,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.baumgartnersoftware.rocketmealsdev",
-      "buildNumber": "3"
+      "buildNumber": "6"
     },
     "android": {
       "adaptiveIcon": {

@@ -115,7 +115,7 @@ export class TL1Parser_Web {
         return TL1Parser_Web.getPriceForGroup(parsedReportItem, group)
     }
 
-    async getMarkingLabelsFromRawMealOffer(rawMealOffer){
+    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
         return TL1Parser_Web.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
     }
 

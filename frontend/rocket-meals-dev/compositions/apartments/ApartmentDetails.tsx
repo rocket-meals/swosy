@@ -1,7 +1,7 @@
 import {Apartments, Buildings, Washingmachines} from '@/helper/database/databaseTypes/types';
 import React, {useEffect, useState} from 'react';
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
-import {TabProps} from "@/components/detailsComponent/DetailsComponent";
+import {DetailsComponentTabProps} from "@/components/detailsComponent/DetailsComponent";
 import {Spinner, Text, View} from "@/components/Themed";
 import {loadApartmentWithWashingMachinesFromServer, useSynchedApartmentsDict} from "@/states/SynchedApartments";
 import {BuildingDetailsWithObject} from "@/compositions/buildings/BuildingDetails";
@@ -234,7 +234,7 @@ function ApartmentDetailsWithObject({ apartment, building }: { apartment: Apartm
 
 	const translation_washing_machines = useTranslation(TranslationKeys.washing_machines)
 
-	let additionalTabs: TabProps[] = [
+	let additionalTabs: DetailsComponentTabProps[] = [
 		{
 			iconName: IconNames.washing_machine_icon,
 			accessibilityLabel: translation_washing_machines,

@@ -62,7 +62,7 @@ export class TL1Parser {
 
     }
 
-    async getMarkingLabelsFromRawMealOffer(rawMealOffer){
+    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
 
     }
 

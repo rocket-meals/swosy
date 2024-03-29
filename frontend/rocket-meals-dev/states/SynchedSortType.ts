@@ -4,11 +4,15 @@ export enum SortType {
 	none = 'none',
 	alphabetical = 'alphabetical',
 	favorite = 'favorite',
+	distance = 'distance',
+	freeRooms = 'freeRooms',
 	intelligent = 'intelligent',
 	eatingHabits = 'eatingHabits',
 }
 
 export const sortTypesForFood = [SortType.intelligent, SortType.favorite, SortType.eatingHabits, SortType.alphabetical, SortType.none]
+export const sortTypesApartments = [SortType.intelligent, SortType.freeRooms, SortType.distance, SortType.alphabetical, SortType.none]
+export const sortTypesBuildings = [SortType.intelligent, SortType.distance, SortType.alphabetical, SortType.none]
 
 export function useSynchedSortType(
 	synchKey: string

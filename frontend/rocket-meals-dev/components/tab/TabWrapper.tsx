@@ -1,11 +1,15 @@
-import {ReactNode, useState} from 'react';
+import React, {useState} from 'react';
 import {View} from '@/components/Themed';
 
 type setActiveType = () => void
 
+export type TabProps = {
+	header: (isActive: boolean, setActive: setActiveType) => React.ReactNode
+	content: React.ReactNode[]
+};
+
 export type TabWrapperProps = {
-  headers: ((active: boolean, setActive: setActiveType) => ReactNode)[],
-  contents: ReactNode[],
+  tabs: TabProps[],
   defaultActive?: number
 }
 
@@ -15,19 +19,19 @@ export default function TabWrapper(props: TabWrapperProps) {
 	return (
 		<View style={{flexDirection: 'column', flexGrow: 1}}>
 			<View style={{flexDirection: 'row'}}>
-				{props.headers.map((header, index) => {
+				{props.tabs.map((tab, index) => {
 					const isActive = activeTab === index;
+
+					const onPress = () => setActiveTab(index);
 					return (
-						<View key={index} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} onTouchEnd={() => setActiveTab(index)}>
-							{header(isActive, () => {
-								setActiveTab(index);
-							})}
+						<View key={index} style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} >
+							{tab.header(isActive, onPress)}
 						</View>
 					)
 				})}
 			</View>
 			<View style={{ flexGrow: 1 }}>
-				{props.contents[activeTab]}
+				{props.tabs[activeTab].content}
 			</View>
 		</View>
 	)

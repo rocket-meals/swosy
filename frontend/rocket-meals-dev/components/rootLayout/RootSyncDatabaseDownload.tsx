@@ -17,6 +17,7 @@ import {LoadingScreenDatabase} from '@/compositions/loadingScreens/LoadingScreen
 import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
 import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
+import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -52,6 +53,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
 	const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
+	const [businesshoursDict, setBusinesshoursDict, lastUpdateBusinesshours, updateBusinesshoursFromServer] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 	const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
@@ -80,6 +82,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addSynchedResourceToDownloadFirst('translations', translationsDict, lastUpdateTranslations)
 	addSynchedResourceToDownloadFirst('app_settings', app_settings, lastUpdateAppSettings)
 	addSynchedResourceToDownloadFirst('canteens', canteensDict, lastUpdateCanteens)
+	addSynchedResourceToDownloadFirst('businesshours', businesshoursDict, lastUpdateBusinesshours)
 	addSynchedResourceToDownloadFirst('buildings', buildingsDict, lastUpdateBuildings)
 	addSynchedResourceToDownloadFirst('profile', profile, lastUpdateProfile);
 	addSynchedResourceToDownloadFirst('wikis', wikisDict, lastUpdateWikis)
@@ -160,6 +163,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 					await updateTranslationsFromServer(nowInMs)
 					await updateAppSettingsFromServer(nowInMs)
 					await updateCanteensFromServer(nowInMs);
+					await updateBusinesshoursFromServer(nowInMs);
 					await updateBuildingsFromServer(nowInMs);
 					await updateProfile()
 					await updateWikisFromServer(nowInMs)

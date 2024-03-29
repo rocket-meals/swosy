@@ -2,20 +2,15 @@ import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {
-	DirectusFiles,
-	Foodoffers, FoodoffersMarkings,
-	Foods,
-	FoodsFeedbacks,
-	ProfilesMarkings
-} from '@/helper/database/databaseTypes/types';
+import {DirectusFiles, Foodoffers, FoodsFeedbacks, ProfilesMarkings} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
 import {
 	useProfileLanguageCode,
 	useSynchedProfileCanteen,
-	useSynchedProfileFoodFeedbacksDict, useSynchedProfileMarking, useSynchedProfileMarkingsDict
+	useSynchedProfileFoodFeedbacksDict,
+	useSynchedProfileMarkingsDict
 } from '@/states/SynchedProfile';
 import React, {useEffect, useState} from 'react';
 import {Spinner, Text, View} from '@/components/Themed';
@@ -31,8 +26,11 @@ import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
 import {useProjectName} from "@/states/ProjectInfo";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
+import {MarkingHelper} from "@/helper/food/MarkingHelper";
+import {getFoodName} from "@/helper/food/FoodTranslation";
+import {MarkingBadge} from "@/components/food/MarkingBadge";
+import {useDislikeColor} from "@/states/ColorScheme";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -50,18 +48,16 @@ function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
 	return foodOffers;
 }
 
-
-
 function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
 	foodOffers.sort((a, b) => {
 		const aFoodId = a?.food?.id;
 		const bFoodId = b?.food?.id;
 		const aFeedback = foodFeedbacksDict[aFoodId];
 		const bFeedback = foodFeedbacksDict[bFoodId];
-		const aRating = aFeedback?.rating;
-		const bRating = bFeedback?.rating;
+		const aRating = aFeedback?.rating
+		const bRating = bFeedback?.rating
 
-		const aRatingPositive = isRatingPositive(aRating);
+		const aRatingPositive = isRatingPositive(aRating)
 		const aRatingNegative = isRatingNegative(aRating);
 		const aRatingUnknown = aRating === null || aRating === undefined;
 
@@ -73,102 +69,46 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		const returnNoOrder = 0;
 		const returnBShouldBeFirst = 1;
 
-		if(aRatingPositive && bRatingPositive){
-			return returnNoOrder
-		}
-		if(aRatingPositive && bRatingNegative){
-			return returnAShouldBeFirst
-		}
-		if(aRatingPositive && bRatingUnknown){
-			return returnBShouldBeFirst
-		}
+		// negative ratings should be last, then unknown, then positive
+		// complete cases aRatingNegative, aRatingUnknown, aRatingPositive and bRatingNegative, bRatingUnknown, bRatingPositive
 
-		if(aRatingNegative && bRatingPositive){
-			return returnBShouldBeFirst
-		}
 		if(aRatingNegative && bRatingNegative){
-			return returnNoOrder
-		}
-		if(aRatingNegative && bRatingUnknown){
-			return returnBShouldBeFirst
+			return returnNoOrder;
+		} else if(aRatingNegative){
+			return returnBShouldBeFirst;
+		} else if(bRatingNegative){
+			return returnAShouldBeFirst;
 		}
 
-		if(aRatingUnknown && bRatingPositive){
-			return returnBShouldBeFirst
-		}
-		if(aRatingUnknown && bRatingNegative){
-			return returnAShouldBeFirst
-		}
 		if(aRatingUnknown && bRatingUnknown){
-			return returnNoOrder
+			return returnNoOrder;
+		} else if(aRatingUnknown){
+			return returnBShouldBeFirst;
+		} else if(bRatingUnknown){
+			return returnAShouldBeFirst;
 		}
-		return 0;
+
+		if(aRatingPositive && bRatingPositive){
+			return returnNoOrder;
+		} else if(aRatingPositive){
+			return returnAShouldBeFirst;
+		} else if(bRatingPositive){
+			return returnBShouldBeFirst;
+		}
+
+
 	});
 	return foodOffers;
 
 }
 
-function areDislikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
-	for(const marking_id of marking_ids){
-		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
-		if(marking){
-			const dislikes = marking.dislikes;
-			if(dislikes !== null && dislikes !== undefined && dislikes){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-function areLikedEatingHabitsFound(marking_ids: string[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
-	for(const marking_id of marking_ids){
-		const marking: ProfilesMarkings = profileMarkingsDict[marking_id];
-		if(marking){
-			const dislikes = marking.dislikes;
-			if(dislikes !== null && dislikes !== undefined && !dislikes){
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
 	foodOffers.sort((a, b) => {
-		const aMarkingsRelation = a?.markings as FoodoffersMarkings[]
-		let aMarkingsIds: string[] = [];
-		if(aMarkingsRelation){
-			for(const marking of aMarkingsRelation){
-				const markingIsOrMarking = marking.markings_id;
-				if(typeof markingIsOrMarking === 'string'){
-					aMarkingsIds.push(markingIsOrMarking);
-				}
-				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
-					aMarkingsIds.push(markingIsOrMarking.id);
-				}
-			}
-		}
+		const aDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		const aLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
 
-		const bMarkingsRelation = b?.markings as FoodoffersMarkings[]
-		let bMarkingsIds = [];
-		if(bMarkingsRelation){
-			for(const marking of bMarkingsRelation){
-				const markingIsOrMarking = marking.markings_id;
-				if(typeof markingIsOrMarking === 'string'){
-					bMarkingsIds.push(markingIsOrMarking);
-				}
-				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
-					bMarkingsIds.push(markingIsOrMarking.id);
-				}
-			}
-		}
-
-		const aDislikedEatingHabitsFound = areDislikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
-		const aLikedEatingHabitsFound = areLikedEatingHabitsFound(aMarkingsIds, profileMarkingsDict);
-
-		const bDislikedEatingHabitsFound = areDislikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
-		const bLikedEatingHabitsFound = areLikedEatingHabitsFound(bMarkingsIds, profileMarkingsDict);
+		const bDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		const bLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
 
 		const returnAShouldBeFirst = -1;
 		const returnNoOrder = 0;
@@ -217,30 +157,12 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	} else if(sortType === SortType.alphabetical){
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
-		copiedFoodOffers = sortByFavorite(foodOffers, foodFeedbacksDict);
+		copiedFoodOffers = sortByFavorite(copiedFoodOffers, foodFeedbacksDict);
 	} else if(sortType === SortType.eatingHabits){
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
 	}
 	return copiedFoodOffers;
 }
-
-function getFoodName(food: string | Foods | null | undefined, languageCode: string) {
-	if (typeof food === 'object' && food !== null) {
-		let translations = food.translations as TranslationEntry[]
-		if (translations) {
-			let translation = getDirectusTranslation(languageCode, translations, 'name', false, undefined, undefined);
-			if (translation) {
-				return translation;
-			}
-		}
-
-		if (food?.alias) {
-			return food.alias
-		}
-	}
-	return null
-}
-
 
 export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
@@ -249,35 +171,39 @@ export default function FoodOfferScreen() {
 	const [foodOffersDownloaded, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidCanteenSelected();
 	const projectName = useProjectName()
+	const dislikeColor = useDislikeColor();
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
+
+
+	const dateAsString = selectedDate.toISOString();
+
+	const initialAmountColumns = useMyGridListDefaultColumns();
 
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const [foodFeedbacksDict, setFoodFeedbacksDict] = useSynchedProfileFoodFeedbacksDict()
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
-	let foodOffersSorted = foodOffersDownloaded
-	console.log("foodOffersDownloaded", foodOffersDownloaded)
 
-	if (foodOffersSorted) {
-		foodOffersSorted = sortFoodOffers(foodOffersSorted, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
+	let [foodOffersSorted, setFoodoffersSorted] = useState<Foodoffers[] | undefined | null>(undefined);
+
+	if (foodOffersDownloaded && !foodOffersSorted) {
+		foodOffersSorted = sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
+		setFoodoffersSorted(foodOffersSorted)
 	}
 
 
-	const navigation = useNavigation();
-
-	const dateAsString = selectedDate.toISOString();
-
-	const initialAmountColumns = useMyGridListDefaultColumns();
-
 	async function loadFoodOffers() {
 		setFoodOffers(undefined)
+		setFoodoffersSorted(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
 				setFoodOffers(downloadedFoodOffers);
+				// sort the food offers
+				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 			} catch (err){
 				setFoodOffers(null);
 			}
@@ -286,15 +212,21 @@ export default function FoodOfferScreen() {
 		}
 	}
 
-
+	// wait half a second before loading the food offers but reset the timeout if any dependencies change
+	let depsReloadFood = [dateAsString, profileCanteen?.id]
 	useEffect(() => {
-		// wait half a second before loading the food offers
-		// to prevent the screen from flickering
 		setFoodOffers(undefined)
-		const timeout = setTimeout(async () => {
-			await loadFoodOffers();
-		}, 500);
-	}, [dateAsString, profileCanteen?.id]);
+		setFoodoffersSorted(undefined)
+		loadFoodOffers();
+	}, depsReloadFood);
+
+
+	// Call useEffect when the sortType changes and the screen gets mounted
+	useEffect(() => {
+		if (foodOffersDownloaded) {
+			setFoodoffersSorted(sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
+		}
+	}, [sortType])
 
   type DataItem = { key: string; data: Foodoffers }
 
@@ -329,16 +261,22 @@ export default function FoodOfferScreen() {
   		}
 		title = getFoodName(food, languageCode)
 
+		const unwantedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(foodOffer, profilesMarkingsDict);
+		const borderColor = unwantedEatingHabitsFound ? dislikeColor : undefined;
+
 	    //TODO: This is a temporary "fix" for the SWOSY project
 		if (projectName === "SWOSY") {
 			//replace the url with the server url
 			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
 		}
 
+		const markingBadge = unwantedEatingHabitsFound ? <MarkingBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
+
 		return (
 			<MyCardForResourcesWithImage
 				key={item.key}
 				heading={title}
+				borderColor={borderColor}
 				thumbHash={thumb_hash}
 				image_url={image_url}
 				assetId={assetId}
@@ -351,7 +289,12 @@ export default function FoodOfferScreen() {
 					<IndividualPricingBadge foodOffer={foodOffer}/>
 				}
 				topRightComponent={
-					<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+					<View style={{
+						flexDirection: 'row',
+					}}>
+						{markingBadge}
+						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+					</View>
 				}
 				imageUploaderConfig={{
 					resourceId: food.id,

@@ -8,6 +8,7 @@ import {
 	useDrawerPositionRaw
 } from '@/states/DrawerSyncConfig';
 import {IconNames} from '@/constants/IconNames';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface AppState {
 
@@ -48,7 +49,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedName
 	const label = title
 
-	const items = []
+	const items: MyModalActionSheetItem[] = []
 	for (const key of availableOptionKeys) {
 		const label: string = optionKeyToName[key]
 
@@ -63,7 +64,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 		items.push({
 			key: key as string,
 			label: label,
-			icon: icon,
+			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
@@ -74,9 +75,10 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 		})
 	}
 
-	const config = {
-		onCancel: undefined,
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		accessibilityLabel: accessibilityLabel,
+		key: 'drawer_position',
+		label: title,
 		title: title,
 		items: items
 	}

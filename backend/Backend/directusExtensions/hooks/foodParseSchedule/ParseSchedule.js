@@ -140,25 +140,27 @@ export class ParseSchedule {
         return json;
     }
 
-    async findOrCreateMarking(markingLabel) {
+    async findOrCreateMarking(marking_external_identifier) {
         let tablename = TABLENAME_MARKINGS;
         let searchJSON = {
-            external_identifier: markingLabel
+            external_identifier: marking_external_identifier
         };
         let markingJSON = {
-            label: markingLabel,
-            external_identifier: markingLabel,
+            alias: marking_external_identifier,
+            external_identifier: marking_external_identifier,
         };
         markingJSON = this.setStatusPublished(markingJSON);
         let marking = await this.createIfNotFound(tablename, searchJSON, markingJSON);
         return marking;
     }
 
-    async findOrCreateMarkings(markingLabels) {
+    async findOrCreateMarkings(markings_external_identifiers) {
         let markings = [];
-        for (let markingLabel of markingLabels) {
-            let marking = await this.findOrCreateMarking(markingLabel);
-            markings.push(marking);
+        for (let marking_external_identifier of markings_external_identifiers) {
+            let marking = await this.findOrCreateMarking(marking_external_identifier);
+            if(marking){
+                markings.push(marking);
+            }
         }
         return markings;
     }
@@ -177,7 +179,7 @@ export class ParseSchedule {
             let items = await itemService.readByQuery({
                 filter: searchJson
             })
-            let item = items[0]
+            item = items[0]
         }
         return item;
     }
@@ -328,6 +330,7 @@ export class ParseSchedule {
                 }
             };
 
+            console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
             let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
             if(updateNeeded){
                 //console.log(JSON.stringify(updateObject, null, 2));
@@ -366,7 +369,8 @@ export class ParseSchedule {
                 filter: {
                     date: date
                 },
-                fields: ['id'] // Assuming 'id' is the primary key field
+                fields: ['id'], // Assuming 'id' is the primary key field
+                limit: -1
             });
 
             let idsToDelete = itemsToDelete.map(item => item.id);
@@ -382,13 +386,13 @@ export class ParseSchedule {
         }
     }
 
-    async findOrCreateCanteen(canteenLabel) {
-        console.log("Find or create canteen: " + canteenLabel)
+    async findOrCreateCanteen(external_identifier) {
+        console.log("Find or create canteen: " + external_identifier)
 
         let tablename = TABLENAME_CANTEENS;
         let canteenJSON = {
-            alias: canteenLabel,
-            external_identifier: canteenLabel
+            alias: external_identifier,
+            external_identifier: external_identifier
         };
 
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
@@ -458,8 +462,8 @@ export class ParseSchedule {
                         let mealoffer = await mealofferService.readOne(createdMealoffer_id);
 
                         if (!!mealoffer) {
-                            let markingLabelsList = await this.parser.getMarkingLabelsFromRawMealOffer(rawFoodOffer) || [];
-                            let markings = await this.findOrCreateMarkings(markingLabelsList);
+                            let markings_external_identifiers = await this.parser.getMarkingsExternalIdentifiersFromRawMealOffer(rawFoodOffer) || [];
+                            let markings = await this.findOrCreateMarkings(markings_external_identifiers);
                             await this.assignMarkingsToMealOffer(markings, mealoffer);
                         }
                         let nutritionsJSON = await this.parser.getMealNutritionsForRawMealOffer(rawFoodOffer);

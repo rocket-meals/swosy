@@ -1,10 +1,11 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useState} from 'react';
 import {Icon, Text, View, useTextContrastColor, useViewBackgroundColor} from '@/components/Themed';
 import {ActionsheetItem, ActionsheetItemText} from '@gluestack-ui/themed';
-import {AccessibilityRole} from 'react-native';
+import {AccessibilityRole, TouchableOpacity} from 'react-native';
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {useProjectColor} from '@/states/ProjectInfo';
 import {IconNames} from '@/constants/IconNames';
+import {MyActionsheetItem} from "@/components/settings/MyActionsheetItem";
 
 export interface SettingsRowProps {
     key?: any;
@@ -13,8 +14,10 @@ export interface SettingsRowProps {
     labelRight?: string | null,
     leftContent?: string | any,
     rightContent?: React.ReactNode,
+	active?: boolean,
     disabled?: boolean,
     leftIcon?: any | string,
+	iconLeftCustom?: React.ReactNode,
     rightIcon?: string,
     onPress?: any,
 	padding?: number | undefined
@@ -29,6 +32,8 @@ export interface SettingsRowProps {
     flex?: number,
     shadeLevel?: number
 }
+
+const DEFAULT_PADDING = 12;
 export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const textColor = useTextContrastColor()
@@ -36,6 +41,43 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
 	const projectColor = useProjectColor()
 	const projectColorContrast = useMyContrastColor(projectColor)
+	const isActive = props.active || false;
+
+	const [isHovered, setIsHovered] = useState(false);
+
+	// Function to handle mouse enter event
+	const handleMouseEnter = () => {
+		setIsHovered(true);
+	};
+
+	// Function to handle mouse leave event
+	const handleMouseLeave = () => {
+		setIsHovered(false);
+	};
+
+	const item = {
+		key: props?.key,
+		icon: props.leftIcon,
+		label: props.labelLeft,
+		accessibilityLabel: props.accessibilityLabel,
+		onSelect: props.onPress,
+		leftIcon: props.leftIcon,
+	}
+
+	const ultraPerformance = false
+
+	if(ultraPerformance) {
+		return (
+			<>
+				<View style={{
+					padding: DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
+				}}>
+					<Text>{item.label}</Text>
+				</View>
+
+			</>
+		)
+	}
 
 	function renderRightContent(showPress: boolean): React.ReactNode {
 		const rightIcon = props?.rightIcon
@@ -63,22 +105,17 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		)
 	}
 
-	const isActive = false
 	const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
 	const usedTextColor = isActive ? projectColorContrast : textColor;
 
-	const item = {
-		key: props?.key,
-		icon: props.leftIcon,
-		label: props.labelLeft,
-		accessibilityLabel: props.accessibilityLabel,
-		onSelect: props.onPress,
-		leftIcon: props.leftIcon,
-	}
 
-	let renderedLeftIcon = <Icon color={textColor} name={item.icon} />
+
+	let renderedLeftIcon: any = <Icon color={textColor} name={item.icon} />
 	if (isActive) {
 		renderedLeftIcon = <Icon color={projectColorContrast} name={item.icon} />
+	}
+	if(props.iconLeftCustom){
+		renderedLeftIcon = props.iconLeftCustom
 	}
 
 	const expanded = props.expanded;
@@ -105,60 +142,61 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		</View>
 	)
 
-	const contentWithWrap = (
-		<View style={{
-			flexDirection: 'row',
-			flexWrap: 'wrap',
-			justifyContent: 'space-between', // This will align the first child left and the last child right
-			flex: 1
-		}}
-		>
-			<View style={{
-				// The red view
-				flexShrink: 1,
-				//marginRight: 'auto', // This ensures that the view stays left
-			}}
-			>
-				<Text style={{ color: usedTextColor }}>{item.label}</Text>
-			</View>
-			<View style={{
-				flexShrink: 1,
-				// The blue view
-				//marginLeft: 'auto', // This ensures that the view stays right
-			}}
-			>
-				<Text style={{ color: usedTextColor, textAlign: 'right'
-				}}
-				>{props.labelRight}
-				</Text>
-			</View>
-		</View>
-	)
-
 	const content = contentWithShrinkingSpaceOnlyRight;
 
-	const DEFAULT_PADDING = 12;
+	const performance = true;
 
-	return (
-		<>
-			<ActionsheetItem
-				padding={props.padding || DEFAULT_PADDING}
-				disabled={!item.onSelect || props.disabled}
-				accessibilityLabel={item.accessibilityLabel}
-				sx={{
-					bg: usedViewBackgroundColor,
-					':hover': {
-						bg: lighterOrDarkerBackgroundColor,
-					},
-				}}
-				key={item.key}
-				onPress={item.onSelect}
-			>
-				<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-				{content}
-				{renderRightContent(!!item.onSelect)}
-			</ActionsheetItem>
-			{renderedChildren}
-		</>
-	)
+	const renderLeftIcon = (icon: any) => {
+		return <View style={{
+			paddingLeft: 8,
+			paddingRight: 8,
+		}}>
+			{icon}
+		</View>
+	}
+
+	if(performance){
+		return (
+			<>
+				<MyActionsheetItem
+					disabled={!item.onSelect || props.disabled}
+					accessibilityLabel={item.accessibilityLabel}
+					onPress={item.onSelect}
+					active={isActive}
+					key={item.key}
+				>
+					{renderLeftIcon(renderedLeftIcon)}
+					{content}
+					{renderRightContent(!!item.onSelect)}
+				</MyActionsheetItem>
+				{/* Your rendered children go here */}
+			</>
+		);
+	} else {
+		return (
+			<>
+				<ActionsheetItem
+					padding={props.padding || DEFAULT_PADDING}
+					disabled={!item.onSelect || props.disabled}
+					accessibilityLabel={item.accessibilityLabel}
+					sx={{
+						bg: usedViewBackgroundColor,
+						':hover': {
+							bg: lighterOrDarkerBackgroundColor,
+						},
+					}}
+					key={item.key}
+					onPress={item.onSelect}
+				>
+					<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+					{content}
+					{renderRightContent(!!item.onSelect)}
+				</ActionsheetItem>
+				{renderedChildren}
+			</>
+		)
+	}
+
+
+
 }

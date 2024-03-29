@@ -16,6 +16,7 @@ export type MyLottieAnimationProps = {
     source?: any,
     colorReplaceMap?: {[key: string]: string},
     loop?: boolean,
+	speed?: number,
     autoPlay?: boolean,
     animationRef?: any,
 	zoom?: number,
@@ -52,6 +53,8 @@ export const MyLottieAnimation = ({
 	const usedLoop = loop === undefined ? true : loop;
 	// Default to true if autoPlay is not explicitly set.
 	const usedAutoPlay = props.autoPlay === undefined ? true : props.autoPlay;
+
+	const speed = props.speed || 1;
 
 	// State for managing animation source.
 	const [usedSource, setUsedSource] = useState(source);
@@ -199,6 +202,7 @@ export const MyLottieAnimation = ({
 				<LottieView
 					key={reloadnumber + ''}
 					autoPlay={usedAutoPlay}
+					speed={speed}
 					loop={usedLoop}
 					ref={animation}
 					resizeMode={"contain"}

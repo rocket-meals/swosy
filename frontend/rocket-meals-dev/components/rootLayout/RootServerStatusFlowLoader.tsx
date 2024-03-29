@@ -1,11 +1,13 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { useSyncState} from '@/helper/syncState/SyncState';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, View} from '@/components/Themed';
 import {useServerInfoRaw} from '@/states/SyncStateServerInfo';
 import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {AuthenticationData} from '@directus/sdk';
-import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass'; // Optional if you want to use default theme
+import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
+import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {useIsDebug} from "@/states/Debug"; // Optional if you want to use default theme
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -17,6 +19,9 @@ export interface ServerStatusFlowLoaderProps {
 }
 
 export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) => {
+
+	const isDebug = useIsDebug();
+
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
 	] = useServerInfoRaw();
@@ -56,22 +61,24 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		})();
 	}, []);
 
+	const debugInformation = isDebug ? <Text>{JSON.stringify(serverInfo, null, 2)}</Text> : null;
+
 	// 1. load server information
 	if (serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo) {
 		return (
-			<View>
+			<LoadingScreen>
 				<Text>{'Loading server Info'}</Text>
-				<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
-			</View>
+				{debugInformation}
+			</LoadingScreen>
 		)
 	}
 
 	if (serverInfo.status === 'offline') {
 		return (
-			<View>
+			<LoadingScreen>
 				<Text>{'Server is offline and no data is cached'}</Text>
-				<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
-			</View>
+				{debugInformation}
+			</LoadingScreen>
 		)
 	}
 
