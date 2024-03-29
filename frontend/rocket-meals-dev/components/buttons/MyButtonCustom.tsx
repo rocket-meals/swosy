@@ -262,12 +262,14 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	if (tooltip) {
 		return (
 			<Tooltip
+
 				placement="top"
 				trigger={(triggerProps) => {
 					return renderButton(triggerProps)
 				}}
 			>
-				<TooltipContent>
+				<TooltipContent style={{
+				}}>
 					<TooltipText>{tooltip}</TooltipText>
 				</TooltipContent>
 			</Tooltip>

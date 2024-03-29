@@ -40,6 +40,9 @@ export enum IconNames {
     utilization_icon = 'human-queue',
     businesshours_icon = 'clock-time-eight',
 
+    select_option_active_icon = 'check-circle',
+    select_option_inactive_icon = 'checkbox-blank-circle-outline',
+
     chevron_right_icon = 'chevron-right',
     chevron_left_icon = 'chevron-left',
     color_edit_icon = 'palette',

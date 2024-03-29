@@ -1,14 +1,14 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useState} from 'react';
 import {SimpleDatePickerComponent} from './SimpleDatePickerComponent';
-import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DateHelper} from '@/helper/date/DateHelper';
 import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
 import {useProjectColor, useProjectColorContrast} from '@/states/ProjectInfo';
-import {View} from '@/components/Themed';
+import {useTextContrastColor, View} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
+import {MyModal} from "@/components/modal/MyModal";
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -39,30 +39,31 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 
 	const locale = useProfileLocaleForJsDate();
 
+	const textColor = useTextContrastColor()
+
 	const selectedDateColor = useProjectColor();
 	const selectedTextColor = useProjectColorContrast();
 
 	const weekdayBackgroundColor = useProjectColor();
 	const weekdayTextColor = useProjectColorContrast();
 
-	const items: MyGlobalActionSheetItem[] = [];
+	const [show, setShow] = useState(false);
 
-	items.push({
-		key: 'gridList',
-		label: selectDateTranslation,
-		//icon: "test",
-		accessibilityLabel: selectDateTranslation,
-		render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-			// Use the custom context provider to provide the input value and setter
-			const onSelectDate = (date: Date) => {
-				if (props.onSelectDate) {
-					props.onSelectDate(date);
-				}
-				hide();
-			}
+	const onSelectDate = (date: Date) => {
+		if (props.onSelectDate) {
+			props.onSelectDate(date);
+		}
+		setShow(false);
+	}
 
-			return (
-				<>
+	const onPress = () => {
+		setShow(true);
+	}
+
+	return (
+		<>
+			<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
+			<MyModal visible={show} title={selectDateTranslation} setVisible={setShow} >
 					<SimpleDatePickerComponent
 						currentDate={props.currentDate}
 						textColor={textColor}
@@ -84,30 +85,7 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 					>
 
 					</View>
-				</>
-			)
-		}
-	})
-
-	const config = {
-		onCancel: async () => {
-			if (props.onCancel) {
-				return await props.onCancel();
-			}
-			return true;
-		},
-		visible: true,
-		title: selectDateTranslation,
-		items: items
-	}
-
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
-	const onPress = () => {
-		show(config)
-	}
-
-	return (
-		<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
+			</MyModal>
+		</>
 	)
 }

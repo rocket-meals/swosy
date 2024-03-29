@@ -4,11 +4,10 @@ import {Apartments} from "@/helper/database/databaseTypes/types";
 import {useProfileLocaleForJsDate} from "@/states/SynchedProfile";
 import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {Text, View} from "@/components/Themed";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MyModal} from "@/components/modal/MyModal";
 
 export type FreeRoomBadgeProps = {
 	apartment: Apartments,
@@ -16,7 +15,7 @@ export type FreeRoomBadgeProps = {
 }
 export const FreeRoomBadge = ({apartment, borderRadius}: FreeRoomBadgeProps) => {
 	const translation_free_rooms = useTranslation(TranslationKeys.free_rooms);
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [show, setShow] = React.useState(false)
 	const locale = useProfileLocaleForJsDate()
 
 	let available_from = apartment.available_from;
@@ -30,12 +29,17 @@ export const FreeRoomBadge = ({apartment, borderRadius}: FreeRoomBadgeProps) => 
 
 	const accessibilityLabel = translation_free_rooms+": "+readableAvailableFrom;
 
-	const config: MyGlobalActionSheetConfig = {
-		visible: true,
-		title: translation_free_rooms,
-		renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-			// Use the custom context provider to provide the input value and setter
-			return <MySafeAreaView>
+	const dislike_icon = IconNames.sort_free_rooms_icon;
+
+	return 	<>
+		<MyButton
+			isActive={true}
+			borderRadius={borderRadius}
+			onPress={() => {
+				setShow(true)
+			}}
+			accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={dislike_icon} />
+		<MyModal visible={show} title={translation_free_rooms} setVisible={setShow}>
 				<MyScrollView>
 					<View style={{
 						width: "100%",
@@ -45,17 +49,6 @@ export const FreeRoomBadge = ({apartment, borderRadius}: FreeRoomBadgeProps) => 
 						}}>{accessibilityLabel}</Text>
 					</View>
 				</MyScrollView>
-			</MySafeAreaView>
-		}
-	}
-
-	const dislike_icon = IconNames.sort_free_rooms_icon;
-
-	return 	<MyButton
-		isActive={true}
-		borderRadius={borderRadius}
-		onPress={() => {
-			show(config)
-		}}
-		accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={dislike_icon} />
+		</MyModal>
+	</>
 }

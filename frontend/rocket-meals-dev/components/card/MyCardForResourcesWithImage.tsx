@@ -8,20 +8,15 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {IconNames} from "@/constants/IconNames";
 import {PermissionHelper} from "@/helper/permission/PermissionHelper";
-import {
-	MyGlobalActionSheetConfig,
-	MyGlobalActionSheetItem,
-	useMyGlobalActionSheet
-} from "@/components/actionsheet/MyGlobalActionSheet";
-import {useMyActionSheetConfigConfirmer} from "@/components/actionsheet/usePredefinedActionSheetConfigs";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import * as ImagePicker from 'expo-image-picker';
 import {ImagePickerAsset} from 'expo-image-picker';
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
-import {updateField, updateFile, uploadFiles} from "@directus/sdk";
-import {Platform} from "react-native";
+import {uploadFiles} from "@directus/sdk";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 
 export type MyCardForResourcesWithImageProps = {
@@ -71,41 +66,30 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 	// DirectusFiles
 	const canCreateFile = PermissionHelper.useCanCreate('directus_files', 'file');
 
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet();
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
-	const configErrorOnUpload: MyGlobalActionSheetConfig = useMyActionSheetConfigConfirmer({
-		renderPreItemsContent: () => {
-			return <View style={{
-				width: '100%',
-				padding: 20,
-			}}>
-				<Text>{"Error on upload"}</Text>
-			</View>
-		},
-		onConfirm: async () => {
-			return true
-			hide()
-		},
-	})
 
-	const pleaseWaitConfig: MyGlobalActionSheetConfig = {
-		visible: true,
-		title: "Please wait",
-		renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-			return <View style={{
-				width: '100%',
-				justifyContent: 'center',
-				alignItems: 'center',
-				padding: 20,
-			}}>
-				<Text>{"Please wait"}</Text>
-				<Spinner />
-				<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
-					hide()
-				} } />
-			</View>
-		}
+	function setLoading(){
+		setModalConfig({
+			key: "image_upload",
+			label: "Upload Image",
+			accessibilityLabel: "Upload Image",
+			renderAsContentInsteadItems: (key, hide) => {
+				return <View style={{
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+					padding: 20,
+				}}>
+					<Text>{"Please wait"}</Text>
+					<Spinner />
+					<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
+						hide()
+					} } />
+				</View>
+			}
 
+		})
 	}
 
 	async function handleSelectImageForUpload(useCamera: boolean) {
@@ -127,7 +111,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 				});
 
 				if (!result.canceled) {
-					show(pleaseWaitConfig);
+					setLoading()
 					const assets: ImagePickerAsset[] | null = result.assets;
 					if (assets) {
 						const asset = assets[0];
@@ -167,7 +151,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 							const fileType = uriParts[uriParts.length - 1];
 							const fileExtension = `.${fileType}`;
 							// create the file
-							const file = {
+							const file: any = {
 								uri,
 								name: file_name + fileExtension,
 								type: `image/${fileType}`,
@@ -209,7 +193,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 				} else {
 				}
-				hide()
+				setModalConfig(null)
 			} else if (canRequest && !usedGranted) {
 				if (useCamera) {
 					await requestPermissionForCamera()
@@ -221,19 +205,36 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		} catch (e) {
 			console.log("Error in handleSelectImageForUpload");
 			console.log(e);
-			show(configErrorOnUpload);
+			setModalConfig({
+				key: "image_upload_error",
+				label: "Error",
+				accessibilityLabel: "Error",
+				renderAsContentInsteadItems: (key, hide) => {
+					return <View style={{
+						width: '100%',
+						justifyContent: 'center',
+						alignItems: 'center',
+						padding: 20,
+					}}>
+						<Text>{"Error on upload"}</Text>
+						<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
+							hide()
+						} } />
+					</View>
+				}
+			})
 		}
 	}
 
 	async function handleDeleteImage() {
 		console.log('delete image');
 		const collectionHelper = new CollectionHelper(props.resourceCollectionName);
-		show(pleaseWaitConfig);
+		setLoading()
 		let result = await collectionHelper.updateItem(props.resourceId, {
 			image: null,
 			image_remote_url: null
 		})
-		hide()
+		setModalConfig(null)
 		if (result) {
 			if (onImageUpdated) {
 				onImageUpdated()
@@ -241,33 +242,13 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		}
 	}
 
-	const configDelete: MyGlobalActionSheetConfig = useMyActionSheetConfigConfirmer({
-		renderPreItemsContent: () => {
-			return <View style={{
-				width: '100%',
-				padding: 20,
-			}}>
-				<Text>{"Are you sure you want to delete the image?"}</Text>
-			</View>
-		},
-		onConfirm: async () => {
-			handleDeleteImage()
-			return true
-		},
-		onCancel: async () => {
-			return false
-		}
-	})
-
-
-
 	const hasPermission = canUpdateImageField || canUpdateImageRemoteUrlField || canCreateFile;
 
 	if(!hasPermission){
 		return null;
 	}
 
-	const items: MyGlobalActionSheetItem[] = []
+	const items: MyModalActionSheetItem[] = []
 
 	if(PlatformHelper.isSmartPhone()){
 		items.push(
@@ -275,8 +256,8 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 				key: 'change_image_camera',
 				label: translation_camera,
 				accessibilityLabel: translation_camera+": "+translation_upload+": "+translation_image,
-				icon: IconNames.camera_icon,
-				onSelect: (key, hide) => {
+				iconLeft: IconNames.camera_icon,
+				onSelect: (key) => {
 					handleSelectImageForUpload(true)
 				}
 			}
@@ -288,8 +269,8 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 			key: 'change_image_gallery',
 			label: translation_gallery,
 			accessibilityLabel: translation_gallery+": "+translation_upload+": "+translation_image,
-			icon: IconNames.gallery_icon,
-			onSelect: (key, hide) => {
+			iconLeft: IconNames.gallery_icon,
+			onSelect: (key) => {
 				handleSelectImageForUpload(false)
 			}
 		}
@@ -300,17 +281,34 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 			key: 'delete_image',
 			label: translation_delete,
 			accessibilityLabel: translation_delete+": "+translation_image,
-			icon: IconNames.delete_icon,
-			onSelect: (key, hide) => {
-				show(configDelete);
-				return true;
-			}
+			iconLeft: IconNames.delete_icon,
+			items: [
+				{
+					key: 'delete_image_confirm',
+					label: translation_delete,
+					accessibilityLabel: translation_delete+": "+translation_image,
+					iconLeft: IconNames.delete_icon,
+					onSelect: (key, hide) => {
+						handleDeleteImage()
+					}
+				},
+				{
+					key: 'delete_image_cancel',
+					label: translation_cancel,
+					accessibilityLabel: translation_cancel+": "+translation_image,
+					iconLeft: IconNames.cancel_icon,
+					onSelect: (key, hide) => {
+						hide();
+						return true;
+					}
+				}
+			]
 		}
 	)
 	items.push(
 		{
 			key: 'cancel',
-			icon: IconNames.cancel_icon,
+			iconLeft: IconNames.cancel_icon,
 			label: translation_cancel,
 			accessibilityLabel: translation_cancel,
 			onSelect: (key, hide) => {
@@ -320,15 +318,23 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		}
 	)
 
-	return <MyButton
-		borderRadius={MyCardDefaultBorderRadius}
-		onPress={() => {
-			show({
-				visible: true,
-				title: title,
-				items: items
-			})
-		}} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={IconNames.change_image_icon} />
+	const onPress = () => {
+		let item: MyModalActionSheetItem = {
+			key: "image_edit",
+			label: title,
+			title: title,
+			accessibilityLabel: accessibilityLabel,
+			items: items
+		}
+
+		setModalConfig(item)
+	}
+
+	return <>
+		<MyButton
+			borderRadius={MyCardDefaultBorderRadius}
+			onPress={onPress} accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={IconNames.change_image_icon} />
+	</>
 }
 
 // define the button component

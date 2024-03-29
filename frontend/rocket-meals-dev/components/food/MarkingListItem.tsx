@@ -6,9 +6,6 @@ import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowT
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {TouchableOpacity} from "react-native";
-import {LoadingRectThemed} from "@/components/food/MarkingList";
-import {SettingsRow} from "@/components/settings/SettingsRow";
 
 export default function MarkingListItem({ markingId }: { markingId: string}) {
 	/**

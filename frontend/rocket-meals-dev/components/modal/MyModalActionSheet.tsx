@@ -1,0 +1,136 @@
+import React, {useState} from 'react';
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {MyModal, MyModalProps} from "@/components/modal/MyModal";
+import {IconNames} from "@/constants/IconNames";
+import {SettingsRow} from "@/components/settings/SettingsRow";
+
+
+export type MyModalActionSheetItem = {
+	key: string,
+	label: string,
+	active?: boolean,
+	title?: string,
+	iconLeft?: string | undefined,
+	onCancel?: () => Promise<boolean> | void,
+	iconLeftCustomRender?: (key: string, hide: () => void) => React.ReactNode,
+	accessibilityLabel: string,
+	onSelect?: (key: string, hide: () => void) => void,
+	renderAsItem?: (key: string, hide: () => void) => React.ReactNode,
+	renderAsContentInsteadItems?: (key: string, hide: () => void) => React.ReactNode,
+	renderAsContentPreItems?: (key: string, hide: () => void) => React.ReactNode,
+	items?: MyModalActionSheetItem[]
+}
+
+export type MyModalActionSheetProps = {
+	visible: boolean,
+	setVisible: React.Dispatch<React.SetStateAction<boolean>> | ((visible: boolean) => void),
+	item: MyModalActionSheetItem
+}
+export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) => {
+	if(!item){
+		return null;
+	}
+
+
+	let reneredItems = []
+	const [selectedItemsHistory, setSelectedItemsHistory] = useState<string[]>([item.key]); // first item is the root item
+
+	const translation_navigate_back = useTranslation(TranslationKeys.navigate_back);
+	const hide = () => {
+		if(props.setVisible){
+			props.setVisible(false);
+		}
+	}
+
+
+	let currentItem: MyModalActionSheetItem | undefined = item;
+	let currentItems = item.items || [];
+	if(selectedItemsHistory.length > 1){
+		// iterate through the selected items
+		for(let i = 1; i < selectedItemsHistory.length; i++){ // start at 1 because the first item is the root item
+			const key = selectedItemsHistory[i];
+			const item = currentItems.find((item) => item.key === key);
+			if(item && item.items){
+				currentItems = item.items;
+			}
+		}
+	}
+
+	let itemsToRender: any = currentItems;
+
+	for(const item of itemsToRender){
+		let isOption = false;
+		let hasSubItems = !!item.items && item.items.length > 0;
+		if(item.onSelect && !hasSubItems){
+			isOption = true;
+		}
+		const onSelect = async (key: string) => {
+			if(item.onSelect){
+				await item.onSelect(key);
+				if(props.setVisible){
+					props.setVisible(false);
+				}
+			} else if(item.items){
+				setSelectedItemsHistory([...selectedItemsHistory, key]);
+			}
+		}
+
+		if(item.renderAsItem){
+			reneredItems.push(item.renderAsItem(item.key, hide))
+			continue;
+		}
+
+		let iconRight = undefined;
+		if(isOption){
+			iconRight = IconNames.select_option_inactive_icon;
+			if(item.active){
+				iconRight = IconNames.select_option_active_icon;
+			}
+		}
+		if(hasSubItems){
+			iconRight = IconNames.chevron_right_icon
+		}
+
+		let leftIcon = item.iconLeft;
+		let iconLeftCustomRender = undefined
+		if(item.iconLeftCustomRender){
+			iconLeftCustomRender = item.iconLeftCustomRender("transparent", "transparent", "black", "black", hide);
+		}
+
+		reneredItems.push(
+			<SettingsRow labelLeft={item.label} accessibilityLabel={item.accessibilityLabel} onPress={onSelect} rightIcon={iconRight} leftIcon={leftIcon} iconLeftCustom={iconLeftCustomRender} active={item.active}  />
+		)
+	}
+
+	let historyIsIntoSubItems = selectedItemsHistory.length > 1;
+	if(historyIsIntoSubItems){
+		reneredItems.push(
+			<SettingsRow labelLeft={translation_navigate_back} accessibilityLabel={translation_navigate_back} onPress={() => {
+				setSelectedItemsHistory(selectedItemsHistory.slice(0, selectedItemsHistory.length - 1));
+			}} leftIcon={IconNames.drawe_menu_go_back_icon} />
+		)
+	}
+
+	let preContent = undefined;
+	if(currentItem.renderAsContentPreItems){
+		preContent = currentItem.renderAsContentPreItems(currentItem.key, hide);
+	}
+
+	let finalContent: any = <>
+		{preContent}
+		{reneredItems}
+	</>;
+
+
+	if(currentItem.renderAsContentInsteadItems){
+		finalContent = currentItem.renderAsContentInsteadItems(currentItem.key, hide);
+	}
+
+
+	let title = currentItem.title;
+	let onCancel = currentItem.onCancel;
+
+	return <MyModal {...props} title={title} onCancel={onCancel}>
+		{finalContent}
+	</MyModal>
+}

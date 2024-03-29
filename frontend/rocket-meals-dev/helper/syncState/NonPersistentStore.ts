@@ -4,8 +4,6 @@ export class NonPersistentStore {
 
 	static currentUser = 'NonPersistentStore.currentUser'
 
-	static globalMyActionSheetConfig = 'NonPersistentStore.globalMyActionSheetConfig'
-
 	static textDimensions = 'NonPersistentStore.textDimensions'
 
 	static foodOfferSelectedDate = 'NonPersistentStore.foodOfferSelectedDate'

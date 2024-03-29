@@ -1,12 +1,10 @@
 import React from "react";
-import {useIsCurrentUserAnonymous, useLogoutCallback} from "@/states/User";
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {NotAllowed} from "@/compositions/animations/NotAllowed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Text, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyModal} from "@/components/modal/MyModal";
 
 
 export type DisabledTouchableOpacityProps = {
@@ -14,9 +12,7 @@ export type DisabledTouchableOpacityProps = {
 	reason: string,
 }
 export const DisabledTouchableOpacity = ({children, reason}: DisabledTouchableOpacityProps) => {
-	const isAnonymous = useIsCurrentUserAnonymous()
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-	const logout = useLogoutCallback()
+	const [show, setShow] = React.useState(false)
 
 	const translation_not_usable = useTranslation(TranslationKeys.not_useable);
 	const translation_okay = useTranslation(TranslationKeys.okay);
@@ -25,46 +21,35 @@ export const DisabledTouchableOpacity = ({children, reason}: DisabledTouchableOp
 
 	const accessiblityLabel = translation_not_usable+". "+reason+"."
 
-	const config: MyGlobalActionSheetConfig = {
-		visible: true,
-		title: title,
-		renderCustomContent: () => {
-			return(
-				<MySafeAreaView>
-					<NotAllowed />
-					<View style={{
-						width: "100%",
-						paddingHorizontal: 20,
-					}}>
-						<View style={{
-							width: "100%",
-							paddingBottom: 20,
-						}}>
-							<Text>{reason}</Text>
-						</View>
-						<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_okay} tooltip={translation_okay} text={translation_okay} onPress={() => {
-							hide()
-						}} />
-					</View>
-
-				</MySafeAreaView>
-			)
-		}
-	}
-
-	if(isAnonymous) {
-		return <TouchableOpacityIgnoreChildEvents
+	return <>
+		<TouchableOpacityIgnoreChildEvents
 			accessibilityLabel={accessiblityLabel}
 			tooltip={accessiblityLabel}
 			style={{}}
 			useDefaultOpacity={true}
 			onPress={() => {
-				show(config);
+				setShow(true)
 			}}>
 			{children}
 		</TouchableOpacityIgnoreChildEvents>
-	}
-	return <>{children}</>
+		<MyModal visible={show} setVisible={setShow} title={title} >
+			<NotAllowed />
+			<View style={{
+				width: "100%",
+				paddingHorizontal: 20,
+			}}>
+				<View style={{
+					width: "100%",
+					paddingBottom: 20,
+				}}>
+					<Text>{reason}</Text>
+				</View>
+				<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_okay} tooltip={translation_okay} text={translation_okay} onPress={() => {
+					setShow(false)
+				}} />
+			</View>
+		</MyModal>
+	</>
 }
 
 

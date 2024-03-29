@@ -1,12 +1,17 @@
 import React, {FunctionComponent} from 'react';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {
-	MyColorSchemeKey, getMyColorSchemeKeyOptions, useColorSchemeKeyToThemeDictionary, useMyColorSchemeKeyDetermined,
-	useMyColorSchemeKeySavedOption, useThemeDetermined
+	getMyColorSchemeKeyOptions,
+	MyColorSchemeKey,
+	useColorSchemeKeyToThemeDictionary,
+	useMyColorSchemeKeyDetermined,
+	useMyColorSchemeKeySavedOption,
+	useThemeDetermined
 } from '@/states/ColorScheme';
 import {useIsDebug} from '@/states/Debug';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface AppState {
 
@@ -44,7 +49,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedThemeName
 	const label = title
 
-	const items = []
+	const items: MyModalActionSheetItem[] = []
 	for (const key of availableColorSchemeKeys) {
 		const label: string = colorSchemeKeyToName[key]
 		const themeForKey = colorSchemeKeyToThemeDict[key]
@@ -64,7 +69,7 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 		items.push({
 			key: key as string,
 			label: label,
-			icon: icon,
+			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
@@ -75,9 +80,10 @@ export const SettingsRowColorScheme: FunctionComponent<AppState> = ({...props}) 
 		})
 	}
 
-	const config = {
-		onCancel: undefined,
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		label: title,
+		accessibilityLabel: accessibilityLabel,
+		key: 'color_scheme',
 		title: title,
 		items: items
 	}

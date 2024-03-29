@@ -3,7 +3,7 @@ import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {NoCourseTimetableFound} from '@/compositions/courseTimetable/NoCourseTimetableFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {useIsDemo} from '@/states/SynchedDemo';
-import {Text, View, useViewBackgroundColor} from '@/components/Themed';
+import {Text, useViewBackgroundColor, View} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
 import {DateHelper} from '@/helper/date/DateHelper';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
@@ -11,22 +11,25 @@ import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
 import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
 import {
 	BaseCourseTimetableEvent,
-	CourseTimetableDictType, CourseTimetableEventType,
-	useCourseTimetableEvents, usePersonalCourseTimetableAmountDaysOnScreen,
-	usePersonalCourseTimetableTimeEnd, usePersonalCourseTimetableTimeStart
+	CourseTimetableDictType,
+	CourseTimetableEventType,
+	useCourseTimetableEvents,
+	usePersonalCourseTimetableAmountDaysOnScreen,
+	usePersonalCourseTimetableTimeEnd,
+	usePersonalCourseTimetableTimeStart
 } from '@/compositions/courseTimetable/CourseTimetableHelper';
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import React from 'react';
 import {TimetableImportDemo} from '@/compositions/courseTimetable/timetableProviders/TimetableImportDemo';
 import {CourseTimetableSchedule} from '@/compositions/courseTimetable/CourseTimetableSchedule';
-import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {IconNames} from '@/constants/IconNames';
 import {CourseTimetableEvent} from '@/compositions/courseTimetable/CourseTimetableEvent';
 import {useIsDebug} from "@/states/Debug";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export default function CourseTimetableScreen() {
 	const translation_import = useTranslation(TranslationKeys.import);
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const isDemo = useIsDemo()
 	const isDebug = useIsDebug()
@@ -54,25 +57,6 @@ export default function CourseTimetableScreen() {
 	}
 	const amountOfDaysToShowOnScreen = amountDaysOnScreen || useBreakPointValue(breakPointsAmountOfDaysToShowOnScreen)
 
-	const configShowDemoImportProvider: MyGlobalActionSheetConfig = {
-		onCancel: undefined,
-		visible: true,
-		title: 'Import',
-		renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-			return (
-				<MyScrollView>
-					<View style={{
-						width: '100%',
-					}}
-					>
-						<Text>{'Show Import'}</Text>
-						<TimetableImportDemo onCloseModal={hide} onImport={onImport}/>
-					</View>
-				</MyScrollView>
-			);
-		}
-	}
-
 	function renderTimetableEventForEditOrCreate(item?: BaseCourseTimetableEvent | CourseTimetableEventType) {
 		return (
 			<MyScrollView>
@@ -91,13 +75,13 @@ export default function CourseTimetableScreen() {
 						console.log('Delete')
 						console.log(itemToDelete)
 						await removeCourseTimetableEvent(itemToDelete)
-						hide()
+						setModalConfig(null)
 					}}
 					handleCreateNew={async (usedEvent: BaseCourseTimetableEvent) => {
 						console.log('Save')
 						console.log(usedEvent)
 						await addNewCourseTimetableEvent(usedEvent)
-						hide()
+						setModalConfig(null)
 					}}
 				/>
 			</MyScrollView>
@@ -105,69 +89,56 @@ export default function CourseTimetableScreen() {
 	}
 
 	function handlePressOnEvent(item: BaseCourseTimetableEvent) {
-		const configShowOnPressEvent: MyGlobalActionSheetConfig = {
-			onCancel: undefined,
-			visible: true,
+		const configShowOnPressEvent: MyModalActionSheetItem = {
+			label: translation_event + ': ' + translation_edit,
+			accessibilityLabel: translation_event + ': ' + translation_edit,
+			key: 'edit',
 			title: translation_event + ': ' + translation_edit,
-			renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return renderTimetableEventForEditOrCreate(item)
 			}
 		}
-		show(configShowOnPressEvent);
+		setModalConfig(configShowOnPressEvent)
 	}
 
 	function handlePressCreateEvent() {
-		const configShowCreateEvent: MyGlobalActionSheetConfig = {
-			onCancel: undefined,
-			visible: true,
+		const configShowCreateEvent: MyModalActionSheetItem = {
+			label: translationCreateEvent,
+			accessibilityLabel: translationCreateEvent,
+			key: 'create',
 			title: translation_event + ': ' + translation_create,
-			renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return renderTimetableEventForEditOrCreate(undefined)
 			}
 		}
-		show(configShowCreateEvent);
+		setModalConfig(configShowCreateEvent)
 	}
 
-	const importProviders: any[] = []
+	const importProviders: MyModalActionSheetItem[] = []
 
 	if (isDemo || isDebug) {
 		importProviders.push({
 			key: 'demo',
 			label: 'Demo',
-			icon: IconNames.demo_icon_on,
-			config: configShowDemoImportProvider,
+			iconLeft: IconNames.demo_icon_on,
+			accessibilityLabel: 'Demo',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<MyScrollView>
+						<View style={{
+							width: '100%',
+						}}
+						>
+							<Text>{'Show Import'}</Text>
+							<TimetableImportDemo onCloseModal={hide} onImport={onImport}/>
+						</View>
+					</MyScrollView>
+				)
+			}
 		})
 	}
 
 	const hasImportProviders = importProviders.length > 0;
-
-	const renderedImportProviders: React.ReactNode[] = []
-	for (let i=0; i<importProviders.length; i++) {
-		const importProvider = importProviders[i];
-		renderedImportProviders.push(
-			<SettingsRowActionsheet key={importProvider.key} accessibilityLabel={importProvider.label} config={importProvider.config} labelLeft={importProvider.label} leftIcon={importProvider.icon} />
-		)
-	}
-
-	const configShowSelectImportProvider: MyGlobalActionSheetConfig = {
-		onCancel: undefined,
-		visible: true,
-		title: 'Select Import Provider',
-		renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-			return (
-				<MyScrollView>
-					<View style={{
-						width: '100%',
-					}}
-					>
-						{renderedImportProviders}
-					</View>
-				</MyScrollView>
-			);
-		}
-	}
-
-
 
 	function onImport(events: CourseTimetableEventType[]) {
 		console.log('On Import')
@@ -199,7 +170,13 @@ export default function CourseTimetableScreen() {
 						accessibilityLabel={title_import}
 						text={title_import}
 						onPress={() => {
-							show(configShowSelectImportProvider)
+							setModalConfig({
+								label: title_import,
+								accessibilityLabel: title_import,
+								key: 'import',
+								title: title_import,
+								items: importProviders
+							})
 						}}
 					/>
 				</View>

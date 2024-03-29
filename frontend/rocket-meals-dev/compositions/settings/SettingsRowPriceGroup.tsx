@@ -1,14 +1,13 @@
 import React, {FunctionComponent} from 'react';
-import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
 import {Weekday} from '@/helper/date/DateHelper';
 import {PriceGroups, useProfilePriceGroup} from '@/states/SynchedProfile';
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {View} from '@/components/Themed';
-import {MoneyConfident} from '@/compositions/animations/accountBalance/MoneyConfident';
 import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export type AvailableOption = {
     value: string | null | undefined | Weekday
@@ -35,8 +34,9 @@ export function usePriceGroupSelectedName(){
 	return selectedOptionName;
 }
 
-export function useGlobalActionSheetSettingPriceGroup(){
+export const useShowPriceGroupModal = () => {
 	const usedIconName: string = IconNames.price_group_icon
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
 
@@ -79,7 +79,7 @@ export function useGlobalActionSheetSettingPriceGroup(){
 		}
 	}
 
-	const items = []
+	const items: MyModalActionSheetItem[] = []
 
 	let selectedOptionName = priceGroupToName[priceGroup]
 	const availableOptionKeys: string[] = Object.keys(availableOptions);
@@ -97,12 +97,11 @@ export function useGlobalActionSheetSettingPriceGroup(){
 		items.push({
 			key: optionKey,
 			label: option.name,
-			icon: icon,
+			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
-			onSelect: async (value: string, hide: () => void) => {
+			onSelect: async (value: string) => {
 				await setPriceGroup(value as PriceGroups)
-				hide()
 			}
 		})
 	}
@@ -119,25 +118,19 @@ export function useGlobalActionSheetSettingPriceGroup(){
 		)
 	}
 
-	const config: MyGlobalActionSheetConfig = {
-		onCancel: undefined,
-		visible: true,
-		title: title,
-		renderPreItemsContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
-			return renderPriceAnimation()
-		},
-		items: items
-	}
-
-
-
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
 	const onPress = () => {
-		show(config)
+		setModalConfig({
+			key: "price_group",
+			label: translation_edit+' '+title,
+			accessibilityLabel: translation_edit+' '+title,
+			renderAsContentPreItems: (key, hide) => {
+				return renderPriceAnimation()
+			},
+			items: items,
+		})
 	}
 
-	return onPress;
+	return onPress
 }
 
 interface AppState {
@@ -147,10 +140,9 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 	const usedIconName: string = IconNames.price_group_icon
 
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
+	const showPriceGroupModal = useShowPriceGroupModal();
 
 	const title = useTranslation(TranslationKeys.price_group)
-
-	const onPress = useGlobalActionSheetSettingPriceGroup();
 
 	const translation_edit = useTranslation(TranslationKeys.edit)
 
@@ -173,8 +165,13 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 
 	const labelRight = selectedOptionName
 
+	const onPress = showPriceGroupModal
+
 
 	return (
-		<SettingsRow labelLeft={label} labelRight={labelRight} onPress={onPress} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
+		<>
+			<SettingsRow labelLeft={label} labelRight={labelRight} onPress={onPress} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
+		</>
+
 	)
 }

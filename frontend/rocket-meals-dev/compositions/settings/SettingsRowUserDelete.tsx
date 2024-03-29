@@ -1,13 +1,13 @@
-import React, { FunctionComponent} from 'react';
+import React, {FunctionComponent} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {Text, View} from '@/components/Themed';
-import { useIsCurrentUserAnonymous, useLogoutCallback} from '@/states/User';
+import {useIsCurrentUserAnonymous, useLogoutCallback} from '@/states/User';
 import {IconNames} from '@/constants/IconNames';
-import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
 import {MyButton} from '@/components/buttons/MyButton';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {deleteProfileRemote, useSynchedProfile} from '@/states/SynchedProfile';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface MyContentConfirmProps {
     text: string
@@ -77,7 +77,6 @@ export const SettingsRowUserDelete: FunctionComponent<AppState> = ({...props}) =
 
 	const [profile, setProfile] = useSynchedProfile()
 
-	const leftIcon = IconNames.user_account_delete_icon
 	const translation_account = useTranslation(TranslationKeys.account)
 	const translation_delete = useTranslation(TranslationKeys.delete)
 	const translation_are_you_sure_to_delete_your_account = useTranslation(TranslationKeys.are_you_sure_to_delete_your_account)
@@ -118,10 +117,12 @@ export const SettingsRowUserDelete: FunctionComponent<AppState> = ({...props}) =
 		}
 	}
 
-	const config: MyGlobalActionSheetConfig = {
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		accessibilityLabel: accessibilityLabel,
+		key: 'delete',
+		label: translation_delete,
 		title: title,
-		renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+		renderAsContentInsteadItems: (key: string, hide: () => void) => {
 			// Use the custom context provider to provide the input value and setter
 			return <MyContentConfirm hide={hide}  onConfirm={handleDelete} text={translation_are_you_sure_to_delete_your_account}/>
 		}

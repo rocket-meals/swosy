@@ -3,13 +3,10 @@ import React, {FunctionComponent} from 'react';
 
 import {IconNames} from '@/constants/IconNames';
 import {MyButton} from '@/components/buttons/MyButton';
-import {
-	MyGlobalActionSheetConfig,
-	MyGlobalActionSheetItem,
-	useMyGlobalActionSheet
-} from "@/components/actionsheet/MyGlobalActionSheet";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 
 interface AppState {
@@ -22,7 +19,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 	const [selectedSortType, setSelectedSortType] = useSynchedSortType(props.synchKey);
 
 	const translation_title = useTranslation(TranslationKeys.sort)
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const translation_select = useTranslation(TranslationKeys.select)
 
@@ -38,7 +35,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 	const tooltip = translation_title+": "+props.itemToSort
 	const accessibilityLabel = translation_title+": "+props.itemToSort
 
-	const items: MyGlobalActionSheetItem[] = [];
+	const items: MyModalActionSheetItem[] = [];
 	const availableSortTypes = props.availableSortTypes;
 	const usedSortOptions = availableSortTypes ? availableSortTypes : [SortType.intelligent, SortType.alphabetical, SortType.favorite ,SortType.none, ];
 	for(const sortType of usedSortOptions){
@@ -80,7 +77,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			key: key,
 			label: label,
 			active: active,
-			icon: icon,
+			iconLeft: icon,
 			accessibilityLabel: label,
 			onSelect: async (key: string, hide: () => void) => {
 				setSelectedSortType(sortType);
@@ -89,20 +86,20 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 		})
 	}
 
+	const onPress = () => {
+		setModalConfig({
+			key: "sort",
+			label: translation_title,
+			accessibilityLabel: translation_title,
+			items: items
+		})
 
-
-	const config: MyGlobalActionSheetConfig = {
-		onCancel: async () => {
-			return true;
-		},
-		visible: true,
-		title: translation_title,
-		items: items
 	}
 
 	return (
-		<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.sort_icon} {...props} onPress={() => {
-			show(config)
-		}} />
+		<>
+			<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.sort_icon} {...props} onPress={onPress} />
+		</>
+
 	)
 }

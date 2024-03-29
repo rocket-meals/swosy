@@ -5,12 +5,7 @@ import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, TextInput, View} from '@/components/Themed';
 import {AuthenticationData} from '@directus/sdk';
 import {ButtonAuthAnonym} from '@/components/buttons/ButtonAuthAnonym';
-import {
-	getAnonymousUser,
-	isUserLoggedIn,
-	useCurrentUser,
-	useLogoutCallback
-} from '@/states/User';
+import {getAnonymousUser, isUserLoggedIn, useCurrentUser, useLogoutCallback} from '@/states/User';
 import {ServerSsoAuthProviders} from '@/components/auth/ServerSsoAuthProviders';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {LoginLayout} from '@/components/auth/LoginLayout';
@@ -18,11 +13,8 @@ import {MyButton} from '@/components/buttons/MyButton';
 import {useNickname} from '@/states/SynchedProfile';
 import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowProfileLanguage';
 import {IconNames} from '@/constants/IconNames';
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {NotAllowed} from "@/compositions/animations/NotAllowed";
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
-import {useMyActionSheetConfigConfirmer} from "@/components/actionsheet/usePredefinedActionSheetConfigs";
+import {MyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -32,8 +24,7 @@ export default function Login() {
 	const [nickname, setNickname] = useNickname()
 
 	const [changedLoginStatus, setChangedLoginStatus] = useState(false)
-
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [showAnonymousWarning, setShowAnonymousWarning] = useState(false)
 
 	const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
 	const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
@@ -46,19 +37,6 @@ export default function Login() {
 	const translation_password = useTranslation(TranslationKeys.password);
 
 	const translation_anonymous_limitations = useTranslation(TranslationKeys.anonymous_limitations);
-
-	const configAnynmousAttention: MyGlobalActionSheetConfig = useMyActionSheetConfigConfirmer({
-		renderPreItemsContent: () => {
-			return renderAnonymousAttention();
-		},
-		onConfirm: async () => {
-			handleLoginAsAnonymous()
-			return true
-		},
-		onCancel: async () => {
-			return false
-		}
-	})
 
 	// email and password for login
 	const [email, setEmail] = useState('')
@@ -127,7 +105,7 @@ export default function Login() {
 
 	async function proceed_to_authenticate_as_anonymous() {
 		if(WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES){
-			show(configAnynmousAttention)
+			setShowAnonymousWarning(true)
 		} else {
 			handleLoginAsAnonymous()
 		}
@@ -235,12 +213,23 @@ export default function Login() {
 		)
 	}
 
+	function renderAnoynmousLoginOption() {
+		return(
+			<>
+				<ButtonAuthAnonym onPress={proceed_to_authenticate_as_anonymous} />
+				<MyModalConfirmer onConfirm={handleLoginAsAnonymous} visible={showAnonymousWarning} setVisible={setShowAnonymousWarning}>
+					{renderAnonymousAttention()}
+				</MyModalConfirmer>
+			</>
+		)
+	}
+
 	function renderWhenNotLoggedIn() {
 		if (!loggedIn) {
 			return (
 				<>
 					<ServerSsoAuthProviders />
-					<ButtonAuthAnonym onPress={proceed_to_authenticate_as_anonymous} />
+					{renderAnoynmousLoginOption()}
 					<View style={{height: 16}}></View>
 					<Divider />
 					<View style={{height: 16}}></View>
