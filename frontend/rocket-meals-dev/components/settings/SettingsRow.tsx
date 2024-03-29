@@ -89,10 +89,10 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		let content:any = null;
 
 		if (showPress && !rightIcon) {
-			content = <Icon name={IconNames.chevron_right_icon} />;
+			content = <Icon style={{color: usedTextColor}} name={IconNames.chevron_right_icon} />;
 		}
 		if (rightIcon) {
-			content = <Icon name={rightIcon} />
+			content = <Icon style={{color: usedTextColor}} name={rightIcon} />
 		}
 
 		return (
@@ -110,10 +110,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 
 
 
-	let renderedLeftIcon: any = <Icon color={textColor} name={item.icon} />
-	if (isActive) {
-		renderedLeftIcon = <Icon color={projectColorContrast} name={item.icon} />
-	}
+	let renderedLeftIcon: any = <Icon style={{color: usedTextColor}} name={item.icon} />
 	if(props.iconLeftCustom){
 		renderedLeftIcon = props.iconLeftCustom
 	}
