@@ -150,8 +150,8 @@ export function useNickname(): [string | null | undefined, ((newValue: string | 
 export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 	let [canteen, setCanteen] = useSynchedProfileCanteen();
 	const [buildingDict, setBuildingDict] = useSynchedBuildingsDict()
-	let building_id = canteen?.building;
-	let building = buildingDict[building_id];
+	let building_id = canteen?.building as string;
+	let building = buildingDict?.[building_id];
 	let coordinates = building?.coordinates;
 	let location = CoordinateHelper.getLocation(coordinates);
 	return location;
@@ -186,7 +186,7 @@ export function useProfileLocaleForJsDate(): string {
 	return locale;
 }
 
-export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)] {
+export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens | null) => void)] {
 	const [profile, setProfile] = useSynchedProfile();
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
@@ -196,8 +196,12 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 		canteen = canteenDict[canteen_id];
 	}
 
-	const setCanteen = (canteen: Canteens) => {
-		profile.canteen = canteen.id;
+	const setCanteen = (canteen: Canteens | null) => {
+		if(canteen) {
+			profile.canteen = canteen.id;
+		} else {
+			profile.canteen = null;
+		}
 		return setProfile(profile);
 	}
 	return [canteen, setCanteen];

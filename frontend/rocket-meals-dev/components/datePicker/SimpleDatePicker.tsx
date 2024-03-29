@@ -1,14 +1,13 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent} from 'react';
 import {SimpleDatePickerComponent} from './SimpleDatePickerComponent';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DateHelper} from '@/helper/date/DateHelper';
 import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
 import {useProjectColor, useProjectColorContrast} from '@/states/ProjectInfo';
-import {useTextContrastColor, View} from '@/components/Themed';
+import {useTextContrastColor} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
-import {MyModal} from "@/components/modal/MyModal";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export interface SimpleDatePickerProps {

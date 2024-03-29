@@ -2,7 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {SettingsRow} from '@/components/settings/SettingsRow';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
-import {MyCanteenSelectionModal,} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
+import {useShowMyCanteenSelectionModal,} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
 import {IconNames} from '@/constants/IconNames';
 import {useIsFoodsEnabled} from '@/states/SynchedAppSettings';
 
@@ -18,7 +18,6 @@ export function useEditProfileCanteenAccessibilityLabel(): string {
 
 export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [show, setShow] = React.useState(false);
 	const isFoodsEnabled = useIsFoodsEnabled();
 
 	const leftIcon = IconNames.canteen_icon
@@ -30,9 +29,7 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 
 	const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 
-	const onPress = () => {
-		setShow(true);
-	}
+	const onPress = useShowMyCanteenSelectionModal();
 
 	if (!isFoodsEnabled) {
 		return null;
@@ -41,7 +38,6 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 	return (
 		<>
 			<SettingsRow accessibilityLabel={accessibilityLabel} labelRight={labelRight} labelLeft={label} leftIcon={leftIcon} {...props} onPress={onPress} />
-			<MyCanteenSelectionModal visible={show} setVisible={setShow} />
 		</>
 	)
 }

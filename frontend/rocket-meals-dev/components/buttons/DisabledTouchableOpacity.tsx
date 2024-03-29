@@ -4,7 +4,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Text, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {MyModal} from "@/components/modal/MyModal";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 
 export type DisabledTouchableOpacityProps = {
@@ -12,14 +12,44 @@ export type DisabledTouchableOpacityProps = {
 	reason: string,
 }
 export const DisabledTouchableOpacity = ({children, reason}: DisabledTouchableOpacityProps) => {
-	const [show, setShow] = React.useState(false)
 
 	const translation_not_usable = useTranslation(TranslationKeys.not_useable);
 	const translation_okay = useTranslation(TranslationKeys.okay);
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const title = translation_not_usable
 
 	const accessiblityLabel = translation_not_usable+". "+reason+"."
+
+	const onPress = () => {
+		setModalConfig({
+			title: translation_not_usable,
+			label: reason,
+			accessibilityLabel: accessiblityLabel,
+			key: "disabledTouchableOpacity",
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<>
+						<NotAllowed />
+						<View style={{
+							width: "100%",
+							paddingHorizontal: 20,
+						}}>
+							<View style={{
+								width: "100%",
+								paddingBottom: 20,
+							}}>
+								<Text>{reason}</Text>
+							</View>
+							<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_okay} tooltip={translation_okay} text={translation_okay} onPress={() => {
+								setModalConfig(null);
+							}} />
+						</View>
+					</>
+				)
+			}
+		})
+	}
 
 	return <>
 		<TouchableOpacityIgnoreChildEvents
@@ -27,28 +57,9 @@ export const DisabledTouchableOpacity = ({children, reason}: DisabledTouchableOp
 			tooltip={accessiblityLabel}
 			style={{}}
 			useDefaultOpacity={true}
-			onPress={() => {
-				setShow(true)
-			}}>
+			onPress={onPress}>
 			{children}
 		</TouchableOpacityIgnoreChildEvents>
-		<MyModal visible={show} setVisible={setShow} title={title} >
-			<NotAllowed />
-			<View style={{
-				width: "100%",
-				paddingHorizontal: 20,
-			}}>
-				<View style={{
-					width: "100%",
-					paddingBottom: 20,
-				}}>
-					<Text>{reason}</Text>
-				</View>
-				<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_okay} tooltip={translation_okay} text={translation_okay} onPress={() => {
-					setShow(false)
-				}} />
-			</View>
-		</MyModal>
 	</>
 }
 
