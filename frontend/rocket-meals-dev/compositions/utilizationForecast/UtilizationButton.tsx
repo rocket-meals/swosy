@@ -26,6 +26,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();
 	const accessibilityLabel = useTranslationUtilizationForecast();
 	const tooltip = accessibilityLabel
+	const title = accessibilityLabel
 	const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[] | undefined>(undefined)
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
@@ -43,6 +44,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 		}
 		setModalConfig({
 			key: "eating_habits",
+			title: title,
 			label: accessibilityLabel,
 			accessibilityLabel: accessibilityLabel,
 			renderAsContentInsteadItems: () => {

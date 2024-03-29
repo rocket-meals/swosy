@@ -9,6 +9,7 @@ import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
 import {MyModal} from "@/components/modal/MyModal";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -47,23 +48,23 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 	const weekdayBackgroundColor = useProjectColor();
 	const weekdayTextColor = useProjectColorContrast();
 
-	const [show, setShow] = useState(false);
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const onSelectDate = (date: Date) => {
 		if (props.onSelectDate) {
 			props.onSelectDate(date);
 		}
-		setShow(false);
+		setModalConfig(null)
 	}
 
 	const onPress = () => {
-		setShow(true);
-	}
-
-	return (
-		<>
-			<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
-			<MyModal visible={show} title={selectDateTranslation} setVisible={setShow} >
+		setModalConfig({
+			title: selectDateTranslation,
+			label: selectDateTranslation,
+			accessibilityLabel: selectDateTranslation,
+			key: 'datePicker',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
 					<SimpleDatePickerComponent
 						currentDate={props.currentDate}
 						textColor={textColor}
@@ -79,13 +80,14 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 						monthTranslation={monthTranslation}
 						selectedTranslation={selectedTranslation}
 					/>
-					<View style={{
-						height: 20, width: '100%'
-					}}
-					>
+				)
+			}
+		})
+	}
 
-					</View>
-			</MyModal>
+	return (
+		<>
+			<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
 		</>
 	)
 }
