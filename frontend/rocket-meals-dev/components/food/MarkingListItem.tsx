@@ -35,10 +35,9 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const markingFromProfile = profilesMarkingsDict[markingId]
 	const status = markingFromProfile?.dislikes;
-	const likes = status ? !status : undefined;
+	let statusSet = status === true || status === false;
+	const likes = statusSet ? !status : undefined;
 	const translation_marking = useTranslation(TranslationKeys.markings);
-
-	const [loading, setLoading] = React.useState(true);
 
 	if(!marking){
 		return null;
