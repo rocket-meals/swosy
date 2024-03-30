@@ -24,6 +24,7 @@ import {config} from '@gluestack-ui/config';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
 import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
+import {MaterialIcons} from "@expo/vector-icons";
 
 type ThemeProps = {
   lightColor?: string;
@@ -44,7 +45,21 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	if (size) {
 		useSize = size;
 	}
-	return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
+	let usedFamily = family;
+	if (usedFamily === undefined) {
+		usedFamily = 'MaterialCommunityIcons';
+	}
+
+	let content = null;
+	if(usedFamily === 'MaterialCommunityIcons'){
+		content = <MaterialCommunityIcons name={name} size={useSize} {...props} />
+	}
+	if(usedFamily === 'MaterialIcons'){
+		content = <MaterialIcons name={"set-meal"} size={useSize} {...props} />
+	}
+
+
+	return <Text>{content}</Text>
 }
 
 const DEFAULT_TEXT_SIZE = 'md';

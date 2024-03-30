@@ -67,7 +67,11 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
+
+	console.log("collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
 	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
+
+
 		registeredItemsToLoad.push(resource);
 		synchedResourcesToDownloadFirst[label] = {
 			data: resource,
