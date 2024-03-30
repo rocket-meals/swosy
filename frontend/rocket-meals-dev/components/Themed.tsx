@@ -78,6 +78,7 @@ type TextInputProps = {
     size?: 'sm' | 'md' | 'lg';
     hidden?: boolean;
     isPassword?: boolean;
+	isNumber?: boolean;
     isDisabled?: boolean;
     isInvalid?: boolean;
     isReadOnly?: boolean;
@@ -111,6 +112,9 @@ export function TextInput(props: TextInputProps) {
 	let type: 'text' | 'password' | undefined = 'text';
 	if (props.isPassword) {
 		type = 'password';
+	}
+	if (props.isNumber) {
+		type = 'number';
 	}
 
 	const defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {

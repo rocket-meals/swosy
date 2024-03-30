@@ -28,7 +28,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.baumgartnersoftware.rocketmealsdev",
-      "buildNumber": "6"
+      "buildNumber": "14"
     },
     "android": {
       "adaptiveIcon": {
@@ -57,7 +57,28 @@
         {
           "username": "jack5496"
         }
-      ]
+      ],
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "The app accesses NFC read your Card balance.",
+          "includeNdefEntitlement": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 31,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.4"
+          }
+        }
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true,

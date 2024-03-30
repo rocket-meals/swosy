@@ -37,6 +37,8 @@ export enum IconNames {
     color_scheme_system_icon = 'theme-light-dark',
     calendar_icon = 'calendar-month',
 
+    account_balance_icon = 'credit-card',
+
     utilization_icon = 'human-queue',
     businesshours_icon = 'clock-time-eight',
 

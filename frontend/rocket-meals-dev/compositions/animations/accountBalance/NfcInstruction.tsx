@@ -1,27 +1,23 @@
-// @ts-nocheck
 import React from 'react';
-import {CrossLottie, Layout} from '../../../../kitcheningredients';
-import { View, useBreakpointValue} from 'native-base';
-import Rectangle from '../../../helper/Rectangle';
-import nfcInstruction from '../../../assets/accountBalance/nfcInstruction.json';
+import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
+import {MyProjectColoredLottieAnimation} from "@/components/lottie/MyProjectColoredLottieAnimation";
+import animationSource from '@/assets/animations/accountBalance/nfcInstruction.json';
+import {View} from "@/components/Themed";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export const NfcInstruction = ({children,...props}: any) => {
-	const noFoundWidths = {
-		base: '100%',
-		sm: '70%',
-		md: Layout.WIDTH_MD*0.3,
-		lg: Layout.WIDTH_LG*0.3,
-		xl: Layout.WIDTH_XL*0.2
-	}
-	const noFoundWidth = useBreakpointValue(noFoundWidths);
+	const nfcInstruction = useTranslation(TranslationKeys.nfcInstructionRead);
+	const translation_animation = useTranslation(TranslationKeys.animation);
+	let accessibilityLabel = translation_animation + ': ' + nfcInstruction;
 
 	return (
-		<View style={{width: '100%', alignItems: 'center'}}>
-			<View style={{width: noFoundWidth}}>
-				<Rectangle>
-					<CrossLottie source={nfcInstruction} flex={1} />
-				</Rectangle>
+		<RectangleWithLayoutCharactersWide amountOfCharactersWide={10}>
+			<View style={{width: '100%', height: "100%"}}>
+				<MyProjectColoredLottieAnimation
+												 source={animationSource}
+												 accessibilityLabel={accessibilityLabel}
+				/>
 			</View>
-		</View>
+		</RectangleWithLayoutCharactersWide>
 	)
 }

@@ -111,6 +111,8 @@ export const useShowPriceGroupModal = () => {
 		return (
 			<View style={{
 				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center',
 			}}
 			>
 				<AnimationPriceGroup />
@@ -121,6 +123,7 @@ export const useShowPriceGroupModal = () => {
 	const onPress = () => {
 		setModalConfig({
 			key: "price_group",
+			title: title,
 			label: translation_edit+' '+title,
 			accessibilityLabel: translation_edit+' '+title,
 			renderAsContentPreItems: (key, hide) => {

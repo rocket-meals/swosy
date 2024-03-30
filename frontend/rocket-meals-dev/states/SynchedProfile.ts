@@ -207,6 +207,15 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 	return [canteen, setCanteen];
 }
 
+export function useAccountBalance(): [number | null | undefined, ((newValue: number | null | undefined) => void)] {
+	const [profile, setProfile] = useSynchedProfile();
+	const setAccountBalance = (newValue: number | null | undefined) => {
+		profile.credit_balance = newValue;
+		return setProfile(profile);
+	}
+	return [profile?.credit_balance, setAccountBalance];
+}
+
 export function useIsProfileSetupComplete(): boolean {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen(); // We do not need a canteen to be set
 	// we should check if the user is first time user and has not set any data

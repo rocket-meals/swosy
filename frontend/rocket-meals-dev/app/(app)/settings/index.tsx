@@ -19,6 +19,7 @@ import {SettingsRowUserDelete} from '@/compositions/settings/SettingsRowUserDele
 import {SettingsRowServerConfiguration} from '@/compositions/settings/SettingsRowServerConfiguration';
 import {SettingsRowPriceGroup} from '@/compositions/settings/SettingsRowPriceGroup';
 import {SettingsRowAppUpdate} from "@/compositions/settings/SettingsRowAppUpdate";
+import {SettingsRowAccountBalance} from "@/compositions/settings/SettingsRowAccountBalance";
 
 export default function SettingsScreen() {
 	return (
@@ -32,6 +33,7 @@ export default function SettingsScreen() {
 					<SettingsRowProfileCanteen />
 					<SettingsRowProfileEatingHabits />
 					<SettingsRowPriceGroup />
+					<SettingsRowAccountBalance />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowColorScheme />

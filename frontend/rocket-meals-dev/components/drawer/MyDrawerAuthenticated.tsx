@@ -8,6 +8,7 @@ import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHea
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
+	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled, useIsCourseTimetableEnabled,
 	useIsFoodsEnabled,
 	useIsHousingEnabled,
@@ -24,7 +25,9 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const isBuildingsEnabled = useIsBuildingsEnabled();
 	const isNewsEnabled = useIsNewsEnabled();
 	const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
+	const isAccountBalanceEnabled = useIsAccountBalanceEnabled()
 
+	const translation_accountbalance = useTranslation(TranslationKeys.accountbalance);
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_settings = useTranslation(TranslationKeys.settings);
 	const translation_canteens = useTranslation(TranslationKeys.canteens);
@@ -73,6 +76,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.foodoffers_icon,
 				header: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'accountbalance/index',
+				label: translation_accountbalance,
+				title: translation_accountbalance,
+				icon: IconNames.account_balance_icon,
+				visibleInDrawer: isAccountBalanceEnabled
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'buildings/index',

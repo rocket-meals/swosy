@@ -54,6 +54,7 @@ export class TranslationKeys {
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
 
+	static accountbalance = createTranslationKey('accountbalance', 'Guthaben');
 	static sort = createTranslationKey('sort', 'Sortieren');
 	static sort_option_none = createTranslationKey('none', 'Keine');
 	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
@@ -62,8 +63,15 @@ export class TranslationKeys {
 	static sort_option_distance = createTranslationKey('distance', 'Distanz');
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
 
+	static success = createTranslationKey('success', 'Erfolg');
+
 	static foods = createTranslationKey('foods', 'Speisen');
 	static apartments = createTranslationKey('apartments', 'Wohnungen');
+
+	static nfcReadCard = createTranslationKey('nfcReadCard', 'NFC Karte lesen');
+	static nfcNotSupported = createTranslationKey('nfcNotSupported', 'NFC wird nicht unterstützt');
+	static nfcNotEnabled = createTranslationKey('nfcNotEnabled', 'NFC ist nicht aktiviert');
+	static nfcInstructionRead = createTranslationKey('nfcInstructionRead', 'Halte dein Gerät an die Karte');
 
 	static new = createTranslationKey('new', 'Neu');
 

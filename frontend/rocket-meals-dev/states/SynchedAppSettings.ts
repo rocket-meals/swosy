@@ -55,6 +55,11 @@ export function useIsCourseTimetableEnabled(): boolean {
 	return appSettings?.course_timetable_enabled || false;
 }
 
+export function useIsAccountBalanceEnabled(): boolean {
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.balance_enabled || false;
+}
+
 export function useIsUtilizationForecastEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.utilization_forecast_calculation_enabled || false;
