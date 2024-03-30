@@ -11,7 +11,7 @@ export const NfcInstruction = ({children,...props}: any) => {
 	let accessibilityLabel = translation_animation + ': ' + nfcInstruction;
 
 	return (
-		<RectangleWithLayoutCharactersWide amountOfCharactersWide={10}>
+		<RectangleWithLayoutCharactersWide amountOfCharactersWide={30}>
 			<View style={{width: '100%', height: "100%"}}>
 				<MyProjectColoredLottieAnimation
 												 source={animationSource}

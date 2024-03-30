@@ -71,7 +71,7 @@ export class TranslationKeys {
 	static nfcReadCard = createTranslationKey('nfcReadCard', 'NFC Karte lesen');
 	static nfcNotSupported = createTranslationKey('nfcNotSupported', 'NFC wird nicht unterstützt');
 	static nfcNotEnabled = createTranslationKey('nfcNotEnabled', 'NFC ist nicht aktiviert');
-	static nfcInstructionRead = createTranslationKey('nfcInstructionRead', 'Halte dein Gerät an die Karte');
+	static nfcInstructionRead = createTranslationKey('nfcInstructionRead', 'Halte dein Gerät an die Karte, um sie zu lesen.');
 
 	static new = createTranslationKey('new', 'Neu');
 

@@ -23,6 +23,7 @@ import {MoneySad} from "@/compositions/animations/accountBalance/MoneySad";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
+import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
 
 
 const onBlur = () => {
@@ -66,6 +67,7 @@ export default function AccountbalanceScreen() {
 
 	const debug = useIsDebug()
 	const demo = useIsDemo()
+	const isExpoGo = isInExpoGo()
 
 	const projectColor = useProjectColor()
 	const readCardBackgroundColor = projectColor;
@@ -103,10 +105,16 @@ export default function AccountbalanceScreen() {
 	async function checkNfcSupportAndEnableStatus(){
 		try{
 			if(PlatformHelper.isSmartPhone()){
-				let isSupported = await NfcManager.isSupported();
-				setNfcSupported(isSupported);
-				let isEnabled = await NfcManager.isEnabled();
-				setNfcEnabled(isEnabled);
+				if(isExpoGo){ // https://github.com/revtel/react-native-nfc-manager/wiki/Expo-Go
+					// This package cannot be used in the "Expo Go" app because it requires custom native code.
+					setNfcSupported(false);
+					setNfcEnabled(false);
+				} else { // but when the app is built, it should work
+					let isSupported = await NfcManager.isSupported();
+					setNfcSupported(isSupported);
+					let isEnabled = await NfcManager.isEnabled();
+					setNfcEnabled(isEnabled);
+				}
 			} else {
 				setNfcSupported(false);
 				setNfcEnabled(false);
@@ -131,7 +139,13 @@ export default function AccountbalanceScreen() {
 			return null;
 		}
 		if(usedNfcSupported === false){
-			return <Text>{translation_nfcNotSupported}</Text>
+			if(isExpoGo){
+				return <Text>{
+					"Expo Go does not support NFC. Please use the built app."
+				}</Text>
+			} else {
+				return <Text>{translation_nfcNotSupported}</Text>
+			}
 		}
 		if(usedNfcEnabled === undefined){
 			return null;
@@ -175,7 +189,7 @@ export default function AccountbalanceScreen() {
 
 		if(canReadNfc){
 			return (
-				<MyButton useOnlyNecessarySpace={true} leftIcon={IconNames.account_balance_icon} text={text} onPress={async () => {
+				<MyButton useOnlyNecessarySpace={true} leftIcon={IconNames.nfc_icon} text={text} onPress={async () => {
 					try {
 						await onReadNfcPress();
 					} catch (e) {
@@ -211,7 +225,7 @@ export default function AccountbalanceScreen() {
 				</View>
 				<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
 					translation_accountBalance
-				} labelLeft={translation_accountBalance} labelRight={formatPrice(displayBalance)} value={displayBalance} onSave={(newBalance: number |undefined |null) => {
+				} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} value={displayBalance} onSave={(newBalance: number |undefined |null) => {
 					callBack(newBalance);
 				}} />
 			</View>
@@ -293,39 +307,62 @@ export const useNfcCardReadPress = (callBack: (balance: number |undefined |null)
 	}
 
 	function showCardReadInstruction(){
-		handleCloseModal = () => {}; // reset
-		if(PlatformHelper.isAndroid()) {
-			setModalConfig({
-				title: nfcInstruction,
-				accessibilityLabel: nfcInstruction,
-				key: "nfcInstruction",
-				label: nfcInstruction,
-				renderAsContentInsteadItems: (key: string, hide: () => void) => {
-					return (
-						<View style={{width: "100%", justifyContent: "center"}}>
-							<Text>{
-								nfcInstruction
-							}</Text>
-							<NfcInstruction/>
-						</View>
-					)
-				}
-			})
+		let title = "NFC";
+		if(isDemo){
+			title = "Demo: "+title;
 		}
-		if(PlatformHelper.isIOS()) {
-			// iOS does not need an instruction, since it has a native popup
-		}
+
+		setModalConfig({
+			title: title,
+			accessibilityLabel: title,
+			key: "nfcInstruction",
+			label: title,
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return (
+					<View style={{width: "100%", justifyContent: "center", alignItems: "center"}}>
+						<Text style={{
+							textAlign: "center"
+						}}>{
+							nfcInstruction
+						}</Text>
+						<NfcInstruction/>
+					</View>
+				)
+			}
+		})
+	}
+
+	async function startDemoCardReading(){
+		console.log("startDemoCardReading");
+		// start showCardReadInstruction();
+		// then artificial delay for 5 seconds
+		// then get the next balance
+		// then call callBack
+
+		showCardReadInstruction();
+		let nextBalance = getNextDemoBalance(accountBalance);
+		// now wait 5 seconds
+		await new Promise((resolve) => {
+			setTimeout(() => {
+				resolve(true);
+			}, 3000);
+		});
+		setModalConfig(null);
+		await callBack(nextBalance);
 	}
 
 	async function startCardReading(){
+		console.log("startCardReading");
 		if(isDemo){
-			let nextBalance = getNextDemoBalance(accountBalance);
-			await callBack(nextBalance);
+			console.log("isDemo");
+			await startDemoCardReading();
 			return;
 		}
 
 
-		showCardReadInstruction();
+		if(PlatformHelper.isAndroid()){ // only show instruction on android since ios has a built in instruction
+			showCardReadInstruction();
+		}
 		let reader = new CardReader(NfcManager, NfcTech, Platform);
 		try{
 			console.log("DEBUG: start reading card");

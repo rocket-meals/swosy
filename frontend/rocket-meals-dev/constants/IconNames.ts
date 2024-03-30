@@ -38,6 +38,7 @@ export enum IconNames {
     calendar_icon = 'calendar-month',
 
     account_balance_icon = 'credit-card',
+    nfc_icon = 'credit-card-wireless',
 
     utilization_icon = 'human-queue',
     businesshours_icon = 'clock-time-eight',
