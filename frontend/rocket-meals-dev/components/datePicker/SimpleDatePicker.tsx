@@ -9,6 +9,7 @@ import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -64,21 +65,23 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 			key: 'datePicker',
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return(
-					<SimpleDatePickerComponent
-						currentDate={props.currentDate}
-						textColor={textColor}
-						selectedTextColor={selectedTextColor}
-						selectedDateColor={selectedDateColor}
-						weekdayBackgroundColor={weekdayBackgroundColor}
-						weekdayTextColor={weekdayTextColor}
-						weekStartsAtDay={weekStartsAtDay}
-						onSelectDate={onSelectDate}
-						renderDate={props.renderDate}
-						locale={locale}
-						yearTranslation={yearTranslation}
-						monthTranslation={monthTranslation}
-						selectedTranslation={selectedTranslation}
-					/>
+					<MyScrollView>
+						<SimpleDatePickerComponent
+							currentDate={props.currentDate}
+							textColor={textColor}
+							selectedTextColor={selectedTextColor}
+							selectedDateColor={selectedDateColor}
+							weekdayBackgroundColor={weekdayBackgroundColor}
+							weekdayTextColor={weekdayTextColor}
+							weekStartsAtDay={weekStartsAtDay}
+							onSelectDate={onSelectDate}
+							renderDate={props.renderDate}
+							locale={locale}
+							yearTranslation={yearTranslation}
+							monthTranslation={monthTranslation}
+							selectedTranslation={selectedTranslation}
+						/>
+					</MyScrollView>
 				)
 			}
 		})
