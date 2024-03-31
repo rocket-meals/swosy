@@ -20,6 +20,7 @@ import {SettingsRowServerConfiguration} from '@/compositions/settings/SettingsRo
 import {SettingsRowPriceGroup} from '@/compositions/settings/SettingsRowPriceGroup';
 import {SettingsRowAppUpdate} from "@/compositions/settings/SettingsRowAppUpdate";
 import {SettingsRowAccountBalance} from "@/compositions/settings/SettingsRowAccountBalance";
+import {SettingsRowDataAccess} from "@/compositions/settings/SettingsRowDataAccess";
 
 export default function SettingsScreen() {
 	return (
@@ -53,6 +54,7 @@ export default function SettingsScreen() {
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowUserDelete />
+					<SettingsRowDataAccess />
 				</SettingsRowGroup>
 			</ScrollViewWithGradient>
 		</MySafeAreaView>

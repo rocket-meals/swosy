@@ -36,6 +36,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_news = useTranslation(TranslationKeys.news);
 	const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
+	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -157,6 +158,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: "Eating Habits",
 				showBackButton: true,
 				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'data-access/index',
+				label: translation_data_access,
+				title: translation_data_access,
+				icon: IconNames.data_access_icon,
 				visibleInDrawer: false
 			})}
 

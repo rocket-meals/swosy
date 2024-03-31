@@ -54,6 +54,8 @@ export class TranslationKeys {
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
 
+	static dataAccess = createTranslationKey('dataAccess', 'Datenauskunft'); // Datenauskunft in english is data access
+
 	static accountbalance = createTranslationKey('accountbalance', 'Guthaben');
 	static sort = createTranslationKey('sort', 'Sortieren');
 	static sort_option_none = createTranslationKey('none', 'Keine');
@@ -62,6 +64,18 @@ export class TranslationKeys {
 	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
 	static sort_option_distance = createTranslationKey('distance', 'Distanz');
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
+
+	static data_access_introduction = createTranslationKey('data_access_introduction', `## 🌟 Deine Daten - Dein Recht
+
+Wir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format. 
+
+### 🛠 Hilfe Benötigt?
+Keine Sorge, falls du mit JSON nicht vertraut bist! Unser Team steht bereit, um jede Frage zu klären und dir bei der Dateninterpretation zur Seite zu stehen.
+
+Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
+`);
+	static your_data_which_we_know_if_you_have_a_profile = createTranslationKey('your_data_known_to_us_if_you_have_a_profile', 'Deine Daten, die uns bekannt sind, wenn du ein Profil hast.');
+	static translation_all_on_device_saved_data = createTranslationKey('translation_all_on_device_saved_data', 'Alle auf dem Gerät gespeicherten Daten.');
 
 	static success = createTranslationKey('success', 'Erfolg');
 
@@ -108,6 +122,8 @@ export class TranslationKeys {
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');
 	static notification = createTranslationKey('notification', 'Benachrichtigung');
+
+	static support = createTranslationKey('support', 'Support');
 
 	static price_group = createTranslationKey('price_group', 'Preisgruppe');
 	static price_group_student = createTranslationKey('price_group_student', 'Student');

@@ -24,6 +24,8 @@ import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 
 const onBlur = () => {
@@ -206,30 +208,32 @@ export default function AccountbalanceScreen() {
 	}
 
 	return (
-		<View style={{width: "100%"}} key={""+focusCounter}>
-			<View style={{width: "100%", justifyContent: "center", alignItems: "center"}}>
-				<AccountBalanceAnimation balance={displayBalance} />
-				<Text>{translation_accountBalance}</Text>
-				<Heading>{formatPrice(displayBalance)}</Heading>
-				<View style={{height: 20, width: "100%"}} />
-				{renderNfcStatus()}
-				<View style={{
-					flexDirection: "row",
-					justifyContent: "center",
-					alignItems: "center",
-					width: "100%",
-					padding: 10,
-					marginTop: 10
-				}}>
-					{renderReadCardButton()}
+		<MySafeAreaView style={{width: "100%"}} key={""+focusCounter}>
+			<MyScrollView>
+				<View style={{width: "100%", justifyContent: "center", alignItems: "center"}}>
+					<AccountBalanceAnimation balance={displayBalance} />
+					<Text>{translation_accountBalance}</Text>
+					<Heading>{formatPrice(displayBalance)}</Heading>
+					<View style={{height: 20, width: "100%"}} />
+					{renderNfcStatus()}
+					<View style={{
+						flexDirection: "row",
+						justifyContent: "center",
+						alignItems: "center",
+						width: "100%",
+						padding: 10,
+						marginTop: 10
+					}}>
+						{renderReadCardButton()}
+					</View>
+					<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
+						translation_accountBalance
+					} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} value={displayBalance} onSave={(newBalance: number |undefined |null) => {
+						callBack(newBalance);
+					}} />
 				</View>
-				<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
-					translation_accountBalance
-				} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} value={displayBalance} onSave={(newBalance: number |undefined |null) => {
-					callBack(newBalance);
-				}} />
-			</View>
-		</View>
+			</MyScrollView>
+		</MySafeAreaView>
 	)
 }
 
