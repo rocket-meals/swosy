@@ -90,6 +90,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 		setModalConfig({
 			key: "sort",
 			label: translation_title,
+			title: translation_title,
 			accessibilityLabel: translation_title,
 			items: items
 		})
