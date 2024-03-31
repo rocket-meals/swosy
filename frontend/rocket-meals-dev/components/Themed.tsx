@@ -4,7 +4,7 @@
  */
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {Text as NativeText, View as NativeView} from 'react-native';
+import {KeyboardTypeOptions, Text as NativeText, View as NativeView} from 'react-native';
 import {
 	Heading as DefaultHeading,
 	Input as DefaultInput,
@@ -108,18 +108,20 @@ export function TextInput(props: TextInputProps) {
 		defaultInputProps.variant = 'outline';
 	}
 
+	let keyboardType: KeyboardTypeOptions = 'default'
 	// set mask to password if isPassword is true
 	let type: 'text' | 'password' | undefined = 'text';
 	if (props.isPassword) {
 		type = 'password';
 	}
 	if (props.isNumber) {
-		type = 'number';
+		keyboardType = 'numeric'
 	}
 
 	const defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
 		value: props.value,
 		onChangeText: props.onChangeText,
+		keyboardType: keyboardType,
 		placeholder: props.placeholder,
 		type: type
 	}
@@ -143,6 +145,7 @@ export function TextInput(props: TextInputProps) {
 			{...defaultInputProps}
 		>
 			<DefaultInputField
+
 				returnKeyType={props?.returnKeyType}
 				onSubmitEditing={props?.onSubmitEditing}
 				ref={props.myRef}
