@@ -64,6 +64,7 @@ export const useProfileLanguageModal = () => {
 		setModalConfig({
 			key: "profile_language",
 			label: title,
+			title: title,
 			accessibilityLabel: title,
 			items: items
 

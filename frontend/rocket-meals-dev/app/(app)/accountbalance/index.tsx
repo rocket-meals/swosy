@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Heading, Text, View} from "@/components/Themed";
-import NfcManager, {NfcTech} from 'react-native-nfc-manager';
 import {MyButton} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
@@ -12,20 +11,19 @@ import {useAccountBalance} from "@/states/SynchedProfile";
 import {useFocusEffect} from "expo-router";
 import {SystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {IconNames} from "@/constants/IconNames";
-import {CardReader} from "react-native-nfc-manager-sw-os";
-import {Platform} from "react-native";
-import {NfcInstruction} from "@/compositions/animations/accountBalance/NfcInstruction";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {MoneyConfused} from "@/compositions/animations/accountBalance/MoneyConfused";
 import {MoneyConfident} from "@/compositions/animations/accountBalance/MoneyConfident";
 import {MoneyFitness} from "@/compositions/animations/accountBalance/MoneyFitness";
 import {MoneySad} from "@/compositions/animations/accountBalance/MoneySad";
-import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
+import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
+import {AccountBalanceAnimation} from "@/app/(app)/accountbalance/BalanceStateBounds";
 
 
 const onBlur = () => {
@@ -57,14 +55,6 @@ export function useMyFocusHandler(onFocus: any, deps: any) {
 	}
 }
 
-
-export enum BalanceStateLowerBound{
-	CONFIDENT = 10,
-	FITNESS = 3,
-	SAD = 0,
-	CONFUSED = -0.01
-}
-
 export default function AccountbalanceScreen() {
 
 	const debug = useIsDebug()
@@ -79,13 +69,21 @@ export default function AccountbalanceScreen() {
 	const translation_nfcNotSupported = useTranslation(TranslationKeys.nfcNotSupported)
 	const translation_nfcNotEnabled = useTranslation(TranslationKeys.nfcNotEnabled)
 	const translation_accountBalance = useTranslation(TranslationKeys.accountbalance)
+	const translation_nfcInstructionRead = useTranslation(TranslationKeys.nfcInstructionRead)
 
 	let callBack = async (nextBalance: number | null | undefined) => {
 		setAccountBalance(nextBalance);
 		setDisplayBalance(nextBalance);
 	}
 
-	const onReadNfcPress = useNfcCardReadPress(callBack);
+	let myCardReader: MyCardReaderInterface = useMyCardReader();
+
+	const [showInstruction, hideInstruction] = useCardReadInstruction()
+
+	const onReadNfcPress = async () => {
+		await myCardReader.readCard(callBack, accountBalance, showInstruction, hideInstruction, translation_nfcInstructionRead);
+	}
+
 
 	const [nfcSupported, setNfcSupported] = useState<boolean | undefined>(undefined);
 	const [nfcEnabled, setNfcEnabled] = useState<boolean | undefined>(undefined);
@@ -106,21 +104,10 @@ export default function AccountbalanceScreen() {
 
 	async function checkNfcSupportAndEnableStatus(){
 		try{
-			if(PlatformHelper.isSmartPhone()){
-				if(isExpoGo){ // https://github.com/revtel/react-native-nfc-manager/wiki/Expo-Go
-					// This package cannot be used in the "Expo Go" app because it requires custom native code.
-					setNfcSupported(false);
-					setNfcEnabled(false);
-				} else { // but when the app is built, it should work
-					let isSupported = await NfcManager.isSupported();
-					setNfcSupported(isSupported);
-					let isEnabled = await NfcManager.isEnabled();
-					setNfcEnabled(isEnabled);
-				}
-			} else {
-				setNfcSupported(false);
-				setNfcEnabled(false);
-			}
+			let isSupported = await myCardReader.isNfcSuppported();
+			setNfcSupported(isSupported);
+			let isEnabled = await myCardReader.isNfcEnabled();
+			setNfcEnabled(isEnabled);
 		} catch (e) {
 			//console.log(e);
 		}
@@ -235,189 +222,4 @@ export default function AccountbalanceScreen() {
 			</MyScrollView>
 		</MySafeAreaView>
 	)
-}
-
-
-type AccountBalanceAnimationProps = {
-	balance: number | undefined | null
-}
-export const AccountBalanceAnimation = (props: AccountBalanceAnimationProps) => {
-	const balance = props?.balance;
-
-	let animation = <MoneyConfused />
-
-	if(balance===undefined || balance===null || balance < 0){
-		animation = <MoneyConfused />
-	} else if(balance >= BalanceStateLowerBound.CONFIDENT){
-		animation = <MoneyConfident />
-	} else if(balance >= BalanceStateLowerBound.FITNESS){
-		animation = <MoneyFitness />
-	} else if(balance >= BalanceStateLowerBound.SAD){
-		animation = <MoneySad />
-	}
-
-	return (
-		<RectangleWithLayoutCharactersWide amountOfCharactersWide={20}>
-			{animation}
-		</RectangleWithLayoutCharactersWide>
-	)
-}
-
-
-
-export const useNfcCardReadPress = (callBack: (balance: number |undefined |null) => Promise<void>) => {
-
-	const nfcInstruction = useTranslation(TranslationKeys.nfcInstructionRead);
-	const translationSuccess = useTranslation(TranslationKeys.success);
-	const translationError = useTranslation(TranslationKeys.error);
-
-	let handleCloseModal = () => {
-		setModalConfig(null);
-	}
-
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
-
-	const [accountBalance, setAccountBalance] = useAccountBalance();
-	const [cardContent, setCardContent] = useState("-");
-	const debug = useIsDebug()
-	const isDemo = useIsDemo();
-
-	function getNextDemoBalance(displayBalance: number | null | undefined){
-		//console.log("demo mode");
-		//console.log(BalanceStateLowerBound);
-		// get number keys of BalanceStateLowerBound
-		let keys = Object.keys(BalanceStateLowerBound);
-		// filter keys to only get the numbers
-		let numbers = keys.filter((key) => {
-				return !isNaN(parseFloat(key));
-			}
-		);
-		//console.log(numbers);
-		// get the current index by displayBalance
-		let currentDisplayBalance = displayBalance || 0;
-		let currentIndex = numbers.indexOf(currentDisplayBalance.toString());
-		//console.log("currentIndex: " + currentIndex);
-		if(currentIndex === -1){
-			currentIndex = 0;
-		}
-		// get the next index
-		let nextIndex = currentIndex + 1;
-		if(nextIndex >= numbers.length){
-			nextIndex = 0;
-		}
-		//console.log("nextIndex: " + nextIndex);
-		// get the next balance
-		return parseFloat(numbers[nextIndex])
-	}
-
-	function showCardReadInstruction(){
-		let title = "NFC";
-		if(isDemo){
-			title = "Demo: "+title;
-		}
-
-		setModalConfig({
-			title: title,
-			accessibilityLabel: title,
-			key: "nfcInstruction",
-			label: title,
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return (
-					<View style={{width: "100%", justifyContent: "center", alignItems: "center"}}>
-						<Text style={{
-							textAlign: "center"
-						}}>{
-							nfcInstruction
-						}</Text>
-						<NfcInstruction/>
-					</View>
-				)
-			}
-		})
-	}
-
-	async function startDemoCardReading(){
-		console.log("startDemoCardReading");
-		// start showCardReadInstruction();
-		// then artificial delay for 5 seconds
-		// then get the next balance
-		// then call callBack
-
-		showCardReadInstruction();
-		let nextBalance = getNextDemoBalance(accountBalance);
-		// now wait 5 seconds
-		await new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(true);
-			}, 3000);
-		});
-		setModalConfig(null);
-		await callBack(nextBalance);
-	}
-
-	async function startCardReading(){
-		console.log("startCardReading");
-		if(isDemo){
-			console.log("isDemo");
-			await startDemoCardReading();
-			return;
-		}
-
-
-		if(PlatformHelper.isAndroid()){ // only show instruction on android since ios has a built in instruction
-			showCardReadInstruction();
-		}
-		let reader = new CardReader(NfcManager, NfcTech, Platform);
-		try{
-			console.log("DEBUG: start reading card");
-			let newAnswer = await reader.readCard(nfcInstruction);
-			console.log("Answer");
-			console.log(newAnswer);
-			setCardContent(JSON.stringify(newAnswer, null, 2));
-
-			let newBalance = newAnswer?.currentBalance;
-			if(newBalance !== undefined && newBalance !== null){
-				setAccountBalance(parseFloat(newBalance));
-				handleCloseModal();
-			} else {
-				setModalConfig({
-					title: translationError,
-					accessibilityLabel: translationError,
-					key: "nfcError",
-					label: translationError,
-					renderAsContentInsteadItems: (key: string, hide: () => void) => {
-						return (
-							<View>
-								<Text>{translationError}</Text>
-							</View>
-						)
-					}
-
-				})
-			}
-		} catch (e: any) {
-			console.log(e);
-			setCardContent(e.toString());
-			setModalConfig({
-				title: translationError,
-				accessibilityLabel: translationError,
-				key: "nfcError",
-				label: translationError,
-				renderAsContentInsteadItems: (key: string, hide: () => void) => {
-					return (
-						<View>
-							<Text>{translationError}</Text>
-						</View>
-					)
-				}
-
-			})
-		}
-	}
-
-	const onPress = async () => {
-		await startCardReading();
-	}
-
-	return onPress;
 }

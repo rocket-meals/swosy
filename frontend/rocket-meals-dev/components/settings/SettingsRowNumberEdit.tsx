@@ -9,7 +9,7 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface MyContentProps {
-    initialValue: number | undefined | null,
+    initialValue: string | undefined | null,
     setInputValue: Dispatch<SetStateAction<number | undefined | null>>,
     onSave: (value: number | undefined | null, hide: () => void) => void,
     placeholder?: string,
@@ -41,7 +41,11 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 	}, [inputRef?.current])
 
 	function handleOnSave() {
-		props.onSave(inputValueLocal, props.hide);
+		let asNumber: number | undefined | null = null;
+		if (inputValueLocal) {
+			asNumber = parseFloat(inputValueLocal)
+		}
+		props.onSave(asNumber, props.hide);
 	}
 
 	const usedValue = inputValueLocal || '';
@@ -64,15 +68,20 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 						let usedNewText: string | undefined | null = newText;
 						console.log('OnChangeNumber')
 						console.log(newText);
-						let usedNewTextNumber: number |null |undefined = null
+						let usedNewTextNumber: string |null |undefined = null
 						if (usedNewText==='') {
 							usedNewText = null;
 						} else if(usedNewText) {
-							usedNewTextNumber = parseFloat(usedNewText)
+							// replace all characters that are not numbers and keep the dot or comma
+							usedNewTextNumber = usedNewText.replace(/[^0-9.,]/g, '');
+						}
+						let asNumber: number | undefined | null = null;
+						if (usedNewTextNumber) {
+							asNumber = parseFloat(usedNewTextNumber)
 						}
 
 						if (setInputValue) {
-							setInputValue(usedNewTextNumber);
+							setInputValue(asNumber);
 							setInputValueLocal(usedNewTextNumber);
 						}
 					}}
@@ -174,7 +183,7 @@ export const SettingsRowNumberEdit = ({accessibilityLabel, labelLeft, rightIcon,
 			// Use the custom context provider to provide the input value and setter
 			return (
 				<MyContent
-					initialValue={initialValue}
+					initialValue={initialValue+""}
 					setInputValue={setInputValue}
 					onSave={onSaveChange}
 					placeholder={placeholder}
