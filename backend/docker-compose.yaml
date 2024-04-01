@@ -76,6 +76,7 @@ services:
       ADMIN_EMAIL: 'admin@example.com'
       ADMIN_PASSWORD: 'd1r3ctu5'
 
+      EMAIL_VERIFY_SETUP: "${EMAIL_VERIFY_SETUP}"
       EMAIL_FROM: "${EMAIL_FROM}"
       EMAIL_TRANSPORT: "${EMAIL_TRANSPORT}"
       EMAIL_SMTP_HOST: "${EMAIL_SMTP_HOST}"
