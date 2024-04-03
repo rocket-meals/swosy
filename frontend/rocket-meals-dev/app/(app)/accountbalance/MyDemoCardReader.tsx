@@ -44,7 +44,7 @@ export default class MyDemoCardReader implements MyCardReaderInterface {
 		await new Promise((resolve) => {
 			setTimeout(() => {
 				resolve(true);
-			}, 3000);
+			}, 2000);
 		});
 		hideInstruction();
 		callBack(nextBalance);

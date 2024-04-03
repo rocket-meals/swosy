@@ -14,12 +14,14 @@ import {AnimationSupport} from "@/compositions/animations/AnimationSupport";
 import {useCurrentUser} from "@/states/User";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {Divider} from "@gluestack-ui/themed";
+import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 
 
 export default function DataAccessScreen() {
 
 	const [profile, setProfile] = useSynchedProfile();
 	const [currentUser, setUserWithCache] = useCurrentUser();
+	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 
 	const translation_data_access_introduction = useTranslation(TranslationKeys.data_access_introduction);
 	const translation_your_data_which_we_know_if_you_have_a_profile = useTranslation(TranslationKeys.your_data_which_we_know_if_you_have_a_profile);
@@ -27,9 +29,28 @@ export default function DataAccessScreen() {
 
 	const translation_profile = useTranslation(TranslationKeys.profile);
 	const translation_account = useTranslation(TranslationKeys.account);
+	const translation_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
 
 	let renderedSavedData = [];
+
+	function renderDataOfObject(obj: any) {
+		return (
+			<MySafeAreaView>
+				<MyScrollView>
+					<View style={{
+						width: '100%',
+						padding: 20,
+					}}
+					>
+						<Text>
+							{JSON.stringify(obj, null, 2)}
+						</Text>
+					</View>
+				</MyScrollView>
+			</MySafeAreaView>
+		);
+	}
 
 	if(currentUser) {
 		const config: MyModalActionSheetItem = {
@@ -38,21 +59,7 @@ export default function DataAccessScreen() {
 			label: translation_account,
 			title: translation_account,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return (
-					<MySafeAreaView>
-						<MyScrollView>
-							<View style={{
-								width: '100%',
-								padding: 20,
-							}}
-							>
-								<Text>
-									{JSON.stringify(currentUser, null, 2)}
-								</Text>
-							</View>
-						</MyScrollView>
-					</MySafeAreaView>
-				);
+				return renderDataOfObject(currentUser);
 			}
 		}
 
@@ -68,26 +75,28 @@ export default function DataAccessScreen() {
 			label: translation_profile,
 			title: translation_profile,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return (
-					<MySafeAreaView>
-						<MyScrollView>
-							<View style={{
-								width: '100%',
-								padding: 20,
-							}}
-							>
-								<Text>
-									{JSON.stringify(profile, null, 2)}
-								</Text>
-							</View>
-						</MyScrollView>
-					</MySafeAreaView>
-				);
+				return renderDataOfObject(profile);
 			}
 		}
 
 		renderedSavedData.push(
 			<SettingsRowActionsheet accessibilityLabel={translation_profile} config={config} labelLeft={translation_profile} />
+		);
+	}
+
+	if (foodFeedbacksDict) {
+		const config: MyModalActionSheetItem = {
+			accessibilityLabel: translation_food_feedbacks,
+			key: translation_food_feedbacks,
+			label: translation_food_feedbacks,
+			title: translation_food_feedbacks,
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return renderDataOfObject(foodFeedbacksDict);
+			}
+		}
+
+		renderedSavedData.push(
+			<SettingsRowActionsheet accessibilityLabel={translation_food_feedbacks} config={config} labelLeft={translation_food_feedbacks} />
 		);
 	}
 

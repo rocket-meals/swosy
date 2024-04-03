@@ -20,7 +20,7 @@ async function loadCanteensFromServer(): Promise<Canteens[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined), ((newValue: Record<string, Canteens>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined), ((newValue: Record<string, Canteens>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Canteens>(PersistentStore.canteens);
 	const demo = useIsDemo()

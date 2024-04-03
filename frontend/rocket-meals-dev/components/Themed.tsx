@@ -232,7 +232,7 @@ export function View({style, ...props}: ViewProps) {
 	return <DefaultView style={styleCopy} {...props} />;
 }
 
-export function Spinner() {
+export function MySpinner() {
 	const textContrastColor = useTextContrastColor();
 	return <DefaultSpinner size={"large"} color={textContrastColor} />
 }

@@ -100,8 +100,9 @@ export const useShowPriceGroupModal = () => {
 			iconLeft: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
-			onSelect: async (value: string) => {
+			onSelect: async (value: string, hide: () => void) => {
 				await setPriceGroup(value as PriceGroups)
+				hide()
 			}
 		})
 	}

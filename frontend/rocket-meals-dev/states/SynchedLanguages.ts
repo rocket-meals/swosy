@@ -10,7 +10,7 @@ export async function loadLanguageRemoteDict() {
 	return await collectionHelper.readItems();
 }
 
-export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefined), ((newValue: Record<string, Languages>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefined), ((newValue: Record<string, Languages>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Languages>(PersistentStore.languages);
 	const demo = useIsDemo()

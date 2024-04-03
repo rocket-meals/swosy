@@ -61,7 +61,7 @@ export function getDemoMarkings(): Record<string, Markings> {
 	return resourceDict
 }
 
-export function useSynchedMarkingsDict(): [(Record<string, Markings> | undefined), ((newValue: Record<string, Markings>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedMarkingsDict(): [(Record<string, Markings> | undefined), ((newValue: Record<string, Markings>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Markings>(PersistentStore.markings);
 	const demo = useIsDemo()

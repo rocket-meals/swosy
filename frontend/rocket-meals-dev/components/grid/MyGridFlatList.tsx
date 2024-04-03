@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
-import {Spinner, View, Text} from '@/components/Themed';
+import {MySpinner, View, Text} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -168,7 +168,7 @@ export const MyGridFlatList = <T extends { key: string }>({
 		}
 		return (
 			<View style={{ paddingVertical: 20 }}>
-				<Spinner />
+				<MySpinner />
 			</View>
 		);
 	};

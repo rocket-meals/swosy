@@ -56,6 +56,12 @@ export class TranslationKeys {
 
 	static dataAccess = createTranslationKey('dataAccess', 'Datenauskunft'); // Datenauskunft in english is data access
 
+	static your_comment = createTranslationKey('your_comment', 'Dein Kommentar');
+	static comments = createTranslationKey('comments', 'Kommentare');
+	static save_comment = createTranslationKey('save_comment', 'Kommentar speichern');
+
+	static average_rating = createTranslationKey('average_rating', 'Durchschnittsbewertung');
+
 	static accountbalance = createTranslationKey('accountbalance', 'Guthaben');
 	static sort = createTranslationKey('sort', 'Sortieren');
 	static sort_option_none = createTranslationKey('none', 'Keine');
@@ -110,6 +116,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
+	static feedback_labels = createTranslationKey('feedback_labels', 'Feedback Labels');
+
 	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
 	static distance_based_canteen_selection_or_if_asked_on_real_location = createTranslationKey('distance_based_canteen_selection_or_if_asked_on_real_location', 'Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.');
 	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
@@ -138,7 +146,6 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
 	static washing_machines = createTranslationKey('washing_machines', 'Waschmaschinen');
 	static washingmachine_state_finished = createTranslationKey('washingmachine_state_finished', 'Waschen beendet');
-	static washingmachine_state_running = createTranslationKey('washingmachine_state_running', 'Wäscht gerade');
 	static washingmachine_estimate_finished_at = createTranslationKey("washingmachine_estimate_finished", "Voraussichtlich fertig um");
 	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
 

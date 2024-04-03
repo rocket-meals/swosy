@@ -18,6 +18,8 @@ import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/
 import {useSynchedNewsDict} from '@/states/SynchedNews';
 import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
+import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
+import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -56,6 +58,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [businesshoursDict, setBusinesshoursDict, lastUpdateBusinesshours, updateBusinesshoursFromServer] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
+	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels, updateFoodsFeedbacksLabelsFromServer]	= useSynchedFoodsFeedbacksLabelsDict()
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks, updateOwnFoodFeedbacksFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
 	const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
 	const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
@@ -88,8 +92,10 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addSynchedResourceToDownloadFirst('canteens', canteensDict, lastUpdateCanteens)
 	addSynchedResourceToDownloadFirst('businesshours', businesshoursDict, lastUpdateBusinesshours)
 	addSynchedResourceToDownloadFirst('buildings', buildingsDict, lastUpdateBuildings)
+	addSynchedResourceToDownloadFirst('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels)
 	addSynchedResourceToDownloadFirst('profile', profile, lastUpdateProfile);
 	addSynchedResourceToDownloadFirst('wikis', wikisDict, lastUpdateWikis)
+	addSynchedResourceToDownloadFirst('ownFoodFeedbacks', ownFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks)
 	addSynchedResourceToDownloadFirst('languages', languagesDict, lastUpdateLanguages)
 	addSynchedResourceToDownloadFirst('markings', markingsDict, lastUpdateMarkings);
 	addSynchedResourceToDownloadFirst('apartments', apartmentsDict, lastUpdateApartments);
@@ -169,8 +175,10 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 					await updateCanteensFromServer(nowInMs);
 					await updateBusinesshoursFromServer(nowInMs);
 					await updateBuildingsFromServer(nowInMs);
+					await updateFoodsFeedbacksLabelsFromServer(nowInMs);
 					await updateProfile()
 					await updateWikisFromServer(nowInMs)
+					await updateOwnFoodFeedbacksFromServer(nowInMs)
 					await updateLanguagesFromServer(nowInMs)
 					await updateMarkingsFromServer(nowInMs)
 					await updateApartmentsFromServer(nowInMs)

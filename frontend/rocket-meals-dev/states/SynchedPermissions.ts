@@ -7,7 +7,7 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 
-export function useSynchedPermissionsDict(): [(Record<string, DirectusPermissions> | undefined), ((newValue: Record<string, DirectusPermissions>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedPermissionsDict(): [(Record<string, DirectusPermissions> | undefined), ((newValue: Record<string, DirectusPermissions>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<DirectusPermissions>(PersistentStore.permissions);
 	const demo = useIsDemo()

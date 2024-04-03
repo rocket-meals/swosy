@@ -19,7 +19,7 @@ async function loadBusinesshoursFromServer(): Promise<Businesshours[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours> | undefined), ((newValue: Record<string, Businesshours>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours> | undefined), ((newValue: Record<string, Businesshours>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Businesshours>(PersistentStore.businesshours);
 	const demo = useIsDemo()

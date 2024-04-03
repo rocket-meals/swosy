@@ -9,6 +9,7 @@ export type MyModalActionSheetItem = {
 	key: string,
 	label: string,
 	active?: boolean,
+	value?: any,
 	title?: string,
 	iconLeft?: string | undefined,
 	onCancel?: () => Promise<boolean> | void,
@@ -19,6 +20,13 @@ export type MyModalActionSheetItem = {
 	renderAsContentInsteadItems?: (key: string, hide: () => void) => React.ReactNode,
 	renderAsContentPreItems?: (key: string, hide: () => void) => React.ReactNode,
 	items?: MyModalActionSheetItem[]
+}
+
+export const getMyModalActionSheetItemDefaultRightIcon = (active: boolean) => {
+	if(active){
+		return IconNames.select_option_active_icon;
+	}
+	return IconNames.select_option_inactive_icon;
 }
 
 export type MyModalActionSheetProps = {
@@ -32,7 +40,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 	}
 
 
-	let reneredItems = []
+	let renderedItems = []
 	const [selectedItemsHistory, setSelectedItemsHistory] = useState<string[]>([item.key]); // first item is the root item
 
 	const translation_navigate_back = useTranslation(TranslationKeys.navigate_back);
@@ -68,7 +76,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 			if(item.onSelect){
 				await item.onSelect(key, hide);
 				if(props.setVisible){
-					props.setVisible(false);
+					//props.setVisible(false);
 				}
 			} else if(item.items){
 				setSelectedItemsHistory([...selectedItemsHistory, key]);
@@ -76,16 +84,13 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		}
 
 		if(item.renderAsItem){
-			reneredItems.push(item.renderAsItem(item.key, hide))
+			renderedItems.push(item.renderAsItem(item.key, hide))
 			continue;
 		}
 
 		let iconRight = undefined;
 		if(isOption){
-			iconRight = IconNames.select_option_inactive_icon;
-			if(item.active){
-				iconRight = IconNames.select_option_active_icon;
-			}
+			iconRight = getMyModalActionSheetItemDefaultRightIcon(item.active || false);
 		}
 		if(hasSubItems){
 			iconRight = IconNames.chevron_right_icon
@@ -97,14 +102,16 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 			iconLeftCustomRender = item.iconLeftCustomRender("transparent", "transparent", "black", "black", hide);
 		}
 
-		reneredItems.push(
-			<SettingsRow labelLeft={item.label} accessibilityLabel={item.accessibilityLabel} onPress={onSelect} rightIcon={iconRight} leftIcon={leftIcon} iconLeftCustom={iconLeftCustomRender} active={item.active}  />
+		renderedItems.push(
+			<SettingsRow labelLeft={item.label} accessibilityLabel={item.accessibilityLabel} onPress={() => {
+				onSelect(item.key);
+			}} rightIcon={iconRight} leftIcon={leftIcon} iconLeftCustom={iconLeftCustomRender} active={item.active}  />
 		)
 	}
 
 	let historyIsIntoSubItems = selectedItemsHistory.length > 1;
 	if(historyIsIntoSubItems){
-		reneredItems.push(
+		renderedItems.push(
 			<SettingsRow labelLeft={translation_navigate_back} accessibilityLabel={translation_navigate_back} onPress={() => {
 				setSelectedItemsHistory(selectedItemsHistory.slice(0, selectedItemsHistory.length - 1));
 			}} leftIcon={IconNames.drawe_menu_go_back_icon} />
@@ -118,7 +125,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 
 	let finalContent: any = <>
 		{preContent}
-		{reneredItems}
+		{renderedItems}
 	</>;
 
 

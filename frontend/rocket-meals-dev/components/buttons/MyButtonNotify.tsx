@@ -30,11 +30,12 @@ export const MyButtonNotify = (props: MyNewButtonProps) => {
 	const tooltip = nextActionDescription + ': ' + props.tooltip;
 
 	const icon = active ? IconNames.notification_active : IconNames.notification_inactive;
+	let useTransparentBorderColor = false
 
 	return(
 		<MyButton useOnlyNecessarySpace={true}
-				  useTransparentBackgroundColor={true}
-				  useTransparentBorderColor={true}
+				  isActive={active}
+				  useTransparentBorderColor={useTransparentBorderColor}
 				  accessibilityLabel={accessibilityLabel}
 				  tooltip={tooltip}
 				  icon={icon}

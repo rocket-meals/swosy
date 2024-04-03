@@ -21,7 +21,7 @@ import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 
 async function loadProfileRemoteByProfileId(id: string) {
-	const profileRelations = ['markings', 'foods_feedbacks', 'devices', 'buildings_favorites', 'buildings_last_visited']
+	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
 	const profileFields = profileRelations.map(x => x+'.*').concat(['*']);
 
 	const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
@@ -229,95 +229,6 @@ export function useIsProfileSetupComplete(): boolean {
 	}
 
 	return true;
-}
-
-
-export function useSynchedProfileFoodFeedbacksDict(): [Record<string, FoodsFeedbacks | undefined>, ((food_id: string) => (FoodsFeedbacks | undefined)), ((food_id: string, rating: (number | null)) => Promise<boolean | void>), ((food_id: string, notify: (boolean | null)) => Promise<boolean | void>), ((food_id: string, comment: (string | null)) => Promise<boolean | void>)]
-{
-	const [profile, setProfile] = useSynchedProfile();
-	const profileFoodFeedbacksList: FoodsFeedbacks[] = profile?.foods_feedbacks || [];
-
-	const profilesFoodIdToFoodFeedbacksDict: Record<string, FoodsFeedbacks> = {};
-	for (let i=0; i<profileFoodFeedbacksList.length; i++) {
-		const profilesFoodFeedback: FoodsFeedbacks = profileFoodFeedbacksList[i];
-		const food_id = profilesFoodFeedback.food;
-		if (!!food_id && typeof food_id === 'string') {
-			profilesFoodIdToFoodFeedbacksDict[food_id] = profilesFoodFeedback;
-		}
-	}
-
-	const useOwnFoodFeedback = (food_id: string): FoodsFeedbacks | undefined => {
-		return profilesFoodIdToFoodFeedbacksDict[food_id];
-	}
-
-	const setFoodFeedback = async (food_id: string, rating: number | null |undefined, notify: boolean | undefined | null, comment: string | null| undefined) => {
-		const foodFeedbacksDictCopy = JSON.parse(JSON.stringify(profilesFoodIdToFoodFeedbacksDict))
-		let existingFoodFeedback = foodFeedbacksDictCopy[food_id];
-		if (!existingFoodFeedback) {
-			existingFoodFeedback = {
-				food: food_id,
-				profile: profile.id
-			}
-		}
-
-		if (rating !== undefined) {
-			existingFoodFeedback.rating = rating;
-		} else if (notify !== undefined) {
-			existingFoodFeedback.notify = notify;
-		} else if (comment !== undefined) {
-			existingFoodFeedback.comment = comment;
-		}
-
-		const ratingIsNull = existingFoodFeedback.rating === null || existingFoodFeedback.rating === undefined;
-		const notifyIsNull = existingFoodFeedback.notify === null || existingFoodFeedback.notify === false || existingFoodFeedback.notify === undefined;
-		const commentIsNull = existingFoodFeedback.comment === null || existingFoodFeedback.comment === undefined || existingFoodFeedback.comment === '';
-		const shouldRemove = ratingIsNull && notifyIsNull && commentIsNull;
-
-		if (shouldRemove) {
-			delete foodFeedbacksDictCopy[food_id];
-		} else {
-			foodFeedbacksDictCopy[food_id] = existingFoodFeedback;
-		}
-
-		const newFoodFeedbacks: FoodsFeedbacks[] = [];
-		const foodIds = Object.keys(foodFeedbacksDictCopy);
-		for (const foodId of foodIds) {
-			newFoodFeedbacks.push(foodFeedbacksDictCopy[foodId]);
-		}
-		profile.foods_feedbacks = newFoodFeedbacks;
-		return await setProfile(profile);
-	}
-
-	const setOwnFoodRating = async (food_id: string, rating: number | null) => {
-		return await setFoodFeedback(food_id, rating, undefined, undefined);
-	}
-
-	const setOwnFoodNotify = async (food_id: string, notify: boolean | null) => {
-		return await setFoodFeedback(food_id, undefined, notify, undefined);
-	}
-
-	const setOwnFoodFeedbackComment = async (food_id: string, comment: string | null) => {
-		return await setFoodFeedback(food_id, undefined, undefined, comment);
-	}
-
-	return [profilesFoodIdToFoodFeedbacksDict, useOwnFoodFeedback, setOwnFoodRating, setOwnFoodNotify, setOwnFoodFeedbackComment];
-}
-
-export function useSynchedProfileFoodFeedback(food_id: string): [FoodsFeedbacks | undefined, ((rating: number | null) => Promise<boolean | void>), ((notify: boolean | null) => Promise<boolean | void>), ((comment: string | null) => Promise<boolean | void>)] {
-	const [profilesFoodIdToFoodFeedbacksDict, useOwnFoodFeedback, setOwnFoodRating, setOwnFoodNotify, setOwnFoodFeedbackComment] = useSynchedProfileFoodFeedbacksDict();
-	const foodFeedback = useOwnFoodFeedback(food_id);
-
-
-	const setRating = async (rating: number | null) => {
-		return await setOwnFoodRating(food_id, rating);
-	}
-	const setNotify = async (notify: boolean | null) => {
-		return await setOwnFoodNotify(food_id, notify);
-	}
-	const setComment = async (comment: string | null) => {
-		return await setOwnFoodFeedbackComment(food_id, comment);
-	}
-	return [foodFeedback, setRating, setNotify, setComment];
 }
 
 export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking: Markings, dislikes: boolean) => void, (marking: Markings) => void] {

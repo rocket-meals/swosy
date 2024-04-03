@@ -6,19 +6,14 @@ import {DirectusFiles, Foodoffers, FoodsFeedbacks, ProfilesMarkings} from '@/hel
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
-import {
-	useProfileLanguageCode,
-	useSynchedProfileCanteen,
-	useSynchedProfileFoodFeedbacksDict,
-	useSynchedProfileMarkingsDict
-} from '@/states/SynchedProfile';
+import {useProfileLanguageCode, useSynchedProfileCanteen, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
 import React, {useEffect, useState} from 'react';
-import {Spinner, Text, View} from '@/components/Themed';
+import {MySpinner, Text, View} from '@/components/Themed';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {router, useNavigation} from 'expo-router';
+import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
@@ -31,6 +26,7 @@ import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {MarkingBadge} from "@/components/food/MarkingBadge";
 import {useDislikeColor} from "@/states/ColorScheme";
+import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -183,7 +179,7 @@ export default function FoodOfferScreen() {
 
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [foodFeedbacksDict, setFoodFeedbacksDict] = useSynchedProfileFoodFeedbacksDict()
+	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
 
@@ -196,6 +192,7 @@ export default function FoodOfferScreen() {
 
 
 	async function loadFoodOffers() {
+		console.log('loadFoodOffers')
 		setFoodOffers(undefined)
 		setFoodoffersSorted(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
@@ -205,7 +202,9 @@ export default function FoodOfferScreen() {
 				// sort the food offers
 				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 			} catch (err){
+				console.error('loadFoodOffers error', err)
 				setFoodOffers(null);
+				setFoodoffersSorted(null);
 			}
 		} else {
 			console.log('No valid canteen selected')
@@ -325,7 +324,7 @@ export default function FoodOfferScreen() {
 			justifyContent: "center",
 			alignItems: "center"
 		}}>
-			<Spinner/>
+			<MySpinner/>
 		</View>
 	} else if (foodOffersSorted === null) {
 		return (

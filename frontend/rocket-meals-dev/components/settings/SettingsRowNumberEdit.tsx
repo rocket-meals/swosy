@@ -196,7 +196,7 @@ export const SettingsRowNumberEdit = ({accessibilityLabel, labelLeft, rightIcon,
 
 	let usedIconRight = rightIcon;
 	if (usedIconRight===undefined) {
-		usedIconRight = IconNames.edit
+		usedIconRight = IconNames.edit_icon
 	}
 
 	return (

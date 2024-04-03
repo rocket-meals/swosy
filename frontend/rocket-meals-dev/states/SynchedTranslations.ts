@@ -16,7 +16,7 @@ async function loadTranslationsFromServer(): Promise<AppTranslations[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedAppTranslationsDict(): [(Record<string, AppTranslations> | undefined), ((newValue: Record<string, AppTranslations>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedAppTranslationsDict(): [(Record<string, AppTranslations> | undefined), ((newValue: Record<string, AppTranslations>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<AppTranslations>(PersistentStore.app_translations);
 	const lastUpdate = resourcesRaw?.lastUpdate;

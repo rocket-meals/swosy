@@ -11,10 +11,10 @@ export type NewValueRawSingleType<Scheme> = {
   lastUpdate: number
 }
 
-export function useSynchedResourceSingleRaw<Resource>(storeKey: string): [(Resource | undefined), ((newValue: Resource, timestampe?: number) => void), (NewValueRawSingleType<Resource> | null), ((value: (NewValueRawSingleType<Resource> | null)) => void)] {
+export function useSynchedResourceSingleRaw<Resource>(storeKey: string): [(Resource | undefined), ((newValue: Resource, timestamp?: number) => void), (NewValueRawSingleType<Resource> | null), ((value: (NewValueRawSingleType<Resource> | null)) => void)] {
 	const [resourcesRaw, setResourcesRaw] = useSyncState<NewValueRawSingleType<Resource>>(storeKey)
-	const setResourcesOnly = (newValue: Resource, timestampe?: number) => {
-		const timeInMs = timestampe || new Date().getTime()
+	const setResourcesOnly = (newValue: Resource, timestamp?: number) => {
+		const timeInMs = timestamp || new Date().getTime()
 		setResourcesRaw({
 			data: newValue,
 			lastUpdate: timeInMs
@@ -24,10 +24,10 @@ export function useSynchedResourceSingleRaw<Resource>(storeKey: string): [(Resou
 	return [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw]
 }
 
-export function useSynchedResourceRaw<Resource>(storeKey: string): [(Record<string, Resource> | undefined), ((newValue: Record<string, Resource>, timestampe?: number) => void), (NewValueRawType<string, Resource> | null), ((value: (NewValueRawType<string, Resource> | null)) => void)] {
+export function useSynchedResourceRaw<Resource>(storeKey: string): [(Record<string, Resource> | undefined), ((newValue: Record<string, Resource>, timestamp?: number) => void), (NewValueRawType<string, Resource> | null), ((value: (NewValueRawType<string, Resource> | null)) => void)] {
 	const [resourcesRaw, setResourcesRaw] = useSyncState<NewValueRawType<string, Resource>>(storeKey)
-	const setResourcesOnly = (newValue: Record<number, Resource>, timestampe?: number) => {
-		const timeInMs = timestampe || new Date().getTime()
+	const setResourcesOnly = (newValue: Record<number, Resource>, timestamp?: number) => {
+		const timeInMs = timestamp || new Date().getTime()
 		setResourcesRaw({
 			data: newValue,
 			lastUpdate: timeInMs

@@ -5,7 +5,7 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 
-export function useSynchedRolesDict(): [(Record<string, DirectusRoles> | undefined), ((newValue: Record<string, DirectusRoles>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedRolesDict(): [(Record<string, DirectusRoles> | undefined), ((newValue: Record<string, DirectusRoles>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<DirectusRoles>(PersistentStore.roles);
 	const demo = useIsDemo()

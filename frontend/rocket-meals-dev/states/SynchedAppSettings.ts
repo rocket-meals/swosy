@@ -4,6 +4,7 @@ import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {RatingType} from "@/components/buttons/MyRatingButton";
+import {FeedbackCommentType, FeedbackLabelsType} from "@/compositions/fooddetails/FoodDetails";
 
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	const collectionHelper = new CollectionHelper<AppSettings>('app_settings');
@@ -11,7 +12,7 @@ async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	return await collectionHelper.readSingletonItem(query);
 }
 
-export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue: AppSettings, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue: AppSettings, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
 	const demo = useIsDemo()
@@ -93,9 +94,11 @@ function getDemoAppSettings(): AppSettings {
 		foods_parsing_status: '',
 		foods_placeholder_image: null,
 		foods_placeholder_image_thumb_hash: '',
-		foods_ratings_amount_display: false,
-		foods_ratings_average_display: false,
+		foods_ratings_amount_display: true,
+		foods_ratings_average_display: true,
 		foods_ratings_type: RatingType.stars,
+		foods_feedbacks_comments_type: FeedbackCommentType.readAndWrite,
+		foods_feedbacks_labels_type: FeedbackLabelsType.useAndRead,
 		foods_settings: '',
 		housing_enabled: true,
 		housing_maps_enabled: false,

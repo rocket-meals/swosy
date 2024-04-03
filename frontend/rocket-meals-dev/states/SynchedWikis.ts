@@ -27,7 +27,7 @@ async function loadWikisFromServer(): Promise<Wikis[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Wikis>(PersistentStore.wikis);
 	const demo = useIsDemo()

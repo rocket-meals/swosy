@@ -37,6 +37,9 @@ export enum IconNames {
     color_scheme_system_icon = 'theme-light-dark',
     calendar_icon = 'calendar-month',
 
+    average_icon = 'chart-areaspline',
+    amount_rating_icon = 'chart-bar',
+
     account_balance_icon = 'credit-card',
     nfc_icon = 'credit-card-wireless',
 
@@ -60,7 +63,7 @@ export enum IconNames {
     first_weekday_icon = 'calendar-week',
     course_timetable_event_create_icon = 'calendar-plus',
     identifier = 'identifier',
-    edit = 'pencil',
+    edit_icon = 'pencil',
     attribute_text_icon = 'tag-text-outline',
     calendar_import_icon = 'calendar-import',
     time_start_icon = 'clock-start',

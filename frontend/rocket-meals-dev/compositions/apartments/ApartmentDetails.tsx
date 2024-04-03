@@ -2,8 +2,12 @@ import {Apartments, Buildings, Washingmachines} from '@/helper/database/database
 import React, {useEffect, useState} from 'react';
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {DetailsComponentTabProps} from "@/components/detailsComponent/DetailsComponent";
-import {Spinner, Text, View} from "@/components/Themed";
-import {loadApartmentWithWashingMachinesFromServer, useSynchedApartmentsDict} from "@/states/SynchedApartments";
+import {MySpinner, Text, View} from "@/components/Themed";
+import {
+	getDemoWashingmachines,
+	loadApartmentWithWashingMachinesFromServer,
+	useSynchedApartmentsDict
+} from "@/states/SynchedApartments";
 import {BuildingDetailsWithObject} from "@/compositions/buildings/BuildingDetails";
 import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -17,6 +21,7 @@ import {Platform} from "react-native";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {DisabledTouchableOpacity} from "@/components/buttons/DisabledTouchableOpacity";
 import {useProjectName} from "@/states/ProjectInfo";
+import {useIsDemo} from "@/states/SynchedDemo";
 
 export default function ApartmentDetails({ apartmentId }: { apartmentId: string }) {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -65,7 +70,6 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 	const translation_washingmachine = useTranslation(TranslationKeys.washing_machine)
 
 	const translation_washingmachine_finished = useTranslation(TranslationKeys.washingmachine_state_finished)
-	const translation_washingmachine_running = useTranslation(TranslationKeys.washingmachine_state_running)
 	const translation_washingmachine_estimate_finished = useTranslation(TranslationKeys.washingmachine_estimate_finished_at);
 	const translation_washingmachine_state_unknown = useTranslation(TranslationKeys.washingmachine_state_unknown)
 
@@ -122,7 +126,7 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 	}
 
 	if(!deviceCanBeNotified){
-		renderedNotifyButton = <DisabledTouchableOpacity reason={"Im Browser nicht nutzbar."}>
+		renderedNotifyButton = <DisabledTouchableOpacity reason={"Im Browser nicht nutzbar"}>
 			{renderedNotifyButton}
 		</DisabledTouchableOpacity>
 	}
@@ -178,6 +182,7 @@ function ApartmentDetailsWashingMachines({ apartment }: { apartment: Apartments 
 	const updateWashersInSeconds = 10;
 	const apartment_id = apartment.id;
 	const [washmashines, setWashmashines] = useState<Washingmachines[] | undefined | null>(undefined);
+	const demo = useIsDemo();
 
 	// This variable is used to store the timeout id for clearing later
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -185,8 +190,13 @@ function ApartmentDetailsWashingMachines({ apartment }: { apartment: Apartments 
 	async function loadWashmashines() {
 		console.log("Loading washing machines for apartment " + apartment_id);
 		try {
-			let result = await loadApartmentWithWashingMachinesFromServer(apartment_id);
-			setWashmashines(result.washingmachines);
+			if(demo){
+				let demoMachines = getDemoWashingmachines();
+				setWashmashines(demoMachines);
+			} else {
+				let result = await loadApartmentWithWashingMachinesFromServer(apartment_id);
+				setWashmashines(result.washingmachines);
+			}
 		} catch (e) {
 			console.error(e);
 			setWashmashines(null);
@@ -215,7 +225,7 @@ function ApartmentDetailsWashingMachines({ apartment }: { apartment: Apartments 
 	}, [apartment_id]); // Only re-run the effect if apartment_id changes
 
 	if (washmashines === undefined) {
-		return <Spinner />;
+		return <MySpinner />;
 	} else if (washmashines === null) {
 		return <Text>{"Error loading washing machines"}</Text>;
 	} else {

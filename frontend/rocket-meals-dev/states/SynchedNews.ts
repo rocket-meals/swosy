@@ -20,7 +20,7 @@ async function loadNewsFromServer(): Promise<News[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedNewsDict(): [(Record<string, News> | undefined), ((newValue: Record<string, News>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedNewsDict(): [(Record<string, News> | undefined), ((newValue: Record<string, News>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<News>(PersistentStore.news);
 	const demo = useIsDemo()

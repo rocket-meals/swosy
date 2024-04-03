@@ -2,7 +2,7 @@ import {MyCardWithText, MyCardWithTextProps} from '@/components/card/MyCardWithT
 import {DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {Rectangle} from '@/components/shapes/Rectangle';
 import React, {ReactNode} from 'react';
-import {Spinner, Text, View} from '@/components/Themed';
+import {MySpinner, Text, View} from '@/components/Themed';
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {MyButton} from "@/components/buttons/MyButton";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
@@ -82,7 +82,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 					padding: 20,
 				}}>
 					<Text>{"Please wait"}</Text>
-					<Spinner />
+					<MySpinner />
 					<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
 						hide()
 					} } />

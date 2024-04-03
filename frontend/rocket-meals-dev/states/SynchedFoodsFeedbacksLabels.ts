@@ -1,5 +1,5 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings, FoodsFeedbacksLabels} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourceRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -7,8 +7,8 @@ import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {LocationType} from "@/helper/geo/LocationType";
 
-async function loadBuildingsFromServer(): Promise<Buildings[]> {
-	const collectionHelper = new CollectionHelper<Buildings>('buildings');
+async function loadResourcesFromServer(): Promise<FoodsFeedbacksLabels[]> {
+	const collectionHelper = new CollectionHelper<FoodsFeedbacksLabels>('foods_feedbacks_labels');
 
 	const fields = ['*','translations.*'];
 
@@ -20,18 +20,18 @@ async function loadBuildingsFromServer(): Promise<Buildings[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefined), ((newValue: Record<string, Buildings>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedFoodsFeedbacksLabelsDict(): [(Record<string, FoodsFeedbacksLabels> | undefined), ((newValue: Record<string, FoodsFeedbacksLabels>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Buildings>(PersistentStore.buildings);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<FoodsFeedbacksLabels>(PersistentStore.foodsFeedbacksLabels);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
 	if (demo) {
-		usedResources = getDemoBuildings()
+		usedResources = getDemoFoodsFeedbacksLabelsDict()
 	}
 
 	async function updateFromServer(nowInMs?: number) {
-		const resourceAsList = await loadBuildingsFromServer();
+		const resourceAsList = await loadResourcesFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
 		setResourcesOnly(resourceAsDict, nowInMs);
 	}
@@ -39,43 +39,38 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-function getDemoResource(index: number): Buildings {
+function getDemoResource(index: number, nameOfLabel: string): FoodsFeedbacksLabels {
 	let languages = getDemoLanguagesDict();
 
-	const name = 'Demo Building '+index
+	const name = 'Demo '+nameOfLabel
 
 	let translations = []
 	for (let languageKey in languages) {
 		let language = languages[languageKey]
 		translations.push({
-			name: language.code+" - "+name,
+			text: language.code+" - "+name,
 			id: index,
 			content: language.code,
-			buildings_id: index+"",
+			foods_feedbacks_labels_id: index+"",
 			languages_code: language.code
 		})
 	}
 
 	return {
 		alias: name,
-		apartments: [],
 		id: index+'',
 		status: '',
-		coordinates: CoordinateHelper.getDemoDirectusCoordinates(index*0.01, index*0.01),
 		translations: translations
 	}
 }
 
-export function getBuildingLocationType(building: Buildings): LocationType | null {
-	let coordinatesA = building?.coordinates;
-	let locationA = CoordinateHelper.getLocation(coordinatesA);
-	return locationA;
-}
+export function getDemoFoodsFeedbacksLabelsDict(): Record<string, FoodsFeedbacksLabels> {
+	const demoResources: Record<string, FoodsFeedbacksLabels> = {}
 
-export function getDemoBuildings(): Record<string, Buildings> {
-	const demoResources: Record<string, Buildings> = {}
-	for (let i = 0; i < 500; i++) {
-		const demoResource = getDemoResource(i)
+	let names = ["Zu salzig", "Zu viel", "Lecker", "Herzhaft", "Süß", "Sauer", "Bitter", "Umami", "Fettig", "Trocken"]
+	for (let i = 0; i < names.length; i++) {
+		let name = names[i];
+		const demoResource = getDemoResource(i, name)
 		demoResources[demoResource.id] = demoResource
 	}
 
