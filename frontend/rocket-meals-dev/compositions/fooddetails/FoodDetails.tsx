@@ -251,8 +251,11 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks}: {food:
 
 export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFeedbacks}) => {
 	let comment = foodFeedback.comment+"";
-	let date_updated = foodFeedback.date_updated+"";
-	let date_human_readable = DateHelper.formatOfferDateToReadable(new Date(date_updated), true, true);
+	let date_updated = foodFeedback.date_updated
+	let date_human_readable: string | undefined = undefined;
+	if(date_updated){
+		date_human_readable = DateHelper.formatOfferDateToReadable(new Date(date_updated), true, true);
+	}
 
 	return (
 		<SettingsRow labelLeft={comment} accessibilityLabel={comment} labelRight={date_human_readable} />
