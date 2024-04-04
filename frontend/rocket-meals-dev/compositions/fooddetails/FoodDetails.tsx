@@ -163,6 +163,7 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 
 
 	const translation_feedback_labels = useTranslation(TranslationKeys.feedback_labels);
+	const translation_edit = useTranslation(TranslationKeys.edit);
 
 	const projectColor = useProjectColor();
 	const projectContrastColor = useMyContrastColor(projectColor);
@@ -220,21 +221,26 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 				}
 			});
 		} else {
+			/**
 			renderedLabels.push(
-				<Text>{"TODO: TRANSLATE: No Food Feedbacks with Labels found"}</Text>
+				<Text>{"No Food Feedbacks with Labels found"}</Text>
 			)
+				*/
 		}
 	} else if(remoteFoodFeedbacks===undefined){
 		renderedLabels.push(
 			<MySpinner />
 		)
 	} else {
+		/**
 		renderedLabels.push(
-			<Text>{"TODO: TRANSLATE: No Food Feedbacks found"}</Text>
+			<Text>{"No Food Feedbacks found"}</Text>
 		)
+		*/
 	}
 
 
+	const translation_edit_food_feedback_labels = translation_edit + ": " + translation_feedback_labels;
 
 	return(
 		<View style={{width: "100%", paddingTop: 10}}>
@@ -249,7 +255,7 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 			}}>
 			</View>
 			<AccountRequiredTouchableOpacity>
-				<MyButton accessibilityLabel={"TODO: Translation: Edit labels"} tooltip={"Edit labels"} text={"Edit labels"} rightIcon={IconNames.edit_icon} onPress={onPressEditFoodFeedbackLabels}/>
+				<MyButton accessibilityLabel={translation_edit_food_feedback_labels} tooltip={translation_edit_food_feedback_labels} text={translation_edit_food_feedback_labels} rightIcon={IconNames.edit_icon} onPress={onPressEditFoodFeedbackLabels}/>
 			</AccountRequiredTouchableOpacity>
 		</View>
 	)
@@ -264,7 +270,17 @@ export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFe
 	}
 
 	return (
-		<SettingsRow labelLeft={comment} accessibilityLabel={comment} labelRight={date_human_readable} />
+		<View>
+			<SettingsRow labelLeft={comment} accessibilityLabel={comment} />
+			<View style={{
+				width: "100%",
+				justifyContent: "flex-end",
+			}}>
+				<Text size={"sm"} italic={true} style={{
+					textAlign: "right",
+				}}>{date_human_readable}</Text>
+			</View>
+		</View>
 	)
 }
 
@@ -581,7 +597,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 
 	// get device height
 	const screenHeight = Dimensions.get('window').height;
-	const detailsMinHeight = screenHeight
+	const detailsMinHeight = screenHeight / 2
 
 	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
 		<View style={{ flex: 1, flexDirection: "row" }}>

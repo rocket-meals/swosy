@@ -6,6 +6,7 @@ import {SettingsRow} from "@/components/settings/SettingsRow";
 import {FoodsFeedbacks} from "@/helper/database/databaseTypes/types";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {FoodFeedbackCommentSingle} from "@/compositions/fooddetails/FoodDetails";
+import { View, Text } from '../Themed';
 
 
 export type MyModalActionSheetItem = {
@@ -141,7 +142,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		finalContent = <MyGridFlatList  data={data} renderItem={(listitem) => {
 			let item = listitem.item.data;
 			return renderItem(item);
-		}} numColumns={1} ListHeaderComponent={preContent} ListFooterComponent={afterContent} />
+		}} numColumns={1} preItem={preContent} postItem={afterContent} />
 	}
 
 
