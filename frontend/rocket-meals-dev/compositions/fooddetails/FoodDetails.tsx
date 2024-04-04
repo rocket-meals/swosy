@@ -1,4 +1,4 @@
-import {Foodoffers, Foods, FoodsFeedbacks, FoodsFeedbacksLabels, Markings} from '@/helper/database/databaseTypes/types';
+import {Foodoffers, Foods, FoodsFeedbacks, FoodsFeedbacksLabels} from '@/helper/database/databaseTypes/types';
 import {Heading, MySpinner, Text, TextInput, useTextContrastColor, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
 import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
@@ -32,10 +32,9 @@ import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {getMyModalActionSheetItemDefaultRightIcon, MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {SettingsRow} from "@/components/settings/SettingsRow";
-import {useSyncState} from "@/helper/syncState/SyncState";
-import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {DateHelper} from "@/helper/date/DateHelper";
+import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -77,7 +76,33 @@ export const useFeedbackLabelsType = (): FeedbackLabelsType => {
 	return feedbackLabelsType
 }
 
-export const useOnPressEditFoodFeedbackLabels = (food_id: string) => {
+const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation}: {food_id: string, feedback_label_id: string, translation: string}) => {
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
+
+	let usedFoodFeedbacksForOwnLabels: FoodsFeedbacks[] = foodFeedback ? [foodFeedback] : []
+	let ownFoodFeedbackLabelIds = getFoodFeedbackLabelsIdsFromFeedbacksWithLabels(usedFoodFeedbacksForOwnLabels)
+	let active = ownFoodFeedbackLabelIds?.includes(feedback_label_id) ?? false
+
+	let iconRight = getMyModalActionSheetItemDefaultRightIcon(active);
+
+	// this is being rendered multiple times because the reference of foodFeedback is changing, therefore print the reference
+	// only rerender if active or translation changes
+
+
+	return <SettingsRow labelLeft={translation} accessibilityLabel={translation} rightIcon={iconRight} onPress={() => {
+		if(!!ownFoodFeedbackLabelIds){
+			let newSelectedLabels = [...ownFoodFeedbackLabelIds];
+			if(newSelectedLabels.includes(feedback_label_id)){
+				newSelectedLabels = newSelectedLabels.filter((value) => value !== feedback_label_id)
+			} else {
+				newSelectedLabels.push(feedback_label_id)
+			}
+			setOwnLabels(newSelectedLabels)
+		}
+	}} active={active}  />
+}
+
+export const useOnPressEditFoodFeedbackLabels = (food_id: string, onClose?: () => void) => {
 	const translation_title = useTranslation(TranslationKeys.feedback_labels)
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
@@ -106,29 +131,8 @@ export const useOnPressEditFoodFeedbackLabels = (food_id: string) => {
 			title: translation,
 			renderAsItem: (key: string, hide: () => void) => {
 				// each component needs to have its own state
-
-				const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
-				let usedFoodFeedbacksForOwnLabels: FoodsFeedbacks[] = foodFeedback ? [foodFeedback] : []
-				let ownFoodFeedbackLabelIds = getFoodFeedbackLabelsIdsFromFeedbacksWithLabels(usedFoodFeedbacksForOwnLabels)
-				let active = ownFoodFeedbackLabelIds?.includes(key) ?? false
-
-				let iconRight = getMyModalActionSheetItemDefaultRightIcon(active);
-
-				// this is being rendered multiple times because the reference of foodFeedback is changing, therefore print the reference
-				// only rerender if active or translation changes
-
-
-				return <SettingsRow labelLeft={translation} accessibilityLabel={translation} rightIcon={iconRight} onPress={() => {
-					if(!!ownFoodFeedbackLabelIds){
-						let newSelectedLabels = [...ownFoodFeedbackLabelIds];
-						if(newSelectedLabels.includes(key)){
-							newSelectedLabels = newSelectedLabels.filter((value) => value !== key)
-						} else {
-							newSelectedLabels.push(key)
-						}
-						setOwnLabels(newSelectedLabels)
-					}
-				}} active={active}  />
+				let translation = feedbackLabelIdToTranslation[key];
+				return <FoodFeedbackSettingsRow food_id={food_id} feedback_label_id={key} translation={translation}/>
 		}
 		})
 	});
@@ -142,7 +146,9 @@ export const useOnPressEditFoodFeedbackLabels = (food_id: string) => {
 			label: translation_title,
 			items: items,
 			onCancel: () => {
-				console.log("onCancel")
+				if(onClose){
+					onClose()
+				}
 			}
 		}
 
@@ -150,7 +156,7 @@ export const useOnPressEditFoodFeedbackLabels = (food_id: string) => {
 	}
 }
 
-export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined;}) => {
+export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined, refresh: () => void}) => {
 	const foods_feedbacks_labels_type = useFeedbackLabelsType()
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const [language, setLanguage] = useProfileLanguageCode()
@@ -162,7 +168,7 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks}: {food:
 	const projectContrastColor = useMyContrastColor(projectColor);
 	const defaultTextColor = useTextContrastColor()
 
-	const onPressEditFoodFeedbackLabels = useOnPressEditFoodFeedbackLabels(food.id)
+	const onPressEditFoodFeedbackLabels = useOnPressEditFoodFeedbackLabels(food.id, refresh)
 
 	if(foods_feedbacks_labels_type === FeedbackLabelsType.disabled){
 		return null
@@ -311,9 +317,11 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 		commentContent = (
 			<View style={{ width: "100%", paddingBottom: 20}}>
 				<AccountRequiredTouchableOpacity>
-					<TextInput placeholder={translation_your_comment} value={comment ?? ''} onChangeText={onChangeText} />
+					<TextInput placeholder={translation_your_comment} value={comment ?? ''} returnKeyType={ReturnKeyType.send} onChangeText={onChangeText} onSubmitEditing={() => {
+						onSubmit();
+					}} />
 
-					<MyButton isActive={comment !== null || saved_comment !== comment}
+					<MyButton disabled={saved_comment === comment} isActive={saved_comment !== comment}
 							  borderTopRadius={0}
 							  accessibilityLabel={translation_save_comment}
 							  text={translation_save_comment}
@@ -444,13 +452,23 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 		let result = loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(food.id, isDemo);
 		return result;
 	}
-	
 
-	useEffect(() => {
+	async function loadData() {
 		// load the labels from the server for the food
 		loadRemoteFoodsFeedbacksForFood(food.id)
 			.then(setRemoteFoodFeedbacks)
 			.catch(console.error);
+	}
+
+	async function refresh() {
+		// load the labels from the server for the food
+		loadData();
+	}
+	
+
+	useEffect(() => {
+		// load the labels from the server for the food
+		loadData();
 	}, [food.id]);
 
 	return (
@@ -463,7 +481,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 			}}>
 				<FoodFeedbackRatingDetails food={food}/>
 			</View>
-			<FoodFeedbacksLabelsComponent food={food} remoteFoodFeedbacks={remoteFoodFeedbacks}/>
+			<FoodFeedbacksLabelsComponent food={food} remoteFoodFeedbacks={remoteFoodFeedbacks} refresh={refresh}/>
 			<FoodFeedbackCommentDetails food={food} remoteFoodFeedbacks={remoteFoodFeedbacks}/>
 		</View>
 	)
@@ -563,7 +581,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 
 	// get device height
 	const screenHeight = Dimensions.get('window').height;
-	const detailsMinHeight = screenHeight / 2
+	const detailsMinHeight = screenHeight
 
 	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
 		<View style={{ flex: 1, flexDirection: "row" }}>

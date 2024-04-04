@@ -37,7 +37,9 @@ interface GridListProps<T> {
     horizontal?: boolean;
     contentContainerStyle?: StyleProp<ViewStyle>;
     spacing?: GridListSpacing;
-    flatListProps?: FlatListProps<T>
+    flatListProps?: FlatListProps<T>;
+	preItem?: React.ReactElement;
+	postItem?: React.ReactElement;
 }
 
 export const DEFAULT_GRID_LIST_SPACING: GridListSpacing = {
@@ -67,6 +69,8 @@ export const MyGridFlatList = <T extends { key: string }>({
 	horizontal,
 	spacing,
 	flatListProps,
+    preItem,
+	postItem,
 }: GridListProps<T>): React.ReactElement => {
 	const amountCompleteRows = Math.floor(data.length / amountColumns);
 	const amountTotalItemsLastRow = data.length - amountCompleteRows * amountColumns;
@@ -158,13 +162,16 @@ export const MyGridFlatList = <T extends { key: string }>({
 
 	// Render footer to show a loading spinner when more items are being loaded
 	const renderFooter = () => {
-		if (endReached) {
-			return null;
-		}
 		if(ListFooterComponent){
 			return <View style={{flex: 1}}>
 				{ListFooterComponent}
 			</View>
+		}
+		if(postItem){
+			return postItem;
+		}
+		if (endReached) {
+			return null;
 		}
 		return (
 			<View style={{ paddingVertical: 20 }}>
@@ -178,6 +185,9 @@ export const MyGridFlatList = <T extends { key: string }>({
 			return <View style={{flex: 1}}>
 				{ListHeaderComponent}
 			</View>
+		}
+		if(preItem){
+			return preItem;
 		}
 	}
 

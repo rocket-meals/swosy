@@ -6,7 +6,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 
-async function loadMarkingsFromServer(): Promise<Markings[]> {
+export async function loadMarkingsFromServer(): Promise<Markings[]> {
 	const collectionHelper = new CollectionHelper<Markings>('markings');
 
 	const fields = ['*','translations.*'];

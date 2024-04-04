@@ -3,6 +3,9 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {MyModal, MyModalProps} from "@/components/modal/MyModal";
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRow} from "@/components/settings/SettingsRow";
+import {FoodsFeedbacks} from "@/helper/database/databaseTypes/types";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
+import {FoodFeedbackCommentSingle} from "@/compositions/fooddetails/FoodDetails";
 
 
 export type MyModalActionSheetItem = {
@@ -39,8 +42,6 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		return null;
 	}
 
-
-	let renderedItems = []
 	const [selectedItemsHistory, setSelectedItemsHistory] = useState<string[]>([item.key]); // first item is the root item
 
 	const translation_navigate_back = useTranslation(TranslationKeys.navigate_back);
@@ -64,73 +65,83 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		}
 	}
 
-	let itemsToRender: any = currentItems;
+	let itemsToRender: MyModalActionSheetItem[] = currentItems;
 
-	for(const item of itemsToRender){
-		let isOption = false;
-		let hasSubItems = !!item.items && item.items.length > 0;
-		if(item.onSelect && !hasSubItems){
-			isOption = true;
-		}
-		const onSelect = async (key: string) => {
-			if(item.onSelect){
-				await item.onSelect(key, hide);
-				if(props.setVisible){
-					//props.setVisible(false);
-				}
-			} else if(item.items){
-				setSelectedItemsHistory([...selectedItemsHistory, key]);
-			}
-		}
 
-		if(item.renderAsItem){
-			renderedItems.push(item.renderAsItem(item.key, hide))
-			continue;
-		}
 
-		let iconRight = undefined;
-		if(isOption){
-			iconRight = getMyModalActionSheetItemDefaultRightIcon(item.active || false);
-		}
-		if(hasSubItems){
-			iconRight = IconNames.chevron_right_icon
-		}
-
-		let leftIcon = item.iconLeft;
-		let iconLeftCustomRender = undefined
-		if(item.iconLeftCustomRender){
-			iconLeftCustomRender = item.iconLeftCustomRender("transparent", "transparent", "black", "black", hide);
-		}
-
-		renderedItems.push(
-			<SettingsRow labelLeft={item.label} accessibilityLabel={item.accessibilityLabel} onPress={() => {
-				onSelect(item.key);
-			}} rightIcon={iconRight} leftIcon={leftIcon} iconLeftCustom={iconLeftCustomRender} active={item.active}  />
-		)
-	}
-
-	let historyIsIntoSubItems = selectedItemsHistory.length > 1;
-	if(historyIsIntoSubItems){
-		renderedItems.push(
-			<SettingsRow labelLeft={translation_navigate_back} accessibilityLabel={translation_navigate_back} onPress={() => {
-				setSelectedItemsHistory(selectedItemsHistory.slice(0, selectedItemsHistory.length - 1));
-			}} leftIcon={IconNames.drawe_menu_go_back_icon} />
-		)
-	}
-
-	let preContent = undefined;
-	if(currentItem.renderAsContentPreItems){
-		preContent = currentItem.renderAsContentPreItems(currentItem.key, hide);
-	}
-
-	let finalContent: any = <>
-		{preContent}
-		{renderedItems}
-	</>;
+	let finalContent: any = undefined
 
 
 	if(currentItem.renderAsContentInsteadItems){
 		finalContent = currentItem.renderAsContentInsteadItems(currentItem.key, hide);
+	} else {
+		let preContent = undefined;
+		if(currentItem.renderAsContentPreItems){
+			preContent = currentItem.renderAsContentPreItems(currentItem.key, hide);
+		}
+
+		type DataItem = { key: string; data: MyModalActionSheetItem}
+		const data: DataItem[] = []
+
+		for(const item of itemsToRender){
+			data.push({key: item.key, data: item})
+		}
+
+		const renderItem = (item: MyModalActionSheetItem) => {
+			let isOption = false;
+			let hasSubItems = !!item.items && item.items.length > 0;
+			if(item.onSelect && !hasSubItems){
+				isOption = true;
+			}
+			const onSelect = async (key: string) => {
+				if(item.onSelect){
+					await item.onSelect(key, hide);
+					if(props.setVisible){
+						//props.setVisible(false);
+					}
+				} else if(item.items){
+					setSelectedItemsHistory([...selectedItemsHistory, key]);
+				}
+			}
+
+			if(item.renderAsItem){
+				return item.renderAsItem(item.key, hide)
+			}
+
+			let iconRight = undefined;
+			if(isOption){
+				iconRight = getMyModalActionSheetItemDefaultRightIcon(item.active || false);
+			}
+			if(hasSubItems){
+				iconRight = IconNames.chevron_right_icon
+			}
+
+			let leftIcon = item.iconLeft;
+			let iconLeftCustomRender = undefined
+			if(item.iconLeftCustomRender){
+				iconLeftCustomRender = item.iconLeftCustomRender("transparent", "transparent", "black", "black", hide);
+			}
+
+			return <SettingsRow labelLeft={item.label} accessibilityLabel={item.accessibilityLabel} onPress={() => {
+					onSelect(item.key);
+				}} rightIcon={iconRight} leftIcon={leftIcon} iconLeftCustom={iconLeftCustomRender} active={item.active}  />
+		}
+
+		let historyIsIntoSubItems = selectedItemsHistory.length > 1;
+		let afterContent = undefined;
+		if(historyIsIntoSubItems){
+			afterContent =
+				<SettingsRow labelLeft={translation_navigate_back} accessibilityLabel={translation_navigate_back} onPress={() => {
+					setSelectedItemsHistory(selectedItemsHistory.slice(0, selectedItemsHistory.length - 1));
+				}} leftIcon={IconNames.drawe_menu_go_back_icon} />
+		}
+
+
+
+		finalContent = <MyGridFlatList  data={data} renderItem={(listitem) => {
+			let item = listitem.item.data;
+			return renderItem(item);
+		}} numColumns={1} ListHeaderComponent={preContent} ListFooterComponent={afterContent} />
 	}
 
 

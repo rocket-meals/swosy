@@ -5,7 +5,7 @@ import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useCurrentUser} from '@/states/User';
 import {useIsDemo} from "@/states/SynchedDemo";
 
-async function loadFoodFeedbacksRemoteByProfileId(id: string) {
+export async function loadFoodFeedbacksRemoteByProfileId(id: string) {
 	const resourceRelations = ['labels']
 	const profileFields = resourceRelations.map(x => x+'.*').concat(['*']);
 

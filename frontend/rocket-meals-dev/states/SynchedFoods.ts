@@ -138,7 +138,7 @@ function getDemoFoodsFeedbacks(): FoodsFeedbacks[] {
 	return demoFoodsFeedbacks
 }
 
-function getDemoFoodFeedbackWithLabels(index: number): FoodsFeedbacks {
+export function getDemoFoodFeedbackWithLabels(index: number): FoodsFeedbacks {
 	let feedbackId = "demoFeedbackId" + index
 	let rating = index % 5
 
