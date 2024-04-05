@@ -1,20 +1,16 @@
 import {
+	action,
 	Actions,
+	createStore,
 	EasyPeasyConfig,
 	FilterActionTypes,
 	StateMapper,
 	Store,
-	action,
-	createStore,
 	thunk,
 	useStoreActions,
 	useStoreState
 } from 'easy-peasy';
-import {
-	AfterHookType,
-	BeforeHookType,
-	SynchedVariableInterface
-} from '@/helper/syncState/SynchedVariableInterface';
+import {AfterHookType, BeforeHookType, SynchedVariableInterface} from '@/helper/syncState/SynchedVariableInterface';
 import {NonPersistentStore, NonPersistentStoreValues} from '@/helper/syncState/NonPersistentStore';
 import {PersistentStore, PersistentStoreValues} from '@/helper/syncState/PersistentStore';
 import {StorageHelper} from '@/helper/storage/StorageHelper';
@@ -24,12 +20,17 @@ import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHe
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
-export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setValue: (value: T) => {}] {
+export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setValue: (value: T | ((currentValue: T) => T)) => void] {
 	const value = useStoreState((state) => {
 		// @ts-ignore TODO: fix this for correct type
 		return state?.[storageKey]?.value
 	});
-	const setValue = useStoreActions((actions) => {
+
+	// setValue is a function which either takes a value of Type T or a function which takes the current value and returns a new value of Type T
+	type setValueType = (value: T | ((currentValue: T) => T)) => void;
+
+	// @ts-ignore TODO: fix this for correct type
+	const setValue: setValueType = useStoreActions((actions) => {
 		// @ts-ignore TODO: fix this for correct type
 		return actions?.[storageKey]?.setValue;
 	});
@@ -39,18 +40,30 @@ export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setVal
 	]
 }
 
-export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | null) => Promise<void>, rawValue: any] {
-	const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<any>(storageKey);
+export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | ((currentValue: T) => T)) => void, rawValue: any] {
+	const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<string>(storageKey);
 	let parsedJSON = null;
 	try {
 		parsedJSON = JSON.parse(jsonStateAsString);
 	} catch (e) { // when jsonStateAsString is null or not a valid JSON
 		//console.error("Error parsing JSON", e, jsonStateAsString)
 	}
-	const setValue = async (dict: T | null) => {
-		//console.log("setValue", dict)
-		//console.log("JSON.stringify(dict)", JSON.stringify(dict))
-		setJsonStateAsString(JSON.stringify(dict))
+	// value: ((currentValue: T) => T) | T): void
+	function setValue (pass: (T | ((currentValue: T) => T))){
+		if (typeof pass === 'function') {
+			setJsonStateAsString((currentValue: string) => {
+				let currentValueParsed = null;
+				try {
+					currentValueParsed = JSON.parse(currentValue);
+				} catch (e) {
+					//console.error("Error parsing JSON", e, currentValue)
+				}
+				const newValue = pass(currentValueParsed);
+				return JSON.stringify(newValue);
+			});
+		} else {
+			setJsonStateAsString(JSON.stringify(pass));
+		}
 	}
 	return [
 		parsedJSON,
@@ -250,9 +263,6 @@ export class SyncState {
 			// @ts-ignore
 			actions.setValueSync(payload);
 
-			//console.log("state", state)
-			// @ts-ignore // TODO fix this for correct type
-			state.value = payload;
 			if (afterHook) {
 				await afterHook(storageKey, state, payload);
 			}
@@ -287,11 +297,14 @@ export class SyncState {
 				setValueSync: action((state, payload) => {
 					this.handleActionSync(state, payload);
 				}),
-				setValue: thunk( async (actions, payload) => {
-					//console.log("setValue async", payload)
-					await this.handleAction(actions, storageKey, actions, payload, additionalStoreModel);
+				setValue: thunk(async (actions, payload, { getState }) => {
+					// Check if payload is a function and call it with current state if it is
+					const newValue = typeof payload === 'function' ? await payload(getState().value) : payload;
+
+					// Proceed with the action handling using the resolved newValue
+					await this.handleAction(actions, storageKey, actions, newValue, additionalStoreModel);
 				})
-			}
+			};
 		}
 
 		return createStore(
