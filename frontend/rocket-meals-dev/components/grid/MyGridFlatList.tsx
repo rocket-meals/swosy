@@ -202,6 +202,7 @@ export const MyGridFlatList = <T extends { key: string }>({
 			<FlatList
 				key={flatListKey}
 				horizontal={usedHorizontal}
+				initialNumToRender={1}
 				data={adjustedData}
 				renderItem={renderItemsWithFillUpDummies}
 				numColumns={numColumns}

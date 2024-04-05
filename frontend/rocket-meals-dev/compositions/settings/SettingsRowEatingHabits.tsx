@@ -2,7 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {SettingsRow} from '@/components/settings/SettingsRow';
 import {IconNames} from '@/constants/IconNames';
-import {useShowMyModalMarkingListModal} from "@/compositions/settings/SettingsButtonProfileEatingHabits";
+import {useNavigateToEatingHabits} from "@/compositions/settings/SettingsButtonProfileEatingHabits";
 
 export function useEditProfileEatingHabitsAccessibilityLabel(): string {
 	const translation_title = useTranslation(TranslationKeys.eating_habits)
@@ -17,7 +17,7 @@ export const SettingsRowProfileEatingHabits: FunctionComponent = ({...props}) =>
 
 	const accessibilityLabel = useEditProfileEatingHabitsAccessibilityLabel();
 
-	const onPress = useShowMyModalMarkingListModal();
+	const onPress = useNavigateToEatingHabits();
 
 	return (
 		<>

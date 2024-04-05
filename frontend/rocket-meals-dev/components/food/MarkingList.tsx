@@ -12,19 +12,19 @@ export const MarkingList = ({...props}) => {
 	let usedDict = markingsDict || {}
 	const all_marking_keys = Object.keys(usedDict);
 
-	return <MarkingListSelective markingIds={all_marking_keys} />
+	return <MarkingListSelective markingIds={all_marking_keys} {...props} />
 }
 
-export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({...props}) => {
+export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({markingIds, ...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	type DataItem = { key: string; data: Markings; name: string}
 	const data: DataItem[] = []
-	if (markingsDict && props.markingIds) {
-		for (let i=0; i<props.markingIds.length; i++) {
-			const resource_id = props.markingIds[i];
+	if (markingsDict && markingIds) {
+		for (let i=0; i<markingIds.length; i++) {
+			const resource_id = markingIds[i];
 			const marking = markingsDict[resource_id]
 			if(!!marking){
 				const translated_name = getMarkingName(marking, languageCode);
@@ -49,6 +49,7 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 	}
 	return (
 		<MyGridFlatList
+			{...props}
 			data={data} renderItem={renderResource} amountColumns={1}
 		/>
 	)

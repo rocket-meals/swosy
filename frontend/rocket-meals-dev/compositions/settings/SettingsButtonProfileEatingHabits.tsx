@@ -8,23 +8,12 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {MarkingList} from "@/components/food/MarkingList";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {router} from "expo-router";
 
-export const useShowMyModalMarkingListModal = () => {
-	const translation_title = useTranslation(TranslationKeys.eating_habits)
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
+export const useNavigateToEatingHabits = () => {
 
 	const onPress = () => {
-		let item: MyModalActionSheetItem = {
-			key: "eating_habits",
-			label: translation_title,
-			title: translation_title,
-			accessibilityLabel: translation_title,
-			renderAsContentInsteadItems: () => {
-				return <MarkingList />
-			}
-		}
-
-		setModalConfig(item)
+			router.push('/(app)/settings/eatinghabits/');
 	}
 
 	return onPress;
@@ -37,7 +26,7 @@ export const SettingsButtonProfileEatingHabits: FunctionComponent<AppState> = ({
 	const accessibilityLabel = useEditProfileEatingHabitsAccessibilityLabel();
 	const tooltip = useEditProfileEatingHabitsAccessibilityLabel();
 
-	const onPress = useShowMyModalMarkingListModal();
+	const onPress = useNavigateToEatingHabits();
 
 	return (
 		<>

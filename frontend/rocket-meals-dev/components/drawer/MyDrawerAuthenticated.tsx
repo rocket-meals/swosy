@@ -37,6 +37,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
 	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
+	const translation_price_group = useTranslation(TranslationKeys.price_group)
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -153,7 +154,15 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'eatinghabits/index',
+				routeName: 'settings/price-group/index',
+				label: translation_price_group,
+				title: translation_price_group,
+				icon: IconNames.price_group_icon,
+				showBackButton: true,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/eatinghabits/index',
 				title: "Eating Habits",
 				label: "Eating Habits",
 				showBackButton: true,

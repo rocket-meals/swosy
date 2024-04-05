@@ -129,6 +129,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');
+	static eatinghabits_introduction = createTranslationKey('eatinghabits_introduction', `Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.`);
 	static notification = createTranslationKey('notification', 'Benachrichtigung');
 
 	static support = createTranslationKey('support', 'Support');
