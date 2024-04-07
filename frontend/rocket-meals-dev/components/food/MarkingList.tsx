@@ -50,18 +50,6 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 
 	}
 
-	let renderedList = [];
-	for (let i=0; i<data.length; i++) {
-		const item = data[i];
-		renderedList.push(<MarkingListItem markingId={item.data.id} key={item.data.id} />);
-	}
-
-	return <View style={{
-		width: "100%"
-	}}>
-		{renderedList}
-	</View>
-
 	return (
 		<MyGridFlatList
 			{...props}
