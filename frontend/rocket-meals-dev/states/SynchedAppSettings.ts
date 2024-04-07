@@ -12,8 +12,8 @@ async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	return await collectionHelper.readSingletonItem(query);
 }
 
-export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue: AppSettings, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
+export function useSynchedAppSettings(): [( AppSettings | null | undefined), ((newValue: (currentValue: (AppSettings | null | undefined)) => (AppSettings | null | undefined), timestamp?: (number | undefined)) => void), number | undefined, ((     nowInMs?: number) => Promise<void>)]
+{
 	const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
 	const demo = useIsDemo()
 
@@ -25,7 +25,9 @@ export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue:
 
 	async function updateFromServer(nowInMs?: number) {
 		const resource = await loadAppSettingsFromServer();
-		setResourceOnly(resource, nowInMs);
+		setResourceOnly((currentSettings) => {
+			return resource;
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourceOnly, lastUpdate, updateFromServer]

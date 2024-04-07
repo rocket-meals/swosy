@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
@@ -20,9 +20,9 @@ async function loadBuildingsFromServer(): Promise<Buildings[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefined), ((newValue: Record<string, Buildings>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
+export function useSynchedBuildingsDict(): [( Record<string, Buildings | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, Buildings | null | undefined> | null | undefined)) => Record<string, Buildings | null | undefined>, timestamp?: (number | undefined)) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Buildings>(PersistentStore.buildings);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Buildings>(PersistentStore.buildings);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -33,7 +33,9 @@ export function useSynchedBuildingsDict(): [(Record<string, Buildings> | undefin
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadBuildingsFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {Languages} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
@@ -10,9 +10,8 @@ export async function loadLanguageRemoteDict() {
 	return await collectionHelper.readItems();
 }
 
-export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefined), ((newValue: Record<string, Languages>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Languages>(PersistentStore.languages);
+export function useSynchedLanguagesDict(): [ Record<string, Languages | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, Languages | null | undefined> | null | undefined)) => Record<string, Languages | null | undefined>, timestamp?: (number | undefined)) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Languages>(PersistentStore.languages);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -23,7 +22,9 @@ export function useSynchedLanguagesDict(): [(Record<string, Languages> | undefin
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadLanguageRemoteDict();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'code')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

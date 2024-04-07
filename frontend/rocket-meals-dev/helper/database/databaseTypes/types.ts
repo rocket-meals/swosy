@@ -220,7 +220,7 @@ export type CanteenFoodFeedbackReportRecipients = {
   report_status_log?: string | null;
   report_time_settings: string;
   send_amount_days_before_offer_date?: number | null;
-  send_once_now_for_today?: boolean | null;
+  send_once_now_for_date?: string | null;
   send_report_at_hh_mm?: string | null;
   sort?: number | null;
   status: string;
@@ -893,6 +893,7 @@ export type Profiles = {
   buildings_favorites: any[] | ProfilesBuildingsFavorites[];
   buildings_last_visited: any[] | ProfilesBuildingsLastVisited[];
   canteen?: string | Canteens | null;
+  course_timetable?: unknown | null;
   credit_balance?: number | null;
   date_created?: string | null;
   date_privacy_policy_accepted?: string | null;
@@ -903,6 +904,7 @@ export type Profiles = {
   language?: string | Languages | null;
   markings: any[] | ProfilesMarkings[];
   nickname?: string | null;
+  notify_on_free_housing_rooms?: boolean | null;
   price_group?: string | null;
   sort?: number | null;
   status?: string | null;

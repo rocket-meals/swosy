@@ -38,7 +38,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 			return JSON.parse(authDataRaw)
 		}
 	}, async (newAuthData) => {
-		setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
+		setAuthData((currentAuthData) => {
+			return newAuthData
+		}) // update the hook but its set asyncronous, so we have to update the storage directly
 		await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
 	})
 
@@ -57,7 +59,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 				}
 			}
 
-			setServerInfo(remote_server_info, nowInMs);
+			setServerInfo((currentServerInfo) => {
+				return remote_server_info
+			}, nowInMs);
 		})();
 	}, []);
 

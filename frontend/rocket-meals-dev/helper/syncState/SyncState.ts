@@ -17,6 +17,7 @@ import {StorageHelper} from '@/helper/storage/StorageHelper';
 import {PersistentSecureStore, PersistentSecureStoreValues} from '@/helper/syncState/PersistentSecureStore';
 import {SecureStorageHelper} from '@/helper/storage/SecureStorageHelper';
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
+import {useCallback} from "react";
 
 export type SyncStateKeys = PersistentStoreValues | NonPersistentStoreValues | PersistentSecureStoreValues;
 
@@ -40,7 +41,7 @@ export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setVal
 	]
 }
 
-export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, setValue: (value: T | ((currentValue: T) => T)) => void, rawValue: any] {
+export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null | undefined, setValue: (callback: ((currentValue: T |null | undefined) => T |null | undefined)) => void, rawValue: any] {
 	const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<string>(storageKey);
 	let parsedJSON = null;
 	try {
@@ -48,23 +49,25 @@ export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null, se
 	} catch (e) { // when jsonStateAsString is null or not a valid JSON
 		//console.error("Error parsing JSON", e, jsonStateAsString)
 	}
-	// value: ((currentValue: T) => T) | T): void
-	function setValue (pass: (T | ((currentValue: T) => T))){
-		if (typeof pass === 'function') {
+
+	const setValue = useCallback(
+		(callback: ((currentValue: T |null | undefined) => T |null | undefined)) => {
 			setJsonStateAsString((currentValue: string) => {
-				let currentValueParsed = null;
+				let currentValueParsed: T | null | undefined = null;
 				try {
 					currentValueParsed = JSON.parse(currentValue);
 				} catch (e) {
-					//console.error("Error parsing JSON", e, currentValue)
+					// console.error("Error parsing JSON", e, currentValue)
 				}
-				const newValue = pass(currentValueParsed);
+				const newValue = callback(currentValueParsed);
 				return JSON.stringify(newValue);
 			});
-		} else {
-			setJsonStateAsString(JSON.stringify(pass));
-		}
-	}
+		},
+		// Dependencies for useCallback
+		[setJsonStateAsString]
+	);
+
+
 	return [
 		parsedJSON,
 		setValue,

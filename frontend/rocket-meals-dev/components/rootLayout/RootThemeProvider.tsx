@@ -66,7 +66,12 @@ const RootContent = (props: RootThemeProviderProps) => {
 			>
 				<Text onLayout={(event) => {
 					const {width, height} = event.nativeEvent.layout;
-					setTextDimensions({width, height});
+					setTextDimensions((currentDimensions) => {
+						return {
+							width: width,
+							height: height
+						}
+					})
 				}}>{"M"}</Text>
 			</View>
 			<RootFabHolder />

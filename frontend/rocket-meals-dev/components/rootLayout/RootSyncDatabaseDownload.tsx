@@ -151,13 +151,19 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			const remoteProfile = await loadProfileRemoteByUser(currentUser)
 			console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
 			if (remoteProfile) {
-				setProfile(remoteProfile, nowInMs);
+				setProfile((currentProfile) => {
+					return remoteProfile;
+				}, nowInMs);
 			}
 		} else {
 			if (!!profile && JSON.stringify(profile) !== JSON.stringify({})) {
-				setProfile(profile, nowInMs)
+				setProfile((currentProfile) => {
+					return profile;
+				}, nowInMs)
 			} else {
-				setProfile(getEmptyProfile(), nowInMs)
+				setProfile((currentProfile) => {
+					return getEmptyProfile();
+				}, nowInMs)
 			}
 		}
 	}

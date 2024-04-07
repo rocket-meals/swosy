@@ -80,7 +80,9 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			iconLeft: icon,
 			accessibilityLabel: label,
 			onSelect: async (key: string, hide: () => void) => {
-				setSelectedSortType(sortType);
+				setSelectedSortType((currentSortType) => {
+					return sortType
+				});
 				hide();
 			}
 		})

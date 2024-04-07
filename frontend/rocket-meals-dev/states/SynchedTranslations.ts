@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {AppTranslations} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 async function loadTranslationsFromServer(): Promise<AppTranslations[]> {
@@ -16,17 +16,18 @@ async function loadTranslationsFromServer(): Promise<AppTranslations[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedAppTranslationsDict(): [(Record<string, AppTranslations> | undefined), ((newValue: Record<string, AppTranslations>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<AppTranslations>(PersistentStore.app_translations);
+export function useSynchedAppTranslationsDict(): [( Record<string, AppTranslations | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, AppTranslations | null | undefined> | null | undefined)) => Record<string, AppTranslations | null | undefined>, timestamp?: (number | undefined)) => void), (number | undefined), (nowInMs?: number) => Promise<void>]
+{
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<AppTranslations>(PersistentStore.app_translations);
 	const lastUpdate = resourcesRaw?.lastUpdate;
-	const usedResources = resourcesOnly;
 
 	async function updateFromServer(nowInMs?: number) {
 		const resourceList = await loadTranslationsFromServer()
 		const resourceDict = CollectionHelper.convertListToDict(resourceList, 'id')
-		setResourcesOnly(resourceDict, nowInMs);
+		setResourcesOnly((currentResouce => {
+			return resourceDict
+		}), nowInMs);
 	}
 
-	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	return [resourcesOnly, setResourcesOnly, lastUpdate, updateFromServer]
 }

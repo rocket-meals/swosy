@@ -5,7 +5,7 @@ import {
 	FoodsFeedbacksFoodsFeedbacksLabels,
 	FoodsMarkings
 } from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {getDemoMarkings} from "@/states/SynchedMarkings";
@@ -13,7 +13,7 @@ import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 
 export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestampe?: number) => void), (number | undefined)] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Foods>(PersistentStore.foods);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;

@@ -1,13 +1,25 @@
 import {Text, View} from '@/components/Themed';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {MyButton} from "@/components/buttons/MyButton";
-import {useCallback, useState} from "react";
-import {useSyncState} from "@/helper/syncState/SyncState";
-import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
+import {useCallback, useMemo, useState} from "react";
+import {action, createStore, StoreProvider, thunk, useStoreActions, useStoreState} from "easy-peasy";
+import {TouchableOpacity} from "react-native";
 
-export default function PlaygroundTestScreen() {
 
-	const [options, setOptions] = useSyncState(NonPersistentStore.test);
+const store = createStore({
+	options: {},
+	updateOptions: action((state, payload) => {
+		state.options = payload;
+	}),
+	setOptions: thunk(async (actions, payload, { getState }) => {
+		let currentState = getState().options;
+		const newValue = await payload(currentState)
+		actions.updateOptions(newValue);
+	}),
+});
+
+function useFlipOptions() {
+	const options = useStoreState((state) => state.options);
+	const setOptions = useStoreActions((actions) => actions.setOptions);
 
 	const flipOptions = useCallback((option: string) => {
 		setOptions((currentOptions) => {
@@ -17,8 +29,66 @@ export default function PlaygroundTestScreen() {
 		})
 	}, [])
 
+	return {options, flipOptions}
+}
+
+function useFlipOptionsWithKey(optionKey: string) {
+	const {options, flipOptions} = useFlipOptions();
+
+	const optionValue = options?.[optionKey];
+	const specificFlipOption = useCallback(() => flipOptions(optionKey), [optionKey])
+
+	const memorizedReturn = useMemo(() => {
+		return {optionValue, specificFlipOption}
+	}, [optionValue])
+
+	return memorizedReturn
+}
+
+// memoize this component
+function MyButtonRowWithOptionKey ({optionKey}: {optionKey: string}) {
+	const {optionValue, specificFlipOption} = useFlipOptionsWithKey(optionKey);
+
+	console.log(`Rendering MyButtonRowWithOptionKey ${optionKey}`)
+
+	return (
+		<View>
+			<Text>{optionKey+": "+optionValue}</Text>
+			<TouchableOpacity style={{
+				backgroundColor: 'orange',
+				padding: 10,
+				margin: 10,
+			}} onPress={specificFlipOption}>
+				<Text>Flip {optionKey}</Text>
+			</TouchableOpacity>
+		</View>
+	)
+
+	/**
+	return useMemo(() => {
+		console.log(`Rendering MyButtonRowWithOptionKey ${optionKey}`)
+
+		return (
+			<View>
+				<Text>{optionKey+": "+optionValue}</Text>
+				<TouchableOpacity style={{
+					backgroundColor: 'orange',
+					padding: 10,
+					margin: 10,
+				}} onPress={specificFlipOption}>
+					<Text>Flip {optionKey}</Text>
+				</TouchableOpacity>
+			</View>
+		)
+	}, [optionValue])
+		*/
+}
+
+export default function PlaygroundTestScreen() {
+
 	return (
 		<MySafeAreaView>
+			<StoreProvider store={store}>
 			<View style={{
 				flex: 1,
 				height: '100%',
@@ -26,11 +96,10 @@ export default function PlaygroundTestScreen() {
 			}}
 			>
 				<Text>Options:</Text>
-				<Text>{`A: ${options?.a}`}</Text>
-				<Text>{`B: ${options?.b}`}</Text>
-				<MyButton accessibilityLabel={"A"} text={"A"} onPress={() => flipOptions("a")} />
-				<MyButton accessibilityLabel={"B"} text={"B"} onPress={() => flipOptions("b")} />
+				<MyButtonRowWithOptionKey optionKey={'option1'} />
+				<MyButtonRowWithOptionKey optionKey={'option2'} />
 			</View>
+			</StoreProvider>
 		</MySafeAreaView>
 	);
 }

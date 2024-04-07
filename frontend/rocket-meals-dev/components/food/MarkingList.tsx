@@ -5,6 +5,8 @@ import {Markings} from "@/helper/database/databaseTypes/types";
 import {ListRenderItemInfo} from "react-native";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {View} from "@/components/Themed";
 
 export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
@@ -47,6 +49,19 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 		);
 
 	}
+
+	let renderedList = [];
+	for (let i=0; i<data.length; i++) {
+		const item = data[i];
+		renderedList.push(<MarkingListItem markingId={item.data.id} key={item.data.id} />);
+	}
+
+	return <View style={{
+		width: "100%"
+	}}>
+		{renderedList}
+	</View>
+
 	return (
 		<MyGridFlatList
 			{...props}

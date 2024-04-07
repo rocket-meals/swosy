@@ -65,7 +65,9 @@ export default function CourseTimetableScreen() {
 						console.log(usedEvent)
 						// update the event in the timetableEvents with the id
 						timetableEvents[usedEvent.id] = usedEvent;
-						await setTimetableEvents(timetableEvents)
+						setTimetableEvents((usedCourseTimetable) => {
+							return timetableEvents
+						})
 						handlePressOnEvent(usedEvent);
 					}}
 					handleEditTemplate={async (usedEvent: BaseCourseTimetableEvent, hide: () => void) => {

@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {FoodsFeedbacks, FoodsFeedbacksFoodsFeedbacksLabels} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useCurrentUser} from '@/states/User';
 import {useIsDemo} from "@/states/SynchedDemo";
@@ -112,10 +112,9 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 
 }
 
-export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [(Record<string, FoodsFeedbacks | undefined>), ((newValue: Record<string, FoodsFeedbacks>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
+export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, FoodsFeedbacks | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, FoodsFeedbacks | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacks | null | undefined>, timestamp?: (number | undefined)) => void, number | null | undefined, (nowInMs?: number) => Promise<void>] {
 	const [currentUser, setUserWithCache] = useCurrentUser();
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<FoodsFeedbacks | undefined>(PersistentStore.ownFoodFeedbacks);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<FoodsFeedbacks | undefined>(PersistentStore.ownFoodFeedbacks);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly || {};
@@ -131,14 +130,20 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [(Record<string, Foods
 				const resourceAsList = await loadFoodFeedbacksRemoteByProfileId(usersProfileId);
 				const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'food')
 				console.log("useSynchedOwnFoodIdToFoodFeedbacksDict: updateFromServer: loadFoodFeedbacksRemoteByProfileId: done: now setResourcesOnly ", performance.now()/1000)
-				setResourcesOnly(resourceAsDict, nowInMs);
+				setResourcesOnly((currentValue) => {
+					return resourceAsDict
+				}, nowInMs)
 			} else {
 				console.log('User without profile')
-				setResourcesOnly({}, nowInMs)
+				setResourcesOnly((currentValue) => {
+					return {}
+				}, nowInMs)
 			}
 		} else {
 			console.log('No user')
-			setResourcesOnly({}, nowInMs)
+			setResourcesOnly((currentValue) => {
+				return {}
+			}, nowInMs)
 		}
 
 	}
@@ -146,7 +151,7 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [(Record<string, Foods
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>, (foodFeedbackLabelIds: string[] | null | undefined) => Promise<void>] {
+export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>, (foodFeedbackLabelIds: string[] | null | undefined) => Promise<void>] {
 	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	let usedResources = foodFeedbacksDict
 	const [currentUser, setUserWithCache] = useCurrentUser();

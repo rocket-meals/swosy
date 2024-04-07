@@ -1,6 +1,6 @@
 import { CollectionsDatesLastUpdate} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 
@@ -17,7 +17,7 @@ async function loadCollectionsDatesLastUpdateFromServer(): Promise<CollectionsDa
 
 export function useSynchedCollectionsDatesLastUpdateDict(): [(Record<string, CollectionsDatesLastUpdate> | undefined), ((newValue: Record<string, CollectionsDatesLastUpdate>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
 ] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<CollectionsDatesLastUpdate>(PersistentStore.markings);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<CollectionsDatesLastUpdate>(PersistentStore.markings);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	const usedResources = resourcesOnly;

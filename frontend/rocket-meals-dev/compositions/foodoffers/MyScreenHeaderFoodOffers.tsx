@@ -45,7 +45,9 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	useEffect(() => {
 		if(tempSelectedDate !== selectedDate){
 			const timeout = setTimeout(() => {
-				setSelectedDate(tempSelectedDate);
+				setSelectedDate((currentSelectedDate) => {
+					return tempSelectedDate;
+				});
 			}, 500);
 			return () => clearTimeout(timeout);
 		}
@@ -108,8 +110,10 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					<SimpleDatePicker currentDate={selectedDate}
 									  onSelectDate={(date) => {
 										  setTempSelectedDate(date);
-										  setSelectedDate(date);
-									  } }
+										  setSelectedDate((currentSelectedDate) => {
+											  return date;
+										  });
+									  }}
 					>
 					</SimpleDatePicker>
 					{renderSwitchDate(true)}

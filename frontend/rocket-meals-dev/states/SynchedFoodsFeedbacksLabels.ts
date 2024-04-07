@@ -1,11 +1,9 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments, Buildings, FoodsFeedbacksLabels} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {FoodsFeedbacksLabels} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
-import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
-import {LocationType} from "@/helper/geo/LocationType";
 
 async function loadResourcesFromServer(): Promise<FoodsFeedbacksLabels[]> {
 	const collectionHelper = new CollectionHelper<FoodsFeedbacksLabels>('foods_feedbacks_labels');
@@ -20,9 +18,8 @@ async function loadResourcesFromServer(): Promise<FoodsFeedbacksLabels[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedFoodsFeedbacksLabelsDict(): [(Record<string, FoodsFeedbacksLabels> | undefined), ((newValue: Record<string, FoodsFeedbacksLabels>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<FoodsFeedbacksLabels>(PersistentStore.foodsFeedbacksLabels);
+export function useSynchedFoodsFeedbacksLabelsDict(): [( Record<string, FoodsFeedbacksLabels | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, FoodsFeedbacksLabels | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacksLabels | null | undefined>, timestamp?: (number | undefined)) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<FoodsFeedbacksLabels>(PersistentStore.foodsFeedbacksLabels);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -33,7 +30,9 @@ export function useSynchedFoodsFeedbacksLabelsDict(): [(Record<string, FoodsFeed
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadResourcesFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

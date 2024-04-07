@@ -3,10 +3,6 @@ import React from 'react';
 import {Text} from '@/components/Themed'
 import {isUserLoggedIn} from '@/states/User';
 import {MyDrawerAuthenticated} from '@/components/drawer/MyDrawerAuthenticated';
-import {
-	useIsProfileSetupComplete
-} from '@/states/SynchedProfile';
-import {MyDrawerSetup} from '@/components/drawer/MyDrawerSetup';
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.

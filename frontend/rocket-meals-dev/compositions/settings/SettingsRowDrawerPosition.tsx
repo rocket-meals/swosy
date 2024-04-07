@@ -68,8 +68,10 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
-				const nextColorSchemeKey: DrawerConfigPosition = key as DrawerConfigPosition
-				setSavedOptionKey(nextColorSchemeKey)
+				const nextValue: DrawerConfigPosition = key as DrawerConfigPosition
+				setSavedOptionKey((currentValue) => {
+					return nextValue;
+				})
 				hide()
 			}
 		})

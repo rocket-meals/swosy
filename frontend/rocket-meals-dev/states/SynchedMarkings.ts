@@ -1,6 +1,6 @@
 import {Markings, News} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
@@ -61,9 +61,8 @@ export function getDemoMarkings(): Record<string, Markings> {
 	return resourceDict
 }
 
-export function useSynchedMarkingsDict(): [(Record<string, Markings> | undefined), ((newValue: Record<string, Markings>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Markings>(PersistentStore.markings);
+export function useSynchedMarkingsDict(): [( Record<string, Markings | null | undefined> | null | undefined), (callback: (currentValue: (Record<string, Markings | null | undefined> | null | undefined)) => Record<string, Markings | null | undefined>, timestamp?: (number | undefined)) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Markings>(PersistentStore.markings);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -74,7 +73,9 @@ export function useSynchedMarkingsDict(): [(Record<string, Markings> | undefined
 	async function updateFromServer(nowInMs?: number) {
 		const markingsList = await loadMarkingsFromServer();
 		const markingsDict = CollectionHelper.convertListToDict(markingsList, 'id')
-		setResourcesOnly(markingsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return markingsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

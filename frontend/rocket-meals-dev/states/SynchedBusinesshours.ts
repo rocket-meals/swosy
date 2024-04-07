@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {Businesshours, Canteens} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup} from '@/states/SynchedUtiliztations';
@@ -19,9 +19,8 @@ async function loadBusinesshoursFromServer(): Promise<Businesshours[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours> | undefined), ((newValue: Record<string, Businesshours>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Businesshours>(PersistentStore.businesshours);
+export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours | null | undefined> | null | undefined), (callback: (currentValue: Record<string, Businesshours | null | undefined> | null | undefined) => Record<string, Businesshours | null | undefined>, timestamp?: number) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Businesshours>(PersistentStore.businesshours);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -33,7 +32,9 @@ export function useSynchedBusinesshoursDict(): [(Record<string, Businesshours> |
 		console.log("await loadBusinesshoursFromServer()");
 		const businesshoursList = await loadBusinesshoursFromServer()
 		const businesshoursDict = CollectionHelper.convertListToDict(businesshoursList, 'id')
-		setResourcesOnly(businesshoursDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return businesshoursDict;
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

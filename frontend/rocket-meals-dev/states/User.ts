@@ -24,8 +24,12 @@ export function useLogoutCallbackWithoutStorageClear(): () => void {
 	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
 	return async () => {
-		setAuthData(null)
-		setCurrentUser(null)
+		setAuthData((currentValue) => {
+			return null
+		});
+		setCurrentUser((currentValue) => {
+			return null
+		});
 	}
 }
 
@@ -34,18 +38,22 @@ export function useAccessToken(): string | null | undefined {
 	return authData?.access_token
 }
 
-export function useCachedUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {
+export function useCachedUserRaw(): [CachedUserInformation | null | undefined, (callback: (currentValue: (CachedUserInformation | null | undefined)) => (CachedUserInformation | null | undefined)) => void] {
 	const [cachedUserRaw, setCachedUser] = useSyncState<CachedUserInformation>(PersistentStore.cachedUser)
 	return [cachedUserRaw, setCachedUser]
 }
 
-export function useCurrentUserRaw(): [CachedUserInformation | null, (newValue: CachedUserInformation) => void] {
+export function useCurrentUserRaw(): [CachedUserInformation | null | undefined, (newValue: CachedUserInformation) => void] {
 	const [cachedUser, setCachedUser] = useCachedUserRaw()
 	const [currentUser, setCurrentUser] = useSyncState<CachedUserInformation>(NonPersistentStore.currentUser)
 	// TODO: Update cached user
 	const setUserWithCache = (newValue: any) => {
-		setCurrentUser(newValue)
-		setCachedUser(newValue)
+		setCurrentUser((currentValue) => {
+			return newValue
+		})
+		setCachedUser((currentValue) => {
+			return newValue
+		})
 	}
 
 	return [currentUser, setUserWithCache]

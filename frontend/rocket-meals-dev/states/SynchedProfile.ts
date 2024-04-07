@@ -19,6 +19,9 @@ import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslati
 import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
+import {useCallback, useMemo} from "react";
+import {useSyncState} from "@/helper/syncState/SyncState";
+import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 
 async function loadProfileRemoteByProfileId(id: string) {
 	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
@@ -66,49 +69,50 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
 	return await loadProfileRemoteByProfileId(id as string);
 }
 
-export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)>), (number | undefined)] {
+export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
 	const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
-	const lastUpdate = resourceRaw?.lastUpdate;
-	let usedSetResource: (newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)> = async (newValue, timestamp) => {
-		return setResource(newValue, timestamp);
-	};
-	if (isServerOnline && !isCurrentUserAnonymous) {
-		usedSetResource = async (newValue: Partial<Profiles>, timestamp?: number) => {
-			console.log('useSynchedProfile setProfile online');
-			const profile_id = newValue?.id || resourceOnly?.id;
-			console.log('profile_id: ', profile_id)
-			if (profile_id) {
-				try {
+	const usedSetResource = useCallback(
+		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => {
+			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
+			if (isServerOnline && !isCurrentUserAnonymous) {
+				setResource((currentValue) => {
+					const newValue = callback(currentValue);
+					const profile_id = newValue?.id || currentValue?.id;
 
-					// Sync with remote
-					//const remoteAnswer = await updateProfileRemote(profile_id, newValue);
-					//console.log('remoteAnswer: ', remoteAnswer)
+					if (profile_id && newValue) {
+						console.log('profile_id: ', profile_id);
 
-					updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
-						console.log('remoteAnswer: ', remoteAnswer)
-					}).catch((err) => {
-						console.log(err)
-					})
+						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+							console.log('remoteAnswer: ', remoteAnswer);
+						}).catch((err) => {
+							console.log(err);
+						});
 
-					setResource(newValue, timestamp);
-					return true;
-				} catch (err) {
-					console.log(err)
-					return false;
-				}
+						return newValue;
+					} else {
+						console.error('Profile ID not found');
+						return newValue;
+					}
+				}, timestamp);
 			} else {
-				setResource(newValue, timestamp);
-				return true;
+				return setResource(callback, timestamp);
 			}
-		}
-	}
+		},
+		// Dependencies for useCallback
+		[isServerOnline, isCurrentUserAnonymous, setResource]
+	);
+
+
 	let usedResource = resourceOnly;
 	if (!usedResource) {
 		usedResource = {}
 	}
+
+	const lastUpdate = resourceRaw?.lastUpdate;
+
 	return [usedResource, usedSetResource, lastUpdate]
 }
 
@@ -119,10 +123,6 @@ export enum PriceGroups {
 }
 export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => void)] {
 	const [profile, setProfile] = useSynchedProfile();
-	const setPriceGroup = (priceGroup: string) => {
-		profile.price_group = priceGroup;
-		return setProfile(profile);
-	}
 
 	let usedPriceGroup = PriceGroups.Student;
 	const profilePriceGroup = profile?.price_group;
@@ -133,16 +133,30 @@ export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => voi
 		}
 	}
 
+	const setPriceGroup = useCallback((priceGroup: string) => {
+		setProfile((currentProfile) => {
+			if(currentProfile){
+				currentProfile.price_group = priceGroup;
+			}
+			return currentProfile;
+		})
+	}, [setProfile]);
+
+
 
 	return [usedPriceGroup, setPriceGroup];
 }
 
-export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => Promise<boolean | void>)] {
+export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => boolean | void)] {
 	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
-	async function setNickname(nextValue: string | undefined) {
-		console.log('SettingsRowProfileNickname onSave', nextValue)
-		return await setProfile({...profile, nickname: nextValue})
-	}
+	const setNickname = useCallback((nickname: string | undefined) => {
+		setProfile((currentValue) => {
+			if(currentValue){
+				currentValue.nickname = nickname;
+			}
+			return currentValue;
+		});
+	}, [setProfile]);
 	const nickname = profile?.nickname
 	return [nickname, setNickname]
 }
@@ -159,10 +173,16 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
 	const [profile, setProfile] = useSynchedProfile();
-	const setLanguage = (language: string) => {
-		profile.language = language;
-		return setProfile(profile);
-	}
+	const setLanguage = useCallback((language: string) => {
+			setProfile((currentValue) => {
+				if(currentValue){
+					currentValue.language = language;
+				}
+				return currentValue;
+			});
+		},
+		[setProfile]
+	);
 	let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
 	const profileLanguage = profile?.language;
 	if (profileLanguage) {
@@ -186,7 +206,7 @@ export function useProfileLocaleForJsDate(): string {
 	return locale;
 }
 
-export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens | null) => void)] {
+export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newValue: Canteens | null) => void)] {
 	const [profile, setProfile] = useSynchedProfile();
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
@@ -196,88 +216,111 @@ export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: C
 		canteen = canteenDict[canteen_id];
 	}
 
-	const setCanteen = (canteen: Canteens | null) => {
-		if(canteen) {
-			profile.canteen = canteen.id;
-		} else {
-			profile.canteen = null;
-		}
-		return setProfile(profile);
-	}
+	const setCanteen = useCallback((newValue: Canteens | null) => {
+		setProfile((currentValue) => {
+			if(currentValue){
+				if(newValue === null) {
+					currentValue.canteen = null;
+					return currentValue;
+				} else {
+					currentValue.canteen = newValue.id;
+					return currentValue;
+				}
+			}
+		});
+	}, [setProfile]);
+
 	return [canteen, setCanteen];
 }
 
 export function useAccountBalance(): [number | null | undefined, ((newValue: number | null | undefined) => void)] {
 	const [profile, setProfile] = useSynchedProfile();
-	const setAccountBalance = (newValue: number | null | undefined) => {
-		profile.credit_balance = newValue;
-		return setProfile(profile);
-	}
+	const setAccountBalance = useCallback((newValue: number | null | undefined) => {
+		setProfile((currentValue) => {
+			if (currentValue) {
+				currentValue.credit_balance = newValue;
+			}
+			return currentValue;
+		});
+	}, [setProfile]);
 	return [profile?.credit_balance, setAccountBalance];
 }
 
-export function useIsProfileSetupComplete(): boolean {
-	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen(); // We do not need a canteen to be set
-	// we should check if the user is first time user and has not set any data
+export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, dislikes: boolean) => void, (marking_id: string) => void] {
+	//const [profile, setProfile] = useSynchedProfile();
+	const [profile, setProfile] = useSyncState<Profiles>(PersistentStore.test);
 
-	const requiredSetVariables: any[] = []
-	for (let i=0; i<requiredSetVariables.length; i++) {
-		const requiredVariable = requiredSetVariables[i];
-		if (!requiredVariable) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking: Markings, dislikes: boolean) => void, (marking: Markings) => void] {
-	const [profile, setProfile] = useSynchedProfile();
 	const profileMarkingsList: ProfilesMarkings[] = profile?.markings || [];
-	const profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+
+	let markingsDictDep = "";
 	for (let i=0; i<profileMarkingsList.length; i++) {
 		const profilesMarking = profileMarkingsList[i];
-		const markings_key = profilesMarking.markings_id;
-		if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
-			profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
-		}
+		markingsDictDep += ""+profilesMarking.dislikes + profilesMarking.markings_id;
 	}
 
-	const privateSetMarkings = async (marking: Markings, dislikes: boolean, remove: boolean) => {
+	const useProfilesMarkingsDict = useCallback(() => {
+		const profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+		for (let i=0; i<profileMarkingsList.length; i++) {
+			const profilesMarking = profileMarkingsList[i];
+			const markings_key = profilesMarking.markings_id;
+			markingsDictDep += ""+profilesMarking.dislikes + profilesMarking.markings_id;
+			if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
+				profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
+			}
+		}
+		return profilesMarkingsDict;
+	}, [markingsDictDep]);
+
+	const profilesMarkingsDict: Record<string, ProfilesMarkings> = useProfilesMarkingsDict();
+
+	const privateSetMarkings = useCallback((marking_id: string, dislikes: boolean, remove: boolean) => {
 		//const markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
-		const markingsDictCopy = profilesMarkingsDict;
+		setProfile((currentProfile) => {
+			if(currentProfile){
+				const newProfileMarking: Partial<ProfilesMarkings> = {
+					markings_id: marking_id,
+					profiles_id: currentProfile?.id,
+					dislikes: dislikes
+				};
+				let currentProfileMarkings = currentProfile?.markings || [];
+				currentProfileMarkings.push(newProfileMarking as ProfilesMarkings);
 
-		const newProfileMarking: Partial<ProfilesMarkings> = {
-			markings_id: marking.id,
-			profiles_id: profile?.id,
-			dislikes: dislikes
-		};
-		markingsDictCopy[marking.id] = newProfileMarking;
+				if (remove) {
+					currentProfileMarkings = currentProfileMarkings.filter((x) => x.markings_id !== marking_id);
+				}
 
-		if (remove) {
-			delete markingsDictCopy[marking.id];
-		}
+				currentProfile.markings = currentProfileMarkings;
+			}
+			return currentProfile;
+		});
+	}, [setProfile]);
 
-		const markingsIds = Object.keys(markingsDictCopy);
-		const newMarkings: ProfilesMarkings[] = [];
-		for (const markingId of markingsIds) {
-			newMarkings.push(markingsDictCopy[markingId]);
-		}
+	const setProfileMarking = useCallback((marking_id: string, dislikes: boolean) => {
+		privateSetMarkings(marking_id, dislikes, false);
+	}, [privateSetMarkings]);
 
-		profile.markings = newMarkings;
-		setProfile(profile);
-	}
-
-	const setProfileMarking = (marking: Markings, dislikes: boolean) => {
-		privateSetMarkings(marking, dislikes, false);
-	}
-
-	const removeProfileMarking = (marking: Markings) => {
-		privateSetMarkings(marking, false, true);
-	}
+	const removeProfileMarking = useCallback((marking_id: string) => {
+		privateSetMarkings(marking_id, false, true);
+	}, [privateSetMarkings]);
 
 
 	return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
+}
+
+export function useSynchedProfileMarking(marking_id: string): [boolean | null | undefined, (dislikes: boolean) => void, () => void] {
+	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+
+	const setMarking = useCallback((dislikes: boolean) => {
+		setProfileMarking(marking_id, dislikes);
+	}, [marking_id]);
+
+	const removeMarking = useCallback(() => {
+		removeProfileMarking(marking_id);
+	}, [marking_id]);
+
+	const dislikes = profilesMarkingsDict[marking_id]?.dislikes;
+
+	return [dislikes, setMarking, removeMarking];
 }
 
 export function getEmptyProfile(): Partial<Profiles> {
