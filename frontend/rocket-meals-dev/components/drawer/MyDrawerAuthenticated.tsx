@@ -16,9 +16,10 @@ import {
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
+import {useIsDevelop} from "@/states/Develop";
 
 export const MyDrawerAuthenticated = (props: any) => {
-	const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
+	const develop = useIsDevelop();
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();
@@ -143,7 +144,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: 'Components',
 				title: 'Components',
 				icon: 'drawing-box',
-				visibleInDrawer: isDevelopMode
+				visibleInDrawer: develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foods/[food]/index',
