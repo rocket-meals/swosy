@@ -41,37 +41,50 @@ export function useSyncStateRaw<T>(storageKey: SyncStateKeys): [value: T, setVal
 	]
 }
 
-export function useSyncState<T>(storageKey: SyncStateKeys): [value: T | null | undefined, setValue: (callback: ((currentValue: T |null | undefined) => T |null | undefined)) => void, rawValue: any] {
-	const [jsonStateAsString, setJsonStateAsString] = useSyncStateRaw<string>(storageKey);
-	let parsedJSON = null;
-	try {
-		parsedJSON = JSON.parse(jsonStateAsString);
-	} catch (e) { // when jsonStateAsString is null or not a valid JSON
-		//console.error("Error parsing JSON", e, jsonStateAsString)
+export function useSyncStateSetter<T>(storageKey: SyncStateKeys): (value: T | ((currentValue: T) => T)) => void {
+	const setValue: (value: T | ((currentValue: T) => T)) => void = useStoreActions((actions) => {
+		// @ts-ignore TODO: fix this for correct type
+		return actions?.[storageKey]?.setValue;
+	});
+	return setValue;
+}
+
+export function useSyncStateValue<T, K>(storageKey: SyncStateKeys, selectorMethod?: (value: T |null | undefined) => K |null | undefined): K |null | undefined {
+	/**
+	const equalityFunction = (prev: K |null | undefined, next: K |null | undefined) => {
+		// make a deep comparison of the previous and next value using JSON.stringify
+		return JSON.stringify(prev) === JSON.stringify(next);
 	}
+		*/
+	const equalityFunction = undefined;
 
-	const setValue = useCallback(
-		(callback: ((currentValue: T |null | undefined) => T |null | undefined)) => {
-			setJsonStateAsString((currentValue: string) => {
-				let currentValueParsed: T | null | undefined = null;
-				try {
-					currentValueParsed = JSON.parse(currentValue);
-				} catch (e) {
-					// console.error("Error parsing JSON", e, currentValue)
-				}
-				const newValue = callback(currentValueParsed);
-				return JSON.stringify(newValue);
-			});
-		},
-		// Dependencies for useCallback
-		[setJsonStateAsString]
-	);
+	const value: K |null | undefined = useStoreState((state) => {
+		// @ts-ignore
+		let value: T |null | undefined = state?.[storageKey]?.value as T |null | undefined
+		if (!selectorMethod) {
+			return value as K |null | undefined;
+		} else {
+			return selectorMethod(value);
+		}
+	}, equalityFunction)
 
+	return value;
+}
+
+/**
+ * This function reads from the global store. In order to get the desired value please provide a selectorMethod which takes the value of the store and returns the desired value.
+ * This helps to avoid unnecessary re-renders.
+ * If no selectorMethod is provided the raw value from the store is returned.
+ * @param storageKey
+ * @param selectorMethod
+ */
+export function useSyncState<T, K>(storageKey: SyncStateKeys, selectorMethod?: (value: T |null | undefined) => K |null | undefined): [K |null | undefined,	setValue: (callback: ((currentValue: T |null | undefined) => T |null | undefined)) => void] {
+	const value = useSyncStateValue(storageKey, selectorMethod);
+	const setValue = useSyncStateSetter(storageKey);
 
 	return [
-		parsedJSON,
-		setValue,
-		jsonStateAsString
+		value,
+		setValue
 	]
 }
 
@@ -87,11 +100,10 @@ export function useAllSyncStates(): {[key: string]: {value: any, setValue: any, 
 
 	for (let i=0; i<allKeys.length; i++) {
 		const key = allKeys[i];
-		const [value, setValue, rawValue] = useSyncState(key);
+		const [value, setValue] = useSyncState(key);
 		allStates[key] = {
 			value: value,
 			setValue: setValue,
-			rawValue: rawValue
 		}
 	}
 
@@ -181,13 +193,14 @@ export class SyncState {
 	private async registerSyncStateVariablesPersistentStore() {
 		const additionalKeys: string[] = await this.getKeysOfClass(PersistentStore);
 
-		const beforeHook = async (storageKey: string, state: any, payload: any) => {
+		const beforeHook = async (storageKey: string, state: any, payload: Object) => {
 			//console.log("beforeHook persistent", storageKey, payload)
 
-			await StorageHelper.setItem(storageKey, payload);
-			const value = await StorageHelper.getItem(storageKey);
-			if (value !== payload) {
-				console.error('Error setting item', storageKey, payload, value);
+			let payloadString = JSON.stringify(payload);
+			await StorageHelper.setItem(storageKey, payloadString);
+			const valueAsString = await StorageHelper.getItem(storageKey);
+			if (valueAsString !== payloadString) {
+				console.error('Error setting item', storageKey, payload, valueAsString);
 				return true; // cancel action
 			}
 			return false; // do not cancel action
@@ -205,13 +218,14 @@ export class SyncState {
 	private async registerSyncStateVariablesPersistentSecure() {
 		const additionalKeys: string[] = await this.getKeysOfClass(PersistentSecureStore);
 
-		const beforeHook = async (storageKey: string, state: any, payload: any) => {
+		const beforeHook = async (storageKey: string, state: any, payload: Object) => {
 			//console.log("beforeHook persistent secure", storageKey, payload)
 
-			await SecureStorageHelper.setItem(storageKey, payload);
-			const value = await SecureStorageHelper.getItem(storageKey);
-			if (value !== payload) {
-				console.error('Error setting item', storageKey, payload, value);
+			const payloadString = JSON.stringify(payload);
+			await SecureStorageHelper.setItem(storageKey, payloadString);
+			const valueAsString = await SecureStorageHelper.getItem(storageKey);
+			if (valueAsString !== payloadString) {
+				console.error('Error setting item', storageKey, payload, valueAsString);
 				return true; // cancel action
 			}
 			return false; // do not cancel action
@@ -219,7 +233,15 @@ export class SyncState {
 
 		for (let i=0; i<additionalKeys.length; i++) {
 			const key = additionalKeys[i];
-			const value = await SecureStorageHelper.getItem(key);
+			const valueString = await SecureStorageHelper.getItem(key);
+			let value = null;
+			try{
+				if (valueString) {
+					value = JSON.parse(valueString);
+				}
+			} catch (e) {
+				console.error('Error parsing value', key, valueString, e);
+			}
 			this.registerSyncState(key, value, beforeHook, undefined, undefined);
 		}
 	}
@@ -254,7 +276,7 @@ export class SyncState {
 		}
 	}
 
-	private async handleAction(actions:  Actions<{}>, storageKey: string, state: StateMapper<FilterActionTypes<{}>>, payload: any, aditionalStoreModel: SynchedVariableInterface) {
+	private async handleAction(actions:  Actions<{}>, storageKey: string, state: StateMapper<FilterActionTypes<{}>>, payload: Object, aditionalStoreModel: SynchedVariableInterface) {
 		const beforeHook = aditionalStoreModel.beforeHook;
 		const afterHook = aditionalStoreModel.afterHook;
 		let cancel = false;
@@ -272,7 +294,7 @@ export class SyncState {
 		}
 	}
 
-	private handleActionSync(state: StateMapper<FilterActionTypes<{}>>, payload: any) {
+	private handleActionSync(state: StateMapper<FilterActionTypes<{}>>, payload: Object) {
 		// @ts-ignore // TODO fix this for correct type
 		state.value = payload;
 	}

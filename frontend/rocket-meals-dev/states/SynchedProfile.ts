@@ -3,14 +3,18 @@ import {
 	Canteens,
 	Devices,
 	DirectusUsers,
-	FoodsFeedbacks,
+	FoodsFeedbacks, Languages,
 	Markings,
 	Profiles,
 	ProfilesBuildingsFavorites,
 	ProfilesBuildingsLastVisited,
 	ProfilesMarkings
 } from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
+import {
+	NewValueRawSingleType,
+	useSynchedResourceSingleRaw, useSynchedResourceSingleRawValue,
+	useSynchResourceSingleRawSetter
+} from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsCurrentUserAnonymous} from '@/states/User';
@@ -20,7 +24,7 @@ import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {useCallback, useMemo} from "react";
-import {useSyncState} from "@/helper/syncState/SyncState";
+import {useSyncState, useSyncStateSetter, useSyncStateValue} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 
 async function loadProfileRemoteByProfileId(id: string) {
@@ -69,8 +73,9 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
 	return await loadProfileRemoteByProfileId(id as string);
 }
 
-export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
-	const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
+	const [setResource, setResourceRaw] = useSynchResourceSingleRawSetter<Partial<Profiles>>(PersistentStore.profile);
+
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
@@ -85,11 +90,13 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 					if (profile_id && newValue) {
 						console.log('profile_id: ', profile_id);
 
+						
 						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
 							console.log('remoteAnswer: ', remoteAnswer);
 						}).catch((err) => {
 							console.log(err);
 						});
+
 
 						return newValue;
 					} else {
@@ -105,6 +112,14 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 		[isServerOnline, isCurrentUserAnonymous, setResource]
 	);
 
+	return [usedSetResource, setResourceRaw]
+}
+
+export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
+	//const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+	const [usedSetResource, setResourceRaw] = useSynchedProfileSetter();
+	const resourceRaw = useSynchedResourceSingleRawValue<Profiles, NewValueRawSingleType<Profiles>>(PersistentStore.profile)
+	const resourceOnly = resourceRaw?.data
 
 	let usedResource = resourceOnly;
 	if (!usedResource) {
@@ -122,10 +137,14 @@ export enum PriceGroups {
     Guest = 'guest'
 }
 export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const profilePriceGroup = useSynchedResourceSingleRawValue<Profiles, (string | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.price_group
+	});
 
 	let usedPriceGroup = PriceGroups.Student;
-	const profilePriceGroup = profile?.price_group;
+	//const profilePriceGroup = profile?.price_group;
 	if (profilePriceGroup) {
 		// check if profilePriceGroup is a valid PriceGroup
 		if (profilePriceGroup === PriceGroups.Student || profilePriceGroup === PriceGroups.Employee || profilePriceGroup === PriceGroups.Guest) {
@@ -148,7 +167,13 @@ export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => voi
 }
 
 export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => boolean | void)] {
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+	//const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+	const [setProfile] = useSynchedProfileSetter();
+	const nickname = useSynchedResourceSingleRawValue<Profiles, (string | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.nickname
+	});
+
+
 	const setNickname = useCallback((nickname: string | undefined) => {
 		setProfile((currentValue) => {
 			if(currentValue){
@@ -157,7 +182,7 @@ export function useNickname(): [string | null | undefined, ((newValue: string | 
 			return currentValue;
 		});
 	}, [setProfile]);
-	const nickname = profile?.nickname
+	//const nickname = profile?.nickname
 	return [nickname, setNickname]
 }
 
@@ -172,7 +197,13 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 }
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const profileLanguage = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.language
+	});
+
+
 	const setLanguage = useCallback((language: string) => {
 			setProfile((currentValue) => {
 				if(currentValue){
@@ -184,7 +215,7 @@ export function useProfileLanguageCode(): [string, ((newValue: string) => void)]
 		[setProfile]
 	);
 	let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
-	const profileLanguage = profile?.language;
+	//const profileLanguage = profile?.language;
 	if (profileLanguage) {
 		if (typeof profileLanguage !== 'string') {
 			usedLanguage = profileLanguage.code
@@ -207,10 +238,15 @@ export function useProfileLocaleForJsDate(): string {
 }
 
 export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newValue: Canteens | null) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const canteen_id = useSynchedResourceSingleRawValue<Profiles, (string | Canteens | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.canteen
+	});
+
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
-	const canteen_id = profile?.canteen as string;
+	//const canteen_id = profile?.canteen as string;
 	let canteen = undefined
 	if (canteenDict && canteen_id) {
 		canteen = canteenDict[canteen_id];
@@ -234,7 +270,13 @@ export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newV
 }
 
 export function useAccountBalance(): [number | null | undefined, ((newValue: number | null | undefined) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const credit_balance = useSynchedResourceSingleRawValue<Profiles, (number | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.credit_balance
+	});
+
+
 	const setAccountBalance = useCallback((newValue: number | null | undefined) => {
 		setProfile((currentValue) => {
 			if (currentValue) {
@@ -243,14 +285,22 @@ export function useAccountBalance(): [number | null | undefined, ((newValue: num
 			return currentValue;
 		});
 	}, [setProfile]);
-	return [profile?.credit_balance, setAccountBalance];
+	//const credit_balance = profile?.credit_balance;
+
+	return [credit_balance, setAccountBalance];
 }
 
 export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, dislikes: boolean) => void, (marking_id: string) => void] {
-	//const [profile, setProfile] = useSynchedProfile();
-	const [profile, setProfile] = useSyncState<Profiles>(PersistentStore.test);
+	//const markingsRaw = useSyncStateValue<Profiles, ProfilesMarkings[]>(PersistentStore.profile, (storedProfile) => {
+	//	return storedProfile?.markings;
+	//});
+	//const setProfile = useSyncStateSetter<Profiles>(PersistentStore.profile);
+	const [setProfile] = useSynchedProfileSetter();
+	const markingsRaw = useSynchedResourceSingleRawValue<Profiles, (ProfilesMarkings[] | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.markings;
+	});
 
-	const profileMarkingsList: ProfilesMarkings[] = profile?.markings || [];
+	const profileMarkingsList: ProfilesMarkings[] = markingsRaw || [];
 
 	let markingsDictDep = "";
 	for (let i=0; i<profileMarkingsList.length; i++) {

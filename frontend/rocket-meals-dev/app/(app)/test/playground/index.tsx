@@ -33,9 +33,23 @@ function useFlipOptions() {
 }
 
 function useFlipOptionsWithKey(optionKey: string) {
-	const {options, flipOptions} = useFlipOptions();
+	// Böse
+	//const options = useStoreState((state) => state.options);
+	//const optionValue = options?.[optionKey];
 
-	const optionValue = options?.[optionKey];
+	// Gut
+	const optionValue = useStoreState((state) => state.options?.[optionKey]);
+
+	const setOptions = useStoreActions((actions) => actions.setOptions);
+
+	const flipOptions = useCallback((option: string) => {
+		setOptions((currentOptions) => {
+			let newOptions = currentOptions ? {...currentOptions} : {};
+			newOptions[option] = !newOptions[option];
+			return newOptions;
+		})
+	}, [])
+
 	const specificFlipOption = useCallback(() => flipOptions(optionKey), [optionKey])
 
 	const memorizedReturn = useMemo(() => {

@@ -8,9 +8,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {loadFoodFeedbacksRemoteByProfileId} from "@/states/SynchedFoodFeedbacks";
 import {getDemoFoodFeedbackWithLabels} from "@/states/SynchedFoods";
-import {useSynchedProfile} from "@/states/SynchedProfile";
 import {loadMarkingsFromServer} from "@/states/SynchedMarkings";
 
 export const MyTestItem = ({id, usePersistentState}: {id: string, usePersistentState: boolean}) => {
