@@ -8,8 +8,8 @@ const DarkBlueTheme: Theme = {
 	dark: true,
 	colors: {
 		primary: 'rgb(10, 132, 255)',
-		background: '#0f172a',
-		card: 'rgb(18, 18, 18)',
+		background: '#1C1B22',
+		card: '#2B2A33',
 		text: 'rgb(229, 229, 231)',
 		border: 'rgb(39, 39, 41)',
 		notification: 'rgb(255, 69, 58)',
