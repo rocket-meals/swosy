@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {View, Text} from '@/components/Themed';
+import {View, Text, useViewBackgroundColor} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
@@ -20,6 +20,7 @@ import {MyDrawerSafeAreaView} from '@/components/drawer/MyDrawerSafeAreaView';
 import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
 import {ProjectBackgroundImage} from '@/components/project/ProjectForegroundImage';
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -176,11 +177,12 @@ type DrawerContentWrapperProps = {
 function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 	const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
 	const gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
+	const viewBackgroundColor = useViewBackgroundColor();
 
 	const renderedDrawerItemsWithSeparator = getMyDrawerItemsCenter(props); // Get the list of drawer items to render.
 
 	return (
-		<View style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+		<View style={{width: '100%', height: '100%', overflow: 'hidden', backgroundColor: viewBackgroundColor}}>
 			<MyDrawerSafeAreaView>
 				{renderDrawerContentTop(props)}
 				<View style={{
@@ -190,11 +192,11 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 					overflow: 'hidden',
 				}}
 				>
-					<ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
+					<MyScrollView>
 						<View style={{width: '100%', height: '100%'}}>
 							{renderedDrawerItemsWithSeparator}
 						</View>
-					</ScrollViewWithGradient>
+					</MyScrollView>
 				</View>
 				{getMyDrawerItemsBottom(props)}
 			</MyDrawerSafeAreaView>
