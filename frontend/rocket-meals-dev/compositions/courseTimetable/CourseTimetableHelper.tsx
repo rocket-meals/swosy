@@ -107,16 +107,17 @@ function usePersonalCourseTimetableTime(start: boolean): [string, ((value: strin
 		time = timetableSettings.end_time;
 	}
 	const setTime = async (value: string | null) => {
-		let usedValue: string | undefined = undefined
-		if (value) {
-			usedValue = value
-		}
-		if (start) {
-			timetableSettings.start_time = usedValue;
-		} else {
-			timetableSettings.end_time = usedValue;
-		}
-		return await setTimetableSettings(timetableSettings);
+		return await setTimetableSettings((currentValue) => {
+			let usedValue: string | undefined = undefined
+			if (value) {
+				usedValue = value
+			}
+			if (start) {
+				currentValue.start_time = usedValue;
+			} else {
+				currentValue.end_time = usedValue;
+			}
+		});
 	}
 	return [time, setTime];
 }
@@ -128,13 +129,15 @@ export function usePersonalCourseTimetableAmountDaysOnScreen(): [number, (value:
 		md: 5.1,
 		lg: 5.1,
 	});
-	const amountDaysOnScreen = timetableSettings.amount_days_to_show || defaultValue;
-	const setAmountDaysOnScreen = async (value: number | null) => {
-		timetableSettings.amount_days_to_show = undefined
-		if (value) {
-			timetableSettings.amount_days_to_show = value;
-		}
-		return await setTimetableSettings(timetableSettings);
+	const amountDaysOnScreen = timetableSettings?.amount_days_to_show || defaultValue;
+	const setAmountDaysOnScreen = (value: number | null) => {
+		setTimetableSettings((currentValue) => {
+			currentValue.amount_days_to_show = undefined
+			if (value) {
+				currentValue.amount_days_to_show = value;
+			}
+			return currentValue;
+		});
 	}
 	return [amountDaysOnScreen, setAmountDaysOnScreen];
 }
@@ -143,9 +146,13 @@ export function usePersonalCourseTimetableTitleIntelligent(): [boolean, (value: 
 	const [timetableSettings, setTimetableSettings] = useSynchedCourseTimetableSettingsRaw();
 	const defaultValue = true;
 	const titleIntelligent = timetableSettings.intelligent_title || defaultValue;
-	const setTitleIntelligent = async (value: boolean) => {
-		timetableSettings.intelligent_title = value;
-		return await setTimetableSettings(timetableSettings);
+	const setTitleIntelligent = (value: boolean) => {
+		setTimetableSettings((currentValue) => {
+			if(currentValue){
+				currentValue.intelligent_title = value;
+			}
+			return currentValue;
+		});
 	}
 	return [titleIntelligent, setTitleIntelligent];
 }
