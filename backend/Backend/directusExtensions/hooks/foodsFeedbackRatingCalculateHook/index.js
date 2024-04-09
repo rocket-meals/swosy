@@ -44,14 +44,14 @@ export default async function ({filter, action, init, schedule}, {
 
         let food_feedbacks = [];
         try{
-            await foodfeedbacksService.readByQuery({
+            food_feedbacks = await foodfeedbacksService.readByQuery({
                 filter: {
                     food: food_id
                 },
                 limit: -1
             })
         } catch (e){
-            // When no feedbacks are found for the filter, we get an error: 
+            // When no feedbacks are found for the filter, we get an error:
         }
 
         let sum = 0;
