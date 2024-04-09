@@ -32,20 +32,28 @@ export async function loadFoodFeedbacksRemoteByProfileId(id: string) {
 	return await resourceCollectionHelper.readItems(query);
 }
 
-async function updateFoodFeedbackRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacks | undefined>, rating: number | null | undefined, comment: string | null | undefined, notify: boolean | null | undefined, foodFeedbackLabelIds: string[] | null | undefined) {
+async function updateFoodFeedbackRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacks | undefined>, rating: number | null | undefined, comment: string | null | undefined, notify: boolean | null | undefined, foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) {
 	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>('foods_feedbacks')
 
-	let newFoodFeedback = {
-		food: foodId,
-		profile: profile_id,
-		// @ts-ignore
-		id: undefined,
-	} as FoodsFeedbacks;
+	let searchedFoodFeedback: FoodsFeedbacks | undefined = foodIdToFoodFeedbackDict[foodId];
 
-	let existingFoodFeedback = foodIdToFoodFeedbackDict[foodId] || newFoodFeedback;
+	let searchedId = searchedFoodFeedback?.id;
+	let isNewFeedback = !searchedId
 
-	let existingId = existingFoodFeedback?.id;
-	let isNewFeedback = !existingId
+	let existingFoodFeedback = searchedFoodFeedback;
+	if(isNewFeedback || !searchedFoodFeedback) {
+		let newFoodFeedback: FoodsFeedbacks = {
+			food: foodId,
+			profile: profile_id,
+			// @ts-ignore
+			id: undefined,
+		}
+		let answer: FoodsFeedbacks = await resourceCollectionHelper.createItem(newFoodFeedback) as FoodsFeedbacks;
+		console.log('updateFoodFeedbackRemote: createItem: answer', answer)
+		existingFoodFeedback = answer;
+	}
+
+	console.log('updateFoodFeedbackRemote: existingFoodFeedback', existingFoodFeedback)
 
 	if(rating !== undefined) {
 		existingFoodFeedback.rating = rating;
@@ -71,9 +79,10 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 			// Add new labels
 			for(let newLabelId of newLabelIds) {
 				nextLabels.push({
-					foods_feedbacks_labels_id: newLabelId,
-					foods_feedbacks_id:existingFoodFeedback.id,
-					// @ts-ignore
+					foods_feedbacks_labels_id: newLabelId.foods_feedbacks_labels_id,
+					foods_feedbacks_id: existingFoodFeedback.id,
+					dislikes: newLabelId.dislikes,
+					// @ts-ignore the id will be set by the server
 					id: undefined
 				})
 			}
@@ -85,6 +94,8 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 					nextLabels.push(existingLabel);
 				}
 			}
+
+			console.log('updateFoodFeedbackRemote: nextLabels', nextLabels)
 
 			existingFoodFeedback.labels = nextLabels
 		}
@@ -103,11 +114,7 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 			await resourceCollectionHelper.deleteItem(existingFoodFeedback.id);
 		}
 	} else {
-		if(isNewFeedback) {
-			await resourceCollectionHelper.createItem(existingFoodFeedback);
-		} else {
-			await resourceCollectionHelper.updateItem(existingId, existingFoodFeedback);
-		}
+		await resourceCollectionHelper.updateItem(existingFoodFeedback.id, existingFoodFeedback);
 	}
 
 }
@@ -151,7 +158,7 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, Foods
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>, (foodFeedbackLabelIds: string[] | null | undefined) => Promise<void>] {
+export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>, (foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) => Promise<void>] {
 	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	let usedResources = foodFeedbacksDict
 	const [currentUser, setUserWithCache] = useCurrentUser();
@@ -174,7 +181,7 @@ export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | nu
 		await updateFromServer()
 	}
 
-	const setOwnLabels = async (foodFeedbackLabelIds: string[] | null | undefined) => {
+	const setOwnLabels = async (foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) => {
 		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, undefined, undefined, foodFeedbackLabelIds)
 		await updateFromServer()
 	}

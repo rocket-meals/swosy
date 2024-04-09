@@ -80,14 +80,32 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 }
 
 
-export function getDictFoodFeedbackLabelsIdToAmount(feedbacks: FoodsFeedbacks[]): Record<string, number> {
-	let feedbacksLabelsIds = getFoodFeedbackLabelsIdsFromFeedbacksWithLabels(feedbacks)
-	let feedbacksLabelsIdsCounted: Record<string, number> = {}
-	for (let feedbacksLabelsId of feedbacksLabelsIds) {
-		if (feedbacksLabelsIdsCounted[feedbacksLabelsId] === undefined) {
-			feedbacksLabelsIdsCounted[feedbacksLabelsId] = 1
-		} else {
-			feedbacksLabelsIdsCounted[feedbacksLabelsId] += 1
+export function getDictFoodFeedbackLabelsIdToAmount(feedbacks: FoodsFeedbacks[] | null | undefined): Record<string, {
+	amount_likes: number,
+	amount_dislikes: number,
+} | undefined> {
+	let feedbacksLabelsIdsCounted: Record<string, {
+		amount_likes: number,
+		amount_dislikes: number,
+	}> = {}
+	if(feedbacks) {
+		for (let feedback of feedbacks) {
+			for(let label of feedback.labels){
+				let feedbacksLabelsId = label.foods_feedbacks_labels_id
+				let dislikes: boolean | undefined | null = label.dislikes;
+				let counted = feedbacksLabelsIdsCounted[feedbacksLabelsId] || {
+					amount_likes: 0,
+					amount_dislikes: 0,
+				};
+				if(dislikes === true){
+					counted.amount_dislikes++;
+				} else if(dislikes === false){
+					counted.amount_likes++;
+				} else {
+					// skip if dislikes is undefined or null
+				}
+				feedbacksLabelsIdsCounted[feedbacksLabelsId] = counted;
+			}
 		}
 	}
 	return feedbacksLabelsIdsCounted

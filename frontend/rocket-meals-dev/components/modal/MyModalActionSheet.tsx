@@ -142,7 +142,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 		finalContent = <MyGridFlatList  data={data} renderItem={(listitem) => {
 			let item = listitem.item.data;
 			return renderItem(item);
-		}} numColumns={1} preItem={preContent} postItem={afterContent} />
+		}} amountColumns={1} preItem={preContent} postItem={afterContent} />
 	}
 
 

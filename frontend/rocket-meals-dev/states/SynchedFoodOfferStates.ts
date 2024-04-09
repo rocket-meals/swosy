@@ -57,6 +57,27 @@ async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers
 	return await collectionHelper.readItem(foodoffer_id, query);
 }
 
+async function loadFoodFromServer(food_id: string): Promise<Foods> {
+	const collectionHelper = new CollectionHelper<Foods>('foods');
+
+	const food_fields = ['*','translations.*', 'markings.*'];
+
+	const query = {
+		fields: food_fields
+	}
+
+	return await collectionHelper.readItem(food_id, query);
+}
+
+export async function loadFood(isDemo: boolean, food_id: string): Promise<Foods> {
+	if(isDemo){
+		const demoFoods = getDemoFoods();
+		return demoFoods[food_id];
+	}
+
+	return await loadFoodFromServer(food_id);
+}
+
 export async function loadFoodOffer(isDemo: boolean, foodoffer_id: string): Promise<Foodoffers> {
 	if(isDemo){
 		let foodOffers = getDemoFoodOffersForDate(new Date());

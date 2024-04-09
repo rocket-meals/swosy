@@ -61,6 +61,7 @@ export class TranslationKeys {
 	static save_comment = createTranslationKey('save_comment', 'Kommentar speichern');
 
 	static average_rating = createTranslationKey('average_rating', 'Durchschnittsbewertung');
+	static amount_ratings = createTranslationKey('amount_ratings', 'Anzahl Bewertungen');
 
 	static accountbalance = createTranslationKey('accountbalance', 'Guthaben');
 	static sort = createTranslationKey('sort', 'Sortieren');
@@ -116,7 +117,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
-	static feedback_labels = createTranslationKey('feedback_labels', 'Feedback Labels');
+	static feedback_labels = createTranslationKey('feedback_labels', 'Rückmeldungen');
 
 	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
 	static distance_based_canteen_selection_or_if_asked_on_real_location = createTranslationKey('distance_based_canteen_selection_or_if_asked_on_real_location', 'Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.');
@@ -244,6 +245,9 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static closed_after = createTranslationKey('closed_after', 'Geschlossen ab');
 
 	static food_details = createTranslationKey('food_details', 'Gericht Details');
+
+	static i_like_that = createTranslationKey('i_like_that', 'Gefällt mir');
+	static i_dislike_that = createTranslationKey('i_dislike_that', 'Gefällt mir nicht');
 
 	static show_login_with_username_and_password = createTranslationKey('show_login_with_username_and_password', 'Mitarbeiter-Login');
 	static email = createTranslationKey('email', 'E-Mail');

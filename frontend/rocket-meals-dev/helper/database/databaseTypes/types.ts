@@ -246,8 +246,8 @@ export type Canteens = {
 };
 
 export type CanteensBusinesshours = {
-  businesshours_id?: string | Businesshours | null;
-  canteens_id?: string | Canteens | null;
+  businesshours_id: string | Businesshours;
+  canteens_id: string | Canteens;
   id: number;
 };
 
@@ -304,9 +304,9 @@ export type ChatroomsMessages = {
 };
 
 export type ChatroomsProfiles = {
-  chatrooms_id?: string | Chatrooms | null;
+  chatrooms_id: string | Chatrooms;
   id: number;
-  profiles_id?: string | Profiles | null;
+  profiles_id: string | Profiles;
 };
 
 export type CollectionsDatesLastUpdate = {
@@ -338,7 +338,7 @@ export type Devices = {
   is_tablet?: boolean | null;
   is_web?: boolean | null;
   platform?: string | null;
-  profile?: string | Profiles | null;
+  profile: string | Profiles;
   pushTokenObj?: unknown | null;
   sort?: number | null;
   status?: string | null;
@@ -712,7 +712,7 @@ export type Foodoffers = {
   date_updated?: string | null;
   fat_g?: number | null;
   fiber_g?: number | null;
-  food?: string | Foods | null;
+  food: string | Foods;
   id: string;
   markings: any[] | FoodoffersMarkings[];
   price_employee?: number | null;
@@ -729,9 +729,9 @@ export type Foodoffers = {
 };
 
 export type FoodoffersMarkings = {
-  foodoffers_id?: string | Foodoffers | null;
+  foodoffers_id: string | Foodoffers;
   id: number;
-  markings_id?: string | Markings | null;
+  markings_id: string | Markings;
 };
 
 export type Foods = {
@@ -768,12 +768,12 @@ export type FoodsFeedbacks = {
   comment?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  food?: string | Foods | null;
+  food: string | Foods;
   foodoffer?: string | Foodoffers | null;
   id: string;
   labels: any[] | FoodsFeedbacksFoodsFeedbacksLabels[];
   notify?: boolean | null;
-  profile?: string | Profiles | null;
+  profile: string | Profiles;
   rating?: number | null;
   sort?: number | null;
   status: string;
@@ -782,8 +782,9 @@ export type FoodsFeedbacks = {
 };
 
 export type FoodsFeedbacksFoodsFeedbacksLabels = {
-  foods_feedbacks_id?: string | FoodsFeedbacks | null;
-  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  dislikes?: boolean | null;
+  foods_feedbacks_id: string | FoodsFeedbacks;
+  foods_feedbacks_labels_id: string | FoodsFeedbacksLabels;
   id: number;
 };
 
@@ -797,6 +798,7 @@ export type FoodsFeedbacksLabels = {
   translations: any[] | FoodsFeedbacksLabelsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  visible?: boolean | null;
 };
 
 export type FoodsFeedbacksLabelsTranslations = {
@@ -884,6 +886,33 @@ export type NewsTranslations = {
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   news_id?: string | News | null;
+  title?: string | null;
+  translation_settings: string;
+};
+
+export type PopupEvents = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
+  date_updated?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  send_notification?: boolean | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | PopupEventsTranslations[];
+};
+
+export type PopupEventsTranslations = {
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  popup_events_id?: string | PopupEvents | null;
   title?: string | null;
   translation_settings: string;
 };
@@ -1095,6 +1124,8 @@ export type CustomDirectusTypes = {
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];
+  popup_events: PopupEvents[];
+  popup_events_translations: PopupEventsTranslations[];
   profiles: Profiles[];
   profiles_buildings_favorites: ProfilesBuildingsFavorites[];
   profiles_buildings_last_visited: ProfilesBuildingsLastVisited[];
