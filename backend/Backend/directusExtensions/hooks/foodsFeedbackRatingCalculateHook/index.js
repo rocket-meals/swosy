@@ -42,12 +42,17 @@ export default async function ({filter, action, init, schedule}, {
     async function recalculateFoodRating(food_id){
         //console.log("recalculateFoodRating: food_id: "+food_id);
 
-        let food_feedbacks = await foodfeedbacksService.readByQuery({
-            filter: {
-                food: food_id
-            },
-            limit: -1
-        })
+        let food_feedbacks = [];
+        try{
+            await foodfeedbacksService.readByQuery({
+                filter: {
+                    food: food_id
+                },
+                limit: -1
+            })
+        } catch (e){
+            // When no feedbacks are found for the filter, we get an error: 
+        }
 
         let sum = 0;
         let rating_amount = 0;
