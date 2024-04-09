@@ -7,7 +7,8 @@ import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {AuthenticationData} from '@directus/sdk';
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
-import {useIsDebug} from "@/states/Debug"; // Optional if you want to use default theme
+import {useIsDebug} from "@/states/Debug";
+import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet"; // Optional if you want to use default theme
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -79,10 +80,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 	if (serverInfo.status === 'offline') {
 		return (
-			<LoadingScreen>
-				<Text>{'Server is offline and no data is cached'}</Text>
-				{debugInformation}
-			</LoadingScreen>
+			<PleaseConnectFirstTimeWithInternet />
 		)
 	}
 
