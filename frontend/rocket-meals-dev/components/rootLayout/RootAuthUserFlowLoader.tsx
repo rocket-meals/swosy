@@ -71,10 +71,6 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 					console.log('Lets check what the cached user is')
 					console.log('cachedUser', cachedUserRaw)
 					let usedCachedUserRaw = cachedUserRaw;
-					if(typeof cachedUserRaw === 'string') {
-						usedCachedUserRaw = JSON.parse(cachedUserRaw)
-					}
-
 					const isUserAnonymous = getIsCachedUserAnonymous(usedCachedUserRaw);
 					//console.log("isUserAnonymous", isUserAnonymous)
 					if (isUserAnonymous) { // if we are anonymous, we can set the user to the cached user
