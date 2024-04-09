@@ -128,7 +128,12 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 					isResourceSynched = false
 				}
 			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
+				console.log("server is cached");
+				console.log("synchedResourceLastUpdate: ",synchedResourceLastUpdate);
+				console.log("nowInMs: ",nowInMs);
+				console.log("synchedResource: ",synchedResource);
 				isResourceSynched = !!synchedResource
+				console.log("isResourceSynched: ",isResourceSynched);
 			}
 			if (!isResourceSynched) {
 				return false;

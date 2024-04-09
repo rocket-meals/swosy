@@ -208,7 +208,15 @@ export class SyncState {
 
 		for (let i=0; i<additionalKeys.length; i++) {
 			const key = additionalKeys[i];
-			const value = await StorageHelper.getItem(key);
+			const valueString = await StorageHelper.getItem(key);
+			let value = null;
+			try{
+				if (valueString) {
+					value = JSON.parse(valueString);
+				}
+			} catch (e) {
+				console.error('Error parsing value', key, valueString, e);
+			}
 			this.registerSyncState(key, value, beforeHook, undefined, undefined);
 		}
 	}

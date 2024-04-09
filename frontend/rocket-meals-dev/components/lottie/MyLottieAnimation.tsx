@@ -23,7 +23,7 @@ export type MyLottieAnimationProps = {
 }
 
 export const DEFAULT_COLOR_TO_BE_REPLACED = '#FF00FF';
-export const DEFAULT_COLOR_TO_REPLACE_WITH = '#EE581F';
+export const DEFAULT_COLOR_TO_REPLACE_WITH = '#D14610';
 
 /**
  * A component that displays a Lottie animation, with support for dynamic source fetching,

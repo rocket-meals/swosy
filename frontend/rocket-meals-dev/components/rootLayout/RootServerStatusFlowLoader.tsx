@@ -53,10 +53,12 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 			console.log('ServerInfoRaw', remote_server_info)
 
 			if (remote_server_info.status === 'offline') {
-				//console.log("Server is offline at fetching remote")
-				if (serverInfo) {
-					//console.log("Server is offline at fetching remote, but we have local data")
-					remote_server_info = serverInfo;
+				console.log("Server is offline at fetching remote")
+				let cachedServerInfo = serverInfo
+				console.log('cachedServerInfo', cachedServerInfo)
+				if (cachedServerInfo) {
+					console.log("Server is offline at fetching remote, but we have local data")
+					remote_server_info = cachedServerInfo;
 					remote_server_info.status = 'cached'
 				}
 			}
