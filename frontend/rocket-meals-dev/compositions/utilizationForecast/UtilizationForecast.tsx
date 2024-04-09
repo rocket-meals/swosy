@@ -78,7 +78,7 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 	}
 
 	function renderDebug() {
-		if(isDebug || true) {
+		if(isDebug) {
 			return <View style={{
 				width: '100%',
 			}}>

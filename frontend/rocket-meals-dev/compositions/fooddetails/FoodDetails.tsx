@@ -431,7 +431,7 @@ export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
 
 	let details = [];
 
-	if(foods_ratings_amount_display){
+	if(foods_ratings_amount_display && ratingAmount !== null && ratingAmount !== undefined){
 		let borderRadiusRight = foods_ratings_average_display ? 0 : undefined
 
 		details.push(
@@ -439,7 +439,7 @@ export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
 		)
 	}
 
-	if(foods_ratings_average_display){
+	if(foods_ratings_average_display && ratingAverage !== null && ratingAverage !== undefined){
 		let borderRadiusLeft = foods_ratings_amount_display ? 0 : undefined
 
 		details.push(

@@ -187,6 +187,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static previous = createTranslationKey('previous', 'Zurück');
 
 	static businesshours = createTranslationKey('businesshours', 'Geschäftszeiten');
+	static foodservicehours = createTranslationKey('foodservicehours', 'Essenszeiten');
+
 	static until = createTranslationKey('until', "bis");
 
 	static day = createTranslationKey('day', 'Tag');

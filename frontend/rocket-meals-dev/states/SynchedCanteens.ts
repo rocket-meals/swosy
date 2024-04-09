@@ -10,7 +10,7 @@ import {getDemoBuildings} from "@/states/SynchedBuildings";
 async function loadCanteensFromServer(): Promise<Canteens[]> {
 	const collectionHelper = new CollectionHelper<Canteens>('canteens');
 
-	const fields = ['*', 'utilization_group.*', "businesshours.*"];
+	const fields = ['*', 'utilization_group.*', "foodservice_hours.*"];
 
 	const query = {
 		limit: -1,
@@ -68,12 +68,11 @@ function getDemoCanteens(): Record<string, Canteens> {
 	return resources
 }
 
-
 /**
  * Returns a dictionary of canteen businesshours
  * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
  */
-export function useSynchedCanteensBusinesshours(): Record<string, Businesshours[] | undefined>
+export function useSynchedCanteensFoodServicehours(): Record<string, Businesshours[] | undefined>
  {
 	 const isDemo = useIsDemo()
 	 const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
@@ -85,8 +84,8 @@ export function useSynchedCanteensBusinesshours(): Record<string, Businesshours[
 	 for (const canteenId in canteensDict) {
 		 const canteen_id_as_string: string = canteenId
 		 const canteen = canteensDict[canteenId]
-		 if (canteen.businesshours) {
-			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.businesshours as CanteensBusinesshours[]
+		 if (canteen?.foodservice_hours) {
+			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.foodservice_hours as CanteensBusinesshours[]
 			 let businesshours: Businesshours[] = []
 			 if(isDemo) {
 				 let demoKeys = Object.keys(demoBusinesshoursDict)

@@ -10,48 +10,49 @@ import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 interface AppState {
 
 }
-export const PleaseConnectFirstTimeWithInternet: FunctionComponent<AppState> = ({ ...props}) => {
+export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({ ...props}) => {
 	const [language, setLanguage] = useProfileLanguageCode()
 
-	const defaultText = 'Please connect first time with internet'
+	const defaultText = 'The server is offline. Please try again later.'
 	let useText = defaultText
 
 	switch (language) {
-		case DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN: useText = 'Bitte verbinden Sie sich das erste Mal mit dem Internet';
-		case DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH: useText = 'Please connect first time with internet';
+		case DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN: useText = 'Der Server ist offline. Bitte versuchen Sie es später erneut.'; break;
+		case DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH: useText = 'The server is offline. Please try again later.'; break;
 	}
 
 	const languageCode = language.toLowerCase()
-	// At this point the app is not connected to the internet
-	// therefore we do not have any translations available or downloaded
+
+	// create translations for the following languages: de, en, fr, it, es, pt, nl, pl, ru, tr, zh, ja, ko, ar
+
 	if (languageCode.startsWith('de')) {
-		useText = 'Bitte verbinden Sie sich das erste Mal mit dem Internet'
+		useText = 'Der Server ist offline. Bitte versuchen Sie es später erneut.'
 	} else if (languageCode.startsWith('en')) {
-		useText = 'Please connect first time with internet'
+		useText = 'The server is offline. Please try again later.'
 	} else if (languageCode.startsWith('fr')) {
-		useText = 'Veuillez vous connecter la première fois avec Internet'
+		useText = 'Le serveur est hors ligne. Veuillez réessayer plus tard.'
 	} else if (languageCode.startsWith('it')) {
-		useText = 'Si prega di connettersi la prima volta con Internet'
+		useText = 'Il server è offline. Riprova più tardi.'
 	} else if (languageCode.startsWith('es')) {
-		useText = 'Conéctese por primera vez con Internet'
+		useText = 'El servidor está fuera de línea. Por favor, inténtelo de nuevo más tarde.'
 	} else if (languageCode.startsWith('pt')) {
-		useText = 'Por favor, conecte-se pela primeira vez com a Internet'
+		useText = 'O servidor está offline. Por favor, tente novamente mais tarde.'
 	} else if (languageCode.startsWith('nl')) {
-		useText = 'Maak voor de eerste keer verbinding met internet'
+		useText = 'De server is offline. Probeer het later opnieuw.'
 	} else if (languageCode.startsWith('pl')) {
-		useText = 'Połącz się po raz pierwszy z Internetem'
+		useText = 'Serwer jest offline. Spróbuj ponownie później.'
 	} else if (languageCode.startsWith('ru')) {
-		useText = 'Подключитесь в первый раз к Интернету'
+		useText = 'Сервер недоступен. Пожалуйста, попробуйте позже.'
 	} else if (languageCode.startsWith('tr')) {
-		useText = 'İlk kez internete bağlanın'
+		useText = 'Sunucu çevrimdışı. Lütfen daha sonra tekrar deneyin.'
 	} else if (languageCode.startsWith('zh')) {
-		useText = '首次连接互联网'
+		useText = '服务器离线。请稍后再试。'
 	} else if (languageCode.startsWith('ja')) {
-		useText = '初めてインターネットに接続してください'
+		useText = 'サーバーがオフラインです。後でもう一度お試しください。'
 	} else if (languageCode.startsWith('ko')) {
-		useText = '인터넷에 처음 연결하십시오'
+		useText = '서버가 오프라인 상태입니다. 나중에 다시 시도해주세요.'
 	} else if (languageCode.startsWith('ar')) {
-		useText = 'يرجى الاتصال لأول مرة بالإنترنت'
+		useText = 'الخادم غير متصل. يرجى المحاولة مرة أخرى لاحقًا.'
 	}
 
 	const accessibilityLabel = useText

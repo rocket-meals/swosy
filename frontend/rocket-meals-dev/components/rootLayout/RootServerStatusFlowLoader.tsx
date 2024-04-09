@@ -8,7 +8,8 @@ import {AuthenticationData} from '@directus/sdk';
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 import {useIsDebug} from "@/states/Debug";
-import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet"; // Optional if you want to use default theme
+import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
+import {PleaseConnectLaterServerIsOffline} from "@/compositions/loadingScreens/PleaseConnectLaterServerIsOffline"; // Optional if you want to use default theme
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -80,7 +81,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 	if (serverInfo.status === 'offline') {
 		return (
-			<PleaseConnectFirstTimeWithInternet />
+			<PleaseConnectLaterServerIsOffline />
 		)
 	}
 

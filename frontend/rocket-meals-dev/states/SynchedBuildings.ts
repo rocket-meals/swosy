@@ -1,16 +1,18 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings, Businesshours, CanteensBusinesshours} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {LocationType} from "@/helper/geo/LocationType";
+import {getDemoBusinesshoursDict, useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 
 async function loadBuildingsFromServer(): Promise<Buildings[]> {
 	const collectionHelper = new CollectionHelper<Buildings>('buildings');
 
-	const fields = ['*','translations.*'];
+	const fields = ['*','businesshours.*','translations.*'];
 
 	const query = {
 		limit: -1,
@@ -82,4 +84,48 @@ export function getDemoBuildings(): Record<string, Buildings> {
 	}
 
 	return demoResources
+}
+
+
+
+
+/**
+ * Returns a dictionary of canteen businesshours
+ * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
+ */
+export function useSynchedBuildingsBusinesshours(): Record<string, Businesshours[] | undefined>
+{
+	const isDemo = useIsDemo()
+	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+	const [businesshoursDict, setBusinesshoursDict] = useSynchedBusinesshoursDict()
+	const demoBusinesshoursDict = getDemoBusinesshoursDict()
+
+	const canteensBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
+
+	for (const buildingId in buildingsDict) {
+		const building_id_as_string: string = buildingId
+		const building = buildingsDict[buildingId]
+		if (building?.businesshours) {
+			let canteensBusinesshours: CanteensBusinesshours[] = building.businesshours as CanteensBusinesshours[]
+			let businesshours: Businesshours[] = []
+			if(isDemo) {
+				let demoKeys = Object.keys(demoBusinesshoursDict)
+				demoKeys.forEach((key) => {
+					businesshours.push(demoBusinesshoursDict[key])
+				})
+			} else {
+				canteensBusinesshours.forEach((canteensBusinesshours) => {
+					let businesshoursId = canteensBusinesshours.businesshours_id
+					let businesshoursEntry = businesshoursDict?.[businesshoursId]
+					if (businesshoursEntry) {
+						businesshours.push(businesshoursEntry)
+					}
+				})
+			}
+
+			canteensBusinesshoursDict[building_id_as_string] = businesshours
+		}
+	}
+	return canteensBusinesshoursDict
+
 }
