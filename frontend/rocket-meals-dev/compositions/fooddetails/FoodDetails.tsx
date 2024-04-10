@@ -29,8 +29,6 @@ import {
 	getDictFoodFeedbackLabelsIdToAmount,
 	loadFoodsFeedbacksForFoodWithFeedbackLabelsIds
 } from "@/states/SynchedFoods";
-import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
-import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";

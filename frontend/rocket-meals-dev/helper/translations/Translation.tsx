@@ -68,6 +68,7 @@ export class TranslationKeys {
 	static sort_option_none = createTranslationKey('none', 'Keine');
 	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
 	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
+	static sort_option_public_rating = createTranslationKey('public_rating', 'Öffentliche Bewertung');
 	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
 	static sort_option_distance = createTranslationKey('distance', 'Distanz');
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');

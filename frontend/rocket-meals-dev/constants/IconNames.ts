@@ -118,6 +118,7 @@ export enum IconNames {
     sort_none_icon = "sort-variant-remove",
     sort_alphabetical_icon = "sort-alphabetical-ascending",
     sort_favorite_icon = "star",
+    sort_public_rating_icon = "star",
     sort_intelligent_icon = "brain",
     sort_distance_icon = "map-marker-distance",
     sort_free_rooms_icon = "door-open",

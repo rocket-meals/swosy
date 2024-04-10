@@ -2,7 +2,13 @@ import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {DirectusFiles, Foodoffers, FoodsFeedbacks, ProfilesMarkings} from '@/helper/database/databaseTypes/types';
+import {
+	DirectusFiles,
+	Foodoffers,
+	Foods,
+	FoodsFeedbacks,
+	ProfilesMarkings
+} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
@@ -44,7 +50,7 @@ function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
 	return foodOffers;
 }
 
-function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
+function sortByOwnFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
 	foodOffers.sort((a, b) => {
 		const aFoodId = a?.food?.id;
 		const bFoodId = b?.food?.id;
@@ -96,6 +102,56 @@ function sortByFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	});
 	return foodOffers;
 
+}
+
+function sortByPublicFavorite(foodOffers: Foodoffers[]) {
+	foodOffers.sort((a, b) => {
+		const aFood: Foods = a.food;
+		const bFood: Foods = b.food;
+
+		const aRating = aFood?.rating_average
+		const bRating = bFood?.rating_average
+
+		const aRatingPositive = isRatingPositive(aRating)
+		const aRatingNegative = isRatingNegative(aRating);
+		const aRatingUnknown = aRating === null || aRating === undefined;
+
+		const bRatingPositive = isRatingPositive(bRating);
+		const bRatingNegative = isRatingNegative(bRating);
+		const bRatingUnknown = bRating === null || bRating === undefined;
+
+		const returnAShouldBeFirst = -1;
+		const returnNoOrder = 0;
+		const returnBShouldBeFirst = 1;
+
+		// negative ratings should be last, then unknown, then positive
+		// complete cases aRatingNegative, aRatingUnknown, aRatingPositive and bRatingNegative, bRatingUnknown, bRatingPositive
+
+		if (aRatingNegative && bRatingNegative) {
+			return returnNoOrder;
+		} else if (aRatingNegative) {
+			return returnBShouldBeFirst;
+		} else if (bRatingNegative) {
+			return returnAShouldBeFirst;
+		}
+
+		if (aRatingUnknown && bRatingUnknown) {
+			return returnNoOrder;
+		} else if (aRatingUnknown) {
+			return returnBShouldBeFirst;
+		} else if (bRatingUnknown) {
+			return returnAShouldBeFirst;
+		}
+
+		if (aRatingPositive && bRatingPositive) {
+			return returnNoOrder;
+		} else if (aRatingPositive) {
+			return returnAShouldBeFirst;
+		} else if (bRatingPositive) {
+			return returnBShouldBeFirst;
+		}
+	});
+	return foodOffers;
 }
 
 function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
@@ -153,9 +209,11 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	} else if(sortType === SortType.alphabetical){
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
-		copiedFoodOffers = sortByFavorite(copiedFoodOffers, foodFeedbacksDict);
+		copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, foodFeedbacksDict);
 	} else if(sortType === SortType.eatingHabits){
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
+	} else if(sortType === SortType.publicRating){
+		copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
 	}
 	return copiedFoodOffers;
 }
