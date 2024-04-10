@@ -114,63 +114,6 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
 }
 
-
-export const useOnPressEditFoodFeedbackLabels = (food_id: string, onClose?: () => void) => {
-	const translation_title = useTranslation(TranslationKeys.feedback_labels)
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
-	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
-	const [language, setLanguage] = useProfileLanguageCode()
-
-	const feedbackLabelIdToTranslation: Record<string, string> = {}
-	if(!!foodFeedbackLabelsDict){
-		Object.keys(foodFeedbackLabelsDict).forEach((key) => {
-			let label = foodFeedbackLabelsDict[key];
-			let id = label.id;
-			let labelTranslations = label.translations as TranslationEntry[];
-			let translation = getDirectusTranslation(language, labelTranslations, 'text');
-			if(translation){
-				feedbackLabelIdToTranslation[id] = translation;
-			}
-		})
-	}
-
-	let items: MyModalActionSheetItem[] = []
-	Object.keys(feedbackLabelIdToTranslation).forEach((key) => {
-		let translation = feedbackLabelIdToTranslation[key];
-		items.push({
-			key: key,
-			label: translation,
-			accessibilityLabel: translation,
-			title: translation,
-			renderAsItem: (key: string, hide: () => void) => {
-				// each component needs to have its own state
-				let translation = feedbackLabelIdToTranslation[key];
-				return <AccountRequiredTouchableOpacity>
-					<FoodFeedbackSettingsRow food_id={food_id} feedback_label_id={key} translation={translation}/>
-				</AccountRequiredTouchableOpacity>
-			}
-		})
-	});
-
-
-	return () => {
-		let config: MyModalActionSheetItem = {
-			title: translation_title,
-			key: translation_title,
-			accessibilityLabel: translation_title,
-			label: translation_title,
-			items: items,
-			onCancel: () => {
-				if(onClose){
-					onClose()
-				}
-			}
-		}
-
-		setModalConfig(config)
-	}
-}
-
 export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined, refresh: () => void}) => {
 	const foods_feedbacks_labels_type = useFeedbackLabelsType()
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
@@ -207,23 +150,26 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 
 	Object.keys(feedbackLabelIdToTranslation).forEach((key) => {
 		let translation = feedbackLabelIdToTranslation[key];
-		let sort = 0;
 		if(foodFeedbackLabelsDict){
 			let label = foodFeedbackLabelsDict[key];
-			sort = label?.sort
+			let sort = label?.sort
+			let visible = label?.visible || isDebug
+			let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
+			let amount_likes = amount_information?.amount_likes ?? null;
+			let amount_dislikes = amount_information?.amount_dislikes ?? null;
+
+			if(visible){
+				data.push({key: key,
+					sort: sort,
+					data: {
+						food_id: food_id,
+						feedback_label_id: key,
+						translation: translation,
+						amount_likes: amount_likes,
+						amount_dislikes: amount_dislikes
+					}})
+			}
 		}
-		let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
-		let amount_likes = amount_information?.amount_likes ?? null;
-		let amount_dislikes = amount_information?.amount_dislikes ?? null;
-		data.push({key: key,
-			sort: sort,
-			data: {
-					food_id: food_id,
-					feedback_label_id: key,
-					translation: translation,
-					amount_likes: amount_likes,
-					amount_dislikes: amount_dislikes
-			}})
 	});
 
 	// sort labels by sort value. If a sort value is set, it will be before the ones without a sort value
