@@ -25,6 +25,7 @@ RUN pnpm install axios
 RUN pnpm install directus-cut
 RUN pnpm install directus-extension-auto-backup@10.8.5
 RUN pnpm install directus-extension-auto-translation@10.8.4
+RUN pnpm install directus-extension-sync@1.1.2
 RUN pnpm install moment
 RUN pnpm install deepl-node
 RUN pnpm install jssoup
