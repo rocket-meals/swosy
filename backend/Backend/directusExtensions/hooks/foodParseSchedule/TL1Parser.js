@@ -145,7 +145,8 @@ export class TL1Parser {
             try{
                 const absolutePath = path.resolve(path_to_tl1_export)
                 console.log("TL1Parser: absolutePath: "+absolutePath)
-                const content = fs.readFileSync(path.resolve(path_to_tl1_export), encoding);
+                const options = {encoding: encoding};
+                const content = fs.readFileSync(path.resolve(path_to_tl1_export), options);
                 console.log("TL1 Report; length= "+content.length);
                 return content;
             } catch (err){
