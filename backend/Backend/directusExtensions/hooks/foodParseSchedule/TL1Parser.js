@@ -150,7 +150,8 @@ export class TL1Parser {
                 console.log("TL1 Report; length= "+content.length);
                 return content;
             } catch (err){
-                console.log("File not found yet")
+                console.log("TL1 Report read error: ")
+                console.log(err.toString())
                 return "";
             }
         }
