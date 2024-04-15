@@ -27,6 +27,7 @@ else
   else
     echo "Please create a .env.backup file before running this script"
     exit 1
+  fi  # Added this missing fi here
 fi
 echo "Reset .env to git head"
 git checkout HEAD -- .env
@@ -34,6 +35,7 @@ echo "Git pull"
 git pull
 echo "Restore .env"
 cp .env.backup .env
+
 
 
 echo "Go to backend"
