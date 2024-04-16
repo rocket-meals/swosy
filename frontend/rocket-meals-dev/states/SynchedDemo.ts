@@ -2,8 +2,8 @@ import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useGlobalSearchParams} from "expo-router";
 
-export function useDemoRaw(): [boolean | null, (newValue: boolean) => void] {
-	const [demoRaw, setDemoRaw] = useSyncState<boolean>(PersistentStore.demo)
+export function useDemoRaw(): [boolean | null | undefined, (callback: (currentValue: (boolean | null | undefined)) => (boolean | null | undefined)) => void] {
+	const [demoRaw, setDemoRaw] = useSyncState<boolean, boolean>(PersistentStore.demo)
 	return [demoRaw, setDemoRaw]
 }
 

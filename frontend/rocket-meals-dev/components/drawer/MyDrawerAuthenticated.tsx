@@ -16,11 +16,11 @@ import {
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
-import {useIsDevelop} from "@/states/Develop";
+import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 
 export const MyDrawerAuthenticated = (props: any) => {
-	const develop = useIsDevelop();
+	const develop = useIsDeveloperModeActive();
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();

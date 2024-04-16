@@ -15,9 +15,7 @@ export const MyButtonNotify = (props: MyNewButtonProps) => {
 	const active = props.active;
 	const translation_notify = useTranslation(TranslationKeys.notification);
 	const translation_active = useTranslation(TranslationKeys.active);
-	const translation_activate = useTranslation(TranslationKeys.activate);
 	const translation_inactive = useTranslation(TranslationKeys.inactive);
-	const translation_deactivate = useTranslation(TranslationKeys.deactivate);
 
 	let nextActionDescription = translation_notify;
 	if (active) {

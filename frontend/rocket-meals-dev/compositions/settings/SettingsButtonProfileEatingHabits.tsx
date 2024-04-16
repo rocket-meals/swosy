@@ -4,10 +4,6 @@ import React, {FunctionComponent} from 'react';
 import {IconNames} from '@/constants/IconNames';
 import {MyButton} from '@/components/buttons/MyButton';
 import {useEditProfileEatingHabitsAccessibilityLabel} from '@/compositions/settings/SettingsRowEatingHabits';
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {MarkingList} from "@/components/food/MarkingList";
-import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
-import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {router} from "expo-router";
 
 export const useNavigateToEatingHabits = () => {

@@ -21,8 +21,56 @@ import {SettingsRowPriceGroup} from '@/compositions/settings/SettingsRowPriceGro
 import {SettingsRowAppUpdate} from "@/compositions/settings/SettingsRowAppUpdate";
 import {SettingsRowAccountBalance} from "@/compositions/settings/SettingsRowAccountBalance";
 import {SettingsRowDataAccess} from "@/compositions/settings/SettingsRowDataAccess";
+import {ProjectBanner} from "@/components/project/ProjectBanner";
+import {View} from "@/components/Themed";
+import {useDeveloperModeRaw, useIsDeveloperModeActive} from "@/states/Develop";
+import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+
+const ProjectVersionInformation = () => {
+	const [develop, setDevelop] = useDeveloperModeRaw();
+
+	const title = "Developer Mode";
+	const translation_state_current = useTranslation(TranslationKeys.state_current)
+	const translation_state_next = useTranslation(TranslationKeys.state_current)
+	const translation_active = useTranslation(TranslationKeys.active)
+	const translation_inactive = useTranslation(TranslationKeys.inactive)
+
+	const state_current_translated = develop ? translation_active : translation_inactive;
+	const state_next_translated = develop ? translation_inactive : translation_active
+
+	const tooltip = title+": "+translation_state_current+": "+state_current_translated+". "+translation_state_next+": "+state_next_translated;
+
+	return <View style={{width: "100%"}}>
+		<MyTouchableOpacity accessibilityLabel={tooltip} tooltip={tooltip} onPress={() => {
+			setDevelop((currentValue) => {
+				return !!currentValue
+			})
+		}} >
+			<ProjectBanner/>
+		</MyTouchableOpacity>
+	</View>
+}
 
 export default function SettingsScreen() {
+
+	const isDevelopModeActive = useIsDeveloperModeActive();
+	let renderedDeveloperModeSettings = null;
+
+	if(isDevelopModeActive){
+		renderedDeveloperModeSettings = (
+			<SettingsRowGroup>
+				<SettingsRowSyncBooleanSwitch labelLeft={'Debug'} leftIcon={IconNames.debug_icon} accessibilityLabel={'Debug'} variable={PersistentStore.debug} />
+				<SettingsRowSyncBooleanSwitch labelLeft={'Demo'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Demo'} variable={PersistentStore.demo} />
+				<SettingsRowSyncBooleanSwitch labelLeft={'Performance'} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={'Performance'} variable={PersistentStore.performance} />
+				<SettingsRowSyncBooleanSwitch labelLeft={'Developer'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Developer'} variable={PersistentStore.develop} />
+				<SettingsRowServerConfiguration />
+				<SettingsRowAppUpdate />
+			</SettingsRowGroup>
+		)
+	}
+
+
 	return (
 		<MySafeAreaView>
 			<ScrollViewWithGradient>
@@ -44,18 +92,12 @@ export default function SettingsScreen() {
 				<SettingsRowGroup>
 					<SettingsRowLogout />
 				</SettingsRowGroup>
-				<SettingsRowGroup>
-					<SettingsRowSyncBooleanSwitch labelLeft={'Debug'} leftIcon={IconNames.debug_icon} accessibilityLabel={'Debug'} variable={PersistentStore.debug} />
-					<SettingsRowSyncBooleanSwitch labelLeft={'Demo'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Demo'} variable={PersistentStore.demo} />
-					<SettingsRowSyncBooleanSwitch labelLeft={'Performance'} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={'Performance'} variable={PersistentStore.performance} />
-					<SettingsRowSyncBooleanSwitch labelLeft={'Developer'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Developer'} variable={PersistentStore.develop} />
-					<SettingsRowServerConfiguration />
-                    <SettingsRowAppUpdate />
-				</SettingsRowGroup>
+				{renderedDeveloperModeSettings}
 				<SettingsRowGroup>
 					<SettingsRowUserDelete />
 					<SettingsRowDataAccess />
 				</SettingsRowGroup>
+				<ProjectVersionInformation />
 			</ScrollViewWithGradient>
 		</MySafeAreaView>
 	);

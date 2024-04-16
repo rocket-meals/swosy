@@ -158,9 +158,9 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
 
 	static active = createTranslationKey('active', 'Aktiv');
-	static activate = createTranslationKey('activate', 'Aktiveren');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');
-	static deactivate = createTranslationKey('deactivate', 'Deaktivieren');
+	static state_current = createTranslationKey('state_current', 'Status aktuell');
+	static state_next = createTranslationKey('state_next', 'Status danach');
 
 	static import = createTranslationKey('import', 'Importieren');
 	static event = createTranslationKey('event', 'Veranstaltung');
@@ -189,7 +189,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static month = createTranslationKey('month', 'Monat');
 	static selected = createTranslationKey('selected', 'Ausgewählt');
 
-	static next = createTranslationKey('next', 'Weiter');
+	static proceed = createTranslationKey('next', 'Weiter');
 	static previous = createTranslationKey('previous', 'Zurück');
 
 	static businesshours = createTranslationKey('businesshours', 'Geschäftszeiten');
