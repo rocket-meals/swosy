@@ -11,12 +11,13 @@ import {PermissionHelper} from "@/helper/permission/PermissionHelper";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import * as ImagePicker from 'expo-image-picker';
-import {ImagePickerAsset} from 'expo-image-picker';
+import {ImagePickerAsset, launchCameraAsync} from 'expo-image-picker';
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {uploadFiles} from "@directus/sdk";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {ImagePickerOptions} from "expo-image-picker/src/ImagePicker.types";
 
 
 export type MyCardForResourcesWithImageProps = {
@@ -98,19 +99,28 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 			const usedGranted = usedPermission?.granted;
 			const canRequest = usedPermission?.canAskAgain;
 
-			const usedAspects = props.aspect || [4, 3];
+			const usedAspects = props.aspect || [1, 1];
 
 			if (usedGranted) {
-				const result = await ImagePicker.launchImageLibraryAsync({
+				let imageLibraryOptions: ImagePickerOptions = {
 					mediaTypes: ImagePicker.MediaTypeOptions.Images,
 					allowsEditing: true,
 					aspect: usedAspects,
 					quality: 1,
 					// only 1
+					allowsMultipleSelection: false,
 					selectionLimit: 1,
-				});
+				};
 
-				if (!result.canceled) {
+
+				let result = null;
+				if(useCamera) {
+					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
+				} else {
+					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
+				}
+
+				if (!!result && !result.canceled) {
 					setLoading()
 					const assets: ImagePickerAsset[] | null = result.assets;
 					if (assets) {
