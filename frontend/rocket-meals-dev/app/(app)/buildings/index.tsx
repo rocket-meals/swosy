@@ -83,7 +83,7 @@ function sortBuildings(resources: Buildings[], buildingsDict: Record<string, Bui
 
 
 export default function BuildingsScreen() {
-	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
@@ -165,6 +165,13 @@ export default function BuildingsScreen() {
 				  router.push(`/(app)/buildings/${resource.id}`)
 			}}
   			accessibilityLabel={title}
+			imageUploaderConfig={{
+				resourceId: resource.id,
+				resourceCollectionName: 'buildings',
+				onImageUpdated: async () => {
+					await updateBuildingsFromServer();
+				}
+			}}
   		/>
   	);
   }
