@@ -119,7 +119,7 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 
 }
 
-export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, FoodsFeedbacks | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, FoodsFeedbacks | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacks | null | undefined>, timestamp?: (number | undefined)) => void, number | null | undefined, (nowInMs?: number) => Promise<void>] {
+export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, FoodsFeedbacks | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, FoodsFeedbacks | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacks | null | undefined>, timestamp?: (number | undefined)) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
 	const [currentUser, setUserWithCache] = useCurrentUser();
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<FoodsFeedbacks | undefined>(PersistentStore.ownFoodFeedbacks);
 	const demo = useIsDemo()

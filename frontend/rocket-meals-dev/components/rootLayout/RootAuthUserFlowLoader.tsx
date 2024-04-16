@@ -18,6 +18,7 @@ import {RootSyncDatabaseDownload} from '@/components/rootLayout/RootSyncDatabase
 import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotificationDeepLink';
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {RootSyncSettingsDownload} from "@/components/rootLayout/RootSyncSettingsDownload";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -107,12 +108,14 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	console.log('AuthFlowUserCheck currentUserRaw: ', currentUserRaw)
 
 	return (
-		<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
-			<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
-				<RootNotificationDeepLink key={currentUser?.id+''}>
-					{props.children}
-				</RootNotificationDeepLink>
-			</RootSyncDatabaseUpload>
-		</RootSyncDatabaseDownload>
+		<RootSyncSettingsDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+			<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+				<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+					<RootNotificationDeepLink key={currentUser?.id+''}>
+						{props.children}
+					</RootNotificationDeepLink>
+				</RootSyncDatabaseUpload>
+			</RootSyncDatabaseDownload>
+		</RootSyncSettingsDownload>
 	)
 }

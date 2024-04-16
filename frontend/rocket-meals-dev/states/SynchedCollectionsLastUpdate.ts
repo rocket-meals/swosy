@@ -15,8 +15,8 @@ async function loadCollectionsDatesLastUpdateFromServer(): Promise<CollectionsDa
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedCollectionsDatesLastUpdateDict(): [(Record<string, CollectionsDatesLastUpdate> | undefined), ((newValue: Record<string, CollectionsDatesLastUpdate>, timestamp?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
+export function useSynchedCollectionsDatesLastUpdateDict(): [Record<string, CollectionsDatesLastUpdate | null | undefined> | null | undefined, ((newValue: (currentValue: Record<string, CollectionsDatesLastUpdate | null | undefined> | null | undefined) => (Record<string, CollectionsDatesLastUpdate | null | undefined>), timestamp?: (number | undefined)) => void), number | undefined, ((nowInMs?: number) => Promise<void>)]
+{
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<CollectionsDatesLastUpdate>(PersistentStore.markings);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
@@ -28,7 +28,9 @@ export function useSynchedCollectionsDatesLastUpdateDict(): [(Record<string, Col
 	async function updateFromServer(nowInMs?: number) {
 		const resourceList = await loadCollectionsDatesLastUpdateFromServer();
 		const resourceDict = CollectionHelper.convertListToDict(resourceList, 'id')
-		setResourcesOnly(resourceDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceDict;
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

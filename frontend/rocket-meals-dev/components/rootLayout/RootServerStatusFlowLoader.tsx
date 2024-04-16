@@ -72,7 +72,8 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	const debugInformation = isDebug ? <Text>{JSON.stringify(serverInfo, null, 2)}</Text> : null;
 
 	// 1. load server information
-	if (serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo) {
+	let serverInfoNotUpdated = (!serverInfoRaw?.lastUpdate || serverInfoRaw?.lastUpdate < nowInMs)
+	if (serverInfoNotUpdated || !serverInfo) {
 		return (
 			<LoadingScreen>
 				<Text>{'Loading server Info'}</Text>

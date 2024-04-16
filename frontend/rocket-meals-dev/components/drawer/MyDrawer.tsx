@@ -21,6 +21,7 @@ import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
 import {ProjectBackgroundImage} from '@/components/project/ProjectForegroundImage';
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export type MyDrawerItemProps = {
     routeName: string;

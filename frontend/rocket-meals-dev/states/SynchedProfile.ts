@@ -3,8 +3,8 @@ import {
 	Canteens,
 	Devices,
 	DirectusUsers,
-	FoodsFeedbacks, Languages,
-	Markings,
+	FoodsFeedbacks,
+	Languages,
 	Profiles,
 	ProfilesBuildingsFavorites,
 	ProfilesBuildingsLastVisited,
@@ -12,7 +12,7 @@ import {
 } from '@/helper/database/databaseTypes/types';
 import {
 	NewValueRawSingleType,
-	useSynchedResourceSingleRaw, useSynchedResourceSingleRawValue,
+	useSynchedResourceSingleRawValue,
 	useSynchResourceSingleRawSetter
 } from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -23,9 +23,7 @@ import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslati
 import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
-import {useCallback, useMemo} from "react";
-import {useSyncState, useSyncStateSetter, useSyncStateValue} from "@/helper/syncState/SyncState";
-import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
+import {useCallback} from "react";
 
 async function loadProfileRemoteByProfileId(id: string) {
 	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
@@ -82,15 +80,16 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 	const usedSetResource = useCallback(
 		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => {
 			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
-			if (isServerOnline && !isCurrentUserAnonymous) {
-				setResource((currentValue) => {
-					const newValue = callback(currentValue);
-					const profile_id = newValue?.id || currentValue?.id;
 
+			setResource((currentValue) => {
+				const newValue = callback(currentValue);
+				const profile_id = newValue?.id || currentValue?.id;
+
+				if (isServerOnline && !isCurrentUserAnonymous) {
 					if (profile_id && newValue) {
 						console.log('profile_id: ', profile_id);
 
-						
+
 						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
 							console.log('remoteAnswer: ', remoteAnswer);
 						}).catch((err) => {
@@ -101,12 +100,11 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 						return newValue;
 					} else {
 						console.error('Profile ID not found');
-						return newValue;
 					}
-				}, timestamp);
-			} else {
-				return setResource(callback, timestamp);
-			}
+				}
+
+				return newValue;
+			}, timestamp);
 		},
 		// Dependencies for useCallback
 		[isServerOnline, isCurrentUserAnonymous, setResource]

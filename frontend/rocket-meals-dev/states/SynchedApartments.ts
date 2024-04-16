@@ -36,7 +36,7 @@ export async function loadApartmentWithWashingMachinesFromServer(apartmentId: st
 	return await collectionHelper.readItem(apartmentId, query);
 }
 
-export function useSynchedApartmentsDict(): [ Record<string, Apartments | null | undefined> | null | undefined, ((callback: (currentValue: (Record<string, Apartments | null | undefined> | null | undefined)) => Record<string, Apartments | null | undefined>, timestamp?: (number | undefined)) => void), number | null | undefined, (() => Promise<void>	)] {
+export function useSynchedApartmentsDict(): [ Record<string, Apartments | null | undefined> | null | undefined, ((callback: (currentValue: (Record<string, Apartments | null | undefined> | null | undefined)) => Record<string, Apartments | null | undefined>, timestamp?: (number | undefined)) => void), number | undefined, ((nowInMs?: number) => Promise<void>	)] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Apartments>(PersistentStore.apartments);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
@@ -57,7 +57,7 @@ export function useSynchedApartmentsDict(): [ Record<string, Apartments | null |
 }
 
 export function getApartmentLocationType(apartment: Apartments, buildingsDict: Record<string, Buildings> | undefined): LocationType | null {
-	let buildingA = buildingsDict?.[apartment.building];
+	let buildingA = buildingsDict?.[apartment?.building];
 	return getBuildingLocationType(buildingA);
 }
 

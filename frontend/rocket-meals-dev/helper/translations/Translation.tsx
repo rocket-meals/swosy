@@ -87,6 +87,11 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static success = createTranslationKey('success', 'Erfolg');
 
+	static maintenance = createTranslationKey('maintenance', 'Wartung');
+	static maintenance_message = createTranslationKey('maintenance_message', 'Du kannst eine gespeicherte Version der App verwenden, aber einige Funktionen sind möglicherweise nicht verfügbar.');
+	static maintenance_estimated_end = createTranslationKey('maintenance_estimated_end', 'Voraussichtliches Ende der Wartung');
+	static use_cached_version = createTranslationKey('use_cached_version', 'Gespeicherte Version verwenden');
+
 	static foods = createTranslationKey('foods', 'Speisen');
 	static apartments = createTranslationKey('apartments', 'Wohnungen');
 

@@ -16,11 +16,11 @@ export function useServerInfo() {
 			status: 'cached',
 			info: {
 				project: {
-					project_name: 'SWOSY ',
-					project_descriptor: 'Studierendenwerk Osnabrück',
+					project_name: 'Rocket Meals',
+					project_descriptor: 'Your company',
 					default_language: 'de-DE',
-					project_logo: 'https://play-lh.googleusercontent.com/BCBvebwBE5xppnKt-Y2-0ztIlXxhxl8jcfeldE05JLuildEkFla4tmTQNUuVk-1cQQ=w480-h960',
-					project_color: '#FCDE18',
+					project_logo: null,
+					project_color: '#D14610',
 					public_foreground: null,
 					public_background: null,
 					public_note: null,

@@ -50,9 +50,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const registeredItemsToLoad: any[] = [];
 
-	const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
-	const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, lastUpdateCollectionsDates, updateCollectionsDatesFromServer] = useSynchedCollectionsDatesLastUpdateDict()
-
 	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
 	const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
 	const [businesshoursDict, setBusinesshoursDict, lastUpdateBusinesshours, updateBusinesshoursFromServer] = useSynchedBusinesshoursDict()
@@ -71,8 +68,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
-
-	console.log("collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
 	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
 
 
@@ -88,7 +83,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
    */
 
 	addSynchedResourceToDownloadFirst('translations', translationsDict, lastUpdateTranslations)
-	addSynchedResourceToDownloadFirst('app_settings', app_settings, lastUpdateAppSettings)
 	addSynchedResourceToDownloadFirst('canteens', canteensDict, lastUpdateCanteens)
 	addSynchedResourceToDownloadFirst('businesshours', businesshoursDict, lastUpdateBusinesshours)
 	addSynchedResourceToDownloadFirst('buildings', buildingsDict, lastUpdateBuildings)
@@ -182,7 +176,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 				if (!demo) {
 					// TODO: Improve by running all updates in parallel using Promise.all?
 					await updateTranslationsFromServer(nowInMs)
-					await updateAppSettingsFromServer(nowInMs)
 					await updateCanteensFromServer(nowInMs);
 					await updateBusinesshoursFromServer(nowInMs);
 					await updateBuildingsFromServer(nowInMs);

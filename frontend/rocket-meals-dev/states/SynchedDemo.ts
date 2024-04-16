@@ -1,12 +1,18 @@
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
+import {useGlobalSearchParams} from "expo-router";
 
 export function useDemoRaw(): [boolean | null, (newValue: boolean) => void] {
-	const [debug, setDebug] = useSyncState<boolean>(PersistentStore.demo)
-	return [debug, setDebug]
+	const [demoRaw, setDemoRaw] = useSyncState<boolean>(PersistentStore.demo)
+	return [demoRaw, setDemoRaw]
 }
 
 export function useIsDemo(): boolean {
-	const [debug, setDebug] = useDemoRaw()
-	return !!debug
+	const [demoRaw, setDemoRaw] = useDemoRaw()
+	const globalSearchParams = useGlobalSearchParams()
+	const demoParamRaw = globalSearchParams?.demo
+	const demoParam = demoParamRaw === "true"
+
+	const demo = demoRaw ?? demoParam
+	return !!demo
 }
