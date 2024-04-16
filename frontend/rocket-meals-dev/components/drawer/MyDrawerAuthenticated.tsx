@@ -17,6 +17,7 @@ import {
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
 import {useIsDevelop} from "@/states/Develop";
+import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDevelop();
@@ -39,6 +40,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
 	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
 	const translation_price_group = useTranslation(TranslationKeys.price_group)
+	const translation_delete_account = useTranslationAccountDelete();
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -159,6 +161,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_price_group,
 				title: translation_price_group,
 				icon: IconNames.price_group_icon,
+				showBackButton: true,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/delete-account/index',
+				label: translation_delete_account,
+				title: translation_delete_account,
+				icon: IconNames.user_account_delete_icon,
 				showBackButton: true,
 				visibleInDrawer: false
 			})}

@@ -50,7 +50,7 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 	const usedIconName: string = IconNames.price_group_icon
 
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
-	const showPriceGroupModal = useNavigateToPriceGroup();
+	const navigateToPriceGroup = useNavigateToPriceGroup();
 
 	const title = useTranslation(TranslationKeys.price_group)
 
@@ -75,13 +75,12 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 
 	const labelRight = selectedOptionName
 
-	const onPress = showPriceGroupModal
+	const onPress = navigateToPriceGroup
 
 
 	return (
 		<>
 			<SettingsRow labelLeft={label} labelRight={labelRight} onPress={onPress} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
 		</>
-
 	)
 }
