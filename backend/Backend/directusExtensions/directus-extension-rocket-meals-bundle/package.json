@@ -23,6 +23,36 @@
 				"type": "hook",
 				"name": "profile-create-hook",
 				"source": "src/profile-create-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "users-avatar-delete-hook",
+				"source": "src/users-avatar-delete-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-feedback-rating-cacluclate-hook",
+				"source": "src/food-feedback-rating-cacluclate-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "push-notification-hook",
+				"source": "src/push-notification-hook/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "redirect-with-token-endpoint",
+				"source": "src/redirect-with-token-endpoint/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "collections-last-update-hook",
+				"source": "src/collections-last-update-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-notify-schedule-hook",
+				"source": "src/food-notify-schedule-hook/index.ts"
 			}
 		],
 		"host": "^10.10.0"
