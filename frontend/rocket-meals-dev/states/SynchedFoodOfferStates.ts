@@ -145,11 +145,6 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 						// is null or empty
 						_null: true
 					}
-				},
-				{
-					date: {
-						_empty: true
-					}
 				}
 			]
 		}
