@@ -44,6 +44,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 
 
 	const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
+	const [imageLoading, setImageLoading] = useState(true);
 
 	useEffect(() => {
 		const url = getInitialImageUrl();
@@ -74,26 +75,50 @@ export default function DirectusImage(props: DirectusImageProps) {
 
 	const thumbHashRaw = props.thumbHash || '93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48';
 	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
-	const placeholder = props.placeholder || thumbHashBase64;
+	const placeholder = props.placeholder
 
 	// Will only cache the image on mobile devices - not in the browser
 	let cachePolicy: "none" | "disk" | "memory" | "memory-disk" | null | undefined = 'disk';
 
+	let loadingContent = null
+		if(imageLoading) {
+			loadingContent =
+				<View style={{
+					width: '100%',
+					height: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+					position: 'absolute',
+				}}>
+					<Image
+						source={thumbHashBase64}
+						alt={props?.alt || 'Image'}
+						style={props.style}
+					/>
+				</View>
+		}
+
 	// with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio
 	let content = (
-		<Image
-			source={source}
-			alt={props?.alt || 'Image'}
-			style={props.style}
-			contentFit={props.contentFit}
-			placeholder={placeholder}
-			onError={(e) => {
-				console.log('DirectusImage onError', e);
-				setImageLoadedFailed(true);
-			}}
-			// Assuming cachePolicy is determined elsewhere or is static
-			cachePolicy={cachePolicy}
-		/>
+		<>
+			{loadingContent}
+			<Image
+				source={source}
+				alt={props?.alt || 'Image'}
+				style={props.style}
+				contentFit={props.contentFit}
+				placeholder={placeholder}
+				onLoad={(event) => { // Called when the image load completes successfully.
+					setImageLoading(false);
+				}}
+				onError={(e) => {
+					console.log('DirectusImage onError', e);
+					setImageLoadedFailed(true);
+				}}
+				// Assuming cachePolicy is determined elsewhere or is static
+				cachePolicy={cachePolicy}
+			/>
+		</>
 	);
 
 	if (imageLoadedFailed) {
