@@ -134,9 +134,24 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 
 	andFilters.push(
 		{
-			date: {
-				_between: [start.toISOString(), end.toISOString()]
-			}
+			_or: [
+				{
+					date: {
+						_between: [start.toISOString(), end.toISOString()]
+					}
+				},
+				{
+					date: {
+						// is null or empty
+						_null: true
+					}
+				},
+				{
+					date: {
+						_empty: true
+					}
+				}
+			]
 		}
 	);
 
@@ -148,13 +163,13 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 		}
 	)
 
-	const dateFilter = {
+	const filter = {
 		_and: andFilters
 	}
 
 	const query = {
 		limit: -1,
-		filter: dateFilter,
+		filter: filter,
 		fields: food_offer_fields
 	}
 
