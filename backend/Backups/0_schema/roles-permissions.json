@@ -10,17 +10,6 @@
             "admin_access": false,
             "app_access": true,
             "users": []
-        },
-        {
-            "id": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "name": "Administrator",
-            "icon": "verified",
-            "description": "$t:admin_description",
-            "ip_access": null,
-            "enforce_tfa": false,
-            "admin_access": true,
-            "app_access": true,
-            "users": []
         }
     ],
     "permissions": [
@@ -974,306 +963,92 @@
             ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "popup_events",
+            "action": "read",
             "permissions": {},
-            "validation": null,
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_collections",
-            "action": "read"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "canteens_foodservicehours",
+            "action": "read",
             "permissions": {},
-            "validation": null,
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_fields",
-            "action": "read"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "role": {
-                    "_eq": "$CURRENT_ROLE"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_permissions",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "buildings_businesshours",
+            "action": "read",
             "permissions": {},
-            "validation": null,
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_relations",
-            "action": "read"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "user": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_activity",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "foods_feedbacks_foods_feedbacks_labels",
+            "action": "read",
             "permissions": {},
-            "validation": {
-                "comment": {
-                    "_nnull": true
-                }
-            },
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_activity",
-            "action": "create"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "_or": [
-                    {
-                        "user": {
-                            "_eq": "$CURRENT_USER"
-                        }
-                    },
-                    {
-                        "_and": [
-                            {
-                                "user": {
-                                    "_null": true
-                                }
-                            },
-                            {
-                                "role": {
-                                    "_eq": "$CURRENT_ROLE"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "_and": [
-                            {
-                                "user": {
-                                    "_null": true
-                                }
-                            },
-                            {
-                                "role": {
-                                    "_null": true
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_presets",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "foods_feedbacks_labels_translations",
+            "action": "read",
             "permissions": {},
-            "validation": {
-                "user": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_presets",
-            "action": "create"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "user": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_presets",
-            "action": "update"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "user": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_presets",
-            "action": "delete"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "id": {
-                    "_eq": "$CURRENT_ROLE"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_roles",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "popup_events_translations",
+            "action": "read",
             "permissions": {},
-            "validation": null,
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_settings",
-            "action": "read"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "washingmachines",
+            "action": "read",
             "permissions": {},
-            "validation": null,
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_translations",
-            "action": "read"
+            ]
         },
         {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "recipient": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
+            "role": "7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954",
+            "collection": "foods_feedbacks_labels",
+            "action": "read",
+            "permissions": {},
+            "validation": {},
             "presets": null,
             "fields": [
                 "*"
-            ],
-            "system": true,
-            "collection": "directus_notifications",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "recipient": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "status"
-            ],
-            "system": true,
-            "collection": "directus_notifications",
-            "action": "update"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "user_created": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "*"
-            ],
-            "system": true,
-            "collection": "directus_shares",
-            "action": "read"
-        },
-        {
-            "role": "ddd9afd0-4974-49c4-9c3e-a58983b55418",
-            "permissions": {
-                "id": {
-                    "_eq": "$CURRENT_USER"
-                }
-            },
-            "validation": null,
-            "presets": null,
-            "fields": [
-                "id",
-                "first_name",
-                "last_name",
-                "last_page",
-                "email",
-                "password",
-                "location",
-                "title",
-                "description",
-                "tags",
-                "preferences_divider",
-                "avatar",
-                "language",
-                "appearance",
-                "theme_light",
-                "theme_dark",
-                "tfa_secret",
-                "status",
-                "role"
-            ],
-            "system": true,
-            "collection": "directus_users",
-            "action": "read"
+            ]
         }
     ]
 }
