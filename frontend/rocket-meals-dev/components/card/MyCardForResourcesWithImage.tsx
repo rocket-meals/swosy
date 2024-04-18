@@ -115,9 +115,9 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 				let result = null;
 				if(useCamera) {
-					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
-				} else {
 					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
+				} else {
+					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
 				}
 
 				if (!!result && !result.canceled) {
