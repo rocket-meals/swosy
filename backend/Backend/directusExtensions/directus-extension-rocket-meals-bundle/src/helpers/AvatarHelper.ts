@@ -1,0 +1,137 @@
+import {AccountHelper} from "./AccountHelper"; // in directus we need to add the filetype ... otherwise we get an error
+
+export class AvatarHelper {
+    /**
+     * Deletes the avatar file for a userId
+     * @param userId the userId
+     * @returns {Promise<void>}
+     */
+    static async deleteFileOfCollection(
+        services,
+        database,
+        schema,
+        accountability,
+        exceptions,
+        collection_name,
+        file_field_name,
+        collectionId
+    ) {
+        const filesService = AvatarHelper.getAdminFileServiceInstance(
+            schema,
+            accountability,
+            services
+        );
+        if (!collectionId) {
+            throw new Error(
+                'deleteFileOfCollection: No collectionId provided: '
+            );
+        }
+
+        const existingItem = await database(collection_name)
+            .where({id: collectionId})
+            .first(); //get user
+        if (!existingItem) {
+            //handle no user found error
+            throw new Error(
+                'deleteFileOfCollection: No item found with id: ' + collectionId
+            );
+        }
+
+        const file_filename = existingItem[file_field_name]; //get filename of avatar
+        if (file_filename) {
+            //if has image
+            await filesService.deleteOne(file_filename); //delete file
+        }
+    }
+
+    /**
+     * Deletes the avatar file for a userId
+     * @param userId the userId
+     * @returns {Promise<void>}
+     */
+    static async deleteAvatarOfUser(
+        services,
+        database,
+        schema,
+        accountability,
+        exceptions,
+        userId
+    ) {
+        const filesService = AvatarHelper.getAdminFileServiceInstance(
+            schema,
+            accountability,
+            services
+        );
+        if (!userId) {
+            throw new Error(
+                'deleteAvatarOfUser: No userId provided: '
+            );
+        }
+
+        const existingUser = await database('directus_users')
+            .where({id: userId})
+            .first(); //get user
+        if (!existingUser) {
+            //handle no user found error
+            throw new Error(
+                'deleteAvatarOfUser: No user found with id: ' + userId
+            );
+        }
+
+        const avatar_filename = existingUser.avatar; //get filename of avatar
+        if (avatar_filename) {
+            //if has image
+            await filesService.deleteOne(avatar_filename); //delete file
+        }
+    }
+
+    /**
+     * Uploads an image by an url. Will return null if imageURL is null. Will return the image id
+     * @param folder_id the folder in which the image should be put
+     * @param imageURL a valid url of an image
+     * @returns {Promise<*|null>} image id or null if imageURL is null
+     */
+    static async uploadImageByURL(
+        services,
+        database,
+        schema,
+        accountability,
+        exceptions,
+        folder_id,
+        imageURL
+    ) {
+        const filesService = AvatarHelper.getAdminFileServiceInstance(
+            schema,
+            accountability,
+            services
+        );
+
+        let body = null;
+        if (folder_id) {
+            body = {folder: folder_id};
+        }
+
+        try {
+            if (imageURL) {
+                const avatar_filename = await filesService.importOne(imageURL, body);
+                return avatar_filename;
+            }
+        } catch (err) {
+            throw new Error(
+                'uploadImageByURL: Error on import avatar: ' + err.toString()
+            );
+        }
+        return null;
+    }
+
+    /**
+     * get a fileService with admin permission
+     * @returns {*}
+     */
+    static getAdminFileServiceInstance(schema, accountability, services) {
+        const {FilesService} = services;
+        const adminAccountAbility =
+            AccountHelper.getAdminAccountability(accountability);
+        return new FilesService({schema, accountability: adminAccountAbility});
+    }
+}
