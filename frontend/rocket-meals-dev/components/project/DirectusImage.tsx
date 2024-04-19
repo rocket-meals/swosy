@@ -30,7 +30,6 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const isDebug = useIsDebug();
 
 	const url: string | undefined = getInitialImageUrl();
-	console.log('DirectusImage url', url);
 
 	// State for managing the image URL
 	const [imageUrl, setImageUrl] = useState<string | undefined>(url);

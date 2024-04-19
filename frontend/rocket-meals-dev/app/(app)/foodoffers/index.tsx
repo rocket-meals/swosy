@@ -33,6 +33,8 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {MarkingBadge} from "@/components/food/MarkingBadge";
 import {useDislikeColor} from "@/states/ColorScheme";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {ServerAPI} from "@/helper/database/server/ServerAPI";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -226,6 +228,7 @@ export default function FoodOfferScreen() {
 	const isValidCanteenSelected = useIsValidCanteenSelected();
 	const projectName = useProjectName()
 	const dislikeColor = useDislikeColor();
+	const [appSettings] = useSynchedAppSettings();
 
 	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
 	const translation_error = useTranslation(TranslationKeys.error);
@@ -329,6 +332,8 @@ export default function FoodOfferScreen() {
 
 		const markingBadge = unwantedEatingHabitsFound ? <MarkingBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
 
+		const placeholderAssetId = appSettings?.foods_placeholder_image;
+
 		return (
 			<MyCardForResourcesWithImage
 				key={item.key}
@@ -337,6 +342,7 @@ export default function FoodOfferScreen() {
 				thumbHash={thumb_hash}
 				image_url={image_url}
 				assetId={assetId}
+				placeholderAssetId={placeholderAssetId}
 				onPress={() => {
 					router.push(`/(app)/foods/${foodOffer.id}`)
 				}}
