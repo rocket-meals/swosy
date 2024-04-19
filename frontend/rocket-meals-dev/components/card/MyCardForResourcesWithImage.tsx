@@ -26,6 +26,7 @@ export type MyCardForResourcesWithImageProps = {
 	borderColor?: string,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined | null,
+	placeholderAssetId?: string | DirectusFiles | undefined | null,
     image_url?: string | undefined | null,
     imageHeight?: number,
     bottomRightComponent?: ReactNode,
@@ -348,7 +349,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 }
 
 // define the button component
-export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
+export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, placeholderAssetId, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
 	const imageUploaderConfig = props.imageUploaderConfig;
 	const imageUploader = imageUploaderConfig ? <ImageUploaderComponent {...imageUploaderConfig} /> : null;
@@ -361,6 +362,7 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 	const topContent = (
 		<Rectangle>
 			<ImageWithComponents image={{
+				fallbackAssetId: placeholderAssetId,
 				image_url: image_url,
 				assetId: assetId,
 				thumbHash: thumbHash,
