@@ -5,9 +5,9 @@ import {useSynchedProfileMarkingsDict} from "@/states/SynchedProfile";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {MarkingList, MarkingListSelective} from "@/components/food/MarkingList";
+import {MarkingListSelective} from "@/components/food/MarkingList";
 import {useDislikeColor} from "@/states/ColorScheme";
-import {MyModal} from "@/components/modal/MyModal";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export type MarkingBadgeProps = {
 	foodoffer: Foodoffers,
@@ -17,27 +17,34 @@ export const MarkingBadge = ({foodoffer, borderRadius}: MarkingBadgeProps) => {
 	const dislikeColor = useDislikeColor();
 
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const dislikedMarkingIds = MarkingHelper.getDislikedMarkingIds(foodoffer, profilesMarkingsDict)
 
 	const translation_attention = useTranslation(TranslationKeys.attention);
 	const translation_eating_habit = useTranslation(TranslationKeys.eating_habits);
-	const [show, setShow] = React.useState(false);
 
 	const accessibilityLabelDislike = translation_attention + " "+translation_eating_habit;
 	const dislike_icon = IconNames.eating_habit_icon;
+
+	const onPress = () => {
+		setModalConfig({
+			title: translation_eating_habit,
+			accessibilityLabel: accessibilityLabelDislike,
+			key: "dislikedMarkingIds",
+			label: translation_eating_habit,
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return <MarkingListSelective markingIds={dislikedMarkingIds} />
+			}
+		})
+	}
 
 	return 	<>
 		<MyButton
 			backgroundColor={dislikeColor}
 			isActive={true}
 			borderRadius={borderRadius}
-			onPress={() => {
-				setShow(true)
-			}}
+			onPress={onPress}
 			accessibilityLabel={accessibilityLabelDislike} tooltip={accessibilityLabelDislike} icon={dislike_icon} />
-		<MyModal title={translation_eating_habit} visible={show} setVisible={setShow} >
-			<MarkingListSelective markingIds={dislikedMarkingIds} />
-		</MyModal>
 	</>
 }

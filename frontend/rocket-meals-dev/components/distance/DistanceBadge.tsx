@@ -1,13 +1,11 @@
 import {Text, View} from "@/components/Themed";
 import SimpleBadge from "@/components/badge/SimpleBadge";
 import {IconNames} from "@/constants/IconNames";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {LocationAnimation} from "@/compositions/animations/LocationAnimation";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {MyModal} from "@/components/modal/MyModal";
-import {useState} from "react";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export type DistanceBadgeProps = {
   distanceInMeter: number
@@ -15,8 +13,8 @@ export type DistanceBadgeProps = {
 
 
 export default function DistanceBadge(props: DistanceBadgeProps) {
-	const [show, setShow] = useState(false)
 	const translation_title = useTranslation(TranslationKeys.sort_option_distance)
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const translation_distance_based_canteen_selection_or_if_asked_on_real_location = useTranslation(TranslationKeys.distance_based_canteen_selection_or_if_asked_on_real_location)
 
@@ -34,15 +32,14 @@ export default function DistanceBadge(props: DistanceBadgeProps) {
 
 	const buttonAccessibilityLabel = translation_title + ' ' + distanceText;
 
-
-	return (
-		<>
-			<MyTouchableOpacity accessibilityLabel={buttonAccessibilityLabel} onPress={() => {
-				setShow(true)
-			}}>
-				<SimpleBadge icon={IconNames.sort_distance_icon} borderBottomLeft={true} borderTopLeft={true} text={distanceText} />
-			</MyTouchableOpacity>
-			<MyModal visible={show} title={translation_title}>
+	const onPress = () => {
+		setModalConfig({
+			title: translation_title,
+			accessibilityLabel: buttonAccessibilityLabel,
+			label: translation_distance_based_canteen_selection_or_if_asked_on_real_location,
+			key: 'distance',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
 					<MyScrollView>
 						<View style={{
 							padding: 20,
@@ -56,7 +53,18 @@ export default function DistanceBadge(props: DistanceBadgeProps) {
 							<Text>{translation_distance_based_canteen_selection_or_if_asked_on_real_location}</Text>
 						</View>
 					</MyScrollView>
-			</MyModal>
+				)
+			}
+		})
+
+	}
+
+
+	return (
+		<>
+			<MyTouchableOpacity accessibilityLabel={buttonAccessibilityLabel} onPress={onPress}>
+				<SimpleBadge icon={IconNames.sort_distance_icon} borderBottomLeft={true} borderTopLeft={true} text={distanceText} />
+			</MyTouchableOpacity>
 		</>
 	)
 }

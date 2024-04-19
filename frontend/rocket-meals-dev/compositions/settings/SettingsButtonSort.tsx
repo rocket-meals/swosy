@@ -26,6 +26,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 	const translation_sort_option_none = useTranslation(TranslationKeys.sort_option_none)
 	const translation_sort_option_alphabetical = useTranslation(TranslationKeys.sort_option_alphabetical)
 	const translation_sort_option_favorite = useTranslation(TranslationKeys.sort_option_favorite)
+	const translation_sort_option_public_rating = useTranslation(TranslationKeys.sort_option_public_rating)
 	const translation_sort_option_intelligent = useTranslation(TranslationKeys.sort_option_intelligent)
 	const translation_sort_option_distance = useTranslation(TranslationKeys.sort_option_distance)
 	const translation_sort_option_free_rooms = useTranslation(TranslationKeys.free_rooms)
@@ -56,6 +57,10 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			label = translation_sort_option_favorite;
 			icon = IconNames.sort_favorite_icon;
 			key = 'sortOptionFavorite';
+		} else if(sortType === SortType.publicRating){
+			label = translation_sort_option_public_rating;
+			icon = IconNames.sort_public_rating_icon;
+			key = 'sortOptionPublicRating';
 		} else if(sortType === SortType.intelligent){
 			label = translation_sort_option_intelligent;
 			icon = IconNames.sort_intelligent_icon;
@@ -80,7 +85,9 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			iconLeft: icon,
 			accessibilityLabel: label,
 			onSelect: async (key: string, hide: () => void) => {
-				setSelectedSortType(sortType);
+				setSelectedSortType((currentSortType) => {
+					return sortType
+				});
 				hide();
 			}
 		})
@@ -90,6 +97,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 		setModalConfig({
 			key: "sort",
 			label: translation_title,
+			title: translation_title,
 			accessibilityLabel: translation_title,
 			items: items
 		})

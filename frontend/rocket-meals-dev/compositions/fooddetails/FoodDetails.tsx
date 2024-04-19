@@ -1,11 +1,16 @@
-import {Foodoffers, Foods} from '@/helper/database/databaseTypes/types';
-import {Text, TextInput, View} from '@/components/Themed';
+import {
+	Foodoffers,
+	Foods,
+	FoodsFeedbacks,
+	FoodsFeedbacksFoodsFeedbacksLabels
+} from '@/helper/database/databaseTypes/types';
+import {Heading, Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
-import {loadFoodOffer} from '@/states/SynchedFoodOfferStates';
+import {loadFood, loadFoodFromServer, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
-import {useSynchedProfileFoodFeedback} from '@/states/SynchedProfile';
-import {KeyboardAvoidingView, Platform} from 'react-native';
+import {useProfileLanguageCode} from '@/states/SynchedProfile';
+import {Dimensions} from 'react-native';
 import NutritionList from '@/components/food/NutritionList';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
@@ -17,6 +22,19 @@ import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
+import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
+import {
+	getDictFoodFeedbackLabelsIdToAmount,
+	loadFoodsFeedbacksForFoodWithFeedbackLabelsIds
+} from "@/states/SynchedFoods";
+import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
+import {SettingsRow} from "@/components/settings/SettingsRow";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
+import {DateHelper} from "@/helper/date/DateHelper";
+import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
+import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -58,12 +76,175 @@ export const useFeedbackLabelsType = (): FeedbackLabelsType => {
 	return feedbackLabelsType
 }
 
+type FoodFeedbackSettingsRowDataProps = {food_id: string, feedback_label_id: string, translation: string, amount_likes: number|undefined|null, amount_dislikes: number|undefined|null}
+type FoodFeedbackSettingsRowProps = {refresh: () => void} & FoodFeedbackSettingsRowDataProps
+const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
 
-export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
+	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
+	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
+	let dislikesRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislikes
+	let statusSet = dislikesRaw === true || dislikesRaw === false;
+	const likes = statusSet ? !dislikesRaw : undefined;
+
+
+	return <SettingsRowTriStateLikeDislike
+		renderRightContentWrapper={(rightContent) => {
+			return <AccountRequiredTouchableOpacity>
+				{rightContent}
+			</AccountRequiredTouchableOpacity>
+		}}
+		onSetState={async (nextLike: boolean | undefined) => {
+		let ownFoodFeedbackLabelsWithoutThisLabel = ownFoodFeedbackLabels.filter((value) => value.foods_feedbacks_labels_id !== feedback_label_id)
+
+		if(nextLike === undefined){
+			await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+		} else {
+			let newLabel: FoodsFeedbacksFoodsFeedbacksLabels = {
+				foods_feedbacks_labels_id: feedback_label_id,
+				foods_feedbacks_id: foodFeedback?.id,
+				dislikes: !nextLike
+			}
+			ownFoodFeedbackLabelsWithoutThisLabel.push(newLabel)
+			await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+		}
+		await refresh()
+	}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
+}
+
+export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined, refresh: () => void}) => {
+	const foods_feedbacks_labels_type = useFeedbackLabelsType()
+	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+	const [language, setLanguage] = useProfileLanguageCode()
+
+	const isDebug = useIsDebug()
+
+	const translation_feedback_labels = useTranslation(TranslationKeys.feedback_labels);
+
+	const feedbackLabelIdToTranslation: Record<string, string> = {}
+	if(!!foodFeedbackLabelsDict){
+		Object.keys(foodFeedbackLabelsDict).forEach((key) => {
+			let label = foodFeedbackLabelsDict[key];
+			let id = label.id;
+			let labelTranslations = label.translations as TranslationEntry[];
+			let translation = getDirectusTranslation(language, labelTranslations, 'text');
+			if(translation){
+				feedbackLabelIdToTranslation[id] = translation;
+			}
+		})
+	}
+
+	if(foods_feedbacks_labels_type === FeedbackLabelsType.disabled){
+		return null
+	}
+
+	const food_id = food.id;
+
+	let dictFoodFeedbackLabelsIdToAmount = getDictFoodFeedbackLabelsIdToAmount(remoteFoodFeedbacks);
+
+	type DataItem = { key: string; sort: number | undefined | null, data: FoodFeedbackSettingsRowDataProps}
+	const data: DataItem[] = []
+
+	Object.keys(feedbackLabelIdToTranslation).forEach((key) => {
+		let translation = feedbackLabelIdToTranslation[key];
+		if(foodFeedbackLabelsDict){
+			let label = foodFeedbackLabelsDict[key];
+			let sort = label?.sort
+			let visible = label?.visible || isDebug
+			let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
+			let amount_likes = amount_information?.amount_likes ?? null;
+			let amount_dislikes = amount_information?.amount_dislikes ?? null;
+
+			if(visible){
+				data.push({key: key,
+					sort: sort,
+					data: {
+						food_id: food_id,
+						feedback_label_id: key,
+						translation: translation,
+						amount_likes: amount_likes,
+						amount_dislikes: amount_dislikes
+					}})
+			}
+		}
+	});
+
+	// sort labels by sort value. If a sort value is set, it will be before the ones without a sort value
+	data.sort((a, b) => {
+		let sort_a = a.sort;
+		let sort_b = b.sort;
+		if(sort_a && sort_b){
+			return sort_a - sort_b;
+		} else if(sort_a){
+			return -1;
+		} else if(sort_b){
+			return 1;
+		} else {
+			return 0;
+		}
+	});
+
+	let listOfFeedbackLabels = <MyGridFlatList data={data} renderItem={(listitem) => {
+		let item: FoodFeedbackSettingsRowDataProps = listitem.item.data;
+		return <FoodFeedbackSettingsRow {...item} refresh={refresh} />
+	}} amountColumns={1} />
+
+	let debugContent = null;
+	if (isDebug) {
+		debugContent = <View>
+			<Text>{"ownFoodFeedback"}</Text>
+			<Text>{JSON.stringify(ownFoodFeedback, null, 2)}</Text>
+		</View>
+
+	}
+
+	return(
+		<View style={{width: "100%", paddingTop: 10}}>
+			<Heading>{translation_feedback_labels}</Heading>
+			<View style={{width: "100%", height: 10}} />
+			<View style={{width: "100%", height: 10}} />
+			<View style={{width: "100%", flexDirection: "row", flexWrap: "wrap"}}>
+				{listOfFeedbackLabels}
+				{debugContent}
+			</View>
+		</View>
+	)
+}
+
+export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFeedbacks}) => {
+	let comment = foodFeedback.comment+"";
+	let date_updated = foodFeedback.date_updated
+	let date_human_readable: string | undefined = undefined;
+	if(date_updated){
+		date_human_readable = DateHelper.formatOfferDateToReadable(new Date(date_updated), true, true);
+	}
+
+	return (
+		<View>
+			<SettingsRow labelLeft={comment} accessibilityLabel={comment} />
+			<View style={{
+				width: "100%",
+				justifyContent: "flex-end",
+			}}>
+				<Text size={"sm"} italic={true} style={{
+					textAlign: "right",
+				}}>{date_human_readable}</Text>
+			</View>
+		</View>
+	)
+}
+
+export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined;}) => {
 	const usedFoodId = food.id;
-	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+
+	const [language, setLanguage] = useProfileLanguageCode()
 
 	const translation_to_the_forum = useTranslation(TranslationKeys.to_the_forum);
+	const translation_your_comment = useTranslation(TranslationKeys.your_comment);
+	const translation_comments = useTranslation(TranslationKeys.comments);
+	const translation_save_comment = useTranslation(TranslationKeys.save_comment);
 
 	// get app_settings
 	const [appSettings] = useSynchedAppSettings();
@@ -71,12 +252,11 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	const foods_feedbacks_comments_type = useFeedbackCommentType()
 	const foods_feedbacks_custom_url = appSettings?.foods_feedbacks_custom_url;
 
-	const foods_feedbacks_labels_type = appSettings?.foods_feedbacks_labels_type;
-	const foods_ratings_amount_display = appSettings?.foods_ratings_amount_display;
-	const foods_ratings_average_display = appSettings?.foods_ratings_average_display;
+	if(foods_feedbacks_comments_type === FeedbackCommentType.disabled){
+		return null
+	}
 
-
-	const [comment, setStateComment] = useState<string | null>(foodFeedback?.comment ?? null);
+	const [comment, setStateComment] = useState<string | null>(ownFoodFeedback?.comment ?? null);
 	const onChangeText = (text: string) => {
 		if (text === '') {
 			setStateComment(null);
@@ -87,32 +267,186 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	}
 
 	const onSubmit = () => {
-		setComment(comment);
+		setOwnComment(comment);
 	}
 
 	let commentContent = undefined;
 
+	let saved_comment = ownFoodFeedback?.comment ?? null;
+
+	let renderedComments: any[] = [];
+
 	if(!!foods_feedbacks_custom_url){
 		commentContent = <MyButton openHrefInNewTab={true} href={foods_feedbacks_custom_url} accessibilityLabel={translation_to_the_forum} tooltip={translation_to_the_forum} text={translation_to_the_forum} leftIcon={IconNames.comment_icon} rightIcon={IconNames.open_link_icon} />
 	} else {
-		commentContent = (
-			<KeyboardAvoidingView enabled={true} keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-				<View style={{ marginBottom: 100 }}>
-					<TextInput placeholder={'Comment'} value={comment ?? ''} onChangeText={onChangeText} />
 
-					<MyButton isActive={comment !== null || (foodFeedback?.comment ?? null) !== comment}
+
+		commentContent = (
+			<View style={{ width: "100%", paddingBottom: 20}}>
+				<AccountRequiredTouchableOpacity>
+					<TextInput placeholder={translation_your_comment} value={comment ?? ''} returnKeyType={ReturnKeyType.send} onChangeText={onChangeText} onSubmitEditing={() => {
+						onSubmit();
+					}} />
+
+					<MyButton disabled={saved_comment === comment} isActive={saved_comment !== comment}
 							  borderTopRadius={0}
-							  accessibilityLabel={'Send feedback'}
-							  text={'Send feedback'}
+							  accessibilityLabel={translation_save_comment}
+							  text={translation_save_comment}
 							  leftIcon={IconNames.comment_send_icon}
 							  onPress={() => {
 								  onSubmit();
 							  }}
 					/>
-				</View>
-			</KeyboardAvoidingView>
+				</AccountRequiredTouchableOpacity>
+			</View>
 		)
 	}
+
+	if(saved_comment && ownFoodFeedback){
+		renderedComments.push(
+			<View style={{width: "100%", paddingTop: 10}}>
+				<Heading>{translation_your_comment}</Heading>
+			</View>
+		)
+
+		renderedComments.push(
+			<FoodFeedbackCommentSingle foodFeedback={ownFoodFeedback} />
+		)
+
+	}
+
+	if(foods_feedbacks_comments_type === FeedbackCommentType.read || foods_feedbacks_comments_type === FeedbackCommentType.readAndWrite){
+		type DataItem = { key: string; data: FoodsFeedbacks; date_updated:  string | null | undefined}
+		const data: DataItem[] = []
+		if (remoteFoodFeedbacks) {
+			for (let i=0; i<remoteFoodFeedbacks.length; i++) {
+				const remoteFeedback = remoteFoodFeedbacks[i];
+				if(remoteFeedback.id !== ownFoodFeedback?.id){
+					if(remoteFeedback.comment){
+						data.push({key: remoteFeedback.id, data: remoteFeedback, date_updated: remoteFeedback.date_updated})
+					}
+				}
+			}
+		}
+
+		// sort by date_updated
+		data.sort((a, b) => {
+			let date_a_as_iso_string = a.date_updated;
+			let date_b_as_iso_string = b.date_updated;
+			if(date_a_as_iso_string && date_b_as_iso_string){
+				let date_a = new Date(date_a_as_iso_string);
+				let date_b = new Date(date_b_as_iso_string);
+				return date_b.getTime() - date_a.getTime();
+			} else {
+				return 0;
+			}
+		});
+
+		renderedComments.push(
+			<MyGridFlatList data={data} renderItem={(item) => {
+				let feedback: FoodsFeedbacks = item.item.data;
+				return <FoodFeedbackCommentSingle foodFeedback={feedback} />
+			}} />
+		)
+	}
+
+	return (
+		<View style={{width: "100%", paddingTop: 10}}>
+			<Heading>{translation_comments}</Heading>
+			<View style={{width: "100%", height: 10}} />
+			{commentContent}
+			{renderedComments}
+		</View>
+	)
+
+}
+
+export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
+	const [appSettings] = useSynchedAppSettings();
+	const foods_ratings_amount_display = appSettings?.foods_ratings_amount_display;
+	const foods_ratings_average_display = appSettings?.foods_ratings_average_display;
+
+	const translation_average_rating = useTranslation(TranslationKeys.average_rating);
+	const translation_amount_rating = useTranslation(TranslationKeys.amount_ratings);
+
+
+	let ratingAmount = food.rating_amount;
+	let ratingAverage = food.rating_average;
+
+	let details = [];
+
+	if(foods_ratings_amount_display && ratingAmount !== null && ratingAmount !== undefined){
+		let borderRadiusRight = foods_ratings_average_display ? 0 : undefined
+
+		details.push(
+			<MyButton useTransparentBorderColor={true} useOnlyNecessarySpace={true} accessibilityLabel={translation_amount_rating} tooltip={translation_amount_rating} borderRightRadius={borderRadiusRight} text={ratingAmount+""} leftIcon={IconNames.amount_rating_icon} />
+		)
+	}
+
+	if(foods_ratings_average_display && ratingAverage !== null && ratingAverage !== undefined){
+		let borderRadiusLeft = foods_ratings_amount_display ? 0 : undefined
+
+		details.push(
+			<MyButton useTransparentBorderColor={true} useOnlyNecessarySpace={true} accessibilityLabel={translation_average_rating} tooltip={translation_average_rating} text={ratingAverage+""} borderLeftRadius={borderRadiusLeft} leftIcon={IconNames.average_icon} />
+		)
+	}
+
+	return <View style={{
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		flexWrap: "wrap",
+	}}>
+		<View style={{
+			paddingTop: 10,
+		}}>
+			<FoodFeedbackRating food={food} showQuickAction={false}/>
+		</View>
+		<View style={{
+			paddingTop: 10,
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+		}}>
+			{details}
+		</View>
+	</View>
+}
+
+export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
+	// get app_settings
+	const [usedFood, setUsedFood] = useState<Foods>(food);
+
+	const [remoteFoodFeedbacks, setRemoteFoodFeedbacks] = useState<FoodsFeedbacks[] | null | undefined>(undefined);
+	const isDemo = useIsDemo();
+
+	async function loadRemoteFoodsFeedbacksForFood(foodId: string): Promise<FoodsFeedbacks[]> {
+		let result = loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
+		return result;
+	}
+
+	async function loadData() {
+		console.log("loadData")
+		// load the labels from the server for the food
+		loadRemoteFoodsFeedbacksForFood(food.id)
+			.then(setRemoteFoodFeedbacks)
+			.catch(console.error);
+		loadFood(isDemo, food.id)
+			.then(setUsedFood)
+			.catch(console.error);
+	}
+
+	async function refresh() {
+		// load the labels from the server for the food
+		await loadData();
+	}
+	
+
+	useEffect(() => {
+		// load the labels from the server for the food
+		loadData();
+	}, [food.id]);
 
 	return (
 		<View style={{
@@ -122,10 +456,10 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 				width: "100%",
 				flexDirection: "row",
 			}}>
-				<FoodFeedbackRating food={food} showQuickAction={false}/>
+				<FoodFeedbackRatingDetails food={usedFood} />
 			</View>
-			<View style={{width: "100%", height: 10}} />
-			{commentContent}
+			<FoodFeedbacksLabelsComponent food={usedFood} remoteFoodFeedbacks={remoteFoodFeedbacks} refresh={refresh}/>
+			<FoodFeedbackCommentDetails food={usedFood} remoteFoodFeedbacks={remoteFoodFeedbacks}/>
 		</View>
 	)
 }
@@ -222,8 +556,18 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
-	const quickActions = <View style={{flexDirection: 'row', justifyContent: 'space-between', flexWrap: "wrap"}}>
-		<View style={{ flex: 1, flexDirection: "row" }}>
+	// get device height
+	const screenHeight = Dimensions.get('window').height;
+	const detailsMinHeight = screenHeight / 2
+
+	const quickActions = <View style={{
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		flexWrap: "wrap",
+	}}>
+		<View style={{ flexDirection: "row" }}>
 			<FoodFeedbackRating food={food} showQuickAction={false}/>
 		</View>
 		<View>
@@ -232,36 +576,46 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 	</View>
 
 	return(
-		<DetailsComponent item={food} heading={
-			food.alias
-		}
-						  subHeadingComponent={quickActions}
-						  image={{
-							  assetId: food.image,
-							  image_url: food.image_remote_url,
-						  }}
-						  tabs={
-							  [
-								  {
-									  iconName: IconNames.nutrition_icon,
-									  accessibilityLabel: translations_nutrition,
-									  text: translations_nutrition,
-									  content: <FoodNutritionDetails foodOfferData={foodOfferData}/>
-								  },
-								  {
-									  iconName: IconNames.eating_habit_icon,
-									  accessibilityLabel: translations_markings,
-									  text: translations_markings,
-									  content: <FoodMarkingDetails foodOfferData={foodOfferData}/>
-								  },
-								  {
-									  iconName: IconNames.comment_icon,
-									  accessibilityLabel: translations_food_feedbacks,
-									  text: translations_food_feedbacks,
-									  content: <FoodFeedbackDetails food={food} />
-								  },
-							  ]
-						  }
-		/>
+
+			<DetailsComponent item={food} heading={
+				food.alias
+			}
+							  subHeadingComponent={quickActions}
+							  image={{
+								  assetId: food.image,
+								  image_url: food.image_remote_url,
+							  }}
+							  tabs={
+								  [
+									  {
+										  iconName: IconNames.nutrition_icon,
+										  accessibilityLabel: translations_nutrition,
+										  text: translations_nutrition,
+										  content: <View style={{
+											  width: "100%",
+											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+										  }}><FoodNutritionDetails foodOfferData={foodOfferData}/></View>
+									  },
+									  {
+										  iconName: IconNames.eating_habit_icon,
+										  accessibilityLabel: translations_markings,
+										  text: translations_markings,
+										  content: <View style={{
+											  width: "100%",
+											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+										  }}><FoodMarkingDetails foodOfferData={foodOfferData}/></View>
+									  },
+									  {
+										  iconName: IconNames.comment_icon,
+										  accessibilityLabel: translations_food_feedbacks,
+										  text: translations_food_feedbacks,
+										  content: <View style={{
+											  width: "100%",
+											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+										  }}><FoodFeedbackDetails food={food} /></View>
+									  },
+								  ]
+							  }
+			/>
 	)
 }

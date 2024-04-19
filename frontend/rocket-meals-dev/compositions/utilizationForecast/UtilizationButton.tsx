@@ -8,10 +8,7 @@ import {useIsUtilizationForecastEnabled} from '@/states/SynchedAppSettings';
 import {loadUtilizationEntriesRemote} from '@/states/SynchedUtiliztations';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
-import {MyModal} from "@/components/modal/MyModal";
-import {useMyModalActionSheetGlobalConfig} from "@/components/modal/MyModalActionSheetGlobal";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
-import {MarkingList} from "@/components/food/MarkingList";
 
 export const useTranslationUtilizationForecast = () => {
 	const translation_forecast = useTranslation(TranslationKeys.forecast)
@@ -26,6 +23,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();
 	const accessibilityLabel = useTranslationUtilizationForecast();
 	const tooltip = accessibilityLabel
+	const title = accessibilityLabel
 	const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[] | undefined>(undefined)
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
@@ -43,6 +41,7 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 		}
 		setModalConfig({
 			key: "eating_habits",
+			title: title,
 			label: accessibilityLabel,
 			accessibilityLabel: accessibilityLabel,
 			renderAsContentInsteadItems: () => {

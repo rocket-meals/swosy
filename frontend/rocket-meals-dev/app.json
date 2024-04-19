@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "rocket-meals-dev",
+    "name": "Rocket Meals Demo",
     "slug": "rocket-meals-dev",
     "version": "0.9.0",
     "orientation": "default",
@@ -12,7 +12,7 @@
       "enabled": true,
       "url": "https://u.expo.dev/36f72583-5997-4602-8609-05f39444f2e7"
     },
-    "scheme": "myapp",
+    "scheme": "app-rocket-meals",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -27,8 +27,8 @@
         "usesNonExemptEncryption": false
       },
       "supportsTablet": true,
-      "bundleIdentifier": "com.baumgartnersoftware.rocketmealsdev",
-      "buildNumber": "6"
+      "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
+      "buildNumber": "16"
     },
     "android": {
       "adaptiveIcon": {
@@ -57,7 +57,28 @@
         {
           "username": "jack5496"
         }
-      ]
+      ],
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "The app accesses NFC read your Card balance.",
+          "includeNdefEntitlement": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 31,
+            "targetSdkVersion": 31,
+            "buildToolsVersion": "31.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.4"
+          }
+        }
+      ],
+      "expo-build-properties"
     ],
     "experiments": {
       "typedRoutes": true,

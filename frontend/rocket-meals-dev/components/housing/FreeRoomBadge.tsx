@@ -7,7 +7,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {DateHelper} from "@/helper/date/DateHelper";
 import {Text, View} from "@/components/Themed";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {MyModal} from "@/components/modal/MyModal";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 export type FreeRoomBadgeProps = {
 	apartment: Apartments,
@@ -15,8 +15,8 @@ export type FreeRoomBadgeProps = {
 }
 export const FreeRoomBadge = ({apartment, borderRadius}: FreeRoomBadgeProps) => {
 	const translation_free_rooms = useTranslation(TranslationKeys.free_rooms);
-	const [show, setShow] = React.useState(false)
 	const locale = useProfileLocaleForJsDate()
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	let available_from = apartment.available_from;
 	let available_from_date = available_from ? new Date(available_from) : new Date();
@@ -31,24 +31,34 @@ export const FreeRoomBadge = ({apartment, borderRadius}: FreeRoomBadgeProps) => 
 
 	const dislike_icon = IconNames.sort_free_rooms_icon;
 
+	const onPress = () => {
+		setModalConfig({
+			title: translation_free_rooms,
+			accessibilityLabel: accessibilityLabel,
+			key: "free_rooms",
+			label: translation_free_rooms,
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<MyScrollView>
+						<View style={{
+							width: "100%",
+						}}>
+							<Text style={{
+								textAlign: "center",
+							}}>{accessibilityLabel}</Text>
+						</View>
+					</MyScrollView>
+				)
+			}
+		})
+
+	}
+
 	return 	<>
 		<MyButton
 			isActive={true}
 			borderRadius={borderRadius}
-			onPress={() => {
-				setShow(true)
-			}}
+			onPress={onPress}
 			accessibilityLabel={accessibilityLabel} tooltip={accessibilityLabel} icon={dislike_icon} />
-		<MyModal visible={show} title={translation_free_rooms} setVisible={setShow}>
-				<MyScrollView>
-					<View style={{
-						width: "100%",
-					}}>
-						<Text style={{
-							textAlign: "center",
-						}}>{accessibilityLabel}</Text>
-					</View>
-				</MyScrollView>
-		</MyModal>
 	</>
 }

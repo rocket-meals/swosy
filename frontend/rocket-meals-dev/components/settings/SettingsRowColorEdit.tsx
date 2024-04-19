@@ -212,7 +212,7 @@ export const SettingsRowColorEdit = ({accessibilityLabel,allowCustomColor, label
 
 	let usedIconRight = rightIcon;
 	if (usedIconRight===undefined) {
-		usedIconRight = IconNames.edit
+		usedIconRight = IconNames.edit_icon
 	}
 
 	return (

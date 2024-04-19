@@ -21,15 +21,17 @@ export class TL1Parser {
     rawMealOffers = null;
     foodIdToRawMealOfferDict = null;
     path_to_tl1_export = null;
+    encoding = null;
 
-    constructor(path_to_tl1_export) {
+    constructor(path_to_tl1_export, encoding="utf-8") {
         this.path_to_tl1_export = path_to_tl1_export;
+        this.encoding = encoding;
         this.rawMealOffers = null;
         this.foodIdToRawMealOfferDict = null;
     }
 
     async createNeededData(services, database, logger){
-        this.rawMealOffers = await TL1Parser.createRawMealOffers(this.path_to_tl1_export);
+        this.rawMealOffers = await TL1Parser.createRawMealOffers(this.path_to_tl1_export, this.encoding);
         this.foodIdToRawMealOfferDict = TL1Parser.createMealIdToRawMealOfferDict(this.rawMealOffers);
     }
 
@@ -129,25 +131,27 @@ export class TL1Parser {
     static _MEALOFFERITEM_DATE = "date";
     static _MEALOFFERITEM_CANTEEN_LABEL = "canteen_label";
 
-    static async createRawMealOffers(path_to_tl1_export){
-        let rawReport = await TL1Parser.getRawReport(path_to_tl1_export);
+    static async createRawMealOffers(path_to_tl1_export, encoding){
+        let rawReport = await TL1Parser.getRawReport(path_to_tl1_export, encoding);
         let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
         let groupedReportItems = TL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
         return TL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
     }
 
-    static async getRawReport(path_to_tl1_export){
+    static async getRawReport(path_to_tl1_export, encoding){
         console.log("TL1Parser: getRawReport");
         console.log("TL1Parser: path_to_tl1_export: "+path_to_tl1_export)
         if (path_to_tl1_export) {
             try{
                 const absolutePath = path.resolve(path_to_tl1_export)
                 console.log("TL1Parser: absolutePath: "+absolutePath)
-                const content = fs.readFileSync(path.resolve(path_to_tl1_export), 'utf-8');
+                const options = {encoding: encoding};
+                const content = fs.readFileSync(path.resolve(path_to_tl1_export), options);
                 console.log("TL1 Report; length= "+content.length);
                 return content;
             } catch (err){
-                console.log("File not found yet")
+                console.log("TL1 Report read error: ")
+                console.log(err.toString())
                 return "";
             }
         }

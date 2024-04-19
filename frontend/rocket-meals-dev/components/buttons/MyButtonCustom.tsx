@@ -10,6 +10,9 @@ import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
+export const BUTTON_DEFAULT_Padding = 12;
+export const BUTTON_DEFAULT_BorderRadius = BUTTON_DEFAULT_Padding/2
+
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
     activeTextColor?: string,
@@ -85,10 +88,6 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 		rightIconUsed = rightIconActive
 	}
 
-
-	const defaultBorderRadius = 6;
-	const defaultPadding = 12;
-
 	const defaultInnerStyle: StyleProp<ViewStyle> = {
 		flexDirection: 'row',
 	}
@@ -101,21 +100,14 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	}
 
 
-	const disabledStyle: StyleProp<ViewStyle> = {
-		// @ts-ignore // This is a valid style on web
-		cursor: disabled ? 'not-allowed' : 'pointer',
-		opacity: disabled ? 0.5 : 1,
-	}
-
-
-	const leftIconPaddingRight = defaultPadding
-	const leftIconPaddingLeft = defaultPadding
+	const leftIconPaddingRight = BUTTON_DEFAULT_Padding
+	const leftIconPaddingLeft = BUTTON_DEFAULT_Padding
 
 	const leftIconViewStyle: StyleProp<ViewStyle> = {
 		backgroundColor: leftIconColoredBox ? usedIconBoxBackgroundColor : undefined,
 		paddingRight: leftIconPaddingRight,
 		paddingLeft: leftIconPaddingLeft,
-		paddingVertical: defaultPadding,
+		paddingVertical: BUTTON_DEFAULT_Padding,
 		justifyContent: 'center',
 	}
 
@@ -132,9 +124,9 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	if (text) {
 		renderedText = (
 			<View style={{
-				marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginLeft: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginRight: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
 				flexDirection: 'row', flexWrap: 'wrap',
 
 			}}
@@ -152,9 +144,9 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	if (icon) {
 		renderedText = (
 			<View style={{
-				marginVertical: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginLeft: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginRight: defaultPadding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginLeft: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+				marginRight: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
 				flexDirection: 'row', flexWrap: 'wrap',
 
 			}}
@@ -166,8 +158,8 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 
 	const rightIconViewStyle: StyleProp<ViewStyle> = {
 		paddingRight: leftIconPaddingRight,
-		paddingLeft: (!!text || !!leftIcon) ? 0 : defaultPadding,
-		paddingVertical: defaultPadding,
+		paddingLeft: (!!text || !!leftIcon) ? 0 : BUTTON_DEFAULT_Padding,
+		paddingVertical: BUTTON_DEFAULT_Padding,
 		justifyContent: 'center',
 	}
 
@@ -181,17 +173,21 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	}
 
 	const renderButton = (triggerProps: any) => {
-		const usedOnPress = async () => {
-			if (href) {
-				if (PlatformHelper.isWeb()) {
-					// on web we will use the
-				} else {
+		let usedOnPress = undefined
+		const isPressable = !disabled && (href || onPress)
+
+		if (href) {
+			if (PlatformHelper.isWeb()) {
+				usedOnPress = null
+				// on web we will use the normal href
+			} else {
+				usedOnPress = async () => {
 					await CommonSystemActionHelper.openExternalURL(href, openHrefInNewTab);
 				}
 			}
-			if (onPress) {
-				await onPress()
-			}
+		}
+		if (onPress) {
+			usedOnPress = onPress
 		}
 
 		let usedAccessibilityRole = accessibilityRole || MyAccessibilityRoles.Button
@@ -201,14 +197,29 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 			usedAccessibilityLabel = translation_navigate_to + ': ' + accessibilityLabel
 		}
 
+		const disabledStyle: StyleProp<ViewStyle> = {
+			// @ts-ignore // This is a valid style on web
+			cursor: disabled ? 'not-allowed' : (isPressable ? 'pointer' : 'default'),
+			opacity: disabled ? 0.5 : 1,
+		}
+
+
 		const renderedButton = (
 			<Pressable
 				{...triggerProps}
 				disabled={disabled}
 				onHoverIn={() => setHovered(true)}
 				onHoverOut={() => setHovered(false)}
-				onPressIn={() => setIsPressed(true)}
-				onPressOut={() => setIsPressed(false)}
+				onPressIn={() => {
+					if (isPressable) {
+						setIsPressed(true)
+					}
+				}}
+				onPressOut={() => {
+					if (isPressable) {
+						setIsPressed(false)
+					}
+				}}
 
 				accessibilityLabel={usedAccessibilityLabel}
 				accessibilityRole={usedAccessibilityRole}
@@ -221,7 +232,7 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 						justifyContent: 'flex-start',
 						alignSelf: useOnlyNecessarySpace ? 'flex-start' : undefined,
 						overflow: 'hidden',
-						borderRadius: borderRadius ?? defaultBorderRadius,
+						borderRadius: borderRadius ?? BUTTON_DEFAULT_BorderRadius,
 						borderBottomLeftRadius: borderLeftRadius ?? borderBottomRadius,
 						borderTopLeftRadius: borderLeftRadius ?? borderTopRadius,
 						borderBottomRightRadius: borderRightRadius ?? borderBottomRadius,

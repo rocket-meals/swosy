@@ -6,7 +6,7 @@ import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper
 import {getMyDrawerItemIcon} from '@/components/drawer/MyDrawerItemIcon';
 import {getMyDrawerItemLabel} from '@/components/drawer/MyDrawerItemLabel';
 import {useProjectColor} from '@/states/ProjectInfo';
-import {Text, View} from "@/components/Themed";
+import {Text, useViewBackgroundColor, View} from "@/components/Themed";
 import {PlatformPressable} from "@react-navigation/elements";
 import {Platform, StyleProp, ViewStyle} from "react-native";
 import {Link} from "@react-navigation/native";
@@ -133,13 +133,14 @@ export const MyDrawerCustomItemCenter = (customItem: MyDrawerCustomItemProps) =>
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
 
 	const projectColor = useProjectColor()
+	const viewBackgroundColor = useViewBackgroundColor();
 
 	// @ts-ignore
 	let label = getMyDrawerItemLabel(customItem.label);
 	const drawer_item_accessibility_label = translation_navigate_to + ' ' + customItem.label
 	const key = customItem?.label
 	const isFocused = customItem.isFocused;
-	const backgroundColor = isFocused ? projectColor : undefined
+	const backgroundColor = isFocused ? projectColor : viewBackgroundColor
 
 	let onPress: any = undefined;
 	if (customItem.onPress) {

@@ -1,14 +1,15 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent} from 'react';
 import {SimpleDatePickerComponent} from './SimpleDatePickerComponent';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DateHelper} from '@/helper/date/DateHelper';
 import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
 import {useProjectColor, useProjectColorContrast} from '@/states/ProjectInfo';
-import {useTextContrastColor, View} from '@/components/Themed';
+import {useTextContrastColor} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
-import {MyModal} from "@/components/modal/MyModal";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export interface SimpleDatePickerProps {
     currentDate: Date,
@@ -47,45 +48,48 @@ export const SimpleDatePicker: FunctionComponent<SimpleDatePickerProps> = (props
 	const weekdayBackgroundColor = useProjectColor();
 	const weekdayTextColor = useProjectColorContrast();
 
-	const [show, setShow] = useState(false);
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const onSelectDate = (date: Date) => {
 		if (props.onSelectDate) {
 			props.onSelectDate(date);
 		}
-		setShow(false);
+		setModalConfig(null)
 	}
 
 	const onPress = () => {
-		setShow(true);
+		setModalConfig({
+			title: selectDateTranslation,
+			label: selectDateTranslation,
+			accessibilityLabel: selectDateTranslation,
+			key: 'datePicker',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<MyScrollView>
+						<SimpleDatePickerComponent
+							currentDate={props.currentDate}
+							textColor={textColor}
+							selectedTextColor={selectedTextColor}
+							selectedDateColor={selectedDateColor}
+							weekdayBackgroundColor={weekdayBackgroundColor}
+							weekdayTextColor={weekdayTextColor}
+							weekStartsAtDay={weekStartsAtDay}
+							onSelectDate={onSelectDate}
+							renderDate={props.renderDate}
+							locale={locale}
+							yearTranslation={yearTranslation}
+							monthTranslation={monthTranslation}
+							selectedTranslation={selectedTranslation}
+						/>
+					</MyScrollView>
+				)
+			}
+		})
 	}
 
 	return (
 		<>
 			<MyButton useTransparentBorderColor={true} tooltip={accessibilityLabel} useOnlyNecessarySpace={true} leftIcon={IconNames.calendar_icon} accessibilityLabel={accessibilityLabel} onPress={onPress} />
-			<MyModal visible={show} title={selectDateTranslation} setVisible={setShow} >
-					<SimpleDatePickerComponent
-						currentDate={props.currentDate}
-						textColor={textColor}
-						selectedTextColor={selectedTextColor}
-						selectedDateColor={selectedDateColor}
-						weekdayBackgroundColor={weekdayBackgroundColor}
-						weekdayTextColor={weekdayTextColor}
-						weekStartsAtDay={weekStartsAtDay}
-						onSelectDate={onSelectDate}
-						renderDate={props.renderDate}
-						locale={locale}
-						yearTranslation={yearTranslation}
-						monthTranslation={monthTranslation}
-						selectedTranslation={selectedTranslation}
-					/>
-					<View style={{
-						height: 20, width: '100%'
-					}}
-					>
-
-					</View>
-			</MyModal>
 		</>
 	)
 }

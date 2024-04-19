@@ -30,7 +30,9 @@ export const SettingsRowFirstDayOfWeek: FunctionComponent<AppState> = ({...props
 		if (option.value) {
 			value = option.value as Weekday;
 		}
-		setFirstDayOfWeekRaw(value);
+		setFirstDayOfWeekRaw((currentValue) => {
+			return value;
+		});
 		hide()
 	}
 

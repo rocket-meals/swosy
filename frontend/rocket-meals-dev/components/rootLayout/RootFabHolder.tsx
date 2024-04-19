@@ -5,7 +5,7 @@ import {
 } from '@/states/ColorScheme';
 import {Icon, View, Text} from '@/components/Themed';
 import {MyFab} from '@/components/fab/MyFab';
-import {useIsDevelop} from '@/states/Develop';
+import {useIsDeveloperModeActive} from '@/states/Develop';
 import {useNavigation} from "expo-router";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {MyButton} from "@/components/buttons/MyButton";
@@ -61,7 +61,7 @@ const DevelopThemeSwitch = () => {
 }
 
 export const RootFabHolder = (props: RootFabHolderProps) => {
-	const isDevelopMode = useIsDevelop();
+	const isDevelopMode = useIsDeveloperModeActive();
 
 	const developHelperComponents = []
 	if (isDevelopMode) {

@@ -114,6 +114,8 @@ export const MyModal = (props: MyModalProps) => {
 	 */
 	const supportedOrientations: Array<'portrait' | 'portrait-upside-down' | 'landscape' | 'landscape-left' | 'landscape-right'> = ['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']
 
+	const MODAL_HEIGHT_PERCENT = 80;
+
 	return(
 		<Modal animationType={"none"} onRequestClose={onCancel} supportedOrientations={supportedOrientations} presentationStyle={"overFullScreen"} visible={visible} style={{
 			zIndex: 1000,
@@ -128,12 +130,12 @@ export const MyModal = (props: MyModalProps) => {
 			}}>
 
 				<MyTouchableOpacity accessibilityLabel={translation_cancel} onPress={onCancel} style={{
-					height: "20%",
+					height: (100-MODAL_HEIGHT_PERCENT)+"%",
 					width: "100%",
 				}} />
 				<View style={{
 					width: "100%",
-					height: "80%",
+					height: MODAL_HEIGHT_PERCENT+"%",
 					backgroundColor: viewBackgroundColor,
 					borderColor: borderColor,
 					borderTopWidth: 1,

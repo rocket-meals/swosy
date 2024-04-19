@@ -24,11 +24,9 @@ export const SettingsRowSyncBooleanSwitch: FunctionComponent<AppState & Settings
 	}
 
 	function onPress(nextValue: boolean) {
-		if (nextValue) {
-			setIsChecked(true);
-		} else {
-			setIsChecked(false);
-		}
+		setIsChecked((currentValue) => {
+			return !currentValue;
+		});
 		if (props.onPress) {
 			props.onPress(nextValue);
 		}

@@ -5,6 +5,7 @@ import * as noInternetConnectionSource from '@/assets/animations/no_internet_con
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
 import {MyProjectColoredLottieAnimation} from '@/components/lottie/MyProjectColoredLottieAnimation';
+import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 
 interface AppState {
 
@@ -65,16 +66,29 @@ export const PleaseConnectFirstTimeWithInternet: FunctionComponent<AppState> = (
 				alignItems: 'center'
 			}}
 			>
-				<MyProjectColoredLottieAnimation accessibilityLabel={accessibilityLabel}
-					style={{
-						width: 300,
-						height: 300,
-					}}
-					source={noInternetConnectionSource}
-				/>
-				<Heading>
-					{accessibilityLabel}
-				</Heading>
+				<View style={{
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}>
+					<Heading>
+						{accessibilityLabel}
+					</Heading>
+				<View style={{
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}>
+					<RectangleWithLayoutCharactersWide amountOfCharactersWide={30}>
+						<MyProjectColoredLottieAnimation style={{
+							width: '100%',
+							height: '100%'
+						}} accessibilityLabel={accessibilityLabel}
+														 source={noInternetConnectionSource}
+						/>
+					</RectangleWithLayoutCharactersWide>
+				</View>
+				</View>
 			</View>
 
 		</MySafeAreaView>

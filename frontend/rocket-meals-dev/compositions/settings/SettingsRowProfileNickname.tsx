@@ -1,8 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {useIsDebug} from '@/states/Debug';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {useNickname, useSynchedProfile} from '@/states/SynchedProfile';
-import {Text, View} from '@/components/Themed';
+import {useNickname} from '@/states/SynchedProfile';
 import {SettingsRowTextEdit} from '@/components/settings/SettingsRowTextEdit';
 import {IconNames} from '@/constants/IconNames';
 
@@ -10,7 +9,6 @@ interface AppState {
 
 }
 export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...props}) => {
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
 	const [nickname, setNickname] = useNickname()
 	const debug = useIsDebug();
 
@@ -28,8 +26,7 @@ export const SettingsRowProfileNickname: FunctionComponent<AppState> = ({...prop
 
 	return (
 		<>
-			<SettingsRowTextEdit onSave={onSave} labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props}>
-			</SettingsRowTextEdit>
+			<SettingsRowTextEdit onSave={onSave} labelLeft={label} accessibilityLabel={accessibilityLabel} labelRight={labelRight} leftIcon={leftIcon} {...props} />
 		</>
 	)
 }

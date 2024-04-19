@@ -4,13 +4,17 @@ import {
 	Devices,
 	DirectusUsers,
 	FoodsFeedbacks,
-	Markings,
+	Languages,
 	Profiles,
 	ProfilesBuildingsFavorites,
 	ProfilesBuildingsLastVisited,
 	ProfilesMarkings
 } from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
+import {
+	NewValueRawSingleType,
+	useSynchedResourceSingleRawValue,
+	useSynchResourceSingleRawSetter
+} from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsCurrentUserAnonymous} from '@/states/User';
@@ -19,9 +23,10 @@ import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslati
 import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
+import {useCallback} from "react";
 
 async function loadProfileRemoteByProfileId(id: string) {
-	const profileRelations = ['markings', 'foods_feedbacks', 'devices', 'buildings_favorites', 'buildings_last_visited']
+	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
 	const profileFields = profileRelations.map(x => x+'.*').concat(['*']);
 
 	const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
@@ -66,49 +71,61 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
 	return await loadProfileRemoteByProfileId(id as string);
 }
 
-export function useSynchedProfile(): [(Partial<Profiles>), ((newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)>), (number | undefined)] {
-	const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
+	const [setResource, setResourceRaw] = useSynchResourceSingleRawSetter<Partial<Profiles>>(PersistentStore.profile);
+
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
-	const lastUpdate = resourceRaw?.lastUpdate;
-	let usedSetResource: (newValue: Partial<Profiles>, timestamp?: number) => Promise<(boolean | void)> = async (newValue, timestamp) => {
-		return setResource(newValue, timestamp);
-	};
-	if (isServerOnline && !isCurrentUserAnonymous) {
-		usedSetResource = async (newValue: Partial<Profiles>, timestamp?: number) => {
-			console.log('useSynchedProfile setProfile online');
-			const profile_id = newValue?.id || resourceOnly?.id;
-			console.log('profile_id: ', profile_id)
-			if (profile_id) {
-				try {
+	const usedSetResource = useCallback(
+		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => {
+			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
 
-					// Sync with remote
-					//const remoteAnswer = await updateProfileRemote(profile_id, newValue);
-					//console.log('remoteAnswer: ', remoteAnswer)
+			setResource((currentValue) => {
+				const newValue = callback(currentValue);
+				const profile_id = newValue?.id || currentValue?.id;
 
-					updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
-						console.log('remoteAnswer: ', remoteAnswer)
-					}).catch((err) => {
-						console.log(err)
-					})
+				if (isServerOnline && !isCurrentUserAnonymous) {
+					if (profile_id && newValue) {
+						console.log('profile_id: ', profile_id);
 
-					setResource(newValue, timestamp);
-					return true;
-				} catch (err) {
-					console.log(err)
-					return false;
+
+						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+							console.log('remoteAnswer: ', remoteAnswer);
+						}).catch((err) => {
+							console.log(err);
+						});
+
+
+						return newValue;
+					} else {
+						console.error('Profile ID not found');
+					}
 				}
-			} else {
-				setResource(newValue, timestamp);
-				return true;
-			}
-		}
-	}
+
+				return newValue;
+			}, timestamp);
+		},
+		// Dependencies for useCallback
+		[isServerOnline, isCurrentUserAnonymous, setResource]
+	);
+
+	return [usedSetResource, setResourceRaw]
+}
+
+export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
+	//const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
+	const [usedSetResource, setResourceRaw] = useSynchedProfileSetter();
+	const resourceRaw = useSynchedResourceSingleRawValue<Profiles, NewValueRawSingleType<Profiles>>(PersistentStore.profile)
+	const resourceOnly = resourceRaw?.data
+
 	let usedResource = resourceOnly;
 	if (!usedResource) {
 		usedResource = {}
 	}
+
+	const lastUpdate = resourceRaw?.lastUpdate;
+
 	return [usedResource, usedSetResource, lastUpdate]
 }
 
@@ -118,14 +135,14 @@ export enum PriceGroups {
     Guest = 'guest'
 }
 export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
-	const setPriceGroup = (priceGroup: string) => {
-		profile.price_group = priceGroup;
-		return setProfile(profile);
-	}
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const profilePriceGroup = useSynchedResourceSingleRawValue<Profiles, (string | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.price_group
+	});
 
 	let usedPriceGroup = PriceGroups.Student;
-	const profilePriceGroup = profile?.price_group;
+	//const profilePriceGroup = profile?.price_group;
 	if (profilePriceGroup) {
 		// check if profilePriceGroup is a valid PriceGroup
 		if (profilePriceGroup === PriceGroups.Student || profilePriceGroup === PriceGroups.Employee || profilePriceGroup === PriceGroups.Guest) {
@@ -133,38 +150,70 @@ export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => voi
 		}
 	}
 
+	const setPriceGroup = useCallback((priceGroup: string) => {
+		setProfile((currentProfile) => {
+			if(currentProfile){
+				currentProfile.price_group = priceGroup;
+			}
+			return currentProfile;
+		})
+	}, [setProfile]);
+
+
 
 	return [usedPriceGroup, setPriceGroup];
 }
 
-export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => Promise<boolean | void>)] {
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
-	async function setNickname(nextValue: string | undefined) {
-		console.log('SettingsRowProfileNickname onSave', nextValue)
-		return await setProfile({...profile, nickname: nextValue})
-	}
-	const nickname = profile?.nickname
+export function useNickname(): [string | null | undefined, ((newValue: string | undefined) => boolean | void)] {
+	//const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+	const [setProfile] = useSynchedProfileSetter();
+	const nickname = useSynchedResourceSingleRawValue<Profiles, (string | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.nickname
+	});
+
+
+	const setNickname = useCallback((nickname: string | undefined) => {
+		setProfile((currentValue) => {
+			if(currentValue){
+				currentValue.nickname = nickname;
+			}
+			return currentValue;
+		});
+	}, [setProfile]);
+	//const nickname = profile?.nickname
 	return [nickname, setNickname]
 }
 
 export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 	let [canteen, setCanteen] = useSynchedProfileCanteen();
 	const [buildingDict, setBuildingDict] = useSynchedBuildingsDict()
-	let building_id = canteen?.building;
-	let building = buildingDict[building_id];
+	let building_id = canteen?.building as string;
+	let building = buildingDict?.[building_id];
 	let coordinates = building?.coordinates;
 	let location = CoordinateHelper.getLocation(coordinates);
 	return location;
 }
 
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
-	const setLanguage = (language: string) => {
-		profile.language = language;
-		return setProfile(profile);
-	}
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const profileLanguage = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.language
+	});
+
+
+	const setLanguage = useCallback((language: string) => {
+			setProfile((currentValue) => {
+				if(currentValue){
+					currentValue.language = language;
+				}
+				return currentValue;
+			});
+		},
+		[setProfile]
+	);
 	let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
-	const profileLanguage = profile?.language;
+	//const profileLanguage = profile?.language;
 	if (profileLanguage) {
 		if (typeof profileLanguage !== 'string') {
 			usedLanguage = profileLanguage.code
@@ -186,189 +235,140 @@ export function useProfileLocaleForJsDate(): string {
 	return locale;
 }
 
-export function useSynchedProfileCanteen(): [Canteens | undefined, ((newValue: Canteens) => void)] {
-	const [profile, setProfile] = useSynchedProfile();
+export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newValue: Canteens | null) => void)] {
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const canteen_id = useSynchedResourceSingleRawValue<Profiles, (string | Canteens | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.canteen
+	});
+
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
-	const canteen_id = profile?.canteen as string;
+	//const canteen_id = profile?.canteen as string;
 	let canteen = undefined
 	if (canteenDict && canteen_id) {
 		canteen = canteenDict[canteen_id];
 	}
 
-	const setCanteen = (canteen: Canteens) => {
-		profile.canteen = canteen.id;
-		return setProfile(profile);
-	}
+	const setCanteen = useCallback((newValue: Canteens | null) => {
+		setProfile((currentValue) => {
+			if(currentValue){
+				if(newValue === null) {
+					currentValue.canteen = null;
+					return currentValue;
+				} else {
+					currentValue.canteen = newValue.id;
+					return currentValue;
+				}
+			}
+		});
+	}, [setProfile]);
+
 	return [canteen, setCanteen];
 }
 
-export function useIsProfileSetupComplete(): boolean {
-	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen(); // We do not need a canteen to be set
-	// we should check if the user is first time user and has not set any data
-
-	const requiredSetVariables: any[] = []
-	for (let i=0; i<requiredSetVariables.length; i++) {
-		const requiredVariable = requiredSetVariables[i];
-		if (!requiredVariable) {
-			return false;
-		}
-	}
-
-	return true;
-}
+export function useAccountBalance(): [number | null | undefined, ((newValue: number | null | undefined) => void)] {
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const credit_balance = useSynchedResourceSingleRawValue<Profiles, (number | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.credit_balance
+	});
 
 
-export function useSynchedProfileFoodFeedbacksDict(): [Record<string, FoodsFeedbacks | undefined>, ((food_id: string) => (FoodsFeedbacks | undefined)), ((food_id: string, rating: (number | null)) => Promise<boolean | void>), ((food_id: string, notify: (boolean | null)) => Promise<boolean | void>), ((food_id: string, comment: (string | null)) => Promise<boolean | void>)]
-{
-	const [profile, setProfile] = useSynchedProfile();
-	const profileFoodFeedbacksList: FoodsFeedbacks[] = profile?.foods_feedbacks || [];
-
-	const profilesFoodIdToFoodFeedbacksDict: Record<string, FoodsFeedbacks> = {};
-	for (let i=0; i<profileFoodFeedbacksList.length; i++) {
-		const profilesFoodFeedback: FoodsFeedbacks = profileFoodFeedbacksList[i];
-		const food_id = profilesFoodFeedback.food;
-		if (!!food_id && typeof food_id === 'string') {
-			profilesFoodIdToFoodFeedbacksDict[food_id] = profilesFoodFeedback;
-		}
-	}
-
-	const useOwnFoodFeedback = (food_id: string): FoodsFeedbacks | undefined => {
-		return profilesFoodIdToFoodFeedbacksDict[food_id];
-	}
-
-	const setFoodFeedback = async (food_id: string, rating: number | null |undefined, notify: boolean | undefined | null, comment: string | null| undefined) => {
-		const foodFeedbacksDictCopy = JSON.parse(JSON.stringify(profilesFoodIdToFoodFeedbacksDict))
-		let existingFoodFeedback = foodFeedbacksDictCopy[food_id];
-		if (!existingFoodFeedback) {
-			existingFoodFeedback = {
-				food: food_id,
-				profile: profile.id
+	const setAccountBalance = useCallback((newValue: number | null | undefined) => {
+		setProfile((currentValue) => {
+			if (currentValue) {
+				currentValue.credit_balance = newValue;
 			}
-		}
+			return currentValue;
+		});
+	}, [setProfile]);
+	//const credit_balance = profile?.credit_balance;
 
-		if (rating !== undefined) {
-			existingFoodFeedback.rating = rating;
-		} else if (notify !== undefined) {
-			existingFoodFeedback.notify = notify;
-		} else if (comment !== undefined) {
-			existingFoodFeedback.comment = comment;
-		}
-
-		const ratingIsNull = existingFoodFeedback.rating === null || existingFoodFeedback.rating === undefined;
-		const notifyIsNull = existingFoodFeedback.notify === null || existingFoodFeedback.notify === false || existingFoodFeedback.notify === undefined;
-		const commentIsNull = existingFoodFeedback.comment === null || existingFoodFeedback.comment === undefined || existingFoodFeedback.comment === '';
-		const shouldRemove = ratingIsNull && notifyIsNull && commentIsNull;
-
-		if (shouldRemove) {
-			delete foodFeedbacksDictCopy[food_id];
-		} else {
-			foodFeedbacksDictCopy[food_id] = existingFoodFeedback;
-		}
-
-		const newFoodFeedbacks: FoodsFeedbacks[] = [];
-		const foodIds = Object.keys(foodFeedbacksDictCopy);
-		for (const foodId of foodIds) {
-			newFoodFeedbacks.push(foodFeedbacksDictCopy[foodId]);
-		}
-		profile.foods_feedbacks = newFoodFeedbacks;
-		return await setProfile(profile);
-	}
-
-	const setOwnFoodRating = async (food_id: string, rating: number | null) => {
-		return await setFoodFeedback(food_id, rating, undefined, undefined);
-	}
-
-	const setOwnFoodNotify = async (food_id: string, notify: boolean | null) => {
-		return await setFoodFeedback(food_id, undefined, notify, undefined);
-	}
-
-	const setOwnFoodFeedbackComment = async (food_id: string, comment: string | null) => {
-		return await setFoodFeedback(food_id, undefined, undefined, comment);
-	}
-
-	return [profilesFoodIdToFoodFeedbacksDict, useOwnFoodFeedback, setOwnFoodRating, setOwnFoodNotify, setOwnFoodFeedbackComment];
+	return [credit_balance, setAccountBalance];
 }
 
-export function useSynchedProfileFoodFeedback(food_id: string): [FoodsFeedbacks | undefined, ((rating: number | null) => Promise<boolean | void>), ((notify: boolean | null) => Promise<boolean | void>), ((comment: string | null) => Promise<boolean | void>)] {
-	const [profilesFoodIdToFoodFeedbacksDict, useOwnFoodFeedback, setOwnFoodRating, setOwnFoodNotify, setOwnFoodFeedbackComment] = useSynchedProfileFoodFeedbacksDict();
-	const foodFeedback = useOwnFoodFeedback(food_id);
+export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, dislikes: boolean) => void, (marking_id: string) => void] {
+	//const markingsRaw = useSyncStateValue<Profiles, ProfilesMarkings[]>(PersistentStore.profile, (storedProfile) => {
+	//	return storedProfile?.markings;
+	//});
+	//const setProfile = useSyncStateSetter<Profiles>(PersistentStore.profile);
+	const [setProfile] = useSynchedProfileSetter();
+	const markingsRaw = useSynchedResourceSingleRawValue<Profiles, (ProfilesMarkings[] | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.markings;
+	});
 
+	const profileMarkingsList: ProfilesMarkings[] = markingsRaw || [];
 
-	const setRating = async (rating: number | null) => {
-		return await setOwnFoodRating(food_id, rating);
-	}
-	const setNotify = async (notify: boolean | null) => {
-		return await setOwnFoodNotify(food_id, notify);
-	}
-	const setComment = async (comment: string | null) => {
-		return await setOwnFoodFeedbackComment(food_id, comment);
-	}
-	return [foodFeedback, setRating, setNotify, setComment];
-}
-
-export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking: Markings, dislikes: boolean) => void, (marking: Markings) => void] {
-	const [profile, setProfile] = useSynchedProfile();
-	const profileMarkingsList: ProfilesMarkings[] = profile?.markings || [];
-	const profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+	let markingsDictDep = "";
 	for (let i=0; i<profileMarkingsList.length; i++) {
 		const profilesMarking = profileMarkingsList[i];
-		const markings_key = profilesMarking.markings_id;
-		if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
-			profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
+		markingsDictDep += ""+profilesMarking.dislikes + profilesMarking.markings_id;
+	}
+
+	const useProfilesMarkingsDict = useCallback(() => {
+		const profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
+		for (let i=0; i<profileMarkingsList.length; i++) {
+			const profilesMarking = profileMarkingsList[i];
+			const markings_key = profilesMarking.markings_id;
+			markingsDictDep += ""+profilesMarking.dislikes + profilesMarking.markings_id;
+			if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
+				profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
+			}
 		}
-	}
+		return profilesMarkingsDict;
+	}, [markingsDictDep]);
 
-	const privateSetMarkings = async (marking: Markings, dislikes: boolean, remove: boolean) => {
-		const markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
+	const profilesMarkingsDict: Record<string, ProfilesMarkings> = useProfilesMarkingsDict();
 
-		const newProfileMarking: Partial<ProfilesMarkings> = {
-			markings_id: marking.id,
-			profiles_id: profile?.id,
-			dislikes: dislikes
-		};
-		markingsDictCopy[marking.id] = newProfileMarking;
+	const privateSetMarkings = useCallback((marking_id: string, dislikes: boolean, remove: boolean) => {
+		//const markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
+		setProfile((currentProfile) => {
+			if(currentProfile){
+				const newProfileMarking: Partial<ProfilesMarkings> = {
+					markings_id: marking_id,
+					profiles_id: currentProfile?.id,
+					dislikes: dislikes
+				};
+				let currentProfileMarkings = currentProfile?.markings || [];
+				currentProfileMarkings.push(newProfileMarking as ProfilesMarkings);
 
-		if (remove) {
-			delete markingsDictCopy[marking.id];
-		}
+				if (remove) {
+					currentProfileMarkings = currentProfileMarkings.filter((x) => x.markings_id !== marking_id);
+				}
 
-		const markingsIds = Object.keys(markingsDictCopy);
-		const newMarkings: ProfilesMarkings[] = [];
-		for (const markingId of markingsIds) {
-			newMarkings.push(markingsDictCopy[markingId]);
-		}
+				currentProfile.markings = currentProfileMarkings;
+			}
+			return currentProfile;
+		});
+	}, [setProfile]);
 
-		profile.markings = newMarkings;
-		setProfile(profile);
-	}
+	const setProfileMarking = useCallback((marking_id: string, dislikes: boolean) => {
+		privateSetMarkings(marking_id, dislikes, false);
+	}, [privateSetMarkings]);
 
-	const setProfileMarking = (marking: Markings, dislikes: boolean) => {
-		privateSetMarkings(marking, dislikes, false);
-	}
-
-	const removeProfileMarking = (marking: Markings) => {
-		privateSetMarkings(marking, false, true);
-	}
+	const removeProfileMarking = useCallback((marking_id: string) => {
+		privateSetMarkings(marking_id, false, true);
+	}, [privateSetMarkings]);
 
 
 	return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
 }
 
-export function useSynchedProfileMarking(marking: Markings): [ProfilesMarkings, ((nextStatus: boolean) => Promise<void>), (() => Promise<void>)] {
+export function useSynchedProfileMarking(marking_id: string): [boolean | null | undefined, (dislikes: boolean) => void, () => void] {
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
-	const markingFromProfile = profilesMarkingsDict[marking.id]
 
-	const setMarking = async (nextStatus: boolean) => {
-		return setProfileMarking(marking, nextStatus)
-	}
+	const setMarking = useCallback((dislikes: boolean) => {
+		setProfileMarking(marking_id, dislikes);
+	}, [marking_id]);
 
-	const removeMarking = async () => {
-		return removeProfileMarking(marking)
-	}
+	const removeMarking = useCallback(() => {
+		removeProfileMarking(marking_id);
+	}, [marking_id]);
 
-	return [markingFromProfile, setMarking, removeMarking];
+	const dislikes = profilesMarkingsDict[marking_id]?.dislikes;
 
+	return [dislikes, setMarking, removeMarking];
 }
 
 export function getEmptyProfile(): Partial<Profiles> {

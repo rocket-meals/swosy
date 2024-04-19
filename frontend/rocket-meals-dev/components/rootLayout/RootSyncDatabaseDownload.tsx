@@ -18,6 +18,8 @@ import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/
 import {useSynchedNewsDict} from '@/states/SynchedNews';
 import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
+import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
+import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -48,14 +50,13 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const registeredItemsToLoad: any[] = [];
 
-	const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
-	const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, lastUpdateCollectionsDates, updateCollectionsDatesFromServer] = useSynchedCollectionsDatesLastUpdateDict()
-
 	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
 	const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
 	const [businesshoursDict, setBusinesshoursDict, lastUpdateBusinesshours, updateBusinesshoursFromServer] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
+	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels, updateFoodsFeedbacksLabelsFromServer]	= useSynchedFoodsFeedbacksLabelsDict()
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks, updateOwnFoodFeedbacksFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
 	const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
 	const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
@@ -68,6 +69,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
 	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
+
+
 		registeredItemsToLoad.push(resource);
 		synchedResourcesToDownloadFirst[label] = {
 			data: resource,
@@ -80,12 +83,13 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
    */
 
 	addSynchedResourceToDownloadFirst('translations', translationsDict, lastUpdateTranslations)
-	addSynchedResourceToDownloadFirst('app_settings', app_settings, lastUpdateAppSettings)
 	addSynchedResourceToDownloadFirst('canteens', canteensDict, lastUpdateCanteens)
 	addSynchedResourceToDownloadFirst('businesshours', businesshoursDict, lastUpdateBusinesshours)
 	addSynchedResourceToDownloadFirst('buildings', buildingsDict, lastUpdateBuildings)
+	addSynchedResourceToDownloadFirst('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels)
 	addSynchedResourceToDownloadFirst('profile', profile, lastUpdateProfile);
 	addSynchedResourceToDownloadFirst('wikis', wikisDict, lastUpdateWikis)
+	addSynchedResourceToDownloadFirst('ownFoodFeedbacks', ownFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks)
 	addSynchedResourceToDownloadFirst('languages', languagesDict, lastUpdateLanguages)
 	addSynchedResourceToDownloadFirst('markings', markingsDict, lastUpdateMarkings);
 	addSynchedResourceToDownloadFirst('apartments', apartmentsDict, lastUpdateApartments);
@@ -118,7 +122,12 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 					isResourceSynched = false
 				}
 			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
+				console.log("server is cached");
+				console.log("synchedResourceLastUpdate: ",synchedResourceLastUpdate);
+				console.log("nowInMs: ",nowInMs);
+				console.log("synchedResource: ",synchedResource);
 				isResourceSynched = !!synchedResource
+				console.log("isResourceSynched: ",isResourceSynched);
 			}
 			if (!isResourceSynched) {
 				return false;
@@ -141,13 +150,19 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			const remoteProfile = await loadProfileRemoteByUser(currentUser)
 			console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
 			if (remoteProfile) {
-				setProfile(remoteProfile, nowInMs);
+				setProfile((currentProfile) => {
+					return remoteProfile;
+				}, nowInMs);
 			}
 		} else {
 			if (!!profile && JSON.stringify(profile) !== JSON.stringify({})) {
-				setProfile(profile, nowInMs)
+				setProfile((currentProfile) => {
+					return profile;
+				}, nowInMs)
 			} else {
-				setProfile(getEmptyProfile(), nowInMs)
+				setProfile((currentProfile) => {
+					return getEmptyProfile();
+				}, nowInMs)
 			}
 		}
 	}
@@ -161,12 +176,13 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 				if (!demo) {
 					// TODO: Improve by running all updates in parallel using Promise.all?
 					await updateTranslationsFromServer(nowInMs)
-					await updateAppSettingsFromServer(nowInMs)
 					await updateCanteensFromServer(nowInMs);
 					await updateBusinesshoursFromServer(nowInMs);
 					await updateBuildingsFromServer(nowInMs);
+					await updateFoodsFeedbacksLabelsFromServer(nowInMs);
 					await updateProfile()
 					await updateWikisFromServer(nowInMs)
+					await updateOwnFoodFeedbacksFromServer(nowInMs)
 					await updateLanguagesFromServer(nowInMs)
 					await updateMarkingsFromServer(nowInMs)
 					await updateApartmentsFromServer(nowInMs)

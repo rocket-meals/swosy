@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {Businesshours, Canteens, CanteensBusinesshours} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup} from '@/states/SynchedUtiliztations';
@@ -10,7 +10,7 @@ import {getDemoBuildings} from "@/states/SynchedBuildings";
 async function loadCanteensFromServer(): Promise<Canteens[]> {
 	const collectionHelper = new CollectionHelper<Canteens>('canteens');
 
-	const fields = ['*', 'utilization_group.*', "businesshours.*"];
+	const fields = ['*', 'utilization_group.*', "foodservice_hours.*"];
 
 	const query = {
 		limit: -1,
@@ -20,9 +20,8 @@ async function loadCanteensFromServer(): Promise<Canteens[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined), ((newValue: Record<string, Canteens>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Canteens>(PersistentStore.canteens);
+export function useSynchedCanteensDict(): [( Record<string, Canteens | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, Canteens | null | undefined> | null | undefined)) => Record<string, Canteens | null | undefined>, timestamp?: (number | undefined)) => void), (number | undefined), (nowInMs?: number) => Promise<void>] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Canteens>(PersistentStore.canteens);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -33,7 +32,9 @@ export function useSynchedCanteensDict(): [(Record<string, Canteens> | undefined
 	async function updateFromServer(nowInMs?: number) {
 		const canteensList = await loadCanteensFromServer()
 		const canteensDict = CollectionHelper.convertListToDict(canteensList, 'id')
-		setResourcesOnly(canteensDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return canteensDict;
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
@@ -67,12 +68,11 @@ function getDemoCanteens(): Record<string, Canteens> {
 	return resources
 }
 
-
 /**
  * Returns a dictionary of canteen businesshours
  * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
  */
-export function useSynchedCanteensBusinesshours(): Record<string, Businesshours[] | undefined>
+export function useSynchedCanteensFoodServicehours(): Record<string, Businesshours[] | undefined>
  {
 	 const isDemo = useIsDemo()
 	 const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
@@ -84,8 +84,8 @@ export function useSynchedCanteensBusinesshours(): Record<string, Businesshours[
 	 for (const canteenId in canteensDict) {
 		 const canteen_id_as_string: string = canteenId
 		 const canteen = canteensDict[canteenId]
-		 if (canteen.businesshours) {
-			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.businesshours as CanteensBusinesshours[]
+		 if (canteen?.foodservice_hours) {
+			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.foodservice_hours as CanteensBusinesshours[]
 			 let businesshours: Businesshours[] = []
 			 if(isDemo) {
 				 let demoKeys = Object.keys(demoBusinesshoursDict)

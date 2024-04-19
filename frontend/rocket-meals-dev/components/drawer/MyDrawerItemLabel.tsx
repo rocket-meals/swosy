@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text} from '@/components/Themed';
+import {Text, useViewBackgroundColor} from '@/components/Themed';
 import {useProjectColor} from '@/states/ProjectInfo';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 
@@ -44,10 +44,13 @@ export const getMyDrawerItemLabel = (label: string | undefined) => {
  */
 export const MyDrawerItemLabel = ({ focused, color, label }: MyCustomDrawerItemLabelProps) => {
 	const projectColor = useProjectColor(); // Fetch the current project color for theme consistency.
-	const contrastColor = useMyContrastColor(projectColor); // Calculate a contrasting color based on the project color for better visibility.
+	const projectContrastColor = useMyContrastColor(projectColor); // Calculate a contrasting color based on the project color for better visibility.
+	const viewBackgroundColor = useViewBackgroundColor();
+	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor);
+	const usedColor = focused ? projectContrastColor : viewBackgroundContrastColor; // Determine the label color based on focus state.
 
 	// Render the label within a Text component, dynamically adjusting its color based on the focus state.
 	return (
-		<Text style={{ color: focused ? contrastColor : color }}>{label}</Text>
+		<Text style={{ color: usedColor }}>{label}</Text>
 	);
 }

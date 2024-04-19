@@ -18,6 +18,7 @@ import {RootSyncDatabaseDownload} from '@/components/rootLayout/RootSyncDatabase
 import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotificationDeepLink';
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {RootSyncSettingsDownload} from "@/components/rootLayout/RootSyncSettingsDownload";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -60,7 +61,9 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 						setCurrentUser(me);
 					} catch (e) {
 						//console.log("AuthFlowUserCheck useEffect error", e)
-						setAuthData(null) // TODO maybe a logout function would be better
+						setAuthData((currentValue) => {
+							return null;
+						}) // TODO maybe a logout function would be better
 						setCurrentUser(null);
 					}
 				} else {
@@ -68,17 +71,24 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 					// this means we are either logged out (not authenticated) or anonymous
 					console.log('Lets check what the cached user is')
 					console.log('cachedUser', cachedUserRaw)
-					const isUserAnonymous = getIsCachedUserAnonymous(cachedUserRaw);
+					let usedCachedUserRaw = cachedUserRaw;
+					const isUserAnonymous = getIsCachedUserAnonymous(usedCachedUserRaw);
 					//console.log("isUserAnonymous", isUserAnonymous)
 					if (isUserAnonymous) { // if we are anonymous, we can set the user to the cached user
-						setCurrentUser(cachedUserRaw?.data);
+						console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are anonymous')
+						setCurrentUser(usedCachedUserRaw?.data);
 					} else { // if we are not anonymous, we are logged out (not authenticated) so we can set the user to null
+						console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are not anonymous')
 						setCurrentUser(null);
 					}
 				}
 			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 				//console.log("AuthFlowUserCheck useEffect server is offline, but we have cached data")
-				setCurrentUser(cachedUserRaw?.data);
+				let usedCachedUserRaw = cachedUserRaw;
+				if(typeof cachedUserRaw === 'string') {
+					usedCachedUserRaw = JSON.parse(cachedUserRaw)
+				}
+				setCurrentUser(usedCachedUserRaw?.data);
 			} else { // if server is offline and we have no cached data, we can't check if we are logged in
 				//console.log("AuthFlowUserCheck useEffect server is offline and we have no cached data")
 				setCurrentUser(null);
@@ -98,12 +108,14 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	console.log('AuthFlowUserCheck currentUserRaw: ', currentUserRaw)
 
 	return (
-		<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
-			<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
-				<RootNotificationDeepLink key={currentUser?.id+''}>
-					{props.children}
-				</RootNotificationDeepLink>
-			</RootSyncDatabaseUpload>
-		</RootSyncDatabaseDownload>
+		<RootSyncSettingsDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+			<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+				<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
+					<RootNotificationDeepLink key={currentUser?.id+''}>
+						{props.children}
+					</RootNotificationDeepLink>
+				</RootSyncDatabaseUpload>
+			</RootSyncDatabaseDownload>
+		</RootSyncSettingsDownload>
 	)
 }

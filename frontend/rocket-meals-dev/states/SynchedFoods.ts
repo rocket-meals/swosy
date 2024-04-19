@@ -1,12 +1,19 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Foods, FoodsMarkings} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {
+	Foods,
+	FoodsFeedbacks,
+	FoodsFeedbacksFoodsFeedbacksLabels,
+	FoodsMarkings
+} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {getDemoMarkings} from "@/states/SynchedMarkings";
+import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 
 export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestampe?: number) => void), (number | undefined)] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Foods>(PersistentStore.foods);
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -70,4 +77,116 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 			translations: translations,
 		}
 	)
+}
+
+
+export function getDictFoodFeedbackLabelsIdToAmount(feedbacks: FoodsFeedbacks[] | null | undefined): Record<string, {
+	amount_likes: number,
+	amount_dislikes: number,
+} | undefined> {
+	let feedbacksLabelsIdsCounted: Record<string, {
+		amount_likes: number,
+		amount_dislikes: number,
+	}> = {}
+	if(feedbacks) {
+		for (let feedback of feedbacks) {
+			for(let label of feedback.labels){
+				let feedbacksLabelsId = label.foods_feedbacks_labels_id
+				let dislikes: boolean | undefined | null = label.dislikes;
+				let counted = feedbacksLabelsIdsCounted[feedbacksLabelsId] || {
+					amount_likes: 0,
+					amount_dislikes: 0,
+				};
+				if(dislikes === true){
+					counted.amount_dislikes++;
+				} else if(dislikes === false){
+					counted.amount_likes++;
+				} else {
+					// skip if dislikes is undefined or null
+				}
+				feedbacksLabelsIdsCounted[feedbacksLabelsId] = counted;
+			}
+		}
+	}
+	return feedbacksLabelsIdsCounted
+}
+
+export function getFoodFeedbackLabelsIdsFromFeedbacksWithLabels(feedbacks: (FoodsFeedbacks)[]): string[] {
+	let feedbacksLabelsIds: string[] = []
+	for (let feedback of feedbacks) {
+		for (let label of feedback.labels) {
+			feedbacksLabelsIds.push(label.foods_feedbacks_labels_id)
+		}
+	}
+	return feedbacksLabelsIds
+}
+
+export async function loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId: string, isDemo?: boolean): Promise<FoodsFeedbacks[]> {
+	if(isDemo) {
+		return getDemoFoodsFeedbacks()
+	}
+
+	let foodCollectionHelper = new CollectionHelper<FoodsFeedbacks>('foods_feedbacks')
+
+	// create a query which finds all labels for the given foodId
+	let query = {
+		fields: ["*", "labels.*"],
+		filter: {
+			_and: [
+				{
+					food: {
+						_eq: foodId
+					}
+				}
+			]
+		}
+	};
+
+	console.log("loadFoodsFeedbacksLabelIdsForFood query", query)
+	let foodsFeedbacks = await foodCollectionHelper.readItems(query)
+	return foodsFeedbacks
+}
+
+function getDemoFoodsFeedbacks(): FoodsFeedbacks[] {
+	let amountResources = 100;
+	let demoFoodsFeedbacks: FoodsFeedbacks[] = []
+	for (let i = 0; i < amountResources; i++) {
+		demoFoodsFeedbacks.push(getDemoFoodFeedbackWithLabels(i))
+	}
+	return demoFoodsFeedbacks
+}
+
+export function getDemoFoodFeedbackWithLabels(index: number): FoodsFeedbacks {
+	let feedbackId = "demoFeedbackId" + index
+	let rating = index % 5
+
+	let demoLabelsDict = getDemoFoodsFeedbacksLabelsDict();
+	let demoLabelKeys = Object.keys(demoLabelsDict)
+	let labelKey = demoLabelKeys[(index % demoLabelKeys.length)]
+
+	let labelRelation: FoodsFeedbacksFoodsFeedbacksLabels = {
+		foods_feedbacks_id: feedbackId,
+		foods_feedbacks_labels_id: labelKey,
+		id: index
+	}
+
+	let date_updated = new Date();
+	// add 1 day for each feedback in the past
+	date_updated.setDate(date_updated.getDate() - index);
+	let date_updated_string = date_updated.toISOString();
+
+	return {
+		status: "published",
+		id: feedbackId,
+		food: "demoFoodId",
+		profile: "demoProfileId "+index,
+		date_updated: date_updated_string,
+		date_created: date_updated_string,
+		rating: rating,
+		comment: "demoComment "+index,
+		notify: true,
+		labels: [
+			labelRelation
+		]
+	}
 }

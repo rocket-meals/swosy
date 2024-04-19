@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import { Wikis} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
@@ -27,9 +27,9 @@ async function loadWikisFromServer(): Promise<Wikis[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((newValue: Record<string, Wikis>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Wikis>(PersistentStore.wikis);
+export function useSynchedWikisDict(): [ Record<string, Wikis | null | undefined> | null | undefined, ((callback: (currentValue: Record<string, Wikis | null | undefined> | null | undefined) => Record<string, Wikis | null | undefined>, timestamp?: number | undefined) => void), number | undefined, ((nowInMs?: number | undefined) => Promise<void>)]
+{
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Wikis>(PersistentStore.wikis);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -40,7 +40,9 @@ export function useSynchedWikisDict(): [(Record<string, Wikis> | undefined), ((n
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadWikisFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

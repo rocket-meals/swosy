@@ -1,9 +1,9 @@
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {Foods} from "@/helper/database/databaseTypes/types";
-import {useSynchedProfileFoodFeedback} from "@/states/SynchedProfile";
 import React from "react";
 import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
+import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 
 export const useFeedbackRatingType = (): RatingType => {
 	const [appSettings] = useSynchedAppSettings();
@@ -33,11 +33,11 @@ export const useFeedbackRatingType = (): RatingType => {
 export const FoodFeedbackRating = ({food, showQuickAction, borderRadius}: {food: Foods, showQuickAction: boolean, borderRadius?: number}) => {
 	let foods_ratings_type = useFeedbackRatingType();
 	const usedFoodId = food.id;
-	const [foodFeedback, setRating, setNotify, setComment] = useSynchedProfileFoodFeedback(usedFoodId);
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
 
 	const rating: number | undefined | null = foodFeedback?.rating;
 
 	return <AccountRequiredTouchableOpacity>
-		<MyRatingButton borderRadius={borderRadius} rating={rating} showQuickAction={showQuickAction} ratingType={foods_ratings_type} setRating={setRating} />
+		<MyRatingButton borderRadius={borderRadius} rating={rating} showQuickAction={showQuickAction} ratingType={foods_ratings_type} setRating={setOwnRating} />
 	</AccountRequiredTouchableOpacity>
 }

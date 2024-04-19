@@ -2,7 +2,7 @@ import {MyCardWithText, MyCardWithTextProps} from '@/components/card/MyCardWithT
 import {DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {Rectangle} from '@/components/shapes/Rectangle';
 import React, {ReactNode} from 'react';
-import {Spinner, Text, View} from '@/components/Themed';
+import {MySpinner, Text, View} from '@/components/Themed';
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {MyButton} from "@/components/buttons/MyButton";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
@@ -11,12 +11,13 @@ import {PermissionHelper} from "@/helper/permission/PermissionHelper";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import * as ImagePicker from 'expo-image-picker';
-import {ImagePickerAsset} from 'expo-image-picker';
+import {ImagePickerAsset, launchCameraAsync} from 'expo-image-picker';
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
 import {uploadFiles} from "@directus/sdk";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {ImagePickerOptions} from "expo-image-picker/src/ImagePicker.types";
 
 
 export type MyCardForResourcesWithImageProps = {
@@ -25,6 +26,7 @@ export type MyCardForResourcesWithImageProps = {
 	borderColor?: string,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined | null,
+	placeholderAssetId?: string | DirectusFiles | undefined | null,
     image_url?: string | undefined | null,
     imageHeight?: number,
     bottomRightComponent?: ReactNode,
@@ -82,7 +84,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 					padding: 20,
 				}}>
 					<Text>{"Please wait"}</Text>
-					<Spinner />
+					<MySpinner />
 					<MyButton accessibilityLabel={"Dismiss"} onPress={() => {
 						hide()
 					} } />
@@ -98,19 +100,28 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 			const usedGranted = usedPermission?.granted;
 			const canRequest = usedPermission?.canAskAgain;
 
-			const usedAspects = props.aspect || [4, 3];
+			const usedAspects = props.aspect || [1, 1];
 
 			if (usedGranted) {
-				const result = await ImagePicker.launchImageLibraryAsync({
+				let imageLibraryOptions: ImagePickerOptions = {
 					mediaTypes: ImagePicker.MediaTypeOptions.Images,
 					allowsEditing: true,
 					aspect: usedAspects,
 					quality: 1,
 					// only 1
+					allowsMultipleSelection: false,
 					selectionLimit: 1,
-				});
+				};
 
-				if (!result.canceled) {
+
+				let result = null;
+				if(useCamera) {
+					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
+				} else {
+					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
+				}
+
+				if (!!result && !result.canceled) {
 					setLoading()
 					const assets: ImagePickerAsset[] | null = result.assets;
 					if (assets) {
@@ -338,7 +349,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 }
 
 // define the button component
-export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
+export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, placeholderAssetId, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
 	const imageUploaderConfig = props.imageUploaderConfig;
 	const imageUploader = imageUploaderConfig ? <ImageUploaderComponent {...imageUploaderConfig} /> : null;
@@ -351,6 +362,7 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 	const topContent = (
 		<Rectangle>
 			<ImageWithComponents image={{
+				fallbackAssetId: placeholderAssetId,
 				image_url: image_url,
 				assetId: assetId,
 				thumbHash: thumbHash,

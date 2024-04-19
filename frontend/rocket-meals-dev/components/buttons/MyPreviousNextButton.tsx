@@ -12,7 +12,7 @@ export type MyPreviousNextButtonProps = {
 export const MyPreviousNextButton = (props: MyPreviousNextButtonProps) => {
 	const forward = props.forward;
 	const iconName = forward ? IconNames.chevron_right_icon : IconNames.chevron_left_icon;
-	const translation_next = useTranslation(TranslationKeys.next);
+	const translation_next = useTranslation(TranslationKeys.proceed);
 	const translation_previous = useTranslation(TranslationKeys.previous);
 	const translation = props.translation;
 

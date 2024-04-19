@@ -1,7 +1,7 @@
 import {Foodoffers} from '@/helper/database/databaseTypes/types';
 import PricingBadge, {formatPrice, PricingBadgeProps} from '@/components/pricing/PricingBadge';
 import useProfilePricing from '@/components/pricing/useProfilePricing';
-import {usePriceGroupSelectedName, useShowPriceGroupModal} from "@/compositions/settings/SettingsRowPriceGroup";
+import {usePriceGroupSelectedName, useNavigateToPriceGroup} from "@/compositions/settings/SettingsRowPriceGroup";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import React from "react";
@@ -19,7 +19,7 @@ export default function IndividualPricingBadge(props: IndivididualPricingBadgePr
 	const translation_edit = useTranslation(TranslationKeys.edit)
 
 	const selectedPriceGroupName = usePriceGroupSelectedName();
-	const onPress = useShowPriceGroupModal();
+	const onPress = useNavigateToPriceGroup();
 
 	if (!profilePricing) {
 		return null;

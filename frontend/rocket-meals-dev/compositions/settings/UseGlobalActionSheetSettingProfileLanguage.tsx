@@ -54,8 +54,12 @@ export const useProfileLanguageModal = () => {
 				}
 				return renderedContent
 			},
-			onSelect: async (code: string) => {
-				setSavedLanguageKey(code)
+			onSelect: async (code: string, hide: () => void) => {
+				console.log('Selected language: '+code)
+				setSavedLanguageKey((currentValue) => {
+					return code
+				})
+				hide()
 			}
 		})
 	}
@@ -64,6 +68,7 @@ export const useProfileLanguageModal = () => {
 		setModalConfig({
 			key: "profile_language",
 			label: title,
+			title: title,
 			accessibilityLabel: title,
 			items: items
 

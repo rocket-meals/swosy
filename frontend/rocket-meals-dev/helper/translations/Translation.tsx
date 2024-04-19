@@ -54,16 +54,51 @@ export class TranslationKeys {
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
 
+	static dataAccess = createTranslationKey('dataAccess', 'Datenauskunft'); // Datenauskunft in english is data access
+
+	static your_comment = createTranslationKey('your_comment', 'Dein Kommentar');
+	static comments = createTranslationKey('comments', 'Kommentare');
+	static save_comment = createTranslationKey('save_comment', 'Kommentar speichern');
+
+	static average_rating = createTranslationKey('average_rating', 'Durchschnittsbewertung');
+	static amount_ratings = createTranslationKey('amount_ratings', 'Anzahl Bewertungen');
+
+	static accountbalance = createTranslationKey('accountbalance', 'Guthaben');
 	static sort = createTranslationKey('sort', 'Sortieren');
 	static sort_option_none = createTranslationKey('none', 'Keine');
 	static sort_option_alphabetical = createTranslationKey('alphabetical', 'Alphabetisch');
 	static sort_option_favorite = createTranslationKey('favorite', 'Favorit');
+	static sort_option_public_rating = createTranslationKey('public_rating', 'Öffentliche Bewertung');
 	static sort_option_intelligent = createTranslationKey('intelligent', 'Intelligent');
 	static sort_option_distance = createTranslationKey('distance', 'Distanz');
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
 
+	static data_access_introduction = createTranslationKey('data_access_introduction', `## 🌟 Deine Daten - Dein Recht
+
+Wir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format. 
+
+### 🛠 Hilfe Benötigt?
+Keine Sorge, falls du mit JSON nicht vertraut bist! Unser Team steht bereit, um jede Frage zu klären und dir bei der Dateninterpretation zur Seite zu stehen.
+
+Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
+`);
+	static your_data_which_we_know_if_you_have_a_profile = createTranslationKey('your_data_known_to_us_if_you_have_a_profile', 'Deine Daten, die uns bekannt sind, wenn du ein Profil hast.');
+	static translation_all_on_device_saved_data = createTranslationKey('translation_all_on_device_saved_data', 'Alle auf dem Gerät gespeicherten Daten.');
+
+	static success = createTranslationKey('success', 'Erfolg');
+
+	static maintenance = createTranslationKey('maintenance', 'Wartung');
+	static maintenance_message = createTranslationKey('maintenance_message', 'Du kannst eine gespeicherte Version der App verwenden, aber einige Funktionen sind möglicherweise nicht verfügbar.');
+	static maintenance_estimated_end = createTranslationKey('maintenance_estimated_end', 'Voraussichtliches Ende der Wartung');
+	static use_cached_version = createTranslationKey('use_cached_version', 'Gespeicherte Version verwenden');
+
 	static foods = createTranslationKey('foods', 'Speisen');
 	static apartments = createTranslationKey('apartments', 'Wohnungen');
+
+	static nfcReadCard = createTranslationKey('nfcReadCard', 'NFC Karte lesen');
+	static nfcNotSupported = createTranslationKey('nfcNotSupported', 'NFC wird nicht unterstützt');
+	static nfcNotEnabled = createTranslationKey('nfcNotEnabled', 'NFC ist nicht aktiviert');
+	static nfcInstructionRead = createTranslationKey('nfcInstructionRead', 'Halte dein Gerät an die Karte, um sie zu lesen.');
 
 	static new = createTranslationKey('new', 'Neu');
 
@@ -88,6 +123,8 @@ export class TranslationKeys {
 	static set_rate_as_favorite = createTranslationKey('set_rate_as_favorite', 'Bewertung als Favorit');
 	static set_rate_as_not_favorite = createTranslationKey('set_rate_as_not_favorite', 'Bewertung nicht als Favorit');
 
+	static feedback_labels = createTranslationKey('feedback_labels', 'Rückmeldungen');
+
 	static open_navitation_to_location = createTranslationKey('open_navitation_to_location', 'Navigation zum Standort öffnen');
 	static distance_based_canteen_selection_or_if_asked_on_real_location = createTranslationKey('distance_based_canteen_selection_or_if_asked_on_real_location', 'Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.');
 	static coordinates = createTranslationKey('coordinates', 'Koordinaten');
@@ -99,7 +136,10 @@ export class TranslationKeys {
 
 	static animation = createTranslationKey('animation', 'Animation');
 	static allergene = createTranslationKey('allergene', 'Allergene');
+	static eatinghabits_introduction = createTranslationKey('eatinghabits_introduction', `Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.`);
 	static notification = createTranslationKey('notification', 'Benachrichtigung');
+
+	static support = createTranslationKey('support', 'Support');
 
 	static price_group = createTranslationKey('price_group', 'Preisgruppe');
 	static price_group_student = createTranslationKey('price_group_student', 'Student');
@@ -114,14 +154,13 @@ export class TranslationKeys {
 	static washing_machine = createTranslationKey('washing_machine', 'Waschmaschine');
 	static washing_machines = createTranslationKey('washing_machines', 'Waschmaschinen');
 	static washingmachine_state_finished = createTranslationKey('washingmachine_state_finished', 'Waschen beendet');
-	static washingmachine_state_running = createTranslationKey('washingmachine_state_running', 'Wäscht gerade');
 	static washingmachine_estimate_finished_at = createTranslationKey("washingmachine_estimate_finished", "Voraussichtlich fertig um");
 	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
 
 	static active = createTranslationKey('active', 'Aktiv');
-	static activate = createTranslationKey('activate', 'Aktiveren');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');
-	static deactivate = createTranslationKey('deactivate', 'Deaktivieren');
+	static state_current = createTranslationKey('state_current', 'Status aktuell');
+	static state_next = createTranslationKey('state_next', 'Status danach');
 
 	static import = createTranslationKey('import', 'Importieren');
 	static event = createTranslationKey('event', 'Veranstaltung');
@@ -150,10 +189,12 @@ export class TranslationKeys {
 	static month = createTranslationKey('month', 'Monat');
 	static selected = createTranslationKey('selected', 'Ausgewählt');
 
-	static next = createTranslationKey('next', 'Weiter');
+	static proceed = createTranslationKey('next', 'Weiter');
 	static previous = createTranslationKey('previous', 'Zurück');
 
 	static businesshours = createTranslationKey('businesshours', 'Geschäftszeiten');
+	static foodservicehours = createTranslationKey('foodservicehours', 'Essenszeiten');
+
 	static until = createTranslationKey('until', "bis");
 
 	static day = createTranslationKey('day', 'Tag');
@@ -212,6 +253,9 @@ export class TranslationKeys {
 	static closed_after = createTranslationKey('closed_after', 'Geschlossen ab');
 
 	static food_details = createTranslationKey('food_details', 'Gericht Details');
+
+	static i_like_that = createTranslationKey('i_like_that', 'Gefällt mir');
+	static i_dislike_that = createTranslationKey('i_dislike_that', 'Gefällt mir nicht');
 
 	static show_login_with_username_and_password = createTranslationKey('show_login_with_username_and_password', 'Mitarbeiter-Login');
 	static email = createTranslationKey('email', 'E-Mail');

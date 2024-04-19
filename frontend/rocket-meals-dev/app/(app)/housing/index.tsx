@@ -132,7 +132,7 @@ function sortApartments(resources: Apartments[], buildingsDict: Record<string, B
 
 export default function HousingScreen() {
 	const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict()
-	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 	const additionalInformationMarkdown = useHousingAdditionalInformationMarkdown()
 
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigApartments);
@@ -185,8 +185,10 @@ export default function HousingScreen() {
   	let image_url: string | undefined = undefined
   	let thumb_hash: string | undefined = undefined
 
+    let building = undefined
+    let imageUploaderConfig = undefined
   	if (!!buildingsDict && resource.building && typeof resource.building === 'string') {
-  		const building = buildingsDict[resource.building]
+  		building = buildingsDict[resource.building]
 
   		if (typeof building !== 'string') {
   			if (building?.image) {
@@ -199,6 +201,14 @@ export default function HousingScreen() {
   				thumb_hash = building.image_thumb_hash
   			}
   		}
+
+		imageUploaderConfig = {
+			resourceId: resource.building,
+			resourceCollectionName: 'buildings',
+			onImageUpdated: async () => {
+				await updateBuildingsFromServer();
+			}
+		}
   	}
 
   	return (
@@ -218,6 +228,7 @@ export default function HousingScreen() {
 				router.push(`/(app)/housing/${resource.id}`)
 			}}
   			accessibilityLabel={title}
+			imageUploaderConfig={imageUploaderConfig}
   		/>
   	);
   }

@@ -8,6 +8,7 @@ import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {router} from "expo-router";
 
 export type AvailableOption = {
     value: string | null | undefined | Weekday
@@ -34,100 +35,9 @@ export function usePriceGroupSelectedName(){
 	return selectedOptionName;
 }
 
-export const useShowPriceGroupModal = () => {
-	const usedIconName: string = IconNames.price_group_icon
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
-
-	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
-
-	const title = useTranslation(TranslationKeys.price_group)
-
-	const translation_select = useTranslation(TranslationKeys.select)
-
-	const translation_edit = useTranslation(TranslationKeys.edit)
-
-	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
-	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
-	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
-
-	const priceGroupToName: {[key in PriceGroups]: string}
-		= {
-		[PriceGroups.Student]: translation_price_group_student,
-		[PriceGroups.Employee]: translation_price_group_employee,
-		[PriceGroups.Guest]: translation_price_group_guest,
-	}
-
-	const priceGroupToIcon: {[key in PriceGroups]: string}
-		= {
-		[PriceGroups.Student]: IconNames.price_group_student,
-		[PriceGroups.Employee]: IconNames.price_group_employee,
-		[PriceGroups.Guest]: IconNames.price_group_guest,
-	}
-
-	const availableOptions: { [key: string]: AvailableOption } = {
-	}
-
-	const availablePriceGroupKeys = Object.keys(priceGroupToName);
-	for (let i=0; i<availablePriceGroupKeys.length; i++) {
-		const availablePriceGroupKey = availablePriceGroupKeys[i] as PriceGroups
-		const name = priceGroupToName[availablePriceGroupKey];
-		const icon = priceGroupToIcon[availablePriceGroupKey];
-		availableOptions[availablePriceGroupKey] = {
-			value: availablePriceGroupKey as PriceGroups,
-			name: name,
-			icon: icon
-		}
-	}
-
-	const items: MyModalActionSheetItem[] = []
-
-	let selectedOptionName = priceGroupToName[priceGroup]
-	const availableOptionKeys: string[] = Object.keys(availableOptions);
-	for (let i=0; i<availableOptionKeys.length; i++) {
-		const optionKey: string = availableOptionKeys[i];
-		const option = availableOptions[optionKey];
-		const active = priceGroup === option.value
-		if (active) {
-			selectedOptionName = option.name;
-		}
-
-		const icon = option.icon
-		const itemAccessibilityLabel = translation_select+': '+option.name
-
-		items.push({
-			key: optionKey,
-			label: option.name,
-			iconLeft: icon,
-			active: active,
-			accessibilityLabel: itemAccessibilityLabel,
-			onSelect: async (value: string) => {
-				await setPriceGroup(value as PriceGroups)
-			}
-		})
-	}
-
-
-	function renderPriceAnimation() {
-		return (
-			<View style={{
-				width: '100%',
-			}}
-			>
-				<AnimationPriceGroup />
-			</View>
-		)
-	}
-
+export const useNavigateToPriceGroup = () => {
 	const onPress = () => {
-		setModalConfig({
-			key: "price_group",
-			label: translation_edit+' '+title,
-			accessibilityLabel: translation_edit+' '+title,
-			renderAsContentPreItems: (key, hide) => {
-				return renderPriceAnimation()
-			},
-			items: items,
-		})
+		router.push('/(app)/settings/price-group/');
 	}
 
 	return onPress
@@ -140,7 +50,7 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 	const usedIconName: string = IconNames.price_group_icon
 
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
-	const showPriceGroupModal = useShowPriceGroupModal();
+	const navigateToPriceGroup = useNavigateToPriceGroup();
 
 	const title = useTranslation(TranslationKeys.price_group)
 
@@ -165,13 +75,12 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 
 	const labelRight = selectedOptionName
 
-	const onPress = showPriceGroupModal
+	const onPress = navigateToPriceGroup
 
 
 	return (
 		<>
 			<SettingsRow labelLeft={label} labelRight={labelRight} onPress={onPress} accessibilityLabel={accessibilityLabel} leftContent={label} leftIcon={usedIconName} {...props}  />
 		</>
-
 	)
 }

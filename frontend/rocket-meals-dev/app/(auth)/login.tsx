@@ -14,7 +14,7 @@ import {useNickname} from '@/states/SynchedProfile';
 import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowProfileLanguage';
 import {IconNames} from '@/constants/IconNames';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
-import {MyModalConfirmer} from "@/components/modal/MyModalConfirmer";
+import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -24,7 +24,12 @@ export default function Login() {
 	const [nickname, setNickname] = useNickname()
 
 	const [changedLoginStatus, setChangedLoginStatus] = useState(false)
-	const [showAnonymousWarning, setShowAnonymousWarning] = useState(false)
+	const onWarnAboutAnonymousLogin = useMyModalConfirmer({
+		onConfirm: handleLoginAsAnonymous,
+		renderAsContentPreItems: (key: string, hide: () => void) => {
+			return renderAnonymousAttention();
+		}
+	})
 
 	const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
 	const translation_show_login_with_username_and_password = useTranslation(TranslationKeys.show_login_with_username_and_password);
@@ -105,7 +110,7 @@ export default function Login() {
 
 	async function proceed_to_authenticate_as_anonymous() {
 		if(WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES){
-			setShowAnonymousWarning(true)
+			onWarnAboutAnonymousLogin()
 		} else {
 			handleLoginAsAnonymous()
 		}
@@ -217,9 +222,6 @@ export default function Login() {
 		return(
 			<>
 				<ButtonAuthAnonym onPress={proceed_to_authenticate_as_anonymous} />
-				<MyModalConfirmer onConfirm={handleLoginAsAnonymous} visible={showAnonymousWarning} setVisible={setShowAnonymousWarning}>
-					{renderAnonymousAttention()}
-				</MyModalConfirmer>
 			</>
 		)
 	}
