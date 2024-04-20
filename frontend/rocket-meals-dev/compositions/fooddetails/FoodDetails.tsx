@@ -6,7 +6,7 @@ import {
 } from '@/helper/database/databaseTypes/types';
 import {Heading, Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
-import {loadFood, loadFoodFromServer, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
+import {loadFood, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
