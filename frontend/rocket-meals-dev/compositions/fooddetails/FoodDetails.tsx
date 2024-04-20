@@ -35,6 +35,7 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
+import DirectusSmallImageOrIconComponent from "@/components/image/DirectusSmallImageOrIconComponent";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -80,6 +81,8 @@ type FoodFeedbackSettingsRowDataProps = {food_id: string, feedback_label_id: str
 type FoodFeedbackSettingsRowProps = {refresh: () => void} & FoodFeedbackSettingsRowDataProps
 const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
 	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
+	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
+	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
 
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
 	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
@@ -87,8 +90,10 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	let statusSet = dislikesRaw === true || dislikesRaw === false;
 	const likes = statusSet ? !dislikesRaw : undefined;
 
+	let iconLeftCustom = <DirectusSmallImageOrIconComponent resource={foodFeedbackLabel} />
 
 	return <SettingsRowTriStateLikeDislike
+		iconLeftCustom={iconLeftCustom}
 		renderRightContentWrapper={(rightContent) => {
 			return <AccountRequiredTouchableOpacity>
 					{rightContent}

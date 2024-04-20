@@ -7,6 +7,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import DirectusImage from "@/components/project/DirectusImage";
+import DirectusSmallImageOrIconComponent from "@/components/image/DirectusSmallImageOrIconComponent";
 
 export default function MarkingListItem({ markingId }: { markingId: string }) {
 	// Memoize the MarkingListItemReal component
@@ -49,18 +50,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 		const text = translated_name || marking.alias || marking.id;
 		const accessibilityLabel = translation_marking+": "+text;
 
-		const iconLeft = marking.icon
-		let iconLeftCustom = undefined
-		if(iconLeft){
-			iconLeftCustom = <Icon family={"MaterialIcons"} name={iconLeft} />
-		}
-		if(marking.image || marking.image_remote_url){
-			iconLeftCustom = <View style={{
-				width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', borderRadius: 3
-			}}>
-				<DirectusImage image_url={marking.image_remote_url} assetId={marking.image} thumbHash={marking.image_thumb_hash} style={{width: "100%", height: "100%"}} />
-			</View>
-		}
+		let iconLeftCustom = <DirectusSmallImageOrIconComponent resource={marking} />
 
 		const onPress = (like: boolean | undefined) => {
 			const removeMarking = like === undefined;
