@@ -91,7 +91,7 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	return <SettingsRowTriStateLikeDislike
 		renderRightContentWrapper={(rightContent) => {
 			return <AccountRequiredTouchableOpacity>
-				{rightContent}
+					{rightContent}
 			</AccountRequiredTouchableOpacity>
 		}}
 		onSetState={async (nextLike: boolean | undefined) => {
