@@ -107,9 +107,7 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 		rightButtons = props.renderRightContentWrapper(rightButtons)
 	}
 
-	const rightContent: any = (
-			{rightButtons}
-	)
+	const rightContent: any = rightButtons
 
 	return (
 		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabel} {...props} rightContent={rightContent} />
