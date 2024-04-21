@@ -55,7 +55,7 @@ export function Icon({name, size, family, ...props}: IconProps) {
 		content = <MaterialCommunityIcons name={name} size={useSize} {...props} />
 	}
 	if(usedFamily === 'MaterialIcons'){
-		content = <MaterialIcons name={"set-meal"} size={useSize} {...props} />
+		content = <MaterialIcons name={name} size={useSize} {...props} />
 	}
 
 
