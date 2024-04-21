@@ -24,7 +24,8 @@ import {config} from '@gluestack-ui/config';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
 import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
-import {MaterialIcons} from "@expo/vector-icons";
+import {FontAwesome5, FontAwesome6, Ionicons, MaterialIcons} from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type ThemeProps = {
   lightColor?: string;
@@ -56,6 +57,18 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	}
 	if(usedFamily === 'MaterialIcons'){
 		content = <MaterialIcons name={name} size={useSize} {...props} />
+	}
+	if(usedFamily === 'FontAwesome'){
+		content = <FontAwesome name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'FontAwesome5'){
+		content = <FontAwesome5 name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'FontAwesome6'){
+		content = <FontAwesome6 name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'Ionicons'){
+		content = <Ionicons name={name} size={useSize} {...props} />
 	}
 
 

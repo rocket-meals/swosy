@@ -1,11 +1,13 @@
-import {Icon, View} from '@/components/Themed';
+import {Icon, View, Text} from '@/components/Themed';
 import React from 'react';
 import DirectusImage from "@/components/project/DirectusImage";
+import {StringHelper} from "@/helper/string/StringHelper";
 
 export default function DirectusSmallImageOrIconComponent({ resource }: { resource: any }) {
-	const iconLeft = resource.icon
+	let iconLeft = resource.icon
 	let iconLeftCustom = undefined
 	if(iconLeft){
+		iconLeft = StringHelper.replaceAll(iconLeft, "_", "-") // directus uses _ instead of - for icon names
 		iconLeftCustom = <Icon family={"MaterialIcons"} name={iconLeft} />
 	}
 	if(resource.image || resource.image_remote_url){

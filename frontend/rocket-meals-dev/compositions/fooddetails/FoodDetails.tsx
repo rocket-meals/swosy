@@ -20,7 +20,7 @@ import {useIsDebug} from "@/states/Debug";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
-import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {DETAILS_COMPONENT_MARGIN_HORIZONTAL, DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
