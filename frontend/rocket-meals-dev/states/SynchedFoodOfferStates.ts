@@ -78,14 +78,16 @@ export async function loadFood(isDemo: boolean, food_id: string): Promise<Foods>
 	return await loadFoodFromServer(food_id);
 }
 
-export async function loadFoodOffer(isDemo: boolean, foodoffer_id: string): Promise<Foodoffers> {
+export async function loadFoodOffer(isDemo: boolean, foodoffer_id: string): Promise<Foodoffers | null> {
 	if(isDemo){
-		let foodOffers = getDemoFoodOffersForDate(new Date());
+		let foodOffers = getDemoFoodOffersForDate(undefined);
+		console.log("SynchedFoodOfferStates: loadFoodOffer: isDemo: true, foodOffers", foodOffers)
 		for(let foodOffer of foodOffers){
 			if(foodOffer.id === foodoffer_id){
 				return foodOffer;
 			}
 		}
+		return null;
 	}
 
 	return await loadFoodOfferFromServer(foodoffer_id);
@@ -171,33 +173,42 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 	return await collectionHelper.readItems(query);
 }
 
-function getDemoFoodOffersForDate(date: Date): Foodoffers[]
+function getDemoFoodOffersForDate(date: Date | undefined): Foodoffers[]
 {
-	if (DateHelper.isWeekend(date)) {
-		return [];
+	if(!!date){
+		if (DateHelper.isWeekend(date)) {
+			return [];
+		}
 	}
 
 	const demoFoods = getDemoFoods();
 	const demoFoodOffer: Foodoffers[] = [];
 	const demoFoodsKeys = Object.keys(demoFoods);
 
-	let amount = 500 + date.getDay() // add day to get different amount of foods for each day
+	let amount = 20 // add day to get different amount of foods for each day
 	if (amount > demoFoodsKeys.length) {
 		amount = demoFoodsKeys.length;
 	}
 
 	// now lets select a bit of random foods based on the date
 	const randomFoods: Foods[] = [];
-	const start = date.getDay(); // start with the day of the week
+	let start = 0
+	if(!!date){
+		start += date.getDay(); // start with the day of the week
+	}
 	for (let i = 0; i < amount; i++) {
 		randomFoods.push(demoFoods[demoFoodsKeys[(start + i) % demoFoodsKeys.length]]);
 	}
 
-
 	for (let i = 0; i < randomFoods.length; i++) {
 		const food = randomFoods[i];
+		let foodDate = new Date();
+		if(!!date){
+			foodDate = date;
+		}
+
 		demoFoodOffer.push({
-			date: date.toISOString(),
+			date: foodDate.toISOString(),
 			food: food,
 			id: i+'',
 			markings: food.markings,

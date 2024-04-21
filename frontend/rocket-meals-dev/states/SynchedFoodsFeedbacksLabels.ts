@@ -4,6 +4,7 @@ import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
+import {MaterialIcons} from "@expo/vector-icons";
 
 async function loadResourcesFromServer(): Promise<FoodsFeedbacksLabels[]> {
 	const collectionHelper = new CollectionHelper<FoodsFeedbacksLabels>('foods_feedbacks_labels');
@@ -38,7 +39,7 @@ export function useSynchedFoodsFeedbacksLabelsDict(): [( Record<string, FoodsFee
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
-function getDemoResource(index: number, nameOfLabel: string): FoodsFeedbacksLabels {
+function getDemoResource(index: number, nameOfLabel: string, icon: string): FoodsFeedbacksLabels {
 	let languages = getDemoLanguagesDict();
 
 	const name = 'Demo '+nameOfLabel
@@ -59,7 +60,9 @@ function getDemoResource(index: number, nameOfLabel: string): FoodsFeedbacksLabe
 		alias: name,
 		id: index+'',
 		status: '',
-		translations: translations
+		visible: true,
+		translations: translations,
+		icon: icon
 	}
 }
 
@@ -67,9 +70,12 @@ export function getDemoFoodsFeedbacksLabelsDict(): Record<string, FoodsFeedbacks
 	const demoResources: Record<string, FoodsFeedbacksLabels> = {}
 
 	let names = ["Zu salzig", "Zu viel", "Lecker", "Herzhaft", "Süß", "Sauer", "Bitter", "Umami", "Fettig", "Trocken"]
+	let icons = ["water", "check", "close", "book", "pause", "mail"]
+
 	for (let i = 0; i < names.length; i++) {
 		let name = names[i];
-		const demoResource = getDemoResource(i, name)
+		let icon = icons[i%icons.length];
+		const demoResource = getDemoResource(i, name, icon)
 		demoResources[demoResource.id] = demoResource
 	}
 

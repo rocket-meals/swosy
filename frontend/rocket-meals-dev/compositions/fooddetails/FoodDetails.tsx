@@ -427,7 +427,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	const isDemo = useIsDemo();
 
 	async function loadRemoteFoodsFeedbacksForFood(foodId: string): Promise<FoodsFeedbacks[]> {
-		let result = loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
+		let result = await loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
 		return result;
 	}
 
@@ -539,7 +539,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		loadFoodOffer(isDemo, foodOfferId)
 			.then(setFoodOfferData)
 			.catch(console.error);
-	}, [foodOfferId]);
+	}, [foodOfferId+""]);
 
 	const food = foodOfferData?.food;
 
