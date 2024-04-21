@@ -1,5 +1,5 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Businesshours, Canteens, CanteensBusinesshours} from '@/helper/database/databaseTypes/types';
+import {Businesshours, Canteens, CanteensFoodservicehours} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -48,18 +48,33 @@ function getDemoCanteens(): Record<string, Canteens> {
 
 	for (let i=0; i<100; i++) {
 		let demo_building_id = demoBuildingsKeys[i % demoBuildingsKeys.length]
+		let demoBuilding = buildingsDict[demo_building_id];
+
+		const canteenId = 'demoCanteen'+(i)
+
+		let foodservice_hours: CanteensFoodservicehours[] = [];
+		let buildingsBusinesshours = demoBuilding.businesshours;
+		if(!!buildingsBusinesshours){
+			for(let buildingsBusinesshour of buildingsBusinesshours){
+				foodservice_hours.push({
+					businesshours_id: buildingsBusinesshour.businesshours_id,
+					canteens_id: canteenId,
+					id: buildingsBusinesshour.id
+				})
+			}
+		}
 
 		const demoResource: Canteens = {
 			building: demo_building_id,
 			date_created: new Date().toISOString(),
 			date_updated: new Date().toISOString(),
-			id: 'demoCanteen'+(i),
+			id: canteenId,
 			alias: 'Demo Canteen '+(i),
 			sort: undefined,
 			status: '',
 			user_created: undefined,
 			user_updated: undefined,
-			businesshours: [],
+			foodservice_hours: foodservice_hours,
 			utilization_group: getDemoUtilizationGroup()
 		}
 		resources[demoResource.id] = demoResource;
@@ -72,12 +87,11 @@ function getDemoCanteens(): Record<string, Canteens> {
  * Returns a dictionary of canteen businesshours
  * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
  */
-export function useSynchedCanteensFoodServicehours(): Record<string, Businesshours[] | undefined>
+export function useSynchedCanteensFoodServicehoursDict(): Record<string, Businesshours[] | undefined>
  {
 	 const isDemo = useIsDemo()
 	 const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
 	 const [businesshoursDict, setBusinesshoursDict] = useSynchedBusinesshoursDict()
-	 const demoBusinesshoursDict = getDemoBusinesshoursDict()
 
 	 const canteensBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
 
@@ -85,22 +99,15 @@ export function useSynchedCanteensFoodServicehours(): Record<string, Businesshou
 		 const canteen_id_as_string: string = canteenId
 		 const canteen = canteensDict[canteenId]
 		 if (canteen?.foodservice_hours) {
-			 let canteensBusinesshours: CanteensBusinesshours[] = canteen.foodservice_hours as CanteensBusinesshours[]
+			 let canteensBusinesshours: CanteensFoodservicehours[] = canteen.foodservice_hours as CanteensFoodservicehours[]
 			 let businesshours: Businesshours[] = []
-			 if(isDemo) {
-				 let demoKeys = Object.keys(demoBusinesshoursDict)
-				 demoKeys.forEach((key) => {
-					 businesshours.push(demoBusinesshoursDict[key])
-				 })
-			 } else {
-				 canteensBusinesshours.forEach((canteensBusinesshours) => {
-					 let businesshoursId = canteensBusinesshours.businesshours_id
-					 let businesshoursEntry = businesshoursDict?.[businesshoursId]
-					 if (businesshoursEntry) {
-						 businesshours.push(businesshoursEntry)
-					 }
-				 })
-			 }
+			 canteensBusinesshours.forEach((canteensBusinesshours) => {
+				 let businesshoursId = canteensBusinesshours.businesshours_id
+				 let businesshoursEntry = businesshoursDict?.[businesshoursId]
+				 if (businesshoursEntry) {
+					 businesshours.push(businesshoursEntry)
+				 }
+			 })
 
 			 canteensBusinesshoursDict[canteen_id_as_string] = businesshours
 		 }
