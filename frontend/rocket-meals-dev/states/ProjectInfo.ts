@@ -33,7 +33,7 @@ export function useProjectLogoAssetId() {
 
 export function useProjectPublicBackgroundAssetId() {
 	const projectInfo = useProjectInfo();
-	return projectInfo?.public_background
+	return projectInfo?.public_background?.id;
 }
 
 export function useProjectPublicForegroundAssetId() {

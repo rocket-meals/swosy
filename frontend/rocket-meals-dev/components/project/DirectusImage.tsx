@@ -42,16 +42,25 @@ export default function DirectusImage(props: DirectusImageProps) {
 		return url;
 	}
 
+	const state_failed = "failed";
+	const state_loading = "loading";
+	const state_success = "success";
 
+	function getInitialLoadState(url: string | null | undefined){
+		return !url ? state_failed : state_loading;
+	}
 
-	const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
-	const [loadFinished, setLoadFinished] = useState(!url);
+	const initialState = getInitialLoadState(url);
+	const [loadState, setLoadState] = useState(initialState)
+	const loadFinished = loadState !== state_loading;
+	const imageLoadedFailed = loadState === state_failed;
+	const imageLoadedSuccess = loadState === state_success;
 
 	useEffect(() => {
 		const url = getInitialImageUrl();
 
 		setImageUrl(url); // Update the imageUrl state with the new URL
-		setImageLoadedFailed(!url); // Update the imageLoadedFailed state based on the presence of the URL
+		setLoadState(getInitialLoadState(url))
 	}, [props.assetId, props.image_url]); // This effect depends on assetId and image_url
 
 	let headers = undefined;
@@ -130,7 +139,14 @@ export default function DirectusImage(props: DirectusImageProps) {
 			style={props.style}
 		/>
 	</View>
-	if(loadFinished && fallbackImage){
+
+	if(loadFinished){
+		if(fallbackImage || imageLoadedSuccess){
+			renderedThumbHash = null;
+		}
+	}
+
+	if(imageLoadedSuccess){
 		renderedThumbHash = null;
 	}
 
@@ -148,12 +164,12 @@ export default function DirectusImage(props: DirectusImageProps) {
 			contentFit={props.contentFit}
 			//placeholder={placeholder} // This is not working as expected
 			onLoad={() => {
-				setLoadFinished(true);
+				console.log('DirectusImage onLoad');
+				setLoadState(state_success)
 			}}
 			onError={(e) => {
 				console.log('DirectusImage onError', e);
-				setImageLoadedFailed(true);
-				setLoadFinished(true);
+				setLoadState(state_failed)
 			}}
 			// Assuming cachePolicy is determined elsewhere or is static
 			cachePolicy={cachePolicy}
@@ -184,12 +200,13 @@ export default function DirectusImage(props: DirectusImageProps) {
 	}
 
 	let debugContent = null;
-	if (isDebug && false) {
+	if (isDebug) {
 		const image_asset_id_or_url = props.image_url || (props.assetId ? props.assetId.toString() : '');
 
 		debugContent = (
 			<View style={{position: 'absolute', top: 0, left: 0}}>
 				<Text>{image_asset_id_or_url}</Text>
+				<Text>{"loadState: "+loadState}</Text>
 			</View>
 		);
 	}
