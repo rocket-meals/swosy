@@ -1,82 +1,83 @@
-import {View, Text} from '@/components/Themed';
+import {View, Text, Icon} from '@/components/Themed';
 import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
-import {useProfileLanguageCode, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
-import React, {useEffect} from 'react';
+import {useProfileLanguageCode, useSynchedProfileMarking, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
+import React, {useEffect, useMemo} from 'react';
 import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowTriStateLikeDislike';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {TouchableOpacity} from "react-native";
-import {LoadingRectThemed} from "@/components/food/MarkingList";
-import {SettingsRow} from "@/components/settings/SettingsRow";
+import DirectusImage from "@/components/project/DirectusImage";
+import DirectusSmallImageOrIconComponent from "@/components/image/DirectusSmallImageOrIconComponent";
 
-export default function MarkingListItem({ markingId }: { markingId: string}) {
-	/**
-	const [loading, setLoading] = React.useState(true);
-	const useLazyLoading = false;
+export default function MarkingListItem({ markingId }: { markingId: string }) {
+	// Memoize the MarkingListItemReal component
+	const memoizedComponent = useMemo(() => {
+		// This will only re-render if `markingId` changes
+		return <MarkingListItemReal markingId={markingId} />;
+	}, [markingId]); // Dependency array, re-render the component when `markingId` changes
 
-	useEffect(() => {
-		// small delay to prevent flickering
-		setTimeout(() => {
-			if (markingId) {
-				setLoading(false)
-			}
-		}, 50);
-	}, [markingId])
+	return memoizedComponent;
+}
 
-	if(loading && useLazyLoading){
-		return <LoadingRectThemed width={'100%'} height={50} style={{marginBottom: 10}} />
+export function getMarkingName(marking: Markings, languageCode: string): string {
+	const translations = marking.translations as TranslationEntry[]
+	let name = getDirectusTranslation(languageCode, translations, 'name') || marking.alias || marking.id;
+	let finalName = name
+	if(marking.external_identifier){
+		finalName +=  " (" + marking.external_identifier + ")";
 	}
-		*/
-	return <MarkingListItemReal markingId={markingId} />
+	return finalName;
 }
 
 function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const marking: Markings | undefined = markingsDict?.[markingId];
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+	const [status, setProfileMarking, removeProfileMarking] = useSynchedProfileMarking(markingId)
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const markingFromProfile = profilesMarkingsDict[markingId]
-	const status = markingFromProfile?.dislikes;
-	const likes = status ? !status : undefined;
+	let statusSet = status === true || status === false;
+	const likes = statusSet ? !status : undefined;
 	const translation_marking = useTranslation(TranslationKeys.markings);
 
-	const [loading, setLoading] = React.useState(true);
+	return useMemo(() => {
 
-	if(!marking){
-		return null;
-	}
+		console.log("Rendering MarkingListItemReal", markingId, status)
 
-	const translations = marking.translations as TranslationEntry[]
-	const translated_name = getDirectusTranslation(languageCode, translations, 'name')
-	const text = translated_name || marking.alias || marking.id;
-	const accessibilityLabel = translation_marking+": "+text;
-
-	const onPress = (like: boolean | undefined) => {
-		const removeMarking = like === undefined;
-		if(removeMarking){
-			removeProfileMarking(marking)
-		} else {
-			const dislikes = like === false;
-			setProfileMarking(marking, dislikes)
+		if(!marking){
+			return null;
 		}
-	}
 
-	const performance = false;
+		const translated_name = getMarkingName(marking, languageCode);
+		const text = translated_name || marking.alias || marking.id;
+		const accessibilityLabel = translation_marking+": "+text;
 
-	if(performance){
-		return <View style={{
-			height: 40, width: '100%', justifyContent: 'center', alignItems: 'center'
-		}}>
-			<Text>{text}</Text>
-		</View>
-	} else {
-		return(
-			<View key={marking.id}>
-				<SettingsRowTriStateLikeDislike onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
+		let iconLeftCustom = <DirectusSmallImageOrIconComponent resource={marking} />
+
+		const onPress = (like: boolean | undefined) => {
+			const removeMarking = like === undefined;
+			if(removeMarking){
+				removeProfileMarking()
+			} else {
+				const dislikes = like === false;
+				setProfileMarking(dislikes)
+			}
+		}
+
+		const performance = false;
+
+		if(performance){
+			return <View style={{
+				height: 40, width: '100%', justifyContent: 'center', alignItems: 'center'
+			}}>
+				<Text>{text}</Text>
 			</View>
-		)
-	}
+		} else {
+			return(
+				<View key={marking.id}>
+					<SettingsRowTriStateLikeDislike iconLeftCustom={iconLeftCustom} onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
+				</View>
+			)
+		}
+	}, [status, translation_marking, languageCode])
 
 
 }

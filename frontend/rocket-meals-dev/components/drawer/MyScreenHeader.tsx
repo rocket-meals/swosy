@@ -12,7 +12,7 @@ import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles'
 import {Platform, View} from 'react-native';
 import {useSafeAreaFrame, useSafeAreaInsets} from 'react-native-safe-area-context';
 import HeaderShownContext from '@react-navigation/elements/src/Header/HeaderShownContext';
-import {useFocusEffect} from 'expo-router';
+import {router, useFocusEffect} from 'expo-router';
 import {PlatformHelper} from '@/helper/PlatformHelper';
 
 /**
@@ -125,7 +125,8 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 					if(navigation.canGoBack()){
 						navigation.goBack()
 					} else {
-						navigation.openDrawer()
+						// if we can't go back, we navigate to the home screen
+						router.push('/(app)/home');
 					}
 				}}>
 					<Icon name={IconNames.drawe_menu_go_back_icon} />

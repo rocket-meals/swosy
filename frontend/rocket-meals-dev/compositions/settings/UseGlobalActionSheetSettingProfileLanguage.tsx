@@ -1,13 +1,16 @@
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {useSynchedLanguagesDict} from '@/states/SynchedLanguages';
-import {useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {Text} from '@/components/Themed';
 import CountryFlag from 'react-native-country-flag';
 import {useIsDebug} from '@/states/Debug';
+import React from "react";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
-export function useGlobalActionSheetSettingProfileLanguage() {
+export const useProfileLanguageModal = () => {
 	const translation_select = useTranslation(TranslationKeys.select)
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const isDebug = useIsDebug()
 
@@ -20,12 +23,11 @@ export function useGlobalActionSheetSettingProfileLanguage() {
 
 	const availableOptionKeys = Object.keys(usedLanguageDict)
 
-	const items = []
+	const items: MyModalActionSheetItem[] = []
 	for (const key of availableOptionKeys) {
 		const language = usedLanguageDict[key]
 		const code = language?.code
 
-		const icon = 'translation'
 		const active = code === selectedKey
 
 		const label = language?.name || code
@@ -38,10 +40,9 @@ export function useGlobalActionSheetSettingProfileLanguage() {
 		items.push({
 			key: code as string,
 			label: label,
-			icon: icon,
 			active: active,
 			accessibilityLabel: itemAccessibilityLabel,
-			renderLeftIcon: (backgroundColor: string, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+			iconLeftCustomRender: (key: string, hide: () => void) => {
 				const renderedContent = [];
 				renderedContent.push(
 					<CountryFlag isoCode={isoCode} size={22} />
@@ -54,24 +55,25 @@ export function useGlobalActionSheetSettingProfileLanguage() {
 				return renderedContent
 			},
 			onSelect: async (code: string, hide: () => void) => {
-				setSavedLanguageKey(code)
-				hide();
+				console.log('Selected language: '+code)
+				setSavedLanguageKey((currentValue) => {
+					return code
+				})
+				hide()
 			}
 		})
 	}
 
-	const config = {
-		onCancel: undefined,
-		visible: true,
-		title: title,
-		items: items
-	}
-
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
 	const onPress = () => {
-		show(config)
+		setModalConfig({
+			key: "profile_language",
+			label: title,
+			title: title,
+			accessibilityLabel: title,
+			items: items
+
+		})
 	}
 
-	return onPress;
+	return onPress
 }

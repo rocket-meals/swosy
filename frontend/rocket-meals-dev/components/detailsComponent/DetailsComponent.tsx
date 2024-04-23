@@ -18,6 +18,8 @@ export type DetailsComponentTabProps = {
 	content: React.ReactNode;
 };
 
+export const DETAILS_COMPONENT_MARGIN_HORIZONTAL = 10;
+
 export function DetailsComponent({ heading, item, image, tabs, subHeadingComponent }: { subHeadingComponent?: React.ReactNode, heading: string |undefined |null, item: any, image: DirectusImageProps, tabs: DetailsComponentTabProps[] }) {
 	const isDebug = useIsDebug()
 
@@ -90,8 +92,6 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 		return tabWrapperTabs
 	}
 
-	const MARGIN_HORIZONTAL = 10;
-
 	return (
 		<View style={{ padding: 0, width: '100%', height: '100%' }}>
 			{(
@@ -107,7 +107,7 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 						</View>
 
 						<View style={{ flex: 1}}>
-							<View style={{marginHorizontal: MARGIN_HORIZONTAL, marginVertical: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
+							<View style={{marginHorizontal: DETAILS_COMPONENT_MARGIN_HORIZONTAL, marginVertical: 4, flexDirection: 'column', justifyContent: 'space-between'}}>
 								<View style={{paddingBottom: 10}}>
 									<Heading>
 										{heading}
@@ -116,7 +116,7 @@ export function DetailsComponent({ heading, item, image, tabs, subHeadingCompone
 								{subHeadingComponent}
 							</View>
 
-							<View style={{ marginTop: 10, marginHorizontal: MARGIN_HORIZONTAL, flex: 1 }}>
+							<View style={{ marginTop: 10, marginHorizontal: DETAILS_COMPONENT_MARGIN_HORIZONTAL, flex: 1 }}>
 								<TabWrapper tabs={
 									renderTabs()
 								}

@@ -7,7 +7,9 @@ import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {AuthenticationData} from '@directus/sdk';
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
-import {useIsDebug} from "@/states/Debug"; // Optional if you want to use default theme
+import {useIsDebug} from "@/states/Debug";
+import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
+import {PleaseConnectLaterServerIsOffline} from "@/compositions/loadingScreens/PleaseConnectLaterServerIsOffline"; // Optional if you want to use default theme
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -38,7 +40,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 			return JSON.parse(authDataRaw)
 		}
 	}, async (newAuthData) => {
-		setAuthData(newAuthData) // update the hook but its set asyncronous, so we have to update the storage directly
+		setAuthData((currentAuthData) => {
+			return newAuthData
+		}) // update the hook but its set asyncronous, so we have to update the storage directly
 		await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
 	})
 
@@ -49,22 +53,27 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 			console.log('ServerInfoRaw', remote_server_info)
 
 			if (remote_server_info.status === 'offline') {
-				//console.log("Server is offline at fetching remote")
-				if (serverInfo) {
-					//console.log("Server is offline at fetching remote, but we have local data")
-					remote_server_info = serverInfo;
+				console.log("Server is offline at fetching remote")
+				let cachedServerInfo = serverInfo
+				console.log('cachedServerInfo', cachedServerInfo)
+				if (cachedServerInfo) {
+					console.log("Server is offline at fetching remote, but we have local data")
+					remote_server_info = cachedServerInfo;
 					remote_server_info.status = 'cached'
 				}
 			}
 
-			setServerInfo(remote_server_info, nowInMs);
+			setServerInfo((currentServerInfo) => {
+				return remote_server_info
+			}, nowInMs);
 		})();
 	}, []);
 
 	const debugInformation = isDebug ? <Text>{JSON.stringify(serverInfo, null, 2)}</Text> : null;
 
 	// 1. load server information
-	if (serverInfoRaw?.lastUpdate !== nowInMs || !serverInfo) {
+	let serverInfoNotUpdated = (!serverInfoRaw?.lastUpdate || serverInfoRaw?.lastUpdate < nowInMs)
+	if (serverInfoNotUpdated || !serverInfo) {
 		return (
 			<LoadingScreen>
 				<Text>{'Loading server Info'}</Text>
@@ -75,10 +84,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 	if (serverInfo.status === 'offline') {
 		return (
-			<LoadingScreen>
-				<Text>{'Server is offline and no data is cached'}</Text>
-				{debugInformation}
-			</LoadingScreen>
+			<PleaseConnectLaterServerIsOffline />
 		)
 	}
 

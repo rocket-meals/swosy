@@ -1,12 +1,11 @@
 import React from "react";
 import {useIsCurrentUserAnonymous, useLogoutCallback} from "@/states/User";
-import {MyGlobalActionSheetConfig, useMyGlobalActionSheet} from "@/components/actionsheet/MyGlobalActionSheet";
 import {NotAllowed} from "@/compositions/animations/NotAllowed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Text, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 
 export type AccountRequiredTouchableOpacityProps = {
@@ -14,7 +13,7 @@ export type AccountRequiredTouchableOpacityProps = {
 }
 export const AccountRequiredTouchableOpacity = ({children}: AccountRequiredTouchableOpacityProps) => {
 	const isAnonymous = useIsCurrentUserAnonymous()
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 	const logout = useLogoutCallback()
 
 	const translation_no_permission = useTranslation(TranslationKeys.no_permission);
@@ -25,45 +24,47 @@ export const AccountRequiredTouchableOpacity = ({children}: AccountRequiredTouch
 
 	const accessiblityLabel = translation_no_permission+". "+translation_please_create_an_account+"."
 
-	const config: MyGlobalActionSheetConfig = {
-		visible: true,
-		title: title,
-		renderCustomContent: () => {
-			return(
-				<MySafeAreaView>
-					<NotAllowed />
-					<View style={{
-						width: "100%",
-						paddingHorizontal: 20,
-					}}>
-						<View style={{
-							width: "100%",
-							paddingBottom: 20,
-						}}>
-							<Text>{translation_please_create_an_account+"."}</Text>
-						</View>
-						<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
-							logout()
-							hide()
-						}} />
-					</View>
-
-				</MySafeAreaView>
-			)
-		}
-	}
-
 	if(isAnonymous) {
-		return <TouchableOpacityIgnoreChildEvents
-			accessibilityLabel={accessiblityLabel}
-			tooltip={accessiblityLabel}
-			style={{}}
-			useDefaultOpacity={true}
-			onPress={() => {
-				show(config);
-			}}>
-			{children}
-		</TouchableOpacityIgnoreChildEvents>
+		const onPress = () => {
+			setModalConfig({
+				title: title,
+				label: translation_no_permission,
+				accessibilityLabel: accessiblityLabel,
+				key: "AccountRequiredTouchableOpacity",
+				renderAsContentInsteadItems: (key: string, hide: () => void) => {
+					return(
+						<>
+							<NotAllowed />
+							<View style={{
+								width: "100%",
+								paddingHorizontal: 20,
+							}}>
+								<View style={{
+									width: "100%",
+									paddingBottom: 20,
+								}}>
+									<Text>{translation_please_create_an_account+"."}</Text>
+								</View>
+								<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
+									logout()
+								}} />
+							</View>
+						</>
+					)
+				}
+			})
+		}
+
+		return <>
+			<TouchableOpacityIgnoreChildEvents
+				accessibilityLabel={accessiblityLabel}
+				tooltip={accessiblityLabel}
+				style={{}}
+				useDefaultOpacity={true}
+				onPress={onPress}>
+				{children}
+			</TouchableOpacityIgnoreChildEvents>
+		</>
 	}
 	return <>{children}</>
 }

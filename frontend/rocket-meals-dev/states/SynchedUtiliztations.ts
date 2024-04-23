@@ -2,8 +2,9 @@ import {UtilizationsEntries, UtilizationsGroups} from '@/helper/database/databas
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DateHelper} from '@/helper/date/DateHelper';
 
-export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, date: Date, isDemo: boolean): Promise<UtilizationsEntries[] | undefined> {
+export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, dateIsoString: string, isDemo: boolean): Promise<UtilizationsEntries[] | undefined> {
 	let utilizationEntries: UtilizationsEntries[] | undefined = undefined;
+	let date = new Date(dateIsoString);
 	if (isDemo) {
 		utilizationEntries = getDemoUtilizationEntries(date);
 		return utilizationEntries;

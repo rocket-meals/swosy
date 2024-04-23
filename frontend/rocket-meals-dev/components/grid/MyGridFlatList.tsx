@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, FlatList, FlatListProps, ListRenderItem, ListRenderItemInfo} from 'react-native';
-import {Spinner, View, Text} from '@/components/Themed';
+import {MySpinner, View, Text} from '@/components/Themed';
 import {ViewStyle} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -37,7 +37,9 @@ interface GridListProps<T> {
     horizontal?: boolean;
     contentContainerStyle?: StyleProp<ViewStyle>;
     spacing?: GridListSpacing;
-    flatListProps?: FlatListProps<T>
+    flatListProps?: FlatListProps<T>;
+	preItem?: React.ReactElement;
+	postItem?: React.ReactElement;
 }
 
 export const DEFAULT_GRID_LIST_SPACING: GridListSpacing = {
@@ -67,16 +69,31 @@ export const MyGridFlatList = <T extends { key: string }>({
 	horizontal,
 	spacing,
 	flatListProps,
-}: GridListProps<T>): React.ReactElement => {
+    preItem,
+	postItem,
+}: GridListProps<T>): React.ReactElement | null => {
 	const amountCompleteRows = Math.floor(data.length / amountColumns);
 	const amountTotalItemsLastRow = data.length - amountCompleteRows * amountColumns;
 	const amountDummyItemsNeeded = amountTotalItemsLastRow > 0 ? amountColumns - amountTotalItemsLastRow : 0;
 
 	const [endReached, setEndReached] = React.useState(false);
 
+	const useDelay = true;
+	const [delayFinished, setDelayFinished] = React.useState(!useDelay);
+
 	const usedSpacing = spacing || DEFAULT_GRID_LIST_SPACING;
 
 	const dummyKey = 'dummy';
+
+	// Somehow navigation crashes when rendering too many items with flatlist directly. Therefore we add a small delay.
+	// https://github.com/rocket-meals/rocket-meals/issues/120
+	if(!delayFinished){
+		return <View onLayout={() => {
+			setDelayFinished(true);
+		}}>
+			<MySpinner />
+		</View>
+	}
 
 	const adjustedData = [...data, ...Array(amountDummyItemsNeeded).fill({ key: dummyKey, isDummy: true })];
 	// We need to add dummy items. If we don't, the last row will be max width stretched to fill the container, which is not what we want.
@@ -158,17 +175,20 @@ export const MyGridFlatList = <T extends { key: string }>({
 
 	// Render footer to show a loading spinner when more items are being loaded
 	const renderFooter = () => {
-		if (endReached) {
-			return null;
-		}
 		if(ListFooterComponent){
 			return <View style={{flex: 1}}>
 				{ListFooterComponent}
 			</View>
 		}
+		if(postItem){
+			return postItem;
+		}
+		if (endReached) {
+			return null;
+		}
 		return (
 			<View style={{ paddingVertical: 20 }}>
-				<Spinner />
+				<MySpinner />
 			</View>
 		);
 	};
@@ -178,6 +198,9 @@ export const MyGridFlatList = <T extends { key: string }>({
 			return <View style={{flex: 1}}>
 				{ListHeaderComponent}
 			</View>
+		}
+		if(preItem){
+			return preItem;
 		}
 	}
 
@@ -192,6 +215,7 @@ export const MyGridFlatList = <T extends { key: string }>({
 			<FlatList
 				key={flatListKey}
 				horizontal={usedHorizontal}
+				initialNumToRender={1}
 				data={adjustedData}
 				renderItem={renderItemsWithFillUpDummies}
 				numColumns={numColumns}

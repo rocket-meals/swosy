@@ -19,6 +19,14 @@ export class DateHelper {
 		return weekday === 0 || weekday === 6; // 0 is sunday, 6 is saturday
 	}
 
+	static isValidDateString(dateString: string |undefined | null) {
+		if (!dateString) {
+			return false;
+		}
+		const date = new Date(dateString);
+		return date instanceof Date && !isNaN(date.getTime());
+	}
+
 	static parseTime(time: string, date?: Date): Date {
 		const parts = time.split(':');
 		const hours = parseInt(parts[0]) || 0;

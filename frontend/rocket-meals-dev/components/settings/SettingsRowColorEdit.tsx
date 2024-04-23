@@ -2,13 +2,13 @@ import React, {Dispatch, FunctionComponent, SetStateAction, useEffect, useRef, u
 import {SettingsRowProps} from './SettingsRow';
 import {TextInput, View} from '@/components/Themed';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
-import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
 import {MyButton} from '@/components/buttons/MyButton';
 import {ReturnKeyType} from '@/helper/input/ReturnKeyType';
 import {IconNames} from '@/constants/IconNames';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {SimpleColorPicker} from '@/components/colorpicker/SimpleColorPicker';
 import {ColorHelper} from '@/components/colorpicker/ColorHelper';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface MyContentProps {
     initialValue: string | undefined | null,
@@ -16,10 +16,6 @@ interface MyContentProps {
     setInputValue: Dispatch<SetStateAction<string | undefined | null>>,
     onSave: (value: string | undefined | null, hide: () => void) => void,
     placeholder?: string,
-    backgroundColor?: string,
-    backgroundColorOnHover?: string,
-    textColor?: string,
-    lighterOrDarkerTextColor?: string,
     hide: () => void,
 }
 const MyContent: FunctionComponent<MyContentProps> = (props) => {
@@ -189,14 +185,16 @@ export const SettingsRowColorEdit = ({accessibilityLabel,allowCustomColor, label
 		}
 	}
 
-	const config: MyGlobalActionSheetConfig = {
+	const config: MyModalActionSheetItem = {
+		accessibilityLabel: title,
 		onCancel: async () => {
 			setInputValue(initialValue)
 			return true;
 		},
-		visible: true,
+		label: title,
+		key: title,
 		title: title,
-		renderCustomContent: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
+		renderAsContentInsteadItems: (key: string, hide: () => void) => {
 			// Use the custom context provider to provide the input value and setter
 			return (
 				<MyContent
@@ -205,10 +203,6 @@ export const SettingsRowColorEdit = ({accessibilityLabel,allowCustomColor, label
 					allowCustomColor={allowCustomColor}
 					onSave={onSaveChange}
 					placeholder={placeholder}
-					backgroundColor={backgroundColor}
-					backgroundColorOnHover={backgroundColorOnHover}
-					textColor={textColor}
-					lighterOrDarkerTextColor={lighterOrDarkerTextColor}
 					hide={hide}
 				/>
 			)
@@ -218,7 +212,7 @@ export const SettingsRowColorEdit = ({accessibilityLabel,allowCustomColor, label
 
 	let usedIconRight = rightIcon;
 	if (usedIconRight===undefined) {
-		usedIconRight = IconNames.edit
+		usedIconRight = IconNames.edit_icon
 	}
 
 	return (

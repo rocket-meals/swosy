@@ -1,16 +1,13 @@
 import React, {FunctionComponent} from "react";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import * as Updates from 'expo-updates';
-import {UpdatesNativeStateChangeEvent, useUpdates} from 'expo-updates';
-import {MyGlobalActionSheetConfig} from "@/components/actionsheet/MyGlobalActionSheet";
+import {useUpdates} from 'expo-updates';
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {IconNames} from "@/constants/IconNames";
-import {View, Text} from "@/components/Themed";
-import {ManifestExtra, NewManifest} from "expo-manifests";
-import axios from "axios";
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface AppState {
 
@@ -116,11 +113,12 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
 
 
 export const SettingsRowAppUpdate: FunctionComponent<AppState> = ({...props}) => {
-    const config: MyGlobalActionSheetConfig = {
-        onCancel: undefined,
-        visible: true,
+    const config: MyModalActionSheetItem = {
+        label: "App Update",
+        accessibilityLabel: "App Update",
+        key: "app-update",
         title: "App Update",
-        renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+        renderAsContentInsteadItems: (key: string, hide: () => void) => {
             return <UpdateComponent />
         }
     }

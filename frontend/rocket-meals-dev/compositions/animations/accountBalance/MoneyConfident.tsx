@@ -1,35 +1,20 @@
 import React from 'react';
-import {BreakPoint, BreakPointsDictionary, useBreakPointValue} from '@/helper/device/DeviceHelper';
-import {DimensionValue} from 'react-native';
-import { View} from '@/components/Themed';
-import {Rectangle} from '@/components/shapes/Rectangle';
-import {MyLottieAnimation} from '@/components/lottie/MyLottieAnimation';
-import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
-
+import {MyProjectColoredLottieAnimation} from "@/components/lottie/MyProjectColoredLottieAnimation";
+import animationSource from '@/assets/animations/accountBalance/moneyConfident.json';
+import {View} from "@/components/Themed";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export const MoneyConfident = ({children,...props}: any) => {
-	const noFoundWidths: BreakPointsDictionary<DimensionValue> = {
-		[BreakPoint.sm]: '50%',
-		[BreakPoint.md]: '20%',
-		[BreakPoint.lg]: '10%',
-	}
-	const noFoundWidth = useBreakPointValue<DimensionValue>(noFoundWidths);
-
-	const accessibilityLabel = 'Animation Money confident';
+	const nfcInstruction = useTranslation(TranslationKeys.nfcInstructionRead);
+	const translation_animation = useTranslation(TranslationKeys.animation);
+	let accessibilityLabel = translation_animation + ': ' + nfcInstruction;
 
 	return (
-		<View style={{width: '100%', alignItems: 'center'}}>
-			<View style={{width: noFoundWidth}}>
-				<Rectangle>
-					<MyLottieAnimation style={{
-						width: '100%',
-						height: '100%'
-					}}
-					source={moneyConfident}
+			<View style={{width: '100%', height: "100%"}}>
+				<MyProjectColoredLottieAnimation
+					source={animationSource}
 					accessibilityLabel={accessibilityLabel}
-					/>
-				</Rectangle>
+				/>
 			</View>
-		</View>
 	)
 }

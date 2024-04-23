@@ -4,7 +4,7 @@
  */
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import {Text as NativeText, View as NativeView} from 'react-native';
+import {KeyboardTypeOptions, Text as NativeText, View as NativeView} from 'react-native';
 import {
 	Heading as DefaultHeading,
 	Input as DefaultInput,
@@ -24,6 +24,8 @@ import {config} from '@gluestack-ui/config';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
 import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
+import {FontAwesome5, FontAwesome6, Ionicons, MaterialIcons} from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type ThemeProps = {
   lightColor?: string;
@@ -44,7 +46,33 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	if (size) {
 		useSize = size;
 	}
-	return <Text><MaterialCommunityIcons name={name} size={useSize} {...props} /></Text>
+	let usedFamily = family;
+	if (usedFamily === undefined) {
+		usedFamily = 'MaterialCommunityIcons';
+	}
+
+	let content = null;
+	if(usedFamily === 'MaterialCommunityIcons'){
+		content = <MaterialCommunityIcons name={name} size={useSize} {...props} />
+	}
+	if(usedFamily === 'MaterialIcons'){
+		content = <MaterialIcons name={name} size={useSize} {...props} />
+	}
+	if(usedFamily === 'FontAwesome'){
+		content = <FontAwesome name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'FontAwesome5'){
+		content = <FontAwesome5 name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'FontAwesome6'){
+		content = <FontAwesome6 name={name} size={useSize} {...props} />
+	}
+	if(usedFamily=== 'Ionicons'){
+		content = <Ionicons name={name} size={useSize} {...props} />
+	}
+
+
+	return <Text>{content}</Text>
 }
 
 const DEFAULT_TEXT_SIZE = 'md';
@@ -63,6 +91,7 @@ type TextInputProps = {
     size?: 'sm' | 'md' | 'lg';
     hidden?: boolean;
     isPassword?: boolean;
+	isNumber?: boolean;
     isDisabled?: boolean;
     isInvalid?: boolean;
     isReadOnly?: boolean;
@@ -92,15 +121,20 @@ export function TextInput(props: TextInputProps) {
 		defaultInputProps.variant = 'outline';
 	}
 
+	let keyboardType: KeyboardTypeOptions = 'default'
 	// set mask to password if isPassword is true
 	let type: 'text' | 'password' | undefined = 'text';
 	if (props.isPassword) {
 		type = 'password';
 	}
+	if (props.isNumber) {
+		keyboardType = 'numeric'
+	}
 
 	const defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
 		value: props.value,
 		onChangeText: props.onChangeText,
+		keyboardType: keyboardType,
 		placeholder: props.placeholder,
 		type: type
 	}
@@ -124,6 +158,7 @@ export function TextInput(props: TextInputProps) {
 			{...defaultInputProps}
 		>
 			<DefaultInputField
+
 				returnKeyType={props?.returnKeyType}
 				onSubmitEditing={props?.onSubmitEditing}
 				ref={props.myRef}
@@ -210,7 +245,7 @@ export function View({style, ...props}: ViewProps) {
 	return <DefaultView style={styleCopy} {...props} />;
 }
 
-export function Spinner() {
+export function MySpinner() {
 	const textContrastColor = useTextContrastColor();
 	return <DefaultSpinner size={"large"} color={textContrastColor} />
 }

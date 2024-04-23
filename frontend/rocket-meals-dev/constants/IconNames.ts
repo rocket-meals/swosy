@@ -37,8 +37,19 @@ export enum IconNames {
     color_scheme_system_icon = 'theme-light-dark',
     calendar_icon = 'calendar-month',
 
+    average_icon = 'chart-areaspline',
+    amount_rating_icon = 'chart-bar',
+
+    account_balance_icon = 'credit-card',
+    nfc_icon = 'credit-card-wireless',
+
     utilization_icon = 'human-queue',
     businesshours_icon = 'clock-time-eight',
+
+    data_access_icon = 'database-eye',
+
+    select_option_active_icon = 'check-circle',
+    select_option_inactive_icon = 'checkbox-blank-circle-outline',
 
     chevron_right_icon = 'chevron-right',
     chevron_left_icon = 'chevron-left',
@@ -52,7 +63,7 @@ export enum IconNames {
     first_weekday_icon = 'calendar-week',
     course_timetable_event_create_icon = 'calendar-plus',
     identifier = 'identifier',
-    edit = 'pencil',
+    edit_icon = 'pencil',
     attribute_text_icon = 'tag-text-outline',
     calendar_import_icon = 'calendar-import',
     time_start_icon = 'clock-start',
@@ -107,6 +118,7 @@ export enum IconNames {
     sort_none_icon = "sort-variant-remove",
     sort_alphabetical_icon = "sort-alphabetical-ascending",
     sort_favorite_icon = "star",
+    sort_public_rating_icon = "star",
     sort_intelligent_icon = "brain",
     sort_distance_icon = "map-marker-distance",
     sort_free_rooms_icon = "door-open",

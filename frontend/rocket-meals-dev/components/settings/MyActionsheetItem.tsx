@@ -13,6 +13,7 @@ export interface SettingsRowProps {
     leftContent?: string | any,
     rightContent?: React.ReactNode,
     disabled?: boolean,
+	active?: boolean,
     leftIcon?: any | string,
     rightIcon?: string,
     onPress?: any,
@@ -40,7 +41,7 @@ export const MyActionsheetItem: FunctionComponent<SettingsRowProps> = (props) =>
 
 	const [isHovered, setIsHovered] = useState(false);
 
-	const isActive = false
+	const isActive = props.active || false;
 	const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
 
 	// Function to handle mouse enter event

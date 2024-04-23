@@ -15,9 +15,7 @@ export const MyButtonNotify = (props: MyNewButtonProps) => {
 	const active = props.active;
 	const translation_notify = useTranslation(TranslationKeys.notification);
 	const translation_active = useTranslation(TranslationKeys.active);
-	const translation_activate = useTranslation(TranslationKeys.activate);
 	const translation_inactive = useTranslation(TranslationKeys.inactive);
-	const translation_deactivate = useTranslation(TranslationKeys.deactivate);
 
 	let nextActionDescription = translation_notify;
 	if (active) {
@@ -30,11 +28,12 @@ export const MyButtonNotify = (props: MyNewButtonProps) => {
 	const tooltip = nextActionDescription + ': ' + props.tooltip;
 
 	const icon = active ? IconNames.notification_active : IconNames.notification_inactive;
+	let useTransparentBorderColor = false
 
 	return(
 		<MyButton useOnlyNecessarySpace={true}
-				  useTransparentBackgroundColor={true}
-				  useTransparentBorderColor={true}
+				  isActive={active}
+				  useTransparentBorderColor={useTransparentBorderColor}
 				  accessibilityLabel={accessibilityLabel}
 				  tooltip={tooltip}
 				  icon={icon}

@@ -5,6 +5,7 @@ import {IconNames} from '@/constants/IconNames';
 import {useLogoutCallback} from '@/states/User';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import ServerConfiguration from '@/constants/ServerConfiguration';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface AppState {
 
@@ -60,7 +61,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
     const accessibilityLabel = translation_edit+': '+title + ' ' + selectedName
     const label = title
 
-    const items = []
+    const items: MyModalActionSheetItem[] = []
 
     for (const key of availableOptionKeys) {
     	const label: string = optionKeyToName[key]
@@ -84,9 +85,10 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
     	})
     }
 
-    const config = {
-    	onCancel: undefined,
-    	visible: true,
+    const config: MyModalActionSheetItem = {
+		accessibilityLabel: accessibilityLabel,
+		label: title,
+		key: 'server_configuration',
     	title: title,
     	items: items
     }

@@ -22,7 +22,6 @@ export type MyNewButtonProps = {
     leftIconColoredBox?: boolean,
     tooltip?: string,
     useTransparentBorderColor?: boolean,
-    useTransparentBackgroundColor?: boolean,
     backgroundColor?: string,
     borderRadius?: number,
     borderLeftRadius?: number,

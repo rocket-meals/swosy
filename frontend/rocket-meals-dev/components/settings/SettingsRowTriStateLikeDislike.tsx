@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useState} from 'react';
 import {SettingsRow, SettingsRowProps} from './SettingsRow';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import { View} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
 
 interface AppState {
@@ -9,6 +9,9 @@ interface AppState {
     accessibilityLabel: string,
     labelLeft: string,
 	onSetState?: (like: boolean | undefined) => void,
+	amount_likes?: number | null,
+	renderRightContentWrapper?: (rightContent: any) => any,
+	amount_dislikes?: number | null,
     onTrackColor?: string,
     debug?: boolean,
     disabled?: boolean
@@ -31,13 +34,10 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 		isChecked = undefined
 	}
 
-	const translationSwitch = useTranslation(TranslationKeys.switch);
-	const translationDisabled = useTranslation(TranslationKeys.button_disabled);
-
-	let accessibilityLabelWithFunction = accessibilityLabel ? accessibilityLabel+': '+translationSwitch : translationSwitch
-	if (props?.disabled) {
-		accessibilityLabelWithFunction += ' ('+translationDisabled+')';
-	}
+	const translation_i_like_that = useTranslation(TranslationKeys.i_like_that);
+	const translation_i_dislike_that = useTranslation(TranslationKeys.i_dislike_that);
+	const translation_active = useTranslation(TranslationKeys.active);
+	const translation_inactive = useTranslation(TranslationKeys.inactive);
 
 	function onPress(likeButton: boolean) {
 		let nextValue: boolean | undefined = !isChecked;
@@ -62,37 +62,54 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 		}
 	}
 
-	const rightContent: any = (
-		<View style={{
-			paddingRight: 0,
-			justifyContent: 'center',
-			alignItems: 'center',
-			flexDirection: 'row'
-		}}
-		>
+	const amount_likes_as_string: string | undefined = props?.amount_likes ? props?.amount_likes+"" : undefined
+	const amount_dislikes_as_string: string | undefined = props?.amount_dislikes ? props?.amount_dislikes+"" : undefined
 
-			<MyButton leftIcon={'thumb-down'}
-				isActive={isDislikeButtonActive}
-				useOnlyNecessarySpace={true}
-				useTransparentBorderColor={true}
-				accessibilityLabel={'like'}
-				onPress={() => {
-					onPress(false)
-				}}
-			/>
-			<MyButton leftIcon={'thumb-up'}
-						isActive={isLikeButtonActive}
-						useOnlyNecessarySpace={true}
-						useTransparentBorderColor={true}
-						accessibilityLabel={'like'}
-						onPress={() => {
-							onPress(true)
-						}}
+	let accessibilityStateLike = isLikeButtonActive ? translation_active : translation_inactive
+	let accessibilityLabel_i_like_that = translation_i_like_that + ": "+accessibilityStateLike+": "+accessibilityLabel
+
+	let accessibilityStateDislike = isDislikeButtonActive ? translation_active : translation_inactive
+	let accessibilityLabel_i_dislike_that = translation_i_dislike_that + ": "+accessibilityStateDislike+": "+accessibilityLabel
+
+	let rightButtons: any = <View style={{
+		paddingRight: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row'
+	}}>
+		<MyButton leftIcon={'thumb-up'}
+				  isActive={isLikeButtonActive}
+				  borderRightRadius={0}
+				  useOnlyNecessarySpace={true}
+				  useTransparentBorderColor={false}
+				  accessibilityLabel={accessibilityLabel_i_like_that}
+				  tooltip={accessibilityLabel_i_like_that}
+				  text={amount_likes_as_string}
+				  onPress={() => {
+					  onPress(true)
+				  }}
 		/>
-		</View>
-	)
+		<MyButton leftIcon={'thumb-down'}
+				  isActive={isDislikeButtonActive}
+				  borderLeftRadius={0}
+				  useOnlyNecessarySpace={true}
+				  useTransparentBorderColor={false}
+				  text={amount_dislikes_as_string}
+				  accessibilityLabel={accessibilityLabel_i_dislike_that}
+				  tooltip={accessibilityLabel_i_dislike_that}
+				  onPress={() => {
+					  onPress(false)
+				  }}
+		/>
+	</View>
+
+	if(props.renderRightContentWrapper){
+		rightButtons = props.renderRightContentWrapper(rightButtons)
+	}
+
+	const rightContent: any = rightButtons
 
 	return (
-		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabelWithFunction} accessibilityRole={'switch'} {...props} rightContent={rightContent} />
+		<SettingsRow labelLeft={labelLeft} accessibilityLabel={accessibilityLabel} {...props} rightContent={rightContent} />
 	)
 }

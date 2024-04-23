@@ -1,31 +1,56 @@
-import React from 'react';
+import React, {createContext, useContext, useState} from 'react';
 import {ThemeProvider} from '@react-navigation/native';
 import {StatusBar} from 'expo-status-bar';
 import {View, Text, useViewBackgroundColor} from '@/components/Themed'; // Import View from your themed components
-import {MyGlobalActionSheet, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {RootFabHolder} from '@/components/rootLayout/RootFabHolder';
 import {useIsDarkTheme, useThemeDetermined} from '@/states/ColorScheme';
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
+import {MyModalActionSheetGlobal} from "@/components/modal/MyModalActionSheetGlobal";
+import {MyModalActionSheetItem, MyModalActionSheetProps} from "@/components/modal/MyModalActionSheet";
+
+// Create a Context for the modal
+const ModalContext = createContext<{
+	modalValue: MyModalActionSheetItem | null;
+	setModalValue: React.Dispatch<React.SetStateAction<MyModalActionSheetItem | null>>;
+} | undefined>(undefined);
+
+// Provider component
+export const ModalProvider = ({ children }: {children: React.ReactNode | React.ReactNode[]}) => {
+	const [modalValue, setModalValue] = useState<MyModalActionSheetItem | null>(null); // Initially empty object
+
+	return (
+		<ModalContext.Provider value={{ modalValue, setModalValue }}>
+			{children}
+		</ModalContext.Provider>
+	);
+};
+
+// Custom hook to use the modal context
+export const useModalGlobalContext: () => [MyModalActionSheetItem | null, React.Dispatch<React.SetStateAction<MyModalActionSheetItem | null>>] = () => {
+	const context = useContext(ModalContext);
+	if (context === undefined) {
+		throw new Error('useModalContext must be used within a ModalProvider');
+	}
+	return [context?.modalValue, context?.setModalValue];
+};
 
 export interface RootThemeProviderProps {
     children?: React.ReactNode;
 }
 
-export const RootThemeProvider = (props: RootThemeProviderProps) => {
-	const theme = useThemeDetermined();
-	const isDarkTheme = useIsDarkTheme();
-	const statusbarTextColorStyle = isDarkTheme ? 'light' : 'dark';
-	const [show, hide, showActionsheetConfig, actionSheetVisible] = useMyGlobalActionSheet();
+const RootContent = (props: RootThemeProviderProps) => {
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
+
 	const backgroundColor = useViewBackgroundColor();
 
 	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
 
-	return (
-		<ThemeProvider value={theme}>
-			<StatusBar style={statusbarTextColorStyle} />
-			{/* Set View to occupy all available space and control accessibility based on action sheet visibility */}
-			<View style={{height: '100%', width: '100%', backgroundColor: backgroundColor}} accessible={!actionSheetVisible} accessibilityElementsHidden={actionSheetVisible}>
+	const appIsAccessible = !modalConfig
+
+	return(
+		<>
+			<View style={{height: '100%', width: '100%', backgroundColor: backgroundColor}} accessible={appIsAccessible} accessibilityElementsHidden={!appIsAccessible}>
 				{/* Render the children respecting the action sheet's visibility */}
 				{props.children}
 			</View>
@@ -41,11 +66,37 @@ export const RootThemeProvider = (props: RootThemeProviderProps) => {
 			>
 				<Text onLayout={(event) => {
 					const {width, height} = event.nativeEvent.layout;
-					setTextDimensions({width, height});
+					setTextDimensions((currentDimensions) => {
+						return {
+							width: width,
+							height: height
+						}
+					})
 				}}>{"M"}</Text>
 			</View>
 			<RootFabHolder />
-			<MyGlobalActionSheet />
+		</>
+	)
+}
+
+export const RootThemeProvider = (props: RootThemeProviderProps) => {
+	const theme = useThemeDetermined();
+	const isDarkTheme = useIsDarkTheme();
+	const statusbarTextColorStyle = isDarkTheme ? 'light' : 'dark';
+
+
+
+	return (
+		<ThemeProvider value={theme}>
+			<ModalProvider>
+				<StatusBar style={statusbarTextColorStyle} />
+				{/* Set View to occupy all available space and control accessibility based on action sheet visibility */}
+				<RootContent>
+					{props.children}
+				</RootContent>
+				<MyModalActionSheetGlobal />
+			</ModalProvider>
+
 		</ThemeProvider>
 	);
 }

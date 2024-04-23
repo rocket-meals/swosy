@@ -8,6 +8,7 @@ import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHea
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
+	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled, useIsCourseTimetableEnabled,
 	useIsFoodsEnabled,
 	useIsHousingEnabled,
@@ -15,16 +16,20 @@ import {
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
+import {useIsDeveloperModeActive} from "@/states/Develop";
+import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 
 export const MyDrawerAuthenticated = (props: any) => {
-	const [isDevelopMode, setIsDevelopMode] = useSyncState<boolean>(PersistentStore.develop);
+	const develop = useIsDeveloperModeActive();
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();
 	const isBuildingsEnabled = useIsBuildingsEnabled();
 	const isNewsEnabled = useIsNewsEnabled();
 	const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
+	const isAccountBalanceEnabled = useIsAccountBalanceEnabled()
 
+	const translation_accountbalance = useTranslation(TranslationKeys.accountbalance);
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_settings = useTranslation(TranslationKeys.settings);
 	const translation_canteens = useTranslation(TranslationKeys.canteens);
@@ -33,6 +38,9 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_news = useTranslation(TranslationKeys.news);
 	const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
+	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
+	const translation_price_group = useTranslation(TranslationKeys.price_group)
+	const translation_delete_account = useTranslationAccountDelete();
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
@@ -73,6 +81,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.foodoffers_icon,
 				header: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'accountbalance/index',
+				label: translation_accountbalance,
+				title: translation_accountbalance,
+				icon: IconNames.account_balance_icon,
+				visibleInDrawer: isAccountBalanceEnabled
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'buildings/index',
@@ -131,7 +146,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: 'Components',
 				title: 'Components',
 				icon: 'drawing-box',
-				visibleInDrawer: isDevelopMode
+				visibleInDrawer: develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foods/[food]/index',
@@ -142,11 +157,34 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'eatinghabits/index',
+				routeName: 'settings/price-group/index',
+				label: translation_price_group,
+				title: translation_price_group,
+				icon: IconNames.price_group_icon,
+				showBackButton: true,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/delete-account/index',
+				label: translation_delete_account,
+				title: translation_delete_account,
+				icon: IconNames.user_account_delete_icon,
+				showBackButton: true,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/eatinghabits/index',
 				title: "Eating Habits",
 				label: "Eating Habits",
 				showBackButton: true,
 				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'data-access/index',
+				label: translation_data_access,
+				title: translation_data_access,
+				icon: IconNames.data_access_icon,
 				visibleInDrawer: false
 			})}
 

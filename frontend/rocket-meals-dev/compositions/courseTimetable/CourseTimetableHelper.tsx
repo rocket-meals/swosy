@@ -3,6 +3,7 @@ import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {Weekday} from '@/helper/date/DateHelper';
+import {useSynchedProfile} from "@/states/SynchedProfile";
 
 type MarkerTime =`${number| ''}${number}:${number}${number}`
 
@@ -43,45 +44,42 @@ export type CourseTimetableDictType = {
     [id: string]: CourseTimetableEventType
 }
 
-export function useCourseTimetableEvents(): [CourseTimetableDictType, (value: CourseTimetableDictType) => Promise<boolean>, (partialEvent: CourseTimetableEventNewType) => Promise<boolean>, (item: CourseTimetableEventType) => Promise<boolean>] {
-	const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableDictType>(PersistentStore.course_timetable)
-	const usedCourseTimetable = courseTimetableRaw || {};
+export function useCourseTimetableEvents(): [CourseTimetableDictType, (value: CourseTimetableDictType) => void, (partialEvent: CourseTimetableEventNewType) => Promise<boolean>, (item: CourseTimetableEventType) => Promise<boolean>] {
+	//const [courseTimetableRaw, setCourseTimetableRaw] = useSyncState<CourseTimetableDictType>(PersistentStore.course_timetable)
+	const [profile, setProfile] = useSynchedProfile();
 
-	/**
-    const [profile, setProfile] = useSynchedProfile();
-    let courseTimetable = profile.course_timetable || {};
-     */
+	let profileCourseTimetable = profile.course_timetable || {};
+	const usedCourseTimetable = profileCourseTimetable || {};
 
-	const setCourseTimetable = async (value: CourseTimetableDictType) => {
-		/**
-        profile.course_timetable = value;
-        let success = await setProfile(profile);
-        return success;
-         */
-		const success = await setCourseTimetableRaw(value);
-		return success;
+	const setCourseTimetable = (callback: (value: CourseTimetableDictType) => void) => {
+		setProfile((profile) => {
+			profile.course_timetable = callback(profile.course_timetable || {});
+			return profile;
+		});
 	}
 
-	const addNewCourseTimetableEvent = async (partialEvent: CourseTimetableEventNewType) => {
-		// find the next free id
-		let id = 1;
-		while (usedCourseTimetable[id+'']) {
-			// id is already taken
-			id++;
-		}
+	const addNewCourseTimetableEvent = (partialEvent: CourseTimetableEventNewType) => {
+		setCourseTimetable((usedCourseTimetable) => {
+			// find the next free id
+			let id = 1;
+			while (usedCourseTimetable[id+'']) {
+				// id is already taken
+				id++;
+			}
 
-		const event: CourseTimetableEventType = partialEvent as CourseTimetableEventType;
-		event.id = id+'';
+			const event: CourseTimetableEventType = partialEvent as CourseTimetableEventType;
+			event.id = id+'';
 
-		usedCourseTimetable[id] = event;
-		const success = await setCourseTimetable(usedCourseTimetable);
-		return success;
+			usedCourseTimetable[id] = event;
+			return usedCourseTimetable;
+		});
 	}
 
 	const removeCourseTimetableEvent = async (item: CourseTimetableEventType) => {
-		delete usedCourseTimetable[item.id];
-		const success = await setCourseTimetable(usedCourseTimetable);
-		return success;
+		setCourseTimetable((usedCourseTimetable) => {
+			delete usedCourseTimetable[item.id];
+			return usedCourseTimetable;
+		});
 	}
 
 	return [usedCourseTimetable, setCourseTimetable, addNewCourseTimetableEvent, removeCourseTimetableEvent];
@@ -109,16 +107,17 @@ function usePersonalCourseTimetableTime(start: boolean): [string, ((value: strin
 		time = timetableSettings.end_time;
 	}
 	const setTime = async (value: string | null) => {
-		let usedValue: string | undefined = undefined
-		if (value) {
-			usedValue = value
-		}
-		if (start) {
-			timetableSettings.start_time = usedValue;
-		} else {
-			timetableSettings.end_time = usedValue;
-		}
-		return await setTimetableSettings(timetableSettings);
+		return await setTimetableSettings((currentValue) => {
+			let usedValue: string | undefined = undefined
+			if (value) {
+				usedValue = value
+			}
+			if (start) {
+				currentValue.start_time = usedValue;
+			} else {
+				currentValue.end_time = usedValue;
+			}
+		});
 	}
 	return [time, setTime];
 }
@@ -130,13 +129,15 @@ export function usePersonalCourseTimetableAmountDaysOnScreen(): [number, (value:
 		md: 5.1,
 		lg: 5.1,
 	});
-	const amountDaysOnScreen = timetableSettings.amount_days_to_show || defaultValue;
-	const setAmountDaysOnScreen = async (value: number | null) => {
-		timetableSettings.amount_days_to_show = undefined
-		if (value) {
-			timetableSettings.amount_days_to_show = value;
-		}
-		return await setTimetableSettings(timetableSettings);
+	const amountDaysOnScreen = timetableSettings?.amount_days_to_show || defaultValue;
+	const setAmountDaysOnScreen = (value: number | null) => {
+		setTimetableSettings((currentValue) => {
+			currentValue.amount_days_to_show = undefined
+			if (value) {
+				currentValue.amount_days_to_show = value;
+			}
+			return currentValue;
+		});
 	}
 	return [amountDaysOnScreen, setAmountDaysOnScreen];
 }
@@ -145,9 +146,13 @@ export function usePersonalCourseTimetableTitleIntelligent(): [boolean, (value: 
 	const [timetableSettings, setTimetableSettings] = useSynchedCourseTimetableSettingsRaw();
 	const defaultValue = true;
 	const titleIntelligent = timetableSettings.intelligent_title || defaultValue;
-	const setTitleIntelligent = async (value: boolean) => {
-		timetableSettings.intelligent_title = value;
-		return await setTimetableSettings(timetableSettings);
+	const setTitleIntelligent = (value: boolean) => {
+		setTimetableSettings((currentValue) => {
+			if(currentValue){
+				currentValue.intelligent_title = value;
+			}
+			return currentValue;
+		});
 	}
 	return [titleIntelligent, setTitleIntelligent];
 }

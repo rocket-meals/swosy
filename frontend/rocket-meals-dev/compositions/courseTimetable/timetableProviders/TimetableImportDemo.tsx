@@ -266,7 +266,7 @@ export function getParsedDemoEvents() {
 export const TimetableImportDemo: FunctionComponent<AppState> = (props) => {
 	const onCloseModal = props.onCloseModal;
 
-	async function onLogin(username, password) {
+	async function onLogin(username: string, password: string) {
 		const events = getParsedDemoEvents();
 		if (events) {
 			if (props?.onImport) {

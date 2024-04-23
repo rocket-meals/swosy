@@ -23,5 +23,15 @@ export const MyProjectColoredLottieAnimation = ({colorReplaceMap, ...props}: MyL
 		usedColorReplaceMap[DEFAULT_COLOR_TO_BE_REPLACED] = usedProjectColor
 	}
 
+	// check every color and if it is not a hex color, remove it
+	for (let key in usedColorReplaceMap) {
+		if (!/^#[0-9A-F]{6}$/i.test(key)) {
+			delete usedColorReplaceMap[key]
+		}
+		if (!/^#[0-9A-F]{6}$/i.test(usedColorReplaceMap[key])) {
+			delete usedColorReplaceMap[key]
+		}
+	}
+
 	return <MyLottieAnimation {...props} colorReplaceMap={usedColorReplaceMap} />
 }

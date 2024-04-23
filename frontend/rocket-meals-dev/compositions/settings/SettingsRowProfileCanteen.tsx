@@ -2,9 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {SettingsRow} from '@/components/settings/SettingsRow';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
-import {
-	useGlobalActionSheetSettingProfileCanteen
-} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
+import {useShowMyCanteenSelectionModal,} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
 import {IconNames} from '@/constants/IconNames';
 import {useIsFoodsEnabled} from '@/states/SynchedAppSettings';
 
@@ -31,7 +29,7 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 
 	const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 
-	const onPress = useGlobalActionSheetSettingProfileCanteen();
+	const onPress = useShowMyCanteenSelectionModal();
 
 	if (!isFoodsEnabled) {
 		return null;

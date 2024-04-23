@@ -1,7 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {
-	useGlobalActionSheetSettingProfileCanteen
-} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
+import {useShowMyCanteenSelectionModal} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
 import {IconNames} from '@/constants/IconNames';
 import {MyButton} from '@/components/buttons/MyButton';
 import {useEditProfileCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
@@ -13,12 +11,12 @@ export const SettingsButtonProfileCanteen: FunctionComponent<AppState> = ({...pr
 	const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 	const tooltip = useEditProfileCanteenAccessibilityLabel();
 
-	const onPress = useGlobalActionSheetSettingProfileCanteen();
-
-	//                <MyButton
-	//                     useOnlyNecessarySpace={true} accessibilityLabel={"Canteen"} leftIcon={IconNames.canteen_icon} {...props} onPress={onPress} />
+	const onPress = useShowMyCanteenSelectionModal();
 
 	return (
-		<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.canteen_icon} {...props} onPress={onPress} />
+		<>
+			<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.canteen_icon} {...props} onPress={onPress} />
+		</>
+
 	)
 }

@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {View, Text} from '@/components/Themed';
+import {View, Text, useViewBackgroundColor} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
@@ -20,6 +20,8 @@ import {MyDrawerSafeAreaView} from '@/components/drawer/MyDrawerSafeAreaView';
 import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
 import {ProjectBackgroundImage} from '@/components/project/ProjectForegroundImage';
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -57,6 +59,7 @@ export function renderMyDrawerScreen({routeName, label, title, icon, showBackBut
 		<Drawer.Screen
 			name={routeName} // The route name must match the URL from the root for navigation.
 			options={{
+				unmountOnBlur: true, // This will unmount the page in order to free up memory but at the cost of loading time
 				// @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
 				visible: usedVisible, // This custom property is used to conditionally render drawer items.
 				label: label,
@@ -124,6 +127,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
 
 	return (
 		<Drawer
+			backBehavior={"history"} // in order to have even a history stack in the drawer https://github.com/expo/expo/issues/27889
 			drawerContent={(props: DrawerContentComponentProps) => {
 				// Render custom drawer content, passing through custom items and props.
 				return <DrawerContentWrapper customDrawerItems={customDrawerItems} {...props} />;
@@ -174,11 +178,12 @@ type DrawerContentWrapperProps = {
 function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 	const theme = useThemeDetermined(); // Determine the current theme to apply appropriate styles.
 	const gradientBackgroundColor = theme?.colors?.card; // Set a background color for the gradient effect.
+	const viewBackgroundColor = useViewBackgroundColor();
 
 	const renderedDrawerItemsWithSeparator = getMyDrawerItemsCenter(props); // Get the list of drawer items to render.
 
 	return (
-		<View style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+		<View style={{width: '100%', height: '100%', overflow: 'hidden', backgroundColor: viewBackgroundColor}}>
 			<MyDrawerSafeAreaView>
 				{renderDrawerContentTop(props)}
 				<View style={{
@@ -188,11 +193,11 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 					overflow: 'hidden',
 				}}
 				>
-					<ScrollViewWithGradient gradientBackgroundColor={gradientBackgroundColor} gradientHeight={24}>
+					<MyScrollView>
 						<View style={{width: '100%', height: '100%'}}>
 							{renderedDrawerItemsWithSeparator}
 						</View>
-					</ScrollViewWithGradient>
+					</MyScrollView>
 				</View>
 				{getMyDrawerItemsBottom(props)}
 			</MyDrawerSafeAreaView>

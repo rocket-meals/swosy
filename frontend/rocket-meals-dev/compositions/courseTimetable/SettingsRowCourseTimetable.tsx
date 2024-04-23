@@ -2,21 +2,22 @@ import React, {FunctionComponent} from 'react';
 import {useSettingTranslationCourseTimetable} from './useSettingTranslationCourseTimetable';
 import {useIsCourseTimetableEnabled} from '@/states/SynchedAppSettings';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
-import {MyGlobalActionSheetConfig} from '@/components/actionsheet/MyGlobalActionSheet';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {Text, View} from '@/components/Themed';
 import {IconNames} from '@/constants/IconNames';
+import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 export const SettingsRowCourseTimetable: FunctionComponent = (props) => {
 	const courseTimetableVisiblity = useIsCourseTimetableEnabled();
 	const translation = useSettingTranslationCourseTimetable();
 
-	const config: MyGlobalActionSheetConfig = {
-		onCancel: undefined,
-		visible: true,
+	const config: MyModalActionSheetItem = {
+		accessibilityLabel: translation,
+		key: 'courseTimetable',
+		label: translation,
 		title: translation,
-		renderCustomContent: (backgroundColor: string | undefined, backgroundColorOnHover: string, textColor: string, lighterOrDarkerTextColor: string, hide: () => void) => {
+		renderAsContentInsteadItems: (key: string, hide: () => void) => {
 			return (
 				<MySafeAreaView>
 					<MyScrollView>

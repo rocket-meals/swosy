@@ -1,48 +1,35 @@
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
-import {MyGlobalActionSheetItem, useMyGlobalActionSheet} from '@/components/actionsheet/MyGlobalActionSheet';
 import {Canteens} from '@/helper/database/databaseTypes/types';
 import React from 'react';
 import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSelectGridList';
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 
-export function useGlobalActionSheetSettingProfileCanteen() {
+export const useShowMyCanteenSelectionModal = () => {
+	const translation_title = useTranslation(TranslationKeys.canteen)
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
-	const translation_title = useTranslation(TranslationKeys.canteen)
-	const label = translation_title
-
-
-	const items: MyGlobalActionSheetItem[] = [];
-
-	items.push({
-		key: 'gridList',
-		label: label,
-		//icon: "test",
-		accessibilityLabel: translation_title,
-		render: (backgroundColor, backgroundColorOnHover, textColor, lighterOrDarkerTextColor, hide) => {
-			// Use the custom context provider to provide the input value and setter
-			const onPress = (canteen: Canteens | undefined) => {
-				hide();
-			}
-
-			return <CanteenSelectGridList onPress={onPress} />
-		}
-	})
-
-	const config = {
-		onCancel: async () => {
-			return true;
-		},
-		visible: true,
-		title: translation_title,
-		items: items
-	}
-
-	const [show, hide, showActionsheetConfig] = useMyGlobalActionSheet()
-
 	const onPress = () => {
-		show(config)
+		setModalConfig({
+			title: translation_title,
+			accessibilityLabel: translation_title,
+			label: translation_title,
+			key: 'canteenSelect',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<CanteenSelectGridList onPress={(canteen: Canteens | undefined) => {
+						if(canteen){
+							setProfileCanteen(canteen);
+						} else {
+							setProfileCanteen(null)
+						}
+						hide();
+					}} />
+				)
+			}
+		})
 	}
 
-	return onPress;
+	return onPress
 }

@@ -204,7 +204,7 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
         }
 
         return (
-        	<View style={{width: '100%', flex: 1
+        	<View style={{width: '100%'
         	}}
         	>
         		<MyGridFlatList
@@ -238,7 +238,6 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
 			<View style={{
 				justifyContent: 'center',
 				alignItems: 'center',
-				flex: 1,
 			}}
 			>
 				<MyPreviousNextButton translation={translatedWordYear}
@@ -270,7 +269,6 @@ export const SimpleDatePickerComponent: FunctionComponent<SimpleDatePickerProps>
 			<View style={{
 				justifyContent: 'center',
 				alignItems: 'center',
-				flex: 1,
 			}}
 			>
 				<MyPreviousNextButton translation={translatedWordMonth}

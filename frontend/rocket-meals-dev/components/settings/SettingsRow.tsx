@@ -14,8 +14,10 @@ export interface SettingsRowProps {
     labelRight?: string | null,
     leftContent?: string | any,
     rightContent?: React.ReactNode,
+	active?: boolean,
     disabled?: boolean,
     leftIcon?: any | string,
+	iconLeftCustom?: React.ReactNode,
     rightIcon?: string,
     onPress?: any,
 	padding?: number | undefined
@@ -31,7 +33,7 @@ export interface SettingsRowProps {
     shadeLevel?: number
 }
 
-const DEFAULT_PADDING = 12;
+export const SETTINGS_ROW_DEFAULT_PADDING = 12;
 export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const textColor = useTextContrastColor()
@@ -39,6 +41,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
 	const projectColor = useProjectColor()
 	const projectColorContrast = useMyContrastColor(projectColor)
+	const isActive = props.active || false;
 
 	const [isHovered, setIsHovered] = useState(false);
 
@@ -67,7 +70,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		return (
 			<>
 				<View style={{
-					padding: DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
+					padding: SETTINGS_ROW_DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
 				}}>
 					<Text>{item.label}</Text>
 				</View>
@@ -86,10 +89,10 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		let content:any = null;
 
 		if (showPress && !rightIcon) {
-			content = <Icon name={IconNames.chevron_right_icon} />;
+			content = <Icon style={{color: usedTextColor}} name={IconNames.chevron_right_icon} />;
 		}
 		if (rightIcon) {
-			content = <Icon name={rightIcon} />
+			content = <Icon style={{color: usedTextColor}} name={rightIcon} />
 		}
 
 		return (
@@ -102,15 +105,14 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		)
 	}
 
-	const isActive = false
 	const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
 	const usedTextColor = isActive ? projectColorContrast : textColor;
 
 
 
-	let renderedLeftIcon = <Icon color={textColor} name={item.icon} />
-	if (isActive) {
-		renderedLeftIcon = <Icon color={projectColorContrast} name={item.icon} />
+	let renderedLeftIcon: any = <Icon style={{color: usedTextColor}} name={item.icon} />
+	if(props.iconLeftCustom){
+		renderedLeftIcon = props.iconLeftCustom
 	}
 
 	const expanded = props.expanded;
@@ -157,6 +159,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 					disabled={!item.onSelect || props.disabled}
 					accessibilityLabel={item.accessibilityLabel}
 					onPress={item.onSelect}
+					active={isActive}
 					key={item.key}
 				>
 					{renderLeftIcon(renderedLeftIcon)}
@@ -170,7 +173,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		return (
 			<>
 				<ActionsheetItem
-					padding={props.padding || DEFAULT_PADDING}
+					padding={props.padding || SETTINGS_ROW_DEFAULT_PADDING}
 					disabled={!item.onSelect || props.disabled}
 					accessibilityLabel={item.accessibilityLabel}
 					sx={{

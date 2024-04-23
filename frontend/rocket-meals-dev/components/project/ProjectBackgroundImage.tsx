@@ -18,6 +18,8 @@ export const ProjectBackgroundImage: FunctionComponent<AppState & ViewProps> = (
 	)
 	//let fallbackElement = undefined
 
+	console.log("ProjectBackgroundImage: directusImageAssetId:", directusImageAssetId)
+
 	return (
 		<View style={[defaultStyle,style]} {...props}>
 			<DirectusImage assetId={directusImageAssetId} fallbackElement={fallbackElement} style={[defaultStyle,style]} {...props}  />

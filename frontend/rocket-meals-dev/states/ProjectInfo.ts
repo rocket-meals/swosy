@@ -18,8 +18,7 @@ export function useProjectDescription() {
 
 export function useProjectColor(): string {
 	const projectInfo = useProjectInfo();
-	//return "#FDFDFD"
-	return projectInfo?.project_color || 'transparent';
+	return projectInfo?.project_color || "#D14610";
 }
 
 export function useProjectColorContrast(): string {
@@ -34,7 +33,7 @@ export function useProjectLogoAssetId() {
 
 export function useProjectPublicBackgroundAssetId() {
 	const projectInfo = useProjectInfo();
-	return projectInfo?.public_background
+	return projectInfo?.public_background?.id;
 }
 
 export function useProjectPublicForegroundAssetId() {

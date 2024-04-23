@@ -80,6 +80,7 @@ export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, 
 		if(!showQuickAction){
 			renderedOptions.push(
 				<MyButton
+					useOnlyNecessarySpace={true}
 					borderRightRadius={0}
 					borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
 					if (isDislikeActive) {
@@ -92,6 +93,7 @@ export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, 
 
 			renderedOptions.push(
 				<MyButton
+					useOnlyNecessarySpace={true}
 					borderLeftRadius={0}
 					borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
 					if (isLikeActive) {
@@ -105,6 +107,7 @@ export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, 
 			if(isDislikeActive){
 				renderedOptions.push(
 					<MyButton
+						useOnlyNecessarySpace={true}
 						borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
 						if (isDislikeActive) {
 							setRating(null)
@@ -116,6 +119,7 @@ export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, 
 			} else {
 				renderedOptions.push(
 					<MyButton
+						useOnlyNecessarySpace={true}
 						borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
 						if (isLikeActive) {
 							setRating(null)
@@ -167,6 +171,7 @@ export const MyRatingButton = ({rating, showQuickAction, ratingType, setRating, 
 				let icon = isRatingEqualOrHigher ? IconNames.star_active_icon : IconNames.star_inactive_icon
 				renderedOptions.push(
 					<MyButton
+						useOnlyNecessarySpace={true}
 						borderLeftRadius={borderLeftRadius}
 						borderRightRadius={borderRightRadius}
 						borderRadius={borderRadius} isActive={isRatingEqualOrHigher} onPress={() => {

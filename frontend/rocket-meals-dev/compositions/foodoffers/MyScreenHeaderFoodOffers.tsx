@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Heading, View} from '@/components/Themed'
-import {MyScreenHeader, MyScreenHeaderProps, getMyScreenHeaderFunction} from '@/components/drawer/MyScreenHeader';
+import {getMyScreenHeaderFunction, MyScreenHeader, MyScreenHeaderProps} from '@/components/drawer/MyScreenHeader';
 import {SettingsButtonProfileCanteen} from '@/compositions/settings/SettingsButtonProfileCanteen';
 import {useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
@@ -9,17 +9,12 @@ import {useProfileLocaleForJsDate, useSynchedProfileCanteen} from '@/states/Sync
 import {Divider} from '@gluestack-ui/themed';
 import {MyPreviousNextButton} from '@/components/buttons/MyPreviousNextButton';
 import {SimpleDatePicker} from '@/components/datePicker/SimpleDatePicker';
-import {UtilizationButton} from '@/compositions/utilizationForecast/UtilizationButton';
 import {SettingsButtonProfileEatingHabits} from '@/compositions/settings/SettingsButtonProfileEatingHabits';
 import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesForFood} from "@/states/SynchedSortType";
 import {UtilizationCanteenButton} from "@/compositions/utilizationForecast/UtilizationCanteenButton";
 import {BusinesshoursCanteenButton} from "@/compositions/businesshours/BusinesshoursCanteenButton";
-import {MyButtonNavigation} from "@/components/buttons/MyButtonNavigation";
-import {MyButton} from "@/components/buttons/MyButton";
-import {useRouter} from "expo-router";
-import {IconNames} from "@/constants/IconNames";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
@@ -37,8 +32,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
 	const translation_day = useTranslation(TranslationKeys.day);
 
-	const router = useRouter()
-
 	const dateCopy = new Date(tempSelectedDate);
 	const humanReadableDate = DateHelper.useSmartReadableDate(dateCopy, locale)
 
@@ -47,7 +40,9 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	useEffect(() => {
 		if(tempSelectedDate !== selectedDate){
 			const timeout = setTimeout(() => {
-				setSelectedDate(tempSelectedDate);
+				setSelectedDate((currentSelectedDate) => {
+					return tempSelectedDate;
+				});
 			}, 500);
 			return () => clearTimeout(timeout);
 		}
@@ -67,9 +62,6 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 				>
 					<SettingsButtonSort itemToSort={translation_foods} synchKey={PersistentStore.sortConfigFoodoffers} availableSortTypes={sortTypesForFood} />
 					<SettingsButtonProfileEatingHabits />
-					<MyButton onPress={() => {
-						router.push('/(app)/eatinghabits')
-					}} icon={IconNames.debug_icon} accessibilityLabel={"Eating Habits"} />
 					<SettingsButtonProfileCanteen />
 				</View>
 			</View>
@@ -113,8 +105,10 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 					<SimpleDatePicker currentDate={selectedDate}
 									  onSelectDate={(date) => {
 										  setTempSelectedDate(date);
-										  setSelectedDate(date);
-									  } }
+										  setSelectedDate((currentSelectedDate) => {
+											  return date;
+										  });
+									  }}
 					>
 					</SimpleDatePicker>
 					{renderSwitchDate(true)}

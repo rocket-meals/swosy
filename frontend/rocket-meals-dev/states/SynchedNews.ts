@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {News, NewsTranslations} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DateHelper} from '@/helper/date/DateHelper';
@@ -20,9 +20,8 @@ async function loadNewsFromServer(): Promise<News[]> {
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedNewsDict(): [(Record<string, News> | undefined), ((newValue: Record<string, News>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<News>(PersistentStore.news);
+export function useSynchedNewsDict(): [( Record<string, News | null | undefined> | null | undefined), ( (callback: (currentValue: (Record<string, News | null | undefined> | null | undefined)) => Record<string, News | null | undefined>, timestamp?: (number | undefined)) => void), number | undefined, (nowInMs?: number) => Promise<void>] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<News>(PersistentStore.news);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -33,7 +32,9 @@ export function useSynchedNewsDict(): [(Record<string, News> | undefined), ((new
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadNewsFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]

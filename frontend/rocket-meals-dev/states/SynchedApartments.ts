@@ -1,6 +1,6 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments, Buildings} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourceRaw} from '@/states/SynchedResource';
+import {Apartments, Buildings, Washingmachines} from '@/helper/database/databaseTypes/types';
+import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getBuildingLocationType, getDemoBuildings} from '@/states/SynchedBuildings';
@@ -36,9 +36,8 @@ export async function loadApartmentWithWashingMachinesFromServer(apartmentId: st
 	return await collectionHelper.readItem(apartmentId, query);
 }
 
-export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undefined), ((newValue: Record<string, Apartments>, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourceRaw<Apartments>(PersistentStore.apartments);
+export function useSynchedApartmentsDict(): [ Record<string, Apartments | null | undefined> | null | undefined, ((callback: (currentValue: (Record<string, Apartments | null | undefined> | null | undefined)) => Record<string, Apartments | null | undefined>, timestamp?: (number | undefined)) => void), number | undefined, ((nowInMs?: number) => Promise<void>	)] {
+	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Apartments>(PersistentStore.apartments);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;
 	let usedResources = resourcesOnly;
@@ -49,15 +48,43 @@ export function useSynchedApartmentsDict(): [(Record<string, Apartments> | undef
 	async function updateFromServer(nowInMs?: number) {
 		const resourceAsList = await loadApartmentsFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
-		setResourcesOnly(resourceAsDict, nowInMs);
+		setResourcesOnly((currentValue) => {
+			return resourceAsDict
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
 }
 
 export function getApartmentLocationType(apartment: Apartments, buildingsDict: Record<string, Buildings> | undefined): LocationType | null {
-	let buildingA = buildingsDict?.[apartment.building];
+	let buildingA = buildingsDict?.[apartment?.building];
 	return getBuildingLocationType(buildingA);
+}
+
+export function getDemoWashingmachines(): Washingmachines[] {
+	const amountWashingmachines = 10
+	const demoResources: Washingmachines[] = []
+
+	for (let i = 0; i < amountWashingmachines; i++) {
+		let date_finished: string | null | undefined = null;
+
+		const date = new Date();
+		if(i%2===1){
+			// set in 2 minutes
+			date.setMinutes(date.getMinutes() + (i));
+		}
+		date_finished = date.toISOString();
+		const demoResource: Washingmachines = {
+			id: i+'',
+			alias: 'Washingmachine ' + i,
+			date_finished: date_finished
+		}
+		demoResources.push(demoResource)
+	}
+
+	return demoResources
+
+
 }
 
 function getDemoApartments(): Record<string, Apartments> {

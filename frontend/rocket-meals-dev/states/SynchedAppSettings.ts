@@ -4,6 +4,7 @@ import {useSynchedResourceSingleRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {RatingType} from "@/components/buttons/MyRatingButton";
+import {FeedbackCommentType, FeedbackLabelsType} from "@/compositions/fooddetails/FoodDetails";
 
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	const collectionHelper = new CollectionHelper<AppSettings>('app_settings');
@@ -11,11 +12,12 @@ async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	return await collectionHelper.readSingletonItem(query);
 }
 
-export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue: AppSettings, timestampe?: number) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
+export function useSynchedAppSettings(): [( AppSettings | null | undefined), ((newValue: (currentValue: (AppSettings | null | undefined)) => (AppSettings | null | undefined), timestamp?: (number | undefined)) => void), number | undefined, ((     nowInMs?: number) => Promise<void>)]
+{
 	const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
 	const demo = useIsDemo()
 
+	console.log('useSynchedAppSettings', resourceRaw)
 	const lastUpdate = resourceRaw?.lastUpdate;
 	let usedResources = resourceOnly;
 	if (demo) {
@@ -24,7 +26,9 @@ export function useSynchedAppSettings(): [(AppSettings | undefined), ((newValue:
 
 	async function updateFromServer(nowInMs?: number) {
 		const resource = await loadAppSettingsFromServer();
-		setResourceOnly(resource, nowInMs);
+		setResourceOnly((currentSettings) => {
+			return resource;
+		}, nowInMs);
 	}
 
 	return [usedResources, setResourceOnly, lastUpdate, updateFromServer]
@@ -53,6 +57,11 @@ export function useIsNewsEnabled(): boolean {
 export function useIsCourseTimetableEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.course_timetable_enabled || false;
+}
+
+export function useIsAccountBalanceEnabled(): boolean {
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.balance_enabled || false;
 }
 
 export function useIsUtilizationForecastEnabled(): boolean {
@@ -88,9 +97,11 @@ function getDemoAppSettings(): AppSettings {
 		foods_parsing_status: '',
 		foods_placeholder_image: null,
 		foods_placeholder_image_thumb_hash: '',
-		foods_ratings_amount_display: false,
-		foods_ratings_average_display: false,
+		foods_ratings_amount_display: true,
+		foods_ratings_average_display: true,
 		foods_ratings_type: RatingType.stars,
+		foods_feedbacks_comments_type: FeedbackCommentType.readAndWrite,
+		foods_feedbacks_labels_type: FeedbackLabelsType.useAndRead,
 		foods_settings: '',
 		housing_enabled: true,
 		housing_maps_enabled: false,

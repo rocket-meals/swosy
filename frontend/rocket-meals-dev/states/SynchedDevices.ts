@@ -4,7 +4,7 @@ import {getDeviceInformation} from '@/helper/device/DeviceHelper';
 
 
 
-export function useSynchedDevices(): [Devices[], (newDevices: Devices[], timestamp?: number) => Promise<void>, (number | undefined), (timestamp?: number) => Promise<void>] {
+export function useSynchedDevices(): [any[] | Devices[] | undefined] {
 	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile();
 
 	const lastUpdateDevices = lastUpdateProfile;
@@ -15,8 +15,12 @@ export function useSynchedDevices(): [Devices[], (newDevices: Devices[], timesta
 
 	const devices = profile?.devices || [];
 	const setDevices = async (newDevices: Devices[], timestamp?: number) => {
-		const newProfile = {...profile, devices: newDevices};
-		await setProfile(newProfile, timestamp);
+		await setProfile((currentProfile) => {
+			if(currentProfile){
+				currentProfile.devices = newDevices;
+			}
+			return currentProfile;
+		}, timestamp);
 	}
 
 	const updateDeviceIfNotRegistered = async (timestamp?: number) => {

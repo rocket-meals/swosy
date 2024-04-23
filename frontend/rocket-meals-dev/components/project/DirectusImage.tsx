@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import {Image} from 'expo-image';
+import {Image, ImageSource} from 'expo-image';
 import {TouchableOpacity} from 'react-native';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, View} from '@/components/Themed';
@@ -15,7 +15,8 @@ export type DirectusImageProps = {
     image_url?: string | undefined | null;
     style?: any;
     alt?: string;
-    placeholder?: string;
+    fallbackImage?: string;
+	fallbackAssetId?: string;
     thumbHash?: string | undefined | null;
     showLoading?: boolean,
     contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down',
@@ -28,10 +29,10 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const isDemoMode = useIsDemo();
 	const isDebug = useIsDebug();
 
-	const url = getInitialImageUrl();
+	const url: string | undefined = getInitialImageUrl();
 
 	// State for managing the image URL
-	const [imageUrl, setImageUrl] = useState<string | undefined | null>(url);
+	const [imageUrl, setImageUrl] = useState<string | undefined>(url);
 
 	function getInitialImageUrl() {
 		let url = ServerAPI.getAssetImageURL(props.assetId);
@@ -41,27 +42,41 @@ export default function DirectusImage(props: DirectusImageProps) {
 		return url;
 	}
 
+	const state_failed = "failed";
+	const state_loading = "loading";
+	const state_success = "success";
 
+	function getInitialLoadState(url: string | null | undefined){
+		return !url ? state_failed : state_loading;
+	}
 
-	const [imageLoadedFailed, setImageLoadedFailed] = useState(!url);
+	const initialState = getInitialLoadState(url);
+	const [loadState, setLoadState] = useState(initialState)
+	const loadFinished = loadState !== state_loading;
+	const imageLoadedFailed = loadState === state_failed;
+	const imageLoadedSuccess = loadState === state_success;
 
 	useEffect(() => {
 		const url = getInitialImageUrl();
 
 		setImageUrl(url); // Update the imageUrl state with the new URL
-		setImageLoadedFailed(!url); // Update the imageLoadedFailed state based on the presence of the URL
+		setLoadState(getInitialLoadState(url))
 	}, [props.assetId, props.image_url]); // This effect depends on assetId and image_url
 
 	let headers = undefined;
 	if (accessToken) {
-		headers = {
-			Authorization: `Bearer ${accessToken}`,
-		};
+		if(!!url){
+			if(url.startsWith(ServerAPI.getServerUrl())){
+				headers = {
+					Authorization: `Bearer ${accessToken}`,
+				};
+			}
+		}
 	}
 
-	let source = {
+	let source: ImageSource = {
 		uri: imageUrl,
-		cacheKy: imageUrl,
+		cacheKey: imageUrl,
 		headers: headers,
 	};
 
@@ -72,42 +87,109 @@ export default function DirectusImage(props: DirectusImageProps) {
 		}
 	}
 
-	const thumbHashRaw = props.thumbHash || '93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48';
-	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
-	const placeholder = props.placeholder || thumbHashBase64;
 
 	// Will only cache the image on mobile devices - not in the browser
 	let cachePolicy: "none" | "disk" | "memory" | "memory-disk" | null | undefined = 'disk';
 
-	// with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio
-	let content = (
+	const defaultThumbHash = '93 18 0A 35 86 37 89 87 80 77 88 8C 79 28 87 78 08 84 85 40 48';
+	const thumbHashRaw = props.thumbHash || defaultThumbHash
+	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
+	let fallbackImage: any = props.fallbackImage
+	if (props.fallbackAssetId) {
+		fallbackImage = ServerAPI.getAssetImageURL(props.fallbackAssetId);
+	}
+
+	let placeHolderContent = null;
+	if(!loadFinished && thumbHashRaw){
+		placeHolderContent = null;
+	} else if (fallbackImage && imageLoadedFailed) {
+		let placeholderSource = {
+			uri: fallbackImage,
+			cacheKy: fallbackImage,
+			headers: headers,
+		};
+		placeHolderContent = (
+			<View style={{
+				height: '100%',
+				width: '100%',
+				position: 'absolute',
+			}}>
+				<Image
+					source={placeholderSource}
+					alt={props?.alt || 'Placeholder'}
+					style={props.style}
+					contentFit={props.contentFit}
+					//placeholder={placeholder} // This is not working as expected
+					// Assuming cachePolicy is determined elsewhere or is static
+					cachePolicy={cachePolicy}
+				/>
+			</View>
+		);
+	}
+
+
+	let renderedThumbHash: any = <View style={{
+		height: '100%',
+		width: '100%',
+		position: 'absolute',
+	}}>
+		<Image
+			source={thumbHashBase64}
+			alt={props?.alt || 'Image blurry'}
+			style={props.style}
+		/>
+	</View>
+
+	if(loadFinished){
+		if(fallbackImage || imageLoadedSuccess){
+			renderedThumbHash = null;
+		}
+	}
+
+	if(imageLoadedSuccess){
+		renderedThumbHash = null;
+	}
+
+
+	// so we have: thumbhash, placeholder and the image and the fallbackElement
+	// we want to first render the thumbhash, then the image and if all fails the placeholder or the fallbackElement
+
+
+
+	let imageContent = (
 		<Image
 			source={source}
-			alt={props?.alt || 'Image'}
+			accessibilityLabel={props?.alt || 'Image not found'}
 			style={props.style}
 			contentFit={props.contentFit}
-			placeholder={placeholder}
+			//placeholder={placeholder} // This is not working as expected
+			onLoad={() => {
+				console.log('DirectusImage onLoad');
+				setLoadState(state_success)
+			}}
 			onError={(e) => {
 				console.log('DirectusImage onError', e);
-				setImageLoadedFailed(true);
+				setLoadState(state_failed)
 			}}
 			// Assuming cachePolicy is determined elsewhere or is static
 			cachePolicy={cachePolicy}
 		/>
+	)
+
+	if (imageLoadedFailed && props?.fallbackElement) {
+		imageContent = props?.fallbackElement
+	}
+
+	// with resizeMode="contain" the image will be scaled to fit the container, but maintain its aspect ratio
+	let content = (
+		<>
+			{imageContent}
+			{renderedThumbHash}
+			{placeHolderContent}
+		</>
 	);
 
-	if (imageLoadedFailed) {
-		content = props?.fallbackElement
-		if (!content && thumbHashBase64) {
-			content = (
-				<Image
-					source={thumbHashBase64}
-					alt={props?.alt || 'Image'}
-					style={props.style}
-				/>
-			)
-		}
-	}
+
 
 	if (props.onPress) {
 		content = (
@@ -124,6 +206,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 		debugContent = (
 			<View style={{position: 'absolute', top: 0, left: 0}}>
 				<Text>{image_asset_id_or_url}</Text>
+				<Text>{"loadState: "+loadState}</Text>
 			</View>
 		);
 	}
