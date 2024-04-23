@@ -111,8 +111,7 @@ export const MyDrawerCustomItemBottom = (customItem: MyDrawerCustomItemProps) =>
 		}
 	}
 
-	return <View style={{flexDirection: 'row', justifyContent: 'center', padding: 5,
-	}}>
+	return <View key={label.toLowerCase()} style={{flexDirection: 'row', justifyContent: 'center', padding: 5 }}>
 		<LinkPressable
 			onPress={onPress}
 			accessibilityLabel={drawer_item_accessibility_label}

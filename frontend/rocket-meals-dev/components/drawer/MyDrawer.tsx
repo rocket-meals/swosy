@@ -57,6 +57,7 @@ export function renderMyDrawerScreen({routeName, label, title, icon, showBackBut
 
 	return (
 		<Drawer.Screen
+			key={routeName}
 			name={routeName} // The route name must match the URL from the root for navigation.
 			options={{
 				unmountOnBlur: true, // This will unmount the page in order to free up memory but at the cost of loading time
