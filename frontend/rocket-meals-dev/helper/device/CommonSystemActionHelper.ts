@@ -67,7 +67,7 @@ class PrivateSystemActionHelper extends CommonSystemActionHelper{
 
 }
 
-class mobileSystemActionHelper extends PrivateSystemActionHelper {
+class MobileSystemActionHelper extends PrivateSystemActionHelper {
 	static async openSystemAppSettings() {
 		if(isMobile){
 			await Linking.openSettings();
@@ -75,25 +75,25 @@ class mobileSystemActionHelper extends PrivateSystemActionHelper {
 	}
 
 	static async openSystemSettings() {
-		return await PrivateSystemActionHelper.openActivity("App-Prefs:", IntentLauncher.ACTION_SETTINGS);
+		return await PrivateSystemActionHelper.openActivity("App-Prefs:", IntentLauncher.ActivityAction.SETTINGS);
 	}
 }
 
-class iPhoneSystemActionHelper extends mobileSystemActionHelper {
+class iPhoneSystemActionHelper extends MobileSystemActionHelper {
 
 }
 
 
-class androidSystemActionHelper extends mobileSystemActionHelper {
+class androidSystemActionHelper extends MobileSystemActionHelper {
 	static async openNFCSettings() {
-		return await mobileSystemActionHelper.openActivity("", IntentLauncher.ACTION_NFC_SETTINGS);
+		return await MobileSystemActionHelper.openActivity("", IntentLauncher.ActivityAction.NFC_SETTINGS);
 	}
 }
 
 
 export class SystemActionHelper {
 
-	static mobileSystemActionHelper = mobileSystemActionHelper;
+	static MobileSystemActionHelper = MobileSystemActionHelper;
 	static iPhoneSystemActionHelper = iPhoneSystemActionHelper;
 	static androidSystemActionHelper = androidSystemActionHelper;
 

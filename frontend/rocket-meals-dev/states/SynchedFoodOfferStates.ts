@@ -75,6 +75,9 @@ export async function loadFood(isDemo: boolean, food_id: string): Promise<Foods>
 		return demoFoods[food_id];
 	}
 
+	// TODO: #125 : https://github.com/rocket-meals/rocket-meals/issues/125 Caching Food implement here?
+	// Change to a useFood maybe?
+
 	return await loadFoodFromServer(food_id);
 }
 

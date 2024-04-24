@@ -4,6 +4,8 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+import {useSynchedDevices} from "@/states/SynchedDevices";
+import {NotificationHelper} from "@/helper/notification/NotificationHelper";
 
 export type MyNewButtonProps = {
     onPress?: () => void;

@@ -344,7 +344,7 @@ export default function FoodOfferScreen() {
 				assetId={assetId}
 				placeholderAssetId={placeholderAssetId}
 				onPress={() => {
-					router.push(`/(app)/foods/${foodOffer.id}`)
+					router.push(`/(app)/foodoffers/${foodOffer.id}`)
 				}}
 				accessibilityLabel={title}
 				innerPadding={0}

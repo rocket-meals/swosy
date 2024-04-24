@@ -8,8 +8,6 @@ import axios from 'axios';
 import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper';
 
 export default function HomeScreen() {
-	const [notificationObj, setNotificationObj] = NotificationHelper.useNotificationPermission();
-
 	const [permission, setPermission] = useState(undefined)
 	const [requestPermission, setRequestPermission] = useState(undefined)
 	const [devicePushToken, setDevicePushToken] = useState<MyPushToken | undefined>(undefined)
@@ -118,7 +116,6 @@ export default function HomeScreen() {
 
 
 				<View style={{width: '100%'}}><Text>{'Current Hook Values'}</Text></View>
-				{renderFunc('notificationObj', notificationObj, null, null)}
 			</View>
 		</MyScrollView>
 	);
