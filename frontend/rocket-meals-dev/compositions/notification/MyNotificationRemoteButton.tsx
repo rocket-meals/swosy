@@ -7,13 +7,14 @@ import {DisabledTouchableOpacity} from "@/components/buttons/DisabledTouchableOp
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {Text, View} from "@/components/Themed";
-import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
+import {AnimationNotificationBell} from "@/compositions/animations/AnimationNotificationBell";
 
 export type MyNewButtonProps = {
     onPress?: () => void;
 	active?: boolean;
+	allowWebToActivateForSmartPhoneIfEmailDisabled?: boolean;
 	tooltip: string;
 	accessibilityLabel: string;
 }
@@ -27,13 +28,14 @@ export const MyNotificationRemoteButton = (props: MyNewButtonProps) => {
 	const translation_device_ios_system = useTranslation(TranslationKeys.device_ios_system);
 	const translation_device_web_system = useTranslation(TranslationKeys.device_web_system);
 	const translation_this_feature_is_not_available_currently_reason = useTranslation(TranslationKeys.this_feature_is_not_available_currently_reason);
+	const notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified = useTranslation(TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified);
 
 	const translation_notification_please_enable_notifications_in_order_to_use_this_feature = useTranslation(TranslationKeys.notification_please_enable_notifications_in_order_to_use_this_feature);
 
-	function renderNotificationInformation() {
+	function renderNotificationInformationPleaseEnable() {
 		return(
 			<View style={{width: "100%"}}>
-				<AnimationAstronautComputer />
+				<AnimationNotificationBell />
 				<View style={{
 					width: "100%",
 					paddingHorizontal: 20,
@@ -65,7 +67,36 @@ export const MyNotificationRemoteButton = (props: MyNewButtonProps) => {
 
 		},
 		renderAsContentPreItems: (key: string, hide: () => void) => {
-			return renderNotificationInformation();
+			return renderNotificationInformationPleaseEnable();
+		}
+	})
+
+	function renderNotificationInformationToNotifyOnSmartphones() {
+		return(
+			<View style={{width: "100%"}}>
+				<AnimationNotificationBell />
+				<View style={{
+					width: "100%",
+					paddingHorizontal: 20,
+				}}>
+					<View style={{
+						width: "100%",
+						paddingBottom: 20,
+					}}>
+						<Text>{notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified}</Text>
+					</View>
+				</View>
+			</View>
+		)
+	}
+
+	const showCustomAskForNotificationOnSmartphone = useMyModalConfirmer({
+		title: translation_notify,
+		onConfirm: () => {
+			props.onPress?.();
+		},
+		renderAsContentPreItems: (key: string, hide: () => void) => {
+			return renderNotificationInformationToNotifyOnSmartphones();
 		}
 	})
 
@@ -75,6 +106,8 @@ export const MyNotificationRemoteButton = (props: MyNewButtonProps) => {
 	const notifications_email_enabled = appSettings?.notifications_email_enabled;
 
 	const canDeactivate = true;
+
+	const allowWebToActivateForSmartPhoneIfEmailDisabled = props.allowWebToActivateForSmartPhoneIfEmailDisabled;
 
 	let reasonNotAbleToActivate = null;
 	let canActivate = false;
@@ -89,6 +122,10 @@ export const MyNotificationRemoteButton = (props: MyNewButtonProps) => {
 	if(PlatformHelper.isWeb()){
 		canActivate = !!notifications_email_enabled;
 		reasonNotAbleToActivate = translation_device_web_system;
+		if(!notifications_email_enabled && allowWebToActivateForSmartPhoneIfEmailDisabled){
+			canActivate = true;
+			reasonNotAbleToActivate = null;
+		}
 	}
 	if(isDemo){
 		canActivate = true;
@@ -106,7 +143,11 @@ export const MyNotificationRemoteButton = (props: MyNewButtonProps) => {
 				}
 			}
 			if(PlatformHelper.isWeb()) {
-				props.onPress?.();
+				if(!notifications_email_enabled && allowWebToActivateForSmartPhoneIfEmailDisabled){
+					showCustomAskForNotificationOnSmartphone();
+				} else {
+					props.onPress?.();
+				}
 			}
 		}
 	}

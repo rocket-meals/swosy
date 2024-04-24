@@ -12,7 +12,7 @@ import {getDemoMarkings} from "@/states/SynchedMarkings";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 
-export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestampe?: number) => void), (number | undefined)] {
+export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestamp?: number) => void), (number | undefined)] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
 	const demo = useIsDemo()
 	const lastUpdate = resourcesRaw?.lastUpdate;

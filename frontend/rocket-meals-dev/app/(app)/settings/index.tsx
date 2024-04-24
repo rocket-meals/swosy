@@ -27,6 +27,7 @@ import {useDeveloperModeRaw, useIsDeveloperModeActive} from "@/states/Develop";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
+import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 
 const ProjectVersionInformation = () => {
 	const [develop, setDevelop] = useDeveloperModeRaw();
@@ -84,6 +85,7 @@ export default function SettingsScreen() {
 					<SettingsRowProfileEatingHabits />
 					<SettingsRowPriceGroup />
 					<SettingsRowAccountBalance />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.notification} iconLeft={IconNames.notification_active} route={"/(app)/settings/notifications"} />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowColorScheme />

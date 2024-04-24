@@ -4,11 +4,11 @@ import React from 'react';
 import FoodDetails from '@/compositions/fooddetails/FoodDetails';
 
 export default function FoodOfferDetails() {
-	const { food } = useLocalSearchParams<{ food: string }>();
+	const { foodoffer } = useLocalSearchParams<{ foodoffer: string }>();
 
 	return (
 		<MySafeAreaView>
-			<FoodDetails foodOfferId={food}/>
+			<FoodDetails foodOfferId={foodoffer}/>
 		</MySafeAreaView>
 	)
 }
