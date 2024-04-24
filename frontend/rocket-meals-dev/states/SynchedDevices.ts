@@ -1,10 +1,11 @@
 import {Devices} from '@/helper/database/databaseTypes/types';
 import {useSynchedProfile} from '@/states/SynchedProfile';
-import {getDeviceInformation} from '@/helper/device/DeviceHelper';
+import {getDeviceInformationWithoutPushToken} from '@/helper/device/DeviceHelper';
+import {NotificationHelper} from "@/helper/notification/NotificationHelper";
 
 
 
-export function useSynchedDevices(): [any[] | Devices[] | undefined] {
+export function useSynchedDevices(): [Devices | undefined , Devices[], (newDevices: Devices[], timestamp?: number) => Promise<void>, number | undefined, (timestamp?: number) => Promise<void>] {
 	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile();
 
 	const lastUpdateDevices = lastUpdateProfile;
@@ -14,6 +15,24 @@ export function useSynchedDevices(): [any[] | Devices[] | undefined] {
 	}
 
 	const devices = profile?.devices || [];
+	let deviceInformationsWithoutPushToken: Partial<Devices> = getDeviceInformationWithoutPushToken();
+	let deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
+	let currentDevice = getCurrentDevice(deviceInformationsId);
+
+	function getCurrentDevice(deviceInformationsId: string | undefined): Devices | undefined {
+		let foundDevice: undefined | Devices = undefined;
+		if (deviceInformationsId) {
+			for (const device of devices) {
+				if (getDeviceIdentifier(device) === deviceInformationsId) {
+					foundDevice = device;
+					break;
+				}
+			}
+		}
+		return foundDevice;
+	}
+
+
 	const setDevices = async (newDevices: Devices[], timestamp?: number) => {
 		await setProfile((currentProfile) => {
 			if(currentProfile){
@@ -23,30 +42,27 @@ export function useSynchedDevices(): [any[] | Devices[] | undefined] {
 		}, timestamp);
 	}
 
-	const updateDeviceIfNotRegistered = async (timestamp?: number) => {
-		const deviceInformations: Partial<Devices> = await getDeviceInformation();
-		const deviceInformationsId = getDeviceIdentifier(deviceInformations);
-		let newDevices = devices;
+	const updateDeviceInformationAndRegisterIfNotFound = async (timestamp?: number) => {
+		deviceInformationsWithoutPushToken = getDeviceInformationWithoutPushToken();
+		deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
+		const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
+		let deviceInformationsWithPushToken = {...deviceInformationsWithoutPushToken,
+			pushTokenObj: pushTokenObj
+		};
 
-		if (deviceInformationsId) {
-			let foundDevice = undefined;
-			for (const device of devices) {
-				if (getDeviceIdentifier(device) === deviceInformationsId) {
-					foundDevice = device;
-					break;
-				}
-			}
-			if (!foundDevice) {
-				newDevices = [...devices, deviceInformations];
-			} else {
-				const deviceInformationsForUpdate = {...foundDevice, ...deviceInformations}; // we want to keep id or createdAt
-				const index = devices.indexOf(foundDevice);
-				newDevices = [...devices];
-				newDevices[index] = deviceInformationsForUpdate;
-			}
+
+		let newDevices = devices;
+		let foundDevice = getCurrentDevice(deviceInformationsId);
+		if (!foundDevice) {
+			newDevices = [...devices, deviceInformationsWithPushToken];
+		} else {
+			const deviceInformationsForUpdate = {...foundDevice, ...deviceInformationsWithPushToken}; // we want to keep id or createdAt
+			const index = devices.indexOf(foundDevice);
+			newDevices = [...devices];
+			newDevices[index] = deviceInformationsForUpdate;
 		}
 		await setDevices(newDevices, timestamp);
 	}
 
-	return [devices, setDevices, lastUpdateDevices, updateDeviceIfNotRegistered];
+	return [currentDevice, devices, setDevices, lastUpdateDevices, updateDeviceInformationAndRegisterIfNotFound];
 }

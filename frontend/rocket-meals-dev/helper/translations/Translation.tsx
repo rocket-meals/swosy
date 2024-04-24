@@ -138,6 +138,12 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static allergene = createTranslationKey('allergene', 'Allergene');
 	static eatinghabits_introduction = createTranslationKey('eatinghabits_introduction', `Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.`);
 	static notification = createTranslationKey('notification', 'Benachrichtigung');
+	static notification_please_enable_notifications_in_order_to_use_this_feature = createTranslationKey('notification_please_enable_notifications_in_order_to_use_this_feature', 'Bitte aktiviere Benachrichtigungen, um diese Funktion zu nutzen.');
+
+	static this_feature_is_not_available_currently_reason = createTranslationKey('this_feature_is_not_available_currently_reason', 'Diese Funktion ist derzeit nicht verfügbar. Grund:');
+	static device_android_system = createTranslationKey('device_android_system', 'Android System');
+	static device_ios_system = createTranslationKey('device_ios_system', 'iOS System');
+	static device_web_system = createTranslationKey('device_web_system', 'Web System');
 
 	static support = createTranslationKey('support', 'Support');
 

@@ -113,7 +113,7 @@ export function useInsets(): EdgeInsets {
 }
 
 
-export async function getDeviceInformation(): Promise<Partial<Devices>> { // Promise<DeviceInformationType>
+export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Promise<DeviceInformationType>
 	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	const windowScale = Dimensions.get('screen').scale;
@@ -126,8 +126,6 @@ export async function getDeviceInformation(): Promise<Partial<Devices>> { // Pro
 	if (PlatformHelper.isWeb()) {
 		isLandscape = windowWidth > windowHeight;
 	}
-
-	const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
 
 	return {
 		display_width: windowWidth,
@@ -144,6 +142,5 @@ export async function getDeviceInformation(): Promise<Partial<Devices>> { // Pro
 		is_ios: PlatformHelper.isIOS(),
 		is_android: PlatformHelper.isAndroid(),
 		is_web: PlatformHelper.isWeb(),
-		pushTokenObj: pushTokenObj
 	}
 }

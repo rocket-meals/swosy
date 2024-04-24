@@ -35,7 +35,7 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 
 	const registeredItemsToLoad: any[] = [];
 
-	const [devices, setDevices, lastUpdateDevices, updateDeviceIfNotRegistered] = useSynchedDevices()
+	const [currentDevice, devices, setDevices, lastUpdateDevices, updateDeviceInformationAndRegisterIfNotFound] = useSynchedDevices()
 
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
 
@@ -99,15 +99,7 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 			//console.log("AuthFlowUserCheck useEffect")
 			//console.log("refreshToken", refreshToken)
 
-			if (isServerOnline) { // if server is online, we can check if we are logged in
-				if (!demo) {
-					await updateDeviceIfNotRegistered(nowInMs)
-				}
-			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
-
-			} else { // if server is offline and we have no cached data, we can't check if we are logged in
-
-			}
+			await updateDeviceInformationAndRegisterIfNotFound(nowInMs)
 		})();
 	}, []);
 

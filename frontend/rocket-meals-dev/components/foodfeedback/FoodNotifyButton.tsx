@@ -4,6 +4,7 @@ import {useFoodTranslation} from "@/helper/food/FoodTranslation";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
+import {MyNotificationRemoteButton} from "@/compositions/notification/MyNotificationRemoteButton";
 
 export type FoodNotifyButtonProps = {
 	food: Foods;
@@ -26,7 +27,7 @@ const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> 
 	const active = !!notify;
 
 	return(
-		<MyButtonNotify tooltip={food_name} accessibilityLabel={food_name} active={active} onPress={() => {
+		<MyNotificationRemoteButton tooltip={food_name} accessibilityLabel={food_name} active={active} onPress={() => {
 			setOwnNotify(!foodFeedback?.notify);
 		}} />
 	)

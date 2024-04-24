@@ -6,6 +6,7 @@ import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 
 export type MyModalPropsConfirmer = {
+	title?: string
 	confirmLabel?: string
 	cancelLabel?: string
 	onConfirm: () => void | Promise<boolean | void> | void,
@@ -15,7 +16,8 @@ export type MyModalPropsConfirmer = {
 export const useMyModalConfirmer = (props: MyModalPropsConfirmer) => {
 	const translation_confirm = useTranslation(TranslationKeys.confirm);
 	const translation_cancel = useTranslation(TranslationKeys.cancel);
-	const title = useTranslation(TranslationKeys.attention);
+	const translation_attention = useTranslation(TranslationKeys.attention);
+	const title = props?.title || translation_attention
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	let items: MyModalActionSheetItem[] = []
