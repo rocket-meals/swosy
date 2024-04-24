@@ -19,6 +19,7 @@ import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotification
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootSyncSettingsDownload} from "@/components/rootLayout/RootSyncSettingsDownload";
+import {RootOnAppFocus} from "@/components/rootLayout/RootOnAppFocus";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -112,7 +113,9 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 			<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 				<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 					<RootNotificationDeepLink key={currentUser?.id+''}>
-						{props.children}
+						<RootOnAppFocus>
+							{props.children}
+						</RootOnAppFocus>
 					</RootNotificationDeepLink>
 				</RootSyncDatabaseUpload>
 			</RootSyncDatabaseDownload>
