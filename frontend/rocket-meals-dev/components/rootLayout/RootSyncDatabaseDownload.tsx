@@ -2,14 +2,12 @@ import {DependencyList, useEffect, useState} from 'react';
 import {useIsServerCached, useIsServerOffline, useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsDemo} from '@/states/SynchedDemo';
-import {getEmptyProfile, loadProfileRemoteByUser, useSynchedProfile} from '@/states/SynchedProfile';
-import {useCurrentUser, useIsCurrentUserAnonymous} from '@/states/User';
+import {useSynchedProfile} from '@/states/SynchedProfile';
 import {useSynchedBuildingsDict} from '@/states/SynchedBuildings';
 import {useSynchedWikisDict} from '@/states/SynchedWikis';
 import {useSynchedLanguagesDict} from '@/states/SynchedLanguages';
 import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
 import {useSynchedApartmentsDict} from '@/states/SynchedApartments';
-import {useSynchedAppSettings} from '@/states/SynchedAppSettings';
 import {useSynchedCollectionsDatesLastUpdateDict} from '@/states/SynchedCollectionsLastUpdate';
 import {useSynchedRolesDict} from '@/states/SynchedRoles';
 import {useSynchedPermissionsDict} from '@/states/SynchedPermissions';
@@ -20,6 +18,10 @@ import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
+import {getSyncCacheComposedKey, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types";
+import {View, Text} from "@/components/Themed";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -42,173 +44,205 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
 
-	const [currentUser, setUserWithCache] = useCurrentUser();
-	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
-
 	const demo = useIsDemo()
-	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 
-	const registeredItemsToLoad: any[] = [];
+	const [startSyncTimeRequest, setStartSyncTimeRequest] = useState<string>(new Date().getTime().toString());
+	const [collectionsDatesLastUpdateDict, setCollectionsDatesLastUpdateDict, cacheHelperLastUpdateDict] = useSynchedCollectionsDatesLastUpdateDict()
 
-	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
-	const [canteensDict, setCanteens, lastUpdateCanteens, updateCanteensFromServer] = useSynchedCanteensDict()
-	const [businesshoursDict, setBusinesshoursDict, lastUpdateBusinesshours, updateBusinesshoursFromServer] = useSynchedBusinesshoursDict()
-	const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
-	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
-	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels, updateFoodsFeedbacksLabelsFromServer]	= useSynchedFoodsFeedbacksLabelsDict()
-	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks, updateOwnFoodFeedbacksFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict()
-	const [languagesDict, setLanguagesDict, lastUpdateLanguages, updateLanguagesFromServer] = useSynchedLanguagesDict()
-	const [apartmentsDict, setApartmentsDict, lastUpdateApartments, updateApartmentsFromServer] = useSynchedApartmentsDict()
-	const [wikisDict, setWikisDict, lastUpdateWikis, updateWikisFromServer] = useSynchedWikisDict()
-	const [rolesDict, setRolesDict, lastUpdateRoles, updateRolesFromServer] = useSynchedRolesDict()
-	const [newsDict, setNewsDict, lastUpdateNews, updateNewsFromServer] = useSynchedNewsDict()
-	const [permissionsDict, setPermissionsDict, lastUpdatePermissions, updatePermissionsFromServer] = useSynchedPermissionsDict()
+	const [translationsDict, setTranslationsDict, cacheHelperObjTranslations] = useSynchedAppTranslationsDict()
+	const [canteensDict, setCanteens, cacheHelperObjCanteens] = useSynchedCanteensDict()
+	const [businesshoursDict, setBusinesshoursDict, cacheHelperObjBusinesshours] = useSynchedBusinesshoursDict()
+	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
+	const [buildingsDict, setBuildingsDict, cacheHelperObjBuildings] = useSynchedBuildingsDict()
+	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels] = useSynchedFoodsFeedbacksLabelsDict()
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
+	const [languagesDict, setLanguagesDict, cacheHelperObjLanguages] = useSynchedLanguagesDict()
+	const [apartmentsDict, setApartmentsDict, cacheHelperObjApartments] = useSynchedApartmentsDict()
+	const [wikisDict, setWikisDict, cacheHelperObjWikis] = useSynchedWikisDict()
+	const [rolesDict, setRolesDict, cacheHelperObjRoles] = useSynchedRolesDict()
+	const [newsDict, setNewsDict, cacheHelperObjNews] = useSynchedNewsDict()
+	const [permissionsDict, setPermissionsDict, cacheHelperObjPermissions] = useSynchedPermissionsDict()
+	const [profile, setProfile, cacheHelperObjProfile] = useSynchedProfile()
 
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+	// SYNC STATE PER RESOURCE
+	// current_version
+	// desired_version
+	// is_version_up_to_date
+	// cacheHelperObj
 
-	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
+	const synchedResourcesToDownloadFirst: {[key: string]: SyncResourceType} = {}
 
-	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
+	type SyncResourceType = {
+		data: any,
+		version_current: string | undefined,
+		version_desired: string | undefined,
+		is_version_up_to_date?: boolean,
+		cacheHelperObj: MyCacheHelperType,
+	}
 
+	function addResourceToCheckForUpdates(label: string, resource: any, cacheHelperObj: MyCacheHelperType){
+		//console.log("-----")
+		//console.log("addResourceToCheckForUpdates: "+label)
+		let desiredVersion = getDesiredVersion(resource, cacheHelperObj, collectionsDatesLastUpdateDict)
+		//console.log("desiredVersion: "+desiredVersion)
+		let currentVersion = cacheHelperObj.sync_cache_composed_key_local
+		//console.log("currentVersion: "+currentVersion)
+		//console.log("-----")
 
-		registeredItemsToLoad.push(resource);
 		synchedResourcesToDownloadFirst[label] = {
 			data: resource,
-			lastUpdate: lastUpdate
+			version_current: currentVersion,
+			version_desired: desiredVersion,
+			is_version_up_to_date: currentVersion === desiredVersion,
+			cacheHelperObj: cacheHelperObj,
 		}
 	}
 
 	/**
    * Needs to be called before the useEffect
    */
-
-	addSynchedResourceToDownloadFirst('translations', translationsDict, lastUpdateTranslations)
-	addSynchedResourceToDownloadFirst('canteens', canteensDict, lastUpdateCanteens)
-	addSynchedResourceToDownloadFirst('businesshours', businesshoursDict, lastUpdateBusinesshours)
-	addSynchedResourceToDownloadFirst('buildings', buildingsDict, lastUpdateBuildings)
-	addSynchedResourceToDownloadFirst('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, lastUpdateFoodsFeedbacksLabels)
-	addSynchedResourceToDownloadFirst('profile', profile, lastUpdateProfile);
-	addSynchedResourceToDownloadFirst('wikis', wikisDict, lastUpdateWikis)
-	addSynchedResourceToDownloadFirst('ownFoodFeedbacks', ownFoodFeedbacksDict, lastUpdateOwnFoodFeedbacks)
-	addSynchedResourceToDownloadFirst('languages', languagesDict, lastUpdateLanguages)
-	addSynchedResourceToDownloadFirst('markings', markingsDict, lastUpdateMarkings);
-	addSynchedResourceToDownloadFirst('apartments', apartmentsDict, lastUpdateApartments);
-	addSynchedResourceToDownloadFirst('roles', rolesDict, lastUpdateRoles);
-	addSynchedResourceToDownloadFirst('permissions', permissionsDict, lastUpdatePermissions);
-	addSynchedResourceToDownloadFirst('news', newsDict, lastUpdateNews);
+	addResourceToCheckForUpdates('translations', translationsDict, cacheHelperObjTranslations)
+	addResourceToCheckForUpdates('canteens', canteensDict, cacheHelperObjCanteens)
+	addResourceToCheckForUpdates('businesshours', businesshoursDict, cacheHelperObjBusinesshours)
+	addResourceToCheckForUpdates('buildings', buildingsDict, cacheHelperObjBuildings)
+	addResourceToCheckForUpdates('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels)
+	addResourceToCheckForUpdates('profile', profile, cacheHelperObjProfile);
+	addResourceToCheckForUpdates('wikis', wikisDict, cacheHelperObjWikis)
+	addResourceToCheckForUpdates('ownFoodFeedbacks', ownFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks)
+	addResourceToCheckForUpdates('languages', languagesDict, cacheHelperObjLanguages)
+	addResourceToCheckForUpdates('markings', markingsDict, cacheHelperObjMarkings);
+	addResourceToCheckForUpdates('apartments', apartmentsDict, cacheHelperObjApartments);
+	addResourceToCheckForUpdates('roles', rolesDict, cacheHelperObjRoles);
+	addResourceToCheckForUpdates('permissions', permissionsDict, cacheHelperObjPermissions);
+	addResourceToCheckForUpdates('news', newsDict, cacheHelperObjNews);
 
 	function getDependencies(): DependencyList {
-		return registeredItemsToLoad;
+		const dependencies: string[] = [];
+		for (let key in synchedResourcesToDownloadFirst) {
+			let resource = synchedResourcesToDownloadFirst[key];
+			let version_current = resource.version_current;
+			let version_desired = resource.version_desired;
+			let dependencyoObj = {
+				key: key,
+				version_current: version_current,
+				version_desired: version_desired
+			}
+			const dependencyKey = JSON.stringify(dependencyoObj, null, 2);
+			dependencies.push(dependencyKey);
+		}
+		return dependencies;
 	}
 
-	const itemsToLoad = getDependencies();
+	const dependenciesToRecheckSyncStatus = getDependencies();
 
-	function checkSynchedResources() {
-		//console.log("--- checkSynchedResources ---");
-		const synchedResourceKeys = Object.keys(synchedResourcesToDownloadFirst)
-		for (let i = 0; i < synchedResourceKeys.length; i++) {
-			let isResourceSynched = false;
-			const synchedResourceKey = synchedResourceKeys[i]
-			const synchedResourceInformation = synchedResourcesToDownloadFirst[synchedResourceKey]
-			const synchedResource = synchedResourceInformation?.data
-			const synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
-			//console.log("synchedResourceKey", synchedResourceKey)
-			//console.log("synchedResourceInformation: ",synchedResourceInformation);
-			if (isServerOnline) { // if server is online, we can check if we are logged in
-				//console.log("server is online");
-				if (synchedResourceLastUpdate != null) {
-					isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
+	function getDesiredVersion(resourceLocal: any, cacheHelperObj: MyCacheHelperType, collectionsDatesLastUpdateDict: Record<string, CollectionsDatesLastUpdate | null | undefined> | null | undefined): string | undefined
+	{
+		if (isServerOnline) { // if server is online
+			const download_always = cacheHelperObj.dependencies.update_always;
+			if(download_always){
+				// we should use as composed key the request time as we cant rely on the composed key which is created by the dependencies
+				return startSyncTimeRequest;
+			} else {
+				const isCollectionDatesLadUpdateDictCached = !!collectionsDatesLastUpdateDict
+				if(isCollectionDatesLadUpdateDictCached){
+					let composedKey = getSyncCacheComposedKey(cacheHelperObj, collectionsDatesLastUpdateDict);
+					if(composedKey instanceof Error){
+						// one of the collections is not found in the collectionsDatesLastUpdateDict
+						return startSyncTimeRequest // tell them to download it just, as we dont know the version and we are online
+					} else {
+						return composedKey
+					}
 				} else {
-					isResourceSynched = false
+					// at this moment somethings wrong, we should have the collection dates last update dict cached from the previous screen
+					return undefined
 				}
-			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
-				console.log("server is cached");
-				console.log("synchedResourceLastUpdate: ",synchedResourceLastUpdate);
-				console.log("nowInMs: ",nowInMs);
-				console.log("synchedResource: ",synchedResource);
-				isResourceSynched = !!synchedResource
-				console.log("isResourceSynched: ",isResourceSynched);
 			}
-			if (!isResourceSynched) {
+		} else if (isServerCached) {
+			const isResourceDataCached = !!resourceLocal;
+			if(isResourceDataCached){ // resource is synched when we have a cached version when server is offline
+				return cacheHelperObj.sync_cache_composed_key_local // therefore we can use the local composed key
+			} else {
+				return undefined // we dont have a local version, so we need to download it
+			}
+		} else {
+			return undefined // we dont have a local version, so we need to download it
+		}
+	}
+
+	function isSyncComplete() {
+		for (let key in synchedResourcesToDownloadFirst) {
+			let resource = synchedResourcesToDownloadFirst[key];
+			if (!resource.is_version_up_to_date) {
 				return false;
 			}
 		}
-		return true
+		return true;
 	}
 
-	async function wait(ms: number) {
-		return new Promise(resolve => {
-			setTimeout(resolve, ms);
-		});
-	}
-
-	async function updateProfile() {
-		console.log('RootSyncDatabase: Update profile');
-		console.log('RootSyncDatabase: Update profile - isCurrentUserAnonymous: ',isCurrentUserAnonymous);
-		if (!isCurrentUserAnonymous) {
-			console.log('RootSyncDatabase: Update profile - loadProfileRemote: ');
-			const remoteProfile = await loadProfileRemoteByUser(currentUser)
-			console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
-			if (remoteProfile) {
-				setProfile((currentProfile) => {
-					return remoteProfile;
-				}, nowInMs);
-			}
-		} else {
-			if (!!profile && JSON.stringify(profile) !== JSON.stringify({})) {
-				setProfile((currentProfile) => {
-					return profile;
-				}, nowInMs)
-			} else {
-				setProfile((currentProfile) => {
-					return getEmptyProfile();
-				}, nowInMs)
+	function getAllUnsyncedResources(): SyncResourceType[] {
+		let unsyncedResources: SyncResourceType[] = [];
+		for (let key in synchedResourcesToDownloadFirst) {
+			let resource = synchedResourcesToDownloadFirst[key];
+			if (!resource.is_version_up_to_date) {
+				unsyncedResources.push(resource);
 			}
 		}
+		return unsyncedResources;
+	}
+
+	function getNextResourceToDownload(): SyncResourceType | undefined {
+		let unsyncedResources = getAllUnsyncedResources();
+		if (unsyncedResources.length > 0) {
+			return unsyncedResources[0];
+		}
+		return undefined;
 	}
 
 	useEffect(() => {
 		(async () => {
 			console.log('RootSyncDatabase: useEffect');
-			console.log('Is server online: ',isServerOnline);
 
-			if (isServerOnline) { // if server is online, we can check if we are logged in
-				if (!demo) {
-					// TODO: Improve by running all updates in parallel using Promise.all?
-					await updateTranslationsFromServer(nowInMs)
-					await updateCanteensFromServer(nowInMs);
-					await updateBusinesshoursFromServer(nowInMs);
-					await updateBuildingsFromServer(nowInMs);
-					await updateFoodsFeedbacksLabelsFromServer(nowInMs);
-					await updateProfile()
-					await updateWikisFromServer(nowInMs)
-					await updateOwnFoodFeedbacksFromServer(nowInMs)
-					await updateLanguagesFromServer(nowInMs)
-					await updateMarkingsFromServer(nowInMs)
-					await updateApartmentsFromServer(nowInMs)
-					await updateRolesFromServer(nowInMs)
-					await updatePermissionsFromServer(nowInMs)
-					await updateNewsFromServer(nowInMs)
-				}
-			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
-
-			} else { // if server is offline and we have no cached data, we can't check if we are logged in
-
-			}
 		})();
 	}, []);
 
 	useEffect(() => {
 		//console.log("Check if sync is complete: ")
-		const syncComplete = demo || checkSynchedResources()
+		const syncComplete = demo || isSyncComplete()
 		//console.log("syncComplete: "+syncComplete);
 		if (syncComplete) {
 			props.setSyncComplete(true);
-		}
-	}, itemsToLoad);
+		} else {
+			const nextResourceToDownload = getNextResourceToDownload();
+			if (nextResourceToDownload) {
+				const cacheHelperObj = nextResourceToDownload.cacheHelperObj;
+				const version_desired = nextResourceToDownload.version_desired;
+				cacheHelperObj.updateFromServer(version_desired);
+			}
 
-	const key = JSON.stringify(synchedResourcesToDownloadFirst);
-	return <LoadingScreenDatabase text={'Download'} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
+		}
+	}, dependenciesToRecheckSyncStatus);
+
+	let renderedTexts: any[] = [];
+	for (let key in synchedResourcesToDownloadFirst) {
+		let resource = synchedResourcesToDownloadFirst[key];
+		let version_current = resource.version_current;
+		let version_desired = resource.version_desired;
+		let dependencyoObj = {
+			key: key,
+			version_current: version_current,
+			version_desired: version_desired
+		}
+		const dependencyKey = JSON.stringify(dependencyoObj, null, 2);
+		renderedTexts.push(<Text>{dependencyKey}</Text>)
+	}
+
+	return <LoadingScreenDatabase text={'Download'} nowInMs={0} synchedResources={{}} >
+		<MyScrollView>
+			<View style={{width: "100%", backgroundColor: "red"}}>
+				{renderedTexts}
+			</View>
+		</MyScrollView>
+	</LoadingScreenDatabase>
 }
 
 export const RootSyncDatabaseDownload = (props: RootAuthUserFlowLoaderProps) => {

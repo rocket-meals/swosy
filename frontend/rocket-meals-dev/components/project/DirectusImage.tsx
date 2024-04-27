@@ -164,11 +164,11 @@ export default function DirectusImage(props: DirectusImageProps) {
 			contentFit={props.contentFit}
 			//placeholder={placeholder} // This is not working as expected
 			onLoad={() => {
-				console.log('DirectusImage onLoad');
+				//console.log('DirectusImage onLoad');
 				setLoadState(state_success)
 			}}
 			onError={(e) => {
-				console.log('DirectusImage onError', e);
+				//console.log('DirectusImage onError', e);
 				setLoadState(state_failed)
 			}}
 			// Assuming cachePolicy is determined elsewhere or is static

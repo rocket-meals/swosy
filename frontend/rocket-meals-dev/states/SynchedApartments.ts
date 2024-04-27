@@ -5,23 +5,24 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getBuildingLocationType, getDemoBuildings} from '@/states/SynchedBuildings';
 import {LocationType} from "@/helper/geo/LocationType";
-import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
+import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
-async function loadApartmentsFromServer(): Promise<Apartments[]> {
-	const collectionHelper = new CollectionHelper<Apartments>('apartments');
-
-	const fields = ['*'];
-
-	const query = {
+export const TABLE_NAME_APARTMENTS = 'apartments';
+const cacheHelperDeepFields_apartments: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
 		limit: -1,
-		fields: fields
-	}
-
+		dependency_collections_or_enum: [TABLE_NAME_APARTMENTS],
+	},
+])
+async function loadApartmentsFromServer(): Promise<Apartments[]> {
+	const collectionHelper = new CollectionHelper<Apartments>(TABLE_NAME_APARTMENTS);
+	const query = cacheHelperDeepFields_apartments.getQuery()
 	return await collectionHelper.readItems(query);
 }
 
 export async function loadApartmentWithWashingMachinesFromServer(apartmentId: string): Promise<Apartments> {
-	const collectionHelper = new CollectionHelper<Apartments>('apartments');
+	const collectionHelper = new CollectionHelper<Apartments>(TABLE_NAME_APARTMENTS);
 
 	const fields = ['*', "washingmachines.*"];
 
@@ -36,24 +37,31 @@ export async function loadApartmentWithWashingMachinesFromServer(apartmentId: st
 	return await collectionHelper.readItem(apartmentId, query);
 }
 
-export function useSynchedApartmentsDict(): [ Record<string, Apartments | null | undefined> | null | undefined, ((callback: (currentValue: (Record<string, Apartments | null | undefined> | null | undefined)) => Record<string, Apartments | null | undefined>, timestamp?: (number | undefined)) => void), number | undefined, ((nowInMs?: number) => Promise<void>	)] {
+export function useSynchedApartmentsDict(): [ Record<string, Apartments | null | undefined> | null | undefined, ((callback: (currentValue: (Record<string, Apartments | null | undefined> | null | undefined)) => Record<string, Apartments | null | undefined>, sync_cache_composed_key_local?: (string | undefined)) => void), cacheHelperObj: MyCacheHelperType]
+{
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Apartments>(PersistentStore.apartments);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
 		usedResources = getDemoApartments()
 	}
 
-	async function updateFromServer(nowInMs?: number) {
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const resourceAsList = await loadApartmentsFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
 		setResourcesOnly((currentValue) => {
 			return resourceAsDict
-		}, nowInMs);
+		}, sync_cache_composed_key_local);
 	}
 
-	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_apartments.getDependencies()
+	}
+
+	return [usedResources, setResourcesOnly, cacheHelperObj]
 }
 
 export function getApartmentLocationType(apartment: Apartments, buildingsDict: Record<string, Buildings> | undefined): LocationType | null {

@@ -17,35 +17,56 @@ import {
 } from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
-import {useIsCurrentUserAnonymous} from '@/states/User';
+import {useCurrentUser, useIsCurrentUserAnonymous} from '@/states/User';
 import {useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
 import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {useCallback} from "react";
+import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
+export const TABLE_NAME_PROFILES = 'profiles';
+const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'markings.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'devices.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'buildings_favorites.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'buildings_last_visited.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	}
+])
 async function loadProfileRemoteByProfileId(id: string) {
-	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
-	const profileFields = profileRelations.map(x => x+'.*').concat(['*']);
-
-	const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
-		acc[x] = { _limit: -1 };
-		return acc;
-	}, {} as Record<string, { _limit: number }>);
-
 	const usersProfileId: string = id;
 	console.log('usersProfileId: ',usersProfileId)
 	console.log('Okay lets load from remote')
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	return await profileCollectionHelper.readItem(usersProfileId, {
-		fields: profileFields,
-		deep: deepFields,
+		fields: cacheHelperDeepFields_profile.getFields(),
+		deep: cacheHelperDeepFields_profile.getDeepFields(),
 	});
 }
 
 export async function deleteProfileRemote(id: string | number) {
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	await profileCollectionHelper.deleteItem(id);
 }
 
@@ -66,19 +87,19 @@ export async function updateProfileRemote(id: string | number, profile: Partial<
 	console.log('updateProfileRemote')
 	console.log('id: ', id)
 	console.log('profile: ', profile)
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	await profileCollectionHelper.updateItem(id, profile);
 	return await loadProfileRemoteByProfileId(id as string);
 }
 
-export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
+export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
 	const [setResource, setResourceRaw] = useSynchResourceSingleRawSetter<Partial<Profiles>>(PersistentStore.profile);
 
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
 	const usedSetResource = useCallback(
-		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => {
+		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => {
 			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
 
 			setResource((currentValue) => {
@@ -104,7 +125,7 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 				}
 
 				return newValue;
-			}, timestamp);
+			}, sync_cache_composed_key_local);
 		},
 		// Dependencies for useCallback
 		[isServerOnline, isCurrentUserAnonymous, setResource]
@@ -113,9 +134,12 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 	return [usedSetResource, setResourceRaw]
 }
 
-export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
+export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
+{
 	//const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
 	const [usedSetResource, setResourceRaw] = useSynchedProfileSetter();
+	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
+	const [currentUser, setUserWithCache] = useCurrentUser();
 	const resourceRaw = useSynchedResourceSingleRawValue<Profiles, NewValueRawSingleType<Profiles>>(PersistentStore.profile)
 	const resourceOnly = resourceRaw?.data
 
@@ -124,9 +148,40 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 		usedResource = {}
 	}
 
-	const lastUpdate = resourceRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourceRaw?.sync_cache_composed_key_local;
 
-	return [usedResource, usedSetResource, lastUpdate]
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
+		console.log('RootSyncDatabase: Update profile');
+		console.log('RootSyncDatabase: Update profile - isCurrentUserAnonymous: ',isCurrentUserAnonymous);
+		if (!isCurrentUserAnonymous) {
+			console.log('RootSyncDatabase: Update profile - loadProfileRemote: ');
+			const remoteProfile = await loadProfileRemoteByUser(currentUser)
+			console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
+			if (remoteProfile) {
+				usedSetResource((currentProfile) => {
+					return remoteProfile;
+				}, sync_cache_composed_key_local);
+			}
+		} else {
+			if (!!usedResource && JSON.stringify(usedResource) !== JSON.stringify({})) {
+				usedSetResource((currentProfile) => {
+					return usedResource;
+				}, sync_cache_composed_key_local)
+			} else {
+				usedSetResource((currentProfile) => {
+					return getEmptyProfile();
+				}, sync_cache_composed_key_local)
+			}
+		}
+	}
+
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_profile.getDependencies()
+	}
+
+	return [usedResource, usedSetResource, cacheHelperObj]
 }
 
 export enum PriceGroups {

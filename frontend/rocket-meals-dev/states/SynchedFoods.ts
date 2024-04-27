@@ -15,7 +15,7 @@ import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLab
 export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestamp?: number) => void), (number | undefined)] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const lastUpdate = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
 		usedResources = getDemoFoods()

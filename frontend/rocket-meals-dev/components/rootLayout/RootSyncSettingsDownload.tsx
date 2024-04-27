@@ -34,17 +34,19 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const demo = useIsDemo()
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
+	const nowAsKey = nowInMs.toString();
 
 	const registeredItemsToLoad: any[] = [];
 
-	const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
-	const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, lastUpdateCollectionsDates, updateCollectionsDatesFromServer] = useSynchedCollectionsDatesLastUpdateDict()
+	const [app_settings, setAppSettings, cacheHelperObjAppSettings] = useSynchedAppSettings()
+	const [collectionsDatesLastUpdate, setCollectionsDatesLastUpdateDict, cacheHelperObjCollectionDatesLastUpdate] = useSynchedCollectionsDatesLastUpdateDict()
 
-	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
+	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: string | undefined}} = {}
 
 
-	console.log("collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
-	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
+	console.log("1_collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
+	console.log(collectionsDatesLastUpdate);
+	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: string | undefined) {
 
 
 		registeredItemsToLoad.push(resource);
@@ -58,8 +60,8 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
    * Needs to be called before the useEffect
    */
 
-	addSynchedResourceToDownloadFirst('app_settings', app_settings, lastUpdateAppSettings)
-	addSynchedResourceToDownloadFirst('collectionsDatesLastUpdate', collectionsDatesLastUpdate, lastUpdateCollectionsDates)
+	addSynchedResourceToDownloadFirst('app_settings', app_settings, cacheHelperObjAppSettings.sync_cache_composed_key_local)
+	addSynchedResourceToDownloadFirst('collectionsDatesLastUpdate', collectionsDatesLastUpdate, cacheHelperObjCollectionDatesLastUpdate.sync_cache_composed_key_local)
 
 	function getDependencies(): DependencyList {
 		return registeredItemsToLoad;
@@ -68,7 +70,7 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const itemsToLoad = getDependencies();
 
 	function checkSynchedResources() {
-		//console.log("--- checkSynchedResources ---");
+		console.log("--- checkSynchedResources ---");
 		const synchedResourceKeys = Object.keys(synchedResourcesToDownloadFirst)
 		for (let i = 0; i < synchedResourceKeys.length; i++) {
 			let isResourceSynched = false;
@@ -76,12 +78,15 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 			const synchedResourceInformation = synchedResourcesToDownloadFirst[synchedResourceKey]
 			const synchedResource = synchedResourceInformation?.data
 			const synchedResourceLastUpdate = synchedResourceInformation?.lastUpdate
-			//console.log("synchedResourceKey", synchedResourceKey)
-			//console.log("synchedResourceInformation: ",synchedResourceInformation);
+			console.log("synchedResourceKey", synchedResourceKey)
+			console.log("synchedResourceInformation: ",synchedResourceInformation);
 			if (isServerOnline) { // if server is online, we can check if we are logged in
-				//console.log("server is online");
+				console.log("server is online");
 				if (synchedResourceLastUpdate != null) {
-					isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
+					console.log("synchedResourceLastUpdate: ",synchedResourceLastUpdate);
+					console.log("nowInMs: ",nowAsKey);
+					isResourceSynched = !!synchedResource && !!synchedResourceLastUpdate && synchedResourceLastUpdate === nowAsKey
+					console.log("isResourceSynched: ",isResourceSynched);
 				} else {
 					isResourceSynched = false
 				}
@@ -100,12 +105,6 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 		return true
 	}
 
-	async function wait(ms: number) {
-		return new Promise(resolve => {
-			setTimeout(resolve, ms);
-		});
-	}
-
 	useEffect(() => {
 		(async () => {
 			console.log('RootSyncSettingsDownload: useEffect');
@@ -114,8 +113,8 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 			if (isServerOnline) { // if server is online, we can check if we are logged in
 				if (!demo) {
 					// TODO: Improve by running all updates in parallel using Promise.all?
-					await updateAppSettingsFromServer(nowInMs)
-					await updateCollectionsDatesFromServer(nowInMs)
+					await cacheHelperObjAppSettings.updateFromServer(nowAsKey)
+					await cacheHelperObjCollectionDatesLastUpdate.updateFromServer(nowAsKey)
 				}
 			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
 
@@ -135,12 +134,12 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 	}, itemsToLoad);
 
 	const key = JSON.stringify(synchedResourcesToDownloadFirst);
-	return <LoadingScreenDatabase text={'Download'} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
+	return <LoadingScreenDatabase text={'Download'} nowInMs={nowInMs} key={key} synchedResources={{}} />
 }
 
 // children: React.ReactNode;
 const MaintenanceCheckComponent = ({children}: {children: React.ReactNode}) => {
-	const [app_settings, setAppSettings, lastUpdateAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
+	const [app_settings, setAppSettings, updateAppSettingsFromServer] = useSynchedAppSettings()
 	const [serverInfo, setServerInfo] = useServerInfoRaw();
 	const isServerCached = useIsServerCached();
 

@@ -25,6 +25,8 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	const isDebug = useIsDebug();
 
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
+	const nowAsKey = nowInMs.toString();
+
 	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
 	] = useServerInfoRaw();
 	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
@@ -65,18 +67,20 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 			setServerInfo((currentServerInfo) => {
 				return remote_server_info
-			}, nowInMs);
+			}, nowAsKey);
 		})();
 	}, []);
 
 	const debugInformation = isDebug ? <Text>{JSON.stringify(serverInfo, null, 2)}</Text> : null;
 
 	// 1. load server information
-	let serverInfoNotUpdated = (!serverInfoRaw?.lastUpdate || serverInfoRaw?.lastUpdate < nowInMs)
+	let serverInfoNotUpdated = (!serverInfoRaw?.sync_cache_composed_key_local || serverInfoRaw?.sync_cache_composed_key_local !== nowAsKey)
 	if (serverInfoNotUpdated || !serverInfo) {
 		return (
 			<LoadingScreen>
 				<Text>{'Loading server Info'}</Text>
+				<Text>{'serverInfoRaw?.sync_cache_composed_key_local: '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
+				<Text>{'nowAsKey: '+nowAsKey}</Text>
 				{debugInformation}
 			</LoadingScreen>
 		)

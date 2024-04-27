@@ -16,7 +16,7 @@ function createTranslationKey(key: string, getTranslation: GetTranslationFunctio
 }
 
 export function useTranslation(key: TranslationKey): string {
-	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
+	const [translationsDict, setTranslationsDict] = useSynchedAppTranslationsDict()
 	let fallback_text = key.getTranslation;
 	if (typeof key.getTranslation === 'string') {
 		fallback_text = key.getTranslation;

@@ -2,13 +2,14 @@ import {Devices} from '@/helper/database/databaseTypes/types';
 import {useSynchedProfile} from '@/states/SynchedProfile';
 import {getDeviceInformationWithoutPushToken} from '@/helper/device/DeviceHelper';
 import {NotificationHelper} from "@/helper/notification/NotificationHelper";
+import {MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
 
 
-export function useSynchedDevices(): [Devices | undefined , Devices[], (newDevices: Devices[], timestamp?: number) => Promise<void>, number | undefined, (timestamp?: number) => Promise<void>] {
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile();
+export function useSynchedDevices(): [Devices | undefined , Devices[], (newDevices: Devices[], sync_cache_composed_key_local?: string) => Promise<void>, cacheHelperObj: MyCacheHelperType] {
+	const [profile, setProfile, cacheHelperTypeProfile] = useSynchedProfile();
 
-	const lastUpdateDevices = lastUpdateProfile;
+	const sync_cache_composed_key_local = cacheHelperTypeProfile.sync_cache_composed_key_local;
 
 	function getDeviceIdentifier(device: Partial<Devices>) {
 		return device.platform+'_'+device.brand+'_'+device.system_version;
@@ -33,16 +34,16 @@ export function useSynchedDevices(): [Devices | undefined , Devices[], (newDevic
 	}
 
 
-	const setDevices = async (newDevices: Devices[], timestamp?: number) => {
+	const setDevices = async (newDevices: Devices[], sync_cache_composed_key_local?: string) => {
 		await setProfile((currentProfile) => {
 			if(currentProfile){
 				currentProfile.devices = newDevices;
 			}
 			return currentProfile;
-		}, timestamp);
+		}, sync_cache_composed_key_local);
 	}
 
-	const updateDeviceInformationAndRegisterIfNotFound = async (timestamp?: number) => {
+	const updateDeviceInformationAndRegisterIfNotFound = async (sync_cache_composed_key_local?: string) => {
 		deviceInformationsWithoutPushToken = getDeviceInformationWithoutPushToken();
 		deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
 		const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
@@ -61,8 +62,18 @@ export function useSynchedDevices(): [Devices | undefined , Devices[], (newDevic
 			newDevices = [...devices];
 			newDevices[index] = deviceInformationsForUpdate;
 		}
-		await setDevices(newDevices, timestamp);
+		await setDevices(newDevices, sync_cache_composed_key_local);
 	}
 
-	return [currentDevice, devices, setDevices, lastUpdateDevices, updateDeviceInformationAndRegisterIfNotFound];
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateDeviceInformationAndRegisterIfNotFound,
+		dependencies: {
+			collections: [],
+			update_always: true
+		}
+
+	}
+
+	return [currentDevice, devices, setDevices, cacheHelperObj];
 }

@@ -1,21 +1,27 @@
-import {Markings, News} from '@/helper/database/databaseTypes/types';
+import {Markings} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
-import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
+import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
-export async function loadMarkingsFromServer(): Promise<Markings[]> {
-	const collectionHelper = new CollectionHelper<Markings>('markings');
-
-	const fields = ['*','translations.*'];
-
-	const query = {
+export const TABLE_NAME_MARKINGS = 'markings';
+const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
 		limit: -1,
-		fields: fields
+		dependency_collections_or_enum: [TABLE_NAME_MARKINGS],
+	},
+	{
+		field: 'translations.*',
+		limit: -1,
+		dependency_collections_or_enum: ["markings_translations"],
 	}
-
+])
+export async function loadMarkingsFromServer(): Promise<Markings[]> {
+	const collectionHelper = new CollectionHelper<Markings>(TABLE_NAME_MARKINGS);
+	const query = cacheHelperDeepFields_markings.getQuery()
 	return await collectionHelper.readItems(query);
 }
 
@@ -61,22 +67,29 @@ export function getDemoMarkings(): Record<string, Markings> {
 	return resourceDict
 }
 
-export function useSynchedMarkingsDict(): [( Record<string, Markings | null | undefined> | null | undefined), (callback: (currentValue: (Record<string, Markings | null | undefined> | null | undefined)) => Record<string, Markings | null | undefined>, timestamp?: (number | undefined)) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
+export function useSynchedMarkingsDict(): [( Record<string, Markings | null | undefined> | null | undefined), (callback: (currentValue: (Record<string, Markings | null | undefined> | null | undefined)) => Record<string, Markings | null | undefined>, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
+{
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Markings>(PersistentStore.markings);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
 		usedResources = getDemoMarkings()
 	}
 
-	async function updateFromServer(nowInMs?: number) {
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const markingsList = await loadMarkingsFromServer();
 		const markingsDict = CollectionHelper.convertListToDict(markingsList, 'id')
 		setResourcesOnly((currentValue) => {
 			return markingsDict
-		}, nowInMs);
+		}, sync_cache_composed_key_local);
 	}
 
-	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_markings.getDependencies()
+	}
+
+	return [usedResources, setResourcesOnly, cacheHelperObj]
 }

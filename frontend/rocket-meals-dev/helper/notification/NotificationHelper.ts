@@ -18,8 +18,8 @@ export class NotificationHelper {
 		return Constants.expoConfig?.extra?.eas?.projectId;
 	}
 
-	static useNotificationPermission(): [boolean, NotificationObjType, (timestamp?: number) => void, () => void] {
-		const [currentDevice, devices, setDevices, lastUpdateDevices, updateDeviceInformationAndRegisterIfNotFound] = useSynchedDevices()
+	static useNotificationPermission(): [boolean, NotificationObjType, (timestamp?: string) => void, () => void] {
+		const [currentDevice, devices, setDevices, cacheHelperObjDevices] = useSynchedDevices()
 		const pushTokenObj: NotificationObjType | undefined = currentDevice?.pushTokenObj || {
 			permission: undefined,
 			pushtokenObj: undefined
@@ -28,7 +28,7 @@ export class NotificationHelper {
 
 		const requestDeviceNotificationPermission = NotificationHelper.requestDeviceNotificationPermission;
 
-		return [notificationGranted, pushTokenObj, updateDeviceInformationAndRegisterIfNotFound, requestDeviceNotificationPermission]
+		return [notificationGranted, pushTokenObj, cacheHelperObjDevices.updateFromServer, requestDeviceNotificationPermission]
 	}
 
 	static getBadgeCountAsync() {

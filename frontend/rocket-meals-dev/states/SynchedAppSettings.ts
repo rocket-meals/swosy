@@ -5,33 +5,42 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {RatingType} from "@/components/buttons/MyRatingButton";
 import {FeedbackCommentType, FeedbackLabelsType} from "@/compositions/fooddetails/FoodDetails";
+import {MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
+export const TABLE_NAME_APP_SETTINGS = 'app_settings';
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
-	const collectionHelper = new CollectionHelper<AppSettings>('app_settings');
+	const collectionHelper = new CollectionHelper<AppSettings>(TABLE_NAME_APP_SETTINGS);
 	const query = CollectionHelper.getQueryWithRelatedFields(['*', "housing_translations.*"]);
 	return await collectionHelper.readSingletonItem(query);
 }
 
-export function useSynchedAppSettings(): [( AppSettings | null | undefined), ((newValue: (currentValue: (AppSettings | null | undefined)) => (AppSettings | null | undefined), timestamp?: (number | undefined)) => void), number | undefined, ((     nowInMs?: number) => Promise<void>)]
+export function useSynchedAppSettings(): [( AppSettings | null | undefined), ((newValue: (currentValue: (AppSettings | null | undefined)) => (AppSettings | null | undefined), ) => void), cacheHelperObj: MyCacheHelperType]
 {
 	const [resourceOnly, setResourceOnly, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<AppSettings>(PersistentStore.app_settings);
 	const demo = useIsDemo()
-
-	console.log('useSynchedAppSettings', resourceRaw)
-	const lastUpdate = resourceRaw?.lastUpdate;
 	let usedResources = resourceOnly;
 	if (demo) {
 		usedResources = getDemoAppSettings()
 	}
+	let lastUpdate = resourceRaw?.sync_cache_composed_key_local
 
-	async function updateFromServer(nowInMs?: number) {
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const resource = await loadAppSettingsFromServer();
 		setResourceOnly((currentSettings) => {
 			return resource;
-		}, nowInMs);
+		}, sync_cache_composed_key_local);
 	}
 
-	return [usedResources, setResourceOnly, lastUpdate, updateFromServer]
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: resourceRaw?.sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: {
+			collections: [],
+			update_always: true,
+		}
+	}
+
+	return [usedResources, setResourceOnly, cacheHelperObj]
 }
 
 export function useIsFoodsEnabled(): boolean {

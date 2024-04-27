@@ -5,29 +5,6 @@ import {Canteens, Foodoffers, Foods} from '@/helper/database/databaseTypes/types
 import {getDemoFoods} from '@/states/SynchedFoods';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
-export function useCachedFoodOffers() {
-	// Structure -
-	// Canteen
-	// Date
-	// How old the cache is?
-
-	// Or should we go by Date first, or either a combined key?
-
-	const [selectedDate, setSelectedDate] = useSyncState<any>(NonPersistentStore.foodOfferCache);
-
-	function getFoodOffer(foodOfferId: string) {
-
-	}
-
-	function getFoodOffers(date: Date, canteen: Canteens) {
-
-	}
-
-	function setFoodOffers(foodOffers: Foodoffers) {
-
-	}
-}
-
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
 	const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
@@ -45,8 +22,10 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 	return [usedSelectedDate, setSelectedDate, changeAmountDays]
 }
 
+export const TABLE_NAME_FOODOFFERS = 'foodoffers';
+export const TABLE_NAME_FOODS = 'foods';
 async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
-	const collectionHelper = new CollectionHelper<Foodoffers>('foodoffers');
+	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
 	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];
 
@@ -58,7 +37,7 @@ async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers
 }
 
 async function loadFoodFromServer(food_id: string): Promise<Foods> {
-	const collectionHelper = new CollectionHelper<Foods>('foods');
+	const collectionHelper = new CollectionHelper<Foods>(TABLE_NAME_FOODS);
 
 	const food_fields = ['*','translations.*', 'markings.*'];
 
@@ -117,7 +96,7 @@ export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, 
  * @param amountDays
  */
 async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
-	const collectionHelper = new CollectionHelper<Foodoffers>('foodoffers');
+	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
 	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];
 

@@ -3,7 +3,7 @@ import {Text, View} from '@/components/Themed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 
 export default function HomeScreen() {
-	const [profile, setProfile, lastUpdateProfile] = useSynchedProfile()
+	const [profile, setProfile] = useSynchedProfile()
 	const [languageCode, setLanguageCode]  = useProfileLanguageCode()
 
 	return (
