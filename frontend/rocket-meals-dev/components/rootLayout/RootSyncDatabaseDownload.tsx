@@ -237,11 +237,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	}
 
 	return <LoadingScreenDatabase text={'Download'} nowInMs={0} synchedResources={{}} >
-		<MyScrollView>
-			<View style={{width: "100%", backgroundColor: "red"}}>
-				{renderedTexts}
-			</View>
-		</MyScrollView>
 	</LoadingScreenDatabase>
 }
 
