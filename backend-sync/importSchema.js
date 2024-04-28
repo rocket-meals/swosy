@@ -286,9 +286,13 @@ const get_collection = async (headers, name) => {
 const save_collections = async (headers) => {
     //get all collections that are in the folder
     console.log("Saving collections...")
-    const collections = fs.readdirSync('./configuration/collections');
+    let collections = fs.readdirSync('./configuration/collections');
 
     for (const collection of collections) {
+        if (collection === "2-wikis.json") {
+            continue;
+        }
+
         const data = await get_collection(headers, collection);
         const jsonData = JSON.stringify(data, null, 4);
 
