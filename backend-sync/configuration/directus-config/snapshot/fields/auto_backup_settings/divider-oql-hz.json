@@ -1,0 +1,28 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "divider-oql-hz",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "divider-oql-hz",
+    "group": null,
+    "hidden": false,
+    "interface": "presentation-divider",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 7,
+    "special": [
+      "alias",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

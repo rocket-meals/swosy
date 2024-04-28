@@ -1,0 +1,29 @@
+{
+  "collection": "businesshours",
+  "field": "valid_range",
+  "type": "alias",
+  "meta": {
+    "collection": "businesshours",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "valid_range",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": "These values are optional, but if provided, select a valid range for the business hours.",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "notice_please_configure_save_location",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "notice_please_configure_save_location",
+    "group": "general_settings",
+    "hidden": false,
+    "interface": "presentation-notice",
+    "note": null,
+    "options": {
+      "text": "Please configure where your backup should be saved. You can either save it in the directus FileLibrary or define a custom path."
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 3,
+    "special": [
+      "alias",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

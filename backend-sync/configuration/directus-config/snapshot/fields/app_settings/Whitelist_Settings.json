@@ -1,0 +1,31 @@
+{
+  "collection": "app_settings",
+  "field": "Whitelist_Settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "Whitelist_Settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 20,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

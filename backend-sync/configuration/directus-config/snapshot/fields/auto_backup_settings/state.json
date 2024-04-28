@@ -1,0 +1,61 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "state",
+  "type": "string",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "state",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": "If you want to run auto backups, just create a directus flow and change the field 'state' to the value 'check'",
+    "options": {
+      "choices": [
+        {
+          "text": "create <-- manual start",
+          "value": "create"
+        },
+        {
+          "text": "running",
+          "value": "running"
+        },
+        {
+          "text": "finished",
+          "value": "finished"
+        },
+        {
+          "text": "failed",
+          "value": "failed"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 9,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "state",
+    "table": "auto_backup_settings",
+    "data_type": "varchar",
+    "default_value": "finished",
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

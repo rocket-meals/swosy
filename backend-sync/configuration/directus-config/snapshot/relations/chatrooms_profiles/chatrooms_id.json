@@ -1,0 +1,25 @@
+{
+  "collection": "chatrooms_profiles",
+  "field": "chatrooms_id",
+  "related_collection": "chatrooms",
+  "meta": {
+    "junction_field": "profiles_id",
+    "many_collection": "chatrooms_profiles",
+    "many_field": "chatrooms_id",
+    "one_allowed_collections": null,
+    "one_collection": "chatrooms",
+    "one_collection_field": null,
+    "one_deselect_action": "delete",
+    "one_field": "participants",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "chatrooms_profiles",
+    "column": "chatrooms_id",
+    "foreign_key_table": "chatrooms",
+    "foreign_key_column": "id",
+    "constraint_name": null,
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  }
+}

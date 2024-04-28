@@ -1,0 +1,44 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "backup_location_type_file_library",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": [
+      {
+        "name": "Vsisible",
+        "rule": {
+          "_and": [
+            {
+              "backup_location_type": {
+                "_neq": "file_library"
+              }
+            }
+          ]
+        },
+        "options": {},
+        "hidden": true
+      }
+    ],
+    "display": null,
+    "display_options": null,
+    "field": "backup_location_type_file_library",
+    "group": "general_settings",
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 6,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}
