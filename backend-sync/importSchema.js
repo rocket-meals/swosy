@@ -147,7 +147,7 @@ const importSchema = async (headers, file) => {
     })
 
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
+        console.error(` -  http error! status: ${response.status} message: ${response.statusText} at ${file}`);
     }
 }
 
@@ -197,9 +197,7 @@ const sync_public_permissions = async (headers) => {
     console.log("Syncing public permissions...")
     //open file roles-permissions/data.json
     const data = fs.readFileSync('./configuration/roles-permissions/public.json', 'utf8');
-    const jsonData = JSON.parse(data);
-
-    const permissions = jsonData.data;
+    const permissions = JSON.parse(data);
 
     const update_permission_node = async (permission) => {
         const response = await fetch(`${url}/permissions`, {
@@ -266,10 +264,91 @@ const main = async () => {
     files = files.sort();
 
     for (const file of files) {
-        await importSchema(headers, `./collections/${file}`);
+        await importSchema(headers, `./configuration/collections/${file}`);
     }
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch(console.error)
+const get_collection = async (headers, name) => {
+    const displayName = name.split('/').pop().split('.').shift().split("-").pop();
+
+    //get first element to check which key to use
+    console.log(` -  fetching ${displayName}`)
+    const data = await fetch(`${url}/items/${displayName}?limit=-1`, {
+        method: 'GET',
+        headers: {
+            "Cookie": headers.get('cookie')
+        },
+    }).then(response => response.json());
+
+    return data.data;
+}
+
+const save_collections = async (headers) => {
+    //get all collections that are in the folder
+    console.log("Saving collections...")
+    const collections = fs.readdirSync('./configuration/collections');
+
+    for (const collection of collections) {
+        const data = await get_collection(headers, collection);
+        const jsonData = JSON.stringify(data, null, 4);
+
+        fs.writeFileSync(`./configuration/collections/${collection}`, jsonData);
+    }
+
+    console.log(" -  saved collections");
+}
+
+const save_public_role = async (headers) => {
+    console.log("Saving public role...")
+    const data = await fetch(`${url}/permissions?filter%5Brole%5D%5B_null%5D=true`, {
+        method: 'GET',
+        headers: {
+            "Cookie": headers.get('cookie')
+        },
+    }).then(response => response.json());
+
+    const jsonData = JSON.stringify(data.data, null, 4);
+
+    fs.writeFileSync('./configuration/roles-permissions/public.json', jsonData);
+    console.log(" -  saved public role");
+}
+
+const main2 = async () => {
+    //wait until directus is ready
+    console.log("Waiting for Directus to be ready...")
+    while (true) {
+        try {
+            await fetch(`${url}/server/ping`);
+            console.log("Directus is ready\n")
+            break;
+        } catch (e) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    console.log("Starting export")
+    const headers = await login();
+
+    // Saving collections
+    await save_collections(headers);
+
+    // Saving public role
+    await save_public_role(headers);
+
+    // Execute "npx directus-sync push" and log its output
+    console.log("Pulling schema changes from Directus...")
+    execSync('npx directus-sync pull');
+}
+
+//Check arguments, if import is passed, run importSchema
+if (process.argv[2] === "push") {
+    main()
+        .then(() => process.exit(0))
+        .catch(console.error)
+}
+
+if (process.argv[2] === "pull") {
+    main2()
+        .then(() => process.exit(0))
+        .catch(console.error)
+}

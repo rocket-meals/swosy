@@ -25,7 +25,7 @@
   "schema": {
     "name": "chatroom",
     "table": "chatrooms_messages",
-    "data_type": "varchar",
+    "data_type": "char",
     "default_value": null,
     "max_length": 36,
     "numeric_precision": null,

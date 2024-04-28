@@ -1125,5 +1125,473 @@
       "*"
     ],
     "_syncId": "46b5ade8-3851-4672-9a1f-427797ccbc4d"
+  },
+  {
+    "role": null,
+    "collection": "apartments",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "feb0018e-c71e-49bc-a17d-d1e8eca5a785"
+  },
+  {
+    "role": null,
+    "collection": "app_settings_housing_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "1b12fc86-2ea6-4968-9de9-9e82762fb088"
+  },
+  {
+    "role": null,
+    "collection": "app_settings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "f2cf8eed-8238-4d03-8391-373bbf06b843"
+  },
+  {
+    "role": null,
+    "collection": "app_translations_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "db3e5483-c594-47be-8a0b-a51ea1adc15b"
+  },
+  {
+    "role": null,
+    "collection": "app_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "32ecdb96-55b4-4fc6-bb77-f8ab241e9288"
+  },
+  {
+    "role": null,
+    "collection": "buildings_businesshours",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "4fad8863-3940-49b9-be4b-0c610909a451"
+  },
+  {
+    "role": null,
+    "collection": "buildings_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "0246cb7e-bad0-43bc-9ad1-ad1cf2db389c"
+  },
+  {
+    "role": null,
+    "collection": "buildings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "7aa3cf1b-3c1e-4c94-9b0d-3e600f29e513"
+  },
+  {
+    "role": null,
+    "collection": "businesshours",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "a3f9cf6a-b38e-4ed1-9af0-9933c301ab85"
+  },
+  {
+    "role": null,
+    "collection": "canteens_foodservicehours",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "404b0528-8638-4023-88ff-0e5fc43cd4f2"
+  },
+  {
+    "role": null,
+    "collection": "canteens",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "71b426f5-6370-4919-9a82-cc3e3fa45316"
+  },
+  {
+    "role": null,
+    "collection": "collections_dates_last_update",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "dc8edf36-22b1-4e89-bb57-2a2d1ab7c539"
+  },
+  {
+    "role": null,
+    "collection": "directus_files",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "a700dcaf-27cc-4e6f-8ead-c56892cab1d7"
+  },
+  {
+    "role": null,
+    "collection": "directus_folders",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "e3e707d3-0fc7-4a76-8a50-84deeae47ef6"
+  },
+  {
+    "role": null,
+    "collection": "directus_permissions",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "7f9fa85a-637d-4806-b543-a4f381f4ee31"
+  },
+  {
+    "role": null,
+    "collection": "directus_roles",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "7dadc6a7-c2ed-4b01-bcb4-4c1fbfca9ad6"
+  },
+  {
+    "role": null,
+    "collection": "directus_settings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "a28c46d5-d08c-45e4-b7b5-216fdb2478f7"
+  },
+  {
+    "role": null,
+    "collection": "foodoffers_markings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "29a774e2-7756-4aab-b08d-62dc44124f9b"
+  },
+  {
+    "role": null,
+    "collection": "foodoffers",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "df84de35-a8f1-4a01-acab-bec960af1324"
+  },
+  {
+    "role": null,
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "954837fe-be07-4b80-9bae-fbe67a0ee6f9"
+  },
+  {
+    "role": null,
+    "collection": "foods_feedbacks_labels_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "425aad67-8255-4439-b128-eccec38ea29f"
+  },
+  {
+    "role": null,
+    "collection": "foods_feedbacks_labels",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "7cf36a9b-4b26-40ff-9e12-c24f7d27ebeb"
+  },
+  {
+    "role": null,
+    "collection": "foods_feedbacks",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "2c5b16f7-1898-4947-8362-2090d85899c7"
+  },
+  {
+    "role": null,
+    "collection": "foods_markings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "0c5f4667-e8eb-412a-99bf-ca15d98eb9d8"
+  },
+  {
+    "role": null,
+    "collection": "foods_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "739469bb-98c1-40ec-a4ad-a1cf368be7d7"
+  },
+  {
+    "role": null,
+    "collection": "foods",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "d31c20c3-a400-4ac1-817c-e0903c90491c"
+  },
+  {
+    "role": null,
+    "collection": "languages",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "86a8048b-8c11-4f51-bd76-bb134061d87b"
+  },
+  {
+    "role": null,
+    "collection": "markings_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "8713829a-d8a3-44e0-954e-2a947b3e20d5"
+  },
+  {
+    "role": null,
+    "collection": "markings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "71228751-61a1-469a-8a3e-6f6a9c32b3ff"
+  },
+  {
+    "role": null,
+    "collection": "news_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "79fce92f-7f6e-4401-b2eb-c288d00f0cd0"
+  },
+  {
+    "role": null,
+    "collection": "news",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "33bc4671-c7e2-4dbf-8399-f0488432203c"
+  },
+  {
+    "role": null,
+    "collection": "popup_events_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "507e286a-2c36-49ee-b60d-1c80d347b2ac"
+  },
+  {
+    "role": null,
+    "collection": "popup_events",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "76bdc249-b3eb-4667-96a9-e8abd980c874"
+  },
+  {
+    "role": null,
+    "collection": "utilizations_entries",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "2d544dd9-af57-47d0-8a03-272b70cd5f5f"
+  },
+  {
+    "role": null,
+    "collection": "utilizations_groups",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "42d45002-8771-4e07-853c-1661f1012e2a"
+  },
+  {
+    "role": null,
+    "collection": "washingmachines",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "5e6d1cec-5ca3-48ae-a049-92588e3b708b"
+  },
+  {
+    "role": null,
+    "collection": "wikis_directus_roles",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "51e3eecc-e806-451c-b8cd-cc27884454cc"
+  },
+  {
+    "role": null,
+    "collection": "wikis_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "6f0b40c5-d1e7-4e7b-8844-47d57d71ea1e"
+  },
+  {
+    "role": null,
+    "collection": "wikis",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "2ec051a4-6a79-4958-a52b-e1a5b51648e2"
   }
 ]

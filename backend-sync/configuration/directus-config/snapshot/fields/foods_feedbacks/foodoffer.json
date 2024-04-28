@@ -27,7 +27,7 @@
   "schema": {
     "name": "foodoffer",
     "table": "foods_feedbacks",
-    "data_type": "varchar",
+    "data_type": "char",
     "default_value": null,
     "max_length": 36,
     "numeric_precision": null,

@@ -1,472 +1,470 @@
-{
-  "data": [
+[
     {
-      "id": 6,
-      "role": null,
-      "collection": "app_settings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 91,
+        "role": null,
+        "collection": "app_settings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 7,
-      "role": null,
-      "collection": "app_settings_housing_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 92,
+        "role": null,
+        "collection": "app_settings_housing_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 8,
-      "role": null,
-      "collection": "app_translations_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 93,
+        "role": null,
+        "collection": "app_translations_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 9,
-      "role": null,
-      "collection": "buildings_businesshours",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 94,
+        "role": null,
+        "collection": "buildings_businesshours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 10,
-      "role": null,
-      "collection": "canteens_foodservicehours",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 95,
+        "role": null,
+        "collection": "canteens_foodservicehours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 11,
-      "role": null,
-      "collection": "foodoffers_markings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 96,
+        "role": null,
+        "collection": "foodoffers_markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 12,
-      "role": null,
-      "collection": "foods_feedbacks_foods_feedbacks_labels",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 97,
+        "role": null,
+        "collection": "foods_feedbacks_foods_feedbacks_labels",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 13,
-      "role": null,
-      "collection": "foods_feedbacks_labels_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 98,
+        "role": null,
+        "collection": "foods_feedbacks_labels_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 14,
-      "role": null,
-      "collection": "foods_markings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 99,
+        "role": null,
+        "collection": "foods_markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 15,
-      "role": null,
-      "collection": "foods_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 100,
+        "role": null,
+        "collection": "foods_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 16,
-      "role": null,
-      "collection": "news_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 101,
+        "role": null,
+        "collection": "news_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 17,
-      "role": null,
-      "collection": "popup_events_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 102,
+        "role": null,
+        "collection": "popup_events_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 18,
-      "role": null,
-      "collection": "utilizations_entries",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 103,
+        "role": null,
+        "collection": "utilizations_entries",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 19,
-      "role": null,
-      "collection": "washingmachines",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 104,
+        "role": null,
+        "collection": "washingmachines",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 20,
-      "role": null,
-      "collection": "wikis_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 105,
+        "role": null,
+        "collection": "wikis_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 21,
-      "role": null,
-      "collection": "buildings_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 106,
+        "role": null,
+        "collection": "buildings_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 22,
-      "role": null,
-      "collection": "collections_dates_last_update",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 107,
+        "role": null,
+        "collection": "collections_dates_last_update",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 23,
-      "role": null,
-      "collection": "foodoffers",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 108,
+        "role": null,
+        "collection": "foodoffers",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 24,
-      "role": null,
-      "collection": "markings_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 109,
+        "role": null,
+        "collection": "markings_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 25,
-      "role": null,
-      "collection": "wikis_directus_roles",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 110,
+        "role": null,
+        "collection": "wikis_directus_roles",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 26,
-      "role": null,
-      "collection": "foods_feedbacks",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 111,
+        "role": null,
+        "collection": "foods_feedbacks",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 27,
-      "role": null,
-      "collection": "app_translations",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 112,
+        "role": null,
+        "collection": "app_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 28,
-      "role": null,
-      "collection": "foods_feedbacks_labels",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 113,
+        "role": null,
+        "collection": "foods_feedbacks_labels",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 29,
-      "role": null,
-      "collection": "markings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 114,
+        "role": null,
+        "collection": "markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 30,
-      "role": null,
-      "collection": "buildings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 115,
+        "role": null,
+        "collection": "buildings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 31,
-      "role": null,
-      "collection": "businesshours",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 116,
+        "role": null,
+        "collection": "businesshours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 32,
-      "role": null,
-      "collection": "canteens",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 117,
+        "role": null,
+        "collection": "canteens",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 33,
-      "role": null,
-      "collection": "apartments",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 118,
+        "role": null,
+        "collection": "apartments",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 34,
-      "role": null,
-      "collection": "languages",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 119,
+        "role": null,
+        "collection": "languages",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 35,
-      "role": null,
-      "collection": "foods",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 120,
+        "role": null,
+        "collection": "foods",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 36,
-      "role": null,
-      "collection": "wikis",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 121,
+        "role": null,
+        "collection": "wikis",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 37,
-      "role": null,
-      "collection": "utilizations_groups",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 122,
+        "role": null,
+        "collection": "utilizations_groups",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 38,
-      "role": null,
-      "collection": "news",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 123,
+        "role": null,
+        "collection": "news",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 39,
-      "role": null,
-      "collection": "popup_events",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 124,
+        "role": null,
+        "collection": "popup_events",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 40,
-      "role": null,
-      "collection": "directus_files",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 125,
+        "role": null,
+        "collection": "directus_files",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 41,
-      "role": null,
-      "collection": "directus_folders",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 126,
+        "role": null,
+        "collection": "directus_folders",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 42,
-      "role": null,
-      "collection": "directus_roles",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 127,
+        "role": null,
+        "collection": "directus_roles",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 43,
-      "role": null,
-      "collection": "directus_settings",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 128,
+        "role": null,
+        "collection": "directus_settings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     },
     {
-      "id": 44,
-      "role": null,
-      "collection": "directus_permissions",
-      "action": "read",
-      "permissions": {},
-      "validation": {},
-      "presets": null,
-      "fields": [
-        "*"
-      ]
+        "id": 129,
+        "role": null,
+        "collection": "directus_permissions",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
     }
-  ]
-}
+]
