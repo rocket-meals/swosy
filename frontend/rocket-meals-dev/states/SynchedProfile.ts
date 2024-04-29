@@ -25,6 +25,8 @@ import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {useCallback} from "react";
 import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {useLocales as useLocalesExpo} from "expo-localization";
+import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -252,6 +254,9 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
 	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
+	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
+	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
+
 	const profileLanguage = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
 		return storedProfileRaw?.data?.language
 	});
@@ -267,17 +272,100 @@ export function useProfileLanguageCode(): [string, ((newValue: string) => void)]
 		},
 		[setProfile]
 	);
-	let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
-	//const profileLanguage = profile?.language;
-	if (profileLanguage) {
-		if (typeof profileLanguage !== 'string') {
-			usedLanguage = profileLanguage.code
+
+	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguage, deviceLocaleCodesWithoutRegionCode, languageDict);
+	return [usedLanguage, setLanguage];
+}
+
+function getBestLanguageCodeForProfile(profileLanguage:  string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
+	let languageCodeOrderToCheck: string[] = [];
+
+	console.log('profileLanguage: ', profileLanguage)
+	console.log('deviceLocaleCodes: ', deviceLocaleCodesWithOrWithoutRegionCode)
+
+	// most important is the locale saved in the profile
+	if(!!profileLanguage){
+		if (typeof profileLanguage === "string") {
+			languageCodeOrderToCheck.push(profileLanguage);
 		} else {
-			usedLanguage = profileLanguage;
+			let profileLanguageCode = profileLanguage.code;
+			languageCodeOrderToCheck.push(profileLanguageCode);
 		}
 	}
 
-	return [usedLanguage, setLanguage];
+	// we then would like to use the device locale
+	languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithOrWithoutRegionCode);
+
+	const serverLanguageDict = languageDict;
+	// if we have knowledge about which languages the server supports, we can use this information
+	if(!!serverLanguageDict){
+		console.log('serverLanguageDict: ', serverLanguageDict)
+		// we want to use the first language code that is supported by the server
+		for (let i=0; i<languageCodeOrderToCheck.length; i++) {
+			let languageCode = languageCodeOrderToCheck[i];
+			console.log('languageCode: ', languageCode)
+			let matchingLanguage = getMatchingLanguageCode(languageCode, serverLanguageDict);
+			if (matchingLanguage) {
+				return matchingLanguage.code;
+			}
+		}
+	}
+
+	// if we have no knowledge about which languages the server supports,
+	// we want to check if in the languageCodeOrderToCheck the first one is
+	// DEFAULT_LANGUAGE_CODE_GERMAN
+	const defaultLanguageCode = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+	for (let i=0; i<languageCodeOrderToCheck.length; i++) {
+		let languageCode = languageCodeOrderToCheck[i];
+		if (isLanguageCodeMatchingServerLanguageCode(languageCode, defaultLanguageCode)) {
+			return defaultLanguageCode
+		}
+	}
+
+	// okay, we have no DEFAULT_LANGUAGE_CODE_GERMAN, so we just use the fallback
+	return DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+}
+
+function getMatchingLanguageCode(languageCodeWithOrWithoutRegionCode: string, serverLanguageDict: Record<string, Languages | null | undefined>): Languages | null {
+	const languageCodeWithOrWithoutRegionCodeLower = languageCodeWithOrWithoutRegionCode.toLowerCase();
+
+	let serverLanguageKeys = Object.keys(serverLanguageDict);
+	for (let i=0; i<serverLanguageKeys.length; i++) {
+		let serverLanguageKey = serverLanguageKeys[i];
+		const languageSupportedByServer = serverLanguageDict[serverLanguageKey];
+		if(languageSupportedByServer){
+			const serverLanguageCodeWithRegion = languageSupportedByServer.code;
+			const serverLanguageCodeWithRegionLower = serverLanguageCodeWithRegion.toLowerCase();
+			// serverLanguageCodeWithRegion could be "de-DE"
+			// serverLanguageCodeWithRegionLower could be "de-de"
+			// languageCodeWithOrWithoutRegionCodeLower could be "de-de" or "de"
+
+			// if the one is a substring of the other, we have a match
+			if (isLanguageCodeMatchingServerLanguageCode(languageCodeWithOrWithoutRegionCodeLower, serverLanguageCodeWithRegionLower)) {
+				return languageSupportedByServer
+			}
+		}
+	}
+	return null;
+}
+
+function isLanguageCodeMatchingServerLanguageCode(languageCodeWithOrWithoutRegionCode: string, serverLanguageCodeWithRegion: string): boolean {
+	const languageCodeWithOrWithoutRegionCodeLower = languageCodeWithOrWithoutRegionCode.toLowerCase();
+	const serverLanguageCodeWithRegionLower = serverLanguageCodeWithRegion.toLowerCase();
+	// serverLanguageCodeWithRegion could be "de-DE"
+	// serverLanguageCodeWithRegionLower could be "de-de"
+	return serverLanguageCodeWithRegionLower.includes(languageCodeWithOrWithoutRegionCodeLower) || languageCodeWithOrWithoutRegionCodeLower.includes(serverLanguageCodeWithRegionLower);
+}
+
+function useDeviceLocaleCodesWithoutRegionCode(): string[] {
+	const locales = useLocalesExpo()
+	let localeCodes: string[] = [];
+	for (let i=0; i<locales.length; i++) {
+		let locale = locales[i];
+		//locale.languageCode; // e.g. "en"
+		localeCodes.push(locale.languageTag); // "de" or "de-DE"
+	}
+	return localeCodes;
 }
 
 export function useProfileLocaleForJsDate(): string {
