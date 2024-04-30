@@ -35,7 +35,7 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
-import DirectusSmallImageOrIconComponent from "@/components/image/DirectusSmallImageOrIconComponent";
+import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -90,7 +90,7 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	let statusSet = dislikesRaw === true || dislikesRaw === false;
 	const likes = statusSet ? !dislikesRaw : undefined;
 
-	let iconLeftCustom = <DirectusSmallImageOrIconComponent resource={foodFeedbackLabel} />
+	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
 	return <SettingsRowTriStateLikeDislike
 		iconLeftCustom={iconLeftCustom}

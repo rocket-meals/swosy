@@ -22,15 +22,35 @@ interface RectangleProps {
 	aspectRatio?: AspectRatio;
 }
 
+export const useCharacterWithInPixel = (amount: number) => {
+	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
+	const width = textDimensions?.width || 0;
+	const widthByCharacters = amount * width;
+	return widthByCharacters;
+}
+
+export const useIconWithInPixel = (amount: number) => {
+	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
+	console.log("useIconWithInPixel textDimensions: ",iconDimensions);
+	const width = iconDimensions?.width || 0;
+	const widthTimesAmount = amount * width;
+	return widthTimesAmount;
+}
+
+export const useIconMaxDimension = () => {
+	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
+	const width = iconDimensions?.width || 0;
+	const height = iconDimensions?.height || 0;
+	return width > height ? width : height
+}
+
 interface RectanglePropsWithCharactersWide {
 	amountOfCharactersWide: number;
 	children?: ReactNode;
 }
 export const RectangleWithLayoutCharactersWide: React.FC<RectanglePropsWithCharactersWide> = ({  amountOfCharactersWide, children }) => {
 	// Render amountOfCharactersWide characters wide which are invisible and not selectable and not focusable and not readable by screen readers
-	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
-	const width = textDimensions?.width || 0;
-	const widthByCharacters = amountOfCharactersWide * 10;
+	const widthByCharacters = useCharacterWithInPixel(amountOfCharactersWide);
 
 	return <View style={{
 		width: widthByCharacters,

@@ -30,11 +30,12 @@ import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {getFoodName} from "@/helper/food/FoodTranslation";
-import {MarkingBadge} from "@/components/food/MarkingBadge";
+import {MarkingsDislikedWarningBadge} from "@/components/food/MarkingsDislikedWarningBadge";
 import {useDislikeColor} from "@/states/ColorScheme";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
-import {ServerAPI} from "@/helper/database/server/ServerAPI";
+import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
+import {getMarkingBadges, MarkingBadges} from "@/components/food/MarkingBadge";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -253,7 +254,7 @@ export default function FoodOfferScreen() {
 
 
 	async function loadFoodOffers() {
-		console.log('loadFoodOffers')
+		//console.log('loadFoodOffers')
 		setFoodOffers(undefined)
 		setFoodoffersSorted(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
@@ -330,7 +331,7 @@ export default function FoodOfferScreen() {
 			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
 		}
 
-		const markingBadge = unwantedEatingHabitsFound ? <MarkingBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
+		const markingBadge = unwantedEatingHabitsFound ? <MarkingsDislikedWarningBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
 
 		const placeholderAssetId = appSettings?.foods_placeholder_image;
 
@@ -351,12 +352,21 @@ export default function FoodOfferScreen() {
 				bottomRightComponent={
 					<IndividualPricingBadge foodOffer={foodOffer}/>
 				}
+				topLeftComponent={
+					<View style={{
+						width: "50%",
+					}}>
+						<ScrollViewWithGradient hideGradient={true} horizontal={true}>
+							<MarkingBadges foodoffer={foodOffer} />
+						</ScrollViewWithGradient>
+					</View>
+				}
 				topRightComponent={
 					<View style={{
-						flexDirection: 'row',
+						flexDirection: 'column',
 					}}>
-						{markingBadge}
 						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+						{markingBadge}
 					</View>
 				}
 				imageUploaderConfig={{

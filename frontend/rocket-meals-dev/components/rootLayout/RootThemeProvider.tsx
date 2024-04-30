@@ -1,13 +1,15 @@
 import React, {createContext, useContext, useState} from 'react';
 import {ThemeProvider} from '@react-navigation/native';
 import {StatusBar} from 'expo-status-bar';
-import {View, Text, useViewBackgroundColor} from '@/components/Themed'; // Import View from your themed components
+import {View, Text, useViewBackgroundColor, Icon} from '@/components/Themed'; // Import View from your themed components
 import {RootFabHolder} from '@/components/rootLayout/RootFabHolder';
 import {useIsDarkTheme, useThemeDetermined} from '@/states/ColorScheme';
 import {useSyncState} from "@/helper/syncState/SyncState";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {MyModalActionSheetGlobal} from "@/components/modal/MyModalActionSheetGlobal";
 import {MyModalActionSheetItem, MyModalActionSheetProps} from "@/components/modal/MyModalActionSheet";
+import {IconNames} from "@/constants/IconNames";
+import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 
 // Create a Context for the modal
 const ModalContext = createContext<{
@@ -45,6 +47,8 @@ const RootContent = (props: RootThemeProviderProps) => {
 	const backgroundColor = useViewBackgroundColor();
 
 	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
+	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
+	const imageWidth = useIconWithInPixel(1);
 
 	const appIsAccessible = !modalConfig
 
@@ -64,15 +68,48 @@ const RootContent = (props: RootThemeProviderProps) => {
 			}}
 				  accessible={false} accessibilityElementsHidden={true}
 			>
-				<Text onLayout={(event) => {
-					const {width, height} = event.nativeEvent.layout;
-					setTextDimensions((currentDimensions) => {
-						return {
-							width: width,
-							height: height
-						}
-					})
-				}}>{"M"}</Text>
+				<View style={{
+					backgroundColor: "red",
+					flexDirection: "row"
+				}}>
+					<Text onLayout={(event) => {
+						const {width, height} = event.nativeEvent.layout;
+						setTextDimensions((currentDimensions) => {
+							return {
+								width: width,
+								height: height
+							}
+						})
+					}}>{"M"}</Text>
+				</View>
+				<Text>{textDimensions?.width}</Text>
+				<View style={{
+					backgroundColor: "blue",
+					width: textDimensions?.width,
+					height: 10,
+				}} />
+				<View style={{
+					backgroundColor: "red",
+					flexDirection: "row"
+				}}>
+					<Icon name={IconNames.star_active_icon} onLayout={(event) => {
+						const {width, height} = event.nativeEvent.layout;
+						setIconDimensions((currentDimensions) => {
+							console.log("SetIconDimensions: "+width);
+							return {
+								width: width,
+								height: height
+							}
+						})
+					}} />
+				</View>
+				<Text>{iconDimensions?.width}</Text>
+				<Text>{imageWidth}</Text>
+				<View style={{
+					backgroundColor: "blue",
+					width: iconDimensions?.width,
+					height: 10,
+				}} />
 			</View>
 			<RootFabHolder />
 		</>

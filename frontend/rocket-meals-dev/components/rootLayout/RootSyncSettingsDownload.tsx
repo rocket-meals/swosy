@@ -44,8 +44,8 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: string | undefined}} = {}
 
 
-	console.log("1_collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
-	console.log(collectionsDatesLastUpdate);
+	//console.log("1_collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
+	//console.log(collectionsDatesLastUpdate);
 	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: string | undefined) {
 
 
@@ -107,8 +107,8 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	useEffect(() => {
 		(async () => {
-			console.log('RootSyncSettingsDownload: useEffect');
-			console.log('Is server online: ',isServerOnline);
+			//console.log('RootSyncSettingsDownload: useEffect');
+			//console.log('Is server online: ',isServerOnline);
 
 			if (isServerOnline) { // if server is online, we can check if we are logged in
 				if (!demo) {

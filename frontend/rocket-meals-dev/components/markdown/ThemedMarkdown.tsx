@@ -17,6 +17,17 @@ import {
 	CustomTextualRenderer
 } from "react-native-render-html/src/render/render-types";
 
+export const MARKDOWN_EXAMPLE = `## Markdown Example
+
+Here comes some more ***important*** information in a rich text format. Lorem markdownum iura! Unda quid, quid iuro viscera nec terras undis illa tectis
+belloque vigil et educere Boote. Cum ubi aut bracchiaque quod: Iuppiter quaque.
+Haec tuta libratus perstant levat stant imperat nitore abductas captat iacet
+dignissima virgine posse coniectum suspiria, scilicet caelestia, cape.
+
+## Links
+[Rocket Meals](https://rocket-meals.de)
+`
+
 interface AppState {
     darkmode?: boolean,
     hideSkeleton?: boolean,

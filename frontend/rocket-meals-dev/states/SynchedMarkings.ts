@@ -5,6 +5,8 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {IconNames} from "@/constants/IconNames";
+import {MARKDOWN_EXAMPLE} from "@/components/markdown/ThemedMarkdown";
 
 export const TABLE_NAME_MARKINGS = 'markings';
 const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -40,14 +42,19 @@ function getDemoMarking(index: number): Markings {
 		let language = languages[languageKey]
 		translations.push({
 			name: language.code+" - "+name,
+			description: MARKDOWN_EXAMPLE,
 			id: id,
 			markings_id: id,
 			languages_code: language.code
 		})
 	}
 
+	const image_remote_url = index % 2 === 0 ? "https://www.studentenwerk-osnabrueck.de/fileadmin/_processed_/9/f/csm_Mensa_Global_rund_weiss_a79f6b48ba.png" : null;
+
 	const marking: Markings = {
 		id: id,
+		icon: IconNames.change_image_icon,
+		image_remote_url: image_remote_url,
 		translations: translations
 	}
 

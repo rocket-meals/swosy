@@ -16,7 +16,7 @@ export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...prop
 	const buildingsBusinesshours = useSynchedBuildingsBusinesshours();
 
 	let canteen_id = profileCanteen?.id;
-	console.log("BusinesshoursCanteenButton: canteen_id", canteen_id)
+	//console.log("BusinesshoursCanteenButton: canteen_id", canteen_id)
 	let building_id = undefined
 	if(profileCanteen?.building){
 		if(typeof profileCanteen.building === "string") {
@@ -25,14 +25,14 @@ export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...prop
 			building_id = profileCanteen.building.id
 		}
 	}
-	console.log("BusinesshoursCanteenButton: building_id", building_id)
+	//console.log("BusinesshoursCanteenButton: building_id", building_id)
 
 	let buildingBusinesshours: Businesshours[] | undefined = buildingsBusinesshours[building_id];
 	let canteenFoodServicehours: Businesshours[] | undefined = canteensBusinesshours[canteen_id];
 
-	console.log("BusinesshoursCanteenButton: profileCanteen", profileCanteen);
-	console.log("BusinesshoursCanteenButton: canteensBusinesshours", canteensBusinesshours);
-	console.log("BusinesshoursCanteenButton: buildingBusinesshours", buildingBusinesshours)
+	//console.log("BusinesshoursCanteenButton: profileCanteen", profileCanteen);
+	//console.log("BusinesshoursCanteenButton: canteensBusinesshours", canteensBusinesshours);
+	//console.log("BusinesshoursCanteenButton: buildingBusinesshours", buildingBusinesshours)
 
 
 	return <BusinesshoursButton businesshours={buildingBusinesshours} foodservicehours={canteenFoodServicehours} {...props} />

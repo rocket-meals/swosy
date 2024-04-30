@@ -354,8 +354,8 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 	const imageUploaderConfig = props.imageUploaderConfig;
 	const imageUploader = imageUploaderConfig ? <ImageUploaderComponent {...imageUploaderConfig} /> : null;
 
-	const topLeftComponent = <>
-		{props.topLeftComponent}
+	const bottomLeftComponent = <>
+		{props.bottomLeftComponent}
 		{imageUploader}
 	</>
 
@@ -369,8 +369,8 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 			}} accesibilityLabel={accessibilityLabel}
 								 topRightComponent={props.topRightComponent}
 								 bottomRightComponent={props.bottomRightComponent}
-								 bottomLeftComponent={props.bottomLeftComponent}
-								 topLeftComponent={topLeftComponent}
+								 bottomLeftComponent={bottomLeftComponent}
+								 topLeftComponent={props.topLeftComponent}
 				onPress={onPress}
 			/>
 		</Rectangle>
