@@ -313,7 +313,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static color_scheme_dark = createTranslationKey('color_scheme_dark', 'Dunkel');
 	static color_scheme_system = createTranslationKey('color_scheme_system', 'System');
 
-	static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey('by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy', 'Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu');
+	static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey('by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy', 'Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu.');
 
 	static cookie_policy_consent = createTranslationKey('cookie_policy_consent', 'Einwilligung zur Cookie-Richtlinie');
 	static cookie_policy_details = createTranslationKey('cookie_policy_details', 'Details zur Cookie-Richtlinie');
