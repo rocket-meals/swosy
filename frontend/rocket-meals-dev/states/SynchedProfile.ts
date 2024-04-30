@@ -59,8 +59,8 @@ const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelper
 ])
 async function loadProfileRemoteByProfileId(id: string) {
 	const usersProfileId: string = id;
-	console.log('usersProfileId: ',usersProfileId)
-	console.log('Okay lets load from remote')
+	//console.log('usersProfileId: ',usersProfileId)
+	//console.log('Okay lets load from remote')
 	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	return await profileCollectionHelper.readItem(usersProfileId, {
 		fields: cacheHelperDeepFields_profile.getFields(),
@@ -74,11 +74,11 @@ export async function deleteProfileRemote(id: string | number) {
 }
 
 export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
-	console.log('loadProfileRemote');
-	console.log('user', user)
+	//console.log('loadProfileRemote');
+	//console.log('user', user)
 	if (user) {
 		const usersProfileId: string = user.profile as unknown as string
-		console.log('usersProfileId: ',usersProfileId)
+		//console.log('usersProfileId: ',usersProfileId)
 		if (usersProfileId) {
 			return await loadProfileRemoteByProfileId(usersProfileId);
 		}
@@ -87,9 +87,9 @@ export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
 }
 
 export async function updateProfileRemote(id: string | number, profile: Partial<Profiles>) {
-	console.log('updateProfileRemote')
-	console.log('id: ', id)
-	console.log('profile: ', profile)
+	//console.log('updateProfileRemote')
+	//console.log('id: ', id)
+	//console.log('profile: ', profile)
 	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	await profileCollectionHelper.updateItem(id, profile);
 	return await loadProfileRemoteByProfileId(id as string);
@@ -103,7 +103,7 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 
 	const usedSetResource = useCallback(
 		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => {
-			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
+			//console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
 
 			setResource((currentValue) => {
 				const newValue = callback(currentValue);
@@ -111,11 +111,11 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 
 				if (isServerOnline && !isCurrentUserAnonymous) {
 					if (profile_id && newValue) {
-						console.log('profile_id: ', profile_id);
+						//console.log('profile_id: ', profile_id);
 
 
 						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
-							console.log('remoteAnswer: ', remoteAnswer);
+							//console.log('remoteAnswer: ', remoteAnswer);
 						}).catch((err) => {
 							console.log(err);
 						});
@@ -154,12 +154,12 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 	const sync_cache_composed_key_local = resourceRaw?.sync_cache_composed_key_local;
 
 	async function updateFromServer(sync_cache_composed_key_local?: string) {
-		console.log('RootSyncDatabase: Update profile');
-		console.log('RootSyncDatabase: Update profile - isCurrentUserAnonymous: ',isCurrentUserAnonymous);
+		//console.log('RootSyncDatabase: Update profile');
+		//console.log('RootSyncDatabase: Update profile - isCurrentUserAnonymous: ',isCurrentUserAnonymous);
 		if (!isCurrentUserAnonymous) {
-			console.log('RootSyncDatabase: Update profile - loadProfileRemote: ');
+			//console.log('RootSyncDatabase: Update profile - loadProfileRemote: ');
 			const remoteProfile = await loadProfileRemoteByUser(currentUser)
-			console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
+			//console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
 			if (remoteProfile) {
 				usedSetResource((currentProfile) => {
 					return remoteProfile;
@@ -281,9 +281,6 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 function getBestLanguageCodeForProfile(profileLanguage: string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
 	let languageCodeOrderToCheck: string[] = [];
 
-	console.log('profileLanguage: ', profileLanguage)
-	console.log('deviceLocaleCodes: ', deviceLocaleCodesWithOrWithoutRegionCode)
-
 	// most important is the locale saved in the profile
 	if(!!profileLanguage){
 		if (typeof profileLanguage === "string") {
@@ -294,23 +291,15 @@ function getBestLanguageCodeForProfile(profileLanguage: string | Languages | nul
 		}
 	}
 
-	if(PlatformHelper.isWeb()){
-		//
-	}
-
 	// we then would like to use the device locale
 	languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithOrWithoutRegionCode);
 
 	const serverLanguageDict = languageDict;
 	// if we have knowledge about which languages the server supports, we can use this information
 	if(!!serverLanguageDict){
-		console.log('serverLanguageDict: ', serverLanguageDict)
-		console.log('languageCodeOrderToCheck: ', languageCodeOrderToCheck)
-		console.log(JSON.stringify(languageCodeOrderToCheck, null, 2))
 		// we want to use the first language code that is supported by the server
 		for (let i=0; i<languageCodeOrderToCheck.length; i++) {
 			let languageCode = languageCodeOrderToCheck[i];
-			console.log('languageCode: ', languageCode)
 			let matchingLanguage = getMatchingLanguageCode(languageCode, serverLanguageDict);
 			if (matchingLanguage) {
 				return matchingLanguage.code;
@@ -377,6 +366,25 @@ function useDeviceLocaleCodesWithoutRegionCode(): string[] {
 		//locale.languageCode; // e.g. "en"
 		localeCodes.push(locale.languageTag); // "de" or "de-DE"
 	}
+
+	const defaultLanguageCode = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+	const defaultFallbackLanguageCode = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+
+	// Workaround for issue #134 - temporarily
+	if(PlatformHelper.isWeb()){ // on Web the locale order does not work properly
+		// sort the default language code if it is in the list to the front
+		localeCodes = localeCodes.sort((a, b) => {
+			if (isLanguageCodeMatchingServerLanguageCode(a, defaultLanguageCode)) {
+				return -1;
+			} else if (isLanguageCodeMatchingServerLanguageCode(b, defaultLanguageCode)) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+	}
+
+
 	return localeCodes;
 }
 
@@ -540,6 +548,6 @@ export function getEmptyProfile(): Partial<Profiles> {
 		foods_feedbacks: undefinedFoodsFeedbacks,
 		canteen: undefined,
 		markings: undefinedMarkings,
-		nickname: 'Gast'
+		nickname: undefined
 	}
 }
