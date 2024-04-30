@@ -27,6 +27,7 @@ import {useCallback} from "react";
 import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 import {useLocales as useLocalesExpo} from "expo-localization";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -251,21 +252,21 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 	return location;
 }
 
-export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
+export function useProfileLanguageCode(): [string, ((newValue: string | null | undefined) => void), string | Languages | null | undefined] {
 	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
 	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
 	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
 
-	const profileLanguage = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+	const profileLanguageSaved = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
 		return storedProfileRaw?.data?.language
 	});
 
 
-	const setLanguage = useCallback((language: string) => {
+	const setLanguage = useCallback((newLanguage: string | null | undefined) => {
 			setProfile((currentValue) => {
 				if(currentValue){
-					currentValue.language = language;
+					currentValue.language = newLanguage;
 				}
 				return currentValue;
 			});
@@ -273,11 +274,11 @@ export function useProfileLanguageCode(): [string, ((newValue: string) => void)]
 		[setProfile]
 	);
 
-	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguage, deviceLocaleCodesWithoutRegionCode, languageDict);
-	return [usedLanguage, setLanguage];
+	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguageSaved, deviceLocaleCodesWithoutRegionCode, languageDict);
+	return [usedLanguage, setLanguage, profileLanguageSaved];
 }
 
-function getBestLanguageCodeForProfile(profileLanguage:  string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
+function getBestLanguageCodeForProfile(profileLanguage: string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
 	let languageCodeOrderToCheck: string[] = [];
 
 	console.log('profileLanguage: ', profileLanguage)
@@ -293,6 +294,10 @@ function getBestLanguageCodeForProfile(profileLanguage:  string | Languages | nu
 		}
 	}
 
+	if(PlatformHelper.isWeb()){
+		//
+	}
+
 	// we then would like to use the device locale
 	languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithOrWithoutRegionCode);
 
@@ -300,6 +305,8 @@ function getBestLanguageCodeForProfile(profileLanguage:  string | Languages | nu
 	// if we have knowledge about which languages the server supports, we can use this information
 	if(!!serverLanguageDict){
 		console.log('serverLanguageDict: ', serverLanguageDict)
+		console.log('languageCodeOrderToCheck: ', languageCodeOrderToCheck)
+		console.log(JSON.stringify(languageCodeOrderToCheck, null, 2))
 		// we want to use the first language code that is supported by the server
 		for (let i=0; i<languageCodeOrderToCheck.length; i++) {
 			let languageCode = languageCodeOrderToCheck[i];
@@ -313,12 +320,17 @@ function getBestLanguageCodeForProfile(profileLanguage:  string | Languages | nu
 
 	// if we have no knowledge about which languages the server supports,
 	// we want to check if in the languageCodeOrderToCheck the first one is
-	// DEFAULT_LANGUAGE_CODE_GERMAN
+	// DEFAULT_LANGUAGE_CODE_GERMAN or FALLBACK_LANGUAGE_CODE_ENGLISH
 	const defaultLanguageCode = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+	const defaultFallbackLanguageCode = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+
 	for (let i=0; i<languageCodeOrderToCheck.length; i++) {
 		let languageCode = languageCodeOrderToCheck[i];
 		if (isLanguageCodeMatchingServerLanguageCode(languageCode, defaultLanguageCode)) {
 			return defaultLanguageCode
+		}
+		if (isLanguageCodeMatchingServerLanguageCode(languageCode, defaultFallbackLanguageCode)) {
+			return defaultFallbackLanguageCode
 		}
 	}
 

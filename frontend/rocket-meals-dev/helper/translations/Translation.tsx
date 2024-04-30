@@ -298,6 +298,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static image = createTranslationKey('image', 'Bild');
 
 	static language = createTranslationKey('language', 'Sprache');
+	static language_system = createTranslationKey('language_system', 'System');
 
 	static drawer_config_position = createTranslationKey('drawer_config_position', 'Position des Menüs');
 	static drawer_config_position_left = createTranslationKey('drawer_config_position_left', 'Links');

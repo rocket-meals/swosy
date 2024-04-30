@@ -7,6 +7,7 @@ import {useIsDebug} from '@/states/Debug';
 import React from "react";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {IconNames} from "@/constants/IconNames";
 
 export const useProfileLanguageModal = () => {
 	const translation_select = useTranslation(TranslationKeys.select)
@@ -15,15 +16,31 @@ export const useProfileLanguageModal = () => {
 	const isDebug = useIsDebug()
 
 	const title = useTranslation(TranslationKeys.language)
+	const language_system = useTranslation(TranslationKeys.language_system)
 
-	const [selectedLanguageKey, setSavedLanguageKey] = useProfileLanguageCode()
+	const [selectedLanguageKey, setSavedLanguageKey, rawSelectedLanguageKey] = useProfileLanguageCode()
 	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
 	const usedLanguageDict = languageDict || {}
-	const selectedKey = selectedLanguageKey
+	const selectedKey = rawSelectedLanguageKey
 
 	const availableOptionKeys = Object.keys(usedLanguageDict)
 
 	const items: MyModalActionSheetItem[] = []
+
+	items.push({
+		key: "system",
+		label: language_system,
+		active: selectedKey === undefined,
+		accessibilityLabel: language_system+' '+translation_select,
+		iconLeft: IconNames.settings_system_auto_icon,
+		onSelect: async (code: string, hide: () => void) => {
+			console.log('Selected language: system')
+			setSavedLanguageKey(undefined);
+			hide()
+		}
+	})
+
+
 	for (const key of availableOptionKeys) {
 		const language = usedLanguageDict[key]
 		const code = language?.code
@@ -56,9 +73,7 @@ export const useProfileLanguageModal = () => {
 			},
 			onSelect: async (code: string, hide: () => void) => {
 				console.log('Selected language: '+code)
-				setSavedLanguageKey((currentValue) => {
-					return code
-				})
+				setSavedLanguageKey(code)
 				hide()
 			}
 		})
