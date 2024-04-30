@@ -36,13 +36,12 @@ export const ServerSsoAuthProviders = () => {
 				const appleIndex = remoteAuthProviders.indexOf(appleProvider);
 				const googleIndex = remoteAuthProviders.indexOf(googleProvider);
 
-				if (isApple) {
-					remoteAuthProviders[appleIndex] = googleProvider;
-					remoteAuthProviders[googleIndex] = appleProvider;
-				} else if (isGoogle) {
-					remoteAuthProviders[appleIndex] = googleProvider;
-					remoteAuthProviders[googleIndex] = appleProvider;
-				}
+
+    const smallerIndex = Math.min(appleIndex, googleIndex);
+    const biggerIndex = Math.max(appleIndex, googleIndex);
+
+					remoteAuthProviders[smallerIndex] = isGoogle? googleProvider : appleProvider
+					remoteAuthProviders[biggerIndex] = isGoogle? appleProvider : googleProvider
 			}
 
 
