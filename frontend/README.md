@@ -21,6 +21,16 @@
   - After the first deployment, set the to be hosted by branch gh-pages
 
 
+## Update/Upgrade
+
+https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/
+
+1. Upgrade the Expo SDK
+```npm install expo@latest```
+2. Upgrade dependencies
+```npx expo install --fix```
+
+
 ## Created:
 
 - Expo 50 // https://blog.expo.dev/expo-router-v3-beta-is-now-available-eab52baf1e3e
@@ -30,5 +40,5 @@
 
 - Github Pages with sub-path - baseUrl
   - https://docs.expo.dev/more/expo-cli/#hosting-with-sub-paths
-  - SDK 50 and abouve
+  - SDK 50 and above
 

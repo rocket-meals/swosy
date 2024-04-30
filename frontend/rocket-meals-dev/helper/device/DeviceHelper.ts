@@ -127,6 +127,14 @@ export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Pr
 		isLandscape = windowWidth > windowHeight;
 	}
 
+	/**
+	 * ATTENTION !!!
+	 * VERY IMPORTANT !!!
+	 * If we are accessing other values for the device, please update the app.json expo.ios.privacyManifests
+	 *
+	 * https://docs.expo.dev/guides/apple-privacy/
+	 * https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api
+	 */
 	return {
 		display_width: windowWidth,
 		display_height: windowHeight,
