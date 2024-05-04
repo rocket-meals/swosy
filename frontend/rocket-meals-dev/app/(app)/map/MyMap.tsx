@@ -1,9 +1,9 @@
 import React from 'react';
 import { View } from "@/components/Themed";
 import { ActivityIndicator } from "react-native";
+import { ExpoLeaflet } from "expo-leaflet";
 
 // Dynamic import of ExpoLeaflet with SSR disabled
-const ExpoLeaflet = React.lazy(() => import("expo-leaflet").then(module => ({ default: module.ExpoLeaflet })));
 
 // Map Layer configuration
 const mapLayer = {

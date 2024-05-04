@@ -42,3 +42,31 @@ https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/
   - https://docs.expo.dev/more/expo-cli/#hosting-with-sub-paths
   - SDK 50 and above
 
+
+## Leaflet
+
+### Web Problem:
+As Expo 50 makes i think Server Side Rendering (SSR) `window` is not defined. But luckily it is not required to function correctly.
+So to fix the error we just need to check if `window` is defined.
+
+https://github.com/Leaflet/Leaflet/pull/6332
+
+
+
+In `/node_modules/leaflet/dist/leaflet-src.js` around line 177 we need to add the following code:
+```javascript
+  	return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
+  }
+
+  var templateRe = /\{ *([\w_ -]+) *\}/g;
+
+  // TODO: ADD THIS 3 LINES
+	if (typeof window == 'undefined'){
+		return;
+	}
+
+  // @function template(str: String, data: Object): String
+  // Simple templating facility, accepts a template string of the form `'Hello {a}, {b}'`
+  // and a data object like `{a: 'foo', b: 'bar'}`, returns evaluated string
+  // `('Hello foo, bar')`. You can also specify functions instead of strings for
+```
