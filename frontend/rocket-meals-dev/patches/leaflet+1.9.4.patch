@@ -1,15 +1,15 @@
 diff --git a/node_modules/leaflet/dist/leaflet-src.js b/node_modules/leaflet/dist/leaflet-src.js
-index 90f6db3..4b57208 100644
+index 90f6db3..9254537 100644
 --- a/node_modules/leaflet/dist/leaflet-src.js
 +++ b/node_modules/leaflet/dist/leaflet-src.js
 @@ -170,6 +170,11 @@
  
    var templateRe = /\{ *([\w_ -]+) *\}/g;
  
-+  // TODO: THIS IS ADDED BY US TO SUPPORT FOR EXPO WEB: https://github.com/Leaflet/Leaflet/issues/6552
-+  if (typeof window == 'undefined'){
-+  	  return;
-+  }
++  // TODO: Expo Fix for Server Side Rendering: Fixed with help of: https://github.com/Leaflet/Leaflet/pull/6332
++	if (typeof window == 'undefined'){
++		return;
++	}
 +
    // @function template(str: String, data: Object): String
    // Simple templating facility, accepts a template string of the form `'Hello {a}, {b}'`

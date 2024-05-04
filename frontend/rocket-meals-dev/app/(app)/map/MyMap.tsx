@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from "@/components/Themed";
 import { ActivityIndicator } from "react-native";
-import { ExpoLeaflet } from "expo-leaflet";
+import {ExpoLeaflet} from "@/components/leaflet";
 
 // Dynamic import of ExpoLeaflet with SSR disabled
 
