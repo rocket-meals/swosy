@@ -85,6 +85,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isFoodsEnabled
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'map/index',
+				label: "map",
+				title: "map",
+				icon: IconNames.foodoffers_icon,
+				visibleInDrawer: true
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'accountbalance/index',
 				label: translation_accountbalance,
 				title: translation_accountbalance,
