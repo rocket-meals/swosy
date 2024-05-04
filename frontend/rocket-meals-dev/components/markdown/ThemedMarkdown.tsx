@@ -9,7 +9,7 @@ import MarkdownIt from 'markdown-it';
 import {config} from '@gluestack-ui/config';
 import {ExternalLinkIcon, MailIcon} from "@gluestack-ui/themed";
 import {IconNames} from "@/constants/IconNames";
-import {MyExternalLink} from "@/components/link/MyExternalLink";
+import {MyLinkCustom} from "@/components/link/MyLinkCustom";
 import {MyButton} from "@/components/buttons/MyButton";
 import {
 	CustomBlockRenderer,
