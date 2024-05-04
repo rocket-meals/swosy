@@ -16,11 +16,6 @@ export type MyCardForResourcesWithImageProps = {
 }
 
 const defaultAspectRatio = 1;
-interface RectangleProps {
-	onLayoutChange?: (layout: { width: number; height: number }) => void;
-	children?: ReactNode;
-	aspectRatio?: AspectRatio;
-}
 
 export const useCharacterWithInPixel = (amount: number) => {
 	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
@@ -35,13 +30,6 @@ export const useIconWithInPixel = (amount: number) => {
 	const width = iconDimensions?.width || 0;
 	const widthTimesAmount = amount * width;
 	return widthTimesAmount;
-}
-
-export const useIconMaxDimension = () => {
-	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
-	const width = iconDimensions?.width || 0;
-	const height = iconDimensions?.height || 0;
-	return width > height ? width : height
 }
 
 interface RectanglePropsWithCharactersWide {

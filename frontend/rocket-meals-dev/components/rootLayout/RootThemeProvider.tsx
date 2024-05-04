@@ -62,9 +62,10 @@ const RootContent = (props: RootThemeProviderProps) => {
 				position: 'absolute',
 				top: 0,
 				left: 0,
-				width: 0,
-				height: 0,
-				overflow: 'hidden',
+//				width: 0, // has to be outcommented to get the width on iOS
+//				height: 0, // has to be outcommented to get the height on iOS
+				// hide the view
+				opacity: 0,
 			}}
 				  accessible={false} accessibilityElementsHidden={true}
 			>
