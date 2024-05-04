@@ -14,7 +14,7 @@ export const AnimationSupport = ({children,...props}: any) => {
 
 	return (
 		<View style={{width: '100%', alignItems: 'center'}}>
-			<RectangleWithLayoutCharactersWide amountOfCharactersWide={30}>
+			<RectangleWithLayoutCharactersWide amountOfCharactersWide={15}>
 				<MyProjectColoredLottieAnimation style={{
 					width: '100%',
 					height: '100%'
