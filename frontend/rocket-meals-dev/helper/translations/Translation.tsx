@@ -246,6 +246,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static canteen = createTranslationKey('canteen', 'Mensa');
 
+	static map = createTranslationKey('map', 'Lageplan');
+
 	static news = createTranslationKey('news', 'News');
 	static read_more = createTranslationKey('read_more', 'Mehr lesen');
 

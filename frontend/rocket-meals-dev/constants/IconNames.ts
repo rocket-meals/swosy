@@ -9,6 +9,7 @@ export enum IconNames {
     drawe_menu_go_back_icon = 'arrow-left',
     canteen_icon = 'warehouse',
     foodoffers_icon = 'silverware-variant',
+    map_icon = 'map',
     building_icon = 'home-city',
     apartments_icon = 'home-account',
     news_icon = 'newspaper',

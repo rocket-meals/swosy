@@ -1,7 +1,6 @@
 import React from 'react';
 import {View} from "@/components/Themed";
-import {MyMap} from "@/app/(app)/map/MyMap";
-
+import {MyMap} from "@/compositions/map/MyMap";
 
 export default function MapScreen() {
 
