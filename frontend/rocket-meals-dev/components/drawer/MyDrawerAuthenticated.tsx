@@ -36,6 +36,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_buildings = useTranslation(TranslationKeys.buildings);
 	const translation_housing = useTranslation(TranslationKeys.housing);
 	const translation_news = useTranslation(TranslationKeys.news);
+	const translation_map = useTranslation(TranslationKeys.map);
 	const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
 	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
@@ -83,6 +84,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.foodoffers_icon,
 				header: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'map/index',
+				label: translation_map,
+				title: translation_map,
+				icon: IconNames.map_icon,
+				visibleInDrawer: develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'accountbalance/index',
