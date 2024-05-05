@@ -49,31 +49,23 @@ export const MyMap = ({markers}: MyMapProps) => {
 
 	return (
 		<MySafeAreaView>
-			<View style={{
-				flex: 1,
-				width: "100%",
-				height: "100%",
-				justifyContent: "center",
-				alignItems: "center",
-			}}>
-				<React.Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />}>
-					<ExpoLeaflet
-						mapLayers={getMapLayers()}
-						mapMarkers={markers}
-						mapCenterPosition={POSITION_BUNDESTAG}
-						maxZoom={18}
-						zoom={15}
-						loadingIndicator={() => <ActivityIndicator />}
-						onMessage={(message) => {
-							console.log(message);
-							if(message.tag === "onMapMarkerClicked"){
-								console.log("Marker clicked: "+message.mapMarkerId)
-							}
-						}}
-					>
-					</ExpoLeaflet>
-				</React.Suspense>
-			</View>
+			<React.Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />}>
+				<ExpoLeaflet
+					mapLayers={getMapLayers()}
+					mapMarkers={markers}
+					mapCenterPosition={POSITION_BUNDESTAG}
+					maxZoom={18}
+					zoom={15}
+					loadingIndicator={() => <ActivityIndicator />}
+					onMessage={(message) => {
+						console.log(message);
+						if(message.tag === "onMapMarkerClicked"){
+							console.log("Marker clicked: "+message.mapMarkerId)
+						}
+					}}
+				>
+				</ExpoLeaflet>
+			</React.Suspense>
 		</MySafeAreaView>
 	);
 };
