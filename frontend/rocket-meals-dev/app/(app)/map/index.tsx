@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text} from "@/components/Themed";
+import {Text, View} from "@/components/Themed";
 import {getMapMarkersFromBuildings, MyMap} from "@/compositions/map/MyMap";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {Buildings} from "@/helper/database/databaseTypes/types";
@@ -9,10 +9,10 @@ import {Asset, useAssets} from "expo-asset";
 import mapMarkerIcon from '@/assets/map/marker-icon-2x.png'
 import * as FileSystem from "expo-file-system";
 import {PlatformHelper} from "@/helper/PlatformHelper";
-import type {PointExpression} from "leaflet";
+import type {PointTuple} from "leaflet";
 
 export const MARKER_DEFAULT_SIZE = 48
-export const getDefaultIconAnchor = (x: number, y: number): PointExpression => {
+export const getDefaultIconAnchor = (x: number, y: number): PointTuple => {
 	return [6, y/2];
 }
 
@@ -56,7 +56,7 @@ export default function MapScreen() {
 	}
 
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
-	if(buildingsDict && assets && assets.length > 0){
+	if(buildingsDict && imageAsString){
 		let buildingIds = Object.keys(buildingsDict);
 		let buildings: Buildings[] = []
 		for(let buildingId of buildingIds){
@@ -65,7 +65,7 @@ export default function MapScreen() {
 				buildings.push(building)
 			}
 		}
-		markers = getMapMarkersFromBuildings(buildings, assets[0].uri)
+		markers = getMapMarkersFromBuildings(buildings, imageAsString)
 	}
 
 	const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
