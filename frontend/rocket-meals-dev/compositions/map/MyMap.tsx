@@ -66,6 +66,9 @@ export const MyMap = ({markers}: MyMapProps) => {
 						loadingIndicator={() => <ActivityIndicator />}
 						onMessage={(message) => {
 							console.log(message);
+							if(message.tag === "onMapMarkerClicked"){
+								console.log("Marker clicked: "+message.mapMarkerId)
+							}
 						}}
 					>
 					</ExpoLeaflet>
