@@ -3,12 +3,9 @@ import {ActivityIndicator} from "react-native";
 import {ExpoLeaflet, MapMarker} from "@/components/leaflet";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {getMapLayers} from "@/compositions/map/LeafletMapLayers";
-import {MyMapMarkerIcons} from "@/compositions/map/MyMapMarkerIcons";
 import {Buildings} from "@/helper/database/databaseTypes/types";
 import {getBuildingLocation} from "@/compositions/buildings/BuildingDetails";
-import {Image} from "expo-image";
-import {View} from "@/components/Themed";
-import {useAssets} from "expo-asset";
+import {getDefaultIconAnchor, MARKER_DEFAULT_SIZE} from "@/app/(app)/map";
 
 const markerImage = require('@/assets/map/marker-icon-2x.png');
 const source = markerImage;
@@ -18,7 +15,7 @@ const source = markerImage;
 const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
 //https://www.openstreetmap.org/#map=19/52.518594247456804/13.376281624711964
 
-export function getMapMarkersFromBuildings(buildings: Buildings[], iconUri: string): MapMarker[] {
+export function getMapMarkersFromBuildings(buildings: Buildings[], icon: string): MapMarker[] {
 	let markers: MapMarker[] = [];
 	if(buildings){
 		buildings.forEach((building) => {
@@ -32,7 +29,9 @@ export function getMapMarkersFromBuildings(buildings: Buildings[], iconUri: stri
 							lng: location.longitude
 						},
 						title: building.alias as string | undefined,
-						icon: MyMapMarkerIcons.getIconWithUri(iconUri)
+						icon: icon,
+						size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+						iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 					});
 				}
 			}

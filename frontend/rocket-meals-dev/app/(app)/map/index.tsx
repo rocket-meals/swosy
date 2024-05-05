@@ -1,20 +1,59 @@
-import React from 'react';
-import {View} from "@/components/Themed";
+import React, {useEffect} from 'react';
+import {View, Text} from "@/components/Themed";
 import {getMapMarkersFromBuildings, MyMap} from "@/compositions/map/MyMap";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {Buildings} from "@/helper/database/databaseTypes/types";
 import {MyMapMarkerIcons} from "@/compositions/map/MyMapMarkerIcons";
-import {useAssets} from "expo-asset";
+import {Asset, useAssets} from "expo-asset";
 
 import mapMarkerIcon from '@/assets/map/marker-icon-2x.png'
+import * as FileSystem from "expo-file-system";
+import {PlatformHelper} from "@/helper/PlatformHelper";
+import type {PointExpression} from "leaflet";
+
+export const MARKER_DEFAULT_SIZE = 48
+export const getDefaultIconAnchor = (x: number, y: number): PointExpression => {
+	return [6, y/2];
+}
 
 export default function MapScreen() {
 	let markers = []
 
-
 	const [assets, error] = useAssets([mapMarkerIcon]);
+	const [imageAsString, setImageAsString] = React.useState<string | null>(null);
 
-	console.log(assets)
+	const loadImageAsBase64 = async (fileUri: string) => {
+		console.log("loadImageAsBase64: fileUri: ", fileUri)
+		try {
+			const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+			return `data:image/jpeg;base64,${base64}`;
+		} catch (error) {
+			console.error('Error loading image:', error);
+			return null;
+		}
+	};
+
+	async function loadImage(){
+		const path = require(`@/assets/map/marker-icon-2x.png`);
+		const htmlFile: Asset = await Asset.fromModule(path);
+		if(PlatformHelper.isWeb()){
+			/// for web everything is easy to handle with the uri
+			setImageAsString(MyMapMarkerIcons.getIconForWebByUri(htmlFile.uri))
+			return;
+		} else {
+			// on mobile the webview cannot access the uri, so we need to download the file and convert it to base64
+			console.log("htmlFile: ", htmlFile)
+			// format into base64
+			await htmlFile.downloadAsync()
+			const base64 = await loadImageAsBase64(htmlFile.localUri);
+			console.log("base64: ", base64)
+			if(base64) {
+				//setImageAsString(htmlFile.localUri)
+				setImageAsString(base64)
+			}
+			//setImageAsString(htmlFile.uri)
+		}
+	}
 
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 	if(buildingsDict && assets && assets.length > 0){
@@ -29,19 +68,25 @@ export default function MapScreen() {
 		markers = getMapMarkersFromBuildings(buildings, assets[0].uri)
 	}
 
-	if(markers.length === 0){
-		const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
+	const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
+
+	if(markers.length === 0 && imageAsString){
 		markers = [
 			{
 				id: "1",
 				position: POSITION_BUNDESTAG,
-				//icon: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png"
-				//icon: "<div style='color:blue'>⚑</div>", // HTML-based icon for WebView rendering
-				icon: MyMapMarkerIcons.DEBUG_ICON
-				//size: [24, 24],
+				//icon: MyMapMarkerIcons.DEBUG_ICON,
+				icon: imageAsString,
+				size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+				iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 			},
 		];
 	}
+
+	useEffect(() => {
+		loadImage()
+	}, [])
+
 
 
 	return (

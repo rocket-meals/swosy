@@ -14,6 +14,8 @@ export const ExpoLeaflet = ({
   onMapLoad,
   ...rest
 }: ExpoLeafletProps) => {
+
+
   const mapProps: LeafletMapProps = rest;
   const webViewRef = useRef<WebView>(null!);
   const [webViewContent, setWebviewContent] = useState<string | null>();

@@ -24,7 +24,6 @@ import { ExpoLeafletProps } from './ExpoLeaflet.types'
 import { MapMarkers } from './MapMarkers'
 import { MapShapes } from './MapShapes'
 import { MapLayer } from './model'
-import {Text, View} from 'react-native'
 
 const { BaseLayer, Overlay } = LayersControl
 
