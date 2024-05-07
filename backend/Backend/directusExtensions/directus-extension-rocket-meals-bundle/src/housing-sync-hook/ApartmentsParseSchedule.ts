@@ -71,6 +71,8 @@ export class ApartmentsParseSchedule {
         let statusRunning = "running";
         let statusFailed = "failed";
 
+        console.log("housing-sync-hook: parse: enabled: " + enabled + " status: " + status);
+
         if (enabled && status === statusCheck && this.finished) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;

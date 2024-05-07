@@ -2,7 +2,7 @@
 	"name": "directus-extension-rocket-meals-bundle",
 	"description": "The main directus extension for rocket meals",
 	"icon": "extension",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"keywords": [
 		"directus",
 		"directus-extension",
@@ -21,18 +21,48 @@
 		"entries": [
 			{
 				"type": "hook",
-				"name": "profile-create-hook",
-				"source": "src/profile-create-hook/index.ts"
+				"name": "cashregister-hook",
+				"source": "src/cashregister-hook/index.ts"
 			},
 			{
 				"type": "hook",
-				"name": "users-avatar-delete-hook",
-				"source": "src/users-avatar-delete-hook/index.ts"
+				"name": "collections-last-update-hook",
+				"source": "src/collections-last-update-hook/index.ts"
 			},
 			{
 				"type": "hook",
 				"name": "food-feedback-rating-cacluclate-hook",
 				"source": "src/food-feedback-rating-cacluclate-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-feedback-report-schedule",
+				"source": "src/food-feedback-report-schedule/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-notify-schedule-hook",
+				"source": "src/food-notify-schedule-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-parse-hook",
+				"source": "src/food-parse-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "housing-sync-hook",
+				"source": "src/housing-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "news-sync-hook",
+				"source": "src/news-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "profile-create-hook",
+				"source": "src/profile-create-hook/index.ts"
 			},
 			{
 				"type": "hook",
@@ -46,13 +76,13 @@
 			},
 			{
 				"type": "hook",
-				"name": "collections-last-update-hook",
-				"source": "src/collections-last-update-hook/index.ts"
+				"name": "users-avatar-delete-hook",
+				"source": "src/users-avatar-delete-hook/index.ts"
 			},
 			{
 				"type": "hook",
-				"name": "food-notify-schedule-hook",
-				"source": "src/food-notify-schedule-hook/index.ts"
+				"name": "utilization-canteen-hook",
+				"source": "src/utilization-canteen-hook/index.ts"
 			}
 		],
 		"host": "^10.10.0"
@@ -70,7 +100,7 @@
 	},
 	"dependencies": {
 		"@types/moment": "^2.13.0",
-		"jssoup": "^0.0.15",
+		"cheerio": "^1.0.0-rc.12",
 		"moment": "^2.30.1"
 	}
 }

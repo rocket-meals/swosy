@@ -1,3 +1,11 @@
+## IMOPRTANT!
+
+https://github.com/rocket-meals/rocket-meals/issues/139
+
+Currently when we want to apply a change we need to move the extension out of the directusExtensions folder and then back in to the directusExtensions folder. Then start directus, remove the not found extension, stop the server and then move the extension back in and start the server again. 
+
+
+
 # Rocket Meals Extension
 
 https://docs.directus.io/extensions/bundles.html

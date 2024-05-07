@@ -40,4 +40,4 @@ export default defineHook(async ({action}, {
             //TODO set field "parse_foods" to false
         }
     );
-};
+});

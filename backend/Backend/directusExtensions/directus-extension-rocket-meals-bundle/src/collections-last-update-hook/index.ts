@@ -14,7 +14,10 @@ export default defineHook(async ({action}, {
 	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
 	let collectionsDatesLastUpdateService = itemsServiceCreator.getItemsService("collections_dates_last_update");
 
+	//console.log("collection-last-update-hook: register hook")
+
 	async function updateLastUpdateDate(collection: string) {
+		//console.log("collection-last-update-hook: updateLastUpdateDate")
 		// check if the collection is not in the excludeCollections list
 		if (!excludeCollections.includes(collection)) {
 			// get the current date
@@ -57,6 +60,7 @@ export default defineHook(async ({action}, {
 		async (meta) => {
 			// get the collection which was updated
 			let collection = meta.collection;
+			//console.log("collection-last-update-hook: update: " + collection)
 
 			// update the collection "collections_dates_last_update" with the current date for the collection which was updated
 			await updateLastUpdateDate(collection);
@@ -68,6 +72,7 @@ export default defineHook(async ({action}, {
 		async (meta) => {
 			// get the collection which was created
 			let collection = meta.collection;
+			//console.log("collection-last-update-hook: create: " + collection)
 
 			// update the collection "collections_dates_last_update" with the current date for the collection which was created
 			await updateLastUpdateDate(collection);
@@ -79,6 +84,7 @@ export default defineHook(async ({action}, {
 		async (meta) => {
 			// get the collection which was deleted
 			let collection = meta.collection;
+			//console.log("collection-last-update-hook: delete: " + collection)
 
 			// update the collection "collections_dates_last_update" with the current date for the collection which was deleted
 			await updateLastUpdateDate(collection);

@@ -1,6 +1,5 @@
 import axios from "axios";
-import JSSoup from 'jssoup';
-
+import cheerio from 'cheerio';
 
 const baseUrl = 'https://www.studentenwerk-hannover.de';
 const newsUrl = `${baseUrl}/unternehmen/news`;
@@ -11,45 +10,42 @@ export class StudentenwerkHannoverNews_Parser {
 
     }
 
-    async getJSONList(){
-        //let demoNewsItem = await this.getDemoNewsItem();
+    async getJSONList() {
         let realNewsItems = await this.getRealNewsItems();
         return [...realNewsItems];
     }
 
-    async getRealNewsItems(){
-        try{
-            console.log("getRealNewsItems")
+    async getRealNewsItems() {
+        try {
+            console.log("getRealNewsItems");
             let response = await axios.get(newsUrl);
-            console.log("Fetched url")
-            let soup = new JSSoup.default(response.data);
-            let articles = soup.findAll('div', 'article');
+            console.log("Fetched url");
+            const $ = cheerio.load(response.data);
 
-            let data = articles.map((article, index) => {
-                let imageElement = article.find('div', 'news-slider-image');
-                let imageStyle = imageElement.attrs.style;
-                let imageUrlMatch = imageStyle.match(/url\('(.*?)'\)/);
+            let data = [];
+            $('div.article').each((index, element) => {
+                // Extract image URL from the inline style
+                let imageStyle = $(element).find('div.news-slider-image').attr('style');
+                let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
                 let imageUrl = imageUrlMatch ? baseUrl + imageUrlMatch[1] : '';
 
-                let linkElement = article.find('a', 'articleLink');
-                let articleUrl = linkElement ? baseUrl + linkElement.attrs.href : '';
+                // Extract link URL
+                let articleUrl = baseUrl + $(element).find('a.articleLink').attr('href');
 
-                let headerElement = article.find('h3');
-                let header = headerElement ? headerElement.text.trim() : '';
+                // Extract article title
+                let header = $(element).find('h3').text().trim();
 
-                let contentElement = article.find('div', 'news_slider-content_teaser');
-                let content = contentElement ? contentElement.text : '';
+                // Extract article content
+                let content = $(element).find('div.news_slider-content_teaser').text();
 
-                let categoryElements = article.findAll('div', 'news_slider-content_categorie');
+                // Extract categories
                 let categories = {};
-                if(categoryElements) {
-                    categoryElements.forEach(categoryElement => {
-                        let categoryName = categoryElement.getText().trim();
-                        categories[categoryName] = categoryName;
-                    });
-                }
+                $(element).find('div.news_slider-content_categorie').each((index, el) => {
+                    let categoryName = $(el).text().trim();
+                    categories[categoryName] = categoryName;
+                });
 
-                return {
+                data.push({
                     external_identifier: "news_" + header.replace(/\W+/g, '_'),
                     image_remote_url: imageUrl,
                     alias: header,
@@ -64,18 +60,18 @@ export class StudentenwerkHannoverNews_Parser {
                         },
                     },
                     categories: categories
-                };
+                });
             });
 
             data.reverse(); // latest news are on top
 
             return data;
-        } catch(error) {
+        } catch (error) {
             console.log(error);
-        };
+        }
     }
 
-    async getDemoNewsItem(){
+    async getDemoNewsItem() {
         return {
             external_identifier: "demo",
             image_remote_url: "https://www.studentenwerk-hannover.de/fileadmin/user_upload/Bilder/4_Beratung/JEE_151007_DSW-Berlin_0709.jpg",
@@ -87,10 +83,8 @@ export class StudentenwerkHannoverNews_Parser {
                     be_source_for_translations: true,
                     let_be_translated: false,
                     create_translations_for_all_languages: true,
-                },
-//                "en-US": {"name": food?.nameEng}
+                }
             }
         }
     }
-
 }

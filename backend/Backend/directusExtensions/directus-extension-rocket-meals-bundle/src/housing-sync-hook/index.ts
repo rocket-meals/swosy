@@ -12,6 +12,8 @@ export default defineHook(async ({action}, {
     getSchema,
     logger
 }) => {
+    logger.info("housing-sync-hook: init");
+
     try {
         await parseSchedule.init(getSchema, services, database, logger);
     } catch (err) {
@@ -40,6 +42,7 @@ export default defineHook(async ({action}, {
     action(
         collection + ".items.update",
         async () => {
+            console.log("housing-sync-hook: update")
             try {
                 await parseSchedule.parse();
             } catch (err) {
@@ -48,4 +51,4 @@ export default defineHook(async ({action}, {
             //TODO set field "parse_foods" to false
         }
     );
-};
+});

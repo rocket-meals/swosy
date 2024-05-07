@@ -53,4 +53,4 @@ export default defineHook(async ({action}, {
                 }
             }
         );
-};
+});
