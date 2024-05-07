@@ -1,0 +1,106 @@
+{
+	"name": "directus-extension-rocket-meals-bundle",
+	"description": "The main directus extension for rocket meals",
+	"icon": "extension",
+	"version": "1.0.1",
+	"keywords": [
+		"directus",
+		"directus-extension",
+		"directus-extension-bundle"
+	],
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"directus:extension": {
+		"type": "bundle",
+		"path": {
+			"app": "dist/app.js",
+			"api": "dist/api.js"
+		},
+		"entries": [
+			{
+				"type": "hook",
+				"name": "cashregister-hook",
+				"source": "src/cashregister-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "collections-last-update-hook",
+				"source": "src/collections-last-update-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-feedback-rating-cacluclate-hook",
+				"source": "src/food-feedback-rating-cacluclate-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-feedback-report-schedule",
+				"source": "src/food-feedback-report-schedule/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-notify-schedule-hook",
+				"source": "src/food-notify-schedule-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "food-parse-hook",
+				"source": "src/food-parse-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "housing-sync-hook",
+				"source": "src/housing-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "news-sync-hook",
+				"source": "src/news-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "profile-create-hook",
+				"source": "src/profile-create-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "push-notification-hook",
+				"source": "src/push-notification-hook/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "redirect-with-token-endpoint",
+				"source": "src/redirect-with-token-endpoint/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "users-avatar-delete-hook",
+				"source": "src/users-avatar-delete-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "utilization-canteen-hook",
+				"source": "src/utilization-canteen-hook/index.ts"
+			}
+		],
+		"host": "^10.10.0"
+	},
+	"scripts": {
+		"build": "directus-extension build",
+		"dev": "directus-extension build -w --no-minify",
+		"link": "directus-extension link",
+		"add": "directus-extension add"
+	},
+	"devDependencies": {
+		"@directus/extensions-sdk": "11.0.3",
+		"@types/node": "^20.12.7",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"@types/moment": "^2.13.0",
+		"cheerio": "^1.0.0-rc.12",
+		"moment": "^2.30.1"
+	}
+}

@@ -34,7 +34,7 @@ const ProjectVersionInformation = () => {
 
 	const title = "Developer Mode";
 	const translation_state_current = useTranslation(TranslationKeys.state_current)
-	const translation_state_next = useTranslation(TranslationKeys.state_current)
+	const translation_state_next = useTranslation(TranslationKeys.state_next)
 	const translation_active = useTranslation(TranslationKeys.active)
 	const translation_inactive = useTranslation(TranslationKeys.inactive)
 
