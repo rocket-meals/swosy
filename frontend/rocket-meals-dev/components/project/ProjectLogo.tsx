@@ -19,6 +19,7 @@ export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...
 	const defaultStyle = {width: usedWidth, height: "100%"}
 
 	const projectLogoAssetId = useProjectLogoAssetId()
+
 	const fallbackElement = (
 		<ViewWithProjectColor style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
 			<ProjectLogoDefault style={{width: '80%', height: '80%'}} />

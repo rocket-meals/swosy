@@ -10,6 +10,7 @@ import {Text, useViewBackgroundColor, View} from "@/components/Themed";
 import {PlatformPressable} from "@react-navigation/elements";
 import {Platform, StyleProp, ViewStyle} from "react-native";
 import {Link} from "@react-navigation/native";
+import {MyLinkCustom, MyLinkDefault} from "@/components/link/MyLinkCustom";
 
 export type MyDrawerCustomItemProps = {
     label: string,
@@ -92,36 +93,14 @@ export const MyDrawerCustomItemBottom = (customItem: MyDrawerCustomItemProps) =>
 		onPress = customItem.onPress;
 	}
 
-	let to = undefined
-
-	if (!onPress) {
-		if (customItem.onPressInternalRouteTo) {
-			onPress = () => {
-				// @ts-ignore TODO: test if Href if working here
-				router.navigate(customItem.onPressInternalRouteTo)
-			};
-		}
-
-		const externalHref = customItem.onPressExternalRouteTo
-		if (externalHref) {
-			to = externalHref
-			onPress = () => {
-				CommonSystemActionHelper.openExternalURL(externalHref, true);
-			};
-		}
-	}
-
-	return <View style={{flexDirection: 'row', justifyContent: 'center', padding: 5,
-	}}>
-		<LinkPressable
-			onPress={onPress}
+	return <View key={label.toLowerCase()} style={{flexDirection: 'row', justifyContent: 'center', padding: 5 }}>
+		<MyLinkDefault
+			hrefExternal={customItem.onPressExternalRouteTo}
+			routeInternal={customItem.onPressInternalRouteTo}
 			accessibilityLabel={drawer_item_accessibility_label}
-			accessibilityRole="button"
-			to={to}
-		 	style={{}}
-		>
-			<Text style={{fontSize: 12}}>{label}</Text>
-		</LinkPressable>
+			onPress={onPress}
+			label={label}
+		/>
 	</View>
 }
 

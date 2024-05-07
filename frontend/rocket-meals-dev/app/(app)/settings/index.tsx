@@ -26,6 +26,8 @@ import {View} from "@/components/Themed";
 import {useDeveloperModeRaw, useIsDeveloperModeActive} from "@/states/Develop";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
+import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 
 const ProjectVersionInformation = () => {
 	const [develop, setDevelop] = useDeveloperModeRaw();
@@ -41,7 +43,7 @@ const ProjectVersionInformation = () => {
 
 	const tooltip = title+": "+translation_state_current+": "+state_current_translated+". "+translation_state_next+": "+state_next_translated;
 
-	return <View style={{width: "100%"}}>
+	return <View style={{width: "100%", paddingLeft: SETTINGS_ROW_DEFAULT_PADDING}}>
 		<MyTouchableOpacity accessibilityLabel={tooltip} tooltip={tooltip} onPress={() => {
 			setDevelop((currentValue) => {
 				return !currentValue
@@ -83,6 +85,7 @@ export default function SettingsScreen() {
 					<SettingsRowProfileEatingHabits />
 					<SettingsRowPriceGroup />
 					<SettingsRowAccountBalance />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.notification} iconLeft={IconNames.notification_active} route={"/(app)/settings/notifications"} />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowColorScheme />

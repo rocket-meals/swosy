@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLogoutCallback} from '@/states/User';
+import {useIsCurrentUserAnonymous, useLogoutCallback} from '@/states/User';
 import {SettingsRow} from '@/components/settings/SettingsRow';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
@@ -9,7 +9,17 @@ export const SettingsRowLogout = (props: any) => {
 	// TODO: Implement logout functionality at ServerAPI
 	const logout = useLogoutCallback()
 
-	const translation_title = useTranslation(TranslationKeys.logout)
+	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
+
+	const translation_logout = useTranslation(TranslationKeys.logout)
+	const translation_sign_in= useTranslation(TranslationKeys.sign_in);
+
+	let translation_title = translation_logout
+	if(isCurrentUserAnonymous){
+		translation_title = translation_sign_in;
+	}
+
+
 
 	return (
 		<>

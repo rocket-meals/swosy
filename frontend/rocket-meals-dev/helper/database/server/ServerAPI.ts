@@ -99,7 +99,11 @@ export class ServerAPI {
 		}
 	}
 
-	static async getAuthProviders(): Promise<AuthProvider[]> {
+	static async getAuthProviders(isDemo?: boolean): Promise<AuthProvider[]> {
+		if(isDemo){
+			return ServerAPI.getDemoAuthProviders();
+		}
+
 		const client = ServerAPI.getPublicClient();
 		const providers: AuthProvider[] = [];
 		const result: ReadProviderOutput[] = await client.request(readProviders());
@@ -110,6 +114,22 @@ export class ServerAPI {
 			})
 		}
 		return providers;
+	}
+
+	static PROVIDER_NAME_APPLE = "apple";
+	static PROVIDER_NAME_GOOGLE = "google";
+
+	static getDemoAuthProviders(): AuthProvider[]{
+		return [
+			{
+				name: ServerAPI.PROVIDER_NAME_APPLE,
+				icon: "apple",
+			},
+			{
+				name: ServerAPI.PROVIDER_NAME_GOOGLE,
+				icon: "google"
+			}
+		]
 	}
 
 	/**

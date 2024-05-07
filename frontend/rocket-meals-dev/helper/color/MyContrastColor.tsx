@@ -38,10 +38,16 @@ export function getColorAsHex(color: string | undefined): string | undefined {
 }
 
 export function useLighterOrDarkerColorForSelection(color: string | undefined): string {
-	return getLighterOrDarkerColorByContrast(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen);
+	const backgroundColor = Color(color);
+	const isDark = backgroundColor.isDark();
+	return useColorForSelectionWithOption(color, isDark);
 }
 
-function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRatio: number): string {
+export function useColorForSelectionWithOption(color: string | undefined, lightenUpColor: boolean): string {
+	return getLighterOrDarkerColorByContrastWithOptions(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen, lightenUpColor);
+}
+
+function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined, contrastRatio: number, lightenUpColor: boolean): string {
 	const start = performance.now();
 
 	const dependencyKey = ""+color + contrastRatio;
@@ -60,7 +66,11 @@ function getLighterOrDarkerColorByContrast(color: string | undefined, contrastRa
 
 		// Loop until the contrast ratio is met or improved
 		while (currentContrastRatio < contrastRatio) {
-			if (isDark) {
+			if(steps>100) {
+				console.warn("getLighterOrDarkerColorByContrast: color: ", color, "contrastRatio: ", contrastRatio, "steps: ", steps)
+				break;
+			}
+			if (lightenUpColor) {
 				modifiedColor = modifiedColor.lighten(step);
 			} else {
 				modifiedColor = modifiedColor.darken(step);

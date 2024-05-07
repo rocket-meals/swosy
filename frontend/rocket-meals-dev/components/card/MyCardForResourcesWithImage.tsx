@@ -26,6 +26,7 @@ export type MyCardForResourcesWithImageProps = {
 	borderColor?: string,
     onPress?: () => void,
     assetId?: string | DirectusFiles | undefined | null,
+	placeholderAssetId?: string | DirectusFiles | undefined | null,
     image_url?: string | undefined | null,
     imageHeight?: number,
     bottomRightComponent?: ReactNode,
@@ -115,9 +116,9 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 				let result = null;
 				if(useCamera) {
-					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
-				} else {
 					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
+				} else {
+					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
 				}
 
 				if (!!result && !result.canceled) {
@@ -348,27 +349,28 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 }
 
 // define the button component
-export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
+export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetId, onPress, image_url, placeholderAssetId, thumbHash, imageHeight, ...props}: MyCardForResourcesWithImageProps) => {
 
 	const imageUploaderConfig = props.imageUploaderConfig;
 	const imageUploader = imageUploaderConfig ? <ImageUploaderComponent {...imageUploaderConfig} /> : null;
 
-	const topLeftComponent = <>
-		{props.topLeftComponent}
+	const bottomLeftComponent = <>
+		{props.bottomLeftComponent}
 		{imageUploader}
 	</>
 
 	const topContent = (
 		<Rectangle>
 			<ImageWithComponents image={{
+				fallbackAssetId: placeholderAssetId,
 				image_url: image_url,
 				assetId: assetId,
 				thumbHash: thumbHash,
 			}} accesibilityLabel={accessibilityLabel}
 								 topRightComponent={props.topRightComponent}
 								 bottomRightComponent={props.bottomRightComponent}
-								 bottomLeftComponent={props.bottomLeftComponent}
-								 topLeftComponent={topLeftComponent}
+								 bottomLeftComponent={bottomLeftComponent}
+								 topLeftComponent={props.topLeftComponent}
 				onPress={onPress}
 			/>
 		</Rectangle>

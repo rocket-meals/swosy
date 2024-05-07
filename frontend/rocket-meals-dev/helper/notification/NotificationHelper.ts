@@ -1,11 +1,10 @@
 import * as Notifications from 'expo-notifications';
-import {Platform} from 'react-native';
-import {useSyncState} from '@/helper/syncState/SyncState';
-import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import Constants from 'expo-constants';
 import {ExpoPushToken} from 'expo-notifications';
+import {Platform} from 'react-native';
+import Constants from 'expo-constants';
 import {PlatformHelper} from '@/helper/PlatformHelper';
 import {IosAuthorizationStatus} from 'expo-notifications/src/NotificationPermissions.types';
+import {useSynchedDevices} from "@/states/SynchedDevices";
 
 export type NotificationObjType = {
     permission?: Notifications.NotificationPermissionsStatus,
@@ -19,27 +18,17 @@ export class NotificationHelper {
 		return Constants.expoConfig?.extra?.eas?.projectId;
 	}
 
-	static useNotificationPermission(): [NotificationObjType, (notificationObj: NotificationObjType) => void] {
-		const [notificationObj, setNotificationObjRaw] = useSyncState<NotificationObjType>(PersistentStore.notificationPermission);
-		const setNotificationObj = async (newNotificationObj: NotificationObjType) => {
-			const newNotificationObjCopy: NotificationObjType = JSON.parse(JSON.stringify(notificationObj));
-			if (newNotificationObj?.permission!==undefined) {
-				newNotificationObjCopy.permission = newNotificationObj?.permission;
-			}
-			if (newNotificationObj?.pushtokenObj!==undefined) {
-				newNotificationObjCopy.pushtokenObj = newNotificationObj?.pushtokenObj;
-			}
-			await setNotificationObjRaw(newNotificationObj);
+	static useNotificationPermission(): [boolean, NotificationObjType, (timestamp?: string) => void, () => void] {
+		const [currentDevice, devices, setDevices, cacheHelperObjDevices] = useSynchedDevices()
+		const pushTokenObj: NotificationObjType | undefined = currentDevice?.pushTokenObj || {
+			permission: undefined,
+			pushtokenObj: undefined
 		}
-		let usedNotificationObj = notificationObj;
-		if (!usedNotificationObj) {
-			usedNotificationObj = {
-				permission: undefined,
-				pushtokenObj: undefined
-			}
-		}
+		let notificationGranted = NotificationHelper.isDeviceNotificationPermissionGranted(pushTokenObj)
 
-		return [usedNotificationObj, setNotificationObj];
+		const requestDeviceNotificationPermission = NotificationHelper.requestDeviceNotificationPermission;
+
+		return [notificationGranted, pushTokenObj, cacheHelperObjDevices.updateFromServer, requestDeviceNotificationPermission]
 	}
 
 	static getBadgeCountAsync() {
@@ -55,7 +44,7 @@ export class NotificationHelper {
 	}
 
 	static isDeviceNotificationPermissionGranted(notificationObj: NotificationObjType) {
-		return notificationObj?.permission?.granted
+		return notificationObj?.permission?.granted === true
 	}
 
 	static isDeviceNotificationPermissionUndetermined(notificationObj: NotificationObjType) {

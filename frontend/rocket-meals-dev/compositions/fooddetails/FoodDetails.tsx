@@ -6,7 +6,7 @@ import {
 } from '@/helper/database/databaseTypes/types';
 import {Heading, Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
-import {loadFood, loadFoodFromServer, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
+import {loadFood, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
@@ -20,7 +20,7 @@ import {useIsDebug} from "@/states/Debug";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
-import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {DETAILS_COMPONENT_MARGIN_HORIZONTAL, DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
@@ -35,6 +35,7 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
+import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -80,6 +81,8 @@ type FoodFeedbackSettingsRowDataProps = {food_id: string, feedback_label_id: str
 type FoodFeedbackSettingsRowProps = {refresh: () => void} & FoodFeedbackSettingsRowDataProps
 const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
 	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
+	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
+	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
 
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
 	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
@@ -87,11 +90,13 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	let statusSet = dislikesRaw === true || dislikesRaw === false;
 	const likes = statusSet ? !dislikesRaw : undefined;
 
+	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
 	return <SettingsRowTriStateLikeDislike
+		iconLeftCustom={iconLeftCustom}
 		renderRightContentWrapper={(rightContent) => {
 			return <AccountRequiredTouchableOpacity>
-				{rightContent}
+					{rightContent}
 			</AccountRequiredTouchableOpacity>
 		}}
 		onSetState={async (nextLike: boolean | undefined) => {
@@ -422,7 +427,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	const isDemo = useIsDemo();
 
 	async function loadRemoteFoodsFeedbacksForFood(foodId: string): Promise<FoodsFeedbacks[]> {
-		let result = loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
+		let result = await loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
 		return result;
 	}
 
@@ -534,7 +539,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 		loadFoodOffer(isDemo, foodOfferId)
 			.then(setFoodOfferData)
 			.catch(console.error);
-	}, [foodOfferId]);
+	}, [foodOfferId+""]);
 
 	const food = foodOfferData?.food;
 

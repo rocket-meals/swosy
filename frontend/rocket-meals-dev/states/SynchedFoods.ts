@@ -12,10 +12,10 @@ import {getDemoMarkings} from "@/states/SynchedMarkings";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 
-export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestampe?: number) => void), (number | undefined)] {
+export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestamp?: number) => void), (number | undefined)] {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const lastUpdate = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
 		usedResources = getDemoFoods()
@@ -51,7 +51,10 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 	let all_markings = getDemoMarkings();
 	let marking_ids = Object.keys(all_markings);
 	// select 5 markings by the position of index, skip dublicates
-	let selected_marking_ids = marking_ids.slice(index*5, index*5+5);
+	let startIndex = (index*5)%marking_ids.length;
+	let endIndex = (index*5+5)%marking_ids.length;
+
+	let selected_marking_ids = marking_ids.slice(startIndex, endIndex);
 
 	let food_markings: FoodsMarkings[] = [];
 	for(let marking_id of selected_marking_ids){
@@ -61,6 +64,8 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 			markings_id: marking_id
 		})
 	}
+
+	let rating_average = (index%5)+(0.1*(index%5));
 
 	return (
 		{
@@ -72,6 +77,8 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 			sort: undefined,
 			markings: food_markings,
 			status: '',
+			rating_average: rating_average,
+			rating_amount: (index*10)%200,
 			user_created: undefined,
 			user_updated: undefined,
 			translations: translations,

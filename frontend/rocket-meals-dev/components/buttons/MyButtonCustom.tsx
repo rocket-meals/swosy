@@ -1,4 +1,4 @@
-import {Icon, Text, View} from '@/components/Themed';
+import {Icon, Text, View, ViewProps} from '@/components/Themed';
 import React, {useState} from 'react';
 import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
 import {StyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -13,6 +13,20 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 export const BUTTON_DEFAULT_Padding = 12;
 export const BUTTON_DEFAULT_BorderRadius = BUTTON_DEFAULT_Padding/2
 
+export const MyButtonCustomContentPadder = ({children}: ViewProps) => {
+	return(
+		<View style={{
+			marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+			marginHorizontal: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
+			flexDirection: 'row', flexWrap: 'wrap',
+
+		}}
+		>
+			{children}
+		</View>
+	)
+}
+
 export type MyNewButtonPropsCustom = {
     activeBackgroundColor?: string,
     activeTextColor?: string,
@@ -25,7 +39,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps // TODO change this to merge with MyButton
-export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
 	const [hovered, setHovered] = useState<boolean>(false)
 	const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -123,37 +137,26 @@ export const MyButtonCustom = ({centerItems, icon, isActive, borderBottomRadius,
 	let renderedText: any = null;
 	if (text) {
 		renderedText = (
-			<View style={{
-				marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginLeft: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginRight: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				flexDirection: 'row', flexWrap: 'wrap',
-
-			}}
-			>
+			<MyButtonCustomContentPadder>
 				<Text style={{
 					flexShrink: 1,
 					color: usedTextColor,
 				}}
 				>{text}
 				</Text>
-			</View>
+			</MyButtonCustomContentPadder>
 		)
 	}
 
 	if (icon) {
 		renderedText = (
-			<View style={{
-				marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginLeft: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				marginRight: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
-				flexDirection: 'row', flexWrap: 'wrap',
-
-			}}
-			>
+			<MyButtonCustomContentPadder>
 				<Icon name={icon} color={usedTextColor} />
-			</View>
+			</MyButtonCustomContentPadder>
 		)
+	}
+	if(customIcon){
+		renderedText = customIcon
 	}
 
 	const rightIconViewStyle: StyleProp<ViewStyle> = {

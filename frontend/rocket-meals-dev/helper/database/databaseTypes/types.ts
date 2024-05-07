@@ -12,7 +12,6 @@ export type Apartments = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
-  washingmachines: any[] | Washingmachines[];
 };
 
 export type AppSettings = {
@@ -252,12 +251,6 @@ export type Canteens = {
   utilization_group?: string | UtilizationsGroups | null;
 };
 
-export type CanteensBusinesshours = {
-  businesshours_id: string | Businesshours;
-  canteens_id: string | Canteens;
-  id: number;
-};
-
 export type CanteensFoodservicehours = {
   businesshours_id?: string | Businesshours | null;
   canteens_id?: string | Canteens | null;
@@ -410,8 +403,11 @@ export type DirectusDashboards = {
 };
 
 export type DirectusExtensions = {
+  bundle?: string | null;
   enabled: boolean;
-  name: string;
+  folder: string;
+  id: string;
+  source: string;
 };
 
 export type DirectusFields = {
@@ -630,6 +626,9 @@ export type DirectusSettings = {
   public_favicon?: string | DirectusFiles | null;
   public_foreground?: string | DirectusFiles | null;
   public_note?: string | null;
+  report_bug_url?: string | null;
+  report_error_url?: string | null;
+  report_feature_url?: string | null;
   storage_asset_presets?: unknown | null;
   storage_asset_transform?: string | null;
   storage_default_folder?: string | DirectusFolders | null;
@@ -651,6 +650,14 @@ export type DirectusShares = {
   role?: string | DirectusRoles | null;
   times_used?: number | null;
   user_created?: string | DirectusUsers | null;
+};
+
+export type DirectusSyncIdMap = {
+  created_at?: string | null;
+  id: number;
+  local_id: string;
+  sync_id: string;
+  table: string;
 };
 
 export type DirectusTranslations = {
@@ -710,9 +717,11 @@ export type DirectusWebhooks = {
   headers?: unknown | null;
   id: number;
   method: string;
+  migrated_flow?: string | null;
   name: string;
   status: string;
   url: string;
+  was_active_before_deprecation: boolean;
 };
 
 export type Foodoffers = {
@@ -805,7 +814,11 @@ export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  icon?: string | null;
   id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
   translations: any[] | FoodsFeedbacksLabelsTranslations[];
@@ -1092,7 +1105,6 @@ export type CustomDirectusTypes = {
   businesshours: Businesshours[];
   canteen_food_feedback_report_recipients: CanteenFoodFeedbackReportRecipients[];
   canteens: Canteens[];
-  canteens_businesshours: CanteensBusinesshours[];
   canteens_foodservicehours: CanteensFoodservicehours[];
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
@@ -1121,6 +1133,7 @@ export type CustomDirectusTypes = {
   directus_sessions: DirectusSessions[];
   directus_settings: DirectusSettings;
   directus_shares: DirectusShares[];
+  directus_sync_id_map: DirectusSyncIdMap[];
   directus_translations: DirectusTranslations[];
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];

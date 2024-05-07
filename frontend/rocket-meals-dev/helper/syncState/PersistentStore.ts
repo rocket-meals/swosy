@@ -20,9 +20,11 @@ export class PersistentStore {
 	static course_timetable = 'PersistentStore.course_timetable'
 
 	static app_translations = 'PersistentStore.app_translations'
+	static collections_dates_last_update = 'PersistentStore.collections_dates_last_update'
 	static canteens = 'PersistentStore.canteens'
 	static businesshours = 'PersistentStore.businesshours'
 	static languages = 'PersistentStore.languages'
+	static imageOverlays = 'PersistentStore.image_overlays'
 	static wikis = 'PersistentStore.wikis'
 	static news = 'PersistentStore.news'
 	static buildings = 'PersistentStore.buildings'

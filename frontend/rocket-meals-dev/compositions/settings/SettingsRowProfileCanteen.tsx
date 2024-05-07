@@ -22,10 +22,11 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 
 	const leftIcon = IconNames.canteen_icon
 	const translation_title = useTranslation(TranslationKeys.canteen)
+	const translation_unknown = useTranslation(TranslationKeys.unknown)
 	const label = translation_title
 	const canteenId = profileCanteen?.id;
 	const canteenIdAsString = canteenId ? canteenId+'' : undefined;
-	const labelRight: string = profileCanteen?.alias || canteenIdAsString || 'unknown';
+	const labelRight: string = profileCanteen?.alias || canteenIdAsString || translation_unknown;
 
 	const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
 

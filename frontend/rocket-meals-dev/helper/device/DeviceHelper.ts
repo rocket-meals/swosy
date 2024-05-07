@@ -113,7 +113,7 @@ export function useInsets(): EdgeInsets {
 }
 
 
-export async function getDeviceInformation(): Promise<Partial<Devices>> { // Promise<DeviceInformationType>
+export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Promise<DeviceInformationType>
 	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	const windowScale = Dimensions.get('screen').scale;
@@ -127,8 +127,14 @@ export async function getDeviceInformation(): Promise<Partial<Devices>> { // Pro
 		isLandscape = windowWidth > windowHeight;
 	}
 
-	const pushTokenObj = await NotificationHelper.loadDeviceNotificationPermission();
-
+	/**
+	 * ATTENTION !!!
+	 * VERY IMPORTANT !!!
+	 * If we are accessing other values for the device, please update the app.json expo.ios.privacyManifests
+	 *
+	 * https://docs.expo.dev/guides/apple-privacy/
+	 * https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api
+	 */
 	return {
 		display_width: windowWidth,
 		display_height: windowHeight,
@@ -144,6 +150,5 @@ export async function getDeviceInformation(): Promise<Partial<Devices>> { // Pro
 		is_ios: PlatformHelper.isIOS(),
 		is_android: PlatformHelper.isAndroid(),
 		is_web: PlatformHelper.isWeb(),
-		pushTokenObj: pushTokenObj
 	}
 }

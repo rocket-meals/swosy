@@ -4,41 +4,93 @@ import {ButtonAuthProviderCustom} from '@/components/buttons/ButtonAuthProviderC
 import {useEffect, useState} from 'react';
 import {AuthProvider, ServerAPI} from '@/helper/database/server/ServerAPI';
 import {View} from '@/components/Themed';
+import {PlatformHelper} from "@/helper/PlatformHelper";
+import {useIsDemo} from "@/states/SynchedDemo";
+
+function isProviderNameEqualTo(provider: AuthProvider, name: string) {
+	const lowerCaseName = name.toLowerCase();
+	const lowerCaseProviderName = provider.name.toLowerCase();
+	return lowerCaseProviderName === lowerCaseName;
+}
 
 export const ServerSsoAuthProviders = () => {
 	const [authProviders, setAuthProviders] = useState<AuthProvider[] | null>(null);
+	const isDemo = useIsDemo()
 
 	useEffect(() => {
 		// call anonymous function
 		(async () => {
 			//console.log("ServerSsoAuthProviders useEffect")
-			const remoteAuthProviders = await ServerAPI.getAuthProviders();
+			const remoteAuthProviders = await ServerAPI.getAuthProviders(isDemo);
+
+			console.log("remoteAuthProviders");
+			console.log(remoteAuthProviders);
+
+
+			// Sort Apple and Google to the top if the platform is iOS or Android
+			const isApple = PlatformHelper.isIOS();
+			const isGoogle = PlatformHelper.isAndroid()
+
+			// switch apple and google positions depending on platform
+			const appleProvider = remoteAuthProviders.find(provider => isProviderNameEqualTo(provider, ServerAPI.PROVIDER_NAME_APPLE));
+			const googleProvider = remoteAuthProviders.find(provider => isProviderNameEqualTo(provider, ServerAPI.PROVIDER_NAME_GOOGLE));
+
+			if (appleProvider && googleProvider) {
+					const appleIndex = remoteAuthProviders.indexOf(appleProvider);
+					const googleIndex = remoteAuthProviders.indexOf(googleProvider);
+
+					const smallerIndex = Math.min(appleIndex, googleIndex);
+					const biggerIndex = Math.max(appleIndex, googleIndex);
+
+					if(isApple){
+						remoteAuthProviders[smallerIndex] = appleProvider
+						remoteAuthProviders[biggerIndex] = googleProvider
+					}
+					if(isGoogle){
+						remoteAuthProviders[smallerIndex] = googleProvider
+						remoteAuthProviders[biggerIndex] = appleProvider
+					}
+			}
+
+
 			//console.log("ServerSsoAuthProviders useEffect authProviders", remoteAuthProviders)
 			setAuthProviders(remoteAuthProviders);
 		})()
 	}, []);
 
+	const PADDING_BETWEEN_AUTH_PROVIDERS = 8;
+
+	const renderedAuthProviders = [];
+
 	if (!authProviders) {
 		// loading
-		return <ButtonAuthProviderCustom key={'ssoPlaceholder'} accessibilityLabel={'loading'} disabled={true} text={'Loading...'} icon_name={'loading'} />
+		renderedAuthProviders.push(
+			<ButtonAuthProviderCustom key={'ssoPlaceholder'} accessibilityLabel={'loading'} disabled={true} text={'Loading...'} icon_name={'loading'} />
+		)
+	} else {
+		for (const authProvider of authProviders) {
+			renderedAuthProviders.push(
+				<ButtonAuthProvider key={authProvider.name} provider={authProvider} />
+			)
+		}
 	}
 
-	const contentRows = [];
-	for (const authProvider of authProviders) {
-		contentRows.push(
+	const paddedAuthProviders: any[] = [];
+	for(let row of renderedAuthProviders){
+		paddedAuthProviders.push(
 			<View style={{
 				width: '100%',
-				marginBottom: 8,
+				marginBottom: PADDING_BETWEEN_AUTH_PROVIDERS,
 			}}
 			>
-				<ButtonAuthProvider key={authProvider.name} provider={authProvider} />
+				{row}
 			</View>
 		)
 	}
 
 	return (
 		<View style={{width: '100%'}}>
-			{contentRows}
+			{paddedAuthProviders}
 		</View>
 	)
 };

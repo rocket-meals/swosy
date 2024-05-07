@@ -17,44 +17,68 @@ import {
 } from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
-import {useIsCurrentUserAnonymous} from '@/states/User';
+import {useCurrentUser, useIsCurrentUserAnonymous} from '@/states/User';
 import {useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {DirectusTranslationHelper} from '@/helper/translations/DirectusTranslationHelper';
 import {LocationType} from "@/helper/geo/LocationType";
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {useCallback} from "react";
+import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {useLocales as useLocalesExpo} from "expo-localization";
+import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
+export const TABLE_NAME_PROFILES = 'profiles';
+const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'markings.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'devices.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'buildings_favorites.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+	{
+		field: 'buildings_last_visited.*',
+		limit: -1,
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	}
+])
 async function loadProfileRemoteByProfileId(id: string) {
-	const profileRelations = ['markings', 'devices', 'buildings_favorites', 'buildings_last_visited']
-	const profileFields = profileRelations.map(x => x+'.*').concat(['*']);
-
-	const deepFields: Record<string, { _limit: number }> = profileRelations.reduce((acc, x) => {
-		acc[x] = { _limit: -1 };
-		return acc;
-	}, {} as Record<string, { _limit: number }>);
-
 	const usersProfileId: string = id;
-	console.log('usersProfileId: ',usersProfileId)
-	console.log('Okay lets load from remote')
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	//console.log('usersProfileId: ',usersProfileId)
+	//console.log('Okay lets load from remote')
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	return await profileCollectionHelper.readItem(usersProfileId, {
-		fields: profileFields,
-		deep: deepFields,
+		fields: cacheHelperDeepFields_profile.getFields(),
+		deep: cacheHelperDeepFields_profile.getDeepFields(),
 	});
 }
 
 export async function deleteProfileRemote(id: string | number) {
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	await profileCollectionHelper.deleteItem(id);
 }
 
 export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
-	console.log('loadProfileRemote');
-	console.log('user', user)
+	//console.log('loadProfileRemote');
+	//console.log('user', user)
 	if (user) {
 		const usersProfileId: string = user.profile as unknown as string
-		console.log('usersProfileId: ',usersProfileId)
+		//console.log('usersProfileId: ',usersProfileId)
 		if (usersProfileId) {
 			return await loadProfileRemoteByProfileId(usersProfileId);
 		}
@@ -63,23 +87,23 @@ export async function loadProfileRemoteByUser(user: DirectusUsers | undefined) {
 }
 
 export async function updateProfileRemote(id: string | number, profile: Partial<Profiles>) {
-	console.log('updateProfileRemote')
-	console.log('id: ', id)
-	console.log('profile: ', profile)
-	const profileCollectionHelper = new CollectionHelper<Profiles>('profiles')
+	//console.log('updateProfileRemote')
+	//console.log('id: ', id)
+	//console.log('profile: ', profile)
+	const profileCollectionHelper = new CollectionHelper<Profiles>(TABLE_NAME_PROFILES)
 	await profileCollectionHelper.updateItem(id, profile);
 	return await loadProfileRemoteByProfileId(id as string);
 }
 
-export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
+export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => void, (callback: (currentValue: NewValueRawSingleType<Partial<Profiles>> | null | undefined) => NewValueRawSingleType<Partial<Profiles>> | null | undefined) => void] {
 	const [setResource, setResourceRaw] = useSynchResourceSingleRawSetter<Partial<Profiles>>(PersistentStore.profile);
 
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
 	const usedSetResource = useCallback(
-		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => {
-			console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
+		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => {
+			//console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
 
 			setResource((currentValue) => {
 				const newValue = callback(currentValue);
@@ -87,11 +111,11 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 
 				if (isServerOnline && !isCurrentUserAnonymous) {
 					if (profile_id && newValue) {
-						console.log('profile_id: ', profile_id);
+						//console.log('profile_id: ', profile_id);
 
 
 						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
-							console.log('remoteAnswer: ', remoteAnswer);
+							//console.log('remoteAnswer: ', remoteAnswer);
 						}).catch((err) => {
 							console.log(err);
 						});
@@ -104,7 +128,7 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 				}
 
 				return newValue;
-			}, timestamp);
+			}, sync_cache_composed_key_local);
 		},
 		// Dependencies for useCallback
 		[isServerOnline, isCurrentUserAnonymous, setResource]
@@ -113,9 +137,12 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 	return [usedSetResource, setResourceRaw]
 }
 
-export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, timestamp?: number | undefined) => void, number | undefined] {
+export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
+{
 	//const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);
 	const [usedSetResource, setResourceRaw] = useSynchedProfileSetter();
+	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
+	const [currentUser, setUserWithCache] = useCurrentUser();
 	const resourceRaw = useSynchedResourceSingleRawValue<Profiles, NewValueRawSingleType<Profiles>>(PersistentStore.profile)
 	const resourceOnly = resourceRaw?.data
 
@@ -124,9 +151,40 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 		usedResource = {}
 	}
 
-	const lastUpdate = resourceRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourceRaw?.sync_cache_composed_key_local;
 
-	return [usedResource, usedSetResource, lastUpdate]
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
+		//console.log('RootSyncDatabase: Update profile');
+		//console.log('RootSyncDatabase: Update profile - isCurrentUserAnonymous: ',isCurrentUserAnonymous);
+		if (!isCurrentUserAnonymous) {
+			//console.log('RootSyncDatabase: Update profile - loadProfileRemote: ');
+			const remoteProfile = await loadProfileRemoteByUser(currentUser)
+			//console.log('RootSyncDatabase: Update profile - remoteProfile: ',remoteProfile);
+			if (remoteProfile) {
+				usedSetResource((currentProfile) => {
+					return remoteProfile;
+				}, sync_cache_composed_key_local);
+			}
+		} else {
+			if (!!usedResource && JSON.stringify(usedResource) !== JSON.stringify({})) {
+				usedSetResource((currentProfile) => {
+					return usedResource;
+				}, sync_cache_composed_key_local)
+			} else {
+				usedSetResource((currentProfile) => {
+					return getEmptyProfile();
+				}, sync_cache_composed_key_local)
+			}
+		}
+	}
+
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_profile.getDependencies()
+	}
+
+	return [usedResource, usedSetResource, cacheHelperObj]
 }
 
 export enum PriceGroups {
@@ -194,35 +252,140 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 	return location;
 }
 
-export function useProfileLanguageCode(): [string, ((newValue: string) => void)] {
+export function useProfileLanguageCode(): [string, ((newValue: string | null | undefined) => void), string | Languages | null | undefined] {
 	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
-	const profileLanguage = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
+	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
+
+	const profileLanguageSaved = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
 		return storedProfileRaw?.data?.language
 	});
 
 
-	const setLanguage = useCallback((language: string) => {
+	const setLanguage = useCallback((newLanguage: string | null | undefined) => {
 			setProfile((currentValue) => {
 				if(currentValue){
-					currentValue.language = language;
+					currentValue.language = newLanguage;
 				}
 				return currentValue;
 			});
 		},
 		[setProfile]
 	);
-	let usedLanguage: string = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
-	//const profileLanguage = profile?.language;
-	if (profileLanguage) {
-		if (typeof profileLanguage !== 'string') {
-			usedLanguage = profileLanguage.code
+
+	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguageSaved, deviceLocaleCodesWithoutRegionCode, languageDict);
+	return [usedLanguage, setLanguage, profileLanguageSaved];
+}
+
+function getBestLanguageCodeForProfile(profileLanguage: string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
+	let languageCodeOrderToCheck: string[] = [];
+
+	// most important is the locale saved in the profile
+	if(!!profileLanguage){
+		if (typeof profileLanguage === "string") {
+			languageCodeOrderToCheck.push(profileLanguage);
 		} else {
-			usedLanguage = profileLanguage;
+			let profileLanguageCode = profileLanguage.code;
+			languageCodeOrderToCheck.push(profileLanguageCode);
 		}
 	}
 
-	return [usedLanguage, setLanguage];
+	// we then would like to use the device locale
+	languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithOrWithoutRegionCode);
+
+	const serverLanguageDict = languageDict;
+	// if we have knowledge about which languages the server supports, we can use this information
+	if(!!serverLanguageDict){
+		// we want to use the first language code that is supported by the server
+		for (let i=0; i<languageCodeOrderToCheck.length; i++) {
+			let languageCode = languageCodeOrderToCheck[i];
+			let matchingLanguage = getMatchingLanguageCode(languageCode, serverLanguageDict);
+			if (matchingLanguage) {
+				return matchingLanguage.code;
+			}
+		}
+	}
+
+	// if we have no knowledge about which languages the server supports,
+	// we want to check if in the languageCodeOrderToCheck the first one is
+	// DEFAULT_LANGUAGE_CODE_GERMAN or FALLBACK_LANGUAGE_CODE_ENGLISH
+	const defaultLanguageCode = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+	const defaultFallbackLanguageCode = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+
+	for (let i=0; i<languageCodeOrderToCheck.length; i++) {
+		let languageCode = languageCodeOrderToCheck[i];
+		if (isLanguageCodeMatchingServerLanguageCode(languageCode, defaultLanguageCode)) {
+			return defaultLanguageCode
+		}
+		if (isLanguageCodeMatchingServerLanguageCode(languageCode, defaultFallbackLanguageCode)) {
+			return defaultFallbackLanguageCode
+		}
+	}
+
+	// okay, we have no DEFAULT_LANGUAGE_CODE_GERMAN, so we just use the fallback
+	return DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+}
+
+function getMatchingLanguageCode(languageCodeWithOrWithoutRegionCode: string, serverLanguageDict: Record<string, Languages | null | undefined>): Languages | null {
+	const languageCodeWithOrWithoutRegionCodeLower = languageCodeWithOrWithoutRegionCode.toLowerCase();
+
+	let serverLanguageKeys = Object.keys(serverLanguageDict);
+	for (let i=0; i<serverLanguageKeys.length; i++) {
+		let serverLanguageKey = serverLanguageKeys[i];
+		const languageSupportedByServer = serverLanguageDict[serverLanguageKey];
+		if(languageSupportedByServer){
+			const serverLanguageCodeWithRegion = languageSupportedByServer.code;
+			const serverLanguageCodeWithRegionLower = serverLanguageCodeWithRegion.toLowerCase();
+			// serverLanguageCodeWithRegion could be "de-DE"
+			// serverLanguageCodeWithRegionLower could be "de-de"
+			// languageCodeWithOrWithoutRegionCodeLower could be "de-de" or "de"
+
+			// if the one is a substring of the other, we have a match
+			if (isLanguageCodeMatchingServerLanguageCode(languageCodeWithOrWithoutRegionCodeLower, serverLanguageCodeWithRegionLower)) {
+				return languageSupportedByServer
+			}
+		}
+	}
+	return null;
+}
+
+function isLanguageCodeMatchingServerLanguageCode(languageCodeWithOrWithoutRegionCode: string, serverLanguageCodeWithRegion: string): boolean {
+	const languageCodeWithOrWithoutRegionCodeLower = languageCodeWithOrWithoutRegionCode.toLowerCase();
+	const serverLanguageCodeWithRegionLower = serverLanguageCodeWithRegion.toLowerCase();
+	// serverLanguageCodeWithRegion could be "de-DE"
+	// serverLanguageCodeWithRegionLower could be "de-de"
+	return serverLanguageCodeWithRegionLower.includes(languageCodeWithOrWithoutRegionCodeLower) || languageCodeWithOrWithoutRegionCodeLower.includes(serverLanguageCodeWithRegionLower);
+}
+
+function useDeviceLocaleCodesWithoutRegionCode(): string[] {
+	const locales = useLocalesExpo()
+	let localeCodes: string[] = [];
+	for (let i=0; i<locales.length; i++) {
+		let locale = locales[i];
+		//locale.languageCode; // e.g. "en"
+		localeCodes.push(locale.languageTag); // "de" or "de-DE"
+	}
+
+	const defaultLanguageCode = DirectusTranslationHelper.DEFAULT_LANGUAGE_CODE_GERMAN;
+	const defaultFallbackLanguageCode = DirectusTranslationHelper.FALLBACK_LANGUAGE_CODE_ENGLISH;
+
+	// Workaround for issue #134 - temporarily
+	if(PlatformHelper.isWeb()){ // on Web the locale order does not work properly
+		// sort the default language code if it is in the list to the front
+		localeCodes = localeCodes.sort((a, b) => {
+			if (isLanguageCodeMatchingServerLanguageCode(a, defaultLanguageCode)) {
+				return -1;
+			} else if (isLanguageCodeMatchingServerLanguageCode(b, defaultLanguageCode)) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+	}
+
+
+	return localeCodes;
 }
 
 export function useProfileLocaleForJsDate(): string {
@@ -385,6 +548,6 @@ export function getEmptyProfile(): Partial<Profiles> {
 		foods_feedbacks: undefinedFoodsFeedbacks,
 		canteen: undefined,
 		markings: undefinedMarkings,
-		nickname: 'Gast'
+		nickname: undefined
 	}
 }

@@ -71,7 +71,12 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 	let accessibilityStateDislike = isDislikeButtonActive ? translation_active : translation_inactive
 	let accessibilityLabel_i_dislike_that = translation_i_dislike_that + ": "+accessibilityStateDislike+": "+accessibilityLabel
 
-	let rightButtons: any = <>
+	let rightButtons: any = <View style={{
+		paddingRight: 0,
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'row'
+	}}>
 		<MyButton leftIcon={'thumb-up'}
 				  isActive={isLikeButtonActive}
 				  borderRightRadius={0}
@@ -96,25 +101,15 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 					  onPress(false)
 				  }}
 		/>
-	</>
+	</View>
 
 	if(props.renderRightContentWrapper){
 		rightButtons = props.renderRightContentWrapper(rightButtons)
 	}
 
-	const rightContent: any = (
-		<View style={{
-			paddingRight: 0,
-			justifyContent: 'center',
-			alignItems: 'center',
-			flexDirection: 'row'
-		}}
-		>
-			{rightButtons}
-		</View>
-	)
+	const rightContent: any = rightButtons
 
 	return (
-		<SettingsRow padding={2} labelLeft={labelLeft} accessibilityLabel={accessibilityLabel} {...props} rightContent={rightContent} />
+		<SettingsRow labelLeft={labelLeft} accessibilityLabel={accessibilityLabel} {...props} rightContent={rightContent} />
 	)
 }

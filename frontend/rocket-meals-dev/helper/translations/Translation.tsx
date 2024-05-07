@@ -3,7 +3,7 @@ import {TranslationEntry, useDirectusTranslation} from '@/helper/translations/Di
 
 type GetTranslationFunction = ((key: string) => string) | string;
 
-interface TranslationKey {
+export interface TranslationKey {
     key: string,
     getTranslation: GetTranslationFunction
 }
@@ -16,7 +16,7 @@ function createTranslationKey(key: string, getTranslation: GetTranslationFunctio
 }
 
 export function useTranslation(key: TranslationKey): string {
-	const [translationsDict, setTranslationsDict, lastUpdateTranslations, updateTranslationsFromServer] = useSynchedAppTranslationsDict()
+	const [translationsDict, setTranslationsDict] = useSynchedAppTranslationsDict()
 	let fallback_text = key.getTranslation;
 	if (typeof key.getTranslation === 'string') {
 		fallback_text = key.getTranslation;
@@ -138,6 +138,14 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static allergene = createTranslationKey('allergene', 'Allergene');
 	static eatinghabits_introduction = createTranslationKey('eatinghabits_introduction', `Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.`);
 	static notification = createTranslationKey('notification', 'Benachrichtigung');
+	static notification_index_introduction = createTranslationKey('notification_index_introduction', `Hier kannst du einstellen, welche Benachrichtigungen du erhalten möchtest. Wir informieren dich über wichtige Ereignisse und Änderungen.`);
+	static notification_please_enable_notifications_in_order_to_use_this_feature = createTranslationKey('notification_please_enable_notifications_in_order_to_use_this_feature', 'Bitte aktiviere Benachrichtigungen, um diese Funktion zu nutzen.');
+	static notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified = createTranslationKey('notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified', 'Bitte benachrichtige mich auf meinen Smartphones, wenn sie benachrichtigt werden dürfen.');
+
+	static this_feature_is_not_available_currently_reason = createTranslationKey('this_feature_is_not_available_currently_reason', 'Diese Funktion ist derzeit nicht verfügbar. Grund:');
+	static device_android_system = createTranslationKey('device_android_system', 'Android System');
+	static device_ios_system = createTranslationKey('device_ios_system', 'iOS System');
+	static device_web_system = createTranslationKey('device_web_system', 'Web System');
 
 	static support = createTranslationKey('support', 'Support');
 
@@ -238,6 +246,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static canteen = createTranslationKey('canteen', 'Mensa');
 
+	static map = createTranslationKey('map', 'Lageplan');
+
 	static news = createTranslationKey('news', 'News');
 	static read_more = createTranslationKey('read_more', 'Mehr lesen');
 
@@ -282,12 +292,15 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static select = createTranslationKey('select', 'Auswählen');
 	static upload = createTranslationKey('upload', 'Hochladen');
 
+	static is_loading = createTranslationKey('is_loading', 'Lädt...');
+
 	static camera = createTranslationKey('camera', 'Kamera');
 	static gallery = createTranslationKey('gallery', 'Galerie');
 
 	static image = createTranslationKey('image', 'Bild');
 
 	static language = createTranslationKey('language', 'Sprache');
+	static language_system = createTranslationKey('language_system', 'System');
 
 	static drawer_config_position = createTranslationKey('drawer_config_position', 'Position des Menüs');
 	static drawer_config_position_left = createTranslationKey('drawer_config_position_left', 'Links');
@@ -302,7 +315,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static color_scheme_dark = createTranslationKey('color_scheme_dark', 'Dunkel');
 	static color_scheme_system = createTranslationKey('color_scheme_system', 'System');
 
-	static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey('by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy', 'Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu');
+	static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey('by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy', 'Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu.');
 
 	static cookie_policy_consent = createTranslationKey('cookie_policy_consent', 'Einwilligung zur Cookie-Richtlinie');
 	static cookie_policy_details = createTranslationKey('cookie_policy_details', 'Details zur Cookie-Richtlinie');

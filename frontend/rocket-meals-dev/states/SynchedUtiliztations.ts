@@ -2,6 +2,8 @@ import {UtilizationsEntries, UtilizationsGroups} from '@/helper/database/databas
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DateHelper} from '@/helper/date/DateHelper';
 
+export const TABLE_NAME_UTILIZATIONS_ENTRIES = 'utilizations_entries';
+export const TABLE_NAME_UTILIZATIONS_GROUPS = 'utilizations_groups';
 export async function loadUtilizationEntriesRemote(utilizationGroup: UtilizationsGroups, dateIsoString: string, isDemo: boolean): Promise<UtilizationsEntries[] | undefined> {
 	let utilizationEntries: UtilizationsEntries[] | undefined = undefined;
 	let date = new Date(dateIsoString);
@@ -9,7 +11,7 @@ export async function loadUtilizationEntriesRemote(utilizationGroup: Utilization
 		utilizationEntries = getDemoUtilizationEntries(date);
 		return utilizationEntries;
 	} else {
-		const utilizationEntriesHelper = new CollectionHelper<UtilizationsEntries>('utilizations_entries');
+		const utilizationEntriesHelper = new CollectionHelper<UtilizationsEntries>(TABLE_NAME_UTILIZATIONS_ENTRIES);
 		const date_start = new Date(date);
 		date_start.setHours(0,0,0,0);
 

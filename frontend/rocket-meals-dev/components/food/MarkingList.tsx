@@ -5,8 +5,6 @@ import {Markings} from "@/helper/database/databaseTypes/types";
 import {ListRenderItemInfo} from "react-native";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {View} from "@/components/Themed";
 
 export const MarkingList = ({...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();

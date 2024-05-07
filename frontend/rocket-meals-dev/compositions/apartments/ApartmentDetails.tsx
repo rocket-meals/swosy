@@ -75,6 +75,8 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 
 	const projectName = useProjectName()
 
+	const isDemo = useIsDemo();
+
 
 	const displayName = washingmachine.alias || washingmachine.id;
 	const tooltip = translation_washingmachine + ": " + displayName;
@@ -112,8 +114,10 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 
 						const title = notificationMessageObject?.title || "title";
 						const body = notificationMessageObject?.body || "body";
-						let secondsFromNow = notificationMessageObject?.secondsFromNow || 10;
-						secondsFromNow = 10;
+						let secondsFromNow = notificationMessageObject?.secondsFromNow
+						if(isDemo){
+							secondsFromNow = 10;
+						}
 
 						NotificationHelper.scheduleLocalNotification(title, body, secondsFromNow, notificationKey);
 					}

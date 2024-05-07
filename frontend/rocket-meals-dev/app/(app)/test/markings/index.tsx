@@ -5,7 +5,7 @@ import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MyButton} from '@/components/buttons/MyButton';
 
 export default function MarkingsTestScreen() {
-	const [markingsDict, setMarkingsDict, lastUpdateMarkings, updateMarkingsFromServer] = useSynchedMarkingsDict()
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict()
 
 	return (
 		<MySafeAreaView>
@@ -13,17 +13,6 @@ export default function MarkingsTestScreen() {
 				<Heading>
 					{'Markings'}
 				</Heading>
-				<MyButton accessibilityLabel={'Update Markings'}
-					onPress={() => {
-						updateMarkingsFromServer()
-					} }
-					tooltip={
-						'Update Markings'
-					}
-					text={
-						'Update Markings'
-					}
-				/>
 				<View style={{
 					width: '100%',
 				}}

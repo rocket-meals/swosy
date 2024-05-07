@@ -2,7 +2,7 @@ import React from 'react';
 import {AllRoutes, router} from 'expo-router';
 import {Text, View} from '@/components/Themed';
 import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
-import {MyExternalLink} from "@/components/link/MyExternalLink";
+import {MyLinkCustom, MyLinkDefault} from "@/components/link/MyLinkCustom";
 
 export type LegalRequiredInternalLinkProps = {
 	externalHref?: string | null | undefined,
@@ -11,23 +11,9 @@ export type LegalRequiredInternalLinkProps = {
 }
 export const LegalRequiredLink = (props: LegalRequiredInternalLinkProps) => {
 
-	let onPress = undefined
-	if (props.internalHref) {
-		onPress = () => {
-			// @ts-ignore
-			router.push(props.internalHref)
-		}
-	}
-	if(props.externalHref) {
-		onPress = undefined;
-	}
-
 	return (
 		<View style={{flexDirection: 'row'}}>
-			<MyExternalLink openInNewTab={true} href={props?.externalHref} accessibilityLabel={props.text} onPress={onPress}
-			>
-				<Text style={{fontSize: 12}}>{props.text}</Text>
-			</MyExternalLink>
+			<MyLinkDefault routeInternal={props.internalHref} hrefExternal={props?.externalHref} accessibilityLabel={props.text} label={props.text} />
 		</View>
 	)
 }

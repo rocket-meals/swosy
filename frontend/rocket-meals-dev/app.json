@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rocket Meals Demo",
     "slug": "rocket-meals-dev",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
@@ -26,9 +26,49 @@
       "config": {
         "usesNonExemptEncryption": false
       },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ],
+            "ignoreCommentExplanation": {
+              "CA92.1": "read and write information that is only accessible to the app itself."
+            }
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "8FFB.1"
+            ],
+            "ignoreCommentExplanation": {
+              "8FFB.1": "boot time to calculate absolute timestamps for events that occurred within your app. Absolute timestamps for events that occurred within your app may be sent off-device. System boot time accessed for this reason, or any other information derived from system boot time, may not be sent off-device."
+            }
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "85F4.1"
+            ],
+            "ignoreCommentExplanation": {
+              "85F4.1": "Disk space may be displayed in units of information (such as bytes). Information accessed for this reason, or any derived information, may not be sent off-device."
+            }
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "DDA9.1"
+            ],
+            "ignoreCommentExplanation": {
+              "DDA9.1": "display file timestamps to the person using the device. Information accessed for this reason, or any derived information, may not be sent off-device."
+            }
+          }
+        ]
+      },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "16"
+      "buildNumber": "17"
     },
     "android": {
       "adaptiveIcon": {
@@ -78,7 +118,8 @@
           }
         }
       ],
-      "expo-build-properties"
+      "expo-build-properties",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

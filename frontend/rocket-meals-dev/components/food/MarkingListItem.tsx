@@ -7,6 +7,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import DirectusImage from "@/components/project/DirectusImage";
+import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 
 export default function MarkingListItem({ markingId }: { markingId: string }) {
 	// Memoize the MarkingListItemReal component
@@ -30,7 +31,7 @@ export function getMarkingName(marking: Markings, languageCode: string): string 
 
 function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-	const marking: Markings | undefined = markingsDict?.[markingId];
+	const marking: Markings | undefined | null = markingsDict?.[markingId];
 	const [status, setProfileMarking, removeProfileMarking] = useSynchedProfileMarking(markingId)
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	let statusSet = status === true || status === false;
@@ -49,18 +50,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 		const text = translated_name || marking.alias || marking.id;
 		const accessibilityLabel = translation_marking+": "+text;
 
-		const iconLeft = marking.icon
-		let iconLeftCustom = undefined
-		if(iconLeft){
-			iconLeftCustom = <Icon family={"MaterialIcons"} name={iconLeft} />
-		}
-		if(marking.image || marking.image_remote_url){
-			iconLeftCustom = <View style={{
-				width: 20, height: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white', borderRadius: 3
-			}}>
-				<DirectusImage image_url={marking.image_remote_url} assetId={marking.image} thumbHash={marking.image_thumb_hash} style={{width: "100%", height: "100%"}} />
-			</View>
-		}
+		let iconLeftCustom = <DirectusImageOrIconComponent resource={marking} />
 
 		const onPress = (like: boolean | undefined) => {
 			const removeMarking = like === undefined;

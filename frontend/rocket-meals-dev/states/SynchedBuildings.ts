@@ -1,5 +1,5 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Apartments, Buildings, Businesshours, CanteensBusinesshours} from '@/helper/database/databaseTypes/types';
+import {Buildings, BuildingsBusinesshours, Businesshours} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -7,50 +7,69 @@ import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {LocationType} from "@/helper/geo/LocationType";
 import {getDemoBusinesshoursDict, useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
-import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
+import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
-async function loadBuildingsFromServer(): Promise<Buildings[]> {
-	const collectionHelper = new CollectionHelper<Buildings>('buildings');
-
-	const fields = ['*','businesshours.*','translations.*'];
-
-	const query = {
+export const TABLE_NAME_BUILDINGS = 'buildings';
+const cacheHelperDeepFields_buildings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
 		limit: -1,
-		fields: fields
+		dependency_collections_or_enum: [TABLE_NAME_BUILDINGS],
+	},
+	{
+		field: 'translations.*',
+		limit: -1,
+		dependency_collections_or_enum: ["buildings_translations"],
+	},
+	{
+		field: 'businesshours.*',
+		limit: -1,
+		dependency_collections_or_enum: ["buildings_businesshours"],
 	}
-
+])
+async function loadBuildingsFromServer(): Promise<Buildings[]> {
+	const collectionHelper = new CollectionHelper<Buildings>(TABLE_NAME_BUILDINGS);
+	const query = cacheHelperDeepFields_buildings.getQuery()
 	return await collectionHelper.readItems(query);
 }
 
-export function useSynchedBuildingsDict(): [( Record<string, Buildings | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, Buildings | null | undefined> | null | undefined)) => Record<string, Buildings | null | undefined>, timestamp?: (number | undefined)) => void), (number | undefined), ((nowInMs?: number) => Promise<void>)
-] {
+export function useSynchedBuildingsDict(): [( Record<string, Buildings | null | undefined> | null | undefined), ((callback: (currentValue: (Record<string, Buildings | null | undefined> | null | undefined)) => Record<string, Buildings | null | undefined>, sync_cache_composed_key_local?: (string | undefined)) => void), cacheHelperObj: MyCacheHelperType]
+{
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Buildings>(PersistentStore.buildings);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
 		usedResources = getDemoBuildings()
 	}
 
-	async function updateFromServer(nowInMs?: number) {
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const resourceAsList = await loadBuildingsFromServer();
 		const resourceAsDict = CollectionHelper.convertListToDict(resourceAsList, 'id')
 		setResourcesOnly((currentValue) => {
 			return resourceAsDict
-		}, nowInMs);
+		}, sync_cache_composed_key_local);
 	}
 
-	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_buildings.getDependencies()
+	}
+
+	return [usedResources, setResourcesOnly, cacheHelperObj]
 }
 
 function getDemoResource(index: number): Buildings {
-	let languages = getDemoLanguagesDict();
+	let languagesDict = getDemoLanguagesDict();
+
+	const demoBusinesshoursDict = getDemoBusinesshoursDict()
 
 	const name = 'Demo Building '+index
 
 	let translations = []
-	for (let languageKey in languages) {
-		let language = languages[languageKey]
+	for (let languageKey in languagesDict) {
+		let language = languagesDict[languageKey]
 		translations.push({
 			name: language.code+" - "+name,
 			id: index,
@@ -60,11 +79,24 @@ function getDemoResource(index: number): Buildings {
 		})
 	}
 
+	const building_id = "demoBuilding"+index;
+
+	let businesshours: BuildingsBusinesshours[] = [];
+	let demoKeys = Object.keys(demoBusinesshoursDict)
+	demoKeys.forEach((key) => {
+		businesshours.push({
+			id: demoBusinesshoursDict[key].id+building_id,
+			buildings_id: building_id,
+			businesshours_id: demoBusinesshoursDict[key].id
+		})
+	})
+
 	return {
 		alias: name,
 		apartments: [],
-		id: index+'',
+		id: building_id,
 		status: '',
+		businesshours: businesshours,
 		coordinates: CoordinateHelper.getDemoDirectusCoordinates(index*0.01, index*0.01),
 		translations: translations
 	}
@@ -87,45 +119,33 @@ export function getDemoBuildings(): Record<string, Buildings> {
 }
 
 
-
-
 /**
  * Returns a dictionary of canteen businesshours
  * @returns Record<string, [Businesshours] | undefined> - canteen id to businesshours
  */
 export function useSynchedBuildingsBusinesshours(): Record<string, Businesshours[] | undefined>
 {
-	const isDemo = useIsDemo()
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 	const [businesshoursDict, setBusinesshoursDict] = useSynchedBusinesshoursDict()
-	const demoBusinesshoursDict = getDemoBusinesshoursDict()
 
-	const canteensBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
+	const buildingsBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
 
 	for (const buildingId in buildingsDict) {
 		const building_id_as_string: string = buildingId
 		const building = buildingsDict[buildingId]
 		if (building?.businesshours) {
-			let canteensBusinesshours: CanteensBusinesshours[] = building.businesshours as CanteensBusinesshours[]
+			let buildingsBusinesshours: BuildingsBusinesshours[] = building.businesshours as BuildingsBusinesshours[]
 			let businesshours: Businesshours[] = []
-			if(isDemo) {
-				let demoKeys = Object.keys(demoBusinesshoursDict)
-				demoKeys.forEach((key) => {
-					businesshours.push(demoBusinesshoursDict[key])
-				})
-			} else {
-				canteensBusinesshours.forEach((canteensBusinesshours) => {
-					let businesshoursId = canteensBusinesshours.businesshours_id
-					let businesshoursEntry = businesshoursDict?.[businesshoursId]
-					if (businesshoursEntry) {
-						businesshours.push(businesshoursEntry)
-					}
-				})
-			}
-
-			canteensBusinesshoursDict[building_id_as_string] = businesshours
+			buildingsBusinesshours.forEach((canteensBusinesshours) => {
+				let businesshoursId = canteensBusinesshours.businesshours_id
+				let businesshoursEntry = businesshoursDict?.[businesshoursId]
+				if (businesshoursEntry) {
+					businesshours.push(businesshoursEntry)
+				}
+			})
+			buildingsBusinesshoursDict[building_id_as_string] = businesshours
 		}
 	}
-	return canteensBusinesshoursDict
+	return buildingsBusinesshoursDict
 
 }

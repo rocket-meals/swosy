@@ -1,50 +1,118 @@
 import {MyButton} from "@/components/buttons/MyButton";
 import React from "react";
-import {Foodoffers} from "@/helper/database/databaseTypes/types";
-import {useSynchedProfileMarkingsDict} from "@/states/SynchedProfile";
-import {MarkingHelper} from "@/helper/food/MarkingHelper";
+import {Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {MarkingListSelective} from "@/components/food/MarkingList";
-import {useDislikeColor} from "@/states/ColorScheme";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
+import {BUTTON_DEFAULT_Padding, MyButtonCustomContentPadder} from "@/components/buttons/MyButtonCustom";
+import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {getMarkingName, getMarkingShortIdentifier} from "@/components/food/MarkingListItem";
+import DirectusImageOrIconComponent, {
+	hasResourceImageOrRemoteImage
+} from "@/components/image/DirectusImageOrIconComponent";
+import {MarkingHelper} from "@/helper/food/MarkingHelper";
+import {useCharacterWithInPixel, useIconMaxDimension, useIconWithInPixel} from "@/components/shapes/Rectangle";
+import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+
+export const MarkingBadges = ({foodoffer}: {foodoffer: Foodoffers}) => {
+	const markingsIds = MarkingHelper.getFoodOfferMarkingIds(foodoffer);
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+
+	let badges: any[] = [];
+	for(let markingId of markingsIds){
+		const marking: Markings | undefined | null = markingsDict?.[markingId];
+		if(!!marking){
+			let markingVisible = marking?.show_on_card
+			if(markingVisible){
+				badges.push(<MarkingBadge markingId={markingId} />)
+			}
+		}
+	}
+
+	if(badges.length===0){
+		return null;
+	} else {
+		return badges
+	}
+
+}
 
 export type MarkingBadgeProps = {
-	foodoffer: Foodoffers,
+	markingId: string
 	borderRadius?: number,
 }
-export const MarkingBadge = ({foodoffer, borderRadius}: MarkingBadgeProps) => {
-	const dislikeColor = useDislikeColor();
-
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+export const MarkingBadge = ({markingId, borderRadius}: MarkingBadgeProps) => {
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const viewBackgroundColor = useViewBackgroundColor();
+	const textColor = useTextContrastColor();
 
-	const dislikedMarkingIds = MarkingHelper.getDislikedMarkingIds(foodoffer, profilesMarkingsDict)
+	const imageWidth = useIconMaxDimension()+(BUTTON_DEFAULT_Padding*2);
 
-	const translation_attention = useTranslation(TranslationKeys.attention);
+	const marking: Markings | undefined | null = markingsDict?.[markingId];
+
+	const translation_description = useTranslation(TranslationKeys.description);
 	const translation_eating_habit = useTranslation(TranslationKeys.eating_habits);
 
-	const accessibilityLabelDislike = translation_attention + " "+translation_eating_habit;
-	const dislike_icon = IconNames.eating_habit_icon;
+
+	if(!marking){
+		return null;
+	}
+
+
+	const translated_name = getMarkingName(marking, languageCode);
+	const marking_translations = marking?.translations as TranslationEntry[]
+	const translated_description = getDirectusTranslation(languageCode, marking_translations, "description");
+
+	const translation_title = translated_name;
+
+	const accessibilityLabel = translated_name
 
 	const onPress = () => {
 		setModalConfig({
-			title: translation_eating_habit,
-			accessibilityLabel: accessibilityLabelDislike,
-			key: "dislikedMarkingIds",
+			title: translation_title,
+			accessibilityLabel: translated_name,
+			key: "foodGroupBadge",
 			label: translation_eating_habit,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return <MarkingListSelective markingIds={dislikedMarkingIds} />
+				return <View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
+					<View style={{width: "100%", alignItems: "center"}}>
+						<DirectusImageOrIconComponent resource={marking} widthImage={imageWidth} heightImage={imageWidth} />
+					</View>
+					<ThemedMarkdown markdown={translated_description} />
+				</View>
 			}
 		})
 	}
 
+	let hasImage = hasResourceImageOrRemoteImage(marking);
+
+	let usedIcon = marking.icon || IconNames.identifier;
+
+	let imageAsCustomIcon = null;
+	if(hasImage){
+	 imageAsCustomIcon = <DirectusImageOrIconComponent resource={marking} widthImage={imageWidth} heightImage={imageWidth} />
+	}
+
+	let transparentBackgroundColor = "#FFFFFF00";
+	let usedBackgroundColor = hasImage ? transparentBackgroundColor : viewBackgroundColor
+
 	return 	<>
 		<MyButton
-			backgroundColor={dislikeColor}
 			isActive={true}
+			useTransparentBorderColor={true}
+			backgroundColor={usedBackgroundColor}
 			borderRadius={borderRadius}
 			onPress={onPress}
-			accessibilityLabel={accessibilityLabelDislike} tooltip={accessibilityLabelDislike} icon={dislike_icon} />
+			accessibilityLabel={accessibilityLabel}
+			tooltip={accessibilityLabel}
+			icon={usedIcon}
+			customIcon={imageAsCustomIcon}
+		/>
 	</>
 }

@@ -19,6 +19,7 @@ import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotification
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootSyncSettingsDownload} from "@/components/rootLayout/RootSyncSettingsDownload";
+import {RootOnAppFocus} from "@/components/rootLayout/RootOnAppFocus";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -29,7 +30,7 @@ export interface RootAuthUserFlowLoaderProps {
     children?: React.ReactNode;
 }
 export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
-	console.log('RootAuthUserFlowLoader')
+	//console.log('RootAuthUserFlowLoader')
 
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
@@ -47,11 +48,11 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	useEffect(() => {
 		// call anonymous function
 		(async () => {
-			console.log('RootAuthUserFlowLoader useEffect')
+			//console.log('RootAuthUserFlowLoader useEffect')
 			//console.log("refreshToken", refreshToken)
 
 			if (isServerOnline) { // if server is online, we can check if we are logged in
-				console.log('RootAuthUserFlowLoader useEffect server is online')
+				//console.log('RootAuthUserFlowLoader useEffect server is online')
 				if (refreshToken) { // but only if we have a refresh token
 					//console.log("AuthFlowUserCheck useEffect server is online and we have a refresh token")
 					try {
@@ -67,7 +68,7 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 						setCurrentUser(null);
 					}
 				} else {
-					console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token')
+					//console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token')
 					// this means we are either logged out (not authenticated) or anonymous
 					console.log('Lets check what the cached user is')
 					console.log('cachedUser', cachedUserRaw)
@@ -75,10 +76,10 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 					const isUserAnonymous = getIsCachedUserAnonymous(usedCachedUserRaw);
 					//console.log("isUserAnonymous", isUserAnonymous)
 					if (isUserAnonymous) { // if we are anonymous, we can set the user to the cached user
-						console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are anonymous')
+						//console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are anonymous')
 						setCurrentUser(usedCachedUserRaw?.data);
 					} else { // if we are not anonymous, we are logged out (not authenticated) so we can set the user to null
-						console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are not anonymous')
+						//console.log('RootAuthUserFlowLoader useEffect server is online, but we have no refresh token and we are not anonymous')
 						setCurrentUser(null);
 					}
 				}
@@ -97,7 +98,7 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	}, []);
 
 	if (!currentUserRaw) {
-		console.log('AuthFlowUserCheck useEffect currentUserRaw is null')
+		//console.log('AuthFlowUserCheck useEffect currentUserRaw is null')
 		return(
 			<LoadingScreen>
 				<Text>{'Authenthication flow waiting'}</Text>
@@ -105,14 +106,16 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 		)
 	}
 
-	console.log('AuthFlowUserCheck currentUserRaw: ', currentUserRaw)
+	//console.log('AuthFlowUserCheck currentUserRaw: ', currentUserRaw)
 
 	return (
 		<RootSyncSettingsDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 			<RootSyncDatabaseDownload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 				<RootSyncDatabaseUpload syncForUserId={currentUser?.id} key={currentUser?.id+''}>
 					<RootNotificationDeepLink key={currentUser?.id+''}>
-						{props.children}
+						<RootOnAppFocus>
+							{props.children}
+						</RootOnAppFocus>
 					</RootNotificationDeepLink>
 				</RootSyncDatabaseUpload>
 			</RootSyncDatabaseDownload>

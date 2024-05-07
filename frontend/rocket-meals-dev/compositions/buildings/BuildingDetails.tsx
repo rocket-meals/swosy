@@ -44,7 +44,7 @@ function BuildingDetailsDescription({ building }: { building: Buildings }) {
 	return <DirectusTranslatedMarkdown field={'content'} translations={usedTranslations} />
 }
 
-function getBuildingLocation(building: Buildings) {
+export function getBuildingLocation(building: Buildings) {
 	const coordinates = building.coordinates;
 	if(!!coordinates){
 		const location = CoordinateHelper.getLocation(coordinates);

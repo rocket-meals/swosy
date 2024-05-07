@@ -33,7 +33,7 @@ export interface SettingsRowProps {
     shadeLevel?: number
 }
 
-const DEFAULT_PADDING = 12;
+export const SETTINGS_ROW_DEFAULT_PADDING = 12;
 export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const textColor = useTextContrastColor()
@@ -70,7 +70,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		return (
 			<>
 				<View style={{
-					padding: DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
+					padding: SETTINGS_ROW_DEFAULT_PADDING, width: '100%', justifyContent: 'center', alignItems: 'center'
 				}}>
 					<Text>{item.label}</Text>
 				</View>
@@ -173,7 +173,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		return (
 			<>
 				<ActionsheetItem
-					padding={props.padding || DEFAULT_PADDING}
+					padding={props.padding || SETTINGS_ROW_DEFAULT_PADDING}
 					disabled={!item.onSelect || props.disabled}
 					accessibilityLabel={item.accessibilityLabel}
 					sx={{

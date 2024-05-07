@@ -4,20 +4,28 @@ import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useCurrentUser} from '@/states/User';
 import {useIsDemo} from "@/states/SynchedDemo";
+import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {TABLE_NAME_BUILDINGS} from "@/states/SynchedBuildings";
 
+export const TABLE_NAME_FOODS_FEEDBACKS = 'foods_feedbacks';
+const cacheHelperDeepFields_food_feedbacks: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
+	{
+		field: '*',
+		limit: -1,
+		dependency_collections_or_enum:  MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS // no dependencies as we will query our own profile
+	},
+	{
+		field: 'labels.*',
+		limit: -1,
+		// FoodsFeedbacksFoodsFeedbacksLabels
+		dependency_collections_or_enum: MyCacheHelperDependencyEnum.DOWNLOAD_ALWAYS
+	},
+])
 export async function loadFoodFeedbacksRemoteByProfileId(id: string) {
-	const resourceRelations = ['labels']
-	const profileFields = resourceRelations.map(x => x+'.*').concat(['*']);
-
-	const deepFields: Record<string, { _limit: number }> = resourceRelations.reduce((acc, x) => {
-		acc[x] = { _limit: -1 };
-		return acc;
-	}, {} as Record<string, { _limit: number }>);
-
 	const usersProfileId: string = id;
-	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>('foods_feedbacks')
+	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS)
 	let query = {
-		fields: profileFields,
+		fields: cacheHelperDeepFields_food_feedbacks.getFields(),
 		filter: {
 			_and: [
 				{
@@ -27,13 +35,13 @@ export async function loadFoodFeedbacksRemoteByProfileId(id: string) {
 				}
 			]
 		},
-		deep: deepFields,
+		deep: cacheHelperDeepFields_food_feedbacks.getDeepFields(),
 	}
 	return await resourceCollectionHelper.readItems(query);
 }
 
 async function updateFoodFeedbackRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacks | undefined>, rating: number | null | undefined, comment: string | null | undefined, notify: boolean | null | undefined, foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) {
-	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>('foods_feedbacks')
+	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS)
 
 	let searchedFoodFeedback: FoodsFeedbacks | undefined = foodIdToFoodFeedbackDict[foodId];
 
@@ -119,17 +127,18 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 
 }
 
-export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, FoodsFeedbacks | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, FoodsFeedbacks | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacks | null | undefined>, timestamp?: (number | undefined)) => void, number | undefined, (nowInMs?: number) => Promise<void>] {
+export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, FoodsFeedbacks | null | undefined> | null | undefined, (callback: (currentValue: (Record<string, FoodsFeedbacks | null | undefined> | null | undefined)) => Record<string, FoodsFeedbacks | null | undefined>, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
+{
 	const [currentUser, setUserWithCache] = useCurrentUser();
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<FoodsFeedbacks | undefined>(PersistentStore.ownFoodFeedbacks);
 	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.lastUpdate;
+	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly || {};
 	if (demo) {
 		//usedResources = getDemoApartments()
 	}
 
-	async function updateFromServer(nowInMs?: number) {
+	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		console.log('updateFromServer: start',performance.now()/1000)
 		if (currentUser) {
 			const usersProfileId: string = currentUser.profile as unknown as string
@@ -139,27 +148,32 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, Foods
 				console.log("useSynchedOwnFoodIdToFoodFeedbacksDict: updateFromServer: loadFoodFeedbacksRemoteByProfileId: done: now setResourcesOnly ", performance.now()/1000)
 				setResourcesOnly((currentValue) => {
 					return resourceAsDict
-				}, nowInMs)
+				}, sync_cache_composed_key_local)
 			} else {
 				console.log('User without profile')
 				setResourcesOnly((currentValue) => {
 					return {}
-				}, nowInMs)
+				}, sync_cache_composed_key_local)
 			}
 		} else {
 			console.log('No user')
 			setResourcesOnly((currentValue) => {
 				return {}
-			}, nowInMs)
+			}, sync_cache_composed_key_local)
 		}
-
 	}
 
-	return [usedResources, setResourcesOnly, lastUpdate, updateFromServer]
+	const cacheHelperObj: MyCacheHelperType = {
+		sync_cache_composed_key_local: sync_cache_composed_key_local,
+		updateFromServer: updateFromServer,
+		dependencies: cacheHelperDeepFields_food_feedbacks.getDependencies()
+	}
+
+	return [usedResources, setResourcesOnly, cacheHelperObj]
 }
 
 export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>, (foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) => Promise<void>] {
-	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
+	const [foodFeedbacksDict, setFoodFeedbacksDict, cacheHelperObj] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	let usedResources = foodFeedbacksDict
 	const [currentUser, setUserWithCache] = useCurrentUser();
 	const usersProfileId: string = currentUser?.profile as unknown as string
@@ -168,22 +182,22 @@ export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | nu
 
 	const setOwnRating = async (rating: number | null | undefined) => {
 		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, rating, undefined, undefined, undefined)
-		await updateFromServer()
+		await cacheHelperObj.updateFromServer()
 	}
 
 	const setOwnComment = async (comment: string | null | undefined) => {
 		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, comment, undefined, undefined)
-		await updateFromServer()
+		await cacheHelperObj.updateFromServer()
 	}
 
 	const setOwnNotify = async (notify: boolean | null | undefined) => {
 		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, undefined, notify, undefined)
-		await updateFromServer()
+		await cacheHelperObj.updateFromServer()
 	}
 
 	const setOwnLabels = async (foodFeedbackLabelIds: FoodsFeedbacksFoodsFeedbacksLabels[] | null | undefined) => {
 		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, undefined, undefined, foodFeedbackLabelIds)
-		await updateFromServer()
+		await cacheHelperObj.updateFromServer()
 	}
 
 	return [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels]

@@ -38,17 +38,6 @@ export class CollectionHelper<CollectionScheme> {
 		return await this.client.request<CollectionScheme>(readSingleton(this.collection, query));
 	}
 
-	static getQueryWithRelatedFieldsAndTranslations(fields?: string[]) {
-		if (!fields) {
-			fields = [];
-		}
-		fields.push('*')
-		fields.push('translations.*');
-		return CollectionHelper.getQueryWithRelatedFields(fields);
-	}
-
-
-
 	async readItems(query?: any) {
 		return await this.client.request<CollectionScheme[]>(readItems(this.collection, query));
 	}

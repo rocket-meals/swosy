@@ -32,14 +32,15 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 
 	const demo = useIsDemo()
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
+	const nowInMsKey = nowInMs.toString();
 
 	const registeredItemsToLoad: any[] = [];
 
-	const [devices, setDevices, lastUpdateDevices, updateDeviceIfNotRegistered] = useSynchedDevices()
+	const [currentDevice, devices, setDevices, cacheHelperObjDevices] = useSynchedDevices()
 
-	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: number | undefined}} = {}
+	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: string | undefined}} = {}
 
-	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: number | undefined) {
+	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: string | undefined) {
 		registeredItemsToLoad.push(resource);
 		synchedResourcesToDownloadFirst[label] = {
 			data: resource,
@@ -51,7 +52,7 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
    * Needs to be called before the useEffect
    */
 	if (!isCurrentUserAnonymous) {
-		addSynchedResourceToDownloadFirst('devices', devices, lastUpdateDevices)
+		addSynchedResourceToDownloadFirst('devices', devices, cacheHelperObjDevices.sync_cache_composed_key_local)
 	}
 
 	function getDependencies(): DependencyList {
@@ -74,7 +75,7 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 			if (isServerOnline) { // if server is online, we can check if we are logged in
 				//console.log("server is online");
 				if (synchedResourceLastUpdate != null) {
-					isResourceSynched = !!synchedResource && !isNaN(synchedResourceLastUpdate) && synchedResourceLastUpdate === nowInMs
+					isResourceSynched = !!synchedResource && synchedResourceLastUpdate === nowInMsKey
 				} else {
 					isResourceSynched = false
 				}
@@ -88,26 +89,12 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 		return true
 	}
 
-	async function wait(ms: number) {
-		return new Promise(resolve => {
-			setTimeout(resolve, ms);
-		});
-	}
-
 	useEffect(() => {
 		(async () => {
 			//console.log("AuthFlowUserCheck useEffect")
 			//console.log("refreshToken", refreshToken)
 
-			if (isServerOnline) { // if server is online, we can check if we are logged in
-				if (!demo) {
-					await updateDeviceIfNotRegistered(nowInMs)
-				}
-			} else if (isServerCached) { // if server is offline, but we have cached data, we can check if we are logged in
-
-			} else { // if server is offline and we have no cached data, we can't check if we are logged in
-
-			}
+			await cacheHelperObjDevices.updateFromServer(nowInMsKey)
 		})();
 	}, []);
 

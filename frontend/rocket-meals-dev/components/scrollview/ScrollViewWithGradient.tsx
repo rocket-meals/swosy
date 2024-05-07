@@ -2,21 +2,22 @@ import React, {FunctionComponent} from 'react';
 import {ScrollViewProps} from 'react-native';
 import {ShowMoreGradient} from './ShowMoreGradient';
 import {ShowMoreGradientPlaceholder} from './ShowMoreGradientPlaceholder';
-import {View} from '@/components/Themed';
+import {View, Text} from '@/components/Themed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 
 interface AppState {
     hideGradient?: boolean
-    scrollViewProps?: ScrollViewProps
     gradientBackgroundColor?: string
     gradientHeight?: number
 }
-export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProps> = (props) => {
-	const horizontal: boolean | undefined | null = !!props?.scrollViewProps?.horizontal;
+export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProps> = ({children, gradientHeight, ...props}) => {
+	const horizontal: boolean | undefined | null = !!props?.horizontal;
 
-	const hideGradient = props.hideGradient;
-	const renderedGradient = hideGradient ? null : <ShowMoreGradient amountOfGradientSteps={20} gradientHeight={props?.gradientHeight} horizontal={horizontal} gradientBackgroundColor={props?.gradientBackgroundColor} />
-	const renderedPlaceholder = hideGradient ? null : <ShowMoreGradientPlaceholder gradientHeight={props?.gradientHeight} />
+	const noChildren = !children || children === null || (Array.isArray(children) && children.length === 0);
+	const hideGradient = props.hideGradient || noChildren
+
+	const renderedGradient = hideGradient ? null : <ShowMoreGradient amountOfGradientSteps={20} gradientHeight={gradientHeight} horizontal={horizontal} gradientBackgroundColor={props?.gradientBackgroundColor} />
+	const renderedPlaceholder = hideGradient ? null : <ShowMoreGradientPlaceholder gradientHeight={gradientHeight} />
 
 
 	const flexDirection: 'row' | 'column' | 'row-reverse' | 'column-reverse' | undefined = horizontal ? 'row' : 'column';
@@ -26,11 +27,12 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
 			<MyScrollView
 				overScrollMode={'always'}
 				style={props.style}
-				contentContainerStyle={{ width: '100%', alignItems: 'center'}}
+				horizontal={horizontal}
+				contentContainerStyle={{ width: '100%', alignItems: 'center', flexDirection: flexDirection}}
 				showsVerticalScrollIndicator={true}
-				{...props.scrollViewProps}
+				{...props}
 			>
-				{props.children}
+				{children}
 				{renderedPlaceholder}
 			</MyScrollView>
 			{renderedGradient}

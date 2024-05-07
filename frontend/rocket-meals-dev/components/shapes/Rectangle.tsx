@@ -16,10 +16,20 @@ export type MyCardForResourcesWithImageProps = {
 }
 
 const defaultAspectRatio = 1;
-interface RectangleProps {
-	onLayoutChange?: (layout: { width: number; height: number }) => void;
-	children?: ReactNode;
-	aspectRatio?: AspectRatio;
+
+export const useCharacterWithInPixel = (amount: number) => {
+	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
+	const width = textDimensions?.width || 0;
+	const widthByCharacters = amount * width;
+	return widthByCharacters;
+}
+
+export const useIconWithInPixel = (amount: number) => {
+	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
+	console.log("useIconWithInPixel textDimensions: ",iconDimensions);
+	const width = iconDimensions?.width || 0;
+	const widthTimesAmount = amount * width;
+	return widthTimesAmount;
 }
 
 interface RectanglePropsWithCharactersWide {
@@ -28,9 +38,7 @@ interface RectanglePropsWithCharactersWide {
 }
 export const RectangleWithLayoutCharactersWide: React.FC<RectanglePropsWithCharactersWide> = ({  amountOfCharactersWide, children }) => {
 	// Render amountOfCharactersWide characters wide which are invisible and not selectable and not focusable and not readable by screen readers
-	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
-	const width = textDimensions?.width || 0;
-	const widthByCharacters = amountOfCharactersWide * 10;
+	const widthByCharacters = useCharacterWithInPixel(amountOfCharactersWide);
 
 	return <View style={{
 		width: widthByCharacters,

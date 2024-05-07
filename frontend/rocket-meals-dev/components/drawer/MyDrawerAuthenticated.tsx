@@ -36,10 +36,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_buildings = useTranslation(TranslationKeys.buildings);
 	const translation_housing = useTranslation(TranslationKeys.housing);
 	const translation_news = useTranslation(TranslationKeys.news);
+	const translation_map = useTranslation(TranslationKeys.map);
 	const translation_course_timetable = useTranslation(TranslationKeys.course_timetable);
 	const translation_food_details = useTranslation(TranslationKeys.food_details);
 	const translation_data_access = useTranslation(TranslationKeys.dataAccess);
 	const translation_price_group = useTranslation(TranslationKeys.price_group)
+	const translation_eating_habits = useTranslation(TranslationKeys.eating_habits)
+	const translation_notification = useTranslation(TranslationKeys.notification)
 	const translation_delete_account = useTranslationAccountDelete();
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
@@ -81,6 +84,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.foodoffers_icon,
 				header: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'map/index',
+				label: translation_map,
+				title: translation_map,
+				icon: IconNames.map_icon,
+				visibleInDrawer: develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'accountbalance/index',
@@ -149,7 +159,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foods/[food]/index',
+				routeName: 'foodoffers/[foodoffer]/index',
 				title: translation_food_details,
 				label: translation_food_details,
 				showBackButton: true,
@@ -174,8 +184,16 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'settings/eatinghabits/index',
-				title: "Eating Habits",
-				label: "Eating Habits",
+				title: translation_eating_habits,
+				label: translation_eating_habits,
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/notifications/index',
+				title: translation_notification,
+				label: translation_notification,
 				showBackButton: true,
 				icon: null,
 				visibleInDrawer: false

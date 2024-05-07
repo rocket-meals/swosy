@@ -28,7 +28,8 @@ export type MyNewButtonProps = {
     borderRightRadius?: number,
     borderTopRadius?: number,
     borderBottomRadius?: number,
-    icon?: string,
+    icon?: string | null,
+	customIcon?: any
     centerItems?: boolean
 }
 export const MyButton = (props: MyNewButtonProps) => {
