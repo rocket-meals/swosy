@@ -1,38 +1,311 @@
+// Required dependencies
 const fetch = require('node-fetch');
 const { CookieJar } = require('cookiejar');
 const fs = require('fs');
 const FormData = require('form-data');
 const { execSync } = require('child_process');
 
-const url="http://localhost:8055"
-const email="admin@example.com"
-const password= "d1r3ctu5"
+/**
+ * Configuration for collections and modules
+ */
+const requiredModules = ["flow-manager", "schema-management-module", "generate-types"];
+const collectionsToSkip = ["2-wikis.json"];
 
-// login with the user and save cookie
+// Load configuration
+const configPath = "./directus-sync.config.js";
+const syncConfig = require(configPath);
+const { 
+    directusUrl: url, 
+    directusEmail: email, 
+    directusPassword: password
+} = syncConfig;
+const configurationPath = "./configuration";
+const configurationPathRolesPermissions = `${configurationPath}/roles-permissions`;
+const configurationPathCollections = `${configurationPath}/collections`;
+
+// Directus API endpoints
+const urlPermissions = `${url}/permissions`;
+const urlItems = `${url}/items`;
+const urlSettings = `${url}/settings`;
+
+
+/**
+ * MAIN PUSH FUNCTION
+ */
+// Main function to handle the "push" command
+const mainPush = async () => {
+    console.log("Starting Push Sync")
+    const headers = await setupDirectusConnectionAndGetHeaders()
+    await enableRequiredSettings(headers);
+    await pushDirectusSyncSchemas();
+    await uploadPublicPermissions(headers);
+    await uploadSchemas(headers);
+};
+
+// Function to enable required settings
+const enableRequiredSettings = async (headers) => {
+    console.log("Enabling required settings...");
+
+    // Patch settings with an empty object
+    console.log(" -  Patching with empty");
+    await fetch(`${urlSettings}`, {
+        method: 'PATCH',
+        headers: {
+            "Cookie": headers.get('cookie'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module_bar: [] }),
+    });
+
+    // Fetch the current settings
+    console.log(" -  Fetching settings");
+    const settingsResponse = await fetch(`${urlSettings}`, {
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    });
+    const settings = await settingsResponse.json();
+    if (!settings) throw new Error("Failed to fetch settings!");
+
+    const modules = settings.data.module_bar;
+    if (!modules) throw new Error("Failed to fetch modules!");
+
+    // Enable required modules
+    for (const moduleIndex in modules) {
+        const module = modules[moduleIndex];
+        if (requiredModules.includes(module.id)) {
+            if (!module.enabled) {
+                console.log(` -  Enabling ${module.id}`);
+                modules[moduleIndex].enabled = true;
+            } else {
+                console.log(` -  ${module.id} already enabled`);
+            }
+        } else {
+            console.log(` -  ${module.id} not required`);
+        }
+    }
+
+    // Patch updated settings
+    const response = await fetch(`${urlSettings}`, {
+        method: 'PATCH',
+        headers: {
+            "Cookie": headers.get('cookie'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ module_bar: modules }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
+    }
+
+    console.log(" -  Enabled required settings");
+};
+
+
+const pushDirectusSyncSchemas = async () => {
+    console.log("Pushing schema changes to Directus...");
+    execSync('npx directus-sync push --config-path ' + configPath);
+}
+
+// Function to sync public permissions
+const uploadPublicPermissions = async (headers) => {
+    console.log("Syncing public permissions...");
+
+    // Load public permissions data
+    const data = fs.readFileSync(`${configurationPathRolesPermissions}/public.json`, 'utf8');
+    const permissions = JSON.parse(data);
+
+    // Helper function to update a permission node
+    const updatePermissionNode = async (permission) => {
+        const response = await fetch(`${urlPermissions}`, {
+            method: 'POST',
+            headers: {
+                "Cookie": headers.get('cookie'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                role: permission.role,
+                collection: permission.collection,
+                action: permission.action,
+                fields: permission.fields,
+                permissions: permission.permissions,
+                validation: permission.validation,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
+        }
+    };
+
+    // Iterate through all permissions and update each
+    for (const permission of permissions) {
+        console.log(` -  Syncing ${permission.collection} ${permission.action}`);
+        await updatePermissionNode(permission);
+    }
+
+    console.log(" -  Public permissions synced");
+};
+
+const uploadSchemas = async (headers) => {
+    console.log("Uploading schemas...");
+    let files = fs.readdirSync(`${configurationPathCollections}`).sort();
+    for (const file of files) {
+        await uploadSchema(headers, `${configurationPathCollections}/${file}`);
+    }
+}
+
+// Function to import a schema file into Directus
+const uploadSchema = async (headers, file) => {
+    const name = file.split('/').pop().split('.').shift();
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(file));
+    const displayName = name.split("-").pop();
+
+    // Check if collection already exists
+    const firstElement = await fetch(`${urlItems}/${displayName}?limit=1`, {
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    }).then(response => response.json());
+
+    if (firstElement.data.length > 0) {
+        console.log(` -  ${displayName} already exists`);
+        return;
+    }
+
+    // Import collection into Directus
+    console.log(` -  Importing ${displayName}`);
+    const response = await fetch(`${url}/utils/import/${displayName}`, {
+        method: 'POST',
+        headers: { "Cookie": headers.get('cookie'), ...formData.getHeaders() },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        console.error(` -  HTTP error! status: ${response.status} message: ${response.statusText} at ${file}`);
+    }
+};
+
+// Function to fetch data for a collection
+const getCollection = async (headers, name) => {
+    const displayName = name.split('/').pop().split('.').shift().split("-").pop();
+    console.log(` -  Fetching ${displayName}`);
+
+    // Retrieve collection data
+    const data = await fetch(`${urlItems}/${displayName}?limit=-1`, {
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    }).then(response => response.json());
+
+    return data.data;
+};
+
+
+/**
+ * MAIN PULL FUNCTION
+ */
+
+// Main function to handle the "pull" command
+const mainPull = async () => {
+    console.log("Waiting for Directus to be ready...");
+    const headers = await setupDirectusConnectionAndGetHeaders()
+    await saveCollections(headers);
+    await savePublicRole(headers);
+    await saveDirectusSyncSchema();
+};
+
+
+// Function to save collections
+const saveCollections = async (headers) => {
+    console.log("Saving collections...");
+    let collections = fs.readdirSync(`${configurationPathCollections}`);
+
+    for (const collection of collections) {
+        if (collectionsToSkip.includes(collection)) {
+            console.log(` -  Skipping ignored collection: ${collection}`);
+            continue;
+        }
+
+        const data = await getCollection(headers, collection);
+        const jsonData = JSON.stringify(data, null, 4);
+
+        // Save the collection data to file
+        fs.writeFileSync(`${configurationPathCollections}/${collection}`, jsonData);
+    }
+
+    console.log(" -  Saved collections");
+};
+
+// Function to save public role permissions
+const savePublicRole = async (headers) => {
+    console.log("Saving public role...");
+    const data = await fetch(`${urlPermissions}?filter%5Brole%5D%5B_null%5D=true`, {
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    }).then(response => response.json());
+
+    const jsonData = JSON.stringify(data.data, null, 4);
+
+    // Save the public role permissions to file
+    fs.writeFileSync(`${configurationPathRolesPermissions}/public.json`, jsonData);
+    console.log(" -  Saved public role");
+};
+
+
+
+
+const saveDirectusSyncSchema = async() => {
+    // Pull schema changes from Directus
+    console.log("Pulling schema changes from Directus...");
+    execSync('npx directus-sync pull --config-path ' + configPath);
+}
+
+
+const setupDirectusConnectionAndGetHeaders = async () => {
+    console.log("Setting up Directus connection...");
+    await waitForDirectusToBeReady();
+    return await login();
+}
+
+const waitForDirectusToBeReady = async () => {
+    console.log("Waiting for Directus to be ready...");
+    while (true) {
+        try {
+            await fetch(`${url}/server/ping`);
+            console.log("Directus is ready\n");
+            break;
+        } catch (e) {
+            const TIME_TO_WAIT = 1000;
+            console.log("Trying again in " + TIME_TO_WAIT + "ms");
+            await new Promise(resolve => setTimeout(resolve, TIME_TO_WAIT));
+        }
+    }
+}
+
+// Function to handle login and return headers with cookies
 const login = async () => {
-    console.log("Logging into directus...")
-    const cookiejar = new CookieJar();
+    console.log("Logging into Directus...");
+    const cookieJar = new CookieJar();
     const headers = new Headers();
     const origin = new URL(url).origin;
 
     const response = await fetch(`${url}/auth/login`, {
         method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password, mode: "session" })
-    })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, mode: "session" }),
+    });
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    // Save the cookies to the jar
     const cookies = response.headers.get('set-cookie');
-    cookiejar.setCookie(cookies, origin);
+    cookieJar.setCookie(cookies, origin);
 
     headers.set(
         'cookie',
-        cookiejar
+        cookieJar
             .getCookies({
                 domain: origin,
                 path: '/',
@@ -43,316 +316,15 @@ const login = async () => {
     );
 
     return headers;
-}
+};
 
-const enable_required_settings = async (headers) => {
-    console.log("Enabling required settings...")
-    console.log(" -  patch with empty")
-    await fetch(`${url}/settings`, {
-        method: 'PATCH',
-        headers: {
-            "Cookie": headers.get('cookie'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ module_bar: [] })
-    })
-
-    console.log(" -  fetching settings")
-    const settings = await fetch(`${url}/settings`, {
-        method: 'GET',
-        headers: {
-            "Cookie": headers.get('cookie')
-        },
-    }).then(response => response.json());
-
-    if (!settings) {
-        throw new Error("Failed to fetch settings!");
-    }
-
-    const modules = settings.data.module_bar;
-
-    if (!modules) {
-        throw new Error("Failed to fetch modules!");
-    }
-
-    const required_modules = [
-        "flow-manager",
-        "schema-management-module",
-        "generate-types"
-    ];
-
-    for (const moduleIndex in modules) {
-        const module = modules[moduleIndex];
-        if (required_modules.includes(module.id)) {
-            if (!module.enabled) {
-                console.log(` -      enabling ${module.id}`);
-                modules[moduleIndex].enabled = true;
-            } else {
-                console.log(` -      ${module.id} already enabled`);
-            }
-        } else {
-            console.log(` -      ${module.id} not required`);
-        }
-    }
-
-    //patch settings
-    const response = await fetch(`${url}/settings`, {
-        method: 'PATCH',
-        headers: {
-            "Cookie": headers.get('cookie'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            module_bar: modules
-        })
-    })
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
-    }
-
-    console.log(" -  enabled required settings");
-}
-
-const importSchema = async (headers, file) => {
-    // get filename without extension and path
-    const name = file.split('/').pop().split('.').shift();
-
-    const formData = new FormData();
-    formData.append('file', fs.createReadStream(file));
-
-    const displayName = name.split("-").pop();
-
-    //get first element to check which key to use
-    const firstElement = await fetch(`${url}/items/${displayName}?limit=1`, {
-        method: 'GET',
-        headers: {
-            "Cookie": headers.get('cookie')
-        },
-    }).then(response => response.json());
-
-    if (firstElement.data.length > 0) {
-        console.log(` -  ${displayName} already exists`);
-        return;
-    }
-
-    console.log(` -  importing ${displayName}`);
-    const response = await fetch(`${url}/utils/import/${displayName}`, {
-        method: 'POST',
-        headers: {
-            "Cookie": headers.get('cookie'),
-            ...formData.getHeaders(),
-        },
-        body: formData,
-    })
-
-    if (!response.ok) {
-        console.error(` -  http error! status: ${response.status} message: ${response.statusText} at ${file}`);
-    }
-}
-
-const sync_roles_and_permissions = async (headers) => {
-    console.log("Syncing roles and permissions...")
-    //open file roles-permissions/data.json
-    const data = fs.readFileSync('./configuration/roles-permissions/data.json', 'utf8');
-    const jsonData = JSON.parse(data);
-    const roles = jsonData.roles;
-
-    //post roles array to http://localhost:8055/roles
-    console.log(" -  syncing roles")
-    const roleResponse = await fetch(`${url}/roles`, {
-        method: 'POST',
-        headers: {
-            "Cookie": headers.get('cookie'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(roles)
-    })
-
-    if (!roleResponse.ok) {
-        throw new Error(`HTTP error! status: ${roleResponse.status} message: ${roleResponse.statusText}`);
-    }
-
-    const permissions = jsonData.permissions;
-
-    //post permissions array to http://localhost:8055/permissions
-    console.log(" -  syncing permissions")
-    const permissionResponse = await fetch(`${url}/permissions`, {
-        method: 'POST',
-        headers: {
-            "Cookie": headers.get('cookie'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(permissions)
-    })
-
-    if (!permissionResponse.ok) {
-        throw new Error(`HTTP error! status: ${permissionResponse.status} message: ${permissionResponse.statusText}`);
-    }
-
-    console.log(" -  roles and permissions synced");
-}
-
-const sync_public_permissions = async (headers) => {
-    console.log("Syncing public permissions...")
-    //open file roles-permissions/data.json
-    const data = fs.readFileSync('./configuration/roles-permissions/public.json', 'utf8');
-    const permissions = JSON.parse(data);
-
-    const update_permission_node = async (permission) => {
-        const response = await fetch(`${url}/permissions`, {
-            method: 'POST',
-            headers: {
-                "Cookie": headers.get('cookie'),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                role: permission.role,
-                collection: permission.collection,
-                action: permission.action,
-                fields: permission.fields,
-                permissions: permission.permissions,
-                validation: permission.validation
-            })
-        })
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
-        }
-    }
-
-    for (const permission of permissions) {
-        console.log(` -  syncing ${permission.collection} ${permission.action}`);
-        await update_permission_node(permission);
-    }
-
-    console.log(" -  public permissions synced");
-}
-
-const main = async () => {
-    //wait until directus is ready
-    console.log("Waiting for Directus to be ready...")
-    while (true) {
-        try {
-            await fetch(`${url}/server/ping`);
-            console.log("Directus is ready\n")
-            break;
-        } catch (e) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-    }
-
-    console.log("Starting import")
-    const headers = await login();
-
-    // Enable required settings
-    await enable_required_settings(headers);
-
-    // Execute "npx directus-sync push" and log its output
-    console.log("Pushing schema changes to Directus...")
-    execSync('npx directus-sync push');
-
-    // Sync roles and permissions
-    //await sync_roles_and_permissions(headers);
-    await sync_public_permissions(headers);
-
-    //read all files in the folder
-    console.log("Importing collections...")
-    let files = fs.readdirSync('./configuration/collections');
-
-    //sort files alphabetically
-    files = files.sort();
-
-    for (const file of files) {
-        await importSchema(headers, `./configuration/collections/${file}`);
-    }
-}
-
-const get_collection = async (headers, name) => {
-    const displayName = name.split('/').pop().split('.').shift().split("-").pop();
-
-    //get first element to check which key to use
-    console.log(` -  fetching ${displayName}`)
-    const data = await fetch(`${url}/items/${displayName}?limit=-1`, {
-        method: 'GET',
-        headers: {
-            "Cookie": headers.get('cookie')
-        },
-    }).then(response => response.json());
-
-    return data.data;
-}
-
-const save_collections = async (headers) => {
-    //get all collections that are in the folder
-    console.log("Saving collections...")
-    let collections = fs.readdirSync('./configuration/collections');
-
-    for (const collection of collections) {
-        if (collection === "2-wikis.json") {
-            continue;
-        }
-
-        const data = await get_collection(headers, collection);
-        const jsonData = JSON.stringify(data, null, 4);
-
-        fs.writeFileSync(`./configuration/collections/${collection}`, jsonData);
-    }
-
-    console.log(" -  saved collections");
-}
-
-const save_public_role = async (headers) => {
-    console.log("Saving public role...")
-    const data = await fetch(`${url}/permissions?filter%5Brole%5D%5B_null%5D=true`, {
-        method: 'GET',
-        headers: {
-            "Cookie": headers.get('cookie')
-        },
-    }).then(response => response.json());
-
-    const jsonData = JSON.stringify(data.data, null, 4);
-
-    fs.writeFileSync('./configuration/roles-permissions/public.json', jsonData);
-    console.log(" -  saved public role");
-}
-
-const main2 = async () => {
-    //wait until directus is ready
-    console.log("Waiting for Directus to be ready...")
-    while (true) {
-        try {
-            await fetch(`${url}/server/ping`);
-            console.log("Directus is ready\n")
-            break;
-        } catch (e) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-    }
-
-    console.log("Starting export")
-    const headers = await login();
-
-    // Saving collections
-    await save_collections(headers);
-
-    // Saving public role
-    await save_public_role(headers);
-
-    // Execute "npx directus-sync push" and log its output
-    console.log("Pulling schema changes from Directus...")
-    execSync('npx directus-sync pull');
-}
-
-//Check arguments, if import is passed, run importSchema
+// Command-line argument processing
 if (process.argv[2] === "push") {
-    main()
+    mainPush()
         .then(() => process.exit(0))
-        .catch(console.error)
-}
-
-if (process.argv[2] === "pull") {
-    main2()
+        .catch(console.error);
+} else if (process.argv[2] === "pull") {
+    mainPull()
         .then(() => process.exit(0))
-        .catch(console.error)
+        .catch(console.error);
 }
