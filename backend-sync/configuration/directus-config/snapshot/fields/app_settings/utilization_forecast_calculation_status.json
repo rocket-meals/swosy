@@ -1,0 +1,61 @@
+{
+  "collection": "app_settings",
+  "field": "utilization_forecast_calculation_status",
+  "type": "string",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "utilization_forecast_calculation_status",
+    "group": "utilization_settings",
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": null,
+    "options": {
+      "choices": [
+        {
+          "text": "start",
+          "value": "start"
+        },
+        {
+          "text": "finished",
+          "value": "finished"
+        },
+        {
+          "text": "running",
+          "value": "running"
+        },
+        {
+          "text": "failed",
+          "value": "failed"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 3,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "utilization_forecast_calculation_status",
+    "table": "app_settings",
+    "data_type": "varchar",
+    "default_value": null,
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "backup_location_folder_id",
+  "type": "uuid",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "backup_location_folder_id",
+    "group": "backup_location_type_file_library",
+    "hidden": false,
+    "interface": "input",
+    "note": "Optional: ID of the folder (otherwise we will create it)",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 1,
+    "special": [
+      "file"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  },
+  "schema": {
+    "name": "backup_location_folder_id",
+    "table": "auto_backup_settings",
+    "data_type": "char",
+    "default_value": null,
+    "max_length": 36,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

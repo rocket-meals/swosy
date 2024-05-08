@@ -44,6 +44,8 @@ services:
       - directus
       - custom_network
       - topDomainProxy
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     environment:
       INSTANCE_ID: "master"
       LETSENCRYPT_HOST: ${MYHOST}

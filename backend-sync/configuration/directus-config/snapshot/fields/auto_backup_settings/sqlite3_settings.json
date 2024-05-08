@@ -1,0 +1,46 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "sqlite3_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": [
+      {
+        "rule": {
+          "_and": [
+            {
+              "DB_CLIENT": {
+                "_neq": "sqlite3"
+              }
+            }
+          ]
+        },
+        "readonly": false,
+        "hidden": true,
+        "required": false,
+        "options": {},
+        "name": "Visibility"
+      }
+    ],
+    "display": null,
+    "display_options": null,
+    "field": "sqlite3_settings",
+    "group": "driver_specific_settings",
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 7,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "collection": "auto_backup_settings",
+  "field": "general_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_backup_settings",
+    "conditions": [
+      {
+        "name": "Open",
+        "rule": {
+          "_and": [
+            {
+              "active": {
+                "_neq": true
+              }
+            }
+          ]
+        },
+        "options": {
+          "start": "open"
+        }
+      }
+    ],
+    "display": null,
+    "display_options": null,
+    "field": "general_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 6,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

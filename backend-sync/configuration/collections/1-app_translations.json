@@ -1,0 +1,1442 @@
+[
+    {
+        "id": "about_us",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.336Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "accessibility",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.372Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "account",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.388Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "active",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.416Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "allergene",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.435Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "animation",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.456Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "anonymous",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.478Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "apartments",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.502Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "are_you_sure_to_delete_your_account",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.525Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "buildings",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.548Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "businesshours",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.568Z",
+        "user_updated": null,
+        "date_updated": "2024-03-23T20:46:58.735Z",
+        "translations": []
+    },
+    {
+        "id": "button_disabled",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.588Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.610Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cancel",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.628Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "canteen",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.645Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "canteens",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.661Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "closed_after",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.680Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "color",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.696Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "color_scheme",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.713Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "color_scheme_dark",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.727Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "color_scheme_light",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.743Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "color_scheme_system",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.760Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "confirm",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.781Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "confirm_password",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.802Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "continue",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.819Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "continue_as_anonymous",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.841Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.860Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_about",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.881Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_button_accept_all",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.899Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_button_allow_selected",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.916Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_button_deny_all",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.932Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_consent",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.949Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_consent_date",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.967Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:49.984Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details_expiry_persistent",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.001Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details_name",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.019Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details_provider",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.037Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details_purpose",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.056Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_details_type",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.077Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_group_necessary",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.095Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_policy_date_updated",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.112Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookie_policy_provider_we",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.129Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "cookies",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.146Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "courseTimetableDescriptionEmpty",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.164Z",
+        "user_updated": null,
+        "date_updated": "2024-03-05T23:00:16.048Z",
+        "translations": []
+    },
+    {
+        "id": "course_timetable",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.181Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "create",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.200Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "currently_logged_in_as",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.216Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "date",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.233Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "day",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.249Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "delete",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.264Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "distance",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.280Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "distance_based_canteen_selection_or_if_asked_on_real_location",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.298Z",
+        "user_updated": null,
+        "date_updated": "2024-03-24T09:51:09.752Z",
+        "translations": []
+    },
+    {
+        "id": "drawer_config_position",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.313Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "drawer_config_position_left",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.328Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "drawer_config_position_right",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.342Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "drawer_config_position_system",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.356Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "eating_habits",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.370Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "edit",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.384Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "email",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.402Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "endTime",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.422Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "event",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.436Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "first_day_of_week",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.450Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "first_day_of_week_system",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.464Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "food_details",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.478Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "food_feedbacks",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.496Z",
+        "user_updated": null,
+        "date_updated": "2024-03-10T22:27:38.518Z",
+        "translations": []
+    },
+    {
+        "id": "foods",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.510Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "for_example",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.526Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "forecast",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.542Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "forgot_password",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.557Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "free_rooms",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.571Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "hide",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.586Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "home",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.599Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "housing",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.614Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "if_you_want_to_login_with_this_account_please_press",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.628Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "import",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.643Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "inactive",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.658Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "is_currently_authenticated_remember_this_account",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.672Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "language",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.686Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "license",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.703Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "location",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.718Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "logout",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.734Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "logout_confirm_message",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.753Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "markings_disclaimer",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.770Z",
+        "user_updated": null,
+        "date_updated": "2024-03-09T21:56:41.440Z",
+        "translations": []
+    },
+    {
+        "id": "month",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.784Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "navigate_back",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.799Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "navigate_to",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.819Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "new",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.835Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "news",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.850Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "next",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.866Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nickname",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.879Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "noFeedbacksFound",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.893Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "no_data_currently_calculating",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.906Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "no_foodoffers_found_for_selection",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.920Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "not_allowed",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.934Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nothing_found",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.947Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "notification",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.962Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.977Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_calories",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:50.993Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_carbohydrates",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.007Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_disclaimer",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.021Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_fat",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.034Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_fiber",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.048Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_protein",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.066Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_saturated_fat",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.082Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_sodium",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.099Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "nutrition_sugar",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.115Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "open_drawer",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.131Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "opend_at",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.146Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "password",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.160Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "previous",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.174Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "price_group",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.188Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "price_group_employee",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.202Z",
+        "user_updated": null,
+        "date_updated": "2024-03-09T01:39:20.573Z",
+        "translations": []
+    },
+    {
+        "id": "price_group_guest",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.216Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "price_group_student",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.232Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "privacy_policy",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.248Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "profile",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.261Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "profile_and_settings",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.275Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "read_more",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.290Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "register",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.306Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "reset",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.322Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "save",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.339Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "seemsEmpty",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.352Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "select",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.366Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "selected",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.382Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "settings",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.399Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "show",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.421Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "show_login_with_username_and_password",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.468Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "sidebar_menu",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.486Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "sign_in",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.500Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "sign_in_with",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.514Z",
+        "user_updated": null,
+        "date_updated": "2024-03-05T23:08:30.055Z",
+        "translations": []
+    },
+    {
+        "id": "somethingWentWrong",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.527Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "startTime",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.540Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "switch",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.554Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "terms_and_conditions",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.571Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "title",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.584Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "today",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.597Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "tomorrow",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.611Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "under_construction",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.624Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "until",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.638Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "utilization",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.652Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "washing_machine",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.666Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "weekday",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.684Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "year",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.699Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    },
+    {
+        "id": "yesterday",
+        "status": "draft",
+        "sort": null,
+        "user_created": "596e2097-9ae8-4eaf-bec0-033d9a61a8e0",
+        "date_created": "2024-05-08T06:32:51.712Z",
+        "user_updated": null,
+        "date_updated": null,
+        "translations": []
+    }
+]

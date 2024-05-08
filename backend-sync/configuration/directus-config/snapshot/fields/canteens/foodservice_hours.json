@@ -1,0 +1,27 @@
+{
+  "collection": "canteens",
+  "field": "foodservice_hours",
+  "type": "alias",
+  "meta": {
+    "collection": "canteens",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "foodservice_hours",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 12,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

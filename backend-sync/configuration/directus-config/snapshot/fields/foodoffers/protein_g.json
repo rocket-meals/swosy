@@ -1,0 +1,42 @@
+{
+  "collection": "foodoffers",
+  "field": "protein_g",
+  "type": "float",
+  "meta": {
+    "collection": "foodoffers",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "protein_g",
+    "group": null,
+    "hidden": false,
+    "interface": "input",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 19,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  },
+  "schema": {
+    "name": "protein_g",
+    "table": "foodoffers",
+    "data_type": "float",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}
