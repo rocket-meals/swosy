@@ -56,7 +56,6 @@ type Query {
   revisions(filter: directus_revisions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_revisions!]!
   revisions_by_id(id: ID!, version: String): directus_revisions
   revisions_aggregated(groupBy: [String], filter: directus_revisions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_revisions_aggregated!]!
-  settings: directus_settings
   activity(filter: directus_activity_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_activity!]!
   activity_by_id(id: ID!, version: String): directus_activity
   activity_aggregated(groupBy: [String], filter: directus_activity_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_activity_aggregated!]!
@@ -66,6 +65,7 @@ type Query {
   users(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_users!]!
   users_by_id(id: ID!, version: String): directus_users
   users_aggregated(groupBy: [String], filter: directus_users_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_users_aggregated!]!
+  settings(version: String): directus_settings
 }
 
 type Mutation {
@@ -84,6 +84,8 @@ type Mutation {
   utils_revert(revision: ID!): Boolean
   utils_cache_clear: Void
   users_invite_accept(token: String!, password: String!): Boolean
+  users_register(email: String!, password: String!, first_name: String, last_name: String): Boolean
+  users_register_verify(token: String!): Boolean
   create_collections_item(data: create_directus_collections_input!): directus_collections
   update_collections_item(collection: String!, data: update_directus_collections_input!): directus_collections
   delete_collections_item(collection: String!): delete_collection
@@ -169,13 +171,13 @@ type Mutation {
   update_versions_items(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_versions_input!): [directus_versions!]!
   update_versions_batch(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_versions_input!]): [directus_versions!]!
   update_versions_item(id: ID!, data: update_directus_versions_input!): directus_versions
-  update_settings(data: update_directus_settings_input!): directus_settings
   update_webhooks_items(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_webhooks_input!): [directus_webhooks!]!
   update_webhooks_batch(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_webhooks_input!]): [directus_webhooks!]!
   update_webhooks_item(id: ID!, data: update_directus_webhooks_input!): directus_webhooks
   update_users_items(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_users_input!): [directus_users!]!
   update_users_batch(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_users_input!]): [directus_users!]!
   update_users_item(id: ID!, data: update_directus_users_input!): directus_users
+  update_settings(data: update_directus_settings_input!): directus_settings
   delete_folders_items(ids: [ID]!): delete_many
   delete_folders_item(id: ID!): delete_one
   delete_dashboards_items(ids: [ID]!): delete_many
@@ -223,7 +225,6 @@ type Subscription {
   directus_shares_mutated(event: EventEnum): directus_shares_mutated
   directus_versions_mutated(event: EventEnum): directus_versions_mutated
   directus_revisions_mutated(event: EventEnum): directus_revisions_mutated
-  directus_settings_mutated(event: EventEnum): directus_settings_mutated
   auto_backup_settings_mutated(event: EventEnum): auto_backup_settings_mutated
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
   languages_mutated(event: EventEnum): languages_mutated
@@ -276,6 +277,7 @@ type Subscription {
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
+  directus_settings_mutated(event: EventEnum): directus_settings_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -1733,6 +1735,17 @@ type directus_settings {
   report_error_url: String
   report_bug_url: String
   report_feature_url: String
+
+  """$t:fields.directus_settings.public_registration_note"""
+  public_registration: Boolean!
+
+  """$t:fields.directus_settings.public_registration_verify_email_note"""
+  public_registration_verify_email: Boolean
+  public_registration_role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
+
+  """$t:fields.directus_settings.public_registration_email_filter_note"""
+  public_registration_email_filter: JSON
+  public_registration_email_filter_func: count_functions
 }
 
 type directus_settings_mutated {
@@ -2497,6 +2510,8 @@ type server_info_project {
   public_background: String
   public_note: String
   custom_css: String
+  public_registration: Boolean
+  public_registration_verify_email: Boolean
 }
 
 type server_info_query_limit {
@@ -4805,6 +4820,16 @@ input update_directus_settings_input {
   report_error_url: String
   report_bug_url: String
   report_feature_url: String
+
+  """$t:fields.directus_settings.public_registration_note"""
+  public_registration: Boolean
+
+  """$t:fields.directus_settings.public_registration_verify_email_note"""
+  public_registration_verify_email: Boolean
+  public_registration_role: update_directus_roles_input
+
+  """$t:fields.directus_settings.public_registration_email_filter_note"""
+  public_registration_email_filter: JSON
 }
 
 input update_directus_shares_input {

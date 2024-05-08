@@ -109,6 +109,18 @@
   },
   {
     "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "buildings_businesshours",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "47cb10e5-f0a5-4cb1-ad52-264d5265371f"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
     "collection": "buildings_translations",
     "action": "read",
     "permissions": {},
@@ -142,6 +154,18 @@
       "*"
     ],
     "_syncId": "8d77ca6e-9c89-4b62-8d96-34a36adf526d"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "canteens_foodservicehours",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "3ab42aed-72dd-4e32-a562-aecdcce2d8a9"
   },
   {
     "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
@@ -624,6 +648,42 @@
   },
   {
     "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "f92911ca-2883-4f36-ba95-8da02a0397dc"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "foods_feedbacks_labels_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "87f65087-220e-4e25-a57f-b327e3d43cff"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "foods_feedbacks_labels",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "5d3b5d7f-fbe6-434c-907c-0433fcbd794d"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
     "collection": "foods_feedbacks_predefined_food_feedback_labels",
     "action": "read",
     "permissions": {},
@@ -777,6 +837,30 @@
       "*"
     ],
     "_syncId": "5e583bd5-e4d5-4790-882f-c8fe0a2deca4"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "popup_events_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "3a0c677e-8e2d-488d-8a53-184cc7c3466b"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "popup_events",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "33a1cf3b-e26e-4b56-85fc-0dd82019c77b"
   },
   {
     "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
@@ -996,6 +1080,18 @@
   },
   {
     "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
+    "collection": "washingmachines",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "37742836-a746-4806-a33a-218686a11eac"
+  },
+  {
+    "role": "06444317-ca88-478c-aaa4-7c7d2141a02a",
     "collection": "wikis_directus_roles",
     "action": "read",
     "permissions": {},
@@ -1029,125 +1125,5 @@
       "*"
     ],
     "_syncId": "acd51c6a-5437-4410-b039-4ca4f91981b1"
-  },
-  {
-    "role": null,
-    "collection": "app_feedbacks",
-    "action": "create",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "1ec9e3e5-85b2-4acc-bf8a-4c905ba55e63"
-  },
-  {
-    "role": null,
-    "collection": "chatrooms_profiles",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "f30751a2-b0ad-4f50-9e8f-a4ac03c58929"
-  },
-  {
-    "role": null,
-    "collection": "devices",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "14ff3e32-533a-40df-932b-015272024663"
-  },
-  {
-    "role": null,
-    "collection": "directus_folders",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "04d14770-ccf8-4f12-a361-07b409b8b817"
-  },
-  {
-    "role": null,
-    "collection": "directus_settings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "0fe2db83-1eac-4299-b4fa-a7891f41d3b0"
-  },
-  {
-    "role": null,
-    "collection": "eating_habit_templates_markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "1245471e-a7df-437f-876a-0c699ae45574"
-  },
-  {
-    "role": null,
-    "collection": "eating_habit_templates_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "3f1191bf-cd62-4371-b05b-3b4f97ed9624"
-  },
-  {
-    "role": null,
-    "collection": "eating_habit_templates",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "74ffd14b-994b-4772-b33e-a1d0ce009dde"
-  },
-  {
-    "role": null,
-    "collection": "foods_feedbacks_predefined_food_feedback_labels",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "4e677bef-d809-4cfb-a3ee-2bd22f375176"
-  },
-  {
-    "role": null,
-    "collection": "profiles_markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "a8ed7ccc-caaf-4e9c-bbcf-2715c41b3aa6"
   }
 ]

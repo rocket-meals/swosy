@@ -1,7 +1,7 @@
 type Query {
-  auto_backup_settings: auto_backup_settings
+  auto_backup_settings(version: String): auto_backup_settings
   auto_backup_settings_by_version(version: String!): version_auto_backup_settings
-  auto_translation_settings: auto_translation_settings
+  auto_translation_settings(version: String): auto_translation_settings
   auto_translation_settings_by_version(version: String!): version_auto_translation_settings
   languages(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [languages!]!
   languages_by_id(id: ID!, version: String): languages
@@ -87,7 +87,7 @@ type Query {
   canteen_food_feedback_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_recipients
   canteen_food_feedback_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_recipients_aggregated!]!
   canteen_food_feedback_report_recipients_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_recipients
-  app_settings: app_settings
+  app_settings(version: String): app_settings
   app_settings_by_version(version: String!): version_app_settings
   popup_events(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events!]!
   popup_events_by_id(id: ID!, version: String): popup_events
@@ -534,7 +534,6 @@ type Subscription {
   directus_shares_mutated(event: EventEnum): directus_shares_mutated
   directus_versions_mutated(event: EventEnum): directus_versions_mutated
   directus_revisions_mutated(event: EventEnum): directus_revisions_mutated
-  directus_settings_mutated(event: EventEnum): directus_settings_mutated
   auto_backup_settings_mutated(event: EventEnum): auto_backup_settings_mutated
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
   languages_mutated(event: EventEnum): languages_mutated
@@ -587,6 +586,7 @@ type Subscription {
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
+  directus_settings_mutated(event: EventEnum): directus_settings_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2112,6 +2112,17 @@ type directus_settings {
   report_error_url: String
   report_bug_url: String
   report_feature_url: String
+
+  """$t:fields.directus_settings.public_registration_note"""
+  public_registration: Boolean!
+
+  """$t:fields.directus_settings.public_registration_verify_email_note"""
+  public_registration_verify_email: Boolean
+  public_registration_role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
+
+  """$t:fields.directus_settings.public_registration_email_filter_note"""
+  public_registration_email_filter: JSON
+  public_registration_email_filter_func: count_functions
 }
 
 type directus_settings_mutated {
