@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
 import {router, useLocalSearchParams, useRouter} from 'expo-router';
-import {Button} from '@gluestack-ui/themed';
+import {MyButton} from "@/components/buttons/MyButton";
 
 export default function HomeScreen() {
 	const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
@@ -14,43 +14,27 @@ export default function HomeScreen() {
 			<Text>{'The issue occurs only on npm run deploy:local (and of course for github pages then).'}</Text>
 			<Text>{'When you visit the page via /test/params/setParamsIssue everything works fine'}</Text>
 			<Text>{'When you visit the page via /test/params/setParamsIssue?test=123 the url wont update correct but the printed params'}</Text>
-			<Button
+			<MyButton text={"Set test"}
 				onPress={() => {
 					router.setParams({test: '123'})
 				}}
-			>
-				<Text>
-					{'Set Test'}
-				</Text>
-			</Button>
-			<Button
+			/>
+			<MyButton text={"Clear params"}
 				onPress={() => {
 					router.setParams({test: undefined})
 				}}
-			>
-				<Text>
-					{'Clear Params'}
-				</Text>
-			</Button>
+					  />
 			<Text>{'routerFromUseRouter: '}</Text>
-			<Button
+			<MyButton text={"Set test"}
 				onPress={() => {
 					routerFromUseRouter.setParams({test: '123'})
 				}}
-			>
-				<Text>
-					{'Set Test'}
-				</Text>
-			</Button>
-			<Button
+			/>
+			<MyButton text={"Clear params"}
 				onPress={() => {
 					routerFromUseRouter.setParams({test: undefined})
 				}}
-			>
-				<Text>
-					{'Clear Params'}
-				</Text>
-			</Button>
+			/>
 			<Text>{'localSearchParams: '}</Text>
 			<Text>{JSON.stringify(localSearchParams, null, 2)}</Text>
 		</View>

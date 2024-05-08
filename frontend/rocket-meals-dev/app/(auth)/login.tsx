@@ -1,6 +1,5 @@
 import {router, useLocalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
-import {Divider} from '@gluestack-ui/themed';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, TextInput, View} from '@/components/Themed';
 import {AuthenticationData} from '@directus/sdk';
@@ -234,7 +233,7 @@ export default function Login() {
 					<ServerSsoAuthProviders />
 					{renderAnoynmousLoginOption()}
 					<View style={{height: 16}}></View>
-					<Divider />
+					<View style={{width: '100%', height: 1, backgroundColor: 'black'}}></View>
 					<View style={{height: 16}}></View>
 					{renderEmployeeLogin()}
 				</>

@@ -13,7 +13,6 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {AnimationSupport} from "@/compositions/animations/AnimationSupport";
 import {useCurrentUser} from "@/states/User";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
-import {Divider} from "@gluestack-ui/themed";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 
 

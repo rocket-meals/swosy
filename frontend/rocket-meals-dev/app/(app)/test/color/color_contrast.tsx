@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import {Text, View, useViewBackgroundColor} from '@/components/Themed';
-import { Divider} from '@gluestack-ui/themed';
 import {
 	getContrastRatio,
 	useLighterOrDarkerColorForSelection,
@@ -28,34 +27,26 @@ export default function HomeScreen() {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Color Information</Text>
-			<Divider />
 			<View style={{width: '100%', height: 20, backgroundColor: projectColor}}>
 				<Text style={{color: projectContrastColor}}>{'contrastRatioProjectContrastColor: '+contrastRatioProjectContrastColor}</Text>
 			</View>
 			<Text>{'viewBackgroundColor: '+viewBackgroundColor}</Text>
 			<View style={{width: 20, height: 20, backgroundColor: viewBackgroundColor}}></View>
-			<Divider />
 			<Text>{'myContrastColorBackground: '+myContrastColorBackground}</Text>
 			<View style={{width: 20, height: 20, backgroundColor: myContrastColorBackground}}></View>
-			<Divider />
 			<Text>{'darkerViewBackgroundColor: '+darkerViewBackgroundColor}</Text>
 			<View style={{width: 20, height: 20, backgroundColor: darkerViewBackgroundColor}}></View>
-			<Divider />
 			<Text>{'myContrastColorDarkerBackground: '+myContrastColorDarkerBackground}</Text>
 			<View style={{width: 20, height: 20, backgroundColor: myContrastColorDarkerBackground}}></View>
-			<Divider />
 			<View style={{width: '100%', height: 20, backgroundColor: viewBackgroundColor}}>
 				<Text style={{color: '#000000'}}>{'contrastRatioViewBackgroundColorBlack: '+contrastRatioViewBackgroundColorBlack}</Text>
 			</View>
-			<Divider />
 			<View style={{width: '100%', height: 20, backgroundColor: viewBackgroundColor}}>
 				<Text style={{color: '#FFFFFF'}}>{'contrastRatioViewBackgroundColorWhite: '+contrastRatioViewBackgroundColorWhite}</Text>
 			</View>
-			<Divider />
 			<View style={{width: '100%', height: 20, backgroundColor: darkerViewBackgroundColor}}>
 				<Text style={{color: '#000000'}}>{'contrastRatioDarkerViewBackgroundColorBlack: '+contrastRatioDarkerViewBackgroundColorBlack}</Text>
 			</View>
-			<Divider />
 			<View style={{width: '100%', height: 20, backgroundColor: darkerViewBackgroundColor}}>
 				<Text style={{color: '#FFFFFF'}}>{'contrastRatioDarkerViewBackgroundColorWhite: '+contrastRatioDarkerViewBackgroundColorWhite}</Text>
 			</View>

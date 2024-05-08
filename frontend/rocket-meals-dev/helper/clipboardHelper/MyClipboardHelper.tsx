@@ -1,4 +1,3 @@
-import {useToast} from "@gluestack-ui/themed";
 import { Clipboard } from 'react-native';
 import {useState} from "react";
 import {View, Text, useViewBackgroundColor} from "@/components/Themed";
@@ -24,7 +23,7 @@ function useClipboard() {
 
 export const useMyClipboard = () => {
     const clipboard = useClipboard();
-    const toast = useToast();
+    //const toast = useToast();
     const viewBackgroundColor = useViewBackgroundColor()
     const lighterOrDarkerBackgroundColor = useLighterOrDarkerColorForSelection(viewBackgroundColor)
     const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
@@ -32,6 +31,8 @@ export const useMyClipboard = () => {
 
     const copyText = async (text: string | undefined | null) => {
         await clipboard.onCopy(text || "");
+
+        /**
         toast.show({
             placement: "top",
             render: () => {
@@ -48,6 +49,7 @@ export const useMyClipboard = () => {
                 </View>
             }
         });
+            */
     }
     return {
         copyText

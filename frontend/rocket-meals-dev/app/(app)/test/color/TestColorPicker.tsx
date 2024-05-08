@@ -1,5 +1,4 @@
 import {Text, View} from '@/components/Themed';
-import {Divider} from '@gluestack-ui/themed';
 import {SimpleColorPicker} from "@/components/colorpicker/SimpleColorPicker";
 import React, {useState} from "react";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
@@ -12,7 +11,6 @@ export default function HomeScreen() {
 		<MySafeAreaView>
 			<View>
 				<Text>Selected color: {color}</Text>
-				<Divider/>
 				<View style={{
 					width: 100,
 					height: 100,

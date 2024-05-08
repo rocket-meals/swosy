@@ -3,8 +3,8 @@ import {useState} from 'react';
 import {Profiles} from '@/helper/database/databaseTypes/types';
 import {loadProfileRemoteByUser} from '@/states/SynchedProfile';
 import {Text, View} from '@/components/Themed';
-import {Button, Divider} from '@gluestack-ui/themed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
+import {MyButton} from "@/components/buttons/MyButton";
 
 export default function HomeScreen() {
 	const [currentUser, setUserWithCache] = useCurrentUser();
@@ -22,8 +22,7 @@ export default function HomeScreen() {
 				<Text>{'Profile Test'}</Text>
 				<Text>{'currentUser'}</Text>
 				<Text>{JSON.stringify(currentUser, null, 2)}</Text>
-				<Divider />
-				<Button onPress={loadProfile} ><Text>{'Load'}</Text></Button>
+				<MyButton text={"Load"} onPress={loadProfile} />
 				<Text>{'loadedProfile'}</Text>
 				<Text>{JSON.stringify(loadedProfile, null, 2)}</Text>
 			</View>

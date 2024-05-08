@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import {Text, TextInput, View} from '@/components/Themed';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {useState} from 'react';
-import {Button, Divider} from '@gluestack-ui/themed';
+import {MyButton} from "@/components/buttons/MyButton";
 
 export default function HomeScreen() {
 	// define state variables email and password
@@ -35,8 +35,7 @@ export default function HomeScreen() {
 				onChangeText={setPassword}
 				placeholder={'Password'}
 			/>
-			<Divider />
-			<Button onPress={() => {
+			<MyButton text={"Sign in"} onPress={() => {
 				ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
 					setResult(result);
 				}).catch((error) => {
@@ -44,10 +43,7 @@ export default function HomeScreen() {
 				})
 			}
 			}
-			>
-				<Text>{'Sign In'}</Text>
-			</Button>
-			<Divider />
+			/>
 			<Text>{'Result'}</Text>
 			<Text>{JSON.stringify(result, null, 2)}</Text>
 		</View>

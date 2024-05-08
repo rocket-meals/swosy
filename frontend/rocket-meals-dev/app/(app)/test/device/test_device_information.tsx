@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import { Divider} from '@gluestack-ui/themed';
 import {useInsets} from '@/helper/device/DeviceHelper';
 
 export default function HomeScreen() {
@@ -19,7 +18,6 @@ export default function HomeScreen() {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Device Information</Text>
-			<Divider />
 			<Text>{'insets'}</Text>
 			<Text>{JSON.stringify(insets, null, 2)}</Text>
 		</View>
