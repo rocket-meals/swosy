@@ -1,4 +1,4 @@
-FROM directus/directus:10.10.7
+FROM directus/directus:10.11.0
 
 
 # Switch to root user to install packages

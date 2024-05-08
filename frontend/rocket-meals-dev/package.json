@@ -21,7 +21,7 @@
   },
   "postinstall": "patch-package",
   "dependencies": {
-    "@directus/sdk": "^14.0.0",
+    "@directus/sdk": "^16.0.0",
     "@dotlottie/react-player": "^1.6.17",
     "@expo/vector-icons": "^14.0.0",
     "@gluestack-style/react": "^1.0.38",

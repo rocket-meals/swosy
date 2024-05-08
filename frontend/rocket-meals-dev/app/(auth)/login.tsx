@@ -99,7 +99,7 @@ export default function Login() {
 	async function handleFailedAuthentication(e: any) {
 		console.log('login.tsx authentication failed')
 		console.error(e)
-		//router.replace('/login'); // clear url params
+		router.replace('/home/');
 	}
 
 	async function handleLoginAsAnonymous () {
@@ -128,6 +128,7 @@ export default function Login() {
 					handleFailedAuthentication('No result')
 				}
 			}).catch((e) => {
+				console.log('login.tsx useEffect directus_token catch')
 				handleFailedAuthentication(e)
 			})
 		}
