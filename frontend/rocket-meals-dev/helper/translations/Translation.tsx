@@ -211,7 +211,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static yesterday = createTranslationKey('yesterday', 'Gestern');
 
 	static nutrition = createTranslationKey('nutrition', 'Nährwerte');
-	static nutrition_disclaimer = createTranslationKey('nutrition_disclaimer', 'Bei der Angabe von der Nährwerte handelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten.');
+
+	static nutrition_disclaimer = createTranslationKey('nutrition_disclaimer', 'Bei der Angabe von der Nährwerte handelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten. ');
 	static nutrition_calories = createTranslationKey('nutrition_calories', 'Kalorien');
 	static nutrition_protein = createTranslationKey('nutrition_protein', 'Protein');
 	static nutrition_fat = createTranslationKey('nutrition_fat', 'Fett');

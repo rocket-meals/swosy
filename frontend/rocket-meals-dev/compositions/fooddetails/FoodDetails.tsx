@@ -36,6 +36,7 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -506,6 +507,22 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 
 	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
 
+	const [appSettings] = useSynchedAppSettings();
+	// person responsible for the information
+	const responsible_person_name = appSettings?.responsible_person_name || "Baumgartner Software UG (haftungsbeschränkt)"
+	// email of the person responsible
+	const responsible_person_webpage = appSettings?.responsible_person_webpage || "https://baumgartner-software.de"
+
+	// # ISSUE: https://github.com/rocket-meals/rocket-meals/issues/143
+	// Guideline 1.4.1 - Safety - Physical Harm
+	// All apps with medical and health information should include links to sources for the information. This helps ensure that users are being provided accurate information.
+	const responsible_for_information_markdown_link = `[${responsible_person_name}](${responsible_person_webpage})`
+
+	let responsibleAdditionElement = null;
+	if(!!responsible_person_name && !!responsible_person_webpage){
+		responsibleAdditionElement = <ThemedMarkdown markdown={responsible_for_information_markdown_link} />
+	}
+
 	return(
 		<>
 			<View style={{ justifyContent: 'space-between' }}>
@@ -524,7 +541,8 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 				</View>
 			</View>
 			<View>
-				<Text italic={true}>{translation_disclaimer}</Text>
+				<ThemedMarkdown markdown={translation_disclaimer} />
+				{responsibleAdditionElement}
 			</View>
 		</>
 	)
