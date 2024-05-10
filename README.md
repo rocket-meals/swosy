@@ -15,3 +15,8 @@ Product home page: https://rocket-meals.de
 
 - Studentenwerk Osnabrück: #FFD500
 - Studentenwerk Hannover: #80BA27
+
+
+# Requirements
+
+- Node 18.18.0
