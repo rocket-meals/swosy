@@ -14,12 +14,12 @@
     "export:web": "expo export --platform web",
     "export:web:dev": "expo export --platform web",
     "test": "jest --watchAll",
-    "lint": "eslint . --ext .ts,.tsx --fix"
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo"
   },
-  "postinstall": "patch-package",
   "dependencies": {
     "@directus/sdk": "^16.0.0",
     "@dotlottie/react-player": "^1.6.17",

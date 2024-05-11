@@ -19,6 +19,7 @@ export const getDefaultIconAnchor = (x: number, y: number): PointTuple => {
 export default function MapScreen() {
 	let markers = []
 
+	const [loadError, setLoadError] = React.useState<string | null>(null);
 	const [assets, error] = useAssets([mapMarkerIcon]);
 	const [imageAsString, setImageAsString] = React.useState<string | null>(null);
 
@@ -36,23 +37,28 @@ export default function MapScreen() {
 	async function loadImage(){
 		const path = require(`@/assets/map/marker-icon-2x.png`);
 		const htmlFile: Asset = await Asset.fromModule(path);
-		if(PlatformHelper.isWeb()){
-			/// for web everything is easy to handle with the uri
-			setImageAsString(MyMapMarkerIcons.getIconForWebByUri(htmlFile.uri))
-			return;
-		} else {
-			// on mobile the webview cannot access the uri, so we need to download the file and convert it to base64
-			console.log("htmlFile: ", htmlFile)
-			// format into base64
-			await htmlFile.downloadAsync()
-			const base64 = await loadImageAsBase64(htmlFile.localUri);
-			console.log("base64: ", base64)
-			if(base64) {
-				//setImageAsString(htmlFile.localUri)
-				setImageAsString(base64)
+		try{
+			if(PlatformHelper.isWeb()){
+				/// for web everything is easy to handle with the uri
+				setImageAsString(MyMapMarkerIcons.getIconForWebByUri(htmlFile.uri))
+				return;
+			} else {
+				// on mobile the webview cannot access the uri, so we need to download the file and convert it to base64
+				console.log("htmlFile: ", htmlFile)
+				// format into base64
+				await htmlFile.downloadAsync()
+				const base64 = await loadImageAsBase64(htmlFile.localUri);
+				console.log("base64: ", base64)
+				if(base64) {
+					//setImageAsString(htmlFile.localUri)
+					setImageAsString(base64)
+				}
+				//setImageAsString(htmlFile.uri)
 			}
-			//setImageAsString(htmlFile.uri)
+		} catch (err){
+			setLoadError(err.message);
 		}
+
 	}
 
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -86,6 +92,14 @@ export default function MapScreen() {
 	useEffect(() => {
 		loadImage()
 	}, [])
+
+	if(loadError){
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text>Error: {loadError}</Text>
+			</View>
+		)
+	}
 
 	if(!imageAsString){
 		return (

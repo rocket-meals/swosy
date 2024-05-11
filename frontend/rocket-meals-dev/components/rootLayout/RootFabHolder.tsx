@@ -66,7 +66,6 @@ export const RootFabHolder = (props: RootFabHolderProps) => {
 	const developHelperComponents = []
 	if (isDevelopMode) {
 		developHelperComponents.push(<DevelopThemeSwitch />)
-		developHelperComponents.push(<HistoryFab />)
 	}
 
 	return (
