@@ -561,14 +561,6 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
 	const food = foodOfferData?.food;
 
-	//TODO: This is a temporary "fix" for the SWOSY project
-	if (server?.info?.project.project_name === "SWOSY" && food) {
-		//replace the url with the server url
-		// @ts-ignore
-		food.image_remote_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
-	}
-
-
 	if(foodOfferData && food && typeof food === 'object'){
 		return <FoodDetailsWithFoodOfferAndFood foodOfferData={foodOfferData} food={food}/>
 	}

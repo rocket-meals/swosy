@@ -325,12 +325,6 @@ export default function FoodOfferScreen() {
 		const unwantedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(foodOffer, profilesMarkingsDict);
 		const borderColor = unwantedEatingHabitsFound ? dislikeColor : undefined;
 
-	    //TODO: This is a temporary "fix" for the SWOSY project
-		if (projectName === "SWOSY") {
-			//replace the url with the server url
-			image_url = "https://swosy.sw-os.de:3001/api/meals/"+ food.id + "/photos";
-		}
-
 		const markingBadge = unwantedEatingHabitsFound ? <MarkingsDislikedWarningBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
 
 		const placeholderAssetId = appSettings?.foods_placeholder_image;
