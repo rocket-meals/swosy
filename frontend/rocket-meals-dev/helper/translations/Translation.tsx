@@ -44,8 +44,6 @@ export function useTranslations(keys: TranslationKey[]): string[] {
 }
 
 export class TranslationKeys {
-	static sidebar_menu = createTranslationKey('sidebar_menu', 'Menü');
-	static profile_and_settings = createTranslationKey('profile_and_settings', 'Profil und Einstellungen');
 	static profile = createTranslationKey('profile', 'Profil')
 	static nickname = createTranslationKey('nickname', 'Spitzname')
 	static account = createTranslationKey('account', 'Account')
@@ -225,7 +223,6 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static about_us = createTranslationKey('about_us', 'Über uns');
 	static license = createTranslationKey('license', 'Lizenz');
 	static accessibility = createTranslationKey('accessibility', 'Barrierefreiheit');
-	static terms_and_conditions = createTranslationKey('terms_and_conditions', 'Nutzungsbedingungen');
 	static cookie_policy = createTranslationKey('cookie_policy', 'Cookie-Richtlinie');
 	static privacy_policy = createTranslationKey('privacy_policy', 'Datenschutzerklärung');
 

@@ -19,20 +19,6 @@ export function useLogoutCallback(): () => void {
 	}
 }
 
-export function useLogoutCallbackWithoutStorageClear(): () => void {
-	const [currentUser, setCurrentUser] = useCurrentUser()
-	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
-
-	return async () => {
-		setAuthData((currentValue) => {
-			return null
-		});
-		setCurrentUser((currentValue) => {
-			return null
-		});
-	}
-}
-
 export function useAccessToken(): string | null | undefined {
 	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 	return authData?.access_token

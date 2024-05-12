@@ -1,17 +1,15 @@
 import React, {FunctionComponent} from 'react';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {BusinesshoursButton} from "@/compositions/businesshours/BusinesshoursButton";
-import {useSynchedCanteensFoodServicehoursDict, useSynchedCanteensDict} from "@/states/SynchedCanteens";
-import {Businesshours} from "@/helper/database/databaseTypes/types";
-import {useIsDemo} from "@/states/SynchedDemo";
-import {useSynchedBuildingsBusinesshours} from "@/states/SynchedBuildings";
+import {useSynchedCanteensFoodServicehoursDict} from "@/states/SynchedCanteens";
+import {Buildings, Businesshours} from "@/helper/database/databaseTypes/types";
+import {useSynchedBuildingsBusinesshours, useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 
 interface AppState {
 
 }
 export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [canteensDict, setCanteendDict] = useSynchedCanteensDict()
 	const canteensBusinesshours = useSynchedCanteensFoodServicehoursDict();
 	const buildingsBusinesshours = useSynchedBuildingsBusinesshours();
 

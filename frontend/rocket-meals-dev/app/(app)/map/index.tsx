@@ -10,6 +10,9 @@ import mapMarkerIcon from '@/assets/map/marker-icon-2x.png'
 import * as FileSystem from "expo-file-system";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import type {PointTuple} from "leaflet";
+import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
+import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 
 export const MARKER_DEFAULT_SIZE = 48
 export const getDefaultIconAnchor = (x: number, y: number): PointTuple => {
@@ -22,6 +25,11 @@ export default function MapScreen() {
 	const [loadError, setLoadError] = React.useState<string | null>(null);
 	const [assets, error] = useAssets([mapMarkerIcon]);
 	const [imageAsString, setImageAsString] = React.useState<string | null>(null);
+
+	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+	const [canteensDict, setCanteensDict] = useSynchedCanteensDict();
+	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict();
+	const [apartmentsDict, setApartmentsDict] = useSynchedApartmentsDict();
 
 	const loadImageAsBase64 = async (fileUri: string) => {
 		console.log("loadImageAsBase64: fileUri: ", fileUri)
@@ -52,6 +60,8 @@ export default function MapScreen() {
 				if(base64) {
 					//setImageAsString(htmlFile.localUri)
 					setImageAsString(base64)
+				} else {
+					setLoadError("Error loading image: base64 is null, fileUri: " + htmlFile.localUri);
 				}
 				//setImageAsString(htmlFile.uri)
 			}
@@ -61,7 +71,6 @@ export default function MapScreen() {
 
 	}
 
-	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 	if(buildingsDict && imageAsString){
 		let buildingIds = Object.keys(buildingsDict);
 		let buildings: Buildings[] = []
