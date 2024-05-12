@@ -56,7 +56,7 @@ export default function MapScreen() {
 				console.log("htmlFile: ", htmlFile)
 				// format into base64
 				await htmlFile.downloadAsync()
-				const base64 = await loadImageAsBase64(htmlFile.localUri);
+				const base64 = await loadImageAsBase64(htmlFile.uri);
 				console.log("base64: ", base64)
 				if(base64) {
 					//setImageAsString(htmlFile.localUri)
