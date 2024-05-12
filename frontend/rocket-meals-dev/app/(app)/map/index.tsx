@@ -36,8 +36,9 @@ export default function MapScreen() {
 		try {
 			const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
 			return `data:image/jpeg;base64,${base64}`;
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Error loading image:', error);
+			setLoadError("Error loading image: base64 is null, fileUri: " + error.message)
 			return null;
 		}
 	};
@@ -60,8 +61,6 @@ export default function MapScreen() {
 				if(base64) {
 					//setImageAsString(htmlFile.localUri)
 					setImageAsString(base64)
-				} else {
-					setLoadError("Error loading image: base64 is null, fileUri: " + htmlFile.localUri);
 				}
 				//setImageAsString(htmlFile.uri)
 			}
