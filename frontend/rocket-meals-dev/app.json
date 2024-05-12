@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Rocket Meals Demo",
-    "slug": "rocket-meals-dev",
+    "name": "Studi|Futter",
+    "slug": "rocket-meals-studi-futter",
     "version": "0.9.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
@@ -12,7 +12,7 @@
       "enabled": true,
       "url": "https://u.expo.dev/36f72583-5997-4602-8609-05f39444f2e7"
     },
-    "scheme": "app-rocket-meals",
+    "scheme": "app-studi-futter",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -67,7 +67,7 @@
         ]
       },
       "supportsTablet": true,
-      "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
+      "bundleIdentifier": "de.baumgartner-software.studi-futter",
       "buildNumber": "17"
     },
     "android": {
@@ -125,14 +125,14 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "baseUrl": "/rocket-meals"
+      "baseUrl": "/studi-futter"
     },
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "36f72583-5997-4602-8609-05f39444f2e7"
+        "projectId": "461671f9-774f-4bc4-80a8-5601313539b0"
       }
     },
     "owner": "baumgartner-software",
