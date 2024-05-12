@@ -8,7 +8,7 @@
     "display": null,
     "display_options": null,
     "field": "redirect_whitelist",
-    "group": "Whitelist_Settings",
+    "group": "whitelist_settings",
     "hidden": false,
     "interface": "select-multiple-dropdown",
     "note": null,

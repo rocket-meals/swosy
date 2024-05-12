@@ -11,7 +11,7 @@ import {
 	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled, useIsCourseTimetableEnabled,
 	useIsFoodsEnabled,
-	useIsHousingEnabled,
+	useIsHousingEnabled, useIsMapEnabled,
 	useIsNewsEnabled
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
@@ -24,6 +24,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();
+	const isMapEnabled = useIsMapEnabled();
 	const isBuildingsEnabled = useIsBuildingsEnabled();
 	const isNewsEnabled = useIsNewsEnabled();
 	const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
@@ -90,7 +91,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_map,
 				title: translation_map,
 				icon: IconNames.map_icon,
-				visibleInDrawer: develop
+				visibleInDrawer: isMapEnabled
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'accountbalance/index',

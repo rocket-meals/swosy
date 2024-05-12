@@ -87,8 +87,6 @@ type Query {
   canteen_food_feedback_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_recipients
   canteen_food_feedback_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_recipients_aggregated!]!
   canteen_food_feedback_report_recipients_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_recipients
-  app_settings(version: String): app_settings
-  app_settings_by_version(version: String!): version_app_settings
   popup_events(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events!]!
   popup_events_by_id(id: ID!, version: String): popup_events
   popup_events_aggregated(groupBy: [String], filter: popup_events_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [popup_events_aggregated!]!
@@ -189,6 +187,8 @@ type Query {
   wikis_translations_by_id(id: ID!, version: String): wikis_translations
   wikis_translations_aggregated(groupBy: [String], filter: wikis_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [wikis_translations_aggregated!]!
   wikis_translations_by_version(version: String!, id: ID!): version_wikis_translations
+  app_settings(version: String): app_settings
+  app_settings_by_version(version: String!): version_app_settings
 }
 
 type Mutation {
@@ -349,7 +349,6 @@ type Mutation {
   update_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_recipients_input!): [canteen_food_feedback_report_recipients!]!
   update_canteen_food_feedback_report_recipients_batch(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
   update_canteen_food_feedback_report_recipients_item(id: ID!, data: update_canteen_food_feedback_report_recipients_input!): canteen_food_feedback_report_recipients
-  update_app_settings(data: update_app_settings_input!): app_settings
   update_popup_events_items(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_popup_events_input!): [popup_events!]!
   update_popup_events_batch(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_popup_events_input!]): [popup_events!]!
   update_popup_events_item(id: ID!, data: update_popup_events_input!): popup_events
@@ -425,6 +424,7 @@ type Mutation {
   update_wikis_translations_items(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_wikis_translations_input!): [wikis_translations!]!
   update_wikis_translations_batch(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_wikis_translations_input!]): [wikis_translations!]!
   update_wikis_translations_item(id: ID!, data: update_wikis_translations_input!): wikis_translations
+  update_app_settings(data: update_app_settings_input!): app_settings
   delete_languages_items(ids: [ID]!): delete_many
   delete_languages_item(id: ID!): delete_one
   delete_news_translations_items(ids: [ID]!): delete_many
@@ -557,7 +557,6 @@ type Subscription {
   wikis_mutated(event: EventEnum): wikis_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
-  app_settings_mutated(event: EventEnum): app_settings_mutated
   popup_events_mutated(event: EventEnum): popup_events_mutated
   app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
@@ -587,6 +586,7 @@ type Subscription {
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
+  app_settings_mutated(event: EventEnum): app_settings_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -769,6 +769,13 @@ type app_settings {
   canteen_reports_enabled: Boolean
   redirect_whitelist: JSON
   redirect_whitelist_func: count_functions
+  map_enabled: Boolean
+
+  """Name of responsible organization"""
+  food_responsible_organization_name: String
+
+  """Link to responsible organization"""
+  food_responsible_organization_link: String
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
 }
@@ -3599,6 +3606,13 @@ type version_app_settings {
   """
   canteen_reports_enabled: Boolean
   redirect_whitelist: JSON
+  map_enabled: Boolean
+
+  """Name of responsible organization"""
+  food_responsible_organization_name: String
+
+  """Link to responsible organization"""
+  food_responsible_organization_link: String
   housing_translations: JSON
 }
 
@@ -4638,6 +4652,9 @@ input app_settings_filter {
   canteen_reports_enabled: boolean_filter_operators
   redirect_whitelist: string_filter_operators
   redirect_whitelist_func: count_function_filter_operators
+  map_enabled: boolean_filter_operators
+  food_responsible_organization_name: string_filter_operators
+  food_responsible_organization_link: string_filter_operators
   housing_translations: app_settings_housing_translations_filter
   housing_translations_func: count_function_filter_operators
   _and: [app_settings_filter]
@@ -5026,6 +5043,13 @@ input create_app_settings_input {
   """
   canteen_reports_enabled: Boolean
   redirect_whitelist: JSON
+  map_enabled: Boolean
+
+  """Name of responsible organization"""
+  food_responsible_organization_name: String
+
+  """Link to responsible organization"""
+  food_responsible_organization_link: String
   housing_translations: [create_app_settings_housing_translations_input]
 }
 
@@ -6503,6 +6527,13 @@ input update_app_settings_input {
   """
   canteen_reports_enabled: Boolean
   redirect_whitelist: JSON
+  map_enabled: Boolean
+
+  """Name of responsible organization"""
+  food_responsible_organization_name: String
+
+  """Link to responsible organization"""
+  food_responsible_organization_link: String
   housing_translations: [update_app_settings_housing_translations_input]
 }
 

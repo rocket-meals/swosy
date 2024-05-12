@@ -509,7 +509,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 
 	const [appSettings] = useSynchedAppSettings();
 	// person responsible for the information
-	const responsible_person_name = appSettings?.responsible_person_name || "Baumgartner Software UG (haftungsbeschränkt)"
+	const responsible_person_name = appSettings?.food_responsible_organization_name || "Baumgartner Software UG (haftungsbeschränkt)"
 	// email of the person responsible
 	const responsible_person_webpage = appSettings?.responsible_person_webpage || "https://baumgartner-software.de"
 

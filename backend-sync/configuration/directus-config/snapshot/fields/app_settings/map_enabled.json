@@ -1,31 +1,31 @@
 {
   "collection": "app_settings",
-  "field": "foods_ratings_average_display",
+  "field": "map_enabled",
   "type": "boolean",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_ratings_average_display",
-    "group": "foods_settings",
+    "field": "map_enabled",
+    "group": "map_settings",
     "hidden": false,
     "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 1,
     "special": [
       "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "foods_ratings_average_display",
+    "name": "map_enabled",
     "table": "app_settings",
     "data_type": "boolean",
     "default_value": true,

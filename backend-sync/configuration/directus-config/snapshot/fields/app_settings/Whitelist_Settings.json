@@ -1,24 +1,24 @@
 {
   "collection": "app_settings",
-  "field": "Whitelist_Settings",
+  "field": "whitelist_settings",
   "type": "alias",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "Whitelist_Settings",
+    "field": "whitelist_settings",
     "group": null,
     "hidden": false,
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "key",
+      "headerIcon": "vpn_key",
       "start": "closed"
     },
     "readonly": false,
     "required": false,
-    "sort": 20,
+    "sort": 21,
     "special": [
       "alias",
       "group",

@@ -1,24 +1,21 @@
 {
   "collection": "app_settings",
-  "field": "maintenance_settings",
+  "field": "food_responsible_settings",
   "type": "alias",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "maintenance_settings",
-    "group": null,
+    "field": "food_responsible_settings",
+    "group": "foods_settings",
     "hidden": false,
-    "interface": "group-detail",
-    "note": null,
-    "options": {
-      "headerIcon": "build",
-      "start": "closed"
-    },
+    "interface": "group-raw",
+    "note": "Who is responsible for the nutrition information?",
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 20,
+    "sort": 5,
     "special": [
       "alias",
       "group",

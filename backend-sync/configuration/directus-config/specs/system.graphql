@@ -248,7 +248,6 @@ type Subscription {
   wikis_mutated(event: EventEnum): wikis_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
-  app_settings_mutated(event: EventEnum): app_settings_mutated
   popup_events_mutated(event: EventEnum): popup_events_mutated
   app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
@@ -278,6 +277,7 @@ type Subscription {
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
+  app_settings_mutated(event: EventEnum): app_settings_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -441,6 +441,13 @@ type app_settings {
   canteen_reports_enabled: Boolean
   redirect_whitelist: JSON
   redirect_whitelist_func: count_functions
+  map_enabled: Boolean
+
+  """Name of responsible organization"""
+  food_responsible_organization_name: String
+
+  """Link to responsible organization"""
+  food_responsible_organization_link: String
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
 }
@@ -2755,6 +2762,9 @@ input app_settings_filter {
   canteen_reports_enabled: boolean_filter_operators
   redirect_whitelist: string_filter_operators
   redirect_whitelist_func: count_function_filter_operators
+  map_enabled: boolean_filter_operators
+  food_responsible_organization_name: string_filter_operators
+  food_responsible_organization_link: string_filter_operators
   housing_translations: app_settings_housing_translations_filter
   housing_translations_func: count_function_filter_operators
   _and: [app_settings_filter]

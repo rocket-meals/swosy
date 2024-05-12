@@ -53,6 +53,11 @@ export function useIsHousingEnabled(): boolean {
 	return appSettings?.housing_enabled || false;
 }
 
+export function useIsMapEnabled(): boolean {
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.map_enabled || false;
+}
+
 export function useIsBuildingsEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.buildings_enabled || false;
