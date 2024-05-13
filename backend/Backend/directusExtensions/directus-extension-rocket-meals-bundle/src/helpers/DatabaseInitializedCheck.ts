@@ -14,7 +14,16 @@ export class DatabaseInitializedCheck{
         let schema = await getSchema();
         let missingTables = [];
 
-        let tableNames = schema.tables.map((table: any) => table.name);
+        let collectionKeys = Object.keys(schema.collections);
+        let tableNamesDict: any = {};
+        for(let collectionKey of collectionKeys) {
+            let collection = schema.collections[collectionKey];
+            if(!!collection){
+                tableNamesDict[collection.collection] = collection.collection;
+            }
+        }
+
+        let tableNames = Object.keys(tableNamesDict);
         for (let table of tables) {
             if (!tableNames.includes(table)) {
                 missingTables.push(table);

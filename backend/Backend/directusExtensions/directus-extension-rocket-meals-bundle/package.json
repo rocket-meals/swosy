@@ -31,8 +31,8 @@
 			},
 			{
 				"type": "hook",
-				"name": "food-feedback-rating-cacluclate-hook",
-				"source": "src/food-feedback-rating-cacluclate-hook/index.ts"
+				"name": "food-feedback-rating-calculate-hook",
+				"source": "src/food-feedback-rating-calculate-hook/index.ts"
 			},
 			{
 				"type": "hook",

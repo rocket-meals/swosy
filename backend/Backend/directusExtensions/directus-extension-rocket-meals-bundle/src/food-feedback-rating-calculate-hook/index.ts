@@ -1,4 +1,4 @@
-import { defineHook } from '@directus/extensions-sdk';
+import {defineHook} from '@directus/extensions-sdk';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
