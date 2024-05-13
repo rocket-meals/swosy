@@ -46,8 +46,8 @@
 			},
 			{
 				"type": "hook",
-				"name": "food-parse-hook",
-				"source": "src/food-parse-hook/index.ts"
+				"name": "food-sync-hook",
+				"source": "src/food-sync-hook/index.ts"
 			},
 			{
 				"type": "hook",

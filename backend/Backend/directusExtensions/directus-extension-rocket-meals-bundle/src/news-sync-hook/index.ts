@@ -1,13 +1,13 @@
 import {NewsParseSchedule} from "./NewsParseSchedule"; // in directus we need to add the filetype ... otherwise we get an error
 import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser";
-import {StudentenwerkOsnabrueckNews_Parser} from "./StudentenwerkOsnabrueckNews_Parser";
-import {defineHook} from "@directus/extensions-sdk"; // in directus we need to add the filetype ... otherwise we get an error
-
+import {defineHook} from "@directus/extensions-sdk";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; // in directus we need to add the filetype ... otherwise we get an error
 
 
 const parseSchedule = new NewsParseSchedule(StudentenwerkHannoverNews_Parser);
 
-
+const SCHEDULE_NAME = "news_parse";
 /**
  *    *    *    *    *    *
  ┬    ┬    ┬    ┬    ┬    ┬
@@ -26,6 +26,11 @@ export default defineHook(async ({action}, {
     getSchema,
     logger
 }) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+    if (!allTablesExist) {
+        return;
+    }
+
        try {
             await parseSchedule.init(getSchema, services, database, logger);
         } catch (err: any) {
@@ -41,7 +46,7 @@ export default defineHook(async ({action}, {
             }
         }
 
-        let collection = "app_settings";
+        let collection = CollectionNames.APP_SETTINGS;
 
         action(
             collection + ".items.update",

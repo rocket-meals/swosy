@@ -1,13 +1,16 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {TimerHelper} from "../helpers/TimerHelper";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_CASHREGISTERS = "cashregisters";
-const TABLENAME_CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions";
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
+const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
 let SCHEDULE_NAME = "Cashregister"
 
 export class ParseSchedule {
+
+    static SCHEDULE_NAME = SCHEDULE_NAME;
 
     private parser: any;
     private finished: boolean;
@@ -16,7 +19,6 @@ export class ParseSchedule {
     private logger: any;
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
-    private itemService: any;
     private cashregisters_service: any;
     private cashregisters_transactions_service: any;
 
@@ -49,7 +51,7 @@ export class ParseSchedule {
             if (!!flows) {
                 return flows?.cashregisters_parsing_enabled;
             }
-        } catch (err) {
+        } catch (err: any) {
             console.log(err);
         }
         return undefined;

@@ -1,13 +1,14 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_FLOWHOOKS = "app_settings";
-const TABLENAME_CANTEENS = "canteens";
-const TABLENAME_UTILIZATION_GROUS = "utilizations_groups";
-const TABLENAME_UTILIZATION_ENTRIES = "utilizations_entries";
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
+const TABLENAME_CANTEENS = CollectionNames.CANTEENS
+const TABLENAME_UTILIZATION_GROUS = CollectionNames.UTILIZATION_GROUPS
+const TABLENAME_UTILIZATION_ENTRIES = CollectionNames.UTILIZATION_ENTRIES
 
-const TABLENAME_BUSINESSHOURS = "businesshours";
-const TABLENAME_CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions";
-const TABLENAME_CASHREGISTERS = "cashregisters";
+const TABLENAME_BUSINESSHOURS = CollectionNames.BUSINESSHOURS
+const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS;
+const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS;
 
 
 const SCHEDULE_NAME = "UtilizationSchedule";

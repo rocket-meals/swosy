@@ -1,26 +1,29 @@
+# This is a template for the .env file
+## This file was created by the setup.sh script
+
 RESTART=always
 
-# For Deployment
-#DOMAIN_PRE=https
-#MYHOST=nilsbaumgartner.de
-
-# For Development
+# Server settings
 DOMAIN_PRE=http
 MYHOST=127.0.0.1
-
 DOMAIN_PATH=rocket-meals
-
 BACKEND_PATH=api
 BACKEND_PORT=8055
 BACKEND_CACHING=false
+# This will result that the backend is reachable under http://127.0.0.1/rocket-meals/api
 
-EMAIL_VERIFY_SETUP=false
-EMAIL_SMTP_PASSWORD="<Password>"
-EMAIL_FROM="info@rocket-meals.de"
-EMAIL_TRANSPORT="smtp"
-EMAIL_SMTP_HOST="smtp.gmail.com"
-EMAIL_SMTP_PORT="465"
-EMAIL_SMTP_USER="nils@baumgartner-software.de"
+# Database settings
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="TheDefaultRocketMealsAdminPassword!$"
+
+
+#EMAIL_VERIFY_SETUP=false
+#EMAIL_SMTP_PASSWORD="<Password>"
+#EMAIL_FROM="info@rocket-meals.de"
+#EMAIL_TRANSPORT="smtp"
+#EMAIL_SMTP_HOST="smtp.gmail.com"
+#EMAIL_SMTP_PORT="465"
+#EMAIL_SMTP_USER="nils@baumgartner-software.de"
 
 DEFAULT_ROLE_ID="7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954"
 
@@ -32,3 +35,6 @@ DEFAULT_ROLE_ID="7cac5b7b-fd2a-4ea1-b0ef-cb84f3aa4954"
 
 #AUTH_GOOGLE_CLIENT_ID=
 #AUTH_GOOGLE_CLIENT_SECRET=
+
+#Proxy settings
+PROXY_MAIL_FOR_SSL_CERTIFICATE_RENEWAL="nils@baumgartner-software.de"

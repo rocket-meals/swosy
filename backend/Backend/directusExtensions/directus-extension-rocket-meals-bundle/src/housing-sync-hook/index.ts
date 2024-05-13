@@ -1,11 +1,13 @@
 import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule"; // in directus we need to add the filetype ... otherwise we get an error
 import {StudentenwerkHannoverApartments_Parser} from "./StudentenwerkHannoverApartments_Parser";
-import {defineHook} from "@directus/extensions-sdk"; // in directus we need to add the filetype ... otherwise we get an error
+import {defineHook} from "@directus/extensions-sdk";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; // in directus we need to add the filetype ... otherwise we get an error
 
 
 const parseSchedule = new ApartmentsParseSchedule(StudentenwerkHannoverApartments_Parser);
 
-
+const SCHEDULE_NAME = "housing_parse";
 export default defineHook(async ({action}, {
     services,
     database,
@@ -13,6 +15,11 @@ export default defineHook(async ({action}, {
     logger
 }) => {
     logger.info("housing-sync-hook: init");
+
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+    if (!allTablesExist) {
+        return;
+    }
 
     try {
         await parseSchedule.init(getSchema, services, database, logger);
@@ -29,7 +36,7 @@ export default defineHook(async ({action}, {
         }
     }
 
-    let collection = "app_settings";
+    let collection = CollectionNames.APP_SETTINGS
 
     /**
     console.log("DEBUG SCHEDULE")

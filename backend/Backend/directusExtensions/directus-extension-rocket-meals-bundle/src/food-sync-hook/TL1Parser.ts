@@ -3,8 +3,9 @@ import {CSVExportParser} from "./CSVExportParser"
 
 import fs from "fs";
 import path from "path"
+import {TL1ParserInterface} from "./ParserInterface";
 
-export class TL1Parser {
+export class TL1Parser implements TL1ParserInterface {
 
     static DEFAULT_CANTEEN_FIELD = "MENSA";
     static DEFAULT_DATE_FIELD = "DATUM";

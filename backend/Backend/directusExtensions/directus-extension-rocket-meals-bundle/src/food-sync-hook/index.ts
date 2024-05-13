@@ -1,6 +1,8 @@
 import {ParseSchedule} from "./ParseSchedule"; // in directus we need to add the filetype ... otherwise we get an error
 import {TL1Parser_Web_SWOSY} from "./TL1Parser_Web_SWOSY";
-import {defineHook} from "@directus/extensions-sdk"; // in directus we need to add the filetype ... otherwise we get an error
+import {defineHook} from "@directus/extensions-sdk";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; // in directus we need to add the filetype ... otherwise we get an error
 
 //const SWOSY_Osnabrueck_Web_Parser = require("./SWOSY_Osnabrueck_Web_Parser");
 //const StudiFutter_Web_Parser = require("./StudiFutter_Web_Parser");
@@ -8,6 +10,7 @@ import {defineHook} from "@directus/extensions-sdk"; // in directus we need to a
 const parser = TL1Parser_Web_SWOSY.getInstance();
 const parseSchedule = new ParseSchedule(parser);
 
+const SCHEDULE_NAME = "food_parse";
 
 export default defineHook(async ({action}, {
     services,
@@ -15,14 +18,18 @@ export default defineHook(async ({action}, {
     getSchema,
     logger
 }) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+    if (!allTablesExist) {
+        return;
+    }
 
-    let collection = "app_settings";
+    let collection = CollectionNames.APP_SETTINGS
 
     try {
         console.log("foodParseSchedule init");
         await parseSchedule.init(getSchema, services, database, logger);
         console.log("foodParseSchedule master init finished");
-    } catch (err) {
+    } catch (err: any) {
         let errMsg = err.toString();
         if (errMsg.includes("no such table: directus_collections")) {
             console.log("+++++++++ Meal Parse Schedule +++++++++");

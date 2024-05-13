@@ -29,10 +29,10 @@ services:
 
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
-    env_file: .env
+    env_file: ./../backendEnv
     environment:
     ### ToDo: Change to your e-mail address
-      - DEFAULT_EMAIL=${EMAIL}
+      - DEFAULT_EMAIL=${PROXY_MAIL_FOR_SSL_CERTIFICATE_RENEWAL}
       - NGINX_PROXY_CONTAINER=outer
     volumes_from:
       - outer

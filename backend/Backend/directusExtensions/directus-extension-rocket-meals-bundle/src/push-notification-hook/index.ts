@@ -1,13 +1,22 @@
 import { defineHook } from '@directus/extensions-sdk';
 import axios from "axios";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
-export default defineHook(({filter}, {
+const SCHEDULE_NAME = "push_notification";
+
+export default defineHook(async ({filter}, {
 	services,
 	database,
 	getSchema,
 }) => {
-	const collectionName = "push_notifications";
+	const collectionName = CollectionNames.PUSH_NOTIFICATIONS
+
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	if (!allTablesExist) {
+		return;
+	}
 
 	// Trigger before the item is created or updated
 	filter(collectionName+'.items.create', async (input, {collection}) => {

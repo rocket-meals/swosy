@@ -1,8 +1,17 @@
 import { defineHook } from '@directus/extensions-sdk';
 import {EventHelper} from '../helpers/EventHelper';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
-export default defineHook(({ filter}, {services}) => {
+const SCHEDULE_NAME = "profile_create";
+
+export default defineHook(async ({ filter}, {services, getSchema, database}) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	if (!allTablesExist) {
+		return;
+	}
+
 	filter(
 		EventHelper.USERS_LOGIN_EVENT,
 		//     async (input: any, actionContext: any) => { /** action */
@@ -11,13 +20,13 @@ export default defineHook(({ filter}, {services}) => {
 			const {database, schema} = actionContext;
 
 			let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-			let profiles_service = itemsServiceCreator.getItemsService("profiles");
-			let users_service = itemsServiceCreator.getItemsService("directus_users");
+			let profiles_service = itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
+			let users_service = itemsServiceCreator.getItemsService(CollectionNames.USERS);
 
 			//const currentProvider = input.provider; //get the current provider
 			//        let userId = input.user; // action
 			let userId = meta.user; // filter
-			const existingUsers = await database('directus_users').where({
+			const existingUsers = await database(CollectionNames.USERS).where({
 				id: userId,
 			});
 			const existingUser = existingUsers[0];

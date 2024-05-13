@@ -3,7 +3,7 @@ services:
 
   app:
     image: jwilder/whoami
-    env_file: .env
+    env_file: envTemplate
     restart: ${RESTART}
     environment:
       - LETSENCRYPT_HOST=${MYHOST}
@@ -23,7 +23,7 @@ services:
 #    container_name: directusWithCache${DOMAIN_PATH} # Cant use container name due to scaling
     build:
       context: ./
-    env_file: .env
+    env_file: ./../backendEnv # In order not to overwrite the env file when pulling from git
     expose:
       - ${BACKEND_PORT}
     restart: ${RESTART}
@@ -75,8 +75,8 @@ services:
       REDIS: "redis://cache:6379"
       CACHE_AUTO_PURGE: 'true'
 
-      ADMIN_EMAIL: 'admin@example.com'
-      ADMIN_PASSWORD: 'd1r3ctu5'
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
 
       #EMAIL_VERIFY_SETUP: "${EMAIL_VERIFY_SETUP}"
       #EMAIL_FROM: "${EMAIL_FROM}"

@@ -2,8 +2,9 @@ import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser"
 
 import axios from "axios"
+import {TL1ParserInterface} from "./ParserInterface";
 
-export class TL1Parser_Web {
+export class TL1Parser_Web implements TL1ParserInterface{
 
     static DEFAULT_CANTEEN_FIELD = "MENSA";
     static DEFAULT_DATE_FIELD = "DATUM";

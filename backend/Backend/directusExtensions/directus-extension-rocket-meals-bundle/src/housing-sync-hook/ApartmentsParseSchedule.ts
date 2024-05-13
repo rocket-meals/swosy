@@ -1,7 +1,8 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_APARTMENTS = "apartments";
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_APARTMENTS = CollectionNames.APARTMENTS;
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
 const SCHEDULE_NAME = "ApartmentsParseSchedule";
 

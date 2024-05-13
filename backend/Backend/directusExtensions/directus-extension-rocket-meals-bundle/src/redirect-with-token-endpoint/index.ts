@@ -1,7 +1,11 @@
 import {defineEndpoint} from '@directus/extensions-sdk';
 import ms from 'ms';
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
+
+const SCHEDULE_NAME = "redirect_with_token";
 
 // TO Test this Endpoint:
 // 1. Login with a user in the Directus Admin UI
@@ -16,7 +20,13 @@ export default defineEndpoint({
 		getSchema,
 		logger
 	}) => {
+
+
 		router.get('/', async (req, res) => {
+			let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+			if (!allTablesExist) {
+				return;
+			}
 			//console.log("#################################")
 			//console.log("Redirect with token endpoint: settings")
 			let redirectUrlIsValid = true;

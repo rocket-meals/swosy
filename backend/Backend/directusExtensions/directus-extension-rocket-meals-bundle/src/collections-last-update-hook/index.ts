@@ -1,18 +1,27 @@
-import { defineHook } from '@directus/extensions-sdk';
+import {defineHook} from '@directus/extensions-sdk';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+
+const SCHEDULE_NAME = "collections_dates_last_update";
 
 export default defineHook(async ({action}, {
 	services,
 	database,
 	getSchema
 }) => {
-	const excludeCollections = ["collections_dates_last_update"];
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	if (!allTablesExist) {
+		return;
+	}
+
+	const excludeCollections = [CollectionNames.COLLECTIONS_DATES_LAST_UPDATE];
 	// create a function which will be called after any update, create or delete of a collection, except the collection "collections_dates_last_update"
 	// this function will update the collection "collections_dates_last_update" with the current date for the collection which was updated, created or deleted
 
 	let schema = await getSchema();
 	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let collectionsDatesLastUpdateService = itemsServiceCreator.getItemsService("collections_dates_last_update");
+	let collectionsDatesLastUpdateService = itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
 
 	//console.log("collection-last-update-hook: register hook")
 

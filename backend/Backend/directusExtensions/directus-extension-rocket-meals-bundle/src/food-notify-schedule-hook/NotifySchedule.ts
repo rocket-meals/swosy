@@ -1,14 +1,11 @@
 import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
 
-const TABLENAME_MEALS = "foods";
-const TABLENAME_FOODS_FEEDBACKS = "foods_feedbacks";
-const TABLENAME_FOODOFFERS = "foodoffers";
-const TABLENAME_CANTEENS = "canteens";
-const TABLENAME_MARKINGS = "markings";
-const TABLENAME_MEALFOFFERS_MARKINGS = "foodoffers_markings"
-
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_MEALS = CollectionNames.FOODS
+const TABLENAME_FOODS_FEEDBACKS = CollectionNames.FOODS_FEEDBACKS
+const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
@@ -139,7 +136,7 @@ export class NotifySchedule {
 
     async notifyDeviceAboutFoodOffer(device, foodOffer, foodWithTranslations, language, aboutMealsInDays, date) {
         // Create a new push_notification entry in the database
-        let pushNotificationService = this.itemsServiceCreator.getItemsService("push_notifications");
+        let pushNotificationService = this.itemsServiceCreator.getItemsService(CollectionNames.PUSH_NOTIFICATIONS);
         let pushTokenObj = device.pushTokenObj;
         /**
          pushTokenObj = {
@@ -205,14 +202,14 @@ export class NotifySchedule {
                 //console.log("Failed to send notification");
                 //console.log("We better reset on the device the pushTokenObj to null");
                 // Reset the pushTokenObj to null
-                let devicesService = this.itemsServiceCreator.getItemsService("devices");
+                let devicesService = this.itemsServiceCreator.getItemsService(CollectionNames.DEVICES);
                 await devicesService.updateOne(device.id, {pushTokenObj: null});
             }
         }
     }
 
     async getAppTranslationText(translationKey, profileLanguage) {
-        let appTranslationsService = this.itemsServiceCreator.getItemsService("app_translations");
+        let appTranslationsService = this.itemsServiceCreator.getItemsService(CollectionNames.APP_TRANSLATIONS);
         try{
             let app_translation_item = await appTranslationsService.readOne(translationKey, {fields: ["*", "translations.*"]});
             let foundTranslation = this.getTranslation(app_translation_item?.translations, profileLanguage, "text");
