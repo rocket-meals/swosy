@@ -1,8 +1,16 @@
 import { defineHook } from '@directus/extensions-sdk';
 import {EventHelper} from "../helpers/EventHelper";
 import {AvatarHelper} from "../helpers/AvatarHelper";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
-export default defineHook(({ filter }, {services}) => {
+const SCHEDULE_NAME = "users_avatar_delete";
+
+export default defineHook(async({ filter }, {services, getSchema, database}) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	if (!allTablesExist) {
+		return;
+	}
+
 	filter(
 		EventHelper.USERS_DELETE_EVENT,
 		// @ts-ignore

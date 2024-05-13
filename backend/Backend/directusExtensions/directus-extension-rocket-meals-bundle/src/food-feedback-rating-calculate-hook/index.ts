@@ -1,16 +1,25 @@
 import { defineHook } from '@directus/extensions-sdk';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+
+const SCHEDULE_NAME = "food_feedback_rating_calculate";
 
 export default defineHook(async ({action}, {
 	services,
 	database,
 	getSchema
 }) => {
-	const collection = "foods_feedbacks"
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	if (!allTablesExist) {
+		return;
+	}
+
+	const collection = CollectionNames.FOODS_FEEDBACKS
 
 	let schema = await getSchema();
 	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let foodsService = itemsServiceCreator.getItemsService("foods");
+	let foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
 	let foodfeedbacksService = itemsServiceCreator.getItemsService(collection);
 
 

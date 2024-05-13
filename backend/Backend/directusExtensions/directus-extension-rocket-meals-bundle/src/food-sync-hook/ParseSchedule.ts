@@ -1,14 +1,15 @@
 import moment from "moment";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_MEALS = "foods";
-const TABLENAME_MEAL_MARKINGS = "foods_markings";
-const TABLENAME_FOODOFFERS = "foodoffers";
-const TABLENAME_CANTEENS = "canteens";
-const TABLENAME_MARKINGS = "markings";
-const TABLENAME_MEALFOFFERS_MARKINGS = "foodoffers_markings"
+const TABLENAME_MEALS = CollectionNames.FOODS;
+const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
+const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS;
+const TABLENAME_CANTEENS = CollectionNames.CANTEENS;
+const TABLENAME_MARKINGS = CollectionNames.MARKINGS;
+const TABLENAME_MEALFOFFERS_MARKINGS = CollectionNames.FOODOFFER_MARKINGS
 
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
 const SCHEDULE_NAME = "FoodParseSchedule";
 

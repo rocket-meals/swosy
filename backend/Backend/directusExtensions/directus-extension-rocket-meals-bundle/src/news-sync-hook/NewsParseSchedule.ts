@@ -1,7 +1,8 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_NEWS = "news";
-const TABLENAME_FLOWHOOKS = "app_settings";
+const TABLENAME_NEWS = CollectionNames.NEWS;
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
 const SCHEDULE_NAME = "NewsParseSchedule";
 

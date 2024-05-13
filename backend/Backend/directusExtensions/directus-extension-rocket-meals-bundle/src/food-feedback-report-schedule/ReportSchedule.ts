@@ -1,9 +1,10 @@
 import moment from "moment"
 import {ReportGenerator} from "./ReportGenerator";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_FLOWHOOKS = "app_settings";
-const TABLENAME_RECIPIENTS = "canteen_food_feedback_report_recipients";
+const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
+const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS
 
 
 const SCHEDULE_NAME = "CanteenFoodFeedbackReportSchedule";
@@ -111,7 +112,7 @@ export class ReportSchedule {
         }
 
         let to_recipient_user_id = recipientEntry?.to_recipient_user; // this is a DirectusUser object
-        let userService = this.itemsServiceCreator.getItemsService("directus_users");
+        let userService = this.itemsServiceCreator.getItemsService(CollectionNames.USERS);
         if(!!to_recipient_user_id){
             let to_recipient_user = await userService.readOne(to_recipient_user_id);
             let to_recipient_user_email = to_recipient_user?.email;
@@ -126,7 +127,7 @@ export class ReportSchedule {
 
     async getCanteenEntry(recipientEntry){
         let canteen_id = recipientEntry.canteen;
-        let canteenService = this.itemsServiceCreator.getItemsService("canteens")
+        let canteenService = this.itemsServiceCreator.getItemsService(CollectionNames.CANTEENS)
         let canteen = await canteenService.readOne(canteen_id);
         return canteen;
     }

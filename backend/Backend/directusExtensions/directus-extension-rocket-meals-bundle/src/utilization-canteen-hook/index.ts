@@ -1,15 +1,23 @@
 import {ParseSchedule} from "./ParseSchedule"
 import {defineHook} from "@directus/extensions-sdk";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const parseSchedule = new ParseSchedule();
 
+const SCHEDULE_NAME = "utilization_canteen";
 export default defineHook(async ({action}, {
     services,
     database,
     getSchema,
     logger
 }) => {
-    let collection = "app_settings";
+    let collection = CollectionNames.APP_SETTINGS
+
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+    if (!allTablesExist) {
+        return;
+    }
 
     try {
         console.log("foodParseSchedule init");

@@ -1,3 +1,5 @@
+import {CollectionNames} from "../helpers/CollectionNames";
+
 export class ReportGenerator {
     private itemServiceCreator: any;
 
@@ -44,7 +46,7 @@ export class ReportGenerator {
             foods: {}
         }
 
-        let foods_feedbacks_labels = await this.itemServiceCreator.getItemsService("foods_feedbacks_labels").readByQuery({fields: ['*'], limit: -1});
+        let foods_feedbacks_labels = await this.itemServiceCreator.getItemsService(CollectionNames.FOODS_FEEDBACK_LABELS).readByQuery({fields: ['*'], limit: -1});
         //console.log("Found amount of foods_feedbacks_labels: "+foods_feedbacks_labels.length)
         let foods_feedbacks_labels_dict = this.convertFeedbacksLabelsToDict(foods_feedbacks_labels);
 
@@ -144,7 +146,7 @@ export class ReportGenerator {
     }
 
     async getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days){
-        let itemService = this.itemServiceCreator.getItemsService("foods_feedbacks")
+        let itemService = this.itemServiceCreator.getItemsService(CollectionNames.FOODS_FEEDBACKS)
         let end = new Date();
         let start = new Date(end);
         // subtract report_feedback_period_days amount days from start
@@ -176,7 +178,7 @@ export class ReportGenerator {
         startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
         endOfTheDay.setHours(23,59,59,999); //set to end of day
 
-        let itemService = this.itemServiceCreator.getItemsService("foodoffers")
+        let itemService = this.itemServiceCreator.getItemsService(CollectionNames.FOODOFFERS)
         let foodOffers = await itemService.readByQuery({filter: {
                     _and: [
                         {
