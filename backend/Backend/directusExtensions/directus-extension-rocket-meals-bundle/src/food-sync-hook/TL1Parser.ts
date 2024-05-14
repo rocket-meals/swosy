@@ -1,10 +1,9 @@
 import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser"
 
-import fs from "fs";
-import path from "path"
 import {ParserInterface} from "./ParserInterface";
 import {TL1Parser_GetRawReportInterface} from "./TL1Parser_GetRawReportInterface";
+import {ParseSchedule} from "./ParseSchedule";
 
 export class TL1Parser implements ParserInterface {
 
@@ -13,9 +12,16 @@ export class TL1Parser implements ParserInterface {
     static DEFAULT_TEXT_FIELD = "TEXT";
     static DEFAULT_RECIPE_ID_FIELD = "REZEPTUR_ID";
     static DEFAULT_NUTRITIONS_FIELD = "NAEHRWERTEJEPORT";
-    static DEFAULT_PRICE_STUDENT_FIELD = "STD_PREIS";
-    static DEFAULT_PRICE_EMPLOYEE_FIELD = "BED_PREIS";
-    static DEFAULT_PRICE_GUEST_FIELD = "GÄSTE_PREIS";
+
+
+    static FIELD_PRICE_STUDENT_OSNABRUECK = "STD_PREIS";
+    static FIELD_PRICE_STUDENT_HANNOVER = "PREIS_STUDENT"; // Hannover TL1 specific
+
+    static FIELD_PRICE_EMPLOYEE_OSNABRUECK = "BED_PREIS";
+    static FIELD_PRICE_EMPLOYEE_HANNOVER = "PREIS_BEDIENSTETER"; // Hannover TL1 specific
+
+    static FIELD_PRICE_GUEST_OSNABRUECK = "GÄSTE_PREIS";
+    static FIELD_PRICE_GUEST_HANNOVER = "PREIS_GAST"; // Hannover TL1 specific
 
     static DEFAULT_MARKING_LABELS_FIELD = "ZSNUMMERN";
     static DEFAULT_MARKING_NAMES_FIELD = "ZSNAMEN";
@@ -114,7 +120,7 @@ export class TL1Parser implements ParserInterface {
         return rawMealOffer[TL1Parser._MEALOFFERITEM_DATE];
     }
 
-    async getPriceForGroupFromRawMealOffer(group, rawMealOffer){
+    async getPriceForGroupFromRawMealOffer(group: string, rawMealOffer){
         let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
         return TL1Parser.getPriceForGroup(parsedReportItem, group)
     }
@@ -136,25 +142,6 @@ export class TL1Parser implements ParserInterface {
         let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
         let groupedReportItems = TL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
         return TL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
-    }
-
-    static async getRawReport(path_to_tl1_export, encoding){
-        console.log("TL1Parser: getRawReport");
-        console.log("TL1Parser: path_to_tl1_export: "+path_to_tl1_export)
-        if (path_to_tl1_export) {
-            try{
-                const absolutePath = path.resolve(path_to_tl1_export)
-                console.log("TL1Parser: absolutePath: "+absolutePath)
-                const options = {encoding: encoding};
-                const content = fs.readFileSync(path.resolve(path_to_tl1_export), options);
-                console.log("TL1 Report; length= "+content.length);
-                return content;
-            } catch (err){
-                console.log("TL1 Report read error: ")
-                console.log(err.toString())
-                return "";
-            }
-        }
     }
 
     static _groupParsedReportItemsToMealOfferListsItems(parsedReport){
@@ -296,12 +283,22 @@ export class TL1Parser implements ParserInterface {
         return parsedReportItem[TL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
-    static getPriceForGroup(parsedReportItem, groupName){
+    static findFirstPriceValueForFields(parsedReportItem, fields: string[]){
+        for(let field of fields){
+            let value = parsedReportItem[field];
+            if(!!value){
+                return value;
+            }
+        }
+        return null;
+    }
+
+    static getPriceForGroup(parsedReportItem, groupName: string){
         let foundPrice = null;
         switch (groupName){
-            case "student": foundPrice = parsedReportItem[TL1Parser.DEFAULT_PRICE_STUDENT_FIELD]; break;
-            case "employee": foundPrice = parsedReportItem[TL1Parser.DEFAULT_PRICE_EMPLOYEE_FIELD]; break;
-            case "guest": foundPrice = parsedReportItem[TL1Parser.DEFAULT_PRICE_GUEST_FIELD]; break;
+            case ParseSchedule.PRICE_GROUP_STUDENT: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_STUDENT_OSNABRUECK, TL1Parser.FIELD_PRICE_STUDENT_HANNOVER]); break;
+            case ParseSchedule.PRICE_GROUP_EMPLOYEE: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_EMPLOYEE_OSNABRUECK, TL1Parser.FIELD_PRICE_EMPLOYEE_HANNOVER]); break;
+            case ParseSchedule.PRICE_GROUP_GUEST: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_GUEST_OSNABRUECK, TL1Parser.FIELD_PRICE_GUEST_HANNOVER]); break;
             default: return null
         }
         if(!!foundPrice){
