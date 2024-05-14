@@ -1,33 +1,33 @@
-export interface TL1ParserInterface {
+export interface ParserInterface {
 
-    createNeededData(services, database, logger): Promise<void>;
+    createNeededData(): Promise<void>;
 
-    etMarkingsJSONList(): Promise<any>;
+    getMarkingsJSONList(): Promise<any>;
 
     getCanteensJSONList(): Promise<any>;
 
     getMealsJSONList(): Promise<any>;
 
-    getMarkingLabelsForMealJSON(foodJSON): Promise<any>;
+    getMarkingLabelsForMealJSON(foodJSON: any): Promise<any>;
 
-    getMealNutritionsForMealJSON(foodJSON): Promise<any>;
+    getMealNutritionsForMealJSON(foodJSON: any): Promise<any>;
 
-    getMealNutritionsForRawMealOffer(rawMealOffer): Promise<any>;
+    getMealNutritionsForRawMealOffer(rawMealOffer: any): Promise<any>;
 
-    getAliasForMealOfferFromRawMealOffer(rawMealOffer): Promise<any>;
+    getAliasForMealOfferFromRawMealOffer(rawMealOffer: any): Promise<any>;
 
     getMealOffersISOStringDatesToDelete(): Promise<any>;
 
     getRawMealOffersJSONList(): Promise<any>;
 
-    getCanteenLabelFromRawMealOffer(rawMealOffer): Promise<any>;
+    getCanteenLabelFromRawMealOffer(rawMealOffer: any): Promise<any>;
 
-    getMealIdFromRawMealOffer(rawMealOffer): Promise<any>;
+    getMealIdFromRawMealOffer(rawMealOffer: any): Promise<any>;
 
-    getISODateStringOfMealOffer(rawMealOffer): Promise<any>;
+    getISODateStringOfMealOffer(rawMealOffer: any): Promise<any>;
 
-    getPriceForGroupFromRawMealOffer(group, rawMealOffer): Promise<any>;
+    getPriceForGroupFromRawMealOffer(group: string, rawMealOffer: any): Promise<any>;
 
-    getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer): Promise<any>;
+    getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer: any): Promise<any>;
 
 }

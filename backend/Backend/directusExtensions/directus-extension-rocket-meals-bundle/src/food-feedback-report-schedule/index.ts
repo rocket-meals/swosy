@@ -12,7 +12,7 @@ export default defineHook(async ({schedule}, {
 	getSchema,
 	logger
 }) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 	if (!allTablesExist) {
 		return;
 	}

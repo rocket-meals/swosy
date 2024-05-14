@@ -3,7 +3,7 @@ services:
 
   app:
     image: jwilder/whoami
-    env_file: envTemplate
+    env_file: .env
     restart: ${RESTART}
     environment:
       - LETSENCRYPT_HOST=${MYHOST}
@@ -23,7 +23,7 @@ services:
 #    container_name: directusWithCache${DOMAIN_PATH} # Cant use container name due to scaling
     build:
       context: ./
-    env_file: ./../backendEnv # In order not to overwrite the env file when pulling from git
+    env_file: .env # In order not to overwrite the env file when pulling from git
     expose:
       - ${BACKEND_PORT}
     restart: ${RESTART}
@@ -40,6 +40,8 @@ services:
       - ./Backend/directusExtensions:/directus/extensions
       # directus-auto-translation api key path
       - ./Backend/secrets:/directus/secrets
+      # TL1 food plan
+      - ${FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE}:/directus/tl1/foodPlan.csv
     networks:
       - directus
       - custom_network
@@ -47,7 +49,6 @@ services:
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     environment:
-      INSTANCE_ID: "master"
       LETSENCRYPT_HOST: ${MYHOST}
       VIRTUAL_HOST: ${MYHOST}
       VIRTUAL_PATH: /${DOMAIN_PATH}/${BACKEND_PATH}/
@@ -57,8 +58,12 @@ services:
       HOST: "0.0.0.0"
       PUBLIC_URL: ${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}
 
-      KEY: '255d861b-5ea1-5996-9aa3-922530ec40b1'
-      SECRET: '6116487b-cda1-52c2-b5b5-c8022c45e263'
+      KEY: "${DATABASE_KEY}"
+      SECRET: "${DATABASE_SECRET}"
+
+      FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE: "${FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
+      FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE: "${FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE}"
+      FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER: "${FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
 
       DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
       DB_FILENAME: './database/data.db'
@@ -98,6 +103,7 @@ services:
       AUTH_PROVIDERS: "${AUTH_PROVIDERS}"
 
       AUTH_APPLE_DRIVER: "openid"
+      AUTH_APPLE_MODE: "session"
       AUTH_APPLE_CLIENT_ID: "${AUTH_APPLE_CLIENT_ID}"
       AUTH_APPLE_CLIENT_SECRET: "${AUTH_APPLE_CLIENT_SECRET}"
       AUTH_APPLE_DEFAULT_ROLE_ID: "${DEFAULT_ROLE_ID}" #If you want to set a default role id
@@ -128,7 +134,7 @@ services:
 
 
       # directus-auto-translation
-      AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt"
+      AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt" # Required for the auto translation plugin
 
 networks:
   custom_network: {}

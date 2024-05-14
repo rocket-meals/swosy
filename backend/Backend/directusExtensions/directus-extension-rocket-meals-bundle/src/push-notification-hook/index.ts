@@ -13,7 +13,7 @@ export default defineHook(async ({filter}, {
 }) => {
 	const collectionName = CollectionNames.PUSH_NOTIFICATIONS
 
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 	if (!allTablesExist) {
 		return;
 	}

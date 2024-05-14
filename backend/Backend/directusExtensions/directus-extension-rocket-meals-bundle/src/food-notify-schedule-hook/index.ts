@@ -12,7 +12,7 @@ export default defineHook(async ({action}, {
 	logger
 }) => {
 	let collection = CollectionNames.APP_SETTINGS
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 	if (!allTablesExist) {
 		return;
 	}

@@ -1,6 +1,7 @@
 import moment from "moment";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {ParserInterface} from "./ParserInterface";
 
 const TABLENAME_MEALS = CollectionNames.FOODS;
 const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
@@ -15,7 +16,7 @@ const SCHEDULE_NAME = "FoodParseSchedule";
 
 export class ParseSchedule {
 
-    private parser: any;
+    private parser: ParserInterface;
     private finished: boolean;
     private schema: any;
     private database: any;
@@ -28,7 +29,7 @@ export class ParseSchedule {
     private foodsService: any;
     private markingsService: any;
 
-    constructor(parser) {
+    constructor(parser: ParserInterface) {
         this.parser = parser;
         this.finished = true;
     }

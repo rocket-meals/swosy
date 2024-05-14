@@ -13,7 +13,7 @@ export default defineHook(async ({action}, {
     getSchema,
     logger
 }) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(ParseSchedule.SCHEDULE_NAME,getSchema, database);
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(ParseSchedule.SCHEDULE_NAME,getSchema);
     if (!allTablesExist) {
         return;
     }

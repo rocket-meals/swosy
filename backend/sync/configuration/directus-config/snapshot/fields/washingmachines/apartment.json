@@ -1,0 +1,42 @@
+{
+  "collection": "washingmachines",
+  "field": "apartment",
+  "type": "string",
+  "meta": {
+    "collection": "washingmachines",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "apartment",
+    "group": null,
+    "hidden": true,
+    "interface": "select-dropdown-m2o",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "apartment",
+    "table": "washingmachines",
+    "data_type": "char",
+    "default_value": null,
+    "max_length": 36,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "apartments",
+    "foreign_key_column": "id"
+  }
+}

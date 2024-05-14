@@ -23,7 +23,7 @@ export default defineEndpoint({
 
 
 		router.get('/', async (req, res) => {
-			let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+			let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 			if (!allTablesExist) {
 				return;
 			}

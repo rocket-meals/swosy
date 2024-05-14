@@ -1,13 +1,19 @@
-// https://github.com/directus/directus/blob/main/api/src/services/items.ts
-export class ItemsServiceCreator {
+class GetItemsService {
+    public services: any;
+    public schema: any;
+    public database: any;
 
-    constructor(services, database, schema) {
+    constructor(services: any, database: any, schema: any) {
         this.services = services;
         this.database = database;
         this.schema = schema;
     }
+}
 
-    getItemsService(tablename) {
+// https://github.com/directus/directus/blob/main/api/src/services/items.ts
+export class ItemsServiceCreator extends GetItemsService{
+
+    getItemsService(tablename: string) {
         const {ItemsService} = this.services;
         return new ItemsService(tablename, {
             accountability: null, //this makes us admin
@@ -18,13 +24,7 @@ export class ItemsServiceCreator {
 
 }
 
-export class ServerServiceCreator {
-
-    constructor(services, database, schema) {
-        this.services = services;
-        this.database = database;
-        this.schema = schema;
-    }
+export class ServerServiceCreator extends GetItemsService{
 
     // https://github.com/directus/directus/blob/main/api/src/services/server.ts
     getServerService() {

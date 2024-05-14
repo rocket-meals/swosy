@@ -1,8 +1,8 @@
-import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule"; // in directus we need to add the filetype ... otherwise we get an error
+import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule"; 
 import {StudentenwerkHannoverApartments_Parser} from "./StudentenwerkHannoverApartments_Parser";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; // in directus we need to add the filetype ... otherwise we get an error
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; 
 
 
 const parseSchedule = new ApartmentsParseSchedule(StudentenwerkHannoverApartments_Parser);
@@ -16,7 +16,7 @@ export default defineHook(async ({action}, {
 }) => {
     logger.info("housing-sync-hook: init");
 
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
     if (!allTablesExist) {
         return;
     }

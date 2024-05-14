@@ -1,4 +1,4 @@
-import {AccountHelper} from "./AccountHelper"; // in directus we need to add the filetype ... otherwise we get an error
+import {AccountHelper} from "./AccountHelper"; 
 
 export class AvatarHelper {
     /**
