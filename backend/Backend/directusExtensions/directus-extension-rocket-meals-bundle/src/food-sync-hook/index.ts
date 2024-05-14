@@ -13,8 +13,9 @@ const SCHEDULE_NAME = "food_parse";
 function getParser(env: any): ParserInterface | null {
     let usedParser: ParserInterface | null = null;
 
-    const FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE = env.FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE;
-    const shouldUseTl1CsvFile = !!FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE;
+    const FOOD_SYNC_HOST_TL1_CSV_FILE_PATH = env.FOOD_SYNC_HOST_TL1_CSV_FILE_PATH;
+    const FOOD_SYNC_HOST_TL1_CSV_FILE_ENCODING = env.FOOD_SYNC_HOST_TL1_CSV_FILE_ENCODING || "latin1";
+    const shouldUseTl1CsvFile = !!FOOD_SYNC_HOST_TL1_CSV_FILE_PATH;
 
     const FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE = env.FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE;
     const shouldUseTl1Url = !!FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE;
@@ -23,17 +24,20 @@ function getParser(env: any): ParserInterface | null {
     const shouldUseSwosyApi = !!FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER;
 
     if (shouldUseTl1CsvFile) {
-        console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_HOST_FILE_PATH_FOR_TL1_CSV_FILE);
+        /* TL1 FTP FILE */
+        console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_HOST_TL1_CSV_FILE_PATH);
         const tl1_csv_file_path = "/directus/tl1/foodPlan.csv"
-        const ftpFileReader = new TL1Parser_RawReportFtpReader(tl1_csv_file_path, "utf8");
+        const ftpFileReader = new TL1Parser_RawReportFtpReader(tl1_csv_file_path, FOOD_SYNC_HOST_TL1_CSV_FILE_ENCODING);
         // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
         usedParser = new TL1Parser(ftpFileReader);
     } else if (shouldUseTl1Url) {
+        /* TL1 URL */
         console.log(SCHEDULE_NAME + ": Using TL1 CSV file from URL: " + FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE);
         const urlReader = new TL1Parser_RawReportUrlReader(FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE);
         // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
         usedParser = new TL1Parser(urlReader);
     } else if (shouldUseSwosyApi) {
+        /* SWOSY API */
         console.log(SCHEDULE_NAME + "Using SWOSY API: " + FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER);
         // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
         usedParser = new SWOSY_API_Parser(FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER)

@@ -1,7 +1,7 @@
-import { defineHook } from '@directus/extensions-sdk';
+import {defineHook} from '@directus/extensions-sdk';
 import {ReportSchedule} from "./ReportSchedule";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {CollectionNames} from "../helpers/CollectionNames";
+
 const parseSchedule = new ReportSchedule();
 
 const SCHEDULE_NAME = "food_feedback_report";
