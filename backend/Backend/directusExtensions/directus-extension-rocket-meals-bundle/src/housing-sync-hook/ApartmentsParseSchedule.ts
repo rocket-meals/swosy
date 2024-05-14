@@ -122,8 +122,8 @@ export class ApartmentsParseSchedule {
         return item;
     }
 
-    async updateApartmentTranslations(meal, newsJSON) {
-        await this.updateItemTranslations(meal, newsJSON, "news_id", this.itemService);
+    async updateApartmentTranslations(resource, resourceJSON) {
+        await this.updateItemTranslations(resource, resourceJSON, "news_id", this.itemService);
     }
 
     async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {

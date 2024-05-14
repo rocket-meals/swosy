@@ -238,6 +238,7 @@ export class ServerAPI {
 
 		try {
 			const directus = ServerAPI.getPublicClient();
+			console.log("Download from server: "+ServerAPI.getServerUrl());
 			const remote_info = await directus.request(serverInfo());
 			console.log('remote_info', JSON.stringify(remote_info, null, 2));
 

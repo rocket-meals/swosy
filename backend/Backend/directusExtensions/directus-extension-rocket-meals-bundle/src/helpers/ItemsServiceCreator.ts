@@ -24,6 +24,28 @@ export class ItemsServiceCreator extends GetItemsService{
 
 }
 
+export class FileServiceCreator extends GetItemsService{
+
+        getFileService() {
+            const {FileService} = this.services;
+            return new FileService({
+                accountability: null, //this makes us admin
+                knex: this.database, //TODO: i think this is not neccessary
+                schema: this.schema,
+            });
+        }
+
+        async importByUrl(url: string, body: Partial<File>){
+            const fileService = this.getFileService();
+            return await fileService.importOne(url, body);
+        }
+
+        async deleteOne(id: string){
+            const fileService = this.getFileService();
+            return await fileService.deleteOne(id);
+        }
+}
+
 export class ActivityServiceCreator extends GetItemsService{
 
         getActivityService() {

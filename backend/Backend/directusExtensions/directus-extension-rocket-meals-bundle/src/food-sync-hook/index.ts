@@ -7,6 +7,7 @@ import {TL1Parser} from "./TL1Parser";
 import {TL1Parser_RawReportFtpReader} from "./TL1Parser_RawReportFtpReader";
 import {TL1Parser_RawReportUrlReader} from "./TL1Parser_RawReportUrlReader";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
+import {FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -52,6 +53,61 @@ function getParser(env: any): ParserInterface | null {
     return null;
 }
 
+async function checkForImageSynchronize(env: any, services: any, database: any, schema: any){
+    console.log(SCHEDULE_NAME + ": Checking for image synchronize");
+    const FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY = env.FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY;
+    const FOOD_SYNC_SWOSY_API_SERVER_URL = env.FOOD_SYNC_SWOSY_API_SERVER_URL;
+
+    const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+    const fileServiceCreator = new FileServiceCreator(services, database, schema);
+
+    const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_SYNC_SWOSY_API_SERVER_URL;
+    if(canImportImages){
+        console.log(SCHEDULE_NAME + ": Importing images from SWOSY API: " + FOOD_SYNC_SWOSY_API_SERVER_URL);
+        const foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
+        const meals = await foodsService.readByQuery({
+            limit: -1
+        });
+        console.log(SCHEDULE_NAME + ": Found " + meals.length + " meals");
+        for(const meal of meals) {
+            const meal_id = meal.id;
+            if (meal.image) {
+                console.log(SCHEDULE_NAME + ": Meal " + meal_id + " already has an image");
+                continue;
+            } else {
+                console.log(SCHEDULE_NAME + ": Meal " + meal_id + " has no image");
+                const swosyImageUrl = SWOSY_API_Parser.getImageRemoteUrlForMealId(FOOD_SYNC_SWOSY_API_SERVER_URL, meal.id);
+                if(swosyImageUrl) {
+                    console.log(SCHEDULE_NAME + ": Trying to import image for meal " + meal_id + " from " + swosyImageUrl);
+
+                    //https://github.com/directus/directus/blob/main/api/src/services/files.ts
+                    const optionalFileParams: Partial<File> = {
+                        // @ts-ignore
+                        filename_download: meal_id + ".jpg",
+                        title: meal_id
+                    }
+
+                    try{
+                        let file_id = await fileServiceCreator.importByUrl(swosyImageUrl, optionalFileParams);
+                        if(file_id) {
+                            console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
+                            await foodsService.updateOne(meal_id, {
+                                image: file_id
+                            });
+                        } else {
+                            console.log(SCHEDULE_NAME + ": Unknown Error while importing image for meal " + meal_id);
+                        }
+                    } catch (err) {
+                        console.log(SCHEDULE_NAME + ": Error while importing image for meal " + meal_id);
+                        console.log(err);
+                    }
+
+                }
+            }
+        }
+    }
+}
+
 export default defineHook(async ({action}, {
     services,
     database,
@@ -90,4 +146,12 @@ export default defineHook(async ({action}, {
             //TODO set field "parse_foods" to false
         }
     );
+
+    try{
+        const schema = await getSchema();
+        await checkForImageSynchronize(env, services, database, schema);
+    } catch (err) {
+        console.log("Error while checking for image synchronize");
+        console.log(err);
+    }
 });

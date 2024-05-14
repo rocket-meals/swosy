@@ -66,6 +66,7 @@ services:
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
       FOOD_SYNC_TL1WEB_EXPORT_URL: "${FOOD_SYNC_TL1WEB_EXPORT_URL}"
       FOOD_SYNC_SWOSY_API_SERVER_URL: "${FOOD_SYNC_SWOSY_API_SERVER_URL}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
+      FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY: "${FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY}" # If the system should sync images from swosy. Swosy api server is needed for this
 
       DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
       DB_FILENAME: './database/data.db'

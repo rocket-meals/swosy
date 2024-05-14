@@ -25,8 +25,8 @@ export class SWOSY_API_Parser implements ParserInterface{
         this.canteens = await this.downloadCanteensDictIdToCanteen();
     }
 
-    private_getImageRemoteUrlForMealId(meal_id: string){
-        return this.api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
+    static getImageRemoteUrlForMealId(api_url: string, meal_id: string){
+        return api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
     }
 
     async getMarkingsJSONList(){
@@ -68,7 +68,7 @@ export class SWOSY_API_Parser implements ParserInterface{
             itemJSONList.push({
                 id: food.id,
                 alias: food?.name,
-                image_remote_url: this.private_getImageRemoteUrlForMealId(food.id),
+                image_remote_url: SWOSY_API_Parser.getImageRemoteUrlForMealId(this.api_url, food.id),
 //                name: food.name,
                 translations: {
                     "de-DE": {"name": food?.name},
