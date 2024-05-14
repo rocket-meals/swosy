@@ -41,7 +41,7 @@ services:
       # directus-auto-translation api key path
       - ./Backend/secrets:/directus/secrets
       # TL1 food plan
-      - ${FOOD_SYNC_HOST_TL1_CSV_FILE_PATH}:/directus/tl1/foodPlan.csv
+      - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/foodPlan.csv
     networks:
       - directus
       - custom_network
@@ -61,10 +61,11 @@ services:
       KEY: "${DATABASE_KEY}"
       SECRET: "${DATABASE_SECRET}"
 
-      FOOD_SYNC_HOST_TL1_CSV_FILE_PATH: "${FOOD_SYNC_HOST_TL1_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
-      FOOD_SYNC_HOST_TL1_CSV_FILE_ENCODING: "${FOOD_SYNC_HOST_TL1_CSV_FILE_ENCODING}"
-      FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE: "${FOOD_SYNC_TL1_URL_FOR_TL1_CSV_FILE}"
-      FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER: "${FOOD_SYNC_URL_OF_A_SWOSY_API_SERVER}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
+      FOOD_SYNC_MODE: "${FOOD_SYNC_MODE}"
+      FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
+      FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
+      FOOD_SYNC_TL1WEB_EXPORT_URL: "${FOOD_SYNC_TL1WEB_EXPORT_URL}"
+      FOOD_SYNC_SWOSY_API_SERVER_URL: "${FOOD_SYNC_SWOSY_API_SERVER_URL}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
 
       DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
       DB_FILENAME: './database/data.db'

@@ -24,6 +24,18 @@ export class ItemsServiceCreator extends GetItemsService{
 
 }
 
+export class ActivityServiceCreator extends GetItemsService{
+
+        getActivityService() {
+            const {ActivityService} = this.services;
+            return new ActivityService({
+                accountability: null, //this makes us admin
+                knex: this.database, //TODO: i think this is not neccessary
+                schema: this.schema,
+            });
+        }
+}
+
 export class ServerServiceCreator extends GetItemsService{
 
     // https://github.com/directus/directus/blob/main/api/src/services/server.ts
