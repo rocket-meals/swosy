@@ -16,6 +16,10 @@ const SCHEDULE_NAME = "FoodParseSchedule";
 
 export class ParseSchedule {
 
+    static PRICE_GROUP_STUDENT = "student";
+    static PRICE_GROUP_EMPLOYEE = "employee";
+    static PRICE_GROUP_GUEST = "guest";
+
     private parser: ParserInterface;
     private finished: boolean;
     private schema: any;
@@ -457,9 +461,9 @@ export class ParseSchedule {
                             alias: alias,
                             canteen: canteen.id,
                             date: date,
-                            price_student: await this.parser.getPriceForGroupFromRawMealOffer("student", rawFoodOffer) || null,
-                            price_employee: await this.parser.getPriceForGroupFromRawMealOffer("employee", rawFoodOffer) || null,
-                            price_guest: await this.parser.getPriceForGroupFromRawMealOffer("guest", rawFoodOffer) || null,
+                            price_student: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_STUDENT, rawFoodOffer) || null,
+                            price_employee: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_EMPLOYEE, rawFoodOffer) || null,
+                            price_guest: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_GUEST, rawFoodOffer) || null,
                             date_updated: new Date(),
                             date_created: new Date(),
                         };
