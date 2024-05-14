@@ -3,9 +3,10 @@ import {CSVExportParser} from "./CSVExportParser"
 
 import fs from "fs";
 import path from "path"
-import {TL1ParserInterface} from "./ParserInterface";
+import {ParserInterface} from "./ParserInterface";
+import {TL1Parser_GetRawReportInterface} from "./TL1Parser_GetRawReportInterface";
 
-export class TL1Parser implements TL1ParserInterface {
+export class TL1Parser implements ParserInterface {
 
     static DEFAULT_CANTEEN_FIELD = "MENSA";
     static DEFAULT_DATE_FIELD = "DATUM";
@@ -19,20 +20,19 @@ export class TL1Parser implements TL1ParserInterface {
     static DEFAULT_MARKING_LABELS_FIELD = "ZSNUMMERN";
     static DEFAULT_MARKING_NAMES_FIELD = "ZSNAMEN";
 
-    rawMealOffers = null;
-    foodIdToRawMealOfferDict = null;
-    path_to_tl1_export = null;
-    encoding = null;
+    rawMealOffers: null | { [x: string]: any; }[]  = null;
+    foodIdToRawMealOfferDict: null | { [x: string]: any; }[] = null;
+    private rawMealOfferReader: TL1Parser_GetRawReportInterface;
 
-    constructor(path_to_tl1_export, encoding="utf-8") {
-        this.path_to_tl1_export = path_to_tl1_export;
-        this.encoding = encoding;
+    constructor(rawMealOfferReader: TL1Parser_GetRawReportInterface) {
+        this.rawMealOfferReader = rawMealOfferReader;
         this.rawMealOffers = null;
         this.foodIdToRawMealOfferDict = null;
     }
 
-    async createNeededData(services, database, logger){
-        this.rawMealOffers = await TL1Parser.createRawMealOffers(this.path_to_tl1_export, this.encoding);
+    async createNeededData(){
+        let rawReport = await this.rawMealOfferReader.getRawReport();
+        this.rawMealOffers = await TL1Parser.createRawMealOffers(rawReport);
         this.foodIdToRawMealOfferDict = TL1Parser.createMealIdToRawMealOfferDict(this.rawMealOffers);
     }
 
@@ -132,8 +132,7 @@ export class TL1Parser implements TL1ParserInterface {
     static _MEALOFFERITEM_DATE = "date";
     static _MEALOFFERITEM_CANTEEN_LABEL = "canteen_label";
 
-    static async createRawMealOffers(path_to_tl1_export, encoding){
-        let rawReport = await TL1Parser.getRawReport(path_to_tl1_export, encoding);
+    static async createRawMealOffers(rawReport: string | Buffer | undefined){
         let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
         let groupedReportItems = TL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
         return TL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
@@ -360,7 +359,7 @@ export class TL1Parser implements TL1ParserInterface {
         return nutritionValuesJSON;
     }
 
-    parseFloatWithOneDecimal(str) {
+    static parseFloatWithOneDecimal(str) {
         let num = parseFloat(str);
         if (isNaN(num)) {
             return NaN; // or some other value to indicate the parse failed
@@ -377,7 +376,7 @@ export class TL1Parser implements TL1ParserInterface {
                 let matchString = match[0];
                 let valueString = matchString.slice(searchText.length);
                 valueString = valueString.replace(",",".");
-                let value = this.parseFloatWithOneDecimal(valueString);
+                let value = TL1Parser.parseFloatWithOneDecimal(valueString);
                 return value;
             }
         } catch(err){

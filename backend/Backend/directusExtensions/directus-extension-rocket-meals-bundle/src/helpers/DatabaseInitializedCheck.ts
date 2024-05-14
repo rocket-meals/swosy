@@ -6,11 +6,11 @@ import {getAllCollectionNames} from "./CollectionNames";
 const EXTENSION_NAME = "directus-extension-rocket-meals-bundle";
 
 export class DatabaseInitializedCheck{
-    static async checkAllTablesExist(scheduleName: string, getSchema: any, database: any): Promise<boolean> {
-        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, getSchema, database, getAllCollectionNames());
+    static async checkAllTablesExist(scheduleName: string, getSchema: any): Promise<boolean> {
+        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, getSchema, getAllCollectionNames());
     }
 
-    static async checkTablesExist(scheduleName: string, getSchema: any, database: any, tables: string[]): Promise<boolean> {
+    static async checkTablesExist(scheduleName: string, getSchema: any, tables: string[]): Promise<boolean> {
         let schema = await getSchema();
         let missingTables = [];
 
@@ -32,7 +32,7 @@ export class DatabaseInitializedCheck{
 
         let allTablesExist = missingTables.length === 0;
         if(!allTablesExist){
-            let logMessage = "++ "+EXTENSION_NAME+`: Database not initialized yet. Missing tables: ${missingTables.join(", ")}`;
+            let logMessage = "++ "+EXTENSION_NAME+" - "+scheduleName+`: Database not initialized yet. Missing tables: ${missingTables.join(", ")}`;
             console.log(logMessage);
         }
         return allTablesExist;

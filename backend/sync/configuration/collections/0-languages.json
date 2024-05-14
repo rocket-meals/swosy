@@ -1,0 +1,42 @@
+[
+    {
+        "code": "ar-SA",
+        "direction": "rtl",
+        "name": "Arabic"
+    },
+    {
+        "code": "de-DE",
+        "direction": "ltr",
+        "name": "German"
+    },
+    {
+        "code": "en-US",
+        "direction": "ltr",
+        "name": "English"
+    },
+    {
+        "code": "es-ES",
+        "direction": "ltr",
+        "name": "Spanish"
+    },
+    {
+        "code": "fr-FR",
+        "direction": "ltr",
+        "name": "French"
+    },
+    {
+        "code": "it-IT",
+        "direction": "ltr",
+        "name": "Italian"
+    },
+    {
+        "code": "pt-BR",
+        "direction": "ltr",
+        "name": "Portuguese"
+    },
+    {
+        "code": "ru-RU",
+        "direction": "ltr",
+        "name": "Russian"
+    }
+]

@@ -7,7 +7,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 const SCHEDULE_NAME = "profile_create";
 
 export default defineHook(async ({ filter}, {services, getSchema, database}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema, database);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 	if (!allTablesExist) {
 		return;
 	}
