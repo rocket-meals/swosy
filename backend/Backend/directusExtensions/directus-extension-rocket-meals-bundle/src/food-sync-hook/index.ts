@@ -54,7 +54,7 @@ function getParser(env: any): ParserInterface | null {
 }
 
 async function checkForImageSynchronize(env: any, services: any, database: any, schema: any){
-    console.log(SCHEDULE_NAME + ": Checking for image synchronize");
+    //console.log(SCHEDULE_NAME + ": Checking for image synchronize");
     const FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY = env.FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY;
     const FOOD_SYNC_SWOSY_API_SERVER_URL = env.FOOD_SYNC_SWOSY_API_SERVER_URL;
 
@@ -63,22 +63,39 @@ async function checkForImageSynchronize(env: any, services: any, database: any, 
 
     const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_SYNC_SWOSY_API_SERVER_URL;
     if(canImportImages){
-        console.log(SCHEDULE_NAME + ": Importing images from SWOSY API: " + FOOD_SYNC_SWOSY_API_SERVER_URL);
+
+
+        console.log(SCHEDULE_NAME + ": Importing images from a SWOSY API: " + FOOD_SYNC_SWOSY_API_SERVER_URL);
         const foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
         const meals = await foodsService.readByQuery({
             limit: -1
         });
+
+
+        let amountMeals = meals.length;
+        let amountMealsImagesImported = 0;
+        let amountMealsWithoutImage = 0;
+        let amountProcessed = 0;
+
         console.log(SCHEDULE_NAME + ": Found " + meals.length + " meals");
         for(const meal of meals) {
+            if (!meal.image) {
+                amountMealsWithoutImage++;
+            }
+        }
+
+
+        for(const meal of meals) {
+            amountProcessed++;
             const meal_id = meal.id;
+
             if (meal.image) {
-                console.log(SCHEDULE_NAME + ": Meal " + meal_id + " already has an image");
-                continue;
+                //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " already has an image");
             } else {
-                console.log(SCHEDULE_NAME + ": Meal " + meal_id + " has no image");
+                //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " has no image");
                 const swosyImageUrl = SWOSY_API_Parser.getImageRemoteUrlForMealId(FOOD_SYNC_SWOSY_API_SERVER_URL, meal.id);
                 if(swosyImageUrl) {
-                    console.log(SCHEDULE_NAME + ": Trying to import image for meal " + meal_id + " from " + swosyImageUrl);
+                    //console.log(SCHEDULE_NAME + ": Trying to import image for meal " + meal_id + " from " + swosyImageUrl);
 
                     //https://github.com/directus/directus/blob/main/api/src/services/files.ts
                     const optionalFileParams: Partial<File> = {
@@ -90,20 +107,28 @@ async function checkForImageSynchronize(env: any, services: any, database: any, 
                     try{
                         let file_id = await fileServiceCreator.importByUrl(swosyImageUrl, optionalFileParams);
                         if(file_id) {
-                            console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
+                            //console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
                             await foodsService.updateOne(meal_id, {
                                 image: file_id
                             });
+                            amountMealsImagesImported++;
                         } else {
                             console.log(SCHEDULE_NAME + ": Unknown Error while importing image for meal " + meal_id);
                         }
-                    } catch (err) {
-                        console.log(SCHEDULE_NAME + ": Error while importing image for meal " + meal_id);
-                        console.log(err);
+                    } catch (err: any) {
+                        if(err.toString().includes("Couldn't fetch file from URL")){
+                            //console.log(SCHEDULE_NAME + ": File for " + meal_id+ " does not exist at " + swosyImageUrl);
+                        } else {
+                            console.log(err.toString());
+                            console.log(SCHEDULE_NAME + ": Error while importing image for meal " + meal_id);
+                            console.log(err);
+                        }
                     }
 
                 }
             }
+
+            console.log(SCHEDULE_NAME + ": Processed: " + amountProcessed + "/" + amountMeals+" || Meals without image: " + amountMealsWithoutImage + " | Meals with imported image: " + amountMealsImagesImported);
         }
     }
 }

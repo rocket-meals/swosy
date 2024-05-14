@@ -26,9 +26,10 @@ export class ItemsServiceCreator extends GetItemsService{
 
 export class FileServiceCreator extends GetItemsService{
 
+    //https://github.com/directus/directus/blob/main/api/src/services/files.ts
         getFileService() {
-            const {FileService} = this.services;
-            return new FileService({
+            const {FilesService} = this.services;
+            return new FilesService({
                 accountability: null, //this makes us admin
                 knex: this.database, //TODO: i think this is not neccessary
                 schema: this.schema,
