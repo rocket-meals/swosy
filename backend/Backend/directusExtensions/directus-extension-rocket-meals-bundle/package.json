@@ -21,6 +21,11 @@
 		"entries": [
 			{
 				"type": "hook",
+				"name": "activity-auto-cleanup-schedule",
+				"source": "src/activity-auto-cleanup-schedule/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "cashregister-hook",
 				"source": "src/cashregister-hook/index.ts"
 			},
