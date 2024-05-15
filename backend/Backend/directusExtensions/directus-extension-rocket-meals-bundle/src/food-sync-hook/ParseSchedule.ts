@@ -346,9 +346,13 @@ export class ParseSchedule {
                 }
             };
 
-            console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
             let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
             if(updateNeeded){
+                console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
+                console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
+                console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
+                console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
+                console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
                 //console.log(JSON.stringify(updateObject, null, 2));
                 await specificItemService.updateOne(item?.id, {id: item?.id, ...updateObject});
             }
@@ -360,7 +364,7 @@ export class ParseSchedule {
         let currentMeal = 0;
         for (let mealJSON of mealsJSONList) {
             currentMeal++;
-            console.log("Update Food " + currentMeal + " / " + amountOfMeals);
+            //console.log("Update Food " + currentMeal + " / " + amountOfMeals);
             let meal = await this.findOrCreateFood(mealJSON);
             if (!!meal && meal.id) {
                 let markingLabelsList = await this.parser.getMarkingLabelsForMealJSON(mealJSON) || [];
@@ -394,7 +398,7 @@ export class ParseSchedule {
             // Step 2: Delete the items using their IDs
             if (idsToDelete.length > 0) {
                 await itemService.deleteMany(idsToDelete).then(() => {
-                    console.log(`Items deleted successfully for date: ${date}`);
+                    //console.log(`Items deleted successfully for date: ${date}`);
                 }).catch(error => {
                     console.error(`Error deleting items for date: ${date}:`, error);
                 });
@@ -403,7 +407,7 @@ export class ParseSchedule {
     }
 
     async findOrCreateCanteen(external_identifier) {
-        console.log("Find or create canteen: " + external_identifier)
+        //console.log("Find or create canteen: " + external_identifier)
 
         let tablename = TABLENAME_CANTEENS;
         let canteenJSON = {
@@ -425,12 +429,12 @@ export class ParseSchedule {
 
         // Step 2: If canteen doesn't exist, create a new one
         if (!canteen) {
-            console.log("No canteen found, creating a new one")
+            console.log("Canteen "+canteenJSON.alias+" not found, creating a new one.");
             canteenJSON = this.setStatusPublished(canteenJSON);
             let createdCanteen_id = await itemService.createOne(canteenJSON);
             canteen = await itemService.readOne(createdCanteen_id);
         } else {
-            console.log("Canteen found")
+            //console.log("Canteen found")
         }
 
         return canteen;
@@ -497,7 +501,7 @@ export class ParseSchedule {
         let currentRawMealOffer = 0;
         for (let rawMealOffer of rawMealOffers) {
             currentRawMealOffer++;
-            console.log("Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
+            //console.log("Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
             await this.createFoodOffer(rawMealOffer);
         }
     }
@@ -510,7 +514,7 @@ export class ParseSchedule {
         let currentMarking = 0;
         for (let markingJSON of markingsJSONList) {
             currentMarking++;
-            console.log("Update Marking " + currentMarking + " / " + amountOfMarkings);
+            //console.log("Update Marking " + currentMarking + " / " + amountOfMarkings);
 
             let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
             delete markingJSONCopy.translations; // Remove meals translations, add it later
