@@ -87,7 +87,7 @@ const getUrlSettings = () => {
 const configureDirectusServerUrl = async () => {
     const predefinedOptions = {
         "Current": directus_url,
-        "Demo Server": "https://rocket-meals.de/demo/api",
+        "Demo Server": "https://rocket-meals.de/rocket-meals/api",
         "Studi|Futter": "https://studi-futter.rocket-meals.de/rocket-meals/api",
         "SWOSY": "https://swosy.rocket-meals.de/rocket-meals/api"
     };
