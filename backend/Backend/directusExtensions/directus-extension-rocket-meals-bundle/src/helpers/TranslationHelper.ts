@@ -1,7 +1,7 @@
 const FIELD_TRANSLATION_LANGUAGE_CODE = "languages_code"; // TODO Import from directus-extension-auto-translation package the field name
 const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-translation package the field name
 
-class TranslationHelper {
+export class TranslationHelper {
 
     static async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
         let itemWithTranslations = await specificItemService.readOne(item?.id, {"fields": ["*", "translations.*"]});
