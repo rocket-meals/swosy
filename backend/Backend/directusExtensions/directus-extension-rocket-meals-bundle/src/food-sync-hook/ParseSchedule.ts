@@ -2,6 +2,7 @@ import moment from "moment";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ParserInterface} from "./ParserInterface";
+import {TranslationHelper} from "../helpers/TranslationHelper";
 
 const TABLENAME_MEALS = CollectionNames.FOODS;
 const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
