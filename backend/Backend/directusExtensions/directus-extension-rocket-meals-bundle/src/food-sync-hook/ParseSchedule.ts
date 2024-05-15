@@ -308,6 +308,10 @@ export class ParseSchedule {
 
                     if (existingTranslation?.name !== translationFromParsing?.name) {
                         existingTranslationsDifferentFromParsing = true;
+                        console.log("existingTranslation is different from parsing")
+                        console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
+                        console.log("translationFromParsing: "+JSON.stringify(translationFromParsing, null, 2))
+
                         updateTranslations.push({
                             id: existingTranslation?.id,
                             ...translationFromParsing,
