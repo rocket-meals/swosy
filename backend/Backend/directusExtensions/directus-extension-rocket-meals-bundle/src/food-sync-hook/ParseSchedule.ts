@@ -12,6 +12,8 @@ const TABLENAME_MEALFOFFERS_MARKINGS = CollectionNames.FOODOFFER_MARKINGS
 
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
+const FIELD_FOODS_ID = "id";
+
 const SCHEDULE_NAME = "FoodParseSchedule";
 
 export class ParseSchedule {
@@ -27,7 +29,6 @@ export class ParseSchedule {
     private logger: any;
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
-    private itemService: any;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
     private foodsService: any;
@@ -257,117 +258,42 @@ export class ParseSchedule {
     }
 
     async updateFoodTranslations(meal, mealJSON) {
-        await this.updateItemTranslations(meal, mealJSON, "meals_id", this.foodsService);
+        await TranslationHelper.updateItemTranslations(meal, mealJSON, "foods_id", this.foodsService);
     }
 
 
-    async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
-        let itemWithTranslations = await specificItemService.readOne(item?.id, {"fields": ["*", "translations.*"]});
-        let translationsFromParsing = itemJSON?.translations || {}
-        /** translationsFromParsing is an object with the following structure:
-         translations: [
-         {
-                  id: 5166,
-                  meals_id: '6',
-                  languages_code: 'de-DE',
-                  name: 'Hallo mein Name ist'
-                },
-         {
-                  id: 5167,
-                  meals_id: '6',
-                  languages_code: 'en-US',
-                  name: 'Hi my name is'
-                }
-         ]
-         */
-        let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
-        /** remaining_translationsFromParsing is an object with the following structure:
-         {
-                "de-DE": {name ....},
-                "en-US": {....}
-            }
-         */
-        let createTranslations = [];
-        let updateTranslations = [];
-        let deleteTranslations = [];
+    removeDuplicatesFromJsonList(jsonList: any[], key: string, collection_name?: string) {
+        let valueList: any = [];
+        let keyDict: any = {};
 
-        if (!!itemWithTranslations) {
-            let existingTranslations = itemWithTranslations?.translations || [];
-
-
-            let existingTranslationsDifferentFromParsing = false;
-            let newTranslationsFromParsing = false;
-
-            for (let existingTranslation of existingTranslations) { //check all existing translations
-                let existingLanguageCode = existingTranslation?.languages_code;
-                let translationFromParsing = translationsFromParsing[existingLanguageCode];
-                if (!!translationFromParsing) { //we also got a translation from the parse
-                    /* Update translation */
-                    translationFromParsing = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
-
-                    if (existingTranslation?.name !== translationFromParsing?.name) {
-                        existingTranslationsDifferentFromParsing = true;
-                        console.log("existingTranslation is different from parsing")
-                        console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
-                        console.log("translationFromParsing: "+JSON.stringify(translationFromParsing, null, 2))
-
-                        updateTranslations.push({
-                            id: existingTranslation?.id,
-                            ...translationFromParsing,
-                            "languages_code": {"code": existingLanguageCode}
-                        });
-                        //console.log("existingTranslation is different from parsing")
-                    } else {
-                        //translation is the same, do nothing
-                        //console.log("translation is the same, do nothing")
-                    }
-                } else { //the parser dont provide a translation, we should delete it?
-                    //TODO check if translation was generated or manually typed
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
-                }
-            }
-            //check remaining translationsFromParsing, then put into createTranslations
-            let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
-            for (let i = 0; i < remaining_languageKeys?.length; i++) {
-                let remaining_languageKey = remaining_languageKeys[i];
-                let translationFromParsing = translationsFromParsing[remaining_languageKey];
-                if(!!translationFromParsing){
-                    newTranslationsFromParsing = true;
-                    createTranslations.push({
-                        [item_primary_key_in_translation_table]: item?.id,
-                        ...translationFromParsing,
-                        "languages_code": {"code": remaining_languageKey}
-                    });
-                }
-            }
-
-            let updateObject = {
-                "translations": {
-                    "create": createTranslations,
-                    "update": updateTranslations,
-                    "delete": deleteTranslations
-                }
-            };
-
-            let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
-            if(updateNeeded){
-                console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
-                console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
-                console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
-                console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
-                console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
-                //console.log(JSON.stringify(updateObject, null, 2));
-                await specificItemService.updateOne(item?.id, {id: item?.id, ...updateObject});
+        for (let json of jsonList) {
+            let keyValue = json[key];
+            const savedValue = keyDict[keyValue];
+            if(!savedValue){
+                keyDict[keyValue] = true;
+                valueList.push(json);
+            } else {
+                console.log(SCHEDULE_NAME+": removeDuplicatesFromJsonList")
+                console.log("Duplicate found in " + collection_name + " with key: " + key);
+                console.log("Current Value: ")
+                console.log(JSON.stringify(json, null, 2));
+                console.log("Already existing Object: ")
+                console.log(JSON.stringify(savedValue, null, 2));
             }
         }
+
+        return valueList;
     }
 
-    async updateFoods(mealsJSONList) {
-        let amountOfMeals = mealsJSONList.length;
-        let currentMeal = 0;
-        for (let mealJSON of mealsJSONList) {
-            currentMeal++;
+    async updateFoods(foodsJSONList) {
+        let amountOfMeals = foodsJSONList.length;
+        let currentFoodIndex = 0;
+
+
+        foodsJSONList = this.removeDuplicatesFromJsonList(foodsJSONList, FIELD_FOODS_ID, "foods"); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
+
+        for (let mealJSON of foodsJSONList) {
+            currentFoodIndex++;
             //console.log("Update Food " + currentMeal + " / " + amountOfMeals);
             let meal = await this.findOrCreateFood(mealJSON);
             if (!!meal && meal.id) {
@@ -514,6 +440,8 @@ export class ParseSchedule {
         let tablename = TABLENAME_MARKINGS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
 
+        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "id");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
+
         let amountOfMarkings = markingsJSONList.length;
         let currentMarking = 0;
         for (let markingJSON of markingsJSONList) {
@@ -523,9 +451,8 @@ export class ParseSchedule {
             let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
             delete markingJSONCopy.translations; // Remove meals translations, add it later
 
-            let json = { external_identifier: markingJSONCopy.external_identifier };
             let markings = await itemService.readByQuery({
-                filter: json,
+                filter: { external_identifier: markingJSONCopy.external_identifier },
                 limit: 1
             });
 
@@ -548,7 +475,7 @@ export class ParseSchedule {
 
 
     async updateMarkingTranslations(marking, markingJSON) {
-        await this.updateItemTranslations(marking, markingJSON, "markings_id", this.markingsService);
+        await TranslationHelper.updateItemTranslations(marking, markingJSON, "markings_id", this.markingsService);
     }
 
 }
