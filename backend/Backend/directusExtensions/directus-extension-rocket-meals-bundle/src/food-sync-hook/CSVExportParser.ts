@@ -1,7 +1,8 @@
 export class CSVExportParser {
 
     static NEW_LINE_DELIMITER = "\n";
-    static INLINE_DELIMITER = "\t";
+    static INLINE_DELIMITER_TAB = "\t";
+    static INLINE_DELIMITER_SEMICOLON = ";";
 
     static getListOfLineObjects(text, newLineDelimiter, inlineDelimiter){
         let lines = CSVExportParser.splitTextIntoLines(text, newLineDelimiter);
@@ -12,7 +13,7 @@ export class CSVExportParser {
         return text.split(delimiter);
     }
 
-    static splitLineByDelimiter(line, delimiter = CSVExportParser.INLINE_DELIMITER){
+    static splitLineByDelimiter(line, delimiter = CSVExportParser.INLINE_DELIMITER_TAB){
         return line.split(delimiter);
     }
 
