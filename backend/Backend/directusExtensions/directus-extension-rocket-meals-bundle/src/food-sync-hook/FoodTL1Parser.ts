@@ -128,7 +128,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     static _MEALOFFERITEM_CANTEEN_LABEL = "canteen_label";
 
     static async createRawMealOffers(rawReport: string | Buffer | undefined){
-        let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
+        let parsedReport = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB);
         let groupedReportItems = FoodTL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
         return FoodTL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
     }
