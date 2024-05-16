@@ -55,13 +55,13 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     }
 
     private static getMarkingJSONFromRawMarking(rawMarking: any){
-        let id = rawMarking['"ID"'];
-        let name = rawMarking['"BESCHREIBUNG"'];
-        let hint = rawMarking['"HINWEISE"'];
-        let short = rawMarking['"KUERZEL"'];
+        let id = rawMarking["ID"];
+        let name = rawMarking["BESCHREIBUNG"];
+        let hint = rawMarking["HINWEISE"];
+        let short = rawMarking["KUERZEL"];
 
-        let externalIdentifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);
-        if (!externalIdentifier){
+        let external_identifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);
+        if (!external_identifier){
             console.log("MarkingTL1Parser: getMarkingJSONFromRawMarking: externalIdentifier is null. Skip this marking.")
             console.log("MarkingTL1Parser: getMarkingJSONFromRawMarking: rawMarking: "+JSON.stringify(rawMarking, null, 2))
             return null;
@@ -80,7 +80,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         }
 
         let marking = {
-            externalIdentifier: externalIdentifier,
+            external_identifier: external_identifier,
             alias: name,
             translations: translations
         }

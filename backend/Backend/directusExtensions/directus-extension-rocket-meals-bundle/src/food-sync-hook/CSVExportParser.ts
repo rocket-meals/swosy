@@ -14,6 +14,7 @@ export class CSVExportParser {
     }
 
     static splitLineByDelimiter(line, delimiter = CSVExportParser.INLINE_DELIMITER_TAB, removeTailoringQuotes){
+        // raw line: " 040";"enthält Schalenfrüchte: Mandeln";"";"27J"
         let lineItemsList = line.split(delimiter);
         if(removeTailoringQuotes){
             for(let i=0; i<lineItemsList.length; i++){
