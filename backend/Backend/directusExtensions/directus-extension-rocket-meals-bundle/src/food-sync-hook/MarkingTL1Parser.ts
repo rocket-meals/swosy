@@ -19,7 +19,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
 
     async createNeededData(){
         let rawExport = await this.getRawReport();
-        this.parsedReport = CSVExportParser.getListOfLineObjects(rawExport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_SEMICOLON);
+        this.parsedReport = CSVExportParser.getListOfLineObjects(rawExport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_SEMICOLON, true);
     }
 
     async getRawReport(): Promise<string | undefined> {
@@ -55,10 +55,10 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     }
 
     private static getMarkingJSONFromRawMarking(rawMarking: any){
-        let id = rawMarking["ID"];
-        let name = rawMarking["BESCHREIBUNG"];
-        let hint = rawMarking["HINWEISE"];
-        let short = rawMarking["KUERZEL"];
+        let id = rawMarking['"ID"'];
+        let name = rawMarking['"BESCHREIBUNG"'];
+        let hint = rawMarking['"HINWEISE"'];
+        let short = rawMarking['"KUERZEL"'];
 
         let externalIdentifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);
         if (!externalIdentifier){
