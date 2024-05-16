@@ -1,10 +1,12 @@
 import axios from "axios";
-import {TL1Parser} from "./TL1Parser"
-import {ParserInterface} from "./ParserInterface";
+import {FoodTL1Parser} from "./FoodTL1Parser"
+import {FoodParserInterface} from "./FoodParserInterface";
+import {MarkingParserInterface} from "./MarkingParserInterface";
+import {TranslationHelper} from "../helpers/TranslationHelper";
 
 const DEFAULT_AMOUNT_OF_DAYS_TO_PULL = 8;
 
-export class SWOSY_API_Parser implements ParserInterface{
+export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInterface {
 
     amountOfDaysToPull: number
     foods = {};
@@ -38,7 +40,7 @@ export class SWOSY_API_Parser implements ParserInterface{
                 alias: remoteItem.label,
                 external_identifier: remoteItem.label,
                 translations: {
-                    "de-DE": {"name": remoteItem.description}
+                    [TranslationHelper.LANGUAGE_CODE_DE]: {"name": remoteItem.description}
                 }
             })
         }
@@ -71,8 +73,8 @@ export class SWOSY_API_Parser implements ParserInterface{
                 image_remote_url: SWOSY_API_Parser.getImageRemoteUrlForMealId(this.api_url, food.id),
 //                name: food.name,
                 translations: {
-                    "de-DE": {"name": food?.name},
-                    "en-US": {"name": food?.nameEng}
+                    [TranslationHelper.LANGUAGE_CODE_DE]: {"name": food?.name},
+                    [TranslationHelper.LANGUAGE_CODE_EN]: {"name": food?.nameEng}
                 }
             })
         }
@@ -88,7 +90,7 @@ export class SWOSY_API_Parser implements ParserInterface{
 
 
 
-    async getMarkingLabelsForMealJSON(foodJSON: any){
+    async getMarkingExternalIdentifierListForFoodJSON(foodJSON: any){
         let food = await this.getMealFromMealJSON(foodJSON);
         let name = "";
         for(let i=1; i<= 6; i++){
@@ -96,7 +98,7 @@ export class SWOSY_API_Parser implements ParserInterface{
             name += textX;
         }
 
-        let markingsDict = await TL1Parser.getMarkingLabelsDictFromName(name)
+        let markingsDict = await FoodTL1Parser.getMarkingLabelsDictFromName(name)
         return Object.keys(markingsDict)
     }
 

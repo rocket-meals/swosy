@@ -1,8 +1,8 @@
-import {TL1Parser_GetRawReportInterface} from "./TL1Parser_GetRawReportInterface";
+import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
 import path from "path";
 import fs from "fs";
 
-export class TL1Parser_RawReportFtpReader implements TL1Parser_GetRawReportInterface {
+export class FoodTL1Parser_RawReportFtpReader implements FoodTL1Parser_GetRawReportInterface {
     private path_to_tl1_export: string;
     private encoding: string;
 

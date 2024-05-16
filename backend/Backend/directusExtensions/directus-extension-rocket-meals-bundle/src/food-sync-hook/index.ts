@@ -2,16 +2,21 @@ import {ParseSchedule} from "./ParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {ParserInterface} from "./ParserInterface";
-import {TL1Parser} from "./TL1Parser";
-import {TL1Parser_RawReportFtpReader} from "./TL1Parser_RawReportFtpReader";
-import {TL1Parser_RawReportUrlReader} from "./TL1Parser_RawReportUrlReader";
+import {FoodParserInterface} from "./FoodParserInterface";
+import {FoodTL1Parser} from "./FoodTL1Parser";
+import {FoodTL1Parser_RawReportFtpReader} from "./FoodTL1Parser_RawReportFtpReader";
+import {FoodTL1Parser_RawReportUrlReader} from "./FoodTL1Parser_RawReportUrlReader";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {MarkingTL1Parser} from "./MarkingTL1Parser";
+import {MarkingParserInterface} from "./MarkingParserInterface";
 
 const SCHEDULE_NAME = "food_parse";
 
-function getParser(env: any): ParserInterface | null {
+const DIRECTUS_TL1_FOOD_PATH = "/directus/tl1/foodPlan.csv"; // This is defined in docker-compose.yaml statically
+const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defined in docker-compose.yaml statically
+
+function getFoodParser(env: any): FoodParserInterface | null {
     const FOOD_SYNC_MODE = env.FOOD_SYNC_MODE; // Options: "TL1CSV", "TL1WEB", "SWOSY"
 
     switch (FOOD_SYNC_MODE) {
@@ -21,10 +26,9 @@ function getParser(env: any): ParserInterface | null {
             const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "latin1";
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-            const tl1_csv_file_path = "/directus/tl1/foodPlan.csv";
-            const ftpFileReader = new TL1Parser_RawReportFtpReader(tl1_csv_file_path, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+            const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new TL1Parser(ftpFileReader);
+            return new FoodTL1Parser(ftpFileReader);
         case "TL1WEB":
             /* TL1 URL */
             const FOOD_SYNC_TL1WEB_EXPORT_URL = env.FOOD_SYNC_TL1WEB_EXPORT_URL;
@@ -34,20 +38,25 @@ function getParser(env: any): ParserInterface | null {
             }
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from URL: " + FOOD_SYNC_TL1WEB_EXPORT_URL);
-            const urlReader = new TL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
+            const urlReader = new FoodTL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new TL1Parser(urlReader);
-        case "SWOSY":
-            /* SWOSY API */
-            const FOOD_SYNC_SWOSY_API_SERVER_URL = env.FOOD_SYNC_SWOSY_API_SERVER_URL;
-            if(!FOOD_SYNC_SWOSY_API_SERVER_URL) {
-                console.log(SCHEDULE_NAME + ": no URL configured for SWOSY API");
-                return null;
-            }
+            return new FoodTL1Parser(urlReader);
+    }
 
-            console.log(SCHEDULE_NAME + ": Using SWOSY API: " + FOOD_SYNC_SWOSY_API_SERVER_URL);
-            // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_SERVER_URL);
+    return null;
+}
+
+function getMarkingParser(env: any): MarkingParserInterface | null {
+    const MARKING_SYNC_MODE = env.MARKING_SYNC_MODE; // Options: "TL1CSV", "TL1WEB"
+
+    switch (MARKING_SYNC_MODE) {
+        case "TL1CSV":
+            /* TL1 CSV FILE */
+            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH;
+            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "latin1";
+
+            console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
+            return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
     }
 
     return null;
@@ -56,16 +65,16 @@ function getParser(env: any): ParserInterface | null {
 async function checkForImageSynchronize(env: any, services: any, database: any, schema: any){
     //console.log(SCHEDULE_NAME + ": Checking for image synchronize");
     const FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY = env.FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY;
-    const FOOD_SYNC_SWOSY_API_SERVER_URL = env.FOOD_SYNC_SWOSY_API_SERVER_URL;
+    const FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
 
     const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
     const fileServiceCreator = new FileServiceCreator(services, database, schema);
 
-    const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_SYNC_SWOSY_API_SERVER_URL;
+    const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
     if(canImportImages){
 
 
-        console.log(SCHEDULE_NAME + ": Importing images from a SWOSY API: " + FOOD_SYNC_SWOSY_API_SERVER_URL);
+        console.log(SCHEDULE_NAME + ": Importing images from a SWOSY API: " + FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL);
         const foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
         const meals = await foodsService.readByQuery({
             limit: -1
@@ -93,7 +102,7 @@ async function checkForImageSynchronize(env: any, services: any, database: any, 
                 //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " already has an image");
             } else {
                 //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " has no image");
-                const swosyImageUrl = SWOSY_API_Parser.getImageRemoteUrlForMealId(FOOD_SYNC_SWOSY_API_SERVER_URL, meal.id);
+                const swosyImageUrl = SWOSY_API_Parser.getImageRemoteUrlForMealId(FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL, meal.id);
                 if(swosyImageUrl) {
                     //console.log(SCHEDULE_NAME + ": Trying to import image for meal " + meal_id + " from " + swosyImageUrl);
 
@@ -145,15 +154,17 @@ export default defineHook(async ({action}, {
         return;
     }
 
-    const usedParser = getParser(env);
-
-    if(!usedParser) {
+    const usedFoodParser = getFoodParser(env);
+    if(!usedFoodParser) {
         console.log(SCHEDULE_NAME + ": no food parser configured");
-        console.log(SCHEDULE_NAME + ": please configure a food parser in the .env file and restart the server");
-        return;
     }
 
-    const parseSchedule = new ParseSchedule(usedParser);
+    const usedMarkingParser = getMarkingParser(env);
+    if(!usedMarkingParser) {
+        console.log(SCHEDULE_NAME + ": no marking parser configured");
+    }
+
+    const parseSchedule = new ParseSchedule(usedFoodParser, usedMarkingParser);
 
     let collection = CollectionNames.APP_SETTINGS
 

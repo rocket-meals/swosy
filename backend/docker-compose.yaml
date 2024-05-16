@@ -42,6 +42,8 @@ services:
       - ./Backend/secrets:/directus/secrets
       # TL1 food plan
       - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/foodPlan.csv
+      # TL1 markings
+      - ${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/markings.csv
     networks:
       - directus
       - custom_network
