@@ -19,6 +19,11 @@ export class CSVExportParser {
         if(removeTailoringQuotes){
             for(let i=0; i<lineItemsList.length; i++){
                 let item = lineItemsList[i];
+                // Strip away carriage return
+                if(item.endsWith('\r')){
+                    item = item.substring(0, item.length-1);
+                }
+
                 if(item.startsWith('"')){
                     item = item.substring(1);
                 }
