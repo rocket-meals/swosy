@@ -33,6 +33,8 @@ export class CSVExportParser {
                 if(item.endsWith('\\"')){
                     item = item.substring(0, item.length-2);
                 }
+
+                lineItemsList[i] = item;
             }
         }
         return lineItemsList;
