@@ -70,6 +70,10 @@ services:
       FOOD_SYNC_SWOSY_API_SERVER_URL: "${FOOD_SYNC_SWOSY_API_SERVER_URL}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
       FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY: "${FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY}" # If the system should sync images from swosy. Swosy api server is needed for this
 
+      MARKING_SYNC_MODE: "${MARKING_SYNC_MODE}"
+      MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/markings.csv
+      MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
+
       DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
       DB_FILENAME: './database/data.db'
       #DB_HOST: 'database' #Required when using pg, mysql, oracledb, or mssql
