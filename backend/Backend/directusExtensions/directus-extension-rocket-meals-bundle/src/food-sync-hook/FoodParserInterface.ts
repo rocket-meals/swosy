@@ -1,14 +1,12 @@
-export interface ParserInterface {
+export interface FoodParserInterface {
 
     createNeededData(): Promise<void>;
-
-    getMarkingsJSONList(): Promise<any>;
 
     getCanteensJSONList(): Promise<any>;
 
     getMealsJSONList(): Promise<any>;
 
-    getMarkingLabelsForMealJSON(foodJSON: any): Promise<any>;
+    getMarkingExternalIdentifierListForFoodJSON(foodJSON: any): Promise<any>;
 
     getMealNutritionsForMealJSON(foodJSON: any): Promise<any>;
 

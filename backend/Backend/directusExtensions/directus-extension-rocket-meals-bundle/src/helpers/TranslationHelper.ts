@@ -3,6 +3,9 @@ const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-tr
 
 export class TranslationHelper {
 
+    static LANGUAGE_CODE_DE = "de-DE";
+    static LANGUAGE_CODE_EN = "en-US";
+
     static async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
         let itemWithTranslations = await specificItemService.readOne(item?.id, {"fields": ["*", "translations.*"]});
         let translationsFromParsing = itemJSON?.translations || {}
@@ -25,8 +28,8 @@ export class TranslationHelper {
         let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
         /** remaining_translationsFromParsing is an object with the following structure:
          {
-             "de-DE": {name ....},
-             "en-US": {....}
+             [TranslationHelper.]: {name ....},
+             [TranslationHelper.]: {....}
          }
          */
         let createTranslations = [];

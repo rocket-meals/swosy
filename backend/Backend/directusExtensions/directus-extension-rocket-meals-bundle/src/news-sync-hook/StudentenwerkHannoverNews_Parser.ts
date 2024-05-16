@@ -1,5 +1,6 @@
 import axios from "axios";
 import cheerio from 'cheerio';
+import {TranslationHelper} from "../helpers/TranslationHelper";
 
 const baseUrl = 'https://www.studentenwerk-hannover.de';
 const newsUrl = `${baseUrl}/unternehmen/news`;
@@ -52,7 +53,7 @@ export class StudentenwerkHannoverNews_Parser {
                     date: new Date(),
                     url: articleUrl,
                     translations: {
-                        "de-DE": {
+                        [TranslationHelper.LANGUAGE_CODE_DE]: {
                             title: header,
                             content: content,
                             be_source_for_translations: true,
@@ -77,7 +78,7 @@ export class StudentenwerkHannoverNews_Parser {
             image_remote_url: "https://www.studentenwerk-hannover.de/fileadmin/user_upload/Bilder/4_Beratung/JEE_151007_DSW-Berlin_0709.jpg",
             url: "https://www.studentenwerk-hannover.de/unternehmen/news/detail/semesterbeitragsstipendium",
             translations: {
-                "de-DE": {
+                [TranslationHelper.LANGUAGE_CODE_DE]: {
                     title: "Semesterbeitragsstipendium",
                     content: "Bewerbung jetzt auch digital möglich",
                     be_source_for_translations: true,

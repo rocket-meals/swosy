@@ -1,11 +1,12 @@
 import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser"
 
-import {ParserInterface} from "./ParserInterface";
-import {TL1Parser_GetRawReportInterface} from "./TL1Parser_GetRawReportInterface";
+import {FoodParserInterface} from "./FoodParserInterface";
+import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
 import {ParseSchedule} from "./ParseSchedule";
+import {TranslationHelper} from "../helpers/TranslationHelper";
 
-export class TL1Parser implements ParserInterface {
+export class FoodTL1Parser implements FoodParserInterface {
 
     static DEFAULT_CANTEEN_FIELD = "MENSA";
     static DEFAULT_DATE_FIELD = "DATUM";
@@ -28,9 +29,9 @@ export class TL1Parser implements ParserInterface {
 
     rawMealOffers: null | { [x: string]: any; }[]  = null;
     foodIdToRawMealOfferDict: null | { [x: string]: any; }[] = null;
-    private rawMealOfferReader: TL1Parser_GetRawReportInterface;
+    private rawMealOfferReader: FoodTL1Parser_GetRawReportInterface;
 
-    constructor(rawMealOfferReader: TL1Parser_GetRawReportInterface) {
+    constructor(rawMealOfferReader: FoodTL1Parser_GetRawReportInterface) {
         this.rawMealOfferReader = rawMealOfferReader;
         this.rawMealOffers = null;
         this.foodIdToRawMealOfferDict = null;
@@ -38,20 +39,8 @@ export class TL1Parser implements ParserInterface {
 
     async createNeededData(){
         let rawReport = await this.rawMealOfferReader.getRawReport();
-        this.rawMealOffers = await TL1Parser.createRawMealOffers(rawReport);
-        this.foodIdToRawMealOfferDict = TL1Parser.createMealIdToRawMealOfferDict(this.rawMealOffers);
-    }
-
-    async getMarkingsJSONList(){
-        let rawMealOffers = await this.getRawMealOffersJSONList();
-        let markingLabelsDict = {};
-        for(let rawMealOffer of rawMealOffers){
-            let markingsFromOffer = TL1Parser.getGenerelMarkingsFromRawMealOffer(rawMealOffer);
-            for(let marking of markingsFromOffer){
-                markingLabelsDict[marking.label] = marking;
-            }
-        }
-        return TL1Parser.getValueListFromDict(markingLabelsDict);
+        this.rawMealOffers = await FoodTL1Parser.createRawMealOffers(rawReport);
+        this.foodIdToRawMealOfferDict = FoodTL1Parser.createMealIdToRawMealOfferDict(this.rawMealOffers);
     }
 
     async getMealsJSONList(){
@@ -60,7 +49,7 @@ export class TL1Parser implements ParserInterface {
         let foodsJSONList = [];
         for(let foodId of foodIds){
             let rawMealOffer = foodIdToRawMealOfferDict[foodId];
-            let food = TL1Parser.getMealJSONFromRawMealOffer(rawMealOffer);
+            let food = FoodTL1Parser.getMealJSONFromRawMealOffer(rawMealOffer);
             foodsJSONList.push(food);
         }
         return foodsJSONList;
@@ -70,19 +59,19 @@ export class TL1Parser implements ParserInterface {
         let rawMealOffers = await this.getRawMealOffersJSONList();
         let canteenLabelsDict = {};
         for(let rawMealOffer of rawMealOffers){
-            let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-            let canteenLabel = TL1Parser.getCanteenLabelFunction(parsedReportItem);
+            let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+            let canteenLabel = FoodTL1Parser.getCanteenLabelFunction(parsedReportItem);
             canteenLabelsDict[canteenLabel] = {
                 label: canteenLabel,
                 external_identifier: canteenLabel,
             };
         }
-        return TL1Parser.getValueListFromDict(canteenLabelsDict);
+        return FoodTL1Parser.getValueListFromDict(canteenLabelsDict);
     }
 
-    async getMarkingLabelsForMealJSON(foodJSON){
+    async getMarkingExternalIdentifierListForFoodJSON(foodJSON){
         let rawMealOffer = this._getRawMealOfferFromMealJSON(foodJSON);
-        return TL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
+        return FoodTL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
     }
 
     async getMealNutritionsForMealJSON(foodJSON){
@@ -91,14 +80,14 @@ export class TL1Parser implements ParserInterface {
     }
 
     async getMealNutritionsForRawMealOffer(rawMealOffer){
-        return TL1Parser.getMealNutritionsFromRawMealOffer(rawMealOffer);
+        return FoodTL1Parser.getMealNutritionsFromRawMealOffer(rawMealOffer);
     }
 
     async getMealOffersISOStringDatesToDelete(rawMealOffersJSONList){
         let datesDict = {};
         for(let rawMealOffer of rawMealOffersJSONList){
-            let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-            let date = TL1Parser.getISODateFunction(parsedReportItem);
+            let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+            let date = FoodTL1Parser.getISODateFunction(parsedReportItem);
             datesDict[date] = date;
         }
         return Object.keys(datesDict);
@@ -109,24 +98,24 @@ export class TL1Parser implements ParserInterface {
     }
 
     async getCanteenLabelFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[TL1Parser._MEALOFFERITEM_CANTEEN_LABEL];
+        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_CANTEEN_LABEL];
     }
 
     async getMealIdFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[TL1Parser._MEALOFFERITEM_MEAL_ID]
+        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_MEAL_ID]
     }
 
     async getISODateStringOfMealOffer(rawMealOffer){
-        return rawMealOffer[TL1Parser._MEALOFFERITEM_DATE];
+        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_DATE];
     }
 
     async getPriceForGroupFromRawMealOffer(group: string, rawMealOffer){
-        let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        return TL1Parser.getPriceForGroup(parsedReportItem, group)
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+        return FoodTL1Parser.getPriceForGroup(parsedReportItem, group)
     }
 
     async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
-        return TL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
+        return FoodTL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
     }
 
     /**
@@ -140,14 +129,14 @@ export class TL1Parser implements ParserInterface {
 
     static async createRawMealOffers(rawReport: string | Buffer | undefined){
         let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
-        let groupedReportItems = TL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
-        return TL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
+        let groupedReportItems = FoodTL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReport);
+        return FoodTL1Parser.createMealOfferJSONFromGroupedList(groupedReportItems);
     }
 
     static _groupParsedReportItemsToMealOfferListsItems(parsedReport){
         let dictOfItemsForAMealOffer = {};
         for(let item of parsedReport){
-            let identifier = TL1Parser.getMealOfferIdentifier(item);
+            let identifier = FoodTL1Parser.getMealOfferIdentifier(item);
             if(!!identifier){
                 let listOfParsedItemsForSameMealOffer = dictOfItemsForAMealOffer[identifier] || [];
                 listOfParsedItemsForSameMealOffer.push(item);
@@ -162,7 +151,7 @@ export class TL1Parser implements ParserInterface {
         let keys = Object.keys(groupedReportItems);
         for(let key of keys){
             let listOfItemsForSameMealOffer = groupedReportItems[key];
-            let foodOfferJSON = TL1Parser._createMealOfferFromGroupedItems(listOfItemsForSameMealOffer);
+            let foodOfferJSON = FoodTL1Parser._createMealOfferFromGroupedItems(listOfItemsForSameMealOffer);
             foodOfferJSONList.push(foodOfferJSON);
         }
         return foodOfferJSONList;
@@ -172,19 +161,19 @@ export class TL1Parser implements ParserInterface {
         let recipe_ids = [];
         let parsedReportItem = listOfItemsForSameMealOffer[0];
         for(let item of listOfItemsForSameMealOffer){
-            let item_id = TL1Parser.getRecipeIdFunction(item);
+            let item_id = FoodTL1Parser.getRecipeIdFunction(item);
             recipe_ids.push(item_id);
         }
-        let food_id = TL1Parser.getSortedMealId(recipe_ids);
+        let food_id = FoodTL1Parser.getSortedMealId(recipe_ids);
 
-        let date = TL1Parser.getISODateFunction(parsedReportItem)
-        let canteen_label = TL1Parser.getCanteenLabelFunction(parsedReportItem)
+        let date = FoodTL1Parser.getISODateFunction(parsedReportItem)
+        let canteen_label = FoodTL1Parser.getCanteenLabelFunction(parsedReportItem)
 
         return {
-            [TL1Parser._MEALOFFERITEM_MEAL_ID]: food_id,
-            [TL1Parser._MEALOFFERITEM_ITEM]: parsedReportItem,
-            [TL1Parser._MEALOFFERITEM_DATE]: date,
-            [TL1Parser._MEALOFFERITEM_CANTEEN_LABEL]: canteen_label,
+            [FoodTL1Parser._MEALOFFERITEM_MEAL_ID]: food_id,
+            [FoodTL1Parser._MEALOFFERITEM_ITEM]: parsedReportItem,
+            [FoodTL1Parser._MEALOFFERITEM_DATE]: date,
+            [FoodTL1Parser._MEALOFFERITEM_CANTEEN_LABEL]: canteen_label,
         }
     }
 
@@ -206,7 +195,7 @@ export class TL1Parser implements ParserInterface {
     static createMealIdToRawMealOfferDict(rawMealOffers){
         let foodIdsDictToRawMealOffers = {};
         for(let rawMealOffer of rawMealOffers){
-            let foodId = TL1Parser.getMealIdFromRawMealOffer(rawMealOffer);
+            let foodId = FoodTL1Parser.getMealIdFromRawMealOffer(rawMealOffer);
             foodIdsDictToRawMealOffers[foodId] = rawMealOffer;
         }
         return foodIdsDictToRawMealOffers
@@ -218,34 +207,34 @@ export class TL1Parser implements ParserInterface {
     }
 
     static getMealJSONFromRawMealOffer(rawMealOffer){
-        let meal_id = TL1Parser.getMealIdFromRawMealOffer(rawMealOffer);
-        let parsedReportItem = rawMealOffer[TL1Parser._MEALOFFERITEM_ITEM];
+        let meal_id = FoodTL1Parser.getMealIdFromRawMealOffer(rawMealOffer);
+        let parsedReportItem = rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
         return {
             id: meal_id,
-            alias: TL1Parser._getMealName(parsedReportItem),
+            alias: FoodTL1Parser._getMealNameDe(parsedReportItem),
 //            name: TL1Parser._getMealName(parsedReportItem),
             translations: {
-                "de-DE": {"name": TL1Parser._getMealName(parsedReportItem)},
-                "en-US": {"name": TL1Parser._getMealNameEng(parsedReportItem)}
+                [TranslationHelper.LANGUAGE_CODE_DE]: {"name": FoodTL1Parser._getMealNameDe(parsedReportItem)},
+                [TranslationHelper.LANGUAGE_CODE_EN]: {"name": FoodTL1Parser._getMealNameEn(parsedReportItem)}
             }
         };
     }
 
     async getAliasForMealOfferFromRawMealOffer(rawMealOffer){
-        let parsedReportItem = rawMealOffer[TL1Parser._MEALOFFERITEM_ITEM];
-        return TL1Parser._getMealName(parsedReportItem);
+        let parsedReportItem = rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
+        return FoodTL1Parser._getMealNameDe(parsedReportItem);
     }
 
     static getParsedReportItemFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[TL1Parser._MEALOFFERITEM_ITEM];
+        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
     }
 
     static getMealIdFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[TL1Parser._MEALOFFERITEM_MEAL_ID];
+        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_MEAL_ID];
     }
 
     static _hasValidName(parsedReportItem){
-        let rawNamesList = TL1Parser._getRawNamesList(parsedReportItem);
+        let rawNamesList = FoodTL1Parser._getRawNamesList(parsedReportItem);
         if(!!rawNamesList && rawNamesList.length>0){
             let rawName = rawNamesList.join("");
             return rawName.length > 0;
@@ -255,11 +244,11 @@ export class TL1Parser implements ParserInterface {
     }
 
     static getMealOfferIdentifier(parsedReportItem){
-        if(TL1Parser._hasValidName(parsedReportItem)){
+        if(FoodTL1Parser._hasValidName(parsedReportItem)){
             let mealOfferIdentifier = "";
-            mealOfferIdentifier += TL1Parser._getCanteenName(parsedReportItem)
-            mealOfferIdentifier += TL1Parser._getDatum(parsedReportItem)
-            mealOfferIdentifier += TL1Parser._getMealIdentifier(parsedReportItem)
+            mealOfferIdentifier += FoodTL1Parser._getCanteenName(parsedReportItem)
+            mealOfferIdentifier += FoodTL1Parser._getDatum(parsedReportItem)
+            mealOfferIdentifier += FoodTL1Parser._getMealIdentifier(parsedReportItem)
             return mealOfferIdentifier;
         } else {
             return null;
@@ -267,20 +256,20 @@ export class TL1Parser implements ParserInterface {
     }
 
     static getRecipeIdFunction(parsedReportItem) {
-        return parsedReportItem[TL1Parser.DEFAULT_RECIPE_ID_FIELD];
+        return parsedReportItem[FoodTL1Parser.DEFAULT_RECIPE_ID_FIELD];
     }
 
     static getISODateFunction(parsedReportItem){
         /**
          *   "DATUM": "25.01.2022",
          */
-        let rawDate = TL1Parser._getDatum(parsedReportItem);
+        let rawDate = FoodTL1Parser._getDatum(parsedReportItem);
         let isoDate = moment(rawDate, "DD-MM-YYYY");
         return isoDate.toISOString();
     }
 
     static getCanteenLabelFunction(parsedReportItem){
-        return parsedReportItem[TL1Parser.DEFAULT_CANTEEN_FIELD];
+        return parsedReportItem[FoodTL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
     static findFirstPriceValueForFields(parsedReportItem, fields: string[]){
@@ -296,9 +285,9 @@ export class TL1Parser implements ParserInterface {
     static getPriceForGroup(parsedReportItem, groupName: string){
         let foundPrice = null;
         switch (groupName){
-            case ParseSchedule.PRICE_GROUP_STUDENT: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_STUDENT_OSNABRUECK, TL1Parser.FIELD_PRICE_STUDENT_HANNOVER]); break;
-            case ParseSchedule.PRICE_GROUP_EMPLOYEE: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_EMPLOYEE_OSNABRUECK, TL1Parser.FIELD_PRICE_EMPLOYEE_HANNOVER]); break;
-            case ParseSchedule.PRICE_GROUP_GUEST: foundPrice = TL1Parser.findFirstPriceValueForFields(parsedReportItem, [TL1Parser.FIELD_PRICE_GUEST_OSNABRUECK, TL1Parser.FIELD_PRICE_GUEST_HANNOVER]); break;
+            case ParseSchedule.PRICE_GROUP_STUDENT: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_STUDENT_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_STUDENT_HANNOVER]); break;
+            case ParseSchedule.PRICE_GROUP_EMPLOYEE: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_EMPLOYEE_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_EMPLOYEE_HANNOVER]); break;
+            case ParseSchedule.PRICE_GROUP_GUEST: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_GUEST_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_GUEST_HANNOVER]); break;
             default: return null
         }
         if(!!foundPrice){
@@ -320,37 +309,37 @@ export class TL1Parser implements ParserInterface {
          * e. G.
          * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
          */
-        let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
         let nutritionValuesJSON = {};
-        let nutritionValuesString = parsedReportItem[TL1Parser.DEFAULT_NUTRITIONS_FIELD];
+        let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
         if(!!nutritionValuesString){
             let kcalEndString = " kcal)";
             let match = nutritionValuesString.match(/\(.* kcal/gm);
             // e. G. (XXXXXXX kcal)
             if(!!match){
-                let kcal = match[0].slice(1,kcalEndString.length); //remove starting bracket and kcal)
+                let kcal = match[0].slice(1,kcalEndString.length); //remove starting bracket "(" and kcal)
                 nutritionValuesJSON.calories_kcal = parseInt(kcal);
             }
 
-            let fatInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Fett");
+            let fatInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Fett");
             nutritionValuesJSON.fat_g = fatInGrams;
 
-            let saturatedFatInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Fettsäuren");
+            let saturatedFatInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Fettsäuren");
             nutritionValuesJSON.saturated_fat_g = saturatedFatInGrams;
 
-            let carbohydratesInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Kohlenhydrate");
+            let carbohydratesInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Kohlenhydrate");
             nutritionValuesJSON.carbohydrate_g = carbohydratesInGrams;
 
-            let sugarInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Zucker");
+            let sugarInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Zucker");
             nutritionValuesJSON.sugar_g = sugarInGrams;
 
-            let fiberInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Ballaststoffe");
+            let fiberInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Ballaststoffe");
             nutritionValuesJSON.fiber_g = fiberInGrams;
 
-            let proteinInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Eiweiß");
+            let proteinInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Eiweiß");
             nutritionValuesJSON.protein_g = proteinInGrams;
 
-            let saltInGrams = TL1Parser.parseNutritionValue(nutritionValuesString,"Salz");
+            let saltInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Salz");
             nutritionValuesJSON.sodium_g = saltInGrams;
         }
         return nutritionValuesJSON;
@@ -373,7 +362,7 @@ export class TL1Parser implements ParserInterface {
                 let matchString = match[0];
                 let valueString = matchString.slice(searchText.length);
                 valueString = valueString.replace(",",".");
-                let value = TL1Parser.parseFloatWithOneDecimal(valueString);
+                let value = FoodTL1Parser.parseFloatWithOneDecimal(valueString);
                 return value;
             }
         } catch(err){
@@ -387,10 +376,10 @@ export class TL1Parser implements ParserInterface {
      */
 
     static getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer){
-        let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
         let markingsDict = {};
-        let rawName = TL1Parser._getRawNamesList(parsedReportItem).join("");
-        markingsDict = TL1Parser.getMarkingLabelsDictFromName(rawName);
+        let rawName = FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
+        markingsDict = FoodTL1Parser.getMarkingLabelsDictFromName(rawName);
         return Object.keys(markingsDict);
     }
 
@@ -402,7 +391,7 @@ export class TL1Parser implements ParserInterface {
         if(!!rawMarkingsInName){
             for(let rawMarkingsPart of rawMarkingsInName){
                 //e. G. "(g, b)"
-                let listOfPartMarkings = TL1Parser.removeValuesAndWhitespacesAndSeperators(rawMarkingsPart, ["(", ")"], ",");
+                let listOfPartMarkings = FoodTL1Parser.removeValuesAndWhitespacesAndSeperators(rawMarkingsPart, ["(", ")"], ",");
                 //e. G. ["g", "b"]
                 for (let partMarking of listOfPartMarkings) {
                     markingsDict[partMarking] = partMarking;
@@ -419,11 +408,11 @@ export class TL1Parser implements ParserInterface {
      * @param parsedReportItem
      */
     static getGenerelMarkingsFromRawMealOffer(rawMealOffer){
-        let parsedReportItem = TL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        let markingLabelString = parsedReportItem[TL1Parser.DEFAULT_MARKING_LABELS_FIELD];
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+        let markingLabelString = parsedReportItem[FoodTL1Parser.DEFAULT_MARKING_LABELS_FIELD];
         //  e. G. "ZSNUMMERN": "2, 9, a, c, j, m, 40, 0",
 
-        let markingNamesString = parsedReportItem[TL1Parser.DEFAULT_MARKING_NAMES_FIELD];
+        let markingNamesString = parsedReportItem[FoodTL1Parser.DEFAULT_MARKING_NAMES_FIELD];
         // e. G. "ZSNAMEN": "mit Konservierungsstoff, mit Süßungsmitteln, Glutenhaltiges Getreide (a), Hühnerei (c), Senf (j), Sesam (m), Geflügel, zusatzstoff- und allergenfrei",
 
         // The idea is, each number corresponds in position with each list, so we split
@@ -508,15 +497,15 @@ export class TL1Parser implements ParserInterface {
 
 
     static _getCanteenName(parsedReportItem) {
-        return parsedReportItem[TL1Parser.DEFAULT_CANTEEN_FIELD];
+        return parsedReportItem[FoodTL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
     static _getDatum(parsedReportItem) {
-        return parsedReportItem[TL1Parser.DEFAULT_DATE_FIELD];
+        return parsedReportItem[FoodTL1Parser.DEFAULT_DATE_FIELD];
     }
 
     static _getMealIdentifier(parsedReportItem) {
-        return TL1Parser._getRawNamesList(parsedReportItem).join("");
+        return FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
     }
 
     static _getRawNamesList(parsedReportItem, postFieldName){
@@ -525,7 +514,7 @@ export class TL1Parser implements ParserInterface {
         }
         let meal_partials_names = [];
         for(let i=1; i<= 6; i++){
-            let partialName = parsedReportItem[TL1Parser.DEFAULT_TEXT_FIELD+i+postFieldName];
+            let partialName = parsedReportItem[FoodTL1Parser.DEFAULT_TEXT_FIELD+i+postFieldName];
             if(!!partialName && partialName.length>0 && partialName!==" "){
                 meal_partials_names.push(partialName);
             }
@@ -535,13 +524,13 @@ export class TL1Parser implements ParserInterface {
 
 
 
-    static _getMealName(parsedReportItem){
-        let rawMealName = TL1Parser._getRawNamesList(parsedReportItem, "").join(", ");
+    static _getMealNameDe(parsedReportItem){
+        let rawMealName = FoodTL1Parser._getRawNamesList(parsedReportItem, "").join(", ");
         return rawMealName.replace(/ \([^ ]+/gm, ""); //remove all (1,3,) stuff
     }
 
-    static _getMealNameEng(parsedReportItem){
-        let rawMealName = TL1Parser._getRawNamesList(parsedReportItem, "_1").join(", ");
+    static _getMealNameEn(parsedReportItem){
+        let rawMealName = FoodTL1Parser._getRawNamesList(parsedReportItem, "_1").join(", ");
         return rawMealName.replace(/ \([^ ]+/gm, ""); //remove all (1,3,) stuff
     }
 

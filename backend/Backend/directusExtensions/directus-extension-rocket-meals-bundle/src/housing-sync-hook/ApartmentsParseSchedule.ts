@@ -148,8 +148,8 @@ export class ApartmentsParseSchedule {
         let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
         /** remaining_translationsFromParsing is an object with the following structure:
          {
-                "de-DE": {name ....},
-                "en-US": {....}
+                [TranslationHelper.]: {name ....},
+                [TranslationHelper.]: {....}
             }
          */
         let createTranslations = [];

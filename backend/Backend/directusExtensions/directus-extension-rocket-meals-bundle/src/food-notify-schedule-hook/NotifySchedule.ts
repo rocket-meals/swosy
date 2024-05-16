@@ -1,5 +1,6 @@
 import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {TranslationHelper} from "../helpers/TranslationHelper";
 
 
 const TABLENAME_MEALS = CollectionNames.FOODS
@@ -9,8 +10,8 @@ const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
-const DefaultLanguage = "de-DE";
-const FallBackLanguage = "en-US";
+const DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE
+const FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
 
 export class NotifySchedule {
 

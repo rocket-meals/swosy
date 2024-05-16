@@ -1,8 +1,9 @@
 import moment from "moment";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {ParserInterface} from "./ParserInterface";
+import {FoodParserInterface} from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {MarkingParserInterface} from "./MarkingParserInterface";
 
 const TABLENAME_MEALS = CollectionNames.FOODS;
 const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
@@ -23,7 +24,8 @@ export class ParseSchedule {
     static PRICE_GROUP_EMPLOYEE = "employee";
     static PRICE_GROUP_GUEST = "guest";
 
-    private parser: ParserInterface;
+    private foodParser: FoodParserInterface | null
+    private markingParser: MarkingParserInterface | null;
     private finished: boolean;
     private schema: any;
     private database: any;
@@ -35,8 +37,9 @@ export class ParseSchedule {
     private foodsService: any;
     private markingsService: any;
 
-    constructor(parser: ParserInterface) {
-        this.parser = parser;
+    constructor(foodParser: FoodParserInterface, markingParser: MarkingParserInterface) {
+        this.foodParser = foodParser;
+        this.markingParser = markingParser;
         this.finished = true;
     }
     
@@ -52,7 +55,8 @@ export class ParseSchedule {
 
     async setStatus(status) {
         await this.database(TABLENAME_FLOWHOOKS).update({
-            foods_parsing_status: status
+            foods_parsing_status: status,
+            foods_parsing_last_date: new Date()
         });
     }
 
@@ -99,30 +103,38 @@ export class ParseSchedule {
             await this.setStatus(statusRunning);
 
             try {
-                console.log("Create Needed Data");
-                await this.parser.createNeededData();
+                if(!!this.markingParser){
+                    console.log("Create Needed Data for MarkingParser");
+                    await this.markingParser.createNeededData()
+                    console.log("Update Markings")
+                    let markingsJSONList = await this.markingParser.getMarkingsJSONList() || [];
+                    await this.updateMarkings(markingsJSONList);
+                }
 
-                console.log("Update Canteens")
-                let canteensJSONList = await this.parser.getCanteensJSONList() || [];
-                await this.updateCanteens(canteensJSONList);
+                if(!!this.foodParser){
+                    console.log("Create Needed Data for FoodParser");
+                    await this.foodParser.createNeededData()
 
-                console.log("Update Markings")
-                let markingsJSONList = await this.parser.getMarkingsJSONList() || [];
-                await this.updateMarkings(markingsJSONList);
+                    console.log("Update Canteens")
+                    let canteensJSONList = await this.foodParser.getCanteensJSONList() || [];
+                    await this.updateCanteens(canteensJSONList);
 
-                console.log("Update Foods")
-                let foodsJSONList = await this.parser.getMealsJSONList() || [];
-                await this.updateFoods(foodsJSONList);
 
-                let rawMealOffersJSONList = await this.parser.getRawMealOffersJSONList() || [];
+                    console.log("Update Foods")
+                    let foodsJSONList = await this.foodParser.getMealsJSONList() || [];
+                    await this.updateFoods(foodsJSONList);
 
-                console.log("Delete all food offers");
-                let ISOStringDatesOfMealOffersToDelete = await this.parser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
-                let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
-                await this.deleteAllFoodOffersWithDates(datesOfMealOffers);
+                    let rawMealOffersJSONList = await this.foodParser.getRawMealOffersJSONList() || [];
 
-                console.log("Create food offers");
-                await this.createFoodOffers(rawMealOffersJSONList);
+                    console.log("Delete all food offers");
+                    let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
+                    let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
+                    await this.deleteAllFoodOffersWithDates(datesOfMealOffers);
+
+                    console.log("Create food offers");
+                    await this.createFoodOffers(rawMealOffersJSONList);
+                }
+
 
                 console.log("Finished");
                 this.finished = true;
@@ -158,7 +170,7 @@ export class ParseSchedule {
         return json;
     }
 
-    async findOrCreateMarking(marking_external_identifier) {
+    async findOrCreateMarkingByExternalIdentifier(marking_external_identifier) {
         let tablename = TABLENAME_MARKINGS;
         let searchJSON = {
             external_identifier: marking_external_identifier
@@ -172,10 +184,10 @@ export class ParseSchedule {
         return marking;
     }
 
-    async findOrCreateMarkings(markings_external_identifiers) {
+    async findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers) {
         let markings = [];
         for (let marking_external_identifier of markings_external_identifiers) {
-            let marking = await this.findOrCreateMarking(marking_external_identifier);
+            let marking = await this.findOrCreateMarkingByExternalIdentifier(marking_external_identifier);
             if(marking){
                 markings.push(marking);
             }
@@ -184,8 +196,6 @@ export class ParseSchedule {
     }
 
     async createIfNotFound(tablename, searchJson, createJSON = searchJson) {
-        //use itemsservice? YES !
-
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
 
         let items = await itemService.readByQuery({
@@ -293,21 +303,21 @@ export class ParseSchedule {
 
         foodsJSONList = this.removeDuplicatesFromJsonList(foodsJSONList, FIELD_FOODS_ID, "foods"); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
-        for (let mealJSON of foodsJSONList) {
+        for (let foodJSON of foodsJSONList) {
             currentFoodIndex++;
             //console.log("Update Food " + currentMeal + " / " + amountOfMeals);
-            let meal = await this.findOrCreateFood(mealJSON);
-            if (!!meal && meal.id) {
-                let markingLabelsList = await this.parser.getMarkingLabelsForMealJSON(mealJSON) || [];
-                let markings = await this.findOrCreateMarkings(markingLabelsList);
-                await this.assignMarkingsToFood(markings, meal);
+            let food = await this.findOrCreateFood(foodJSON);
+            if (!!food && food.id) {
+                let marking_external_identifier_list = await this.foodParser.getMarkingExternalIdentifierListForFoodJSON(foodJSON) || [];
+                let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
+                await this.assignMarkingsToFood(markings, food);
 
-                let nutritionsJSON = await this.parser.getMealNutritionsForMealJSON(mealJSON);
+                let nutritionsJSON = await this.foodParser.getMealNutritionsForMealJSON(foodJSON);
                 if (!!nutritionsJSON) {
-                    await this.assignNutritionsToFood(meal, nutritionsJSON);
+                    await this.assignNutritionsToFood(food, nutritionsJSON);
                 }
 
-                await this.updateFoodTranslations(meal, mealJSON);
+                await this.updateFoodTranslations(food, foodJSON);
             }
         }
     }
@@ -374,21 +384,21 @@ export class ParseSchedule {
 
     async createFoodOffer(rawFoodOffer) {
         let tablename = TABLENAME_FOODOFFERS;
-        let canteenLabel = await this.parser.getCanteenLabelFromRawMealOffer(rawFoodOffer);
+        let canteenLabel = await this.foodParser.getCanteenLabelFromRawMealOffer(rawFoodOffer);
         if (!!canteenLabel) {
             let canteen = await this.findOrCreateCanteen(canteenLabel);
             if (!!canteen) {
-                let food_id = await this.parser.getMealIdFromRawMealOffer(rawFoodOffer);
+                let food_id = await this.foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
                 let mealFromService = await this.foodsService.readByQuery({
                     filter: {
                         id: food_id
                     }
                 });
                 if (!!mealFromService && mealFromService.length > 0) {
-                    let isoDateStringOfMealOffer = await this.parser.getISODateStringOfMealOffer(rawFoodOffer)
+                    let isoDateStringOfMealOffer = await this.foodParser.getISODateStringOfMealOffer(rawFoodOffer)
                     //console.log("get alias for meal offer")
                     //console.log(this.parser)
-                    let alias = await this.parser.getAliasForMealOfferFromRawMealOffer(rawFoodOffer);
+                    let alias = await this.foodParser.getAliasForMealOfferFromRawMealOffer(rawFoodOffer);
                     let date = this.parseISOStringDateToDateOnlyDate(isoDateStringOfMealOffer);
                     if (!!food_id && !!date) {
                         let foodOfferJSON = {
@@ -396,9 +406,9 @@ export class ParseSchedule {
                             alias: alias,
                             canteen: canteen.id,
                             date: date,
-                            price_student: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_STUDENT, rawFoodOffer) || null,
-                            price_employee: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_EMPLOYEE, rawFoodOffer) || null,
-                            price_guest: await this.parser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_GUEST, rawFoodOffer) || null,
+                            price_student: await this.foodParser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_STUDENT, rawFoodOffer) || null,
+                            price_employee: await this.foodParser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_EMPLOYEE, rawFoodOffer) || null,
+                            price_guest: await this.foodParser.getPriceForGroupFromRawMealOffer(ParseSchedule.PRICE_GROUP_GUEST, rawFoodOffer) || null,
                             date_updated: new Date(),
                             date_created: new Date(),
                         };
@@ -413,11 +423,11 @@ export class ParseSchedule {
                         let mealoffer = await mealofferService.readOne(createdMealoffer_id);
 
                         if (!!mealoffer) {
-                            let markings_external_identifiers = await this.parser.getMarkingsExternalIdentifiersFromRawMealOffer(rawFoodOffer) || [];
-                            let markings = await this.findOrCreateMarkings(markings_external_identifiers);
+                            let markings_external_identifiers = await this.foodParser.getMarkingsExternalIdentifiersFromRawMealOffer(rawFoodOffer) || [];
+                            let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
                             await this.assignMarkingsToMealOffer(markings, mealoffer);
                         }
-                        let nutritionsJSON = await this.parser.getMealNutritionsForRawMealOffer(rawFoodOffer);
+                        let nutritionsJSON = await this.foodParser.getMealNutritionsForRawMealOffer(rawFoodOffer);
                         if (!!nutritionsJSON) {
                             await this.assignNutritionsToFoodOffer(mealoffer, nutritionsJSON);
                         }
@@ -441,7 +451,7 @@ export class ParseSchedule {
         let tablename = TABLENAME_MARKINGS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
 
-        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "id");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
+        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
         let amountOfMarkings = markingsJSONList.length;
         let currentMarking = 0;
