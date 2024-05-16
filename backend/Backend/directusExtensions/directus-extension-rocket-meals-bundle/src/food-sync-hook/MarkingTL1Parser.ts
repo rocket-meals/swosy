@@ -46,7 +46,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         let markings = [];
         for (let i = 0; i < this.parsedReport.length; i++){
             let parsedLineObject = this.parsedReport[i];
-            let marking = this.getMarkingJSONFromRawMarking(parsedLineObject);
+            let marking = MarkingTL1Parser.getMarkingJSONFromRawMarking(parsedLineObject);
             if(marking){
                 markings.push(marking);
             }
@@ -60,7 +60,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         let hint = rawMarking["HINWEISE"];
         let short = rawMarking["KUERZEL"];
 
-        let externalIdentifier = this.getMarkingExternalIdentifier(id, short);
+        let externalIdentifier = MarkingTL1Parser.getMarkingExternalIdentifier(id, short);
         if (!externalIdentifier){
             console.log("MarkingTL1Parser: getMarkingJSONFromRawMarking: externalIdentifier is null. Skip this marking.")
             return null;
@@ -128,7 +128,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         }
     }
 
-    private getMarkingExternalIdentifier(id: string | undefined, short: string | undefined): string | null{
+    private static getMarkingExternalIdentifier(id: string | undefined, short: string | undefined): string | null{
         // Hannover Mail to Mister Wiebesiek 15.05.2024 um 03:51 Uhr. Confirm the following:
         // The external identifier is, the short or if the short is empty the id without leading spaces and leading zeros.
         // id e.g. " 103" -> "103" or " 098" -> "98"
