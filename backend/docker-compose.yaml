@@ -4,15 +4,17 @@ services:
   rocket-meals-service:
     image: "traefik/whoami"
     container_name: "rocket-meals-service"
+    env_file:
+      - ".env"
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.rocket-meals-service.rule=PathPrefix(`/rocket-meals/ping`)"
-      - "traefik.http.middlewares.strip-rocket-meals.stripPrefix.prefixes=/rocket-meals"
-      - "traefik.http.routers.rocket-meals-service.middlewares=strip-rocket-meals"
-      - "traefik.http.routers.rocket-meals-service.entrypoints=websecure"
-      - "traefik.http.routers.rocket-meals-service.tls.certresolver=myresolver"
+      - "traefik.http.routers.${DOMAIN_PATH}-service.rule=PathPrefix(`/${DOMAIN_PATH}/ping`)"
+      - "traefik.http.middlewares.strip-${DOMAIN_PATH}.stripPrefix.prefixes=/${DOMAIN_PATH}"
+      - "traefik.http.routers.${DOMAIN_PATH}-service.middlewares=strip-rocket-meals"
+      - "traefik.http.routers.${DOMAIN_PATH}-service.entrypoints=websecure"
+      - "traefik.http.routers.${DOMAIN_PATH}-service.tls.certresolver=myresolver"
 
 networks:
   traefik:

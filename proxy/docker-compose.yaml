@@ -4,6 +4,8 @@ services:
   traefik:
     image: "traefik:v3.0"
     container_name: "traefik"
+    env_file:
+      - ".env"
     command:
       - "--api.insecure=true"
       - "--api.dashboard=true"
@@ -22,10 +24,10 @@ services:
     networks:
       - traefik
     labels:
-      - "traefik.http.routers.traefik-http.rule=Host(`127.0.0.1`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-http.rule=Host(`${MYHOST}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-http.service=api@internal"
       - "traefik.http.routers.traefik-http.entrypoints=web"
-      - "traefik.http.routers.traefik-https.rule=Host(`127.0.0.1`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-https.rule=Host(`${MYHOST}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
       - "traefik.http.routers.traefik-https.service=api@internal"
       - "traefik.http.routers.traefik-https.entrypoints=websecure"
       - "traefik.http.routers.traefik-https.tls.certresolver=myresolver"
