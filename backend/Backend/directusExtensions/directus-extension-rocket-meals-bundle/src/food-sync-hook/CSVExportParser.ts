@@ -25,6 +25,14 @@ export class CSVExportParser {
                 if(item.endsWith('"')){
                     item = item.substring(0, item.length-1);
                 }
+
+                // remove escaped quotes
+                if(item.startsWith('\\"')){
+                    item = item.substring(2);
+                }
+                if(item.endsWith('\\"')){
+                    item = item.substring(0, item.length-2);
+                }
             }
         }
         return lineItemsList;
