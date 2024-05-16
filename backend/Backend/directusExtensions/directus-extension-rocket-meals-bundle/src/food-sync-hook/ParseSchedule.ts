@@ -281,7 +281,7 @@ export class ParseSchedule {
             let keyValue = json[key];
             const savedValue = keyDict[keyValue];
             if(!savedValue){
-                keyDict[keyValue] = true;
+                keyDict[keyValue] = json;
                 valueList.push(json);
             } else {
                 console.log(SCHEDULE_NAME+": removeDuplicatesFromJsonList")
@@ -451,13 +451,14 @@ export class ParseSchedule {
         let tablename = TABLENAME_MARKINGS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename);
 
-        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
+        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier", "markings");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
         let amountOfMarkings = markingsJSONList.length;
         let currentMarking = 0;
         for (let markingJSON of markingsJSONList) {
             currentMarking++;
-            //console.log("Update Marking " + currentMarking + " / " + amountOfMarkings);
+            console.log("Update Marking " + currentMarking + " / " + amountOfMarkings);
+            console.log(markingJSON)
 
             let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
             delete markingJSONCopy.translations; // Remove meals translations, add it later
