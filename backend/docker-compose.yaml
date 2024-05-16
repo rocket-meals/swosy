@@ -1,152 +1,20 @@
-version: '3'
+version: "3.3"
+
 services:
-
-  app:
-    image: jwilder/whoami
-    env_file: .env
-    restart: ${RESTART}
-    environment:
-      - LETSENCRYPT_HOST=${MYHOST}
-      - VIRTUAL_HOST=${MYHOST}
-      - VIRTUAL_PATH=/${DOMAIN_PATH}/whoami
+  rocket-meals-service:
+    image: "traefik/whoami"
+    container_name: "rocket-meals-service"
     networks:
-      - topDomainProxy
-
-  cache:
-    image: redis:6.2.6
-    networks:
-      - custom_network
-
-# Redundant, but needed for scaling. Check x-common-params: &common-params to reduce redundancy
-
-  directus-master:
-#    container_name: directusWithCache${DOMAIN_PATH} # Cant use container name due to scaling
-    build:
-      context: ./
-    env_file: .env # In order not to overwrite the env file when pulling from git
-    expose:
-      - ${BACKEND_PORT}
-    restart: ${RESTART}
-    depends_on:
-      - cache
-    volumes:
-      # By default, uploads are stored in /directus/uploads
-      # Always make sure your volumes matches the storage root when using
-      # local driver
-      - ./Backend/uploads:/directus/uploads
-      # Make sure to also mount the volume when using SQLite
-      - ./Backend/database:/directus/database
-      # If you want to load extensions from the host
-      - ./Backend/directusExtensions:/directus/extensions
-      # directus-auto-translation api key path
-      - ./Backend/secrets:/directus/secrets
-      # TL1 food plan
-      - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/foodPlan.csv
-      # TL1 markings
-      - ${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/markings.csv
-    networks:
-      - directus
-      - custom_network
-      - topDomainProxy
-    ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
-    environment:
-      LETSENCRYPT_HOST: ${MYHOST}
-      VIRTUAL_HOST: ${MYHOST}
-      VIRTUAL_PATH: /${DOMAIN_PATH}/${BACKEND_PATH}/
-      VIRTUAL_DEST: /
-      VIRTUAL_PORT: ${BACKEND_PORT}
-
-      HOST: "0.0.0.0"
-      PUBLIC_URL: ${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}
-
-      KEY: "${DATABASE_KEY}"
-      SECRET: "${DATABASE_SECRET}"
-
-      FOOD_SYNC_MODE: "${FOOD_SYNC_MODE}"
-      FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
-      FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
-      FOOD_SYNC_TL1WEB_EXPORT_URL: "${FOOD_SYNC_TL1WEB_EXPORT_URL}"
-      FOOD_SYNC_SWOSY_API_SERVER_URL: "${FOOD_SYNC_SWOSY_API_SERVER_URL}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
-      FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY: "${FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY}" # If the system should sync images from swosy. Swosy api server is needed for this
-
-      MARKING_SYNC_MODE: "${MARKING_SYNC_MODE}"
-      MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/markings.csv
-      MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
-
-      DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
-      DB_FILENAME: './database/data.db'
-      #DB_HOST: 'database' #Required when using pg, mysql, oracledb, or mssql
-      #DB_PORT: '5432'
-      #DB_DATABASE: 'directus'
-      #DB_USER: 'directus'
-      #DB_PASSWORD: 'directus'
-
-      TZ: "Europe/Berlin"
-
-      CACHE_ENABLED: "true"
-      CACHE_STORE: "redis"
-      REDIS: "redis://cache:6379"
-      CACHE_AUTO_PURGE: 'true'
-
-      ADMIN_EMAIL: "${ADMIN_EMAIL}"
-      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
-
-      #EMAIL_VERIFY_SETUP: "${EMAIL_VERIFY_SETUP}"
-      #EMAIL_FROM: "${EMAIL_FROM}"
-      #EMAIL_TRANSPORT: "${EMAIL_TRANSPORT}"
-      #EMAIL_SMTP_HOST: "${EMAIL_SMTP_HOST}"
-      #EMAIL_SMTP_PORT: "${EMAIL_SMTP_PORT}"
-      #EMAIL_SMTP_USER: "${EMAIL_SMTP_USER}"
-      #EMAIL_SMTP_PASSWORD: "${EMAIL_SMTP_PASSWORD}"
-      #EMAIL_SMTP_POOL: ""
-      #EMAIL_SMTP_SECURE: "true"
-      #EMAIL_SMTP_IGNORE_TLS: "true"
-
-      CORS_ENABLED: "true"
-      CORS_ORIGIN: "true"
-      REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
-      #CORS_ALLOWED_HEADERS: 'Access-Control-Allow-Origin,Authorization,Accept,Accept-Encoding,Accept-Language,Access-Control-Request-Headers,Access-Control-Request-Method,Cache-Control,Connection,Content-Type,Host,Origin,Pragma,Referer,Sec-Fetch-Mode,User-Agent'
-      #CORS_EXPOSED_HEADERS: 'Access-Control-Allow-Origin,Authorization,Accept,Accept-Encoding,Accept-Language,Access-Control-Request-Headers,Access-Control-Request-Method, Cache-Control,Connection,Content-Type,Host,Origin,Pragma,Referer,Sec-Fetch-Mode,User-Agent'
-
-      AUTH_PROVIDERS: "${AUTH_PROVIDERS}"
-
-      AUTH_APPLE_DRIVER: "openid"
-      AUTH_APPLE_MODE: "session"
-      AUTH_APPLE_CLIENT_ID: "${AUTH_APPLE_CLIENT_ID}"
-      AUTH_APPLE_CLIENT_SECRET: "${AUTH_APPLE_CLIENT_SECRET}"
-      AUTH_APPLE_DEFAULT_ROLE_ID: "${DEFAULT_ROLE_ID}" #If you want to set a default role id
-      AUTH_APPLE_SCOPE: "openid"
-      AUTH_APPLE_IDENTIFIER_KEY: "sub"
-      AUTH_APPLE_ALLOW_PUBLIC_REGISTRATION: "true"
-      AUTH_APPLE_ISSUER_URL: "https://appleid.apple.com/.well-known/openid-configuration"
-      AUTH_APPLE_ICON: "apple"
-
-      AUTH_GOOGLE_DRIVER: "openid"
-      AUTH_GOOGLE_MODE: "session"
-      AUTH_GOOGLE_CLIENT_ID: "${AUTH_GOOGLE_CLIENT_ID}"
-      AUTH_GOOGLE_CLIENT_SECRET: "${AUTH_GOOGLE_CLIENT_SECRET}"
-      AUTH_GOOGLE_ISSUER_URL: "https://accounts.google.com"
-      AUTH_GOOGLE_IDENTIFIER_KEY: "email"
-      AUTH_GOOGLE_ICON: "google"
-      AUTH_GOOGLE_LABEL: "Google"
-      AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true"
-      AUTH_GOOGLE_DEFAULT_ROLE_ID: "${DEFAULT_ROLE_ID}"
-
-
-      NODE_TLS_REJECT_UNAUTHORIZED: 0 # The HTTPS cert is not complete: "unable to verify the first certificate"
-
-      ACCESS_TOKEN_TTL: "15m"
-      REFRESH_TOKEN_TTL: "180d"
-
-      MAX_PAYLOAD_SIZE: "80mb"
-
-
-      # directus-auto-translation
-      AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt" # Required for the auto translation plugin
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rocket-meals-service.rule=PathPrefix(`/rocket-meals/ping`)"
+      - "traefik.http.middlewares.strip-rocket-meals.stripPrefix.prefixes=/rocket-meals"
+      - "traefik.http.routers.rocket-meals-service.middlewares=strip-rocket-meals"
+      - "traefik.http.routers.rocket-meals-service.entrypoints=websecure"
+      - "traefik.http.routers.rocket-meals-service.tls.certresolver=myresolver"
 
 networks:
-  custom_network: {}
-  directus:
-  topDomainProxy:
-    external: true
+  traefik:
+    external:
+      name: traefik

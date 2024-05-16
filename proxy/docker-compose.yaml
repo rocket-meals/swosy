@@ -1,88 +1,47 @@
-version: '3'
+version: "3.3"
 
 services:
-
-  outer:
-    container_name: outer
-    env_file: .env
-    build: .
-    labels:
-      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+  traefik:
+    image: "traefik:v3.0"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
-    restart: always
-    environment:
-      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
-      #- DEFAULT_HOST=outer.bar.com
-      - DEFAULT_HOST=${MYHOST}
-      - DHPARAM_GENERATION=false
-    logging:
-      driver: local #or "none" or "local"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
-      - ./extraVolumes/certs:/etc/nginx/certs:rw
-      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
-      - ./extraVolumes/html:/usr/share/nginx/html:rw
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
     networks:
-      - reverse-proxy
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=PathPrefix(`/traefik`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=traefik-strip"
+      - "traefik.http.middlewares.traefik-strip.stripprefix.prefixes=/traefik"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
 
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    env_file: .env
-    environment:
-    ### ToDo: Change to your e-mail address
-      - DEFAULT_EMAIL=${PROXY_MAIL_FOR_SSL_CERTIFICATE_RENEWAL}
-      - NGINX_PROXY_CONTAINER=outer
-    volumes_from:
-      - outer
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./extraVolumes/certs:/etc/nginx/certs:rw
-      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
-      - ./acme:/etc/acme.sh
-    restart: always
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
     networks:
-      - reverse-proxy
-
-  app:
-    container_name: outer_app
-    image: jwilder/whoami
-    env_file: .env
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - LETSENCRYPT_HOST=${MYHOST}
-      - VIRTUAL_PATH=/ping/
-      - VIRTUAL_DEST=/
-    networks:
-      - reverse-proxy
-
-  redirect:
-    image: morbz/docker-web-redirect
-    env_file: .env
-    restart: always
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - VIRTUAL_PATH=/
-      - VIRTUAL_DEST=/
-      - REDIRECT_TARGET=${MYHOST}/homepage/ # Just /homepage without ending with a / will result in infinite redirects
-      # For more see: https://serverfault.com/questions/821997/nginx-reverse-proxy-too-many-redirections
-      # Also the - VIRTUAL_PATH=/ping/ must end with a / too
-    networks:
-      - reverse-proxy
-
-  redirect_catch:
-    container_name: redirect_catch
-    image: jwilder/whoami
-    env_file: .env
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - LETSENCRYPT_HOST=${MYHOST}
-      - VIRTUAL_PATH=/homepage/homepage/
-      - VIRTUAL_DEST=/
-    networks:
-      - reverse-proxy
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=PathPrefix(`/ping`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
 
 networks:
-  reverse-proxy:
-    name: topDomainProxy
+  traefik:
+    driver: bridge
+    name: traefik
