@@ -13,6 +13,9 @@ import {MarkingParserInterface} from "./MarkingParserInterface";
 
 const SCHEDULE_NAME = "food_parse";
 
+const DIRECTUS_TL1_FOOD_PATH = "/directus/tl1/foodPlan.csv"; // This is defined in docker-compose.yaml statically
+const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defined in docker-compose.yaml statically
+
 function getFoodParser(env: any): FoodParserInterface | null {
     const FOOD_SYNC_MODE = env.FOOD_SYNC_MODE; // Options: "TL1CSV", "TL1WEB", "SWOSY"
 
@@ -23,8 +26,7 @@ function getFoodParser(env: any): FoodParserInterface | null {
             const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "latin1";
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-            const tl1_csv_file_path = "/directus/tl1/foodPlan.csv";
-            const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(tl1_csv_file_path, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+            const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
             return new FoodTL1Parser(ftpFileReader);
         case "TL1WEB":
@@ -54,8 +56,7 @@ function getMarkingParser(env: any): MarkingParserInterface | null {
             const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "latin1";
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-            const tl1_csv_file_path = "/directus/tl1/marking.csv";
-            return new MarkingTL1Parser(tl1_csv_file_path, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+            return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
     }
 
     return null;
