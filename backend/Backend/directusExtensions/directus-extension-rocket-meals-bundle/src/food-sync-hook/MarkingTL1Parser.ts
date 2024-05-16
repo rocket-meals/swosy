@@ -19,16 +19,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
 
     async createNeededData(){
         let rawExport = await this.getRawReport();
-        /**
-         "ID";"BESCHREIBUNG";"HINWEISE";"KUERZEL"
-         " 103";"KlimaTeller";"";"kt"
-         " 104";"Gesund&Munter";"";"m"
-         " 100";"nachhaltige Fischerei / sustainable fishery";"";"f"
-         " 098";"vegan";"";"x"
-         " 085";"kakaohaltige Fettglasur";"";""
-         */
-        let parsedReport = CSVExportParser.getListOfLineObjects(rawReport);
-        this.parsedReport = parsedReport;
+        this.parsedReport = CSVExportParser.getListOfLineObjects(rawExport);
     }
 
     async getRawReport(): Promise<string | undefined> {
