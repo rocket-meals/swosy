@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "file-image",
     "note": null,
-    "options": null,
+    "options": {
+      "folder": "a6043bbd-4ae0-4b01-b135-0ae9f9c942e9"
+    },
     "readonly": false,
     "required": false,
     "sort": 17,

@@ -11,25 +11,25 @@ export class TranslationHelper {
         let translationsFromParsing = itemJSON?.translations || {}
         /** translationsFromParsing is an object with the following structure:
          translations: [
-             {
-                 id: 5166,
-                 foods_id: '6',
-                 languages_code: 'de-DE',
-                 name: 'Hallo mein Name ist'
-             },
-             {
-                 id: 5167,
-                 foods_id: '6',
-                 languages_code: 'en-US',
-                 name: 'Hi my name is'
-             }
+         {
+         id: 5166,
+         foods_id: '6',
+         languages_code: 'de-DE',
+         name: 'Hallo mein Name ist'
+         },
+         {
+         id: 5167,
+         foods_id: '6',
+         languages_code: 'en-US',
+         name: 'Hi my name is'
+         }
          ]
          */
         let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
         /** remaining_translationsFromParsing is an object with the following structure:
          {
-             [TranslationHelper.]: {name ....},
-             [TranslationHelper.]: {....}
+         [TranslationHelper.]: {name ....},
+         [TranslationHelper.]: {....}
          }
          */
         let createTranslations = [];
@@ -57,8 +57,16 @@ export class TranslationHelper {
                         console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
                         console.log("translationFromParsing: "+JSON.stringify(translationFromParsing, null, 2))
 
+                        // be_source_for_translations if language Code is German
+                        let be_source_for_translations: boolean = false;
+                        if(existingLanguageCode === TranslationHelper.LANGUAGE_CODE_DE){
+                            be_source_for_translations = true;
+                        }
+
                         updateTranslations.push({
                             id: existingTranslation?.id,
+                            let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
+                            be_source_for_translations: be_source_for_translations,
                             ...translationFromParsing,
                             [FIELD_TRANSLATION_LANGUAGE_CODE]: {[FIELD_LANGUAGE_ID]: existingLanguageCode}
                         });
@@ -79,8 +87,17 @@ export class TranslationHelper {
                 let translationFromParsing = translationsFromParsing[remaining_languageKey];
                 if(!!translationFromParsing){
                     newTranslationsFromParsing = true;
+
+                    // be_source_for_translations if language Code is German
+                    let be_source_for_translations: boolean = false;
+                    if(remaining_languageKey === TranslationHelper.LANGUAGE_CODE_DE){
+                        be_source_for_translations = true;
+                    }
+
                     createTranslations.push({
                         [item_primary_key_in_translation_table]: item?.id,
+                        be_source_for_translations: be_source_for_translations,
+                        let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
                         ...translationFromParsing,
                         [FIELD_TRANSLATION_LANGUAGE_CODE]: {[FIELD_LANGUAGE_ID]: remaining_languageKey}
                     });
