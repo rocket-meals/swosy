@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   traefik:
     image: "traefik:v3.0"
@@ -7,43 +5,63 @@ services:
     env_file:
       - ".env"
     command:
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--api.dashboard=true"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--certificatesResolvers.myresolver.acme.email=${PROXY_MAIL_FOR_SSL_CERTIFICATE_RENEWAL}"
-      - "--certificatesResolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesResolvers.myresolver.acme.httpChallenge.entrypoint=web"
+      - "--entrypoints.traefik.address=:8080"
+      - "--certificatesresolvers.myresolver.acme.email=${CERT_MAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
     networks:
       - traefik
     labels:
-      - "traefik.http.routers.traefik-http.rule=Host(`${MYHOST}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-      - "traefik.http.routers.traefik-http.service=api@internal"
-      - "traefik.http.routers.traefik-http.entrypoints=web"
-      - "traefik.http.routers.traefik-https.rule=Host(`${MYHOST}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-      - "traefik.http.routers.traefik-https.service=api@internal"
-      - "traefik.http.routers.traefik-https.entrypoints=websecure"
-      - "traefik.http.routers.traefik-https.tls.certresolver=myresolver"
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH}"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.rule=Host(`${MYHOST}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik.middlewares=https-redirect"
+
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${MYHOST}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=${RESOLVER}"
+
+      #- "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
   whoami:
     image: "traefik/whoami"
-    container_name: "simple-service"
+    container_name: "whoami-service"
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=PathPrefix(`/ping`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.routers.whoami.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)"
+      - "traefik.http.routers.whoami.middlewares=https-redirect"
+
+      - "traefik.http.routers.whoami-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)"
+      - "traefik.http.routers.whoami-secure.entrypoints=websecure"
+      - "traefik.http.routers.whoami-secure.tls=true"
+      - "traefik.http.routers.whoami-secure.tls.certresolver=${RESOLVER}"
 
 networks:
   traefik:
-    driver: bridge
+    external: true
     name: traefik

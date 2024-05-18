@@ -1,0 +1,26 @@
+services:
+  rocket-meals-frontend:
+    image: "traefik/whoami"
+    container_name: "rocket-meals-frontend"
+    env_file:
+      - ".env"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+
+      - "traefik.http.routers.rocket-meals-frontend.entrypoints=web"
+      - "traefik.http.routers.rocket-meals-frontend.rule=Host(`${MYHOST}`)"
+      - "traefik.http.routers.rocket-meals-frontend.middlewares=https-redirect"
+
+      - "traefik.http.routers.rocket-meals-frontend-secure.entrypoints=websecure"
+      - "traefik.http.routers.rocket-meals-frontend-secure.rule=Host(`${MYHOST}`)"
+      - "traefik.http.routers.rocket-meals-frontend-secure.tls=true"
+      - "traefik.http.routers.rocket-meals-frontend-secure.tls.certresolver=${RESOLVER}"
+
+networks:
+  traefik:
+    external: true
+    name: traefik

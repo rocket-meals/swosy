@@ -1,22 +1,28 @@
-version: "3.3"
-
 services:
-  rocket-meals-service:
+  rocket-meals-backend:
     image: "traefik/whoami"
-    container_name: "rocket-meals-service"
+    container_name: "rocket-meals-backend"
     env_file:
       - ".env"
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${DOMAIN_PATH}-service.rule=PathPrefix(`/${DOMAIN_PATH}/ping`)"
-      - "traefik.http.middlewares.strip-${DOMAIN_PATH}.stripPrefix.prefixes=/${DOMAIN_PATH}"
-      - "traefik.http.routers.${DOMAIN_PATH}-service.middlewares=strip-rocket-meals"
-      - "traefik.http.routers.${DOMAIN_PATH}-service.entrypoints=websecure"
-      - "traefik.http.routers.${DOMAIN_PATH}-service.tls.certresolver=myresolver"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.strip-backend.stripPrefix.prefixes=/backend"
+
+      - "traefik.http.routers.rocket-meals-backend.entrypoints=web"
+      - "traefik.http.routers.rocket-meals-backend.rule=Host(`${MYHOST}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.rocket-meals-backend.middlewares=https-redirect"
+
+      - "traefik.http.routers.rocket-meals-backend-secure.entrypoints=websecure"
+      - "traefik.http.routers.rocket-meals-backend-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.rocket-meals-backend-secure.middlewares=strip-backend"
+      - "traefik.http.routers.rocket-meals-backend-secure.tls=true"
+      - "traefik.http.routers.rocket-meals-backend-secure.tls.certresolver=${RESOLVER}"
 
 networks:
   traefik:
-    external:
-      name: traefik
+    external: true
+    name: traefik

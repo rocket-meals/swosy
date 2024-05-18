@@ -1,0 +1,23 @@
+services:
+  traefik:
+    env_file:
+      - ".env"
+    extends:
+      service: traefik
+      file: proxy/docker-compose.yaml
+
+  backend:
+    extends:
+      service: rocket-meals-backend
+      file: backend/docker-compose.yaml
+
+  frontend:
+    extends:
+      service: rocket-meals-frontend
+      file: frontend/docker-compose.yaml
+
+
+networks:
+  traefik:
+    external: true
+    name: traefik
