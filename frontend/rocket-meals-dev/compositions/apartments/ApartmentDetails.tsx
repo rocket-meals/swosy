@@ -13,7 +13,7 @@ import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {WashingmachineAnimation} from "@/compositions/animations/WashingmachineAnimation";
-import {Rectangle, RectangleWithLayout, RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
+import {Rectangle, RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 import {NotificationHelper} from "@/helper/notification/NotificationHelper";
 import {NotificationRequest} from "expo-notifications";

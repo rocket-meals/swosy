@@ -7,21 +7,13 @@ import {TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunc
 import {DetailsComponent, DetailsComponentTabProps} from "@/components/detailsComponent/DetailsComponent";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {SettingsRowUser} from "@/compositions/settings/SettingsRowUser";
-import {SettingsRowProfileNickname} from "@/compositions/settings/SettingsRowProfileNickname";
-import {SettingsRowProfileLanguage} from "@/compositions/settings/SettingsRowProfileLanguage";
-import {SettingsRowProfileCanteen} from "@/compositions/settings/SettingsRowProfileCanteen";
-import {SettingsRowProfileEatingHabits} from "@/compositions/settings/SettingsRowEatingHabits";
-import {SettingsRowPriceGroup} from "@/compositions/settings/SettingsRowPriceGroup";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {useMyClipboard} from "@/helper/clipboardHelper/MyClipboardHelper";
 import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {View} from "@/components/Themed";
-import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
-import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
-import {MyButtonNavigation} from "@/components/buttons/MyButtonNavigation";
+import {MyButtonNavigationToLocation} from "@/components/buttons/MyButtonNavigationToLocation";
 
 export default function BuildingDetails({ buildingId }: { buildingId: string }) {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -92,7 +84,7 @@ function BuildingsInformation({ building }: { building: Buildings }) {
 function BuildingNavigationButton({ building }: { building: Buildings }) {
 	const location = getBuildingLocation(building);
 	if(!!location) {
-		return <MyButtonNavigation location={location}/>
+		return <MyButtonNavigationToLocation location={location}/>
 	}
 	return null;
 }

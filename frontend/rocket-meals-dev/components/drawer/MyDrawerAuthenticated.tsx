@@ -18,9 +18,13 @@ import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHou
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
 import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
+import {useCurrentIsEmployee, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDeveloperModeActive();
+	const role = useCurrentRole();
+	const isAdmin = useCurrentRoleIsAdmin();
+	const isEmployee = useCurrentIsEmployee()
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();
@@ -44,6 +48,11 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_price_group = useTranslation(TranslationKeys.price_group)
 	const translation_eating_habits = useTranslation(TranslationKeys.eating_habits)
 	const translation_notification = useTranslation(TranslationKeys.notification)
+
+	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
+
+	const translation_role_employee = useTranslation(TranslationKeys.role_employee)
+
 	const translation_delete_account = useTranslationAccountDelete();
 
 	const customDrawerWikiItems = useMyDrawerWikiItems()
@@ -165,6 +174,38 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_food_details,
 				showBackButton: true,
 				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodweekplan/index',
+				title: translation_foodweekplan,
+				label: translation_foodweekplan,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodweekplan/[canteen_id]/index',
+				title: translation_foodweekplan,
+				label: translation_foodweekplan,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'employee/index',
+				title: translation_role_employee,
+				label: translation_role_employee,
+				showBackButton: true,
+				icon: IconNames.role_employee,
+				visibleInDrawer: isEmployee
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodweekplan/[canteen_id]/[date_start_week_iso_or_current]/index',
+				title: translation_foodweekplan,
+				label: translation_foodweekplan,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({

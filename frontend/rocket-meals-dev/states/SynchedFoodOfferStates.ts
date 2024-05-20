@@ -10,7 +10,7 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 	const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
 
 	const defaultDate = new Date();
-	defaultDate.setHours(12,0,0,0); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
+	setDateForFoodSelection(defaultDate); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
 	let usedSelectedDate = selectedDate || defaultDate;
 	usedSelectedDate = new Date(usedSelectedDate);
 
@@ -20,6 +20,11 @@ export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (da
 	}
 
 	return [usedSelectedDate, setSelectedDate, changeAmountDays]
+}
+
+export function setDateForFoodSelection(date: Date): Date{
+	date.setHours(12,0,0,0);
+	return date;
 }
 
 export const TABLE_NAME_FOODOFFERS = 'foodoffers';
@@ -77,6 +82,7 @@ export async function loadFoodOffer(isDemo: boolean, foodoffer_id: string): Prom
 
 //export async function getFoodOffersForSelectedDate(date: Date, canteen: Canteens, cachedFoodOffers, setCachedFoodOffers){
 export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, canteen: Canteens) {
+	console.log("getFoodOffersForSelectedDate: isDemo:"+isDemo+" date:"+date+" canteen:"+canteen)
 	// TODO: useCached Foodoffers
 	const copyDate = new Date(date);
 	// If in cache not too old, if we have internet connection
@@ -167,7 +173,7 @@ function getDemoFoodOffersForDate(date: Date | undefined): Foodoffers[]
 	const demoFoodOffer: Foodoffers[] = [];
 	const demoFoodsKeys = Object.keys(demoFoods);
 
-	let amount = 20 // add day to get different amount of foods for each day
+	let amount = 12 // add day to get different amount of foods for each day
 	if (amount > demoFoodsKeys.length) {
 		amount = demoFoodsKeys.length;
 	}

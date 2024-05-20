@@ -2,7 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {SettingsRow, SettingsRowProps} from "@/components/settings/SettingsRow";
 import {TranslationKey, TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles";
-import {AllRoutes, Href, router} from "expo-router";
+import {AllRoutes, router} from "expo-router";
 
 export type SettingsRowNavigateSimpleProps = {
 	// translation_key is a static field from the class TranslationKeys
