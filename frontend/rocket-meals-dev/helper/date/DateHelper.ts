@@ -85,13 +85,32 @@ export class DateHelper {
 		return Weekday.MONDAY;
 	}
 
-	static getWeekdayNames(locale?: string, firstDayOfWeek?: Weekday) {
+	static getWeekdayNames(locale?: string, firstDayOfWeek?: Weekday, short?: boolean) {
 		const currentWeekDates = DateHelper.getCurrentWeekDates(undefined, firstDayOfWeek);
 		const output = [];
 		for (const date of currentWeekDates) {
-			output.push(DateHelper.getWeekdayNameByDate(date, locale));
+			output.push(DateHelper.getWeekdayNameByDate(date, locale, short));
 		}
 		return output;
+	}
+
+	static getPreviousMonday(date: Date){
+		let tempDate = new Date(date);
+		while(tempDate.getDay() != DateHelper.getWeekdayIndex(Weekday.MONDAY)) {
+			tempDate.setDate(tempDate.getDate() -1);
+		}
+		return tempDate
+	}
+
+	static getFirstMondayOfYear(): Date {
+		let tempDate = new Date();
+		const JANUARY = 0;
+		tempDate.setMonth(JANUARY);
+		tempDate.setDate(1); // first day of month
+		while(tempDate.getDay() != DateHelper.getWeekdayIndex(Weekday.MONDAY)) {
+			tempDate.setDate(tempDate.getDate() + 1);
+		}
+		return tempDate;
 	}
 
 	static getWeekdayIndex(weekday: Weekday) {
@@ -136,7 +155,7 @@ export class DateHelper {
 	}
 
 	static getWeekdayNamesFirstLetters(locale?: string, firstDayOfWeek?: Weekday) {
-		const weekdayNames = DateHelper.getWeekdayNames(locale, firstDayOfWeek);
+		const weekdayNames = DateHelper.getWeekdayNames(locale, firstDayOfWeek, true);
 		const output = [];
 		for (const weekdayName of weekdayNames) {
 			output.push(weekdayName[0]);
@@ -152,15 +171,6 @@ export class DateHelper {
 			firstDateOfWeek.setDate(firstDateOfWeek.getDate()+1);
 		}
 		return output;
-	}
-
-	static getWeekdayNameFirstLetter(date: Date, locale?: string) {
-		const weekDayName = DateHelper.getWeekdayNameByDate(date, locale);
-		if (!!weekDayName && weekDayName.length > 0) {
-			return weekDayName[0];
-		} else {
-			return '?'
-		}
 	}
 
 	static getDefaultWeekdayDate(weekdayName: Weekday): Date {
@@ -193,11 +203,15 @@ export class DateHelper {
 		return DateHelper.getWeekdayNameByDate(date, locale);
 	}
 
-	static getWeekdayNameByDate(date: Date, locale?: string) {
+	static getWeekdayNameByDate(date: Date, locale?: string, short?: boolean) {
 		if (!locale) {
 			locale = 'en-us';
 		}
-		const weekdayName = date.toLocaleString(locale, { weekday: 'long' })
+		let weekdayOption: "long" | "short" | "narrow" | undefined = "long"
+		if(short){
+			weekdayOption = "short"
+		}
+		const weekdayName = date.toLocaleString(locale, { weekday: weekdayOption })
 		return StringHelper.capitalizeFirstLetter(weekdayName);
 	}
 
@@ -218,12 +232,6 @@ export class DateHelper {
 		// 7+ (6 - 1) = 5
 		const diffToStartWithFirstDayOfWeek = (7+(weekDateOfFirstDayOfMonth-firstDayOfWeekIndex))%7
 		return diffToStartWithFirstDayOfWeek;
-	}
-
-	static getAmountDaysFromNextMonthToWeekend(date: Date, firstDayOfWeek: Weekday) {
-		const lastDayOfMonth = DateHelper.getFirstDayOfNextMonth(date);
-		const amountDays = DateHelper.getAmountDaysFromLastMonthForWeekstart(lastDayOfMonth, firstDayOfWeek);
-		return (7-amountDays);
 	}
 
 	static getAmountDaysInMonth(date: Date) {
@@ -458,5 +466,9 @@ export class DateHelper {
 		}
 		const now = new Date();
 		return date>now;
+	}
+
+	static isDateBetween(start: Date, check: Date, end: Date){
+		return start <= check && check <= end;
 	}
 }

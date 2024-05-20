@@ -11,20 +11,19 @@ import {
 } from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
-import {CanteenSelectionRequired, useIsValidCanteenSelected} from '@/compositions/foodoffers/CanteenSelectionRequired';
+import {
+	CanteenSelectionRequired,
+	useIsValidProfileCanteenSelected
+} from '@/compositions/foodoffers/CanteenSelectionRequired';
 import {useProfileLanguageCode, useSynchedProfileCanteen, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
 import React, {useEffect, useState} from 'react';
-import {MySpinner, Text, View} from '@/components/Themed';
+import {MySpinner, View} from '@/components/Themed';
 import {useIsDemo} from '@/states/SynchedDemo';
-import {AnimationNoFoodOffersFound} from '@/compositions/animations/AnimationNoFoodOffersFound';
-import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {router} from 'expo-router';
 import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
-import {AnimationThinking} from "@/compositions/animations/AnimationThinking";
-import {useProjectName} from "@/states/ProjectInfo";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
@@ -35,7 +34,9 @@ import {useDislikeColor} from "@/states/ColorScheme";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
-import {getMarkingBadges, MarkingBadges} from "@/components/food/MarkingBadge";
+import {MarkingBadges} from "@/components/food/MarkingBadge";
+import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
+import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -226,13 +227,9 @@ export default function FoodOfferScreen() {
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [foodOffersDownloaded, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
-	const isValidCanteenSelected = useIsValidCanteenSelected();
-	const projectName = useProjectName()
+	const isValidCanteenSelected = useIsValidProfileCanteenSelected();
 	const dislikeColor = useDislikeColor();
 	const [appSettings] = useSynchedAppSettings();
-
-	const translation_no_food_offers_found = useTranslation(TranslationKeys.no_foodoffers_found_for_selection);
-	const translation_error = useTranslation(TranslationKeys.error);
 
 
 	const dateAsString = selectedDate.toISOString();
@@ -398,10 +395,7 @@ export default function FoodOfferScreen() {
 		return (
 			<MySafeAreaView>
 				<MyScrollView>
-					<View style={{width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 30}}>
-						<Text>{translation_error}</Text>
-						<AnimationThinking />
-					</View>
+					<ErrorGeneric />
 				</MyScrollView>
 			</MySafeAreaView>
 		);
@@ -409,10 +403,7 @@ export default function FoodOfferScreen() {
   		return (
   			<MySafeAreaView>
   				<MyScrollView>
-  					<View style={{width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 30}}>
-  						<Text>{translation_no_food_offers_found}</Text>
-  						<AnimationNoFoodOffersFound />
-  					</View>
+					<NoFoodOffersFound />
   				</MyScrollView>
   			</MySafeAreaView>
   		);

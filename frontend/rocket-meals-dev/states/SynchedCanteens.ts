@@ -58,6 +58,15 @@ export function useSynchedCanteensDict(): [( Record<string, Canteens | null | un
 	return [usedResources, setResourcesOnly, cacheHelperObj]
 }
 
+export function useSynchedCanteenById(canteen_id: string | undefined): Canteens | null | undefined{
+	const [canteensDict, setCanteensDict] = useSynchedCanteensDict();
+	if(!canteen_id){
+		return null;
+	}
+	const foundCanteen = canteensDict?.[canteen_id];
+	return foundCanteen;
+}
+
 function getDemoCanteens(): Record<string, Canteens> {
 	const resources: Record<string, Canteens> = {};
 

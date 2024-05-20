@@ -8,7 +8,7 @@ import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper
 export type MyNewButtonProps = {
     location: LocationType
 }
-export const MyButtonNavigation = (props: MyNewButtonProps) => {
+export const MyButtonNavigationToLocation = (props: MyNewButtonProps) => {
 	const translation_open_navitation_to_location = useTranslation(TranslationKeys.open_navitation_to_location)
 	const {location} = props;
 
