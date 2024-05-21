@@ -1,33 +1,60 @@
 [
     {
         "date_created": "2024-05-13T17:57:40.902Z",
-        "date_updated": null,
+        "date_updated": "2024-05-14T23:53:20.264Z",
         "id": "about_us",
         "sort": null,
         "status": "draft",
         "user_created": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
-        "user_updated": null,
-        "translations": []
+        "user_updated": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
+        "translations": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ]
     },
     {
         "date_created": "2024-05-13T17:57:40.916Z",
-        "date_updated": null,
+        "date_updated": "2024-05-14T23:53:10.735Z",
         "id": "accessibility",
         "sort": null,
         "status": "draft",
         "user_created": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
-        "user_updated": null,
-        "translations": []
+        "user_updated": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
+        "translations": [
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+        ]
     },
     {
         "date_created": "2024-05-13T17:57:40.927Z",
-        "date_updated": null,
+        "date_updated": "2024-05-15T19:54:42.428Z",
         "id": "account",
         "sort": null,
         "status": "draft",
         "user_created": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
-        "user_updated": null,
-        "translations": []
+        "user_updated": "b4a2b825-9bd6-41dc-9a13-fe9607eac431",
+        "translations": [
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24
+        ]
     },
     {
         "date_created": "2024-05-13T17:57:40.941Z",

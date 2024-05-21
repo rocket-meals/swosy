@@ -1,6 +1,5 @@
 [
     {
-        "id": 91,
         "role": null,
         "collection": "eating_habit_templates_translations",
         "action": "read",
@@ -12,7 +11,6 @@
         ]
     },
     {
-        "id": 92,
         "role": null,
         "collection": "foods_feedbacks_predefined_food_feedback_labels",
         "action": "read",
@@ -24,7 +22,6 @@
         ]
     },
     {
-        "id": 93,
         "role": null,
         "collection": "app_feedbacks",
         "action": "create",
@@ -36,7 +33,6 @@
         ]
     },
     {
-        "id": 94,
         "role": null,
         "collection": "eating_habit_templates_markings",
         "action": "read",
@@ -48,7 +44,6 @@
         ]
     },
     {
-        "id": 95,
         "role": null,
         "collection": "profiles_markings",
         "action": "read",
@@ -60,7 +55,6 @@
         ]
     },
     {
-        "id": 96,
         "role": null,
         "collection": "eating_habit_templates",
         "action": "read",
@@ -72,7 +66,6 @@
         ]
     },
     {
-        "id": 97,
         "role": null,
         "collection": "devices",
         "action": "read",
@@ -84,7 +77,6 @@
         ]
     },
     {
-        "id": 98,
         "role": null,
         "collection": "chatrooms_profiles",
         "action": "read",
@@ -96,7 +88,6 @@
         ]
     },
     {
-        "id": 99,
         "role": null,
         "collection": "canteens_foodservicehours",
         "action": "read",
@@ -108,7 +99,6 @@
         ]
     },
     {
-        "id": 100,
         "role": null,
         "collection": "buildings_businesshours",
         "action": "read",
@@ -120,7 +110,6 @@
         ]
     },
     {
-        "id": 101,
         "role": null,
         "collection": "foods_feedbacks_foods_feedbacks_labels",
         "action": "read",
@@ -132,7 +121,6 @@
         ]
     },
     {
-        "id": 102,
         "role": null,
         "collection": "foods_feedbacks_labels_translations",
         "action": "read",
@@ -144,7 +132,6 @@
         ]
     },
     {
-        "id": 103,
         "role": null,
         "collection": "popup_events_translations",
         "action": "read",
@@ -156,7 +143,6 @@
         ]
     },
     {
-        "id": 104,
         "role": null,
         "collection": "washingmachines",
         "action": "read",
@@ -168,7 +154,6 @@
         ]
     },
     {
-        "id": 105,
         "role": null,
         "collection": "foods_feedbacks_labels",
         "action": "read",
@@ -180,7 +165,6 @@
         ]
     },
     {
-        "id": 106,
         "role": null,
         "collection": "popup_events",
         "action": "read",
@@ -192,7 +176,6 @@
         ]
     },
     {
-        "id": 107,
         "role": null,
         "collection": "app_settings",
         "action": "read",
@@ -204,7 +187,6 @@
         ]
     },
     {
-        "id": 108,
         "role": null,
         "collection": "app_settings_housing_translations",
         "action": "read",
@@ -216,7 +198,6 @@
         ]
     },
     {
-        "id": 109,
         "role": null,
         "collection": "app_translations_translations",
         "action": "read",
@@ -228,7 +209,6 @@
         ]
     },
     {
-        "id": 110,
         "role": null,
         "collection": "foodoffers_markings",
         "action": "read",
@@ -240,7 +220,6 @@
         ]
     },
     {
-        "id": 111,
         "role": null,
         "collection": "foods_markings",
         "action": "read",
@@ -252,7 +231,6 @@
         ]
     },
     {
-        "id": 112,
         "role": null,
         "collection": "foods_translations",
         "action": "read",
@@ -264,7 +242,6 @@
         ]
     },
     {
-        "id": 113,
         "role": null,
         "collection": "news_translations",
         "action": "read",
@@ -276,7 +253,6 @@
         ]
     },
     {
-        "id": 114,
         "role": null,
         "collection": "utilizations_entries",
         "action": "read",
@@ -288,7 +264,6 @@
         ]
     },
     {
-        "id": 115,
         "role": null,
         "collection": "wikis_translations",
         "action": "read",
@@ -300,7 +275,6 @@
         ]
     },
     {
-        "id": 116,
         "role": null,
         "collection": "buildings_translations",
         "action": "read",
@@ -312,7 +286,6 @@
         ]
     },
     {
-        "id": 117,
         "role": null,
         "collection": "collections_dates_last_update",
         "action": "read",
@@ -324,7 +297,6 @@
         ]
     },
     {
-        "id": 118,
         "role": null,
         "collection": "foodoffers",
         "action": "read",
@@ -336,7 +308,6 @@
         ]
     },
     {
-        "id": 119,
         "role": null,
         "collection": "markings_translations",
         "action": "read",
@@ -348,7 +319,6 @@
         ]
     },
     {
-        "id": 120,
         "role": null,
         "collection": "wikis_directus_roles",
         "action": "read",
@@ -360,7 +330,6 @@
         ]
     },
     {
-        "id": 121,
         "role": null,
         "collection": "foods_feedbacks",
         "action": "read",
@@ -372,7 +341,6 @@
         ]
     },
     {
-        "id": 122,
         "role": null,
         "collection": "app_translations",
         "action": "read",
@@ -384,7 +352,6 @@
         ]
     },
     {
-        "id": 123,
         "role": null,
         "collection": "markings",
         "action": "read",
@@ -396,7 +363,6 @@
         ]
     },
     {
-        "id": 124,
         "role": null,
         "collection": "buildings",
         "action": "read",
@@ -408,7 +374,6 @@
         ]
     },
     {
-        "id": 125,
         "role": null,
         "collection": "businesshours",
         "action": "read",
@@ -420,7 +385,6 @@
         ]
     },
     {
-        "id": 126,
         "role": null,
         "collection": "canteens",
         "action": "read",
@@ -432,7 +396,6 @@
         ]
     },
     {
-        "id": 127,
         "role": null,
         "collection": "apartments",
         "action": "read",
@@ -444,7 +407,6 @@
         ]
     },
     {
-        "id": 128,
         "role": null,
         "collection": "languages",
         "action": "read",
@@ -456,7 +418,6 @@
         ]
     },
     {
-        "id": 129,
         "role": null,
         "collection": "foods",
         "action": "read",
@@ -468,7 +429,6 @@
         ]
     },
     {
-        "id": 130,
         "role": null,
         "collection": "wikis",
         "action": "read",
@@ -480,7 +440,6 @@
         ]
     },
     {
-        "id": 131,
         "role": null,
         "collection": "utilizations_groups",
         "action": "read",
@@ -492,7 +451,6 @@
         ]
     },
     {
-        "id": 132,
         "role": null,
         "collection": "news",
         "action": "read",
@@ -504,7 +462,6 @@
         ]
     },
     {
-        "id": 133,
         "role": null,
         "collection": "directus_files",
         "action": "read",
@@ -516,7 +473,6 @@
         ]
     },
     {
-        "id": 134,
         "role": null,
         "collection": "directus_folders",
         "action": "read",
@@ -528,7 +484,6 @@
         ]
     },
     {
-        "id": 135,
         "role": null,
         "collection": "directus_roles",
         "action": "read",
@@ -540,7 +495,6 @@
         ]
     },
     {
-        "id": 136,
         "role": null,
         "collection": "directus_settings",
         "action": "read",
@@ -552,7 +506,6 @@
         ]
     },
     {
-        "id": 137,
         "role": null,
         "collection": "directus_permissions",
         "action": "read",

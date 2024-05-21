@@ -75,13 +75,14 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	return <Text>{content}</Text>
 }
 
-const DEFAULT_TEXT_SIZE = 'md';
+export const TEXT_SIZE_DEFAULT = 'md';
+export const TEXT_SIZE_SMALL = "sm";
 
 export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
 export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {
 	const tokens = config.tokens;
 	const fontSize = tokens.fontSizes
-	const usedSize = size || DEFAULT_TEXT_SIZE;
+	const usedSize = size || TEXT_SIZE_DEFAULT;
 	return fontSize[usedSize];
 }
 
@@ -104,7 +105,7 @@ type TextInputProps = {
 }
 export function TextInput(props: TextInputProps) {
 	const textContrastColor = useTextContrastColor();
-	const usedFontSize = getFontSizeInPixelBySize(props.size || DEFAULT_TEXT_SIZE);
+	const usedFontSize = getFontSizeInPixelBySize(props.size || TEXT_SIZE_DEFAULT);
 	let usedColor = props.style?.color;
 	if (usedColor === undefined) {
 		usedColor = textContrastColor;
@@ -206,7 +207,7 @@ export function Text({style, size,...props}: MyTextProps) {
 	const textContrastColor = useTextContrastColor();
 	const isWeb = PlatformHelper.isWeb();
 
-	const usedSize = size || DEFAULT_TEXT_SIZE;
+	const usedSize = size || TEXT_SIZE_DEFAULT;
 
 	// @ts-ignore
 	const defaultStyle = {

@@ -48,7 +48,7 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
             if(updateCheckResult.isAvailable) {
                 const manifest: Updates.Manifest = updateCheckResult.manifest;
                 setDownloadingNewUpdate(true);
-                const timeoutInMillis = 10000; // 10 seconds
+                const timeoutInMillis = 1000*TIMEOUT_IN_SECONDS // 10 seconds
                 const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("timedout"), timeoutInMillis))
 
                 let updateFetchPromise = Updates.fetchUpdateAsync();

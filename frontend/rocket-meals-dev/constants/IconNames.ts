@@ -9,6 +9,7 @@ export enum IconNames {
     drawe_menu_go_back_icon = 'arrow-left',
     canteen_icon = 'warehouse',
     foodoffers_icon = 'silverware-variant',
+    foodweekplan_icon = "calendar",
     map_icon = 'map',
     building_icon = 'home-city',
     apartments_icon = 'home-account',
@@ -102,6 +103,8 @@ export enum IconNames {
     like_inactive_icon = "thumb-up-outline",
     star_active_icon = "star",
     star_inactive_icon = "star-outline",
+
+    role_employee = 'briefcase',
 
     description_icon = "text",
     fact_icon = "information",

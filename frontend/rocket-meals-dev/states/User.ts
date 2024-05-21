@@ -6,6 +6,7 @@ import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {DirectusRoles, DirectusUsers} from '@/helper/database/databaseTypes/types';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {useSynchedRolesDict} from "@/states/SynchedRoles";
+import {useIsDemo} from "@/states/SynchedDemo";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,
@@ -98,6 +99,27 @@ export function useCurrentRole(): DirectusRoles | null {
 	}
 	const role = rolesDict?.[role_id]
 	return role || null
+}
+
+export function useCurrentRoleIsAdmin(): boolean | null{
+	const role = useCurrentRole();
+	if(role?.admin_access){
+		return true;
+	}
+	// TODO: check if other roles are required
+	return false;
+}
+
+export function useCurrentIsEmployee(){
+	const role = useCurrentRole();
+	if(role?.admin_access){
+		return true;
+	}
+
+	if(role?.name==="Employee"){
+		return true;
+	}
+	return false;
 }
 
 export function isUserLoggedIn(): boolean {

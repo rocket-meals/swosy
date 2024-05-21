@@ -2,18 +2,17 @@ import React, {FunctionComponent} from 'react';
 import {Heading, View} from '@/components/Themed';
 import {useEditProfileCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
-import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
+import {useSynchedCanteenById, useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSelectGridList';
 
-export function useIsValidCanteenSelected(): boolean {
+export function useIsValidProfileCanteenSelected(): boolean {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [canteensDict, setCanteensDict] = useSynchedCanteensDict();
-	// check if profileCanteen is found in canteensDict
-	if (!!profileCanteen && !!canteensDict) {
-		const foundCanteen = canteensDict[profileCanteen?.id];
-		return !!foundCanteen;
-	}
-	return false;
+	return useIsValidCanteenId(profileCanteen?.id);
+}
+
+export function useIsValidCanteenId(canteen_id: string | undefined): boolean {
+	const foundCanteen = useSynchedCanteenById(canteen_id);
+	return !!foundCanteen;
 }
 
 interface AppState {

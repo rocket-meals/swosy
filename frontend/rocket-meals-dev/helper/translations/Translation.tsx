@@ -71,6 +71,8 @@ export class TranslationKeys {
 	static sort_option_distance = createTranslationKey('distance', 'Distanz');
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
 
+	static foodweekplan = createTranslationKey('foodweekplan', 'Speise Wochenplan');
+
 	static data_access_introduction = createTranslationKey('data_access_introduction', `## 🌟 Deine Daten - Dein Recht
 
 Wir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format. 
@@ -152,6 +154,8 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static price_group_employee = createTranslationKey('price_group_employee', 'Mitarbeiter');
 	static price_group_guest = createTranslationKey('price_group_guest', 'Gast');
 
+	static role_employee = createTranslationKey('role_employee', 'Mitarbeiter');
+
 	static under_construction = createTranslationKey('under_construction', 'In Arbeit');
 	static no_permission = createTranslationKey('no_permission', 'Keine Berechtigung');
 	static please_create_an_account = createTranslationKey('please_create_an_account', 'Bitte erstelle einen Account');
@@ -162,6 +166,9 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static washingmachine_state_finished = createTranslationKey('washingmachine_state_finished', 'Waschen beendet');
 	static washingmachine_estimate_finished_at = createTranslationKey("washingmachine_estimate_finished", "Voraussichtlich fertig um");
 	static washingmachine_state_unknown = createTranslationKey('translation_washingmachine_unknown', 'Waschmaschine unbekannt');
+
+
+	static current = createTranslationKey('current', 'Aktuell');
 
 	static active = createTranslationKey('active', 'Aktiv');
 	static inactive = createTranslationKey('inactive', 'Inaktiv');
@@ -176,6 +183,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static location = createTranslationKey('location', 'Ort');
 	static title = createTranslationKey('title', 'Titel');
 	static weekday = createTranslationKey('weekday', 'Wochentag');
+	static week = createTranslationKey('week', 'Woche');
 	static startTime = createTranslationKey('startTime', 'Startzeit');
 	static endTime = createTranslationKey('endTime', 'Endzeit');
 	static color = createTranslationKey('color', 'Farbe');
