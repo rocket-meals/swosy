@@ -118,12 +118,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         return FoodTL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
     }
 
-    async getCategoryForMealJSON(foodJSON){
-        let rawMealOffer = this._getRawMealOfferFromMealJSON(foodJSON);
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        return parsedReportItem[FoodTL1Parser.DEFAULT_CATEGORY_FIELD];
-    }
-
     /**
      * Parser for TL1 Reports
      */

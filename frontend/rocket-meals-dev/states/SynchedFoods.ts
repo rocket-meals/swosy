@@ -25,16 +25,18 @@ export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newVa
 
 export function getDemoFoods(): Record<string, Foods> {
 	const demoNames = ['Fries', 'Burger', 'Lasagne', 'Pizza', 'Pasta', 'Salad', 'Soup', 'Sushi', 'Steak', 'Chicken', 'Fish', 'Rice', 'Noodles', 'Dumplings', 'Curry', 'Tacos', 'Burritos', 'Sandwich', 'Hotdog', 'Kebab', 'Doner', 'Falafel', 'Shawarma']
+	const demoCategories = ['PASTA & FRIENDS', "VEGGIE & VEGAN", "SÜSSE ECKE", "EVERGREENS"];
 	const demoResources: Record<string, Foods> = {}
 	demoNames.forEach((name, index) => {
-		const demoResource: Foods = getDemoResource(index, index.toString(), 'Demo '+name+' '+index.toString())
+		const category = demoCategories[index % demoCategories.length];
+		const demoResource: Foods = getDemoResource(index, index.toString(), 'Demo '+name+' '+index.toString(), category)
 		demoResources[demoResource.id] = demoResource
 	})
 
 	return demoResources
 }
 
-function getDemoResource(index: number, id: string, name: string): Foods {
+function getDemoResource(index: number, id: string, name: string, category: string): Foods {
 	let languages = getDemoLanguagesDict();
 
 	let translations = []
@@ -73,6 +75,7 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 			date_updated: new Date().toISOString(),
 			id: id,
 			alias: name,
+			category: category,
 			image: undefined,
 			sort: undefined,
 			markings: food_markings,
@@ -82,6 +85,8 @@ function getDemoResource(index: number, id: string, name: string): Foods {
 			user_created: undefined,
 			user_updated: undefined,
 			translations: translations,
+			feedbacks: [],
+			foodoffers: []
 		}
 	)
 }

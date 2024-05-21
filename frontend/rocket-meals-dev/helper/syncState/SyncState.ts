@@ -151,11 +151,11 @@ export class SyncState {
 	}
 
 	async reset() {
-		this.initialized = false;
-		this.globalSynchedStoreModels = {};
+		SyncState.getInstance().initialized = false;
+		SyncState.getInstance().globalSynchedStoreModels = {};
 		await SyncState.getInstance().clear();
 
-		const setLoadState = this.setLoadState
+		const setLoadState = SyncState.getInstance().setLoadState
 		if (setLoadState) {
 			setLoadState(false);
 		}

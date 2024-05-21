@@ -7,7 +7,7 @@ export type ButtonAuthAnonymProps = {
 }
 // The component to handle SSO login links
 export const ButtonAuthAnonym = (props: ButtonAuthAnonymProps) => {
-	const continueAnonym = useTranslation(TranslationKeys.continue_as_anonymous)
+	const continueAnonym = useTranslation(TranslationKeys.continue_without_account)
 
 	const onPress = props.onPress
 

@@ -20,8 +20,9 @@ import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacks
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
 import {getSyncCacheComposedKey, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types";
-import {View, Text} from "@/components/Themed";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {Text} from "@/components/Themed";
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
+import {LoadingScreenTextInformationWrapper} from "@/compositions/loadingScreens/LoadingScreen";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -43,6 +44,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
+
+	const translation_sync_database = useRootTranslation(RootTranslationKey.SYNC_DATABASE)
 
 	const demo = useIsDemo()
 
@@ -73,6 +76,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const synchedResourcesToDownloadFirst: {[key: string]: SyncResourceType} = {}
 
 	type SyncResourceType = {
+		key: string,
 		data: any,
 		version_current: string | undefined,
 		version_desired: string | undefined,
@@ -80,7 +84,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 		cacheHelperObj: MyCacheHelperType,
 	}
 
-	function addResourceToCheckForUpdates(label: string, resource: any, cacheHelperObj: MyCacheHelperType){
+	function addResourceToCheckForUpdates(key: string, resource: any, cacheHelperObj: MyCacheHelperType){
 		//console.log("-----")
 		//console.log("addResourceToCheckForUpdates: "+label)
 		let desiredVersion = getDesiredVersion(resource, cacheHelperObj, collectionsDatesLastUpdateDict)
@@ -89,7 +93,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 		//console.log("currentVersion: "+currentVersion)
 		//console.log("-----")
 
-		synchedResourcesToDownloadFirst[label] = {
+		synchedResourcesToDownloadFirst[key] = {
+			key: key,
 			data: resource,
 			version_current: currentVersion,
 			version_desired: desiredVersion,
@@ -205,6 +210,16 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 		})();
 	}, []);
 
+	async function handleUpdateFromServer(cacheHelperObj: MyCacheHelperType, version_desired: string | undefined) {
+		const simulateSlowDownload = false;
+		if (simulateSlowDownload){
+			await new Promise(r => setTimeout(r, 1000));
+		}
+
+		await cacheHelperObj.updateFromServer(version_desired);
+		// small delay to make sure the server has time to update the data
+	}
+
 	useEffect(() => {
 		//console.log("Check if sync is complete: ")
 		const syncComplete = demo || isSyncComplete()
@@ -216,7 +231,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			if (nextResourceToDownload) {
 				const cacheHelperObj = nextResourceToDownload.cacheHelperObj;
 				const version_desired = nextResourceToDownload.version_desired;
-				cacheHelperObj.updateFromServer(version_desired);
+				handleUpdateFromServer(cacheHelperObj, version_desired);
 			}
 
 		}
@@ -236,7 +251,10 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 		renderedTexts.push(<Text>{dependencyKey}</Text>)
 	}
 
-	return <LoadingScreenDatabase text={'Download'} nowInMs={0} synchedResources={{}} >
+	const nextResourceToDownload = getNextResourceToDownload();
+
+	return <LoadingScreenDatabase text={translation_sync_database} nowInMs={0} synchedResources={{}}>
+		<Text>{nextResourceToDownload?.key}</Text>
 	</LoadingScreenDatabase>
 }
 

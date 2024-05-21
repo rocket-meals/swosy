@@ -47,7 +47,7 @@ export class TranslationKeys {
 	static profile = createTranslationKey('profile', 'Profil')
 	static nickname = createTranslationKey('nickname', 'Spitzname')
 	static account = createTranslationKey('account', 'Account')
-	static anonymous = createTranslationKey('anonymous', 'Anonym')
+	static without_account = createTranslationKey('without_account', 'Ohne Account')
 	static reset = createTranslationKey('reset', 'Zurücksetzen')
 	static confirm = createTranslationKey('confirm', 'Bestätigen')
 	static are_you_sure_to_delete_your_account = createTranslationKey('are_you_sure_to_delete_your_account', 'Sind Sie sicher, dass Sie Ihren Account löschen möchten?');
@@ -103,7 +103,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static new = createTranslationKey('new', 'Neu');
 
 	static attention = createTranslationKey('attention', 'Achtung!');
-	static anonymous_limitations = createTranslationKey('anonymous_limitations', 'Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.');
+	static without_account_limitations = createTranslationKey('without_account_limitations', 'Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App weitesgehend anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.');
 
 	static not_useable = createTranslationKey('not_useable', 'Nicht nutzbar');
 
@@ -279,7 +279,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static show = createTranslationKey('show', 'Anzeigen');
 	static hide = createTranslationKey('hide', 'Verbergen');
 	static confirm_password = createTranslationKey('confirm_password', 'Passwort bestätigen');
-	static continue_as_anonymous = createTranslationKey('continue_as_anonymous', 'Anonym fortfahren');
+	static continue_without_account = createTranslationKey('continue_without_account', 'Ohne Account fortfahren');
 	static sign_in_with = createTranslationKey('sign_in_with', 'Fortfahren mit');
 
 	static home = createTranslationKey('home', 'Startseite');

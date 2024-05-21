@@ -2,24 +2,16 @@ import React, {useEffect} from 'react';
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text} from '@/components/Themed';
-import {
-	useIsServerCached,
-	useIsServerOnline
-} from '@/states/SyncStateServerInfo';
+import {useIsServerCached, useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {AuthenticationData} from '@directus/sdk';
-import {
-	getIsCachedUserAnonymous,
-	useCachedUserRaw,
-	useCurrentUser,
-	useCurrentUserRaw
-} from '@/states/User';
+import {getIsCachedUserAnonymous, useCachedUserRaw, useCurrentUser, useCurrentUserRaw} from '@/states/User';
 import {RootSyncDatabaseDownload} from '@/components/rootLayout/RootSyncDatabaseDownload';
 import {RootNotificationDeepLink} from '@/components/rootLayout/RootNotificationDeepLink';
 import {RootSyncDatabaseUpload} from '@/components/rootLayout/RootSyncDatabaseUpload';
-import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootSyncSettingsDownload} from "@/components/rootLayout/RootSyncSettingsDownload";
 import {RootOnAppFocus} from "@/components/rootLayout/RootOnAppFocus";
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -32,10 +24,12 @@ export interface RootAuthUserFlowLoaderProps {
 export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 	//console.log('RootAuthUserFlowLoader')
 
+	const translation_check_user_authentication = useRootTranslation(RootTranslationKey.CHECK_USER_AUTHENTICATION)
+
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
 
-	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
+	const [authData, setAuthData] = useSyncState<AuthenticationData, AuthenticationData>(PersistentSecureStore.authentificationData)
 	const refreshToken = authData?.refresh_token;
 	const [currentUser, setCurrentUser] = useCurrentUser()
 	const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
@@ -99,10 +93,7 @@ export const RootAuthUserFlowLoader = (props: RootAuthUserFlowLoaderProps) => {
 
 	if (!currentUserRaw) {
 		//console.log('AuthFlowUserCheck useEffect currentUserRaw is null')
-		return(
-			<LoadingScreen>
-				<Text>{'Authenthication flow waiting'}</Text>
-			</LoadingScreen>
+		return(<Text>{translation_check_user_authentication}</Text>
 		)
 	}
 

@@ -138,7 +138,7 @@ export default function FoodplanScreen() {
 		let weekdayDate = DateHelper.formatOfferDateToReadable(date, false, false);
 
 		return <View style={{width: "100%", borderBottomColor: viewContrastColor, borderBottomWidth: 1, flexDirection: "row"}}>
-			<View style={{flex: 1}}>
+			<View>
 				<View>
 					<Heading>{weekdayName}</Heading>
 				</View>
@@ -146,7 +146,7 @@ export default function FoodplanScreen() {
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
-			<View style={{flex: 11}}>
+			<View style={{flex: 1}}>
 				{renderFoodoffersForRow(offers)}
 			</View>
 		</View>

@@ -12,6 +12,8 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {DateHelper} from "@/helper/date/DateHelper";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {LoadingScreenFullScreenOverlay} from "@/compositions/loadingScreens/LoadingScreen";
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -31,6 +33,8 @@ export interface RootAuthUserFlowLoaderInnerProps {
 export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInnerProps) => {
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
+
+	const translation_load_server_settings = useRootTranslation(RootTranslationKey.SYNC_SERVER_SETTINGS)
 
 	const demo = useIsDemo()
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
@@ -134,7 +138,7 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 	}, itemsToLoad);
 
 	const key = JSON.stringify(synchedResourcesToDownloadFirst);
-	return <LoadingScreenDatabase text={'Download'} nowInMs={nowInMs} key={key} synchedResources={{}} />
+	return <LoadingScreenDatabase text={translation_load_server_settings} nowInMs={nowInMs} key={key} synchedResources={{}} />
 }
 
 // children: React.ReactNode;
@@ -183,9 +187,7 @@ const MaintenanceCheckComponent = ({children}: {children: React.ReactNode}) => {
 
 	if(maintenance_active) {
 		if(useCachedData && isServerCached) {
-			content = <View style={{width: '100%', height: '100%'}}>
-				{children}
-			</View>
+			return children
 		} else {
 			let estimated_end_message = undefined;
 			if(translation_maintenance_estimated_end && maintenance_end_date_string) {
@@ -195,8 +197,7 @@ const MaintenanceCheckComponent = ({children}: {children: React.ReactNode}) => {
 			}
 
 			content = (
-				<MySafeAreaView>
-					<MyScrollView>
+				<LoadingScreenFullScreenOverlay>
 						<View style={{width: '100%', alignItems: 'center'}}>
 							<AnimationUnderConstruction />
 							<Heading>{translation_maintenance}</Heading>
@@ -212,10 +213,8 @@ const MaintenanceCheckComponent = ({children}: {children: React.ReactNode}) => {
 									return currentServerInfo
 								});
 							}}  accessibilityLabel={translation_use_cached_version} />
-
-						</View>
-					</MyScrollView>
-				</MySafeAreaView>
+							</View>
+				</LoadingScreenFullScreenOverlay>
 			)
 		}
 	}

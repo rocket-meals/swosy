@@ -13,12 +13,13 @@ import {RootServerStatusFlowLoader} from '@/components/rootLayout/RootServerStat
 import {RootAuthUserFlowLoader} from '@/components/rootLayout/RootAuthUserFlowLoader';
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from '@/components/rootLayout/RootThemeProvider';
-import Slot = Navigator.Slot;
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {SecureStorageHelper} from '@/helper/storage/SecureStorageHelper';
 import {KeyboardAvoidingView, Platform} from 'react-native';
 import {RootAppUpdateChecker} from "@/components/rootLayout/RootAppUpdateChecker";
 import {RootCustomerAdaptions} from "@/components/rootLayout/RootCustomerAdaptions";
+import Slot = Navigator.Slot;
+import {LoadingLogoProvider} from "@/compositions/loadingScreens/LoadingLogoProvider";
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -33,7 +34,8 @@ SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 export default function RootLayout() {
 	// State for checking if fonts and storage are loaded
 	const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
-	const [reloadNumber, setReloadNumber] = useState(0);
+	const [reloadNumber, setReloadNumber] = useState(1);
+	const [store, setStore] = useState<any>(null);
 	const [fontsLoaded, fontsError] = useFonts({
 		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
 		...FontAwesome.font,
@@ -51,6 +53,8 @@ export default function RootLayout() {
 			SyncState.setLoadState(reset);
 			console.log("await instance.init()")
 			await instance.init();
+			const store = SyncState.getInstance().getStore();
+			setStore(store);
 			setReloadNumber(reloadNumber+1)
 		}
 	}
@@ -78,8 +82,6 @@ export default function RootLayout() {
 		return null;
 	}
 
-	const store = SyncState.getInstance().getStore();
-
   // Render the Root Layout
   return (
       <KeyboardAvoidingView
@@ -89,15 +91,17 @@ export default function RootLayout() {
       <StoreProvider store={store} key={reloadNumber+""}>
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
-            <RootAppUpdateChecker key={reloadNumber+""}>
-              <RootServerStatusFlowLoader key={reloadNumber+""} >
-                <RootAuthUserFlowLoader key={reloadNumber+""}>
-				  <RootCustomerAdaptions key={reloadNumber+""}>
-					<Slot key={reloadNumber+""} />
-				  </RootCustomerAdaptions>
-                </RootAuthUserFlowLoader>
-              </RootServerStatusFlowLoader>
-            </RootAppUpdateChecker>
+			  <LoadingLogoProvider key={reloadNumber+""}>
+				  <RootAppUpdateChecker key={reloadNumber+""}>
+					  <RootServerStatusFlowLoader key={reloadNumber+""} >
+						  <RootAuthUserFlowLoader key={reloadNumber+""}>
+							  <RootCustomerAdaptions key={reloadNumber}>
+								  <Slot key={reloadNumber} />
+							  </RootCustomerAdaptions>
+						  </RootAuthUserFlowLoader>
+					  </RootServerStatusFlowLoader>
+				  </RootAppUpdateChecker>
+			  </LoadingLogoProvider>
           </RootThemeProvider>
         </GluestackUIProvider>
       </StoreProvider>

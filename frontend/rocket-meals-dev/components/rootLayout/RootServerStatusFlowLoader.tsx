@@ -6,10 +6,17 @@ import {useServerInfoRaw} from '@/states/SyncStateServerInfo';
 import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
 import {AuthenticationData} from '@directus/sdk';
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
-import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {
+	LoadingScreen,
+	LoadingScreenFullScreenOverlay,
+	LoadingScreenTextInformationWrapper
+} from "@/compositions/loadingScreens/LoadingScreen";
 import {useIsDebug} from "@/states/Debug";
 import {PleaseConnectFirstTimeWithInternet} from "@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet";
-import {PleaseConnectLaterServerIsOffline} from "@/compositions/loadingScreens/PleaseConnectLaterServerIsOffline"; // Optional if you want to use default theme
+import {PleaseConnectLaterServerIsOffline} from "@/compositions/loadingScreens/PleaseConnectLaterServerIsOffline";
+import {MyButton} from "@/components/buttons/MyButton";
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
+import {IconNames} from "@/constants/IconNames"; // Optional if you want to use default theme
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -24,8 +31,13 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 	const isDebug = useIsDebug();
 
+	const translation_check_server_status = useRootTranslation(RootTranslationKey.CHECK_SERVER_STATUS)
+	const translation_server_is_offline = useRootTranslation(RootTranslationKey.SERVER_IS_OFFLINE)
+	const translation_continue_with_cache = useRootTranslation(RootTranslationKey.CONTINUE_WITH_CACHE)
+
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 	const nowAsKey = nowInMs.toString();
+	const [continueWithCache, setContinueWithCache] = useState<boolean>(false);
 
 	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
 	] = useServerInfoRaw();
@@ -71,24 +83,51 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		})();
 	}, []);
 
-	const debugInformation = isDebug ? <Text>{JSON.stringify(serverInfo, null, 2)}</Text> : null;
+	const debugInformation = <>
+		<Text>{'serverInfoRaw?.sync_cache_composed_key_local: '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
+		<Text>{'nowAsKey: '+nowAsKey}</Text>
+		<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+	</>
 
 	// 1. load server information
 	let serverInfoNotUpdated = (!serverInfoRaw?.sync_cache_composed_key_local || serverInfoRaw?.sync_cache_composed_key_local !== nowAsKey)
 	if (serverInfoNotUpdated || !serverInfo) {
+
+
 		return (
 			<LoadingScreen>
-				<Text>{'Loading server Info'}</Text>
-				<Text>{'serverInfoRaw?.sync_cache_composed_key_local: '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
-				<Text>{'nowAsKey: '+nowAsKey}</Text>
-				{debugInformation}
+			<LoadingScreenTextInformationWrapper>
+				<Text>{translation_check_server_status}</Text>
+				{isDebug && debugInformation}
+			</LoadingScreenTextInformationWrapper>
 			</LoadingScreen>
 		)
 	}
 
 	if (serverInfo.status === 'offline') {
 		return (
-			<PleaseConnectLaterServerIsOffline />
+			<LoadingScreen>
+				<LoadingScreenFullScreenOverlay>
+					<PleaseConnectLaterServerIsOffline />
+				</LoadingScreenFullScreenOverlay>
+			</LoadingScreen>
+		)
+	}
+
+	if(serverInfo.status === "cached" && !continueWithCache) {
+		return (
+			<LoadingScreen>
+			<LoadingScreenTextInformationWrapper>
+				<Text>{translation_server_is_offline}</Text>
+				<View style={{
+					marginTop: 20,
+				}}>
+					<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_continue_with_cache} onPress={() => {
+						setContinueWithCache(true)
+					}} text={translation_continue_with_cache} rightIcon={IconNames.chevron_right_icon} />
+				</View>
+			</LoadingScreenTextInformationWrapper>
+			</LoadingScreen>
 		)
 	}
 

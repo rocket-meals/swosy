@@ -4,8 +4,9 @@ import {Text, View} from '@/components/Themed';
 import * as rocketSource from '@/assets/animations/rocket_purple.json';
 import {MyProjectColoredLottieAnimation} from '@/components/lottie/MyProjectColoredLottieAnimation';
 import {StringHelper} from '@/helper/string/StringHelper';
-import {LoadingLogo} from "@/compositions/loadingScreens/LoadingLogo";
-import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {LoadingLogoProvider} from "@/compositions/loadingScreens/LoadingLogoProvider";
+import {LoadingScreen, LoadingScreenTextInformationWrapper} from "@/compositions/loadingScreens/LoadingScreen";
+import {useIsDebug} from "@/states/Debug";
 
 interface AppState {
     children?: React.ReactNode;
@@ -14,6 +15,8 @@ interface AppState {
     synchedResources: {[key: string]: {data: any, lastUpdate: number | undefined}}
 }
 export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, nowInMs, synchedResources, ...props}) => {
+	const isDebug = useIsDebug()
+
 	const synchedResourcesDataSynchedDict: {[key: string]: any}
         = {}
 	const synchedResourceKeys = Object.keys(synchedResources)
@@ -47,8 +50,6 @@ export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, no
 		}
 	}
 
-	const message = 'Loading resources'
-
 	let content = null
 	if (!allResourcesSynched) {
 		content = (
@@ -68,9 +69,11 @@ export const LoadingScreenDatabase: FunctionComponent<AppState> = ({children, no
 
 	return (
 		<LoadingScreen>
-			<Text>{props.text}</Text>
-			{content}
-			{children}
+			<LoadingScreenTextInformationWrapper>
+				<Text>{props.text}</Text>
+				{isDebug && content}
+				{isDebug && children}
+			</LoadingScreenTextInformationWrapper>
 		</LoadingScreen>
 	);
 }

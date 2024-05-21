@@ -5,6 +5,7 @@ import {useCurrentUser, useIsCurrentUserAnonymous} from '@/states/User';
 import {LoadingScreenDatabase} from '@/compositions/loadingScreens/LoadingScreenDatabase';
 import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet';
 import {useSynchedDevices} from '@/states/SynchedDevices';
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -26,6 +27,8 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 
 	const isServerOnline = useIsServerOnline()
 	const isServerCached = useIsServerCached();
+
+	const translation_sync_user_settings = useRootTranslation(RootTranslationKey.SYNC_USER_SETTINGS)
 
 	const [currentUser, setUserWithCache] = useCurrentUser();
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
@@ -108,7 +111,7 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 	}, itemsToLoad);
 
 	const key = JSON.stringify(synchedResourcesToDownloadFirst);
-	return <LoadingScreenDatabase text={'Upload'} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
+	return <LoadingScreenDatabase text={translation_sync_user_settings} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
 }
 
 export const RootSyncDatabaseUpload = (props: RootAuthUserFlowLoaderProps) => {

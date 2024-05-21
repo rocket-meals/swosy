@@ -40,7 +40,7 @@ export default function Login() {
 	const translation_email = useTranslation(TranslationKeys.email);
 	const translation_password = useTranslation(TranslationKeys.password);
 
-	const translation_anonymous_limitations = useTranslation(TranslationKeys.anonymous_limitations);
+	const translation_anonymous_limitations = useTranslation(TranslationKeys.without_account_limitations);
 
 	// email and password for login
 	const [email, setEmail] = useState('')

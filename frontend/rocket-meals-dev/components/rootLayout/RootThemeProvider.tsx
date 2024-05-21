@@ -131,7 +131,6 @@ export const RootThemeProvider = (props: RootThemeProviderProps) => {
 	const statusbarTextColorStyle = isDarkTheme ? 'light' : 'dark';
 
 
-
 	return (
 		<ThemeProvider value={theme}>
 			<ModalProvider>

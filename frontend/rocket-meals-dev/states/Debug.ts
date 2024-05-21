@@ -8,11 +8,16 @@ export function useDebugRaw(): [boolean | null, (newValue: boolean) => void] {
 }
 
 export function useIsDebug(): boolean {
+	const [debug] = useDebugRaw()
+	return !!debug
+}
+
+export function useDebug(): [boolean, (newValue: boolean) => void] {
 	const [debugRaw, setDebugRaw] = useDebugRaw()
 	const globalSearchParams = useGlobalSearchParams()
 	const debugParamRaw = globalSearchParams?.debug
 	const debugParam = debugParamRaw === "true"
 
 	const debug = debugRaw ?? debugParam
-	return !!debug
+	return [!!debug, setDebugRaw]
 }

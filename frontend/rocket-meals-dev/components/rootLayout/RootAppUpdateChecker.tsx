@@ -5,6 +5,7 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {View, Text} from "@/components/Themed";
 import {AppState} from "react-native";
 import {LoadingScreen} from "@/compositions/loadingScreens/LoadingScreen";
+import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
 
 export interface ServerStatusFlowLoaderProps {
@@ -28,6 +29,9 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
     const currentAppState = useAppState();
 
     const TIMEOUT_IN_SECONDS = 3;
+
+    const translation_check_for_app_updates = useRootTranslation(RootTranslationKey.CHECK_FOR_APP_UPDATES)
+    const translation_download_new_app_update = useRootTranslation(RootTranslationKey.DOWNLOAD_NEW_APP_UPDATE)
 
     const [initialCheckFinished, setInitialCheckFinished] = React.useState<boolean>(false);
     const [updateIsAvailable, setUpdateIsAvailable] = React.useState<boolean>(false);
@@ -105,18 +109,16 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
     }, [currentAppState]);
 
     if(!initialCheckFinished) {
-        let text = "Checking for updates"
+        let text = translation_check_for_app_updates
         if(updateIsAvailable) {
-            text = "Downloading new update"
+            text = translation_download_new_app_update
         }
         if(reloadInProgress) {
-            text = "Reloading app"
+            text = "Reloading app..."
         }
 
 
-        return <LoadingScreen>
-            <Text>{text}</Text>
-        </LoadingScreen>
+        return <Text>{text}</Text>
     } else {
         return (
             props.children
