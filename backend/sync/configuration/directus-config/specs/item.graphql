@@ -2455,6 +2455,7 @@ type foods {
   sugar_g: Float
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  category: String
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
   foodoffers(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers]
@@ -2501,6 +2502,7 @@ type foods_aggregated_count {
   sugar_g: Int
   user_created: Int
   user_updated: Int
+  category: Int
   feedbacks: Int
   foodoffers: Int
   markings: Int
@@ -4001,6 +4003,7 @@ type version_foods {
   sugar_g: Float
   user_created: JSON
   user_updated: JSON
+  category: String
   feedbacks: JSON
   foodoffers: JSON
   markings: JSON
@@ -5466,6 +5469,7 @@ input create_foods_input {
   sugar_g: Float
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  category: String
   feedbacks: [create_foods_feedbacks_input]
   foodoffers: [create_foodoffers_input]
   markings: [create_foods_markings_input]
@@ -6155,6 +6159,7 @@ input foods_filter {
   sugar_g: number_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  category: string_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
   foodoffers: foodoffers_filter
@@ -7014,6 +7019,7 @@ input update_foods_input {
   sugar_g: Float
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  category: String
   feedbacks: [update_foods_feedbacks_input]
   foodoffers: [update_foodoffers_input]
   markings: [update_foods_markings_input]

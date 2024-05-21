@@ -13,7 +13,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_TEXT_FIELD = "TEXT";
     static DEFAULT_RECIPE_ID_FIELD = "REZEPTUR_ID";
     static DEFAULT_NUTRITIONS_FIELD = "NAEHRWERTEJEPORT";
-
+    static DEFAULT_CATEGORY_FIELD = "SPEISE_BEZEICHNUNG";
 
     static FIELD_PRICE_STUDENT_OSNABRUECK = "STD_PREIS";
     static FIELD_PRICE_STUDENT_HANNOVER = "PREIS_STUDENT"; // Hannover TL1 specific
@@ -118,6 +118,12 @@ export class FoodTL1Parser implements FoodParserInterface {
         return FoodTL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
     }
 
+    async getCategoryForMealJSON(foodJSON){
+        let rawMealOffer = this._getRawMealOfferFromMealJSON(foodJSON);
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+        return parsedReportItem[FoodTL1Parser.DEFAULT_CATEGORY_FIELD];
+    }
+
     /**
      * Parser for TL1 Reports
      */
@@ -212,6 +218,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return {
             id: meal_id,
             alias: FoodTL1Parser._getMealNameDe(parsedReportItem),
+            category: parsedReportItem[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
 //            name: TL1Parser._getMealName(parsedReportItem),
             translations: {
                 [TranslationHelper.LANGUAGE_CODE_DE]: {"name": FoodTL1Parser._getMealNameDe(parsedReportItem)},
@@ -299,6 +306,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foundPrice;
 
     }
+
 
     /**
      * Nutritions

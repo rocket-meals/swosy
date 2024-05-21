@@ -30488,6 +30488,10 @@
               }
             ]
           },
+          "category": {
+            "nullable": true,
+            "type": "string"
+          },
           "feedbacks": {
             "nullable": true,
             "type": "array",

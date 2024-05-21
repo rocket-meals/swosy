@@ -1,7 +1,7 @@
 {
   "collection": "foodoffers_markings",
   "meta": {
-    "accountability": "all",
+    "accountability": null,
     "archive_app_filter": true,
     "archive_field": null,
     "archive_value": null,

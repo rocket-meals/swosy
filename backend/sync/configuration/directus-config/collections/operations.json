@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_ri1ei",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "payload": {
+        "foods_parsing_status": "start"
+      },
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "5ea87d76-a6c0-4a7c-819b-e493da87b8c7",
+    "_syncId": "d4502058-883f-4a85-b598-83f92245e8cc"
+  }
+]

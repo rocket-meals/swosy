@@ -252,7 +252,7 @@ export class ParseSchedule {
 
     async findOrCreateFood(mealJSON) {
         let mealJSONCopy = JSON.parse(JSON.stringify(mealJSON));
-        //TODO use the "createIfNotFound" method abouve
+        //TODO use the "createIfNotFound" method above
         delete mealJSONCopy.translations; //remove meals translations, we need to add it later
         let tablename = TABLENAME_MEALS;
         let itemService = this.itemsServiceCreator.getItemsService(tablename)
@@ -307,7 +307,7 @@ export class ParseSchedule {
             currentFoodIndex++;
             //console.log("Update Food " + currentMeal + " / " + amountOfMeals);
             let food = await this.findOrCreateFood(foodJSON);
-            if (!!food && food.id) {
+            if (!!food && food.id && this.foodParser) {
                 let marking_external_identifier_list = await this.foodParser.getMarkingExternalIdentifierListForFoodJSON(foodJSON) || [];
                 let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
                 await this.assignMarkingsToFood(markings, food);
@@ -316,6 +316,14 @@ export class ParseSchedule {
                 if (!!nutritionsJSON) {
                     await this.assignNutritionsToFood(food, nutritionsJSON);
                 }
+
+                let tablename = TABLENAME_MEALS;
+                let itemService = this.itemsServiceCreator.getItemsService(tablename)
+                await itemService.updateOne(food.id, {
+                    alias: foodJSON.alias,
+                    category: foodJSON.category,
+                });
+
 
                 await this.updateFoodTranslations(food, foodJSON);
             }
