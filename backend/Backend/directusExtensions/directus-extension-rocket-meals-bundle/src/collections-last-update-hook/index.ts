@@ -5,7 +5,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "collections_dates_last_update";
 
-export default defineHook(async ({action}, {
+export default defineHook(async ({action, init}, {
 	services,
 	database,
 	getSchema
@@ -88,10 +88,14 @@ export default defineHook(async ({action}, {
 				//console.error("Error while updating the collection 'collections_dates_last_update' for the collection: " + collection + " with the current date: " + currentDate);
 				//console.error(e);
 			}
+			await cleanupNonExistingCollectionsAndCreateMissingCollections();
 		}
-		await cleanupNonExistingCollectionsAndCreateMissingCollections();
 	}
 
+	// https://docs.directus.io/extensions/hooks.html#available-events
+	init("app.after", async () => {
+		await cleanupNonExistingCollectionsAndCreateMissingCollections();
+	});
 
 	action(
 		"*" + ".items.update",
