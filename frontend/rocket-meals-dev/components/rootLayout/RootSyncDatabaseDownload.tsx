@@ -142,15 +142,21 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	function getDesiredVersion(resourceLocal: any, cacheHelperObj: MyCacheHelperType, collectionsDatesLastUpdateDict: Record<string, CollectionsDatesLastUpdate | null | undefined> | null | undefined): string | undefined
 	{
+		//console.log("getDesiredVersion")
 		if (isServerOnline) { // if server is online
+			//console.log("isServerOnline")
 			const download_always = cacheHelperObj.dependencies.update_always;
+			//console.log("download_always: "+download_always)
 			if(download_always){
 				// we should use as composed key the request time as we cant rely on the composed key which is created by the dependencies
 				return startSyncTimeRequest;
 			} else {
+				//console.log("not download_always")
 				const isCollectionDatesLadUpdateDictCached = !!collectionsDatesLastUpdateDict
+				//console.log("isCollectionDatesLadUpdateDictCached: "+isCollectionDatesLadUpdateDictCached)
 				if(isCollectionDatesLadUpdateDictCached){
 					let composedKey = getSyncCacheComposedKey(cacheHelperObj, collectionsDatesLastUpdateDict);
+					//console.log("composedKey: "+composedKey)
 					if(composedKey instanceof Error){
 						// one of the collections is not found in the collectionsDatesLastUpdateDict
 						return startSyncTimeRequest // tell them to download it just, as we dont know the version and we are online
@@ -231,6 +237,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			if (nextResourceToDownload) {
 				const cacheHelperObj = nextResourceToDownload.cacheHelperObj;
 				const version_desired = nextResourceToDownload.version_desired;
+				console.log("Next resource to download: "+nextResourceToDownload.key)
 				handleUpdateFromServer(cacheHelperObj, version_desired);
 			}
 
@@ -255,6 +262,9 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	return <LoadingScreenDatabase text={translation_sync_database} nowInMs={0} synchedResources={{}}>
 		<Text>{nextResourceToDownload?.key}</Text>
+		<Text>{"is_version_up_to_date: "+nextResourceToDownload?.is_version_up_to_date}</Text>
+		<Text>{"version_desired: "+nextResourceToDownload?.version_desired}</Text>
+		<Text>{"version_current: "+nextResourceToDownload?.version_current}</Text>
 	</LoadingScreenDatabase>
 }
 

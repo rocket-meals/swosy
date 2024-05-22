@@ -29,6 +29,8 @@ export const unstable_settings = {
 	initialRouteName: '(app)',
 };
 
+const INITIAL_RELOAD_NUMBER = 5;
+
 SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 
 export default function RootLayout() {
@@ -41,7 +43,7 @@ export default function RootLayout() {
 			store: any
 		}>
 	({
-		reloadNumber: 1,
+		reloadNumber: INITIAL_RELOAD_NUMBER,
 		store: null,
 	});
 	const reloadNumber = reloadData.reloadNumber;
@@ -53,26 +55,29 @@ export default function RootLayout() {
 		...FontAwesome.font,
 	});
 
-	const reset = (bool: boolean) => {
-		console.log('RootLayout: reset: '+bool);
-		setReloadData({
-			reloadNumber: reloadData.reloadNumber,
-			store: null,
-		});
-	}
-
-	async function loadStorage() {
-		console.log('Load storage asynchronously and update state')
-		if (!storageLoaded) {
-			const instance = SyncState.getInstance();
-			SyncState.setLoadState(reset);
-			console.log("await instance.init()")
-			await instance.init();
+	const reset = (storageLoaded: boolean) => {
+		console.log('RootLayout: reset: '+storageLoaded);
+		if(!storageLoaded) {
+			setReloadData({
+				reloadNumber: reloadData.reloadNumber,
+				store: null,
+			});
+		} else {
 			const store = SyncState.getInstance().getStore();
 			setReloadData({
 				reloadNumber: reloadData.reloadNumber + 1,
 				store: store,
 			})
+		}
+	}
+
+	async function loadStorage() {
+		console.log('Load storage asynchronously and update state - reloadNumber: '+reloadNumber);
+		if (!storageLoaded) {
+			const instance = SyncState.getInstance();
+			SyncState.setLoadState(reset);
+			await instance.init();
+			// init() will call the reset function
 		}
 	}
 
@@ -94,7 +99,7 @@ export default function RootLayout() {
 	}, [fontsError]);
 
 	// Return null if fonts or storage are not loaded
-	const hotReloadOrFirstLoad = reloadNumber === 0 // Expo hot reload would cause storage to stay loaded, which would result in a double render
+	const hotReloadOrFirstLoad = reloadNumber === INITIAL_RELOAD_NUMBER // Expo hot reload would cause storage to stay loaded, which would result in a double render
 	if (!fontsLoaded || !storageLoaded || hotReloadOrFirstLoad) {
 		return null;
 	}
@@ -109,7 +114,7 @@ export default function RootLayout() {
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
 			  <LoadingLogoProvider key={reloadNumber+""}>
-				  <RootAppUpdateChecker key={reloadNumber+""}>
+				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""+1222}>
 					  <RootServerStatusFlowLoader key={reloadNumber+""} >
 						  <RootAuthUserFlowLoader key={reloadNumber+""}>
 							  <RootCustomerAdaptions key={reloadNumber}>

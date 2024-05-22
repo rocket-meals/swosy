@@ -28,6 +28,10 @@ export default function MapScreen() {
 	// emoji pin
 	const icon = "📍";
 
+	const icon_canteen = "🍽️";
+	const icon_apartment = "🏠";
+	const icon_building = "🏢";
+
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [canteensDict, setCanteensDict] = useSynchedCanteensDict();
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict();

@@ -41,14 +41,14 @@ export const LoadingScreenTextInformationWrapper: FunctionComponent<LoadingScree
 			bottom: 0,
 			left: 0,
 			width: '100%',
-			backgroundColor: viewBackgroundColor
+			justifyContent: "flex-end"
 		}}>
 			<MyScrollView>
 				<View style={{
-					width: '100%',
-					paddingBottom: 20,
+					backgroundColor: viewBackgroundColor,
+					justifyContent: 'center',
 					alignItems: 'center',
-					justifyContent: 'center'
+					padding: 20
 				}}>
 					{children}
 				</View>

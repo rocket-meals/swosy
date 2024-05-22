@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useSyncState} from '@/helper/syncState/SyncState';
-import {ServerAPI} from '@/helper/database/server/ServerAPI';
+import {ServerAPI, ServerInfo} from '@/helper/database/server/ServerAPI';
 import {Text, View} from '@/components/Themed';
 import {useServerInfoRaw} from '@/states/SyncStateServerInfo';
 import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
@@ -60,38 +60,75 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		await SecureStorageHelperAbstractClass.setItem(PersistentSecureStore.authentificationData, JSON.stringify(newAuthData)) // but hook is async, so we have to update the storage directly
 	})
 
-	useEffect(() => {
-		// call anonymous function
-		(async () => {
-			let remote_server_info = await ServerAPI.downloadServerInfo();
-			console.log('ServerInfoRaw', remote_server_info)
+	async function loadServerInfo(){
+		let remote_server_info = await ServerAPI.downloadServerInfo();
+		console.log('ServerInfoRaw', remote_server_info)
 
-			if (remote_server_info.status === 'offline') {
-				console.log("Server is offline at fetching remote")
-				let cachedServerInfo = serverInfo
-				console.log('cachedServerInfo', cachedServerInfo)
-				if (cachedServerInfo) {
-					console.log("Server is offline at fetching remote, but we have local data")
-					remote_server_info = cachedServerInfo;
-					remote_server_info.status = 'cached'
-				}
+		if (remote_server_info.status === 'offline') {
+			console.log("Server is offline at fetching remote")
+			let cachedServerInfo = serverInfo
+			console.log('cachedServerInfo', cachedServerInfo)
+			if (cachedServerInfo) {
+				console.log("Server is offline at fetching remote, but we have local data")
+				remote_server_info = cachedServerInfo;
+				remote_server_info.status = 'cached'
 			}
+		}
 
+		return remote_server_info
+	}
+
+	async function checkIfProcessWithCachedDataPossible(){
+		const cachedServerInfo = serverInfo;
+		if (cachedServerInfo) {
+			cachedServerInfo.status = 'cached';
 			setServerInfo((currentServerInfo) => {
-				return remote_server_info
+				return cachedServerInfo;
 			}, nowAsKey);
-		})();
+		} else {
+			console.log("No cached data available");
+			// Handle the case where there's no cached data
+			// set serverInfo null
+			setServerInfo((currentServerInfo) => {
+				return null;
+			}, nowAsKey);
+		}
+	}
+
+	async function loadInformation() {
+		const TIMEOUT_IN_SECONDS = 3;
+		const timeoutInMillis = 1000 * TIMEOUT_IN_SECONDS;
+		const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("timedout"), timeoutInMillis));
+
+		const serverLoadPromise = loadServerInfo();
+
+		try {
+			const remote_server_info_unkownType = await Promise.race([serverLoadPromise, timeoutPromise]);
+			const remote_server_info = remote_server_info_unkownType as ServerInfo;
+
+			// If we get here, it means loadServerInfo resolved before timeout
+			setServerInfo((currentServerInfo) => {
+				return remote_server_info;
+			}, nowAsKey);
+		} catch (error) {
+			// If we get here, it means timeout occurred or loadServerInfo rejected
+			checkIfProcessWithCachedDataPossible();
+		}
+	}
+
+	useEffect(() => {
+		loadInformation();
 	}, []);
 
 	const debugInformation = <>
-		<Text>{'serverInfoRaw?.sync_cache_composed_key_local: '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
+		<Text>{'serverInfoRaw?.sync_cache_composed_key_local - '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
 		<Text>{'nowAsKey: '+nowAsKey}</Text>
 		<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
 	</>
 
 	// 1. load server information
 	let serverInfoNotUpdated = (!serverInfoRaw?.sync_cache_composed_key_local || serverInfoRaw?.sync_cache_composed_key_local !== nowAsKey)
-	if (serverInfoNotUpdated || !serverInfo) {
+	if (serverInfoNotUpdated || (serverInfo===undefined)) {
 
 
 		return (
@@ -104,7 +141,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		)
 	}
 
-	if (serverInfo.status === 'offline') {
+	if (serverInfo===null || serverInfo.status === 'offline') {
 		return (
 			<LoadingScreen>
 				<LoadingScreenFullScreenOverlay>

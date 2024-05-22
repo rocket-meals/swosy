@@ -10,10 +10,8 @@ export class DatabaseInitializedCheck{
         return await DatabaseInitializedCheck.checkTablesExist(scheduleName, getSchema, getAllCollectionNames());
     }
 
-    static async checkTablesExist(scheduleName: string, getSchema: any, tables: string[]): Promise<boolean> {
+    static async getTableNames(getSchema: any): Promise<string[]> {
         let schema = await getSchema();
-        let missingTables = [];
-
         let collectionKeys = Object.keys(schema.collections);
         let tableNamesDict: any = {};
         for(let collectionKey of collectionKeys) {
@@ -22,8 +20,13 @@ export class DatabaseInitializedCheck{
                 tableNamesDict[collection.collection] = collection.collection;
             }
         }
+        return Object.keys(tableNamesDict);
+    }
 
-        let tableNames = Object.keys(tableNamesDict);
+    static async checkTablesExist(scheduleName: string, getSchema: any, tables: string[]): Promise<boolean> {
+        let missingTables = [];
+
+        let tableNames = await DatabaseInitializedCheck.getTableNames(getSchema);
         for (let table of tables) {
             if (!tableNames.includes(table)) {
                 missingTables.push(table);

@@ -138,7 +138,12 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 	}, itemsToLoad);
 
 	const key = JSON.stringify(synchedResourcesToDownloadFirst);
-	return <LoadingScreenDatabase text={translation_load_server_settings} nowInMs={nowInMs} key={key} synchedResources={{}} />
+	return <LoadingScreenDatabase text={translation_load_server_settings} nowInMs={nowInMs} key={key} synchedResources={{}} >
+		<Text>{"app_settings: "}</Text>
+		<Text>{"collectionsDatesLastUpdate"}</Text>
+		<Text>{JSON.stringify(collectionsDatesLastUpdate, null, 2)}</Text>
+
+	</LoadingScreenDatabase>
 }
 
 // children: React.ReactNode;

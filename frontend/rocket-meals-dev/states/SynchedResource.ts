@@ -21,6 +21,10 @@ export function useSynchResourceSingleRawSetter<Resource>(storeKey: string): [(n
 			setResourcesRaw((currentValue: NewValueRawSingleType<Resource> | null | undefined) => {
 				let currentValueData = currentValue?.data;
 				let currentSyncCacheComposedKey = sync_cache_composed_key_local || currentValue?.sync_cache_composed_key_local;
+				console.log("useSynchResourceSingleRawSetter currentSyncCacheComposedKey", currentSyncCacheComposedKey)
+				console.log("sync_cache_composed_key_local", sync_cache_composed_key_local)
+				console.log("currentValue?.sync_cache_composed_key_local", currentValue?.sync_cache_composed_key_local)
+				console.log("-------------------")
 				const newValue = callback(currentValueData);
 				let returnValue: NewValueRawSingleType<Resource> = {
 					data: newValue,

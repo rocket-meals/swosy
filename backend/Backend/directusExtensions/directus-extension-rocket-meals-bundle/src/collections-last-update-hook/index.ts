@@ -25,6 +25,34 @@ export default defineHook(async ({action}, {
 
 	//console.log("collection-last-update-hook: register hook")
 
+	/**
+	 * As not all collections are created after import or setup or during changes to the schema.
+	 * Therefore we need to check if all collections are in the "collections_dates_last_update" collection synchronized.
+	 * If a collection is missing in the "collections_dates_last_update" collection, we need to create it.
+	 * If a collection is not existing anymore, we need to delete it from the "collections_dates_last_update" collection.
+	 */
+	async function cleanupNonExistingCollectionsAndCreateMissingCollections() {
+		let allTableNamesInDatabase = await DatabaseInitializedCheck.getTableNames(getSchema);
+		let allTableNamesWithoutExcludeCollections = allTableNamesInDatabase.filter((tableName: string) => !excludeCollections.includes(tableName));
+
+		let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readByQuery({});
+		let tableNamesInLastUpdatesTable = allItemsInLastUpdatesTables.map((item: any) => item.id);
+
+		let missingTableNames = allTableNamesWithoutExcludeCollections.filter((tableName: string) => !tableNamesInLastUpdatesTable.includes(tableName));
+		let tableNamesToDelete = tableNamesInLastUpdatesTable.filter((tableName: string) => !allTableNamesWithoutExcludeCollections.includes(tableName));
+
+		for (let tableNameToDelete of tableNamesToDelete) {
+			await collectionsDatesLastUpdateService.deleteOne(tableNameToDelete);
+		}
+
+		for (let missingTableName of missingTableNames) {
+			await collectionsDatesLastUpdateService.createOne({
+				id: missingTableName,
+				date_updated: new Date().toISOString()
+			});
+		}
+	}
+
 	async function updateLastUpdateDate(collection: string) {
 		//console.log("collection-last-update-hook: updateLastUpdateDate")
 		// check if the collection is not in the excludeCollections list
@@ -61,6 +89,7 @@ export default defineHook(async ({action}, {
 				//console.error(e);
 			}
 		}
+		await cleanupNonExistingCollectionsAndCreateMissingCollections();
 	}
 
 

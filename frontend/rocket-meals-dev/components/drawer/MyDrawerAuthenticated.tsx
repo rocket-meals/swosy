@@ -93,21 +93,21 @@ export const MyDrawerAuthenticated = (props: any) => {
 				title: translation_canteens,
 				icon: IconNames.foodoffers_icon,
 				header: getMyScreenHeaderFoodOffers(),
-				visibleInDrawer: isFoodsEnabled
+				visibleInDrawer: isFoodsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'map/index',
 				label: translation_map,
 				title: translation_map,
 				icon: IconNames.map_icon,
-				visibleInDrawer: isMapEnabled
+				visibleInDrawer: isMapEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'accountbalance/index',
 				label: translation_accountbalance,
 				title: translation_accountbalance,
 				icon: IconNames.account_balance_icon,
-				visibleInDrawer: isAccountBalanceEnabled
+				visibleInDrawer: isAccountBalanceEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'buildings/index',
@@ -115,7 +115,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				title: translation_buildings,
 				icon: IconNames.building_icon,
 				header: getMyScreenHeaderBuildings(),
-				visibleInDrawer: isBuildingsEnabled
+				visibleInDrawer: isBuildingsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'buildings/[building]/index',
@@ -131,7 +131,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
 				header: getMyScreenHeaderHousing(),
-				visibleInDrawer: isHousingEnabled
+				visibleInDrawer: isHousingEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'housing/[apartment]/index',
@@ -146,14 +146,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_news,
 				title: translation_news,
 				icon: IconNames.news_icon,
-				visibleInDrawer: isNewsEnabled
+				visibleInDrawer: isNewsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'course-timetable/index',
 				label: translation_course_timetable,
 				title: translation_course_timetable,
 				icon: IconNames.course_timetable_icon,
-				visibleInDrawer: isCourseTimetableEnabled
+				visibleInDrawer: isCourseTimetableEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'settings/index',
@@ -161,13 +161,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				title: translation_settings,
 				icon: IconNames.settings_icon,
 			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'components/index',
-				label: 'Components',
-				title: 'Components',
-				icon: 'drawing-box',
-				visibleInDrawer: develop
-			})}
+
 			{useRenderMyDrawerScreen({
 				routeName: 'foodoffers/[foodoffer]/index',
 				title: translation_food_details,
@@ -247,7 +241,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.data_access_icon,
 				visibleInDrawer: false
 			})}
-
+			{useRenderMyDrawerScreen({
+				routeName: 'components/index',
+				label: 'Components',
+				title: 'Components',
+				icon: 'drawing-box',
+				visibleInDrawer: develop
+			})}
 			{renderedMyDrawerWikiItems}
 		</MyDrawer>
 	)
