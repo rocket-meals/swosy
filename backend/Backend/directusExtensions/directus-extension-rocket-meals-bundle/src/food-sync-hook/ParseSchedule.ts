@@ -305,7 +305,7 @@ export class ParseSchedule {
 
         for (let foodJSON of foodsJSONList) {
             currentFoodIndex++;
-            //console.log("Update Food " + currentMeal + " / " + amountOfMeals);
+            //console.log("Update Food " + currentFoodIndex + " / " + amountOfMeals);
             let food = await this.findOrCreateFood(foodJSON);
             if (!!food && food.id && this.foodParser) {
                 let marking_external_identifier_list = await this.foodParser.getMarkingExternalIdentifierListForFoodJSON(foodJSON) || [];
@@ -319,6 +319,7 @@ export class ParseSchedule {
 
                 let tablename = TABLENAME_MEALS;
                 let itemService = this.itemsServiceCreator.getItemsService(tablename)
+                //console.log("Update Food with alias (and category): " + foodJSON.alias + " (" + foodJSON.category + ")");
                 await itemService.updateOne(food.id, {
                     alias: foodJSON.alias,
                     category: foodJSON.category,
