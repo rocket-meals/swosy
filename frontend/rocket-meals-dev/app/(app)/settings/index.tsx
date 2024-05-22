@@ -95,12 +95,12 @@ export default function SettingsScreen() {
 				<SettingsRowGroup>
 					<SettingsRowLogout />
 				</SettingsRowGroup>
-				{renderedDeveloperModeSettings}
 				<SettingsRowGroup>
 					<SettingsRowUserDelete />
 					<SettingsRowDataAccess />
 				</SettingsRowGroup>
 				<ProjectVersionInformation />
+				{renderedDeveloperModeSettings}
 			</ScrollViewWithGradient>
 		</MySafeAreaView>
 	);

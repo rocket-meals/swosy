@@ -24,12 +24,13 @@ export type MyTouchableOpacityProps = {
     accessibilityHint?: string,
     accessibilityState?: AccessibilityState,
     onPress?: () => void | ((event: GestureResponderEvent) => void)
+	onLongPress?: () => void | ((event: GestureResponderEvent) => void)
     style?: ViewProps['style']
     styled?: ViewProps['style']
     children?: React.ReactNode
 }
 
-export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLabel, onPress, style, children ,...props}: MyTouchableOpacityProps) => {
+export const MyTouchableOpacity = ({disabled, accessibilityRole, accessibilityLabel, onLongPress, onPress, style, children ,...props}: MyTouchableOpacityProps) => {
 	const isDebug = useIsDebug();
 
 	let mergedStyle: ViewProps['style'] = {

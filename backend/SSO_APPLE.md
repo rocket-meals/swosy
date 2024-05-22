@@ -6,20 +6,28 @@ Since it is a bit ugly with apple, here is a small tutorial:
 ! You will need an Apple Developer Account !
 Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-with-apple-4/
 
-- Find your Apple Team ID --> THIS will be our 
-- Go to Identifiers menu in Certificates, Identifiers & Profiles (https://developer.apple.com/account/resources/certificates/list)
-- Identifiers (https://developer.apple.com/account/resources/certificates/list)
-  - Create new --> Services IDs
-    - Choose an Identifier --> THIS will be our AUTH_APPLE_CLIENT_ID
-    - Register
-  - Open the created Identifier
-    - Check "Sign in with Apple"
-    - Click "Configure" (Sign in with Apple)
+- 1. Find your Apple Team ID --> Variable TeamID
+  - https://developer.apple.com/account/resources/identifiers/list
+  - Top right corner, after your name like: "... - 6U99XXXXXX"
+- 2. Create a new App ID
+  - Visit Identifiers (https://developer.apple.com/account/resources/certificates/list)
+  - Press on the "+" Button
+  - Register a new App ID
+  - Fill in a name and a Bundle ID
+  - Activate "Sign in with Apple"
+  - Save and Register
+- 3. Create a Service ID (Configuration of the Return URL)
+  - Visit Identifiers (https://developer.apple.com/account/resources/certificates/list)
+  - Press top right on the search icon and search for "Service IDs"
+  - Select one or create a new service ID
+  - The name of the service will be our "AUTH_APPLE_CLIENT_ID"
+  - Check "Sign in with Apple"
+  - Click "Configure" (Sign in with Apple)
     - Select or create a primary App ID
     - Choose you Domain (example.com)
     - Enter the return URLs: "https://<PUBLIC_URL>/api/auth/login/apple/callback"
       - Replace <PUBLIC_URL> with your instance of your server
-    - Continue --> Save
+      - Continue --> Save
 - Keys (https://developer.apple.com/account/resources/certificates/list)
   - Create a new key
   - Check "Sign in with Apple"
@@ -28,6 +36,7 @@ Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-w
   - Click Continue
   - Click Register
   - Save "Key ID", we will need this in a moment
+  - Save File as we cannot download it again
   - Click Download and save file as: "key.txt"
 - Secret Generation
   - Have the following Values: "TeamID", "AUTH_APPLE_CLIENT_ID", "KEY_ID", key.txt file

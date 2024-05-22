@@ -24,7 +24,13 @@ export default function MapScreen() {
 
 	const [loadError, setLoadError] = React.useState<string | null>(null);
 	const [assets, error] = useAssets([mapMarkerIcon]);
-	const [imageAsString, setImageAsString] = React.useState<string | null>(null);
+	//const [imageAsString, setImageAsString] = React.useState<string | null>(null);
+	// emoji pin
+	const icon = "📍";
+
+	const icon_canteen = "🍽️";
+	const icon_apartment = "🏠";
+	const icon_building = "🏢";
 
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const [canteensDict, setCanteensDict] = useSynchedCanteensDict();
@@ -44,6 +50,7 @@ export default function MapScreen() {
 	};
 
 	async function loadImage(){
+		/*
 		const path = require(`@/assets/map/marker-icon-2x.png`);
 		const htmlFile: Asset = await Asset.fromModule(path);
 		try{
@@ -67,10 +74,10 @@ export default function MapScreen() {
 		} catch (err){
 			setLoadError(err.message);
 		}
-
+		*/
 	}
 
-	if(buildingsDict && imageAsString){
+	if(buildingsDict && icon){
 		let buildingIds = Object.keys(buildingsDict);
 		let buildings: Buildings[] = []
 		for(let buildingId of buildingIds){
@@ -79,18 +86,18 @@ export default function MapScreen() {
 				buildings.push(building)
 			}
 		}
-		markers = getMapMarkersFromBuildings(buildings, imageAsString)
+		markers = getMapMarkersFromBuildings(buildings, icon)
 	}
 
 	const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
 
-	if(markers.length === 0 && imageAsString){
+	if(markers.length === 0 && icon){
 		markers = [
 			{
 				id: "1",
 				position: POSITION_BUNDESTAG,
 				//icon: MyMapMarkerIcons.DEBUG_ICON,
-				icon: imageAsString,
+				icon: icon,
 				size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
 				iconAnchor: getDefaultIconAnchor(MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE),
 			},
@@ -109,7 +116,7 @@ export default function MapScreen() {
 		)
 	}
 
-	if(!imageAsString){
+	if(!icon){
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
 				<Text>Loading...</Text>

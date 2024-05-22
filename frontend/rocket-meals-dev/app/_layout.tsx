@@ -13,12 +13,13 @@ import {RootServerStatusFlowLoader} from '@/components/rootLayout/RootServerStat
 import {RootAuthUserFlowLoader} from '@/components/rootLayout/RootAuthUserFlowLoader';
 import {Navigator} from 'expo-router';
 import {RootThemeProvider} from '@/components/rootLayout/RootThemeProvider';
-import Slot = Navigator.Slot;
 import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHelperAbstractClass';
 import {SecureStorageHelper} from '@/helper/storage/SecureStorageHelper';
 import {KeyboardAvoidingView, Platform} from 'react-native';
 import {RootAppUpdateChecker} from "@/components/rootLayout/RootAppUpdateChecker";
 import {RootCustomerAdaptions} from "@/components/rootLayout/RootCustomerAdaptions";
+import Slot = Navigator.Slot;
+import {LoadingLogoProvider} from "@/compositions/loadingScreens/LoadingLogoProvider";
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -28,30 +29,55 @@ export const unstable_settings = {
 	initialRouteName: '(app)',
 };
 
+const INITIAL_RELOAD_NUMBER = 5;
+
 SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 
 export default function RootLayout() {
 	// State for checking if fonts and storage are loaded
-	const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
-	const [reloadNumber, setReloadNumber] = useState(0);
+	//const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
+
+	const [reloadData, setReloadData] = useState
+	<{
+			reloadNumber: number,
+			store: any
+		}>
+	({
+		reloadNumber: INITIAL_RELOAD_NUMBER,
+		store: null,
+	});
+	const reloadNumber = reloadData.reloadNumber;
+	const store = reloadData.store;
+	const storageLoaded = store !== null;
+
 	const [fontsLoaded, fontsError] = useFonts({
 		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
 		...FontAwesome.font,
 	});
 
-	const reset = (bool: boolean) => {
-		console.log('RootLayout: reset: '+bool);
-		setStorageLoaded(bool);
+	const reset = (storageLoaded: boolean) => {
+		console.log('RootLayout: reset: '+storageLoaded);
+		if(!storageLoaded) {
+			setReloadData({
+				reloadNumber: reloadData.reloadNumber,
+				store: null,
+			});
+		} else {
+			const store = SyncState.getInstance().getStore();
+			setReloadData({
+				reloadNumber: reloadData.reloadNumber + 1,
+				store: store,
+			})
+		}
 	}
 
 	async function loadStorage() {
-		console.log('Load storage asynchronously and update state')
+		console.log('Load storage asynchronously and update state - reloadNumber: '+reloadNumber);
 		if (!storageLoaded) {
 			const instance = SyncState.getInstance();
 			SyncState.setLoadState(reset);
-			console.log("await instance.init()")
 			await instance.init();
-			setReloadNumber(reloadNumber+1)
+			// init() will call the reset function
 		}
 	}
 
@@ -73,12 +99,10 @@ export default function RootLayout() {
 	}, [fontsError]);
 
 	// Return null if fonts or storage are not loaded
-	const hotReloadOrFirstLoad = reloadNumber === 0 // Expo hot reload would cause storage to stay loaded, which would result in a double render
+	const hotReloadOrFirstLoad = reloadNumber === INITIAL_RELOAD_NUMBER // Expo hot reload would cause storage to stay loaded, which would result in a double render
 	if (!fontsLoaded || !storageLoaded || hotReloadOrFirstLoad) {
 		return null;
 	}
-
-	const store = SyncState.getInstance().getStore();
 
   // Render the Root Layout
   return (
@@ -89,15 +113,17 @@ export default function RootLayout() {
       <StoreProvider store={store} key={reloadNumber+""}>
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
-            <RootAppUpdateChecker key={reloadNumber+""}>
-              <RootServerStatusFlowLoader key={reloadNumber+""} >
-                <RootAuthUserFlowLoader key={reloadNumber+""}>
-				  <RootCustomerAdaptions key={reloadNumber+""}>
-					<Slot key={reloadNumber+""} />
-				  </RootCustomerAdaptions>
-                </RootAuthUserFlowLoader>
-              </RootServerStatusFlowLoader>
-            </RootAppUpdateChecker>
+			  <LoadingLogoProvider key={reloadNumber+""}>
+				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""+1222}>
+					  <RootServerStatusFlowLoader key={reloadNumber+""} >
+						  <RootAuthUserFlowLoader key={reloadNumber+""}>
+							  <RootCustomerAdaptions key={reloadNumber}>
+								  <Slot key={reloadNumber} />
+							  </RootCustomerAdaptions>
+						  </RootAuthUserFlowLoader>
+					  </RootServerStatusFlowLoader>
+				  </RootAppUpdateChecker>
+			  </LoadingLogoProvider>
           </RootThemeProvider>
         </GluestackUIProvider>
       </StoreProvider>

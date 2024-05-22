@@ -16,7 +16,7 @@ export const SettingsRowUser: FunctionComponent<AppState> = ({...props}) => {
 
 	const leftIcon = IconNames.settings_user_account_icon
 	const translation_title = useTranslation(TranslationKeys.account)
-	const translation_anonymous = useTranslation(TranslationKeys.anonymous)
+	const translation_anonymous = useTranslation(TranslationKeys.without_account)
 	const label = translation_title
 	let labelRight = currentUser?.id
 	if (isCurrentUserAnonymous) {

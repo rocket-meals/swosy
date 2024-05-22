@@ -116,17 +116,19 @@ services:
       AUTH_APPLE_CLIENT_ID: "${AUTH_APPLE_CLIENT_ID}"
       AUTH_APPLE_CLIENT_SECRET: "${AUTH_APPLE_CLIENT_SECRET}"
       AUTH_APPLE_DEFAULT_ROLE_ID: "${DEFAULT_ROLE_ID}" #If you want to set a default role id
-      AUTH_APPLE_SCOPE: "openid"
-      AUTH_APPLE_IDENTIFIER_KEY: "sub"
+      AUTH_APPLE_ICON: "apple"
+      AUTH_APPLE_LABEL: "Apple"
       AUTH_APPLE_ALLOW_PUBLIC_REGISTRATION: "true"
       AUTH_APPLE_ISSUER_URL: "https://appleid.apple.com/.well-known/openid-configuration"
-      AUTH_APPLE_ICON: "apple"
+      AUTH_APPLE_SCOPE: "name email"
+      AUTH_APPLE_IDENTIFIER_KEY: "email"
+      AUTH_APPLE_PARAMS: '{"response_mode":"form_post"}'
 
       AUTH_GOOGLE_DRIVER: "openid"
       AUTH_GOOGLE_MODE: "session"
       AUTH_GOOGLE_CLIENT_ID: "${AUTH_GOOGLE_CLIENT_ID}"
       AUTH_GOOGLE_CLIENT_SECRET: "${AUTH_GOOGLE_CLIENT_SECRET}"
-      AUTH_GOOGLE_ISSUER_URL: "https://accounts.google.com"
+      AUTH_GOOGLE_ISSUER_URL: "https://accounts:google:com/:well-known/openid-configuration"
       AUTH_GOOGLE_IDENTIFIER_KEY: "email"
       AUTH_GOOGLE_ICON: "google"
       AUTH_GOOGLE_LABEL: "Google"

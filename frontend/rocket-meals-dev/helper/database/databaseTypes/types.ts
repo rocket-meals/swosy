@@ -36,6 +36,9 @@ export type AppSettings = {
   date_created?: string | null;
   date_privacy_policy_updated?: string | null;
   date_updated?: string | null;
+  food_responsible_organization_link?: string | null;
+  food_responsible_organization_name?: string | null;
+  food_responsible_settings: string;
   foods_enabled?: boolean | null;
   foods_feedbacks_comments_type?: string | null;
   foods_feedbacks_custom_url?: string | null;
@@ -57,9 +60,12 @@ export type AppSettings = {
   housing_settings: string;
   housing_translations: any[] | AppSettingsHousingTranslations[];
   id: number;
+  legal_requirements_settings: string;
   maintenance_end?: string | null;
   maintenance_settings: string;
   maintenance_start?: string | null;
+  map_enabled?: boolean | null;
+  map_settings: string;
   news_enabled?: boolean | null;
   news_parsing_enabled?: boolean | null;
   news_parsing_last_date?: string | null;
@@ -71,6 +77,7 @@ export type AppSettings = {
   notifications_foods_status?: string | null;
   notifications_ios_enabled?: boolean | null;
   notifications_settings: string;
+  redirect_whitelist?: unknown | null;
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -78,6 +85,7 @@ export type AppSettings = {
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
   utilization_settings: string;
+  whitelist_settings: string;
 };
 
 export type AppSettingsHousingTranslations = {
@@ -180,7 +188,7 @@ export type BuildingsBusinesshours = {
 
 export type BuildingsTranslations = {
   be_source_for_translations?: boolean | null;
-  buildings_id: string | Buildings;
+  buildings_id?: string | Buildings | null;
   content?: string | null;
   id: number;
   languages_code: string | Languages;
@@ -310,9 +318,9 @@ export type ChatroomsMessages = {
 };
 
 export type ChatroomsProfiles = {
-  chatrooms_id: string | Chatrooms;
+  chatrooms_id?: string | Chatrooms | null;
   id: number;
-  profiles_id: string | Profiles;
+  profiles_id?: string | Profiles | null;
 };
 
 export type CollectionsDatesLastUpdate = {
@@ -344,7 +352,7 @@ export type Devices = {
   is_tablet?: boolean | null;
   is_web?: boolean | null;
   platform?: string | null;
-  profile: string | Profiles;
+  profile?: string | Profiles | null;
   pushTokenObj?: unknown | null;
   sort?: number | null;
   status?: string | null;
@@ -626,6 +634,10 @@ export type DirectusSettings = {
   public_favicon?: string | DirectusFiles | null;
   public_foreground?: string | DirectusFiles | null;
   public_note?: string | null;
+  public_registration: boolean;
+  public_registration_email_filter?: unknown | null;
+  public_registration_role?: string | null;
+  public_registration_verify_email: boolean;
   report_bug_url?: string | null;
   report_error_url?: string | null;
   report_feature_url?: string | null;
@@ -727,7 +739,7 @@ export type DirectusWebhooks = {
 export type Foodoffers = {
   alias?: string | null;
   calories_kcal?: number | null;
-  canteen: string | Canteens;
+  canteen?: string | Canteens | null;
   carbohydrate_g?: number | null;
   date?: string | null;
   date_created?: string | null;
@@ -751,15 +763,16 @@ export type Foodoffers = {
 };
 
 export type FoodoffersMarkings = {
-  foodoffers_id: string | Foodoffers;
+  foodoffers_id?: string | Foodoffers | null;
   id: number;
-  markings_id: string | Markings;
+  markings_id?: string | Markings | null;
 };
 
 export type Foods = {
   alias?: string | null;
   calories_kcal?: number | null;
   carbohydrate_g?: number | null;
+  category?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   extra?: string | null;
@@ -795,7 +808,7 @@ export type FoodsFeedbacks = {
   id: string;
   labels: any[] | FoodsFeedbacksFoodsFeedbacksLabels[];
   notify?: boolean | null;
-  profile: string | Profiles;
+  profile?: string | Profiles | null;
   rating?: number | null;
   sort?: number | null;
   status: string;
@@ -805,8 +818,8 @@ export type FoodsFeedbacks = {
 
 export type FoodsFeedbacksFoodsFeedbacksLabels = {
   dislikes?: boolean | null;
-  foods_feedbacks_id: string | FoodsFeedbacks;
-  foods_feedbacks_labels_id: string | FoodsFeedbacksLabels;
+  foods_feedbacks_id?: string | FoodsFeedbacks | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
   id: number;
 };
 
@@ -829,7 +842,7 @@ export type FoodsFeedbacksLabels = {
 
 export type FoodsFeedbacksLabelsTranslations = {
   be_source_for_translations?: boolean | null;
-  foods_feedbacks_labels_id: string | FoodsFeedbacksLabels;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
   id: number;
   languages_code: string | Languages;
   let_be_translated?: boolean | null;
@@ -840,7 +853,7 @@ export type FoodsFeedbacksLabelsTranslations = {
 export type FoodsMarkings = {
   foods_id: string | Foods;
   id: number;
-  markings_id: string | Markings;
+  markings_id?: string | Markings | null;
 };
 
 export type FoodsTranslations = {
@@ -881,7 +894,7 @@ export type MarkingsTranslations = {
   id: number;
   languages_code: string | Languages;
   let_be_translated?: boolean | null;
-  markings_id: string | Markings;
+  markings_id?: string | Markings | null;
   name?: string | null;
   translation_settings: string;
 };
@@ -938,7 +951,7 @@ export type PopupEventsTranslations = {
   id: number;
   languages_code: string | Languages;
   let_be_translated?: boolean | null;
-  popup_events_id: string | PopupEvents;
+  popup_events_id?: string | PopupEvents | null;
   title?: string | null;
   translation_settings: string;
 };
@@ -968,22 +981,22 @@ export type Profiles = {
 };
 
 export type ProfilesBuildingsFavorites = {
-  buildings_id: string | Buildings;
+  buildings_id?: string | Buildings | null;
   id: number;
-  profiles_id: string | Profiles;
+  profiles_id?: string | Profiles | null;
 };
 
 export type ProfilesBuildingsLastVisited = {
-  buildings_id: string | Buildings;
+  buildings_id?: string | Buildings | null;
   id: number;
-  profiles_id: string | Profiles;
+  profiles_id?: string | Profiles | null;
 };
 
 export type ProfilesMarkings = {
   dislikes?: boolean | null;
   id: number;
-  markings_id: string | Markings;
-  profiles_id: string | Profiles;
+  markings_id?: string | Markings | null;
+  profiles_id?: string | Profiles | null;
 };
 
 export type PushNotifications = {
@@ -1075,9 +1088,9 @@ export type Wikis = {
 };
 
 export type WikisDirectusRoles = {
-  directus_roles_id: string | DirectusRoles;
+  directus_roles_id?: string | DirectusRoles | null;
   id: number;
-  wikis_id: string | Wikis;
+  wikis_id?: string | Wikis | null;
 };
 
 export type WikisTranslations = {
@@ -1088,7 +1101,7 @@ export type WikisTranslations = {
   let_be_translated?: boolean | null;
   title?: string | null;
   translation_settings: string;
-  wikis_id: string | Wikis;
+  wikis_id?: string | Wikis | null;
 };
 
 export type CustomDirectusTypes = {

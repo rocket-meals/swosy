@@ -32,7 +32,9 @@ export default function FoodplanScreen() {
 
 	let date_start_week_iso = date_start_week_iso_or_current+"";
 	if(date_start_week_iso_or_current===FOODPLAN_DATE_START_WEEK_CURRENT){
-		date_start_week_iso = DateHelper.getPreviousMonday(new Date()).toISOString();
+		let today = new Date()
+		today.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
+		date_start_week_iso = DateHelper.getPreviousMonday(today).toISOString();
 	}
 
 	let startDate = new Date(date_start_week_iso+"");
@@ -69,8 +71,12 @@ export default function FoodplanScreen() {
 	}
 
 	useEffect(() => {
+		console.log("useEffect")
+		console.log("canteen_id: "+canteen?.id)
+		console.log("date_start_week_iso: "+date_start_week_iso)
+		console.log("isDemo: "+isDemo)
 		loadWeekOffers()
-	}, [canteen_id, date_start_week_iso, isDemo])
+	}, [canteen?.id, date_start_week_iso, isDemo])
 
 	function renderHeaderRow(){
 		return <View>
@@ -132,7 +138,7 @@ export default function FoodplanScreen() {
 		let weekdayDate = DateHelper.formatOfferDateToReadable(date, false, false);
 
 		return <View style={{width: "100%", borderBottomColor: viewContrastColor, borderBottomWidth: 1, flexDirection: "row"}}>
-			<View style={{flex: 1}}>
+			<View>
 				<View>
 					<Heading>{weekdayName}</Heading>
 				</View>
@@ -140,7 +146,7 @@ export default function FoodplanScreen() {
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
-			<View style={{flex: 11}}>
+			<View style={{flex: 1}}>
 				{renderFoodoffersForRow(offers)}
 			</View>
 		</View>
