@@ -65,7 +65,7 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
             }
 
             setUpdateIsAvailable(updateCheckResult.isAvailable)
-            if(updateCheckResult.isAvailable || true) {
+            if(updateCheckResult.isAvailable) {
                 const manifest: Updates.Manifest = updateCheckResult.manifest;
                 setDownloadingNewUpdate(true);
                 const timeoutInMillis = 1000*TIMEOUT_IN_SECONDS

@@ -77,6 +77,7 @@ export function Icon({name, size, family, ...props}: IconProps) {
 
 export const TEXT_SIZE_DEFAULT = 'md';
 export const TEXT_SIZE_SMALL = "sm";
+export const TEXT_SIZE_EXTRA_SMALL = "xs";
 
 export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
 export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {

@@ -1,10 +1,18 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import React, {useEffect, useState} from 'react';
-import {Heading, MySpinner, Text, TEXT_SIZE_SMALL, useViewBackgroundColor, View} from '@/components/Themed';
+import {
+	Heading,
+	MySpinner,
+	Text,
+	TEXT_SIZE_EXTRA_SMALL,
+	TEXT_SIZE_SMALL,
+	useViewBackgroundColor,
+	View
+} from '@/components/Themed';
 import {useLocalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {Foodoffers} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
@@ -13,8 +21,12 @@ import {useProfileLanguageCode, useProfileLocaleForJsDate} from "@/states/Synche
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export const FOODPLAN_DATE_START_WEEK_CURRENT = "current";
+
+
+const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
 export default function FoodplanScreen() {
 
@@ -28,7 +40,7 @@ export default function FoodplanScreen() {
 	const textColorForViewContrastColor = useMyContrastColor(viewContrastColor)
 	const translation_weekday = useTranslation(TranslationKeys.weekday)
 	const localeForJsDate = useProfileLocaleForJsDate()
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 
 	let date_start_week_iso = date_start_week_iso_or_current+"";
 	if(date_start_week_iso_or_current===FOODPLAN_DATE_START_WEEK_CURRENT){
@@ -41,6 +53,8 @@ export default function FoodplanScreen() {
 
 	type DataItem = { date_iso: string, offers: Foodoffers[] | undefined }
 	const [weekOffers, setWeekOffers] = useState<DataItem[] | undefined | null>(undefined);
+	let allOffers = getAllFoodOffers(weekOffers);
+	let categories = getFoodCategories(allOffers);
 
 	async function loadWeekOffers(){
 		console.log("loadWeekOffers");
@@ -70,6 +84,55 @@ export default function FoodplanScreen() {
 
 	}
 
+	function getFoodCategory(food: Foods){
+		let category = food.category;
+		const prefixToIgnore = "NI-Menue: ";
+		if(!!category && category.startsWith(prefixToIgnore)){
+			category = category.substring(prefixToIgnore.length);
+		}
+		return category;
+	}
+
+	function getAllFoodOffers(offers: DataItem[] | undefined){
+		if(!offers){
+			return [];
+		}
+		let allOffers: Foodoffers[] = [];
+		for(let dayItem of offers){
+			let offers = dayItem.offers;
+			if(!!offers){
+				allOffers = allOffers.concat(offers);
+			}
+		}
+		return allOffers;
+	}
+
+	function isCategoryUnknown(category: string){
+		return category===undefined || category===null || category==="";
+	}
+
+	function getFoodCategories(offers: Foodoffers[] | undefined){
+		if(!offers){
+			return [];
+		}
+		let categoriesDict: {[key: string]: boolean} = {};
+		for(let offer of offers){
+			let food = offer.food as Foods;
+			let category = getFoodCategory(food);
+			if(!!category){
+				categoriesDict[category] = true;
+			}
+			if(isCategoryUnknown(category)){
+				// unknown category
+				categoriesDict[CATEGORY_UNKNOWN] = true;
+			}
+		}
+		let categories = Object.keys(categoriesDict);
+		// sort categories alphabetically
+		categories.sort();
+		return categories;
+	}
+
 	useEffect(() => {
 		console.log("useEffect")
 		console.log("canteen_id: "+canteen?.id)
@@ -78,14 +141,29 @@ export default function FoodplanScreen() {
 		loadWeekOffers()
 	}, [canteen?.id, date_start_week_iso, isDemo])
 
+	const FLEX_WEEKDAY = 1;
+	const FLEX_CATEGORIES = 10;
+
 	function renderHeaderRow(){
+		let renderedCategories = [];
+		for(let category of categories){
+			renderedCategories.push(
+				<View style={{flex: 1, padding: 5}}>
+					<Text style={{color: textColorForViewContrastColor}}>{category}</Text>
+				</View>
+			)
+		}
+
 		return <View>
 			<View style={{width: "100%"}}>
 				<Heading>{canteen?.alias}</Heading>
 			</View>
-			<View style={{backgroundColor: viewContrastColor, width: "100%"}}>
-				<View style={{flex: 1}}>
+			<View style={{backgroundColor: viewContrastColor, width: "100%", flexDirection: "row"}}>
+				<View style={{flex: FLEX_WEEKDAY}}>
 					<Text style={{color: textColorForViewContrastColor}}>{translation_weekday}</Text>
+				</View>
+				<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
+					{renderedCategories}
 				</View>
 			</View>
 		</View>
@@ -103,12 +181,14 @@ export default function FoodplanScreen() {
 
 		return <View style={{
 			flex: 1,
-			paddingHorizontal: 5
+			marginBottom: 5,
 		}}>
 			<View style={{
 			}}>
-				<Text>{title}</Text>
-				<Text size={TEXT_SIZE_SMALL}>{price_information}</Text>
+				<Text size={TEXT_SIZE_EXTRA_SMALL}
+					  numberOfLines={3}
+				>{title}</Text>
+				<Text size={TEXT_SIZE_EXTRA_SMALL} numberOfLines={2}>{price_information}</Text>
 			</View>
 		</View>
 	}
@@ -119,16 +199,42 @@ export default function FoodplanScreen() {
 		}
 
 		let output = [];
+
+		let foodOffersInCategories: {[key: string]: Foodoffers[]} = {};
 		for(let offer of offers){
-			output.push(renderFoodoffer(offer));
+			let food = offer.food as Foods;
+			let category = getFoodCategory(food);
+			if(isCategoryUnknown(category)){
+				category = CATEGORY_UNKNOWN;
+			}
+			if(!foodOffersInCategories[category]){
+				foodOffersInCategories[category] = [];
+			}
+			foodOffersInCategories[category].push(offer);
 		}
+
+		for(let category of categories){
+			let foodOffers = foodOffersInCategories[category];
+			if(!foodOffers){
+				foodOffers = [];
+			}
+			let renderedOffers = [];
+			for(let offer of foodOffers){
+				renderedOffers.push(renderFoodoffer(offer));
+			}
+			output.push(
+				<View style={{
+					flex: 1,
+					flexDirection: "column",
+					padding: 5
+				}}>
+					{renderedOffers}
+				</View>
+			)
+		}
+
 		return (
-			<View style={{
-				flexDirection: "row",
-				flex: 1
-			}}>
-				{output}
-			</View>
+			output
 		)
 	}
 
@@ -138,7 +244,7 @@ export default function FoodplanScreen() {
 		let weekdayDate = DateHelper.formatOfferDateToReadable(date, false, false);
 
 		return <View style={{width: "100%", borderBottomColor: viewContrastColor, borderBottomWidth: 1, flexDirection: "row"}}>
-			<View>
+			<View style={{flex: FLEX_WEEKDAY}}>
 				<View>
 					<Heading>{weekdayName}</Heading>
 				</View>
@@ -146,7 +252,7 @@ export default function FoodplanScreen() {
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
-			<View style={{flex: 1}}>
+			<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
 				{renderFoodoffersForRow(offers)}
 			</View>
 		</View>
@@ -154,6 +260,7 @@ export default function FoodplanScreen() {
 
 	function renderWeekOffers(){
 		let output = [];
+
 		output.push(renderHeaderRow());
 		if(!!weekOffers){
 			for(let i=0; i<weekOffers.length; i++){
@@ -174,7 +281,9 @@ export default function FoodplanScreen() {
 
 	return (
 		<MySafeAreaView>
-			{renderWeekOffers()}
+			<MyScrollView>
+				{renderWeekOffers()}
+			</MyScrollView>
 		</MySafeAreaView>
 	);
 }
