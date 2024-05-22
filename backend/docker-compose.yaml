@@ -128,7 +128,7 @@ services:
       AUTH_GOOGLE_MODE: "session"
       AUTH_GOOGLE_CLIENT_ID: "${AUTH_GOOGLE_CLIENT_ID}"
       AUTH_GOOGLE_CLIENT_SECRET: "${AUTH_GOOGLE_CLIENT_SECRET}"
-      AUTH_GOOGLE_ISSUER_URL: "https://accounts:google:com/:well-known/openid-configuration"
+      AUTH_GOOGLE_ISSUER_URL: "https://accounts.google.com/.well-known/openid-configuration"
       AUTH_GOOGLE_IDENTIFIER_KEY: "email"
       AUTH_GOOGLE_ICON: "google"
       AUTH_GOOGLE_LABEL: "Google"
