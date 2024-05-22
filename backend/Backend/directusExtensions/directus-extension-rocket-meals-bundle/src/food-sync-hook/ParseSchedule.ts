@@ -126,6 +126,10 @@ export class ParseSchedule {
 
                     let rawMealOffersJSONList = await this.foodParser.getRawMealOffersJSONList() || [];
 
+
+                    // TODO Improve this part, it is not very efficient.
+                    // We only want to delete the offers when there is a difference between the new and the old offers, except for the ids.
+                    // Since deleting all offers and creating them again results that the user might reload when the offers are not available.
                     console.log("Delete all food offers");
                     let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
                     let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
