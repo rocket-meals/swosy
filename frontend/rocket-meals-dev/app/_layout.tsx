@@ -33,9 +33,21 @@ SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 
 export default function RootLayout() {
 	// State for checking if fonts and storage are loaded
-	const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
-	const [reloadNumber, setReloadNumber] = useState(1);
-	const [store, setStore] = useState<any>(null);
+	//const [storageLoaded, setStorageLoaded] = useState<boolean>(false);
+
+	const [reloadData, setReloadData] = useState
+	<{
+			reloadNumber: number,
+			store: any
+		}>
+	({
+		reloadNumber: 1,
+		store: null,
+	});
+	const reloadNumber = reloadData.reloadNumber;
+	const store = reloadData.store;
+	const storageLoaded = store !== null;
+
 	const [fontsLoaded, fontsError] = useFonts({
 		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
 		...FontAwesome.font,
@@ -43,7 +55,10 @@ export default function RootLayout() {
 
 	const reset = (bool: boolean) => {
 		console.log('RootLayout: reset: '+bool);
-		setStorageLoaded(bool);
+		setReloadData({
+			reloadNumber: reloadData.reloadNumber,
+			store: null,
+		});
 	}
 
 	async function loadStorage() {
@@ -54,8 +69,10 @@ export default function RootLayout() {
 			console.log("await instance.init()")
 			await instance.init();
 			const store = SyncState.getInstance().getStore();
-			setStore(store);
-			setReloadNumber(reloadNumber+1)
+			setReloadData({
+				reloadNumber: reloadData.reloadNumber + 1,
+				store: store,
+			})
 		}
 	}
 
