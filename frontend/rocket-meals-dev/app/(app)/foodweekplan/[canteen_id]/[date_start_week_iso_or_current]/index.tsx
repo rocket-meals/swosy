@@ -142,7 +142,7 @@ export default function FoodplanScreen() {
 	}, [canteen?.id, date_start_week_iso, isDemo])
 
 	const FLEX_WEEKDAY = 1;
-	const FLEX_CATEGORY = 2;
+	const FLEX_CATEGORIES = 10;
 
 	function renderHeaderRow(){
 		let renderedCategories = [];
@@ -153,7 +153,6 @@ export default function FoodplanScreen() {
 				</View>
 			)
 		}
-		let amountCategories = categories.length;
 
 		return <View>
 			<View style={{width: "100%"}}>
@@ -163,7 +162,7 @@ export default function FoodplanScreen() {
 				<View style={{flex: FLEX_WEEKDAY}}>
 					<Text style={{color: textColorForViewContrastColor}}>{translation_weekday}</Text>
 				</View>
-				<View style={{flex: amountCategories*FLEX_CATEGORY, flexDirection: "row"}}>
+				<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
 					{renderedCategories}
 				</View>
 			</View>
@@ -225,7 +224,7 @@ export default function FoodplanScreen() {
 			}
 			output.push(
 				<View style={{
-					flex: FLEX_CATEGORY,
+					flex: 1,
 					flexDirection: "column",
 					padding: 5
 				}}>
@@ -253,7 +252,9 @@ export default function FoodplanScreen() {
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
-			{renderFoodoffersForRow(offers)}
+			<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
+				{renderFoodoffersForRow(offers)}
+			</View>
 		</View>
 	}
 
