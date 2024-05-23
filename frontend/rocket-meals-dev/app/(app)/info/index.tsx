@@ -7,8 +7,8 @@ import {WikiComponent} from '@/compositions/wikis/WikiComponent';
 import NotFoundScreen from "@/app/+not-found";
 
 export function useWikiCustomIdFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ id?: string }>();
-	return params.id as string;
+	const params = useLocalSearchParams<{ info_id?: string }>();
+	return params.info_id as string;
 }
 
 export default function WikisCustomScreen() {

@@ -19,9 +19,9 @@ import {useWikiCustomIdFromLocalSearchParams} from "@/app/(app)/info";
 
 export const getInternalRouteToWiki = (wiki: Wikis) => {
 	if(wiki.custom_id){
-		return `info/?id=${wiki.custom_id}`
+		return `info/?info_id=${wiki.custom_id}`
 	} else {
-		return `wikis/?id=${wiki.id}`
+		return `wikis/?wiki_id=${wiki.id}`
 	}
 }
 
