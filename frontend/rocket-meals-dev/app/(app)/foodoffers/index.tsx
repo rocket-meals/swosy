@@ -37,6 +37,7 @@ import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGrad
 import {MarkingBadges} from "@/components/food/MarkingBadge";
 import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
+import {SEARCH_PARAM_FOODOFFER_ID} from "@/app/(app)/foodoffers/details";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -336,7 +337,7 @@ export default function FoodOfferScreen() {
 				assetId={assetId}
 				placeholderAssetId={placeholderAssetId}
 				onPress={() => {
-					router.push(`/(app)/foodoffers/${foodOffer.id}`)
+					router.push(`/(app)/foodoffers/details/?${SEARCH_PARAM_FOODOFFER_ID}=${foodOffer.id}`)
 				}}
 				accessibilityLabel={title}
 				innerPadding={0}

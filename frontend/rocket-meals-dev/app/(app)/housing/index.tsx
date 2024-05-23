@@ -20,6 +20,7 @@ import {DistanceHelper} from "@/helper/geo/DistanceHelper";
 import React from "react";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import {FreeRoomBadge} from "@/components/housing/FreeRoomBadge";
+import {SEARCH_PARAM_APARTMENTS_ID} from "@/app/(app)/housing/apartment";
 
 function useHousingAdditionalInformationMarkdown(): string |null {
 	const [appSettings] = useSynchedAppSettings();
@@ -225,7 +226,7 @@ export default function HousingScreen() {
 				distanceBadge
 			}
   			onPress={() => {
-				router.push(`/(app)/housing/${resource.id}`)
+				router.push(`/(app)/housing/apartment/?${SEARCH_PARAM_APARTMENTS_ID}=${resource.id}`)
 			}}
   			accessibilityLabel={title}
 			imageUploaderConfig={imageUploaderConfig}

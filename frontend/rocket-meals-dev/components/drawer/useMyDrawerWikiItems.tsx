@@ -14,12 +14,14 @@ import {
 	useDrawerActiveBackgroundColor
 } from '@/components/drawer/MyDrawer';
 import { useLocalSearchParams} from 'expo-router';
+import {useWikiIdFromLocalSearchParams} from "@/app/(app)/wikis";
+import {useWikiCustomIdFromLocalSearchParams} from "@/app/(app)/info";
 
 export const getInternalRouteToWiki = (wiki: Wikis) => {
 	if(wiki.custom_id){
-		return `info/${wiki.custom_id}`
+		return `info/?infos_id=${wiki.custom_id}`
 	} else {
-		return `wikis/${wiki.id}`
+		return `wikis/?wikis_id=${wiki.id}`
 	}
 }
 
@@ -74,8 +76,7 @@ export function useMyDrawerWikiItems() {
 }
 
 function MyWikiCustomIdHeader(props: MyScreenHeaderPropsRequired) {
-	const { id } = useLocalSearchParams();
-	const customId = id as string
+	const customId = useWikiCustomIdFromLocalSearchParams();
 	const wiki = useSynchedWikiByCustomId(customId);
 	const wiki_id = wiki?.id
 
@@ -83,8 +84,7 @@ function MyWikiCustomIdHeader(props: MyScreenHeaderPropsRequired) {
 }
 
 function MyWikiHeader(props: MyScreenHeaderPropsRequired) {
-	const { id } = useLocalSearchParams();
-	const wikiId = id as string
+	const wikiId = useWikiIdFromLocalSearchParams()
 
 	return <MyWikiHeaderById id={wikiId} {...props} />
 }
@@ -113,27 +113,6 @@ const MyWikiHeaderById = ({id, ...props}: MyWikiHeaderByIdProps) => {
 	return <MyScreenHeader custom_title={custom_title} {...props} />
 }
 
-type MyWikiHeaderByCustomIdProps = MyScreenHeaderPropsRequired & {
-	customId: string
-}
-function MyWikiHeaderByCustomId(props: MyWikiHeaderByCustomIdProps) {
-	const wiki = useSynchedWikiByCustomId(props.customId);
-	const [languageCode, setLanguageCode] = useProfileLanguageCode();
-
-	let custom_title = props.customId
-
-	if (!!wiki) {
-		const translations = wiki.translations as TranslationEntry[]
-		const fallback_text = wiki.id
-		const label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
-		if (label) {
-			custom_title = label
-		}
-	}
-
-	return <MyScreenHeader custom_title={custom_title} {...props} />
-}
-
 export const getMyScreenHeaderWikisByCustomId: any = () => {
 	return (props: MyScreenHeaderProps) => {
 		return <MyWikiCustomIdHeader {...props} />
@@ -151,9 +130,9 @@ export function useRenderedMyDrawerWikiScreens() {
 
 	return [
 		renderMyDrawerScreen({
-				routeName: 'wikis/[id]',
-				label: 'Test',
-				title: 'Test',
+				routeName: 'wikis/index',
+				label: 'Wikis',
+				title: 'Wikis',
 				icon: 'home',
 				visibleInDrawer: false,
 				header: getMyScreenHeaderWikis(),
@@ -161,9 +140,9 @@ export function useRenderedMyDrawerWikiScreens() {
 			drawerActiveBackgroundColor
 		),
 		renderMyDrawerScreen({
-				routeName: 'info/[id]',
-				label: 'Test',
-				title: 'Test',
+				routeName: 'info/index',
+				label: 'Information',
+				title: 'Information',
 				icon: 'home',
 				visibleInDrawer: false,
 				header: getMyScreenHeaderWikisByCustomId(),

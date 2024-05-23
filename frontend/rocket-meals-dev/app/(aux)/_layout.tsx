@@ -20,8 +20,6 @@ export default function AppLayout() {
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_sign_in = useTranslation(TranslationKeys.sign_in);
 
-	const customDrawerWikiItems = useMyDrawerWikiItems()
-
 	const customDrawerItems: MyDrawerCustomItemProps[] = [
 		/**
          {
