@@ -1,4 +1,6 @@
 import moment from "moment";
+// import object-hash
+import {hash} from 'object-hash';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {FoodParserInterface} from "./FoodParserInterface";
@@ -26,6 +28,7 @@ export class ParseSchedule {
 
     private foodParser: FoodParserInterface | null
     private markingParser: MarkingParserInterface | null;
+    private previousMealOffersHash: string | null;
     private finished: boolean;
     private schema: any;
     private database: any;
@@ -41,6 +44,7 @@ export class ParseSchedule {
         this.foodParser = foodParser;
         this.markingParser = markingParser;
         this.finished = true;
+        this.previousMealOffersHash = null;
     }
     
     // Todo create/generate documentation 
@@ -86,6 +90,14 @@ export class ParseSchedule {
         return undefined;
     }
 
+    async getHashOfMealOffers(object: any) {
+        return hash(object, {
+            algorithm: 'md5',
+            excludeValues: false,
+            ignoreUnknown: false
+        });
+    }
+
     async parse(force = false) {
         this.foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
         this.markingsService = this.itemsServiceCreator.getItemsService(TABLENAME_MARKINGS);
@@ -117,26 +129,35 @@ export class ParseSchedule {
 
                     console.log("Update Canteens")
                     let canteensJSONList = await this.foodParser.getCanteensJSONList() || [];
+                    // TODO also check if previous values changed or not using hash
                     await this.updateCanteens(canteensJSONList);
 
 
                     console.log("Update Foods")
                     let foodsJSONList = await this.foodParser.getMealsJSONList() || [];
+                    // TODO also check if previous values changed or not using hash
                     await this.updateFoods(foodsJSONList);
 
                     let rawMealOffersJSONList = await this.foodParser.getRawMealOffersJSONList() || [];
 
+                    console.log("Check if meal offers changed")
+                    let currentMealOffersHash = await this.getHashOfMealOffers(rawMealOffersJSONList);
+                    console.log("Current meal offers hash: " + currentMealOffersHash);
+                    console.log("Previous meal offers hash: " + this.previousMealOffersHash);
 
-                    // TODO Improve this part, it is not very efficient.
-                    // We only want to delete the offers when there is a difference between the new and the old offers, except for the ids.
-                    // Since deleting all offers and creating them again results that the user might reload when the offers are not available.
-                    console.log("Delete all food offers");
-                    let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
-                    let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
-                    await this.deleteAllFoodOffersWithDates(datesOfMealOffers);
+                    const mealOffersChanged = !this.previousMealOffersHash || this.previousMealOffersHash !== currentMealOffersHash;
+                    if(mealOffersChanged){
+                        console.log("Delete all food offers");
+                        let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
+                        let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
+                        await this.deleteAllFoodOffersWithDates(datesOfMealOffers);
 
-                    console.log("Create food offers");
-                    await this.createFoodOffers(rawMealOffersJSONList);
+                        console.log("Create food offers");
+                        await this.createFoodOffers(rawMealOffersJSONList);
+
+                        console.log("Set previous meal offers hash");
+                        this.previousMealOffersHash = currentMealOffersHash;
+                    }
                 }
 
 
