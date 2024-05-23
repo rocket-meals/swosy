@@ -29,7 +29,7 @@ export const unstable_settings = {
 	initialRouteName: '(app)',
 };
 
-const INITIAL_RELOAD_NUMBER = 5;
+const INITIAL_RELOAD_NUMBER = 0;
 
 SecureStorageHelperAbstractClass.setInstance(new SecureStorageHelper());
 
@@ -114,7 +114,7 @@ export default function RootLayout() {
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
 			  <LoadingLogoProvider key={reloadNumber+""}>
-				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""+1222}>
+				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""}>
 					  <RootServerStatusFlowLoader key={reloadNumber+""} >
 						  <RootAuthUserFlowLoader key={reloadNumber+""}>
 							  <RootCustomerAdaptions key={reloadNumber}>

@@ -96,6 +96,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isFoodsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'foodoffers/details/index',
+				title: translation_food_details,
+				label: translation_food_details,
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'map/index',
 				label: translation_map,
 				title: translation_map,
@@ -118,7 +126,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isBuildingsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'buildings/[building]/index',
+				routeName: 'buildings/details/index',
 				title: "Building Details",
 				label: "Building Details",
 				showBackButton: true,
@@ -134,7 +142,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isHousingEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'housing/[apartment]/index',
+				routeName: 'housing/apartment/index',
 				title: "Apartment Details",
 				label: "Apartment Details",
 				showBackButton: true,
@@ -163,12 +171,12 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 
 			{useRenderMyDrawerScreen({
-				routeName: 'foodoffers/[foodoffer]/index',
-				title: translation_food_details,
-				label: translation_food_details,
+				routeName: 'employee/index',
+				title: translation_role_employee,
+				label: translation_role_employee,
 				showBackButton: true,
-				icon: null,
-				visibleInDrawer: false
+				icon: IconNames.role_employee,
+				visibleInDrawer: isEmployee
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foodweekplan/index',
@@ -179,7 +187,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/[canteen_id]/index',
+				routeName: 'foodweekplan/canteens/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
 				showBackButton: true,
@@ -187,15 +195,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'employee/index',
-				title: translation_role_employee,
-				label: translation_role_employee,
-				showBackButton: true,
-				icon: IconNames.role_employee,
-				visibleInDrawer: isEmployee
-			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/[canteen_id]/[date_start_week_iso_or_current]/index',
+				routeName: 'foodweekplan/canteen_and_date_iso_start_week/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
 				showBackButton: true,

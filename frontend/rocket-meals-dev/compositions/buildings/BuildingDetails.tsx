@@ -14,6 +14,7 @@ import {CoordinateHelper} from "@/helper/geo/CoordinateHelper";
 import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {View} from "@/components/Themed";
 import {MyButtonNavigationToLocation} from "@/components/buttons/MyButtonNavigationToLocation";
+import NotFoundScreen from "@/app/+not-found";
 
 export default function BuildingDetails({ buildingId }: { buildingId: string }) {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -21,6 +22,8 @@ export default function BuildingDetails({ buildingId }: { buildingId: string }) 
 
 	if(building && typeof building === 'object'){
 		return <BuildingDetailsWithObject building={building} />
+	} else {
+		return <NotFoundScreen />
 	}
 }
 
