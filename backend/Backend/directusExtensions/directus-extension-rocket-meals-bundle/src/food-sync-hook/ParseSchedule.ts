@@ -1,6 +1,5 @@
 import moment from "moment";
-// import object-hash
-import {hash} from 'object-hash';
+import hash from 'object-hash';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {FoodParserInterface} from "./FoodParserInterface";
