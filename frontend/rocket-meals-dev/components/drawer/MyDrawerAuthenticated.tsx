@@ -142,7 +142,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isHousingEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'housing/[apartment]/index',
+				routeName: 'housing/apartment/index',
 				title: "Apartment Details",
 				label: "Apartment Details",
 				showBackButton: true,
@@ -171,22 +171,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/index',
-				title: translation_foodweekplan,
-				label: translation_foodweekplan,
-				showBackButton: true,
-				icon: IconNames.foodweekplan_icon,
-				visibleInDrawer: false
-			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/[canteen_id]/index',
-				title: translation_foodweekplan,
-				label: translation_foodweekplan,
-				showBackButton: true,
-				icon: IconNames.foodweekplan_icon,
-				visibleInDrawer: false
-			})}
-			{useRenderMyDrawerScreen({
 				routeName: 'employee/index',
 				title: translation_role_employee,
 				label: translation_role_employee,
@@ -195,7 +179,23 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isEmployee
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/[canteen_id]/[date_start_week_iso_or_current]/index',
+				routeName: 'foodweekplan/index',
+				title: translation_foodweekplan,
+				label: translation_foodweekplan,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodweekplan/canteens/index',
+				title: translation_foodweekplan,
+				label: translation_foodweekplan,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodweekplan/canteen_and_date_iso_start_week/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
 				showBackButton: true,

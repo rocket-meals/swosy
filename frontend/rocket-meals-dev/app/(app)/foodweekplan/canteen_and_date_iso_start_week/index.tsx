@@ -22,16 +22,20 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-
-export const FOODPLAN_DATE_START_WEEK_CURRENT = "current";
-
+import {useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodweekplan/canteens";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
-export default function FoodplanScreen() {
+export const SEARCH_PARAM_DATE_ISO = 'date_iso';
 
-	const { canteen_id } = useLocalSearchParams<{ canteen_id: string }>();
-	const { date_start_week_iso_or_current } = useLocalSearchParams<{ date_start_week_iso_or_current: string }>();
+export function useDateIsoFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_DATE_ISO]?: string }>();
+	return params[SEARCH_PARAM_DATE_ISO];
+}
+
+export default function FoodplanScreen() {
+	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
+	const date_start_week_iso_or_current: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
 	const canteen = useSynchedCanteenById(canteen_id);
 	const AMOUNT_DAYS = 7;
@@ -43,7 +47,7 @@ export default function FoodplanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 
 	let date_start_week_iso = date_start_week_iso_or_current+"";
-	if(date_start_week_iso_or_current===FOODPLAN_DATE_START_WEEK_CURRENT){
+	if(!date_start_week_iso_or_current || date_start_week_iso_or_current===""){
 		let today = new Date()
 		today.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
 		date_start_week_iso = DateHelper.getPreviousMonday(today).toISOString();
