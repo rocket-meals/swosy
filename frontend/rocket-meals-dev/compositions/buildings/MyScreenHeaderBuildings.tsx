@@ -6,9 +6,13 @@ import {Divider} from '@gluestack-ui/themed';
 import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesApartments, sortTypesBuildings} from "@/states/SynchedSortType";
+import {useBuildingIdFromLocalSearchParams} from "@/app/(app)/buildings";
 
 const MyScreenHeaderBuildings = ({ ...props }: MyScreenHeaderProps) => {
 	const translation_item_to_sort = useTranslation(TranslationKeys.buildings);
+	let buildings_id: string | undefined = useBuildingIdFromLocalSearchParams();
+
+
 
 	function renderSecondaryHeaderContent(props: any) {
 		return (
@@ -28,15 +32,32 @@ const MyScreenHeaderBuildings = ({ ...props }: MyScreenHeaderProps) => {
 		);
 	}
 
-	return (
-		<View style={{
-			width: '100%',
-		}}
-		>
-			<MyScreenHeader hideDivider={true} {...props} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
-			<Divider />
-		</View>
-	)
+	if(buildings_id){
+		// get options and the rest of the props
+		const {options, ...rest} = props;
+		// @ts-ignore
+		options.showBackButton = true;
+
+		return (
+			<View style={{
+				width: '100%',
+			}}
+			>
+				<MyScreenHeader options={options} {...rest} />
+				<Divider />
+			</View>
+		)
+	} else {
+		return (
+			<View style={{
+				width: '100%',
+			}}
+			>
+				<MyScreenHeader hideDivider={true} {...props} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+				<Divider />
+			</View>
+		)
+	}
 }
 
 

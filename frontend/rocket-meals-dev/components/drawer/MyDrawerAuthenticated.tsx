@@ -96,6 +96,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isFoodsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'foodoffers/details/index',
+				title: translation_food_details,
+				label: translation_food_details,
+				showBackButton: true,
+				icon: null,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'map/index',
 				label: translation_map,
 				title: translation_map,
@@ -118,7 +126,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isBuildingsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'buildings/[building]/index',
+				routeName: 'buildings/details/index',
 				title: "Building Details",
 				label: "Building Details",
 				showBackButton: true,
@@ -162,14 +170,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: IconNames.settings_icon,
 			})}
 
-			{useRenderMyDrawerScreen({
-				routeName: 'foodoffers/[foodoffer]/index',
-				title: translation_food_details,
-				label: translation_food_details,
-				showBackButton: true,
-				icon: null,
-				visibleInDrawer: false
-			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foodweekplan/index',
 				title: translation_foodweekplan,

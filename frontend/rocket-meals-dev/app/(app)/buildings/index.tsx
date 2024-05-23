@@ -5,7 +5,7 @@ import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
-import {router} from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useEstimatedLocationUponSelectedCanteen, useProfileLanguageCode} from "@/states/SynchedProfile";
@@ -13,6 +13,7 @@ import {LocationType} from "@/helper/geo/LocationType";
 import {DistanceHelper} from "@/helper/geo/DistanceHelper";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import React from "react";
+import BuildingDetails from "@/compositions/buildings/BuildingDetails";
 
 function getBuildingName(building: Buildings, languageCode: string): string | null {
 	if(building.alias){
@@ -80,8 +81,18 @@ function sortBuildings(resources: Buildings[], buildingsDict: Record<string, Bui
 	return copiedResources;
 }
 
+export const SEARCH_PARAM_BUILDINGS_ID = 'buildings_id';
+
+export function useBuildingIdFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_BUILDINGS_ID]?: string }>();
+	return params[SEARCH_PARAM_BUILDINGS_ID];
+}
 
 export default function BuildingsScreen() {
+	return <BuildingsScreenIndex />
+}
+
+function BuildingsScreenIndex() {
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
@@ -161,7 +172,7 @@ export default function BuildingsScreen() {
 			}
   			assetId={assetId}
   			onPress={() => {
-				  router.push(`/(app)/buildings/${resource.id}`)
+				  router.push(`/(app)/buildings/details/?${SEARCH_PARAM_BUILDINGS_ID}=${resource.id}`)
 			}}
   			accessibilityLabel={title}
 			imageUploaderConfig={{
