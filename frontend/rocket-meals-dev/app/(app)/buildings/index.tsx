@@ -1,16 +1,15 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {Apartments, Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
+import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
-import {router, useNavigation} from "expo-router";
+import {router} from "expo-router";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useEstimatedLocationUponSelectedCanteen, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {LocationType} from "@/helper/geo/LocationType";
-import {getApartmentLocationType} from "@/states/SynchedApartments";
 import {DistanceHelper} from "@/helper/geo/DistanceHelper";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import React from "react";
