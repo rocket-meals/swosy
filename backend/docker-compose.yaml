@@ -1,6 +1,6 @@
 services:
   rocket-meals-backend:
-    image: "traefik/whoami"
+    image: "jwilder/whoami"
     container_name: "rocket-meals-backend"
     env_file:
       - ".env"
@@ -13,14 +13,15 @@ services:
       - "traefik.http.middlewares.strip-backend.stripPrefix.prefixes=/backend"
 
       - "traefik.http.routers.rocket-meals-backend.entrypoints=web"
-      - "traefik.http.routers.rocket-meals-backend.rule=Host(`${MYHOST}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.rocket-meals-backend.rule=Host(`${MYHOST}`) && PathPrefix(`/backend/ping`)"
       - "traefik.http.routers.rocket-meals-backend.middlewares=https-redirect"
 
       - "traefik.http.routers.rocket-meals-backend-secure.entrypoints=websecure"
-      - "traefik.http.routers.rocket-meals-backend-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/backend`)"
+      - "traefik.http.routers.rocket-meals-backend-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/backend/ping`)"
       - "traefik.http.routers.rocket-meals-backend-secure.middlewares=strip-backend"
       - "traefik.http.routers.rocket-meals-backend-secure.tls=true"
       - "traefik.http.routers.rocket-meals-backend-secure.tls.certresolver=${RESOLVER}"
+
 
 networks:
   traefik:

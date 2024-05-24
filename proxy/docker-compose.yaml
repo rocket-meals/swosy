@@ -43,23 +43,30 @@ services:
 
       #- "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
-  whoami:
-    image: "traefik/whoami"
-    container_name: "whoami-service"
+  traefik-ping:
+    image: "jwilder/whoami"
+    container_name: "traefik-ping"
+    env_file:
+      - ".env"
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      #- "traefik.http.middlewares.strip-traefik-ping.stripPrefix.prefixes=/subpath" # If we have a subpath
 
-      - "traefik.http.routers.whoami.entrypoints=web"
-      - "traefik.http.routers.whoami.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)"
-      - "traefik.http.routers.whoami.middlewares=https-redirect"
+      - "traefik.http.routers.traefik-ping.entrypoints=web"
+      - "traefik.http.routers.traefik-ping.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+      - "traefik.http.routers.traefik-ping.middlewares=https-redirect"
 
-      - "traefik.http.routers.whoami-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)"
-      - "traefik.http.routers.whoami-secure.entrypoints=websecure"
-      - "traefik.http.routers.whoami-secure.tls=true"
-      - "traefik.http.routers.whoami-secure.tls.certresolver=${RESOLVER}"
+      - "traefik.http.routers.traefik-ping-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-ping-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+      #- "traefik.http.routers.traefik-ping-secure.middlewares=strip-traefik-ping" # If we have a subpath
+      - "traefik.http.routers.traefik-ping-secure.tls=true"
+      - "traefik.http.routers.traefik-ping-secure.tls.certresolver=${RESOLVER}"
+
+
 
 networks:
   traefik:
