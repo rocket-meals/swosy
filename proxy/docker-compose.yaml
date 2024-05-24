@@ -2,8 +2,6 @@ services:
   traefik:
     image: "traefik:v3.0"
     container_name: "traefik"
-    env_file:
-      - ".env"
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
@@ -43,28 +41,27 @@ services:
 
       #- "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
-  traefik-ping:
-    image: "jwilder/whoami"
-    container_name: "traefik-ping"
-    env_file:
-      - ".env"
-    networks:
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik"
-      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      #- "traefik.http.middlewares.strip-traefik-ping.stripPrefix.prefixes=/subpath" # If we have a subpath
-
-      - "traefik.http.routers.traefik-ping.entrypoints=web"
-      - "traefik.http.routers.traefik-ping.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
-      - "traefik.http.routers.traefik-ping.middlewares=https-redirect"
-
-      - "traefik.http.routers.traefik-ping-secure.entrypoints=websecure"
-      - "traefik.http.routers.traefik-ping-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
-      #- "traefik.http.routers.traefik-ping-secure.middlewares=strip-traefik-ping" # If we have a subpath
-      - "traefik.http.routers.traefik-ping-secure.tls=true"
-      - "traefik.http.routers.traefik-ping-secure.tls.certresolver=${RESOLVER}"
+# If you want to add a ping service to check if traefik is working, please also add in the root docker-compose.yaml file the traefik-ping service
+#  traefik-ping:
+#    image: "jwilder/whoami"
+#    container_name: "traefik-ping"
+#    networks:
+#      - traefik
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=traefik"
+#      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+#      #- "traefik.http.middlewares.strip-traefik-ping.stripPrefix.prefixes=/subpath" # If we have a subpath
+#
+#      - "traefik.http.routers.traefik-ping.entrypoints=web"
+#      - "traefik.http.routers.traefik-ping.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+#      - "traefik.http.routers.traefik-ping.middlewares=https-redirect"
+#
+#      - "traefik.http.routers.traefik-ping-secure.entrypoints=websecure"
+#      - "traefik.http.routers.traefik-ping-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+#      #- "traefik.http.routers.traefik-ping-secure.middlewares=strip-traefik-ping" # If we have a subpath
+#      - "traefik.http.routers.traefik-ping-secure.tls=true"
+#      - "traefik.http.routers.traefik-ping-secure.tls.certresolver=${RESOLVER}"
 
 
 

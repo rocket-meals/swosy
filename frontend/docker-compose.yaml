@@ -1,24 +1,24 @@
 services:
-  rocket-meals-frontend:
-    image: "traefik/whoami"
-    container_name: "rocket-meals-frontend"
-    env_file:
-      - ".env"
+  rocket-meals-frontend-ping:
+    image: "jwilder/whoami"
+    container_name: "rocket-meals-frontend-ping"
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.strip-frontend.stripPrefix.prefixes=/${DOMAIN_PATH}/${FRONTEND_PATH}"
 
-      - "traefik.http.routers.rocket-meals-frontend.entrypoints=web"
-      - "traefik.http.routers.rocket-meals-frontend.rule=Host(`${MYHOST}`)"
-      - "traefik.http.routers.rocket-meals-frontend.middlewares=https-redirect"
+      - "traefik.http.routers.rocket-meals-frontend-ping.entrypoints=web"
+      - "traefik.http.routers.rocket-meals-frontend-ping.rule=Host(`${MYHOST}`) && PathPrefix(`/${DOMAIN_PATH}/${FRONTEND_PATH}/ping`)"
+      - "traefik.http.routers.rocket-meals-frontend-ping.middlewares=https-redirect"
 
-      - "traefik.http.routers.rocket-meals-frontend-secure.entrypoints=websecure"
-      - "traefik.http.routers.rocket-meals-frontend-secure.rule=Host(`${MYHOST}`)"
-      - "traefik.http.routers.rocket-meals-frontend-secure.tls=true"
-      - "traefik.http.routers.rocket-meals-frontend-secure.tls.certresolver=${RESOLVER}"
+      - "traefik.http.routers.rocket-meals-frontend-ping-secure.entrypoints=websecure"
+      - "traefik.http.routers.rocket-meals-frontend-ping-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/${DOMAIN_PATH}/${FRONTEND_PATH}/ping`)"
+      - "traefik.http.routers.rocket-meals-frontend-ping-secure.middlewares=strip-frontend"
+      - "traefik.http.routers.rocket-meals-frontend-ping-secure.tls=true"
+      - "traefik.http.routers.rocket-meals-frontend-ping-secure.tls.certresolver=${RESOLVER}"
 
 networks:
   traefik:

@@ -1,29 +1,58 @@
 services:
-  rocket-meals-backend:
-    image: "jwilder/whoami"
-    container_name: "rocket-meals-backend"
-    env_file:
-      - ".env"
+
+  ##########################################
+  # Information: When adding a service please also add the service in the root docker-compose.yaml file
+  ##########################################
+
+  rocket-meals-cache:
+    image: redis:6.2.6
+    networks:
+      - directus_network
+
+  rocket-meals-directus:
+#    image: "jwilder/whoami"
+    build:
+      context: ./
+    container_name: "rocket-meals-directus"
     networks:
       - traefik
+      - directus_network
     labels:
+    # Let the directus image be available at /rocket-meals/api
       - "traefik.enable=true"
+      - "traefik.http.routers.rocket-meals-directus.entrypoints=web"
+      - "traefik.http.routers.rocket-meals-directus.rule=Host(`${MYHOST}`) && PathPrefix(`/rocket-meals/api`)"
+      - "traefik.http.routers.rocket-meals-directus.middlewares=https-redirect"
+      - "traefik.http.services.rocket-meals-directus.loadbalancer.server.port=80"
+      - "traefik.http.routers.rocket-meals-directus-secure.entrypoints=websecure"
+      - "traefik.http.routers.rocket-meals-directus-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/rocket-meals/api`)"
+      - "traefik.http.routers.rocket-meals-directus-secure.service=rocket-meals-directus"
+      - "traefik.http.routers.rocket-meals-directus-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls=true"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls.certresolver=${RESOLVER}"
+      - "traefik.http.services.rocket-meals-directus.loadbalancer.server.port=8055"
       - "traefik.docker.network=traefik"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.strip-backend.stripPrefix.prefixes=/backend"
-
-      - "traefik.http.routers.rocket-meals-backend.entrypoints=web"
-      - "traefik.http.routers.rocket-meals-backend.rule=Host(`${MYHOST}`) && PathPrefix(`/backend/ping`)"
-      - "traefik.http.routers.rocket-meals-backend.middlewares=https-redirect"
-
-      - "traefik.http.routers.rocket-meals-backend-secure.entrypoints=websecure"
-      - "traefik.http.routers.rocket-meals-backend-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/backend/ping`)"
-      - "traefik.http.routers.rocket-meals-backend-secure.middlewares=strip-backend"
-      - "traefik.http.routers.rocket-meals-backend-secure.tls=true"
-      - "traefik.http.routers.rocket-meals-backend-secure.tls.certresolver=${RESOLVER}"
-
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH}"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls.certresolver=${RESOLVER}"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls.domains[0].main=${MYHOST}"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls.domains[0].sans=${MYHOST}"
+      # Now strip the /rocket-meals/api from the path so that the directus container can handle the request
+      - "traefik.http.routers.rocket-meals-directus-secure.middlewares=rocket-meals-directus-strip"
+      - "traefik.http.middlewares.rocket-meals-directus-strip.stripprefix.prefixes=/rocket-meals/api/"
+      - "traefik.http.routers.rocket-meals-directus-secure.service=rocket-meals-directus"
+      - "traefik.http.services.rocket-meals-directus.loadbalancer.server.port=8055"
+      - "traefik.http.routers.rocket-meals-directus-secure.tls.certresolver=${RESOLVER}"
+    ports:
+      - "8055:80"
+    expose:
+      - "8055"
+    entrypoint:
+      PUBLIC_URL: https://127.0.0.1/rocket-meals/api
+      ROOT_URL: ./rocket-meals/api/admin
 
 networks:
+  directus_network: {}
   traefik:
     external: true
     name: traefik
