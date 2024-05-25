@@ -12,17 +12,21 @@ export const RootCustomerAdaptions = (props: RootCustomerAdaptionsProps) => {
 	 * Implement customer specific adaptions here
 	 */
 
-	return 	 <View stle={{
+	return 	 <View style={{
 		width: '100%',
 		height: '100%',
-		flexDirection: "row"
+		flexDirection: 'row',
 	}}>
 		<View style={{
-			backgroundColor: projectColor,
-			width: 20,
+			width: 10,
 			height: "100%",
-			flexDirection: "row"
+			backgroundColor: projectColor,
 		}} />
-		{props.children}
+		<View style={{
+			flexGrow: 1,
+			flex: 1
+		}}>
+			{props.children}
+		</View>
 	</View>
 }
