@@ -10,6 +10,10 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {router} from "expo-router";
 import {Text} from "@/components/Themed";
 import React from "react";
+import * as Linking from 'expo-linking';
+// access app.json from expo
+import appJson from "../../app.json"
+
 
 export type MyLinkDefaultProps = {
 	label: string,
@@ -61,6 +65,13 @@ export const MyLinkCustom = ({onPress, routeInternal, hrefExternal, accessibilit
 
 	// TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
 	if (Platform.OS === 'web' && !onPress && usedHrefForWeb) {
+		if(routeInternal){
+			let baseUrl = appJson?.expo?.experiments?.baseUrl
+			if(baseUrl){
+				usedHrefForWeb = baseUrl + routeInternal
+			}
+		}
+
 		return (
 			<a href={usedHrefForWeb} onClick={(event) => {
 				event.preventDefault() // because we want to handle the routing ourselves and not let the browser handle it
