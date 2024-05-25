@@ -17,11 +17,11 @@ export const LegalRequiredLinks = (props: any) => {
 	const wiki_accessibility = useSynchedWikiByCustomId("accessibility");
 
 	const content = [];
-	content.push(<LegalRequiredLink externalHref={wiki_about_us?.url} internalHref={'/(aux)/about-us'} text={translation_about_us} />);
-	content.push(<LegalRequiredLink internalHref={'/(aux)/privacy-policy'} text={translation_privacy_policy} />);
-	content.push(<LegalRequiredLink internalHref={'/(aux)/license'} text={translation_license} />);
-	content.push(<LegalRequiredLink internalHref={'/(aux)/cookie-policy'} text={translation_cookie_policy} />);
-	content.push(<LegalRequiredLink internalHref={'/(aux)/accessibility'} text={translation_accessibility} />);
+	content.push(<LegalRequiredLink externalHref={wiki_about_us?.url} internalHref={'/about-us'} text={translation_about_us} />);
+	content.push(<LegalRequiredLink internalHref={'/privacy-policy'} text={translation_privacy_policy} />);
+	content.push(<LegalRequiredLink internalHref={'/license'} text={translation_license} />);
+	content.push(<LegalRequiredLink internalHref={'/cookie-policy'} text={translation_cookie_policy} />);
+	content.push(<LegalRequiredLink internalHref={'/accessibility'} text={translation_accessibility} />);
 
 	function renderSpacer(key: string) {
 		return (
