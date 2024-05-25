@@ -89,7 +89,7 @@ export class ParseSchedule {
         return undefined;
     }
 
-    async getHashOfMealOffers(object: any) {
+    async getHashOfJsonObject(object: any) {
         return hash(object, {
             algorithm: 'md5',
             excludeValues: false,
@@ -140,10 +140,11 @@ export class ParseSchedule {
                     let rawMealOffersJSONList = await this.foodParser.getRawMealOffersJSONList() || [];
 
                     console.log("Check if meal offers changed")
-                    let currentMealOffersHash = await this.getHashOfMealOffers(rawMealOffersJSONList);
+                    let currentMealOffersHash = await this.getHashOfJsonObject(rawMealOffersJSONList);
                     console.log("Current meal offers hash: " + currentMealOffersHash);
                     console.log("Previous meal offers hash: " + this.previousMealOffersHash);
 
+                    // TODO: At the start of the server all food offers get deleted and created again. While this is okay, it would be nicer to check if there are realy new data and only to update/create these instead of recreating all offers new when a single thing changes due to our changed hash.
                     const mealOffersChanged = !this.previousMealOffersHash || this.previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
                         console.log("Delete all food offers");
