@@ -1,8 +1,7 @@
 import React from 'react';
-import {AllRoutes, router} from 'expo-router';
-import {Text, View} from '@/components/Themed';
-import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
-import {MyLinkCustom, MyLinkDefault} from "@/components/link/MyLinkCustom";
+import {AllRoutes} from 'expo-router';
+import {View} from '@/components/Themed';
+import {MyLinkDefault} from "@/components/link/MyLinkCustom";
 
 export type LegalRequiredInternalLinkProps = {
 	externalHref?: string | null | undefined,
