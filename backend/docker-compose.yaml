@@ -20,7 +20,7 @@ services:
       traefik.http.routers.rocket-meals-directus.rule: Host(`${MYHOST}`) && PathPrefix(`/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}`)
       traefik.http.routers.rocket-meals-directus.tls: "true"
       traefik.http.routers.rocket-meals-directus.tls.certresolver: tls
-      traefik.http.services.rocket-meals-directus.loadbalancer.server.port: 8055
+      traefik.http.services.rocket-meals-directus.loadbalancer.server.port: ${DIRECTUS_PORT}
       traefik.http.middlewares.rocket-meals-directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
       traefik.http.routers.rocket-meals-directus.middlewares: rocket-meals-directus-stripprefix
       # network: traefik
@@ -46,6 +46,7 @@ services:
       ROOT_REDIRECT: "./${ROCKET_MEALS_BACKEND_PATH}/admin"
       # Directus default configuration
       HOST: "0.0.0.0" # To bind to all interfaces for Docker
+      PORT: "${DIRECTUS_PORT}"
       TZ: "Europe/Berlin"
       ACCESS_TOKEN_TTL: "15m" # Time to live for the access token
       REFRESH_TOKEN_TTL: "180d" # Time to live for the refresh token
