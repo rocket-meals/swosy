@@ -6,6 +6,7 @@ import { StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { ExpoLeafletProps, LeafletMapProps } from "./web/src/ExpoLeaflet.types";
 import { LeafletWebViewEvent } from "./web/src/model";
+import getHtmlFileContent from "@/components/leaflet/assets/indexHtml";
 
 export const ExpoLeaflet = ({
   backgroundColor,
@@ -27,12 +28,14 @@ export const ExpoLeaflet = ({
 
     const loadHtmlFile = async () => {
       try {
-        const path = require(`./assets/index.html`);
-        const htmlFile: Asset = await Asset.fromModule(path);
-        await htmlFile.downloadAsync();
-        const webviewContent: string = await FileSystem.readAsStringAsync(
-          htmlFile.localUri!
-        );
+        //const path = require(`./assets/index.html`);
+        //const htmlFile: Asset = await Asset.fromModule(path);
+        //await htmlFile.downloadAsync();
+        //const webviewContent: string = await FileSystem.readAsStringAsync(
+        //  htmlFile.localUri!
+        //);
+        // ToDo: Check Issue: 156 - https://github.com/rocket-meals/rocket-meals/issues/156
+        const webviewContent = getHtmlFileContent();
         if (isNotCancelled) {
           setWebviewContent(webviewContent);
           onMessage({
