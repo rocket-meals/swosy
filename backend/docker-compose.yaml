@@ -16,15 +16,23 @@ services:
       - directus_network
     labels:
       traefik.enable: "true"
-      traefik.http.routers.rocket-meals-directus.entrypoints: websecure
-      traefik.http.routers.rocket-meals-directus.rule: Host(`${MYHOST}`) && PathPrefix(`/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}`)
-      traefik.http.routers.rocket-meals-directus.tls: "true"
-      traefik.http.routers.rocket-meals-directus.tls.certresolver: tls
-      traefik.http.services.rocket-meals-directus.loadbalancer.server.port: ${DIRECTUS_PORT}
-      traefik.http.middlewares.rocket-meals-directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
-      traefik.http.routers.rocket-meals-directus.middlewares: rocket-meals-directus-stripprefix
-      # network: traefik
       traefik.docker.network: traefik
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+
+      traefik.http.routers.rocket-meals-backend.entrypoints: web
+      traefik.http.routers.rocket-meals-backend.rule: Host(`${MYHOST}`) && PathPrefix(`/backend`)
+      traefik.http.routers.rocket-meals-backend.middlewares: https-redirect
+
+      traefik.http.routers.rocket-meals-directus-secure.entrypoints: websecure
+      traefik.http.routers.rocket-meals-directus-secure.rule: Host(`${MYHOST}`) && PathPrefix(`/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}`)
+      traefik.http.routers.rocket-meals-directus-secure.middlewares: rocket-meals-directus-stripprefix
+      traefik.http.routers.rocket-meals-directus-secure.tls: "true"
+      traefik.http.routers.rocket-meals-directus-secure.tls.certresolver: "${RESOLVER}"
+      traefik.http.services.rocket-meals-directus-secure.loadbalancer.server.port: ${DIRECTUS_PORT}
+      traefik.http.middlewares.rocket-meals-directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
+
+      # network: traefik
+
     volumes:
       # By default, uploads are stored in /directus/uploads
       # Always make sure your volumes matches the storage root when using
