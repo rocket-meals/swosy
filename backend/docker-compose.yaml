@@ -15,19 +15,19 @@ services:
       - directus_network
     labels:
       traefik.enable: "true"
-      traefik.http.routers.directus-api.entrypoints: websecure
-      traefik.http.routers.directus-api.rule: Host(`127.0.0.1`) && PathPrefix(`/rocket-meals/api`)
-      traefik.http.routers.directus-api.tls: "true"
-      traefik.http.routers.directus-api.tls.certresolver: tls
-      traefik.http.services.directus-api.loadbalancer.server.port: 8055
-      traefik.http.middlewares.directus-api-stripprefix.stripprefix.prefixes: /rocket-meals/api
-      traefik.http.routers.directus-api.middlewares: directus-api-stripprefix
+      traefik.http.routers.directus.entrypoints: websecure
+      traefik.http.routers.directus.rule: Host(`${MYHOST}`) && PathPrefix(`/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}`)
+      traefik.http.routers.directus.tls: "true"
+      traefik.http.routers.directus.tls.certresolver: tls
+      traefik.http.services.directus.loadbalancer.server.port: 8055
+      traefik.http.middlewares.directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
+      traefik.http.routers.directus.middlewares: directus-stripprefix
       # network: traefik
       traefik.docker.network: traefik
     environment:
       # Traefik configuration
-      PUBLIC_URL: "https://127.0.0.1/rocket-meals/api"
-      ROOT_REDIRECT: "./api/admin"
+      PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
+      ROOT_REDIRECT: "./${ROCKET_MEALS_BACKEND_PATH}/admin"
       # Directus configuration
       ADMIN_EMAIL: "admin@example.com"
       ADMIN_PASSWORD: "d1r3ctu5"
