@@ -9,7 +9,7 @@ services:
     restart: ${RESTART}
     deploy:
       mode: replicated
-      replicas: ${DIRECTUS_REPLICAS}
+      replicas: ${DIRECTUS_REPLICAS:-1}  # Default to 1 if DIRECTUS_REPLICAS is not set
       endpoint_mode: vip # Virtual IP - https://docs.docker.com/compose/compose-file/deploy/#endpoint_mode
     networks:
       - traefik
