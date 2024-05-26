@@ -6,6 +6,7 @@ services:
     build:
       context: ./
     #container_name: "rocket-meals-directus" # "replicas" is ignored if you name your container using container_name: myname
+    restart: ${RESTART}
     deploy:
       mode: replicated
       replicas: ${DIRECTUS_REPLICAS}
@@ -143,6 +144,7 @@ services:
 
   # The cache service for Directus
   rocket-meals-cache:
+    restart: ${RESTART}
     image: redis:6.2.6
     networks:
       - directus_network
