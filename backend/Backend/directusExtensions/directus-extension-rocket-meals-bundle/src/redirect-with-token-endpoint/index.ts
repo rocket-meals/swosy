@@ -36,7 +36,8 @@ export default defineEndpoint({
 
 			if(!!redirect && typeof redirect === "string"){
 				//let settings = await database(TABLENAME_FLOWHOOKS).first();
-				let appSettingsService = new AppSettingsService(services, database, getSchema);
+				let schema = await getSchema();
+				let appSettingsService = new AppSettingsService(services, database, schema);
 				let settings = await appSettingsService.getAppSettings();
 				let redirect_whitelist = settings?.redirect_whitelist;
 				if (!!redirect_whitelist) {
