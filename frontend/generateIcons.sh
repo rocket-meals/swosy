@@ -90,9 +90,7 @@ generate_images() {
     # Generate splash.png with logo scaled to 90% of the width
     calculate_splash_logo_width
     convert -size $SPLASH_SIZE canvas:white "$OUTPUT_FOLDER/splash.png"
-    convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH%x}x -gravity center -extent $SPLASH_SIZE "$OUTPUT_FOLDER/temp_logo.png"
-    convert "$OUTPUT_FOLDER/splash.png" "$OUTPUT_FOLDER/temp_logo.png" -gravity center -composite "$OUTPUT_FOLDER/splash.png"
-    rm "$OUTPUT_FOLDER/temp_logo.png"
+    convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH%x}x -gravity center -composite "$OUTPUT_FOLDER/splash.png"
 }
 
 # Main script execution
