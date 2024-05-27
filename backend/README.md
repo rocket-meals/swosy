@@ -1,5 +1,12 @@
 # RocketMealsBackend
 
+# Configuration
+
+## App Whitelist Redirects
+
+- In the Backend at `App Settings` under `Redirect Whitelist` add the `scheme` for the app
+  - Example: `myscheme://*`
+
 # Server Installtion
 
 Similar steps can be made for local testing
