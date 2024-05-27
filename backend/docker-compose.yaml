@@ -60,6 +60,8 @@ services:
       HOST: "0.0.0.0"
       PUBLIC_URL: ${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}
 
+      EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
+
       KEY: "${DATABASE_KEY}"
       SECRET: "${DATABASE_SECRET}"
 
