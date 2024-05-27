@@ -1,12 +1,134 @@
 import {defineEndpoint} from '@directus/extensions-sdk';
 import ms from 'ms';
-import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {AppSettingsService} from "../helpers/ItemsServiceCreator";
-
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
+import {StringHelper} from "../helpers/StringHelper";
 
 const SCHEDULE_NAME = "redirect_with_token";
+const env = process.env;
+const PUBLIC_URL = env.PUBLIC_URL; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
+
+const WILDCARD = "\\*"; // we need to escape the * as it is a special character in regex
+const WILDCARD_REPLACEMENT = "WILDCARD_REPLACEMENT";
+
+function startsWithUntilWildcardReplacement(inputStr: string, whitelistStrWithWildcardReplacement: string): boolean {
+	// redirectUrl could be "/rocket-meals/login/.../"
+	// redirect_whitelist_entry_with_possible_wildcard_replacement could be "/rocket-meals/WILDCARD_REPLACEMENT/.../"
+	// we need to check if the redirectUrl starts with the redirect_whitelist_entry_with_possible_wildcard_replacement
+	let split = whitelistStrWithWildcardReplacement.split(WILDCARD_REPLACEMENT);
+	let first_part: string = split.length > 1 ? split[0] as string : whitelistStrWithWildcardReplacement;
+	// so /rocket-meals/ is the first part and the rest is the second part
+	// remove the last char if it is a slash
+	if(first_part.endsWith("/")){
+		first_part = first_part.slice(0, -1);
+	}
+	// check if the redirectUrl starts with the first part
+	return inputStr.startsWith(first_part);
+}
+
+// function to check if a url is allowed/matches a whitelist entry
+function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string, redirectUrl: URL): boolean {
+	//console.log("isRedirectUrlAllowedForWhitelistEntry")
+	//console.log("redirect_whitelist_entry: " + redirect_whitelist_entry)
+	//console.log("redirectUrl: " + redirectUrl)
+	// redirect_whitelist_entry is * then return true
+	if (redirect_whitelist_entry === "*") {
+		return true;
+	}
+	// redirectUrl could be
+	// 127.0.0.1
+	// 127.0.0.1/login?directus_refresh_token=1234
+	// localhost
+	// localhost:8081
+	// localhost:8081/login?directus_refresh_token=1234
+	// myapp://login?directus_refresh_token=1234
+	// http://localhost:8081/login?directus_refresh_token=1234
+	// https://myapp.com/login?directus_refresh_token=1234
+	// myapp://*
+	// http://localhost:8081/*
+	// https://myapp.com/*
+
+	// check if the redirectUrl matches the whitelist entry
+	const redirectUrlProtocol = redirectUrl.protocol;
+	const redirectUrlHost = redirectUrl.host;
+	const redirectUrlPathname = redirectUrl.pathname;
+	const redirectUrlSearch = redirectUrl.search;
+
+	// as the redirect_whitelist_entry is a string, we need to check if it is a valid URL otherwise like "localhost" or "127.0.0.1" we need first to convert it to a valid URL
+	// if no protocol is given, we assume http and https
+	const hasProtocol = redirect_whitelist_entry.includes("://");
+	if(!hasProtocol){
+		//console.log("No protocol found in redirect_whitelist_entry: " + redirect_whitelist_entry)
+		// if no protocol is given, we assume http and https
+		let redirect_whitelist_entry_http = "http://" + redirect_whitelist_entry;
+		let redirect_whitelist_entry_https = "https://" + redirect_whitelist_entry;
+		// then we recursively call this function with the new URLs
+		let redirect_allowed_http = isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_http, redirectUrl);
+		let redirect_allowed_https = isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry_https, redirectUrl);
+		return redirect_allowed_http || redirect_allowed_https;
+	} else {
+		// okay we have a protocol which could be http, https, myapp, or a wildcard like *
+		// we need to check if the protocol matches
+		// if the redirectURL contains our WILDCARD_REPLACEMENT, then we reject it
+		if(redirectUrlProtocol.includes(WILDCARD_REPLACEMENT)){
+			//console.log("redirectUrlProtocol contains WILDCARD_REPLACEMENT, this is not allowed")
+			return false;
+		} else {
+			//console.log("redirectUrl seems to be valid")
+			// replace all * with WILDCARD_REPLACEMENT
+			//console.log("Replace whitelist entry all wildcards with WILDCARD_REPLACEMENT")
+			let replacedRedirect_whitelist_entry = StringHelper.replaceAll(redirect_whitelist_entry, WILDCARD, WILDCARD_REPLACEMENT);
+			// create a new URL from the replaced string
+			//console.log("replacedRedirect_whitelist_entry: " + replacedRedirect_whitelist_entry)
+			let replacedRedirect_whitelist_entry_URL = new URL(replacedRedirect_whitelist_entry);
+			//console.log("replacedRedirect_whitelist_entry_URL: " + replacedRedirect_whitelist_entry_URL)
+
+			const replacedRedirect_whitelist_entry_URLProtocol = replacedRedirect_whitelist_entry_URL.protocol;
+			const replacedRedirect_whitelist_entry_URLHost = replacedRedirect_whitelist_entry_URL.host;
+			const replacedRedirect_whitelist_entry_URLPathname = replacedRedirect_whitelist_entry_URL.pathname;
+			const replacedRedirect_whitelist_entry_URLSearch = replacedRedirect_whitelist_entry_URL.search;
+
+			// check if the protocol matches
+			const protocolMatches = startsWithUntilWildcardReplacement(redirectUrlProtocol, replacedRedirect_whitelist_entry_URLProtocol);
+			if(!protocolMatches){
+				return false;
+			}
+
+			// check if the host matches
+			const hostMatches = startsWithUntilWildcardReplacement(redirectUrlHost, replacedRedirect_whitelist_entry_URLHost);
+			if(!hostMatches){
+				return false;
+			}
+
+			// check if the pathname matches
+			const pathnameMatches = startsWithUntilWildcardReplacement(redirectUrlPathname, replacedRedirect_whitelist_entry_URLPathname);
+			if(!pathnameMatches){
+				return false;
+			}
+
+			// check if the search matches
+			const searchMatches = startsWithUntilWildcardReplacement(redirectUrlSearch, replacedRedirect_whitelist_entry_URLSearch);
+			if(!searchMatches){
+				return false;
+			}
+
+			// if all checks passed, then the redirect URL is allowed
+			return true;
+
+		}
+	}
+
+
+}
+
+function getValidUrl(url: string): URL | null {
+	try {
+		return new URL(url);
+	} catch (e) {
+		return null;
+	}
+}
+
 
 // TO Test this Endpoint:
 // 1. Login with a user in the Directus Admin UI
@@ -32,57 +154,50 @@ export default defineEndpoint({
 			//console.log("Redirect with token endpoint: settings")
 			let redirectUrlIsValid = true;
 
-			const redirect = req.query.redirect;
+			let redirect = req.query.redirect;
 
-			if(!!redirect && typeof redirect === "string"){
-				//let settings = await database(TABLENAME_FLOWHOOKS).first();
-				let schema = await getSchema();
-				let appSettingsService = new AppSettingsService(services, database, schema);
-				let settings = await appSettingsService.getAppSettings();
-				let redirect_whitelist = settings?.redirect_whitelist;
-				if (!!redirect_whitelist) {
-					let foundValidRedirect = false;
-					if (redirect_whitelist.length === 0) {
-						foundValidRedirect = true; // no whitelist means all redirects are allowed
-					}
+				if(!!redirect && typeof redirect === "string"){
 
-					const redirectUrl = new URL(redirect);
+					let redirectUrl = getValidUrl(redirect);
 
-					for (let i = 0; i < redirect_whitelist.length && !foundValidRedirect; i++) { // iterate over the whitelist as long as we haven't found a valid redirect
-						let redirect_whitelist_entry = redirect_whitelist[i];
+					if(!!redirectUrl) {
+						//let settings = await database(TABLENAME_FLOWHOOKS).first();
+						let schema = await getSchema();
+						let appSettingsService = new AppSettingsService(services, database, schema);
+						let settings = await appSettingsService.getAppSettings();
+						//console.log("App Settings")
+						//console.log(JSON.stringify(settings, null, 2))
+						let redirect_whitelist = settings?.redirect_whitelist;
+						if (!!redirect_whitelist) {
+							let foundValidRedirect = false;
+							if (redirect_whitelist.length === 0) {
+								foundValidRedirect = true; // no whitelist means all redirects are allowed
+							}
 
-						// Handle the wildcard "*" as a special case
-						if (redirect_whitelist_entry === "*") {
-							foundValidRedirect = true;
-							break;
-						} else {
-							const entryUrl = new URL(redirect_whitelist_entry.replace("*", "wildcard"));
+							for (let i = 0; i < redirect_whitelist.length && !foundValidRedirect; i++) { // iterate over the whitelist as long as we haven't found a valid redirect
+								let redirect_whitelist_entry = redirect_whitelist[i];
+								try{
+									if (isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry, redirectUrl)) {
+										foundValidRedirect = true;
+										break;
+									}
+								} catch (e){
+									console.log("Error in redirect with token endpoint")
+									console.log("redirectUrl: " + redirectUrl)
+									console.log("redirect_whitelist_entry: " + redirect_whitelist_entry)
+									console.log(e)
+								}
 
-							// Check scheme
-							if (entryUrl.protocol !== redirectUrl.protocol && entryUrl.protocol !== 'wildcard:') continue;
+							}
 
-							// Check hostname
-							if (entryUrl.hostname !== redirectUrl.hostname && entryUrl.hostname !== 'wildcard') continue;
-
-							// Check port
-							if (entryUrl.port !== redirectUrl.port && entryUrl.port !== 'wildcard') continue;
-
-							// Check path
-							const entryPath = entryUrl.pathname.replace('/wildcard', '.*');
-							const redirectPath = redirectUrl.pathname;
-							const pathRegex = new RegExp(`^${entryPath}$`);
-							if (!pathRegex.test(redirectPath)) continue;
-
-							foundValidRedirect = true;
-							break;
+							redirectUrlIsValid = foundValidRedirect;
 						}
+					} else {
+						redirectUrlIsValid = false; // no valid redirect URL found
 					}
-
-					redirectUrlIsValid = foundValidRedirect;
+				} else {
+					redirectUrlIsValid = false; // no redirect URL found
 				}
-			} else {
-				redirectUrlIsValid = false; // no redirect URL found
-			}
 
 
 
