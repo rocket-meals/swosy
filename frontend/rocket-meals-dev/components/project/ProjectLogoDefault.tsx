@@ -3,8 +3,10 @@ import {useProjectColorContrast} from '@/states/ProjectInfo';
 import {Image} from 'expo-image';
 
 // import from asset/logo the default logo RocketMealsLogoWhite
-const logoWhite = require('../../assets/logo/RocketMealsLogoWhite.png');
-const logoBlack = require('../../assets/logo/RocketMealsLogoBlack.png');
+//const logoWhite = require('../../assets/logo/RocketMealsLogoWhite.png');
+//const logoBlack = require('../../assets/logo/RocketMealsLogoBlack.png');
+
+const defaultIcon = require('../../assets/images/icon.png');
 
 interface ProjectLogoDefaultProps {
     style?: any;
@@ -24,10 +26,7 @@ export const ProjectLogoDefault = (props: ProjectLogoDefaultProps) => {
      'memory-disk' - Image is cached in memory, but with a fallback to the disk cache.
      */
 
-    let source = logoBlack;
-    if (useWhiteLogo) {
-    	source = logoWhite;
-    }
+    let source = defaultIcon;
 
     return (
     	<Image

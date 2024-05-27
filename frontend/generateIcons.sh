@@ -87,10 +87,14 @@ generate_images() {
     # Generate notification-icon.png
     convert "$icon_path" -resize $NOTIFICATION_ICON_SIZE "$OUTPUT_FOLDER/notification-icon.png"
 
-    # Generate splash.png with logo scaled to 90% of the width
+    # Generate splash.png with $logo_path
+    # 1. Copy the logo_path image to the output folder but with 90% width of the splash image size and a white background
     calculate_splash_logo_width
-    convert -size $SPLASH_SIZE canvas:white "$OUTPUT_FOLDER/splash.png"
-    convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH%x}x -gravity center -composite "$OUTPUT_FOLDER/splash.png"
+    # convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH}x "$OUTPUT_FOLDER/splash-logo.png" # has transparent background
+    convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH}x -background white -alpha remove -alpha off "$OUTPUT_FOLDER/splash.png"
+    # Extend the splash-logo height to match the splash image height
+    convert "$OUTPUT_FOLDER/splash.png" -gravity center -background white -extent ${SPLASH_SIZE} "$OUTPUT_FOLDER/splash.png"
+
 }
 
 # Main script execution
