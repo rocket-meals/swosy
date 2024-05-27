@@ -176,7 +176,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_role_employee,
 				showBackButton: true,
 				icon: IconNames.role_employee,
-				visibleInDrawer: isEmployee
+				visibleInDrawer: isEmployee || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foodweekplan/index',

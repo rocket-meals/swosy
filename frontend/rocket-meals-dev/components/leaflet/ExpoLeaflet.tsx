@@ -1,11 +1,12 @@
-import { Asset } from "expo-asset";
+import {Asset} from "expo-asset";
 import * as FileSystem from "expo-file-system";
 import isEqual from "lodash.isequal";
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { WebView } from "react-native-webview";
-import { ExpoLeafletProps, LeafletMapProps } from "./web/src/ExpoLeaflet.types";
-import { LeafletWebViewEvent } from "./web/src/model";
+import React, {useEffect, useRef, useState} from "react";
+import {StyleSheet, View} from "react-native";
+import {WebView} from "react-native-webview";
+import {ExpoLeafletProps, LeafletMapProps} from "./web/src/ExpoLeaflet.types";
+import {LeafletWebViewEvent} from "./web/src/model";
+import getHtmlFileContent from "@/components/leaflet/assets/indexHtml";
 
 export const ExpoLeaflet = ({
   backgroundColor,
@@ -14,7 +15,6 @@ export const ExpoLeaflet = ({
   onMapLoad,
   ...rest
 }: ExpoLeafletProps) => {
-
 
   const mapProps: LeafletMapProps = rest;
   const webViewRef = useRef<WebView>(null!);
@@ -27,12 +27,19 @@ export const ExpoLeaflet = ({
 
     const loadHtmlFile = async () => {
       try {
-        const path = require(`./assets/index.html`);
-        const htmlFile: Asset = await Asset.fromModule(path);
-        await htmlFile.downloadAsync();
-        const webviewContent: string = await FileSystem.readAsStringAsync(
-          htmlFile.localUri!
-        );
+
+        const bugIsFixed = false;
+        let webviewContent: string = getHtmlFileContent()
+        if(bugIsFixed){
+          const path = require(`./assets/index.html`);
+          const htmlFile: Asset = await Asset.fromModule(path);
+          await htmlFile.downloadAsync();
+          webviewContent = await FileSystem.readAsStringAsync(
+              htmlFile.localUri!
+          );
+        }
+        // ToDo: Check Issue: 156 - https://github.com/rocket-meals/rocket-meals/issues/156
+        //const webviewContent = getHtmlFileContent();
         if (isNotCancelled) {
           setWebviewContent(webviewContent);
           onMessage({
