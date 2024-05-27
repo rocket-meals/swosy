@@ -2,10 +2,12 @@
 
 # Configuration
 
-## App Whitelist Redirects
+## Whitelist Redirects
 
-- In the Backend at `App Settings` under `Redirect Whitelist` add the `scheme` for the app
-  - Example: `myscheme://*`
+- In the Backend at `App Settings` under `Redirect Whitelist` add:
+  - For expo: `exp://*`
+  - For our GitHub Page: `https://rocket-meals.github.io/<subdomain>/`
+  - For our app: `app-rocket-meals-<subdomain>://*`
 
 # Server Installtion
 
