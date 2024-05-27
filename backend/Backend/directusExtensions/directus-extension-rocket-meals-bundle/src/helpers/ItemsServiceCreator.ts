@@ -85,11 +85,17 @@ export class AppSettingsService extends GetItemsService{
     async getAppSettings(): null | any {
         let itemsService = new ItemsServiceCreator(this.services, this.database, this.schema);
         let appSettingsService = itemsService.getItemsService(CollectionNames.APP_SETTINGS);
-        let appSettingsList = await appSettingsService.readByQuery({});
-        if(!!appSettingsList && appSettingsList.length === 0){
-            let appSettings = appSettingsList[0];
-            return appSettings;
-        } else {
+        try{
+            let appSettingsList = await appSettingsService.readByQuery({});
+            if(!!appSettingsList && appSettingsList.length !== 0){
+                let appSettings = appSettingsList[0];
+                return appSettings;
+            } else {
+                return null;
+            }
+        } catch (err){
+            console.log("Error getting app settings")
+            console.log(err);
             return null;
         }
     }

@@ -17,8 +17,12 @@
       "allowOther": true,
       "choices": [
         {
-          "text": "localhost",
+          "text": "127.0.0.1",
           "value": "127.0.0.1"
+        },
+        {
+          "text": "localhost",
+          "value": "localhost"
         }
       ]
     },
