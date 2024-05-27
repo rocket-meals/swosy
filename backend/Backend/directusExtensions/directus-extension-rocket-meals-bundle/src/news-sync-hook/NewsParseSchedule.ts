@@ -106,8 +106,7 @@ export class NewsParseSchedule {
         console.log("Make copy of");
         console.log(newsJSON);
         let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
-        let tablename = TABLENAME_NEWS
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
+        let itemService = this.newsService;
 
         let items = await itemService.readByQuery({
             filter: {external_identifier: copyNewsJSON?.external_identifier}
@@ -115,7 +114,9 @@ export class NewsParseSchedule {
         let item = items[0];
         if (!item) {
             delete copyNewsJSON.translations; //remove meals translations, we need to add it later
-            let itemId = await itemService.createOne(copyNewsJSON);
+            let itemId = await itemService.createOne({
+                external_identifier: copyNewsJSON?.external_identifier,
+            });
             item = await itemService.readOne(itemId);
         }
         return item;
@@ -218,10 +219,18 @@ export class NewsParseSchedule {
         }
     }
 
+    async updateOtherFields(item, newsJSON) {
+        let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
+        delete copyNewsJSON.translations; //remove meals translations, we need to add it later
+        let itemService = this.newsService;
+        await itemService.updateOne(item?.id, copyNewsJSON);
+    }
+
     async updateNews(newsJSONList) {
         for (let newsJSON of newsJSONList) {
             let news = await this.findOrCreateSingleNews(newsJSON);
             if (!!news && news?.id) {
+                await this.updateOtherFields(news, newsJSON);
                 await this.updateNewsTranslations(news, newsJSON);
             }
         }
