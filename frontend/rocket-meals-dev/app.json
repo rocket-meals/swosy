@@ -120,7 +120,12 @@
       ],
       "expo-build-properties",
       "expo-localization",
-      "expo-asset",
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/"]
+        }
+      ],
       "expo-font"
     ],
     "experiments": {
