@@ -6,6 +6,8 @@ import {StyleSheet, View} from "react-native";
 import {WebView} from "react-native-webview";
 import {ExpoLeafletProps, LeafletMapProps} from "./web/src/ExpoLeaflet.types";
 import {LeafletWebViewEvent} from "./web/src/model";
+//import allergist from '@/assets/animations/support-woman.json';
+import path from '@/assets/leaflet/index.html';
 
 export const ExpoLeaflet = ({
   backgroundColor,
@@ -26,7 +28,7 @@ export const ExpoLeaflet = ({
 
     const loadHtmlFile = async () => {
       try {
-        const path = require(`./assets/index.html`);
+
         const htmlFile: Asset = await Asset.fromModule(path);
         await htmlFile.downloadAsync();
         const webviewContent: string = await FileSystem.readAsStringAsync(
