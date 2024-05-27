@@ -1,3 +1,5 @@
+import {CollectionNames} from "./CollectionNames";
+
 class GetItemsService {
     public services: any;
     public schema: any;
@@ -74,6 +76,22 @@ export class ServerServiceCreator extends GetItemsService{
     async getServerInfo() {
         const serverService = this.getServerService();
         return await serverService.serverInfo();
+    }
+
+}
+
+export class AppSettingsService extends GetItemsService{
+
+    async getAppSettings(): null | any {
+        let itemsService = new ItemsServiceCreator(this.services, this.database, this.schema);
+        let appSettingsService = itemsService.getItemsService(CollectionNames.APP_SETTINGS);
+        let appSettingsList = await appSettingsService.readByQuery({});
+        if(!!appSettingsList && appSettingsList.length === 0){
+            let appSettings = appSettingsList[0];
+            return appSettings;
+        } else {
+            return null;
+        }
     }
 
 }
