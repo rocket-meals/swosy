@@ -24,7 +24,7 @@ export class StudentenwerkHannoverNews_Parser {
             const $ = cheerio.load(response.data);
 
             let data = [];
-            $('div.article').each((index, element) => {
+            $('div.article').each(async (index, element) => {
                 // Extract image URL from the inline style
                 let imageStyle = $(element).find('div.news-slider-image').attr('style');
                 let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
@@ -32,6 +32,18 @@ export class StudentenwerkHannoverNews_Parser {
 
                 // Extract link URL
                 let articleUrl = baseUrl + $(element).find('a.articleLink').attr('href');
+
+                let date = new Date();
+                // visit article page to get the date
+                let articleResponse = await axios.get(articleUrl);
+                const $article = cheerio.load(articleResponse.data);
+                // search for itemprop="datePublished"
+                let datePublished = $article('meta[itemprop="datePublished"]').attr('content');
+                // has format: 24.05.2024
+                let dateParts = datePublished.split('.');
+                date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                // set date time to 12:00
+                date.setHours(12, 0, 0, 0);
 
                 // Extract article title
                 let header = $(element).find('h3').text().trim();

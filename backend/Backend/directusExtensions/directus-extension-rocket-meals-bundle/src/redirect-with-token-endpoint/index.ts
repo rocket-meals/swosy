@@ -2,6 +2,7 @@ import {defineEndpoint} from '@directus/extensions-sdk';
 import ms from 'ms';
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {AppSettingsService} from "../helpers/ItemsServiceCreator";
 
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
@@ -33,8 +34,56 @@ export default defineEndpoint({
 
 			const redirect = req.query.redirect;
 
-			//let settings = await database(TABLENAME_FLOWHOOKS).first();
-			//TODO: check if redirect is in listOfAllowedRedirects
+			if(!!redirect && typeof redirect === "string"){
+				//let settings = await database(TABLENAME_FLOWHOOKS).first();
+				let appSettingsService = new AppSettingsService(services, database, getSchema);
+				let settings = await appSettingsService.getAppSettings();
+				let redirect_whitelist = settings?.redirect_whitelist;
+				if (!!redirect_whitelist) {
+					let foundValidRedirect = false;
+					if (redirect_whitelist.length === 0) {
+						foundValidRedirect = true; // no whitelist means all redirects are allowed
+					}
+
+					const redirectUrl = new URL(redirect);
+
+					for (let i = 0; i < redirect_whitelist.length && !foundValidRedirect; i++) { // iterate over the whitelist as long as we haven't found a valid redirect
+						let redirect_whitelist_entry = redirect_whitelist[i];
+
+						// Handle the wildcard "*" as a special case
+						if (redirect_whitelist_entry === "*") {
+							foundValidRedirect = true;
+							break;
+						} else {
+							const entryUrl = new URL(redirect_whitelist_entry.replace("*", "wildcard"));
+
+							// Check scheme
+							if (entryUrl.protocol !== redirectUrl.protocol && entryUrl.protocol !== 'wildcard:') continue;
+
+							// Check hostname
+							if (entryUrl.hostname !== redirectUrl.hostname && entryUrl.hostname !== 'wildcard') continue;
+
+							// Check port
+							if (entryUrl.port !== redirectUrl.port && entryUrl.port !== 'wildcard') continue;
+
+							// Check path
+							const entryPath = entryUrl.pathname.replace('/wildcard', '.*');
+							const redirectPath = redirectUrl.pathname;
+							const pathRegex = new RegExp(`^${entryPath}$`);
+							if (!pathRegex.test(redirectPath)) continue;
+
+							foundValidRedirect = true;
+							break;
+						}
+					}
+
+					redirectUrlIsValid = foundValidRedirect;
+				}
+			} else {
+				redirectUrlIsValid = false; // no redirect URL found
+			}
+
+
 
 			if(!redirectUrlIsValid){
 				res.status(400).send("Invalid redirect URL");
