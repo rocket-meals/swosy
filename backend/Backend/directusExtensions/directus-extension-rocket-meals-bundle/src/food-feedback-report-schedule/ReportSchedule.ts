@@ -169,6 +169,10 @@ export class ReportSchedule {
     }
 
     async updateReportLogSuccess(generateReportForDate, recipientEntry){
+        let logMessage = `
+            Report was sent successfully for the date: ${generateReportForDate}
+            Sent at: ${new Date().toISOString()}
+        `
         await this.updateReportLog(recipientEntry, "Report was sent successfully for the date: " + generateReportForDate);
     }
 
@@ -230,17 +234,11 @@ export class ReportSchedule {
         }
 
 
-
+        // So at this point we know:
+        // at which o clock the report should be sent
+        // how many days before the offer date the report should be sent
 
         let date_for_which_the_report_should_be_generated_moment_date = moment(now_moment_date).add(send_amount_days_before_offer_date, 'days').format("YYYY-MM-DD") + " " + send_report_at_hh_mm;
-        // if it is already past the time, we need to add one day
-        if(now_moment_date.isAfter(date_for_which_the_report_should_be_generated_moment_date)){
-            //console.log("It is already past the time for the report to be generated. Adding one day.")
-            date_for_which_the_report_should_be_generated_moment_date = moment(now_moment_date).add(1, 'days').format("YYYY-MM-DD") + " " + send_report_at_hh_mm;
-        }
-        // date_when_the_next_report_should_be_generated is date_for_which_the_report_should_be_generated_moment_date minus send_amount_days_before_offer_date
-        let date_when_the_next_report_should_be_generated = moment(date_for_which_the_report_should_be_generated_moment_date).subtract(send_amount_days_before_offer_date, 'days').format("YYYY-MM-DD") + " " + send_report_at_hh_mm;
-
 
         let date_next_report_is_due = recipientEntry.date_next_report_is_due;
         //console.log("date_for_which_the_report_should_be_generated_moment_date: " + date_for_which_the_report_should_be_generated_moment_date);
@@ -281,9 +279,15 @@ export class ReportSchedule {
 
         if(!date_next_report_is_due || settingsChanged){
             // if the date_next_report_is_due is not set, we have to set it
-            let date_next_report_is_due_moment = moment(date_when_the_next_report_should_be_generated)
-            let date_next_report_is_due_iso = date_next_report_is_due_moment.toISOString();
+            // date_when_the_next_report_should_be_generated is date_for_which_the_report_should_be_generated_moment_date minus send_amount_days_before_offer_date
+            let date_when_the_next_report_should_be_generated = moment(now_moment_date).add(0, 'days').format("YYYY-MM-DD") + " " + send_report_at_hh_mm;
+            if(now_moment_date.isAfter(date_when_the_next_report_should_be_generated)){
+                // since the date_when_the_next_report_should_be_generated is in the past and we "missed" the report, we have to set the next report date to tomorrow
+                date_when_the_next_report_should_be_generated = moment(date_when_the_next_report_should_be_generated).add(1, 'days').format("YYYY-MM-DD") + " " + send_report_at_hh_mm;
+            }
+            let date_next_report_is_due_iso = moment(date_when_the_next_report_should_be_generated).toISOString();
             await itemService.updateOne(recipientEntry.id, {date_next_report_is_due: date_next_report_is_due_iso});
+            await this.updateReportLog(recipientEntry, "Next report date was not set. Set next report due date to: "+date_next_report_is_due_iso);
             return null; // we do not want to send a report now
         } else {
             // if the date_next_report_is_due is set, we have to check if the report is due
