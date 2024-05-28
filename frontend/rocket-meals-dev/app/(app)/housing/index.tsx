@@ -59,7 +59,7 @@ function sortByApartmentName(resources: Apartments[], buildingsDict: Record<stri
 	return resources;
 }
 
-function sortByAvailableFrom(resources: Apartments[]) {
+function sortByAvailableFromOldestDateFirst(resources: Apartments[]) {
 	resources.sort((a, b) => {
 		let availableFromA = a.available_from;
 		let availableFromB = b.available_from;
@@ -121,7 +121,7 @@ function sortApartments(resources: Apartments[], buildingsDict: Record<string, B
 			copiedResources = sortByDistance(copiedResources, buildingsDict, currentLocation);
 		}
 	} else if(sortType === SortType.freeRooms){
-		copiedResources = sortByAvailableFrom(copiedResources);
+		copiedResources = sortByAvailableFromOldestDateFirst(copiedResources);
 	}
 	/**
 	else if(sortType === SortType.favorite){
