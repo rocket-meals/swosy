@@ -74,25 +74,25 @@ export function getDemoLanguagesDict(): Record<string, Languages> {
 			name: "Spanish",
 			direction: "ltr"
 		},
-		"it-IT": {
-			code: "it-IT",
-			name: "Italian",
+		"ar-SA": {
+			code: "ar-SA",
+			name: "Arabic",
+			direction: "rtl"
+		},
+		"zh-CN": {
+			code: "zh-CN",
+			name: "Chinese",
 			direction: "ltr"
 		},
-		"nl-NL": {
-			code: "nl-NL",
-			name: "Dutch",
+		"ru-RU": {
+			code: "ru-RU",
+			name: "Russian",
 			direction: "ltr"
 		},
-		"pl-PL": {
-			code: "pl-PL",
-			name: "Polish",
+		"tr-TR": {
+			code: "tr-TR",
+			name: "Turkish",
 			direction: "ltr"
-		},
-		"pt-PT": {
-			code: "pt-PT",
-			name: "Portuguese",
-			direction: "ltr"
-		},
+		}
 	}
 }

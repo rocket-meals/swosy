@@ -23,6 +23,7 @@ import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types"
 import {Text} from "@/components/Themed";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 import {LoadingScreenTextInformationWrapper} from "@/compositions/loadingScreens/LoadingScreen";
+import {useSynchedPopupEventsDict} from "@/states/SynchedPopupEvents";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -64,6 +65,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [wikisDict, setWikisDict, cacheHelperObjWikis] = useSynchedWikisDict()
 	const [rolesDict, setRolesDict, cacheHelperObjRoles] = useSynchedRolesDict()
 	const [newsDict, setNewsDict, cacheHelperObjNews] = useSynchedNewsDict()
+	const [popupEventsDict, setPopupEventsDict, cacheHelperObjPopupEvents] = useSynchedPopupEventsDict()
 	const [permissionsDict, setPermissionsDict, cacheHelperObjPermissions] = useSynchedPermissionsDict()
 	const [profile, setProfile, cacheHelperObjProfile] = useSynchedProfile()
 
@@ -120,6 +122,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('roles', rolesDict, cacheHelperObjRoles);
 	addResourceToCheckForUpdates('permissions', permissionsDict, cacheHelperObjPermissions);
 	addResourceToCheckForUpdates('news', newsDict, cacheHelperObjNews);
+	addResourceToCheckForUpdates('popupEvents', popupEventsDict, cacheHelperObjPopupEvents);
 
 	function getDependencies(): DependencyList {
 		const dependencies: string[] = [];

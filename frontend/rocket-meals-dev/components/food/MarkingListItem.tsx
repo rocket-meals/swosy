@@ -62,21 +62,11 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			}
 		}
 
-		const performance = false;
-
-		if(performance){
-			return <View style={{
-				height: 40, width: '100%', justifyContent: 'center', alignItems: 'center'
-			}}>
-				<Text>{text}</Text>
+		return(
+			<View key={marking.id}>
+				<SettingsRowTriStateLikeDislike iconLeftCustom={iconLeftCustom} onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
 			</View>
-		} else {
-			return(
-				<View key={marking.id}>
-					<SettingsRowTriStateLikeDislike iconLeftCustom={iconLeftCustom} onSetState={onPress} accessibilityLabel={accessibilityLabel} labelLeft={text} value={likes}/>
-				</View>
-			)
-		}
+		)
 	}, [status, translation_marking, languageCode])
 
 

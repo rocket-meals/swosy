@@ -16,7 +16,7 @@ export type MyModalActionSheetItem = {
 	value?: any,
 	title?: string,
 	iconLeft?: string | undefined,
-	onCancel?: () => Promise<boolean> | void,
+	onCancel?: () => Promise<void> | void,
 	iconLeftCustomRender?: (key: string, hide: () => void) => React.ReactNode,
 	accessibilityLabel: string,
 	onSelect?: (key: string, hide: () => void) => void,

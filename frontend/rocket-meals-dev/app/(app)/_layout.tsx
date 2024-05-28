@@ -3,6 +3,7 @@ import React from 'react';
 import {Text} from '@/components/Themed'
 import {isUserLoggedIn} from '@/states/User';
 import {MyDrawerAuthenticated} from '@/components/drawer/MyDrawerAuthenticated';
+import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
@@ -35,5 +36,8 @@ export default function AppLayout() {
 	}
 
 	// This layout can be deferred because it's not the root layout.
-	return <MyDrawerAuthenticated />
+	return <>
+		<MyDrawerAuthenticated />
+		<PopupEventsOverlay />
+	</>
 }
