@@ -1,2 +1,4 @@
 **/*.DS_Store
 .idea/**
+
+backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
