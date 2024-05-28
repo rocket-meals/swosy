@@ -37,12 +37,16 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(generateReportForDate, report_feedback_period_days, canteenEntry){
+    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days, canteenEntry){
         //console.log("generateReportJSON");
+
+        let date = generateReportForDate;
+        let dateHumanReadable = date.getDate()+"."+date.getMonth();
 
         let report = {
             canteen: canteenEntry?.alias || canteenEntry.id,
             report_feedback_period_days: report_feedback_period_days,
+            dateHumanReadable: dateHumanReadable,
             foods: {}
         }
 
