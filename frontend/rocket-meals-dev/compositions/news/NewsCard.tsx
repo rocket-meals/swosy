@@ -51,7 +51,7 @@ const NewsCard: React.FC<NewsItemProps> = ({ text, url, image_url, headline, ass
 
 	let displayedDate = '';
 	if (date) {
-		displayedDate = DateHelper.useSmartReadableDate(new Date(date), jsLocale)
+		displayedDate = DateHelper.formatOfferDateToReadable(new Date(date), true, false);
 	}
 
 	// left 751

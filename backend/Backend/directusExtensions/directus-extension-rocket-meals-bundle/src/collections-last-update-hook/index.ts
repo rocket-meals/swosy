@@ -35,7 +35,9 @@ export default defineHook(async ({action, init}, {
 		let allTableNamesInDatabase = await DatabaseInitializedCheck.getTableNames(getSchema);
 		let allTableNamesWithoutExcludeCollections = allTableNamesInDatabase.filter((tableName: string) => !excludeCollections.includes(tableName));
 
-		let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readByQuery({});
+		let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readByQuery({
+			limit: -1
+		});
 		let tableNamesInLastUpdatesTable = allItemsInLastUpdatesTables.map((item: any) => item.id);
 
 		let missingTableNames = allTableNamesWithoutExcludeCollections.filter((tableName: string) => !tableNamesInLastUpdatesTable.includes(tableName));

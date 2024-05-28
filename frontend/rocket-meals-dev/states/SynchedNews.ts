@@ -100,6 +100,7 @@ function getSingleDemoNews(index: number): News {
 	return {
 		alias: 'Demo News',
 		date_created: DateHelper.addDays(new Date(), -index).toISOString(),
+		date: DateHelper.addDays(new Date(), -index).toISOString(),
 		date_updated: new Date().toISOString(),
 		external_identifier: undefined,
 		id: news_id,
@@ -119,7 +120,7 @@ function getSingleDemoNews(index: number): News {
 function getDemoNews(): Record<string, News> {
 	const resourceDict: Record<string, News> = {}
 
-	for (let i = 0; i < 500; i++) {
+	for (let i = 0; i < 100; i++) {
 		const demoResource = getSingleDemoNews(i)
 		resourceDict[demoResource.id] = demoResource
 	}

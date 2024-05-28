@@ -1,33 +1,83 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import { DirectusFiles, News} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings, DirectusFiles, News} from '@/helper/database/databaseTypes/types';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {TranslationEntry, getDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
 import {MarkdownHelper} from '@/helper/string/MarkdownHelper';
 import NewsCard from '@/compositions/news/NewsCard';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
+import {LocationType} from "@/helper/geo/LocationType";
+import {PersistentStore} from "@/helper/syncState/PersistentStore";
+import {Text, View} from "@/components/Themed";
+
+function sortByDateNewestFirst(resources: News[]) {
+	resources.sort((a, b) => {
+		let dateA = a.date;
+		let dateB = b.date;
+		let availableFromA_asDate = dateA ? new Date(dateA) : null;
+		let availableFromB_asDate = dateB ? new Date(dateB) : null;
+
+		// oldest first - since rooms which will be available far in the future are not interesting
+		if(availableFromA_asDate && availableFromB_asDate){
+			return availableFromB_asDate.getTime() - availableFromA_asDate.getTime()
+		} else if(availableFromA_asDate){
+			return -1;
+		} else if(availableFromB_asDate){
+			return 1;
+		}
+		return 0;
+	});
+	return resources;
+
+}
+
+function sortNews(resources: News[], resourcesDict: Record<string, News | null | undefined> | null | undefined, sortType: SortType, languageCode: string, currentLocation: LocationType | null) {
+	let copiedResources = [...resources];
+	if(sortType === SortType.intelligent){
+		// sort first by name, then by eating habits, then by favorite
+		let sortOrders = [SortType.date];
+		for(const sortOrder of sortOrders){
+			copiedResources = sortNews(copiedResources, resourcesDict, sortOrder, languageCode, currentLocation);
+		}
+	} else if(sortType === SortType.date){
+		copiedResources = sortByDateNewestFirst(copiedResources);
+	}
+	/**
+	 else if(sortType === SortType.favorite){
+	 copiedResources = sortByFavorite(copiedResources, foodFeedbacksDict);
+	 }
+	 */
+	return copiedResources;
+}
 
 export default function NewsScreen() {
 	const [newsDict, setNewsDict] = useSynchedNewsDict()
-
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigNews);
 
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
 	const translation_news = useTranslation(TranslationKeys.news)
 
 	const initialAmountColumns = 1
 
-	const resources = [];
+	let resources: News[] = [];
 	if (newsDict) {
 		const resourceKeys = Object.keys(newsDict)
 		for (let i = 0; i < resourceKeys.length; i++) {
 			const key = resourceKeys[i];
 			const building = newsDict[key];
-			resources.push(building)
+			if (building){
+				resources.push(building)
+			}
 		}
 	}
+
+	resources = sortNews(resources, newsDict, sortType, languageCode, null);
+
+
 
   type DataItem = { key: string; data: News }
 
@@ -81,7 +131,7 @@ export default function NewsScreen() {
   		}
   	}
 
-  	const date_published = resource?.date || resource.date_created;
+  	const date_published = resource?.date
 
   	const accessiblityLabel = translation_navigate_to+': '+translation_news+' '+heading + ' ' + date_published;
 
@@ -102,6 +152,9 @@ export default function NewsScreen() {
 
   return (
   	<MySafeAreaView>
+		<Text>
+			{"SortType: "+sortType}
+		</Text>
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
