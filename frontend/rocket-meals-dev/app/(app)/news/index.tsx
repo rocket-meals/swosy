@@ -1,17 +1,16 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {Apartments, Buildings, DirectusFiles, News} from '@/helper/database/databaseTypes/types';
+import {DirectusFiles, News} from '@/helper/database/databaseTypes/types';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
-import {TranslationEntry, getDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
+import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
 import {MarkdownHelper} from '@/helper/string/MarkdownHelper';
 import NewsCard from '@/compositions/news/NewsCard';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {LocationType} from "@/helper/geo/LocationType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {Text, View} from "@/components/Themed";
 
 function sortByDateNewestFirst(resources: News[]) {
 	resources.sort((a, b) => {
@@ -152,9 +151,6 @@ export default function NewsScreen() {
 
   return (
   	<MySafeAreaView>
-		<Text>
-			{"SortType: "+sortType}
-		</Text>
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
