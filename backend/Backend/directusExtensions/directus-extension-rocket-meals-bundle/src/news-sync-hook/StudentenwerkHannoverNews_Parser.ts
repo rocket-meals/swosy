@@ -12,6 +12,12 @@ export class StudentenwerkHannoverNews_Parser {
 
     }
 
+    async getJSONList(){
+        //let demoNewsItem = await this.getDemoNewsItem();
+        let realNewsItems = await this.getRealNewsItems();
+        return [...realNewsItems];
+    }
+
     async getRealNewsItems(limitAmountNews?: number | undefined) {
         try {
             console.log("getRealNewsItems from: " + newsUrl);
