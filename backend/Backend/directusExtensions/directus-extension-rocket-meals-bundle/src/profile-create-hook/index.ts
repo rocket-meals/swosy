@@ -6,11 +6,50 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "profile_create";
 
-export default defineHook(async ({ filter}, {services, getSchema, database}) => {
+export default defineHook(async ({ filter, schedule}, {services, getSchema, database}) => {
 	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
 	if (!allTablesExist) {
 		return;
 	}
+
+
+	// every minute
+	schedule('0 * * * * *', async () => {
+		// search for users without profiles and create profiles for them
+		let schema = await getSchema();
+		let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+		let users_service = itemsServiceCreator.getItemsService(CollectionNames.USERS);
+		let profiles_service = itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
+		// users without profiles
+		let users = await users_service.readByQuery({
+			filter: {
+				profile: {
+					_eq: null
+				}
+			},
+			limit: -1
+		});
+		if(!!users && users.length > 0) {
+			console.log("Users without profiles: " + users.length);
+			for (let user of users) {
+				try {
+					let profile_id = await profiles_service.createOne({}); //create a profile
+					if (profile_id) {
+						console.log("Created profile for user: " + user.id);
+						await users_service.updateOne(user.id, {
+							profile: profile_id
+						});
+					}
+				} catch (e) {
+					console.log(
+						'profileCreateHook: Error while creating profile for user: ' +
+						user.id
+					);
+					console.log(e);
+				}
+			}
+		}
+	});
 
 	filter(
 		EventHelper.USERS_LOGIN_EVENT,
