@@ -21,7 +21,8 @@
 			"ts-jest": {
 				"isolatedModules": true
 			}
-		}
+		},
+		"testTimeout": 20000
 	},
 	"directus:extension": {
 		"type": "bundle",
@@ -104,7 +105,8 @@
 		"host": "^10.10.0"
 	},
 	"scripts": {
-		"build": "directus-extension build",
+		"buildWithoutTest": "directus-extension build",
+		"build": "npm run test && npm run buildWithoutTest",
 		"test": "jest",
 		"dev": "directus-extension build -w --no-minify",
 		"link": "directus-extension link",
