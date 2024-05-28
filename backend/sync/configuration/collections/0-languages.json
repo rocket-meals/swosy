@@ -25,18 +25,18 @@
         "name": "French"
     },
     {
-        "code": "it-IT",
-        "direction": "ltr",
-        "name": "Italian"
-    },
-    {
-        "code": "pt-BR",
-        "direction": "ltr",
-        "name": "Portuguese"
-    },
-    {
         "code": "ru-RU",
         "direction": "ltr",
         "name": "Russian"
+    },
+    {
+        "code": "tr-TR",
+        "direction": "ltr",
+        "name": "Turkish"
+    },
+    {
+        "code": "zh-CN",
+        "direction": "ltr",
+        "name": "Chinese"
     }
 ]
