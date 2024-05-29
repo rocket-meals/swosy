@@ -45,40 +45,7 @@
     },
     {
         "role": null,
-        "collection": "profiles_markings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "role": null,
         "collection": "eating_habit_templates",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "role": null,
-        "collection": "devices",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "role": null,
-        "collection": "chatrooms_profiles",
         "action": "read",
         "permissions": {},
         "validation": {},

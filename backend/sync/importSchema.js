@@ -6,6 +6,7 @@ import FormData from 'form-data';
 import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import https from 'https';
 import inquirer from 'inquirer';
 
 // Convert import.meta.url to a file path
@@ -13,6 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dumpPath = "./configuration/directus-config";
+
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+});
 
 /**
  * Configuration for collections and modules
@@ -58,12 +63,11 @@ function parseEnvFile(content) {
 
 
 const parsedEnvFile = parseEnvFile(envFile);
-const DOMAIN_PRE = parsedEnvFile.DOMAIN_PRE
 const MYHOST = parsedEnvFile.MYHOST;
-const DOMAIN_PATH = parsedEnvFile.DOMAIN_PATH
-const BACKEND_PATH = parsedEnvFile.BACKEND_PATH;
+const DOMAIN_PATH = parsedEnvFile.ROCKET_MEALS_PATH
+const BACKEND_PATH = parsedEnvFile.ROCKET_MEALS_BACKEND_PATH;
 
-let directus_url = `${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`
+let directus_url = `https://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`
 let admin_email = parsedEnvFile.ADMIN_EMAIL;
 let admin_password = parsedEnvFile.ADMIN_PASSWORD;
 
@@ -86,7 +90,7 @@ const getUrlSettings = () => {
 
 const configureDirectusServerUrl = async () => {
     const predefinedOptions = {
-        "Current": directus_url,
+        "Current HTTPS": directus_url,
         "Demo Server": "https://rocket-meals.de/rocket-meals/api",
         "Studi|Futter": "https://studi-futter.rocket-meals.de/rocket-meals/api",
         "SWOSY": "https://swosy.rocket-meals.de/rocket-meals/api"
@@ -200,10 +204,15 @@ const mainPush = async () => {
 const enableRequiredSettings = async (headers) => {
     console.log("Enabling required settings...");
 
+    // fetch with ignoring self signed certificates
+
+
+
     // Patch settings with an empty object
     console.log(" -  Patching with empty");
     await fetch(`${getUrlSettings()}`, {
         method: 'PATCH',
+        agent: httpsAgent,
         headers: {
             "Cookie": headers.get('cookie'),
             'Content-Type': 'application/json',
@@ -214,6 +223,7 @@ const enableRequiredSettings = async (headers) => {
     // Fetch the current settings
     console.log(" -  Fetching settings");
     const settingsResponse = await fetch(`${getUrlSettings()}`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     });
@@ -240,6 +250,7 @@ const enableRequiredSettings = async (headers) => {
 
     // Patch updated settings
     const response = await fetch(`${getUrlSettings()}`, {
+        agent: httpsAgent,
         method: 'PATCH',
         headers: {
             "Cookie": headers.get('cookie'),
@@ -262,7 +273,7 @@ const getDirectusSyncParams = () => {
 const pushDirectusSyncSchemas = async () => {
     console.log("Pushing schema changes to Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('npx directus-sync push '+directus_sync_params);
+    execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync push '+directus_sync_params);
 }
 
 // Function to sync public permissions
@@ -273,9 +284,12 @@ const uploadPublicPermissions = async (headers) => {
     const data = fs.readFileSync(`${configurationPathRolesPermissions}/public.json`, 'utf8');
     const permissions = JSON.parse(data);
 
+
+
     // Helper function to update a permission node
     const updatePermissionNode = async (permission) => {
         const response = await fetch(`${getUrlPermissions()}`, {
+            agent: httpsAgent,
             method: 'POST',
             headers: {
                 "Cookie": headers.get('cookie'),
@@ -322,6 +336,7 @@ const uploadSchema = async (headers, file) => {
 
     // Check if collection already exists
     const firstElement = await fetch(`${getUrlItems()}/${displayName}?limit=1`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -334,6 +349,7 @@ const uploadSchema = async (headers, file) => {
     // Import collection into Directus
     console.log(` -  Importing ${displayName}`);
     const response = await fetch(`${directus_url}/utils/import/${displayName}`, {
+        agent: httpsAgent,
         method: 'POST',
         headers: { "Cookie": headers.get('cookie'), ...formData.getHeaders() },
         body: formData,
@@ -351,6 +367,7 @@ const getCollection = async (headers, name) => {
 
     // Retrieve collection data
     const data = await fetch(`${getUrlItems()}/${displayName}?limit=-1`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -399,6 +416,7 @@ const saveCollections = async (headers) => {
 const savePublicRole = async (headers) => {
     console.log("Saving public role...");
     const data = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -417,7 +435,7 @@ const saveDirectusSyncSchema = async() => {
     // Pull schema changes from Directus
     console.log("Pulling schema changes from Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('npx directus-sync pull ' + directus_sync_params);
+    execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync pull ' + directus_sync_params);
 }
 
 
@@ -434,7 +452,11 @@ const waitForDirectusToBeReady = async () => {
     let ready = false;
     for (let i = 0; i < retries; i++) {
         try {
-            await fetch(`${directus_url}/server/ping`);
+            console.log("Fetch directus ping...");
+            await fetch(`${directus_url}/server/ping`, {
+                agent: httpsAgent,
+                method: 'GET',
+            });
             console.log("Directus is ready\n");
             ready = true;
             break;
@@ -462,6 +484,7 @@ const login = async () => {
     //console.log("admin_password: "+admin_password)
 
     const response = await fetch(`${directus_url}/auth/login`, {
+        agent: httpsAgent,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: admin_email, password: admin_password, mode: "session" }),
