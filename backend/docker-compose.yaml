@@ -51,7 +51,7 @@ services:
     environment:
       # Traefik configuration
       PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
-      ROOT_REDIRECT: "./${ROCKET_MEALS_BACKEND_PATH}/admin"
+      ROOT_REDIRECT: "/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}/admin"
       # Directus default configuration
       HOST: "0.0.0.0" # To bind to all interfaces for Docker
       PORT: "${DIRECTUS_PORT}"
