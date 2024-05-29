@@ -22,5 +22,77 @@
     "reject": null,
     "flow": "5ea87d76-a6c0-4a7c-819b-e493da87b8c7",
     "_syncId": "d4502058-883f-4a85-b598-83f92245e8cc"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_ri1ei",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "payload": {
+        "news_parsing_status": "start"
+      },
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "fdf706b4-7202-4f5a-8932-e8e5a5483ca1",
+    "_syncId": "f783e09a-f4b0-47d3-95f9-9590bdbb7d46"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_ri1ei",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "payload": {
+        "housing_parsing_status": "start"
+      },
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "781140de-7c54-466e-b1da-017d5c724b5b",
+    "_syncId": "e020a7cb-4d5f-4fbb-b537-3d174ff4432c"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_ri1ei",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "payload": {
+        "notifications_foods_status": "start"
+      },
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "f0e0d635-0c62-4a49-a7c4-343767579542",
+    "_syncId": "cb55e304-2a4a-43db-b5c4-14d28df08a9a"
   }
 ]
