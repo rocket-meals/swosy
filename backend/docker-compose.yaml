@@ -1,12 +1,18 @@
 version: '3.8'
 
 services:
+
   # The Directus backend
   rocket-meals-directus:
     build:
       context: ./
     #container_name: "rocket-meals-directus" # "replicas" is ignored if you name your container using container_name: myname
     restart: ${RESTART}
+    depends_on:
+      rocket-meals-database:
+        condition: service_healthy
+      rocket-meals-cache:
+        condition: service_started
     deploy:
       mode: replicated
       replicas: ${DIRECTUS_REPLICAS:-1}  # Default to 1 if DIRECTUS_REPLICAS is not set
@@ -41,7 +47,7 @@ services:
       # local driver
       - ./Backend/uploads:/directus/uploads
       # Make sure to also mount the volume when using SQLite
-      - ./Backend/database:/directus/database
+      #- ./Backend/database:/directus/database
       # If you want to load extensions from the host
       - ./Backend/directusExtensions:/directus/extensions
       # directus-auto-translation api key path
@@ -93,13 +99,18 @@ services:
       # Directus Database configuration
       KEY: "${DATABASE_KEY}"
       SECRET: "${DATABASE_SECRET}"
-      DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
-      DB_FILENAME: './database/data.db'
-      #DB_HOST: 'database' #Required when using pg, mysql, oracledb, or mssql
-      #DB_PORT: '5432'
-      #DB_DATABASE: 'directus'
-      #DB_USER: 'directus'
-      #DB_PASSWORD: 'directus'
+
+      # Database
+      # Debug database
+      #DB_CLIENT: 'sqlite3' # https://docs.directus.io/configuration/config-options/
+      #DB_FILENAME: './database/data.db'
+      # Production database
+      DB_CLIENT: "pg"
+      DB_HOST: "rocket-meals-database"
+      DB_PORT: "5432"
+      DB_DATABASE: "directus"
+      DB_USER: "directus"
+      DB_PASSWORD: "directus"
 
       # Directus Admin user
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
@@ -152,6 +163,22 @@ services:
 
       # directus-auto-translation
       AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt" # Required for the auto translation plugin -  fix to the directus volume
+
+  # The Directus database - postgres with data volume
+  # https://docs.directus.io/self-hosted/docker-guide.html#example-docker-compose
+  rocket-meals-database:
+    image: postgis/postgis:13-master
+    # Required when running on platform other than amd64, like Apple M1/M2:
+    # platform: linux/amd64
+    restart: ${RESTART}
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "directus"
+      POSTGRES_PASSWORD: "directus"
+      POSTGRES_DB: "directus"
+    networks:
+      - directus_network
 
 
   # The cache service for Directus

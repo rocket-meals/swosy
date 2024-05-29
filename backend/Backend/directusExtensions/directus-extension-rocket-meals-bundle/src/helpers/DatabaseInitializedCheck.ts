@@ -11,16 +11,21 @@ export class DatabaseInitializedCheck{
     }
 
     static async getTableNames(getSchema: any): Promise<string[]> {
-        let schema = await getSchema();
-        let collectionKeys = Object.keys(schema.collections);
-        let tableNamesDict: any = {};
-        for(let collectionKey of collectionKeys) {
-            let collection = schema.collections[collectionKey];
-            if(!!collection){
-                tableNamesDict[collection.collection] = collection.collection;
+        try{
+            let schema = await getSchema();
+            let collectionKeys = Object.keys(schema.collections);
+            let tableNamesDict: any = {};
+            for(let collectionKey of collectionKeys) {
+                let collection = schema.collections[collectionKey];
+                if(!!collection){
+                    tableNamesDict[collection.collection] = collection.collection;
+                }
             }
+            return Object.keys(tableNamesDict);
+        } catch (e) {
+            console.error("++ "+EXTENSION_NAME+" - getTableNames: Error: ", e);
+            return [];
         }
-        return Object.keys(tableNamesDict);
     }
 
     static async checkTablesExist(scheduleName: string, getSchema: any, tables: string[]): Promise<boolean> {

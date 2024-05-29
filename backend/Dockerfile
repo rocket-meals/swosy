@@ -1,4 +1,4 @@
-FROM directus/directus:10.11.0
+FROM directus/directus:10.11.2
 
 
 # Switch to root user to install packages
@@ -19,9 +19,11 @@ USER root
 RUN corepack enable
 USER node
 
-RUN pnpm install directus-extension-auto-backup@10.8.5
-RUN pnpm install directus-extension-auto-translation@10.11.2
-RUN pnpm install directus-extension-schema-management-module
-RUN pnpm install directus-extension-flow-manager
-RUN pnpm install directus-extension-sync@1.1.2
+#RUN pnpm install directus-extension-auto-backup@10.8.5
+
+RUN pnpm install directus-extension-auto-translation@10.11.6
+RUN pnpm install directus-extension-sync@2.0.0
+RUN pnpm install directus-extension-flow-manager@1.4.1
+#RUN pnpm install directus-extension-schema-management-module@1.5.0
+
 # RUN pnpm install directus-extension-package-name
