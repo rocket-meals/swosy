@@ -12,12 +12,10 @@
     "hidden": false,
     "interface": "translations",
     "note": null,
-    "options": {
-      "userLanguage": true
-    },
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 16,
     "special": [
       "translations"
     ],

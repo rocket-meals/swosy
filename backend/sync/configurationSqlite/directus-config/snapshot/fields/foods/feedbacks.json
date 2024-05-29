@@ -1,0 +1,27 @@
+{
+  "collection": "foods",
+  "field": "feedbacks",
+  "type": "alias",
+  "meta": {
+    "collection": "foods",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "feedbacks",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 25,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

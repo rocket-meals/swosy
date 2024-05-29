@@ -18,7 +18,7 @@
     "column": "user_created",
     "foreign_key_table": "directus_users",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "utilizations_groups_user_created_foreign",
     "on_update": "NO ACTION",
     "on_delete": "SET NULL"
   }

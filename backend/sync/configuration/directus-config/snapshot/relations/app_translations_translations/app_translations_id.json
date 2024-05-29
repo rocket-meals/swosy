@@ -18,7 +18,7 @@
     "column": "app_translations_id",
     "foreign_key_table": "app_translations",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "app_translations_translations_app_translations_id_foreign",
     "on_update": "NO ACTION",
     "on_delete": "CASCADE"
   }

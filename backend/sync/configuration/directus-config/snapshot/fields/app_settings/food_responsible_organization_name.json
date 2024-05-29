@@ -11,7 +11,7 @@
     "group": "food_responsible_settings",
     "hidden": false,
     "interface": "input",
-    "note": "Name of responsible organization",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "food_responsible_organization_name",
     "table": "app_settings",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

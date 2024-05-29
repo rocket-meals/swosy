@@ -1,0 +1,27 @@
+{
+  "collection": "buildings",
+  "field": "businesshours",
+  "type": "alias",
+  "meta": {
+    "collection": "buildings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "businesshours",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 20,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

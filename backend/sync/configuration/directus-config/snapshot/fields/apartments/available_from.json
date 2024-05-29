@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 10,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "available_from",
     "table": "apartments",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

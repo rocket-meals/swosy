@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "file-image",
     "note": null,
-    "options": null,
+    "options": {
+      "folder": "d5371cdc-a9e6-46a6-a42d-9d71450042aa"
+    },
     "readonly": false,
     "required": false,
     "sort": 12,
@@ -27,9 +29,9 @@
   "schema": {
     "name": "image",
     "table": "foods_feedbacks_labels",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

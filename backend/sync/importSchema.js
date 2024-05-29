@@ -266,14 +266,36 @@ const enableRequiredSettings = async (headers) => {
     console.log(" -  Enabled required settings");
 };
 
+const escapeShellArg = (arg) => {
+    return arg.replace(/([\\"'`$!&*()|;<>])/g, '\\$1');
+}
+
 const getDirectusSyncParams = () => {
-    return '--directus-url '+directus_url+" --directus-email "+admin_email+" --directus-password "+admin_password+" --dump-path "+dumpPath;
+    // Properly escape the password for shell command
+    const escaped_password = escapeShellArg(admin_password);
+    const preserverIds = "dashboards,operations,panels,roles,translations";
+    const preserveOption = "--preserve-ids "+preserverIds;
+    return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + escaped_password + '" --dump-path ' + dumpPath+ " "+preserveOption
 }
 
 const pushDirectusSyncSchemas = async () => {
     console.log("Pushing schema changes to Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync push '+directus_sync_params);
+    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
+
+    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 push ' + directus_sync_params;
+    // execSync and print the output
+    try{
+        execSync(command, {
+            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+            stdio: 'pipe'
+        })
+        console.log(" -  Pushed schema changes to Directus");
+    } catch (error) {
+        console.log(error.message)
+        console.log("Please run the command manually and check the error")
+        console.log("Command: "+command)
+    }
 }
 
 // Function to sync public permissions
@@ -362,10 +384,13 @@ const uploadSchema = async (headers, file) => {
 
 // Function to fetch data for a collection
 const getCollection = async (headers, name) => {
+    console.log("Fetching collection... name: "+name)
     const displayName = name.split('/').pop().split('.').shift().split("-").pop();
     console.log(` -  Fetching ${displayName}`);
 
     // Retrieve collection data
+    console.log(" -  Fetching collection data");
+    console.log(`${getUrlItems()}/${displayName}?limit=-1`);
     const data = await fetch(`${getUrlItems()}/${displayName}?limit=-1`, {
         agent: httpsAgent,
         method: 'GET',
@@ -395,6 +420,9 @@ const mainPull = async () => {
 const saveCollections = async (headers) => {
     console.log("Saving collections...");
     let collections = fs.readdirSync(`${configurationPathCollections}`);
+    // remove files that are not collections like .DS_Store
+    // if file ends with .DS_Store it is not a collection
+    collections = collections.filter(file => !file.endsWith(".DS_Store"));
 
     for (const collection of collections) {
         if (collectionsToSkip.includes(collection)) {
@@ -403,7 +431,10 @@ const saveCollections = async (headers) => {
         }
 
         const data = await getCollection(headers, collection);
+        console.log(data);
         const jsonData = JSON.stringify(data, null, 4);
+        console.log(` -  Fetched ${collection} (${data.length} items)`);
+        console.log(jsonData);
 
         // Save the collection data to file
         fs.writeFileSync(`${configurationPathCollections}/${collection}`, jsonData);
@@ -435,7 +466,21 @@ const saveDirectusSyncSchema = async() => {
     // Pull schema changes from Directus
     console.log("Pulling schema changes from Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync pull ' + directus_sync_params);
+    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
+
+    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params;
+    // execSync and print the output
+    try{
+        execSync(command, {
+            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+            stdio: 'pipe'
+        })
+        console.log(" -  Pulled schema changes from Directus");
+    } catch (error) {
+        console.log(error.message)
+        console.log("Please run the command manually and check the error")
+        console.log("Command: "+command)
+    }
 }
 
 

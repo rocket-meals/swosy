@@ -1,7 +1,7 @@
 {
   "collection": "cashregisters_transactions",
   "field": "user_updated",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "cashregisters_transactions",
     "conditions": null,
@@ -29,9 +29,9 @@
   "schema": {
     "name": "user_updated",
     "table": "cashregisters_transactions",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

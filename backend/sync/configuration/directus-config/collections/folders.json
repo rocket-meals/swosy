@@ -1,17 +1,42 @@
 [
   {
-    "name": "Buildings",
-    "parent": "a514c767-ab99-41b7-b942-eb1b86ccbbad",
-    "_syncId": "85712771-3e45-46b2-9250-5bf3582597b5"
+    "name": "PopupEvents",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "0edf85c4-e37f-48d9-985c-b83dc9411362"
+  },
+  {
+    "name": "Appsettings",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "462bf197-f235-4d92-9d86-88361d7f201c"
   },
   {
     "name": "Images",
     "parent": null,
-    "_syncId": "a514c767-ab99-41b7-b942-eb1b86ccbbad"
+    "_syncId": "6baff1a8-400e-4dab-8f39-a5422df94db2"
   },
   {
     "name": "Foods",
-    "parent": "a514c767-ab99-41b7-b942-eb1b86ccbbad",
-    "_syncId": "a6043bbd-4ae0-4b01-b135-0ae9f9c942e9"
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "7ca24fe5-f805-432a-a52e-623682eef9dc"
+  },
+  {
+    "name": "Buildings",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "82168ce3-9ad1-4828-9f0d-61247d26763b"
+  },
+  {
+    "name": "Markings",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "bfc6d704-da2c-428e-84ee-b35e59c386d7"
+  },
+  {
+    "name": "FoodFeedbackLabels",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "d5371cdc-a9e6-46a6-a42d-9d71450042aa"
+  },
+  {
+    "name": "News",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "e8ee120f-7692-4ada-a4e8-784900c06bcb"
   }
 ]

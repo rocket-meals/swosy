@@ -9,22 +9,25 @@
     "display_options": {
       "choices": [
         {
-          "text": "Published",
+          "text": "$t:published",
           "value": "published",
-          "foreground": "#FFFFFF",
-          "background": "var(--theme--primary)"
+          "color": "var(--theme--primary)",
+          "foreground": "var(--theme--primary)",
+          "background": "var(--theme--primary-background)"
         },
         {
-          "text": "Draft",
+          "text": "$t:draft",
           "value": "draft",
-          "foreground": "#18222F",
-          "background": "#D3DAE4"
+          "color": "var(--theme--foreground)",
+          "foreground": "var(--theme--foreground)",
+          "background": "var(--theme--background-normal)"
         },
         {
-          "text": "Archived",
+          "text": "$t:archived",
           "value": "archived",
-          "foreground": "#FFFFFF",
-          "background": "var(--theme--warning)"
+          "color": "var(--theme--warning)",
+          "foreground": "var(--theme--warning)",
+          "background": "var(--theme--warning-background)"
         }
       ],
       "showAsDot": true
@@ -37,16 +40,19 @@
     "options": {
       "choices": [
         {
-          "text": "Published",
-          "value": "published"
+          "text": "$t:published",
+          "value": "published",
+          "color": "var(--theme--primary)"
         },
         {
-          "text": "Draft",
-          "value": "draft"
+          "text": "$t:draft",
+          "value": "draft",
+          "color": "var(--theme--foreground)"
         },
         {
-          "text": "Archived",
-          "value": "archived"
+          "text": "$t:archived",
+          "value": "archived",
+          "color": "var(--theme--warning)"
         }
       ]
     },
@@ -62,12 +68,12 @@
   "schema": {
     "name": "status",
     "table": "apartments",
-    "data_type": "varchar",
-    "default_value": "published",
+    "data_type": "character varying",
+    "default_value": "draft",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
-    "is_nullable": true,
+    "is_nullable": false,
     "is_unique": false,
     "is_primary_key": false,
     "is_generated": false,

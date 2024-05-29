@@ -18,7 +18,7 @@
     "column": "cashregister",
     "foreign_key_table": "cashregisters",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "cashregisters_transactions_cashregister_foreign",
     "on_update": "NO ACTION",
     "on_delete": "CASCADE"
   }

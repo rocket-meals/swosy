@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 13,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "image_remote_url",
     "table": "news",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

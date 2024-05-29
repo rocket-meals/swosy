@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "file-image",
     "note": null,
-    "options": null,
+    "options": {
+      "folder": "bfc6d704-da2c-428e-84ee-b35e59c386d7"
+    },
     "readonly": false,
     "required": false,
     "sort": 11,
@@ -27,9 +29,9 @@
   "schema": {
     "name": "image",
     "table": "markings",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

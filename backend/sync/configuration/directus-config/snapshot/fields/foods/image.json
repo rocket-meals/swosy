@@ -13,7 +13,7 @@
     "interface": "file-image",
     "note": null,
     "options": {
-      "folder": "a6043bbd-4ae0-4b01-b135-0ae9f9c942e9"
+      "folder": "7ca24fe5-f805-432a-a52e-623682eef9dc"
     },
     "readonly": false,
     "required": false,
@@ -29,9 +29,9 @@
   "schema": {
     "name": "image",
     "table": "foods",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

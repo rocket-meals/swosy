@@ -12,9 +12,7 @@
     "hidden": false,
     "interface": "datetime",
     "note": null,
-    "options": {
-      "includeSeconds": true
-    },
+    "options": null,
     "readonly": false,
     "required": false,
     "sort": 8,
@@ -27,7 +25,7 @@
   "schema": {
     "name": "date_finished",
     "table": "washingmachines",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

@@ -11,7 +11,7 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "group-raw",
-    "note": "Who is responsible for the nutrition information?",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,

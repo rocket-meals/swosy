@@ -18,7 +18,7 @@
     "column": "buildings_id",
     "foreign_key_table": "buildings",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "buildings_businesshours_buildings_id_foreign",
     "on_update": "NO ACTION",
     "on_delete": "CASCADE"
   }

@@ -17,7 +17,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 3,
+    "sort": 4,
     "special": null,
     "translations": null,
     "validation": null,
@@ -27,7 +27,7 @@
   "schema": {
     "name": "buildings_parsing_last_date",
     "table": "app_settings",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

@@ -11,7 +11,7 @@
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": "Authentication - You need an authentication key to access to the API. https://www.deepl.com/de/account/summary",
+    "note": "Authentication - You need an authentication key to access to the API. https://www.deepl.com/de/your-account/keys",
     "options": {
       "iconLeft": "key",
       "masked": true
@@ -28,7 +28,7 @@
   "schema": {
     "name": "auth_key",
     "table": "auto_translation_settings",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

@@ -13,11 +13,12 @@
     "interface": "translations",
     "note": null,
     "options": {
+      "defaultOpenSplitView": true,
       "userLanguage": true
     },
     "readonly": false,
     "required": false,
-    "sort": 18,
+    "sort": 16,
     "special": [
       "translations"
     ],

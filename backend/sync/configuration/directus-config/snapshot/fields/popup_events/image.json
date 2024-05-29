@@ -12,10 +12,12 @@
     "hidden": false,
     "interface": "file-image",
     "note": null,
-    "options": null,
+    "options": {
+      "folder": "0edf85c4-e37f-48d9-985c-b83dc9411362"
+    },
     "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 9,
     "special": [
       "file"
     ],
@@ -27,9 +29,9 @@
   "schema": {
     "name": "image",
     "table": "popup_events",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

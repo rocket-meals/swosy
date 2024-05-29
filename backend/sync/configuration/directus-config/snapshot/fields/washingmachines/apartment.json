@@ -1,7 +1,7 @@
 {
   "collection": "washingmachines",
   "field": "apartment",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "washingmachines",
     "conditions": null,
@@ -9,14 +9,16 @@
     "display_options": null,
     "field": "apartment",
     "group": null,
-    "hidden": true,
+    "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 11,
-    "special": null,
+    "special": [
+      "m2o"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
@@ -25,9 +27,9 @@
   "schema": {
     "name": "apartment",
     "table": "washingmachines",
-    "data_type": "varchar",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

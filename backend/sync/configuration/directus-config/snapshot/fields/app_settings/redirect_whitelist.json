@@ -8,7 +8,7 @@
     "display": null,
     "display_options": null,
     "field": "redirect_whitelist",
-    "group": "whitelist_settings",
+    "group": "redirect_settings",
     "hidden": false,
     "interface": "select-multiple-dropdown",
     "note": null,
@@ -23,6 +23,14 @@
         {
           "text": "localhost",
           "value": "localhost"
+        },
+        {
+          "text": "exp://",
+          "value": "exp://"
+        },
+        {
+          "text": "https://rocket-meals.github.io",
+          "value": "https://rocket-meals.github.io"
         }
       ]
     },
@@ -41,12 +49,17 @@
     "name": "redirect_whitelist",
     "table": "app_settings",
     "data_type": "json",
-    "default_value": null,
+    "default_value": [
+      "127.0.0.1",
+      "exp://",
+      "https://rocket-meals.github.io",
+      "localhost"
+    ],
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
-    "is_unique": true,
+    "is_unique": false,
     "is_primary_key": false,
     "is_generated": false,
     "generation_expression": null,
