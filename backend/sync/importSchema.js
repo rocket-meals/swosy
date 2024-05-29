@@ -344,6 +344,9 @@ const uploadPublicPermissions = async (headers) => {
 const uploadSchemas = async (headers) => {
     console.log("Uploading schemas...");
     let files = fs.readdirSync(`${configurationPathCollections}`).sort();
+    // remove files that are not collections like .DS_Store
+    // if file ends with .DS_Store it is not a collection
+    files = files.filter(file => !file.endsWith(".DS_Store"));
     for (const file of files) {
         await uploadSchema(headers, `${configurationPathCollections}/${file}`);
     }
