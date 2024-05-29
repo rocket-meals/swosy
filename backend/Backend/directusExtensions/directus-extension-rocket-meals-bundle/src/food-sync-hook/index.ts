@@ -180,14 +180,16 @@ export default defineHook(async ({action}, {
                 console.log(err);
             }
             //TODO set field "parse_foods" to false
+
+
+            // TODO: Remove this after switched to new project
+            try{
+                const schema = await getSchema();
+                await checkForImageSynchronize(env, services, database, schema);
+            } catch (err) {
+                console.log("Error while checking for image synchronize");
+                console.log(err);
+            }
         }
     );
-
-    try{
-        const schema = await getSchema();
-        await checkForImageSynchronize(env, services, database, schema);
-    } catch (err) {
-        console.log("Error while checking for image synchronize");
-        console.log(err);
-    }
 });

@@ -1,0 +1,29 @@
+services:
+  traefik:
+    env_file:
+      - .env
+    extends:
+      service: traefik
+      file: proxy/docker-compose.yaml
+
+  rocket-meals-directus:
+    env_file:
+      - .env
+    extends:
+      service: rocket-meals-directus
+      file: backend/docker-compose.yaml
+
+  rocket-meals-cache:
+    env_file:
+      - .env
+    extends:
+      service: rocket-meals-cache
+      file: backend/docker-compose.yaml
+    networks:
+      - directus_network
+
+networks:
+  directus_network: {}
+  traefik:
+    driver: bridge
+    name: traefik
