@@ -25,7 +25,7 @@
   "schema": {
     "name": "chatrooms_id",
     "table": "chatrooms_profiles",
-    "data_type": "char",
+    "data_type": "varchar",
     "default_value": null,
     "max_length": 36,
     "numeric_precision": null,

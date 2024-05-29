@@ -237,9 +237,7 @@ type Subscription {
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
   app_translations_mutated(event: EventEnum): app_translations_mutated
   app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
-  buildings_mutated(event: EventEnum): buildings_mutated
   buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
-  buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
@@ -248,36 +246,38 @@ type Subscription {
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   chatrooms_mutated(event: EventEnum): chatrooms_mutated
   chatrooms_messages_mutated(event: EventEnum): chatrooms_messages_mutated
-  chatrooms_profiles_mutated(event: EventEnum): chatrooms_profiles_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
-  devices_mutated(event: EventEnum): devices_mutated
   directus_users_mutated(event: EventEnum): directus_users_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
-  foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   foods_mutated(event: EventEnum): foods_mutated
-  foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
-  foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
-  foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
-  foods_markings_mutated(event: EventEnum): foods_markings_mutated
   foods_translations_mutated(event: EventEnum): foods_translations_mutated
   markings_mutated(event: EventEnum): markings_mutated
-  markings_translations_mutated(event: EventEnum): markings_translations_mutated
   news_mutated(event: EventEnum): news_mutated
   news_translations_mutated(event: EventEnum): news_translations_mutated
-  popup_events_mutated(event: EventEnum): popup_events_mutated
-  popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
-  profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
-  profiles_buildings_last_visited_mutated(event: EventEnum): profiles_buildings_last_visited_mutated
-  profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
-  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
+  buildings_mutated(event: EventEnum): buildings_mutated
+  buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
+  chatrooms_profiles_mutated(event: EventEnum): chatrooms_profiles_mutated
+  devices_mutated(event: EventEnum): devices_mutated
+  foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
+  foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
+  foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
+  foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
+  foods_markings_mutated(event: EventEnum): foods_markings_mutated
+  markings_translations_mutated(event: EventEnum): markings_translations_mutated
+  popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
+  profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
+  profiles_buildings_last_visited_mutated(event: EventEnum): profiles_buildings_last_visited_mutated
+  profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
+  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
+  popup_events_mutated(event: EventEnum): popup_events_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2125,12 +2125,12 @@ type foods {
   category: String
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
-  foodoffers(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers]
-  foodoffers_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
   translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
   translations_func: count_functions
+  foodoffers(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers]
+  foodoffers_func: count_functions
 }
 
 type foods_feedbacks {
@@ -2363,6 +2363,7 @@ type popup_events {
   send_notification: Boolean
   sort: Int
   status: String
+  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
   translations(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_translations]
   translations_func: count_functions
 }
@@ -3513,9 +3514,9 @@ input create_foods_input {
   user_updated: create_directus_users_input
   category: String
   feedbacks: [create_foods_feedbacks_input]
-  foodoffers: [create_foodoffers_input]
   markings: [create_foods_markings_input]
   translations: [create_foods_translations_input]
+  foodoffers: [create_foodoffers_input]
 }
 
 input create_foods_markings_input {
@@ -4255,12 +4256,12 @@ input foods_filter {
   category: string_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
-  foodoffers: foodoffers_filter
-  foodoffers_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
   translations: foods_translations_filter
   translations_func: count_function_filter_operators
+  foodoffers: foodoffers_filter
+  foodoffers_func: count_function_filter_operators
   _and: [foods_filter]
   _or: [foods_filter]
 }
@@ -4402,6 +4403,7 @@ input popup_events_filter {
   send_notification: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
+  canteen: canteens_filter
   translations: popup_events_translations_filter
   translations_func: count_function_filter_operators
   _and: [popup_events_filter]
@@ -5040,9 +5042,9 @@ input update_foods_input {
   user_updated: update_directus_users_input
   category: String
   feedbacks: [update_foods_feedbacks_input]
-  foodoffers: [update_foodoffers_input]
   markings: [update_foods_markings_input]
   translations: [update_foods_translations_input]
+  foodoffers: [update_foodoffers_input]
 }
 
 input update_foods_markings_input {
