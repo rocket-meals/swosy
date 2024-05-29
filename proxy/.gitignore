@@ -1,4 +1,3 @@
-
-.idea/
-acme/**/*
-extraVolumes/**/*
+/acme/
+/extraVolumes/
+.env

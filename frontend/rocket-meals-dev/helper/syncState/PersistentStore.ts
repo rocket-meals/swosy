@@ -32,6 +32,8 @@ export class PersistentStore {
 	static apartments = 'PersistentStore.apartments'
 	static app_settings = 'PersistentStore.app_settings'
 	static markings = 'PersistentStore.markings'
+	static popup_events = 'PersistentStore.popup_events'
+	static popup_events_read = 'PersistentStore.popup_events_read'
 	static roles = 'PersistentStore.roles'
 	static permissions = 'PersistentStore.permissions'
 	static foods = 'PersistentStore.foods'
@@ -44,8 +46,6 @@ export class PersistentStore {
 	static sortConfigNews = 'PersistentStore.sortConfigNews'
 
 	static profile = 'PersistentStore.profile'
-
-	static notificationPermission = 'PersistentStore.notificationPermission'
 
 	static firstWeekday = 'PersistentStore.firstWeekday'
 }

@@ -81,7 +81,7 @@ export type MyModalProps = {
 	visible: boolean,
 	setVisible: React.Dispatch<React.SetStateAction<boolean>> | setVisibleType,
 	title?: string,
-	onCancel?: () => Promise<boolean> | void,
+	onCancel?: () => Promise<void> | void,
 	children?: React.ReactNode | React.ReactNode[]
 	renderContent?: (hide: () => void) => React.ReactNode | React.ReactNode[]
 }

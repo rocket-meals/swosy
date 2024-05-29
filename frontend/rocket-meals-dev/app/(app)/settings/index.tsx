@@ -28,6 +28,7 @@ import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
+import {SettingsRowResetPopupEventsRead} from "@/compositions/settings/SettingsResetPopupEventsRead";
 
 const ProjectVersionInformation = () => {
 	const [develop, setDevelop] = useDeveloperModeRaw();
@@ -66,6 +67,7 @@ export default function SettingsScreen() {
 				<SettingsRowSyncBooleanSwitch labelLeft={'Demo'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Demo'} variable={PersistentStore.demo} />
 				<SettingsRowSyncBooleanSwitch labelLeft={'Performance'} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={'Performance'} variable={PersistentStore.performance} />
 				<SettingsRowSyncBooleanSwitch labelLeft={'Developer'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Developer'} variable={PersistentStore.develop} />
+				<SettingsRowResetPopupEventsRead />
 				<SettingsRowServerConfiguration />
 				<SettingsRowAppUpdate />
 			</SettingsRowGroup>

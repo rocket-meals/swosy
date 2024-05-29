@@ -6,5 +6,4 @@ echo "Installing dependencies"  &&
 npm ci &&
 
 echo "Start pushing schema to backend"  &&
-node importSchema.js push &&
-cd scripts
+node importSchema.js push

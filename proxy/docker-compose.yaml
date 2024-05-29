@@ -1,88 +1,71 @@
-version: '3'
-
 services:
-
-  outer:
-    container_name: outer
-    env_file: .env
-    build: .
-    labels:
-      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+  traefik:
+    image: "traefik:v3.0"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.traefik.address=:8080"
+      - "--certificatesresolvers.myresolver.acme.email=${CERT_MAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
     ports:
       - "80:80"
       - "443:443"
-    restart: always
-    environment:
-      #- LETSENCRYPT_HOST=se-services.informatik.uos.de
-      #- DEFAULT_HOST=outer.bar.com
-      - DEFAULT_HOST=${MYHOST}
-      - DHPARAM_GENERATION=false
-    logging:
-      driver: local #or "none" or "local"
+      - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro # allow to read running dockers
-      - ./extraVolumes/certs:/etc/nginx/certs:rw
-      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
-      - ./extraVolumes/html:/usr/share/nginx/html:rw
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
     networks:
-      - reverse-proxy
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${BASIC_AUTH}"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
 
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    env_file: .env
-    environment:
-    ### ToDo: Change to your e-mail address
-      - DEFAULT_EMAIL=${PROXY_MAIL_FOR_SSL_CERTIFICATE_RENEWAL}
-      - NGINX_PROXY_CONTAINER=outer
-    volumes_from:
-      - outer
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./extraVolumes/certs:/etc/nginx/certs:rw
-      - ./extraVolumes/vhosts:/etc/nginx/vhost.d:rw
-      - ./acme:/etc/acme.sh
-    restart: always
-    networks:
-      - reverse-proxy
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.rule=Host(`${MYHOST}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik.middlewares=https-redirect"
 
-  app:
-    container_name: outer_app
-    image: jwilder/whoami
-    env_file: .env
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - LETSENCRYPT_HOST=${MYHOST}
-      - VIRTUAL_PATH=/ping/
-      - VIRTUAL_DEST=/
-    networks:
-      - reverse-proxy
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${MYHOST}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=${RESOLVER}"
 
-  redirect:
-    image: morbz/docker-web-redirect
-    env_file: .env
-    restart: always
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - VIRTUAL_PATH=/
-      - VIRTUAL_DEST=/
-      - REDIRECT_TARGET=${MYHOST}/homepage/ # Just /homepage without ending with a / will result in infinite redirects
-      # For more see: https://serverfault.com/questions/821997/nginx-reverse-proxy-too-many-redirections
-      # Also the - VIRTUAL_PATH=/ping/ must end with a / too
-    networks:
-      - reverse-proxy
+      #- "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
-  redirect_catch:
-    container_name: redirect_catch
-    image: jwilder/whoami
-    env_file: .env
-    environment:
-      - VIRTUAL_HOST=${MYHOST}
-      - LETSENCRYPT_HOST=${MYHOST}
-      - VIRTUAL_PATH=/homepage/homepage/
-      - VIRTUAL_DEST=/
-    networks:
-      - reverse-proxy
+# If you want to add a ping service to check if traefik is working, please also add in the root docker-compose.yaml file the traefik-ping service
+#  traefik-ping:
+#    image: "jwilder/whoami"
+#    container_name: "traefik-ping"
+#    networks:
+#      - traefik
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=traefik"
+#      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+#      #- "traefik.http.middlewares.strip-traefik-ping.stripPrefix.prefixes=/subpath" # If we have a subpath
+#
+#      - "traefik.http.routers.traefik-ping.entrypoints=web"
+#      - "traefik.http.routers.traefik-ping.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+#      - "traefik.http.routers.traefik-ping.middlewares=https-redirect"
+#
+#      - "traefik.http.routers.traefik-ping-secure.entrypoints=websecure"
+#      - "traefik.http.routers.traefik-ping-secure.rule=Host(`${MYHOST}`) && PathPrefix(`/ping`)" # If we have a subpath use PathPrefix(`/subpath/ping`)
+#      #- "traefik.http.routers.traefik-ping-secure.middlewares=strip-traefik-ping" # If we have a subpath
+#      - "traefik.http.routers.traefik-ping-secure.tls=true"
+#      - "traefik.http.routers.traefik-ping-secure.tls.certresolver=${RESOLVER}"
+
+
 
 networks:
-  reverse-proxy:
-    name: topDomainProxy
+  traefik:
+    external: true
+    name: traefik

@@ -931,6 +931,7 @@ export type NewsTranslations = {
 
 export type PopupEvents = {
   alias?: string | null;
+  canteen?: string | Canteens | null;
   date_created?: string | null;
   date_end?: string | null;
   date_start?: string | null;

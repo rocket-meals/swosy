@@ -1,31 +1,33 @@
 {
-  "collection": "popup_events_translations",
-  "field": "popup_events_id",
+  "collection": "popup_events",
+  "field": "canteen",
   "type": "string",
   "meta": {
-    "collection": "popup_events_translations",
+    "collection": "popup_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "popup_events_id",
+    "field": "canteen",
     "group": null,
-    "hidden": true,
-    "interface": null,
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 2,
-    "special": null,
+    "sort": 14,
+    "special": [
+      "m2o"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "popup_events_id",
-    "table": "popup_events_translations",
-    "data_type": "varchar",
+    "name": "canteen",
+    "table": "popup_events",
+    "data_type": "char",
     "default_value": null,
     "max_length": 36,
     "numeric_precision": null,
@@ -36,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "popup_events",
+    "foreign_key_table": "canteens",
     "foreign_key_column": "id"
   }
 }
