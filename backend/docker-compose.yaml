@@ -33,6 +33,8 @@ services:
 
       # network: traefik
 
+
+
     volumes:
       # By default, uploads are stored in /directus/uploads
       # Always make sure your volumes matches the storage root when using
@@ -146,8 +148,6 @@ services:
       AUTH_GOOGLE_ICON: "google"
       AUTH_GOOGLE_LABEL: "Google"
       AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true"
-      AUTH_GOOGLE_ISSUER_URL: "https://accounts.google.com/.well-known/openid-configuration"
-      AUTH_GOOGLE_IDENTIFIER_KEY: "sub" # The key in the response that identifies the user
 
 
       # directus-auto-translation
