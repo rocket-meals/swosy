@@ -23,52 +23,61 @@ Similar steps can be made for local testing
                     - Eigene IP-Adresse:
                         - Server IP eintragen
 - Debian 11
-    - Install Node.js and npm
-        - "sudo apt install nodejs npm"
-    - Install docker:
-        - `wget https://gist.githubusercontent.com/angristan/389ad925b61c663153e6f582f7ef370e/raw/02c56807863ce73b84faa582468cc2e71637067c/install_docker.sh`
-        - `chmod +x install_docker.sh`
-        - `./install_docker.sh`
-        - Alternative?
-              - docker-compose version 1.29.2, build 5becea4c
-              - `sudo apt-get purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras` (https://docs.docker.com/engine/install/ubuntu/)
-                  - `sudo su -l $USER`
-                  - `sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
-                  - `sudo chmod +x /usr/local/bin/docker-compose`
-    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-      - Remove any other nodejs: sudo apt auto-remove nodejs
-      - nvm install 18
-      - nvm use 18
-      - nvm alias default 18
-        - If you get an error: Node not found, try: sudo ln -s /root/.nvm/versions/node/v18.19.1/bin/node /usr/local/bin/node
-    - curl -o- -L https://yarnpkg.com/install.sh | bash
-    - exit terminal and restart // no source will not help
-    - sudo apt install git
-    - `git config --global credential.helper store`
-        - Allow git to store the credentials later
-    - `git clone https://github.com/FireboltCasters/Server-Toplevel-Proxy`
-        - `cd Server-Toplevel-Proxy`
-        - `nano .env`
-        - Change MYHOST to `<subdomain.rocket-meals.de>`
-        - `docker-compose up -d`
-    - `git clone <Forked RocketMeals Backend Server>`
-        - `cd RocketMealsBackend`
-        - `nano .env`
-            - "DOMAIN_PRE=http" --> "DOMAIN_PRE=https"
-            - "MYHOST=127.0.0.1" --> "MYHOST=<subdomain>.rocket-meals.de"
-            - "DOMAIN_PATH=rocketmeals" --> "DOMAIN_PATH=backend"
-        - `./permissionDatabase.sh`
-            - An error message, data.db not found, is normal
-        - Test Server
-            - `docker-compose up`
-            - Should start and fail first time, then auto reboots after required files created
-            - `docker-compose down`
-        - Apply latest scheme
-            - "cd Backend"
-            - "npm install"
-            - "npm run schema-apply:latest"
-    - `git clone <Forked RocketMeals Frontend Server>`
-
+    - Get Project from GitHub:
+      - If you already have the project you can skip this
+      - Install Git
+          - `sudo apt install git`
+      - Generate and add SSH Key into your GitHub Account
+        - Generate SSH Key
+          - ```[ -f ~/.ssh/id_rsa.pub ] || ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""; cat ~/.ssh/id_rsa.pub```
+        -  Visit: https://github.com/settings/keys and add the SSH Key
+      - Create a new GitHub Repo forked from "https://github.com/rocket-meals/rocket-meals"
+        - Clone the Repo
+            - `git clone <Your Rocket Meals Repo>`
+    - At this step you should have the RocketMeals Repo on your Server
+    - Enter "rocket-meals" folder
+      - `cd rocket-meals`
+      - Enter the Backend Folder
+        - `cd backend`
+        - Install Docker and Docker-Compose
+          - `./install-docker.sh`
+          - Check if Docker is installed
+            - `docker --version` should return a "26.1.3"
+            - `docker-compose --version` should return "Docker Compose version v2.27.1"
+        - Go back to "rocket-meals" folder
+          - `cd ..`
+      - Install nvm and nodejs
+        - Remove any other nodejs: `sudo apt auto-remove nodejs`
+        - Install nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash`
+          - nvm install 18
+          - nvm use 18
+          - nvm alias default 18
+            - If you get an error: Node not found, try: sudo ln -s /root/.nvm/versions/node/v18.19.1/bin/node /usr/local/bin/node
+    - Prepare Backend
+      - Configure `.env` in "/rocket-meals"
+        - nano .env
+          - Change the following:
+            - MYHOST: "subdomain.domain.de" where your server is running on
+            - RESOLVER: change to "myresolver" for production
+            - ADMIN_EMAIL: your email
+            - ADMIN_PASSWORD: your password
+          - Configure the rest if you are using SSO and the email service
+      - SSL for HTTPS:
+        - Set the ssl cert permission to 600: `chmod 600 ./proxy/letsencrypt/acme.json`
+      - Database Permissions
+        - `cd ./backend && ./permissionDatabase.sh && cd ..`
+    - Start the backend:
+      - `docker-compose up`
+      - Wait until the backend is started. At the first start you will see some errors as the database is not yet created and the ssl certificates are not yet created.
+      - Check if your backend can be reached: `https://<MYHOST>/rocket-meals/api/`
+      - Migrate to the latest version
+    - Migrate to the latest version
+      - On your local machine or on the server go into: `rocket-meals/backend/sync`
+        - run: `./push.sh`
+    - Mobile App Configuration:
+      - If you already setup your server go to "app-settings" table
+        - Change the "redirect settings" and add your "scheme" of your app:
+          - `app-rocket-meals` which you can find in the `app.json` file
 
 ## Configure Email
 
