@@ -8,11 +8,6 @@ services:
       context: ./
     #container_name: "rocket-meals-directus" # "replicas" is ignored if you name your container using container_name: myname
     restart: ${RESTART}
-    depends_on:
-      rocket-meals-database:
-        condition: service_healthy
-      rocket-meals-cache:
-        condition: service_started
     deploy:
       mode: replicated
       replicas: ${DIRECTUS_REPLICAS:-1}  # Default to 1 if DIRECTUS_REPLICAS is not set
@@ -38,9 +33,6 @@ services:
       traefik.http.middlewares.rocket-meals-directus-stripprefix.stripprefix.prefixes: /${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}
 
       # network: traefik
-
-
-
     volumes:
       # By default, uploads are stored in /directus/uploads
       # Always make sure your volumes matches the storage root when using
