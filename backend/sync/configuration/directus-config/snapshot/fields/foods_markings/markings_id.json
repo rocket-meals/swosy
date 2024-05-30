@@ -1,7 +1,7 @@
 {
   "collection": "foods_markings",
   "field": "markings_id",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "foods_markings",
     "conditions": null,
@@ -25,9 +25,9 @@
   "schema": {
     "name": "markings_id",
     "table": "foods_markings",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

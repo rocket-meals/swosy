@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "input-rich-text-md",
     "note": null,
-    "options": null,
+    "options": {
+      "folder": "462bf197-f235-4d92-9d86-88361d7f201c"
+    },
     "readonly": false,
     "required": false,
     "sort": 4,

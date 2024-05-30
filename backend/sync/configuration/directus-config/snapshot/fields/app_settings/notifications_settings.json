@@ -13,7 +13,7 @@
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "notifications",
+      "headerIcon": "notifications_active",
       "start": "closed"
     },
     "readonly": false,

@@ -11,8 +11,9 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "select-dropdown",
-    "note": "Using predefined labels users can communicate safely and you are still in controll of the communicated content",
+    "note": null,
     "options": {
+      "allowNone": true,
       "allowOther": true,
       "choices": [
         {
@@ -21,19 +22,17 @@
         },
         {
           "text": "use only",
-          "value": "use",
-          "icon": "edit_square"
+          "value": "use"
         },
         {
           "text": "use and read",
-          "value": "useAndRead",
-          "icon": "interactive_space"
+          "value": "useAndRead"
         }
       ]
     },
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 13,
     "special": null,
     "translations": null,
     "validation": null,
@@ -43,8 +42,8 @@
   "schema": {
     "name": "foods_feedbacks_labels_type",
     "table": "app_settings",
-    "data_type": "varchar",
-    "default_value": null,
+    "data_type": "character varying",
+    "default_value": "foods_feedbacks_labels_type",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

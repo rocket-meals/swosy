@@ -13,33 +13,28 @@
     "interface": "select-dropdown",
     "note": null,
     "options": {
-      "allowOther": true,
       "choices": [
         {
           "text": "disabled",
-          "value": "disabled",
-          "icon": "disabled_visible"
+          "value": "disabled"
         },
         {
           "text": "write only",
-          "value": "write",
-          "icon": "edit"
+          "value": "write"
         },
         {
           "text": "read only",
-          "value": "read",
-          "icon": "visibility"
+          "value": "read"
         },
         {
           "text": "read and write",
-          "value": "readAndWrite",
-          "icon": "speaker_notes"
+          "value": "readAndWrite"
         }
       ]
     },
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 12,
     "special": null,
     "translations": null,
     "validation": null,
@@ -49,8 +44,8 @@
   "schema": {
     "name": "foods_feedbacks_comments_type",
     "table": "app_settings",
-    "data_type": "varchar",
-    "default_value": null,
+    "data_type": "character varying",
+    "default_value": "disabled",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

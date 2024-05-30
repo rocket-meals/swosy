@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 8,
+    "sort": 10,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "image_remote_url",
     "table": "popup_events",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

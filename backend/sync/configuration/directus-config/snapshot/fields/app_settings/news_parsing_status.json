@@ -13,6 +13,8 @@
     "interface": "select-dropdown",
     "note": null,
     "options": {
+      "allowNone": true,
+      "allowOther": true,
       "choices": [
         {
           "text": "start",
@@ -34,7 +36,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 4,
+    "sort": 3,
     "special": null,
     "translations": null,
     "validation": null,
@@ -44,8 +46,8 @@
   "schema": {
     "name": "news_parsing_status",
     "table": "app_settings",
-    "data_type": "varchar",
-    "default_value": null,
+    "data_type": "character varying",
+    "default_value": "finished",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

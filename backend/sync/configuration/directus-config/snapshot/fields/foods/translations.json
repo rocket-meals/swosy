@@ -13,6 +13,7 @@
     "interface": "translations",
     "note": null,
     "options": {
+      "defaultOpenSplitView": true,
       "userLanguage": true
     },
     "readonly": false,

@@ -25,7 +25,7 @@
   "schema": {
     "name": "url",
     "table": "buildings",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

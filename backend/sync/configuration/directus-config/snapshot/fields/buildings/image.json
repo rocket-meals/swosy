@@ -13,7 +13,7 @@
     "interface": "file-image",
     "note": null,
     "options": {
-      "folder": "85712771-3e45-46b2-9250-5bf3582597b5"
+      "folder": "82168ce3-9ad1-4828-9f0d-61247d26763b"
     },
     "readonly": false,
     "required": false,
@@ -29,9 +29,9 @@
   "schema": {
     "name": "image",
     "table": "buildings",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

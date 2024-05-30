@@ -9,21 +9,21 @@
     "display_options": {
       "choices": [
         {
-          "text": "Published",
+          "text": "$t:published",
           "value": "published",
           "color": "var(--theme--primary)",
           "foreground": "var(--theme--primary)",
           "background": "var(--theme--primary-background)"
         },
         {
-          "text": "Draft",
+          "text": "$t:draft",
           "value": "draft",
           "color": "var(--theme--foreground)",
           "foreground": "var(--theme--foreground)",
           "background": "var(--theme--background-normal)"
         },
         {
-          "text": "Archived",
+          "text": "$t:archived",
           "value": "archived",
           "color": "var(--theme--warning)",
           "foreground": "var(--theme--warning)",
@@ -40,17 +40,17 @@
     "options": {
       "choices": [
         {
-          "text": "Published",
+          "text": "$t:published",
           "value": "published",
           "color": "var(--theme--primary)"
         },
         {
-          "text": "Draft",
+          "text": "$t:draft",
           "value": "draft",
           "color": "var(--theme--foreground)"
         },
         {
-          "text": "Archived",
+          "text": "$t:archived",
           "value": "archived",
           "color": "var(--theme--warning)"
         }
@@ -68,7 +68,7 @@
   "schema": {
     "name": "status",
     "table": "app_translations",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": "draft",
     "max_length": 255,
     "numeric_precision": null,

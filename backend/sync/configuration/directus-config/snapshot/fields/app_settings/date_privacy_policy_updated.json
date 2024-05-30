@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "datetime",
     "note": null,
-    "options": null,
+    "options": {
+      "includeSeconds": true
+    },
     "readonly": false,
     "required": false,
     "sort": 1,
@@ -25,7 +27,7 @@
   "schema": {
     "name": "date_privacy_policy_updated",
     "table": "app_settings",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

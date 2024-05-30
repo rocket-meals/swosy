@@ -3,7 +3,7 @@
   "meta": {
     "accountability": "all",
     "archive_app_filter": true,
-    "archive_field": null,
+    "archive_field": "status",
     "archive_value": "archived",
     "collapse": "open",
     "collection": "wikis",
@@ -16,8 +16,8 @@
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 14,
-    "sort_field": null,
+    "sort": 10,
+    "sort_field": "sort",
     "translations": null,
     "unarchive_value": "draft",
     "versioning": false

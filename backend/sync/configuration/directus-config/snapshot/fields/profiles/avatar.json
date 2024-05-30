@@ -1,7 +1,7 @@
 {
   "collection": "profiles",
   "field": "avatar",
-  "type": "string",
+  "type": "json",
   "meta": {
     "collection": "profiles",
     "conditions": null,
@@ -15,8 +15,10 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 8,
-    "special": null,
+    "sort": 22,
+    "special": [
+      "cast-json"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
@@ -25,9 +27,9 @@
   "schema": {
     "name": "avatar",
     "table": "profiles",
-    "data_type": "varchar",
+    "data_type": "json",
     "default_value": null,
-    "max_length": 255,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

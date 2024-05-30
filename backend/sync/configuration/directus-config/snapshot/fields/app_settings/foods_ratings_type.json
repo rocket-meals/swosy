@@ -13,43 +13,34 @@
     "interface": "select-dropdown",
     "note": null,
     "options": {
+      "allowNone": true,
       "allowOther": true,
       "choices": [
         {
           "text": "disabled",
-          "value": "disabled",
-          "icon": "disabled_visible"
+          "value": "disabled"
         },
         {
           "text": "favorite",
-          "value": "favorite",
-          "icon": "stars"
+          "value": "favorite"
         },
         {
           "text": "hearts",
-          "value": "hearts",
-          "icon": "heart_plus"
+          "value": "hearts"
         },
         {
           "text": "likes",
-          "value": "likes",
-          "icon": "thumb_up"
+          "value": "likes"
         },
         {
           "text": "stars",
-          "value": "stars",
-          "icon": "star_half"
-        },
-        {
-          "text": "smilies",
-          "value": "smilies",
-          "icon": "child_care"
+          "value": "stars"
         }
       ]
     },
     "readonly": false,
     "required": false,
-    "sort": 10,
+    "sort": 11,
     "special": null,
     "translations": null,
     "validation": null,
@@ -59,8 +50,8 @@
   "schema": {
     "name": "foods_ratings_type",
     "table": "app_settings",
-    "data_type": "varchar",
-    "default_value": null,
+    "data_type": "character varying",
+    "default_value": "stars",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Buildings",
+    "parent": "a514c767-ab99-41b7-b942-eb1b86ccbbad",
+    "_syncId": "85712771-3e45-46b2-9250-5bf3582597b5"
+  },
+  {
+    "name": "Images",
+    "parent": null,
+    "_syncId": "a514c767-ab99-41b7-b942-eb1b86ccbbad"
+  },
+  {
+    "name": "Foods",
+    "parent": "a514c767-ab99-41b7-b942-eb1b86ccbbad",
+    "_syncId": "a6043bbd-4ae0-4b01-b135-0ae9f9c942e9"
+  }
+]

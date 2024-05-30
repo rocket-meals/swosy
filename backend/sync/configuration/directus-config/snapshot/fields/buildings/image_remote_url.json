@@ -20,12 +20,12 @@
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
     "name": "image_remote_url",
     "table": "buildings",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
     "numeric_precision": null,

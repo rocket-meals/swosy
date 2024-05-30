@@ -6,6 +6,7 @@ import FormData from 'form-data';
 import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import https from 'https';
 import inquirer from 'inquirer';
 
 // Convert import.meta.url to a file path
@@ -13,6 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dumpPath = "./configuration/directus-config";
+
+const httpsAgent = new https.Agent({
+    rejectUnauthorized: false,
+});
 
 /**
  * Configuration for collections and modules
@@ -58,16 +63,18 @@ function parseEnvFile(content) {
 
 
 const parsedEnvFile = parseEnvFile(envFile);
-const DOMAIN_PRE = parsedEnvFile.DOMAIN_PRE
 const MYHOST = parsedEnvFile.MYHOST;
-const DOMAIN_PATH = parsedEnvFile.DOMAIN_PATH
-const BACKEND_PATH = parsedEnvFile.BACKEND_PATH;
+const DOMAIN_PATH = parsedEnvFile.ROCKET_MEALS_PATH
+const BACKEND_PATH = parsedEnvFile.ROCKET_MEALS_BACKEND_PATH;
 
-let directus_url = `${DOMAIN_PRE}://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`
+let directus_url = `https://${MYHOST}/${DOMAIN_PATH}/${BACKEND_PATH}`
 let admin_email = parsedEnvFile.ADMIN_EMAIL;
 let admin_password = parsedEnvFile.ADMIN_PASSWORD;
 
 const configurationPath = "./configuration";
+const directusConfigCollectionsPath = "./configuration/directus-config/collections";
+const directusConfigOverwriteCollectionsPath = "./configuration/directus-config-overwrite/collections";
+
 const configurationPathRolesPermissions = `${configurationPath}/roles-permissions`;
 const configurationPathCollections = `${configurationPath}/collections`;
 
@@ -86,7 +93,7 @@ const getUrlSettings = () => {
 
 const configureDirectusServerUrl = async () => {
     const predefinedOptions = {
-        "Current": directus_url,
+        "Current HTTPS": directus_url,
         "Demo Server": "https://rocket-meals.de/rocket-meals/api",
         "Studi|Futter": "https://studi-futter.rocket-meals.de/rocket-meals/api",
         "SWOSY": "https://swosy.rocket-meals.de/rocket-meals/api"
@@ -190,6 +197,7 @@ const mainPush = async () => {
     console.log("Starting Push Sync")
     await configureVariables();
     const headers = await setupDirectusConnectionAndGetHeaders()
+    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     await enableRequiredSettings(headers);
     await pushDirectusSyncSchemas();
     await uploadPublicPermissions(headers);
@@ -200,10 +208,15 @@ const mainPush = async () => {
 const enableRequiredSettings = async (headers) => {
     console.log("Enabling required settings...");
 
+    // fetch with ignoring self signed certificates
+
+
+
     // Patch settings with an empty object
     console.log(" -  Patching with empty");
     await fetch(`${getUrlSettings()}`, {
         method: 'PATCH',
+        agent: httpsAgent,
         headers: {
             "Cookie": headers.get('cookie'),
             'Content-Type': 'application/json',
@@ -214,6 +227,7 @@ const enableRequiredSettings = async (headers) => {
     // Fetch the current settings
     console.log(" -  Fetching settings");
     const settingsResponse = await fetch(`${getUrlSettings()}`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     });
@@ -240,6 +254,7 @@ const enableRequiredSettings = async (headers) => {
 
     // Patch updated settings
     const response = await fetch(`${getUrlSettings()}`, {
+        agent: httpsAgent,
         method: 'PATCH',
         headers: {
             "Cookie": headers.get('cookie'),
@@ -255,14 +270,36 @@ const enableRequiredSettings = async (headers) => {
     console.log(" -  Enabled required settings");
 };
 
+const escapeShellArg = (arg) => {
+    return arg.replace(/([\\"'`$!&*()|;<>])/g, '\\$1');
+}
+
 const getDirectusSyncParams = () => {
-    return '--directus-url '+directus_url+" --directus-email "+admin_email+" --directus-password "+admin_password+" --dump-path "+dumpPath;
+    // Properly escape the password for shell command
+    const escaped_password = escapeShellArg(admin_password);
+    const preserverIds = "dashboards,operations,panels,roles,translations";
+    const preserveOption = "--preserve-ids "+preserverIds;
+    return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + escaped_password + '" --dump-path ' + dumpPath+ " "+preserveOption
 }
 
 const pushDirectusSyncSchemas = async () => {
     console.log("Pushing schema changes to Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('npx directus-sync push '+directus_sync_params);
+    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
+
+    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 push ' + directus_sync_params;
+    // execSync and print the output
+    try{
+        execSync(command, {
+            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+            stdio: 'pipe'
+        })
+        console.log(" -  Pushed schema changes to Directus");
+    } catch (error) {
+        console.log(error.message)
+        console.log("Please run the command manually and check the error")
+        console.log("Command: "+command)
+    }
 }
 
 // Function to sync public permissions
@@ -271,12 +308,22 @@ const uploadPublicPermissions = async (headers) => {
 
     // Load public permissions data
     const data = fs.readFileSync(`${configurationPathRolesPermissions}/public.json`, 'utf8');
-    const permissions = JSON.parse(data);
+    const permissions_to_upload = JSON.parse(data);
+
+    let remote_permissions = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
+        agent: httpsAgent,
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    }).then(response => response.json());
+    console.log("remote_permissions: "+JSON.stringify(remote_permissions, null, 4))
+
 
     // Helper function to update a permission node
-    const updatePermissionNode = async (permission) => {
-        const response = await fetch(`${getUrlPermissions()}`, {
-            method: 'POST',
+    const updatePermissionNode = async (permission, id) => {
+        console.log("Set fields to: "+JSON.stringify(permission.fields))
+        const response = await fetch(`${getUrlPermissions()}/${id}`, {
+            agent: httpsAgent,
+            method: 'PATCH',
             headers: {
                 "Cookie": headers.get('cookie'),
                 'Content-Type': 'application/json',
@@ -297,9 +344,46 @@ const uploadPublicPermissions = async (headers) => {
     };
 
     // Iterate through all permissions and update each
-    for (const permission of permissions) {
-        console.log(` -  Syncing ${permission.collection} ${permission.action}`);
-        await updatePermissionNode(permission);
+    for (const permission_to_upload of permissions_to_upload) {
+        console.log(` -  Syncing ${permission_to_upload.collection} ${permission_to_upload.action}`);
+
+        let id_for_permission = permission_to_upload.id;
+        if (id_for_permission === undefined) {
+            console.log(" -  Permission object does not have an id, trying to find or create it: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            // okay maybe the id is in the remote_permissions which should be found by collection and action and role=null
+            let remote_permission = remote_permissions.data.find(permission => permission.collection === permission_to_upload.collection && permission.action === permission_to_upload.action && permission.role === null);
+            if (remote_permission !== undefined) {
+                id_for_permission = remote_permission.id;
+            } else {
+                console.log(" -  Permission does not exist yet, trying to create it");
+                // okay the permission does not exist yet, so we need to create it
+                const response = await fetch(`${getUrlPermissions()}`, {
+                    agent: httpsAgent,
+                    method: 'POST',
+                    headers: {
+                        "Cookie": headers.get('cookie'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        role: null,
+                        collection: permission_to_upload.collection,
+                        action: permission_to_upload.action,
+                    }),
+                });
+                let response_json = await response.json();
+                let new_created_permission = response_json.data;
+                console.log("new_created_permission with id: "+new_created_permission?.id);
+                id_for_permission = new_created_permission?.id;
+            }
+        }
+
+        if(id_for_permission === undefined) {
+            console.error("Could not find or create permission for: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            continue;
+        } else {
+            console.log(" -  Updating permission with id: "+id_for_permission+" for: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            await updatePermissionNode(permission_to_upload, id_for_permission);
+        }
     }
 
     console.log(" -  Public permissions synced");
@@ -308,6 +392,9 @@ const uploadPublicPermissions = async (headers) => {
 const uploadSchemas = async (headers) => {
     console.log("Uploading schemas...");
     let files = fs.readdirSync(`${configurationPathCollections}`).sort();
+    // remove files that are not collections like .DS_Store
+    // if file ends with .DS_Store it is not a collection
+    files = files.filter(file => !file.endsWith(".DS_Store"));
     for (const file of files) {
         await uploadSchema(headers, `${configurationPathCollections}/${file}`);
     }
@@ -322,6 +409,7 @@ const uploadSchema = async (headers, file) => {
 
     // Check if collection already exists
     const firstElement = await fetch(`${getUrlItems()}/${displayName}?limit=1`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -334,6 +422,7 @@ const uploadSchema = async (headers, file) => {
     // Import collection into Directus
     console.log(` -  Importing ${displayName}`);
     const response = await fetch(`${directus_url}/utils/import/${displayName}`, {
+        agent: httpsAgent,
         method: 'POST',
         headers: { "Cookie": headers.get('cookie'), ...formData.getHeaders() },
         body: formData,
@@ -346,11 +435,15 @@ const uploadSchema = async (headers, file) => {
 
 // Function to fetch data for a collection
 const getCollection = async (headers, name) => {
+    console.log("Fetching collection... name: "+name)
     const displayName = name.split('/').pop().split('.').shift().split("-").pop();
     console.log(` -  Fetching ${displayName}`);
 
     // Retrieve collection data
+    console.log(" -  Fetching collection data");
+    console.log(`${getUrlItems()}/${displayName}?limit=-1`);
     const data = await fetch(`${getUrlItems()}/${displayName}?limit=-1`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -371,13 +464,32 @@ const mainPull = async () => {
     await saveCollections(headers);
     await savePublicRole(headers);
     await saveDirectusSyncSchema();
+    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
 };
+
+const copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder = async () => {
+    // copy all files except .DS_Store from directusConfigOverwriteCollectionsPath to directusConfigCollectionsPath
+
+    const absolutePathCollections = path.resolve(__dirname, directusConfigOverwriteCollectionsPath);
+    const files = fs.readdirSync(absolutePathCollections);
+    for (const file of files) {
+        if (file.endsWith(".DS_Store")) {
+            continue;
+        }
+        const source = path.resolve(absolutePathCollections, file);
+        const destination = path.resolve(__dirname, directusConfigCollectionsPath, file);
+        fs.copyFileSync(source, destination);
+    }
+}
 
 
 // Function to save collections
 const saveCollections = async (headers) => {
     console.log("Saving collections...");
     let collections = fs.readdirSync(`${configurationPathCollections}`);
+    // remove files that are not collections like .DS_Store
+    // if file ends with .DS_Store it is not a collection
+    collections = collections.filter(file => !file.endsWith(".DS_Store"));
 
     for (const collection of collections) {
         if (collectionsToSkip.includes(collection)) {
@@ -386,7 +498,10 @@ const saveCollections = async (headers) => {
         }
 
         const data = await getCollection(headers, collection);
+        console.log(data);
         const jsonData = JSON.stringify(data, null, 4);
+        console.log(` -  Fetched ${collection} (${data.length} items)`);
+        console.log(jsonData);
 
         // Save the collection data to file
         fs.writeFileSync(`${configurationPathCollections}/${collection}`, jsonData);
@@ -399,6 +514,7 @@ const saveCollections = async (headers) => {
 const savePublicRole = async (headers) => {
     console.log("Saving public role...");
     const data = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
+        agent: httpsAgent,
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
@@ -417,7 +533,21 @@ const saveDirectusSyncSchema = async() => {
     // Pull schema changes from Directus
     console.log("Pulling schema changes from Directus...");
     const directus_sync_params = getDirectusSyncParams();
-    execSync('npx directus-sync pull ' + directus_sync_params);
+    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
+
+    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params;
+    // execSync and print the output
+    try{
+        execSync(command, {
+            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+            stdio: 'pipe'
+        })
+        console.log(" -  Pulled schema changes from Directus");
+    } catch (error) {
+        console.log(error.message)
+        console.log("Please run the command manually and check the error")
+        console.log("Command: "+command)
+    }
 }
 
 
@@ -434,7 +564,11 @@ const waitForDirectusToBeReady = async () => {
     let ready = false;
     for (let i = 0; i < retries; i++) {
         try {
-            await fetch(`${directus_url}/server/ping`);
+            console.log("Fetch directus ping...");
+            await fetch(`${directus_url}/server/ping`, {
+                agent: httpsAgent,
+                method: 'GET',
+            });
             console.log("Directus is ready\n");
             ready = true;
             break;
@@ -462,6 +596,7 @@ const login = async () => {
     //console.log("admin_password: "+admin_password)
 
     const response = await fetch(`${directus_url}/auth/login`, {
+        agent: httpsAgent,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: admin_email, password: admin_password, mode: "session" }),

@@ -1,7 +1,7 @@
 {
   "collection": "directus_users",
   "field": "profile",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "directus_users",
     "conditions": null,
@@ -27,9 +27,9 @@
   "schema": {
     "name": "profile",
     "table": "directus_users",
-    "data_type": "varchar",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

@@ -10,9 +10,11 @@
     "field": "comment",
     "group": null,
     "hidden": false,
-    "interface": "input",
+    "interface": "input-multiline",
     "note": null,
-    "options": null,
+    "options": {
+      "softLength": 1024
+    },
     "readonly": false,
     "required": false,
     "sort": 8,

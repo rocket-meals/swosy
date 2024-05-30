@@ -18,7 +18,7 @@
     "column": "foods_id",
     "foreign_key_table": "foods",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "foods_translations_foods_id_foreign",
     "on_update": "NO ACTION",
     "on_delete": "CASCADE"
   }

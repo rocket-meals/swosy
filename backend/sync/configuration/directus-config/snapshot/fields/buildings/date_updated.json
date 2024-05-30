@@ -19,7 +19,6 @@
     "required": false,
     "sort": 7,
     "special": [
-      "cast-timestamp",
       "date-updated"
     ],
     "translations": null,
@@ -30,7 +29,7 @@
   "schema": {
     "name": "date_updated",
     "table": "buildings",
-    "data_type": "datetime",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

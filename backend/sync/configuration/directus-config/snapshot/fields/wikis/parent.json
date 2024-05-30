@@ -1,7 +1,7 @@
 {
   "collection": "wikis",
   "field": "parent",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "wikis",
     "conditions": null,
@@ -27,9 +27,9 @@
   "schema": {
     "name": "parent",
     "table": "wikis",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

@@ -9,11 +9,11 @@
     "display_options": {
       "choices": [
         {
-          "text": "Left to Right",
+          "text": "$t:left_to_right",
           "value": "ltr"
         },
         {
-          "text": "Right to Left",
+          "text": "$t:right_to_left",
           "value": "rtl"
         }
       ],
@@ -27,11 +27,11 @@
     "options": {
       "choices": [
         {
-          "text": "Left to Right",
+          "text": "$t:left_to_right",
           "value": "ltr"
         },
         {
-          "text": "Right to Left",
+          "text": "$t:right_to_left",
           "value": "rtl"
         }
       ]
@@ -48,7 +48,7 @@
   "schema": {
     "name": "direction",
     "table": "languages",
-    "data_type": "varchar",
+    "data_type": "character varying",
     "default_value": "ltr",
     "max_length": 255,
     "numeric_precision": null,

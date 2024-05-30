@@ -1,7 +1,7 @@
 {
   "collection": "buildings_translations",
   "field": "buildings_id",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "buildings_translations",
     "conditions": null,
@@ -25,9 +25,9 @@
   "schema": {
     "name": "buildings_id",
     "table": "buildings_translations",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

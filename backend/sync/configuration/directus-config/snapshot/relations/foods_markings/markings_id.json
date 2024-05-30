@@ -18,7 +18,7 @@
     "column": "markings_id",
     "foreign_key_table": "markings",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "foods_markings_markings_id_foreign",
     "on_update": "NO ACTION",
     "on_delete": "CASCADE"
   }

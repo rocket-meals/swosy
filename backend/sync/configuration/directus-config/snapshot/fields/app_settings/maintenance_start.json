@@ -27,7 +27,7 @@
   "schema": {
     "name": "maintenance_start",
     "table": "app_settings",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

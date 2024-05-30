@@ -18,7 +18,7 @@
     "column": "profile",
     "foreign_key_table": "profiles",
     "foreign_key_column": "id",
-    "constraint_name": null,
+    "constraint_name": "directus_users_profile_foreign",
     "on_update": "NO ACTION",
     "on_delete": "SET NULL"
   }

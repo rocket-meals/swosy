@@ -12,13 +12,13 @@
     "hidden": false,
     "interface": "datetime",
     "note": null,
-    "options": {
-      "includeSeconds": true
-    },
+    "options": null,
     "readonly": false,
     "required": false,
     "sort": 14,
-    "special": null,
+    "special": [
+      "date-created"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
@@ -27,7 +27,7 @@
   "schema": {
     "name": "date_privacy_policy_accepted",
     "table": "profiles",
-    "data_type": "datetime",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

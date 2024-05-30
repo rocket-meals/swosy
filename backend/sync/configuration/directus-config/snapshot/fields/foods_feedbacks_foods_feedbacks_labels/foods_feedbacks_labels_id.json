@@ -1,7 +1,7 @@
 {
   "collection": "foods_feedbacks_foods_feedbacks_labels",
   "field": "foods_feedbacks_labels_id",
-  "type": "string",
+  "type": "uuid",
   "meta": {
     "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
@@ -25,9 +25,9 @@
   "schema": {
     "name": "foods_feedbacks_labels_id",
     "table": "foods_feedbacks_foods_feedbacks_labels",
-    "data_type": "char",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 36,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

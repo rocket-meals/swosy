@@ -11,7 +11,7 @@
     "group": "visibility_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": "Show the Item at the bottom of the drawer, next to legal links.",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,

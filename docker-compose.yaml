@@ -9,8 +9,25 @@ services:
   rocket-meals-directus:
     env_file:
       - .env
+    depends_on:
+      rocket-meals-database:
+        condition: service_healthy
+      rocket-meals-cache:
+        condition: service_started
     extends:
       service: rocket-meals-directus
+      file: backend/docker-compose.yaml
+
+  rocket-meals-database:
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U directus" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    extends:
+      service: rocket-meals-database
       file: backend/docker-compose.yaml
 
   rocket-meals-cache:
