@@ -1,113 +1,5 @@
 [
     {
-        "id": 72,
-        "role": null,
-        "collection": "app_settings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 73,
-        "role": null,
-        "collection": "app_translations_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 74,
-        "role": null,
-        "collection": "buildings_businesshours",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 75,
-        "role": null,
-        "collection": "collections_dates_last_update",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 76,
-        "role": null,
-        "collection": "foods_feedbacks_labels",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 77,
-        "role": null,
-        "collection": "foods_feedbacks_labels_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 78,
-        "role": null,
-        "collection": "foods_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 79,
-        "role": null,
-        "collection": "foodsoffers_markings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 80,
-        "role": null,
-        "collection": "markings_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
         "id": 81,
         "role": null,
         "collection": "news_translations",
@@ -495,6 +387,114 @@
         "id": 113,
         "role": null,
         "collection": "directus_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 118,
+        "role": null,
+        "collection": "app_settings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 120,
+        "role": null,
+        "collection": "buildings_businesshours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 121,
+        "role": null,
+        "collection": "collections_dates_last_update",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 122,
+        "role": null,
+        "collection": "foods_feedbacks_labels",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 123,
+        "role": null,
+        "collection": "foods_feedbacks_labels_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 124,
+        "role": null,
+        "collection": "foods_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 125,
+        "role": null,
+        "collection": "foodsoffers_markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 126,
+        "role": null,
+        "collection": "markings_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 127,
+        "role": null,
+        "collection": "app_translations_translations",
         "action": "read",
         "permissions": {},
         "validation": {},

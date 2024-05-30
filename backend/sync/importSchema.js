@@ -72,6 +72,9 @@ let admin_email = parsedEnvFile.ADMIN_EMAIL;
 let admin_password = parsedEnvFile.ADMIN_PASSWORD;
 
 const configurationPath = "./configuration";
+const directusConfigCollectionsPath = "./configuration/directus-config/collections";
+const directusConfigOverwriteCollectionsPath = "./configuration/directus-config-overwrite/collections";
+
 const configurationPathRolesPermissions = `${configurationPath}/roles-permissions`;
 const configurationPathCollections = `${configurationPath}/collections`;
 
@@ -194,6 +197,7 @@ const mainPush = async () => {
     console.log("Starting Push Sync")
     await configureVariables();
     const headers = await setupDirectusConnectionAndGetHeaders()
+    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
     await enableRequiredSettings(headers);
     await pushDirectusSyncSchemas();
     await uploadPublicPermissions(headers);
@@ -304,15 +308,22 @@ const uploadPublicPermissions = async (headers) => {
 
     // Load public permissions data
     const data = fs.readFileSync(`${configurationPathRolesPermissions}/public.json`, 'utf8');
-    const permissions = JSON.parse(data);
+    const permissions_to_upload = JSON.parse(data);
 
+    let remote_permissions = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
+        agent: httpsAgent,
+        method: 'GET',
+        headers: { "Cookie": headers.get('cookie') },
+    }).then(response => response.json());
+    console.log("remote_permissions: "+JSON.stringify(remote_permissions, null, 4))
 
 
     // Helper function to update a permission node
-    const updatePermissionNode = async (permission) => {
-        const response = await fetch(`${getUrlPermissions()}`, {
+    const updatePermissionNode = async (permission, id) => {
+        console.log("Set fields to: "+JSON.stringify(permission.fields))
+        const response = await fetch(`${getUrlPermissions()}/${id}`, {
             agent: httpsAgent,
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 "Cookie": headers.get('cookie'),
                 'Content-Type': 'application/json',
@@ -333,9 +344,46 @@ const uploadPublicPermissions = async (headers) => {
     };
 
     // Iterate through all permissions and update each
-    for (const permission of permissions) {
-        console.log(` -  Syncing ${permission.collection} ${permission.action}`);
-        await updatePermissionNode(permission);
+    for (const permission_to_upload of permissions_to_upload) {
+        console.log(` -  Syncing ${permission_to_upload.collection} ${permission_to_upload.action}`);
+
+        let id_for_permission = permission_to_upload.id;
+        if (id_for_permission === undefined) {
+            console.log(" -  Permission object does not have an id, trying to find or create it: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            // okay maybe the id is in the remote_permissions which should be found by collection and action and role=null
+            let remote_permission = remote_permissions.data.find(permission => permission.collection === permission_to_upload.collection && permission.action === permission_to_upload.action && permission.role === null);
+            if (remote_permission !== undefined) {
+                id_for_permission = remote_permission.id;
+            } else {
+                console.log(" -  Permission does not exist yet, trying to create it");
+                // okay the permission does not exist yet, so we need to create it
+                const response = await fetch(`${getUrlPermissions()}`, {
+                    agent: httpsAgent,
+                    method: 'POST',
+                    headers: {
+                        "Cookie": headers.get('cookie'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        role: null,
+                        collection: permission_to_upload.collection,
+                        action: permission_to_upload.action,
+                    }),
+                });
+                let response_json = await response.json();
+                let new_created_permission = response_json.data;
+                console.log("new_created_permission with id: "+new_created_permission?.id);
+                id_for_permission = new_created_permission?.id;
+            }
+        }
+
+        if(id_for_permission === undefined) {
+            console.error("Could not find or create permission for: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            continue;
+        } else {
+            console.log(" -  Updating permission with id: "+id_for_permission+" for: "+permission_to_upload.collection+" "+permission_to_upload.action);
+            await updatePermissionNode(permission_to_upload, id_for_permission);
+        }
     }
 
     console.log(" -  Public permissions synced");
@@ -416,7 +464,23 @@ const mainPull = async () => {
     await saveCollections(headers);
     await savePublicRole(headers);
     await saveDirectusSyncSchema();
+    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
 };
+
+const copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder = async () => {
+    // copy all files except .DS_Store from directusConfigOverwriteCollectionsPath to directusConfigCollectionsPath
+
+    const absolutePathCollections = path.resolve(__dirname, directusConfigOverwriteCollectionsPath);
+    const files = fs.readdirSync(absolutePathCollections);
+    for (const file of files) {
+        if (file.endsWith(".DS_Store")) {
+            continue;
+        }
+        const source = path.resolve(absolutePathCollections, file);
+        const destination = path.resolve(__dirname, directusConfigCollectionsPath, file);
+        fs.copyFileSync(source, destination);
+    }
+}
 
 
 // Function to save collections
