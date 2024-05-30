@@ -125,7 +125,7 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "baseUrl": "/studi-futter"
+      "baseUrl": "/rocket-meals"
     },
     "extra": {
       "router": {
