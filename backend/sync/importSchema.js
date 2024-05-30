@@ -287,11 +287,15 @@ const pushDirectusSyncSchemas = async () => {
     const directus_sync_params = getDirectusSyncParams();
     //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
 
-    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 push ' + directus_sync_params;
+    let command = 'npx directus-sync@2.1.0 push ' + directus_sync_params;
+    if(directus_url.startsWith("https://127.0.0.1")) {
+        command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 '+command;
+    }
+
     // execSync and print the output
     try{
         execSync(command, {
-            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
+            env: { ...process.env },
             stdio: 'pipe'
         })
         console.log(" -  Pushed schema changes to Directus");
@@ -402,6 +406,7 @@ const uploadSchemas = async (headers) => {
 
 // Function to import a schema file into Directus
 const uploadSchema = async (headers, file) => {
+    console.log("Uploading schema... file: "+file)
     const name = file.split('/').pop().split('.').shift();
     const formData = new FormData();
     formData.append('file', fs.createReadStream(file));
@@ -413,6 +418,8 @@ const uploadSchema = async (headers, file) => {
         method: 'GET',
         headers: { "Cookie": headers.get('cookie') },
     }).then(response => response.json());
+
+    console.log()
 
     if (firstElement.data.length > 0) {
         console.log(` -  ${displayName} already exists`);
@@ -535,7 +542,10 @@ const saveDirectusSyncSchema = async() => {
     const directus_sync_params = getDirectusSyncParams();
     //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
 
-    const command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params;
+    let command = 'npx directus-sync@2.1.0 pull ' + directus_sync_params;
+    if(directus_url.startsWith("https://127.0.0.1")) {
+        command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 '+command;
+    }
     // execSync and print the output
     try{
         execSync(command, {

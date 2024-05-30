@@ -1,13 +1,13 @@
 {
   "collection": "foods_feedbacks",
   "field": "foodoffer",
-  "related_collection": "foodsoffers",
+  "related_collection": "foodoffers",
   "meta": {
     "junction_field": null,
     "many_collection": "foods_feedbacks",
     "many_field": "foodoffer",
     "one_allowed_collections": null,
-    "one_collection": "foodsoffers",
+    "one_collection": "foodoffers",
     "one_collection_field": null,
     "one_deselect_action": "nullify",
     "one_field": null,
@@ -16,7 +16,7 @@
   "schema": {
     "table": "foods_feedbacks",
     "column": "foodoffer",
-    "foreign_key_table": "foodsoffers",
+    "foreign_key_table": "foodoffers",
     "foreign_key_column": "id",
     "constraint_name": "foods_feedbacks_foodoffer_foreign",
     "on_update": "NO ACTION",

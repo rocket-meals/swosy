@@ -1,210 +1,5 @@
 [
     {
-        "id": 81,
-        "role": null,
-        "collection": "news_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 82,
-        "role": null,
-        "collection": "popup_events_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 83,
-        "role": null,
-        "collection": "utilizations_entries",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 84,
-        "role": null,
-        "collection": "washingmachines",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 85,
-        "role": null,
-        "collection": "wikis_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 86,
-        "role": null,
-        "collection": "app_settings_housing_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 87,
-        "role": null,
-        "collection": "buildings_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 88,
-        "role": null,
-        "collection": "canteens_foodservice_hours",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 89,
-        "role": null,
-        "collection": "foods_markings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 90,
-        "role": null,
-        "collection": "popup_events_canteens",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 91,
-        "role": null,
-        "collection": "wikis_directus_roles",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 92,
-        "role": null,
-        "collection": "app_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 93,
-        "role": null,
-        "collection": "foodsoffers",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 94,
-        "role": null,
-        "collection": "buildings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 95,
-        "role": null,
-        "collection": "businesshours",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 96,
-        "role": null,
-        "collection": "markings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 97,
-        "role": null,
-        "collection": "canteens",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 98,
         "role": null,
         "collection": "apartments",
         "action": "read",
@@ -216,9 +11,8 @@
         ]
     },
     {
-        "id": 99,
         "role": null,
-        "collection": "foods",
+        "collection": "app_settings_housing_translations",
         "action": "read",
         "permissions": {},
         "validation": {},
@@ -228,175 +22,7 @@
         ]
     },
     {
-        "id": 100,
-        "role": null,
-        "collection": "wikis",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 101,
-        "role": null,
-        "collection": "utilizations_groups",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 102,
-        "role": null,
-        "collection": "news",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 103,
-        "role": null,
-        "collection": "popup_events",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 104,
-        "role": null,
-        "collection": "languages",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 105,
-        "role": null,
-        "collection": "directus_collections",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 106,
-        "role": null,
-        "collection": "directus_fields",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 107,
-        "role": null,
-        "collection": "directus_files",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 108,
-        "role": null,
-        "collection": "directus_folders",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 109,
-        "role": null,
-        "collection": "directus_permissions",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 110,
-        "role": null,
-        "collection": "directus_relations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 111,
-        "role": null,
-        "collection": "directus_roles",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 112,
-        "role": null,
-        "collection": "directus_settings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 113,
-        "role": null,
-        "collection": "directus_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "id": 118,
+        "id": 3,
         "role": null,
         "collection": "app_settings",
         "action": "read",
@@ -408,9 +34,9 @@
         ]
     },
     {
-        "id": 120,
+        "id": 4,
         "role": null,
-        "collection": "buildings_businesshours",
+        "collection": "app_translations_translations",
         "action": "read",
         "permissions": {},
         "validation": {},
@@ -420,7 +46,73 @@
         ]
     },
     {
-        "id": 121,
+        "role": null,
+        "collection": "app_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "buildings_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "buildings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "businesshours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "canteens_foodservice_hours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "canteens",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 12,
         "role": null,
         "collection": "collections_dates_last_update",
         "action": "read",
@@ -432,9 +124,8 @@
         ]
     },
     {
-        "id": 122,
         "role": null,
-        "collection": "foods_feedbacks_labels",
+        "collection": "directus_collections",
         "action": "read",
         "permissions": {},
         "validation": {},
@@ -444,7 +135,95 @@
         ]
     },
     {
-        "id": 123,
+        "role": null,
+        "collection": "directus_fields",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_files",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_folders",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_permissions",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_relations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_roles",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_settings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "directus_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 22,
         "role": null,
         "collection": "foods_feedbacks_labels_translations",
         "action": "read",
@@ -456,7 +235,30 @@
         ]
     },
     {
-        "id": 124,
+        "id": 23,
+        "role": null,
+        "collection": "foods_feedbacks_labels",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "foods_markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 25,
         "role": null,
         "collection": "foods_translations",
         "action": "read",
@@ -468,7 +270,18 @@
         ]
     },
     {
-        "id": 125,
+        "role": null,
+        "collection": "foods",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 27,
         "role": null,
         "collection": "foodsoffers_markings",
         "action": "read",
@@ -480,7 +293,18 @@
         ]
     },
     {
-        "id": 126,
+        "role": null,
+        "collection": "languages",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 30,
         "role": null,
         "collection": "markings_translations",
         "action": "read",
@@ -492,9 +316,141 @@
         ]
     },
     {
-        "id": 127,
         "role": null,
-        "collection": "app_translations_translations",
+        "collection": "markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "news_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "news",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "popup_events_canteens",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "popup_events_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "popup_events",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "utilizations_entries",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "utilizations_groups",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "washingmachines",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "wikis_directus_roles",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "wikis_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "role": null,
+        "collection": "wikis",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 180,
+        "role": null,
+        "collection": "buildings_businesshours",
         "action": "read",
         "permissions": {},
         "validation": {},

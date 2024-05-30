@@ -38,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foodsoffers",
+    "foreign_key_table": "foodoffers",
     "foreign_key_column": "id"
   }
 }

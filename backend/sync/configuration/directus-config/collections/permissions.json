@@ -839,18 +839,6 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foodsoffers",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "9725f887-12da-414c-ba6a-1fcf80ea4d2c"
-  },
-  {
-    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "languages",
     "action": "read",
     "permissions": {},
@@ -1403,30 +1391,6 @@
   },
   {
     "role": null,
-    "collection": "apartments",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "5fc81e1b-4670-46df-b2a7-cfc6ed22d7fe"
-  },
-  {
-    "role": null,
-    "collection": "app_settings_housing_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "42444965-f1d2-4105-92a7-05095b4e97c9"
-  },
-  {
-    "role": null,
     "collection": "app_settings",
     "action": "read",
     "permissions": {},
@@ -1451,18 +1415,6 @@
   },
   {
     "role": null,
-    "collection": "app_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "8bb3f1c9-dfcd-4495-9a39-9f2a63d6d991"
-  },
-  {
-    "role": null,
     "collection": "buildings_businesshours",
     "action": "read",
     "permissions": {},
@@ -1471,67 +1423,7 @@
     "fields": [
       "*"
     ],
-    "_syncId": "ea9abe00-7b3b-483d-8260-5c0309a63499"
-  },
-  {
-    "role": null,
-    "collection": "buildings_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "7171605b-ddef-4439-a854-c74b37a5df02"
-  },
-  {
-    "role": null,
-    "collection": "buildings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "ddfdcf8c-01ec-418b-a151-10921e6482ee"
-  },
-  {
-    "role": null,
-    "collection": "businesshours",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "797b2514-92c6-40e7-9b90-dd11b2896b42"
-  },
-  {
-    "role": null,
-    "collection": "canteens_foodservice_hours",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "ef6b2a00-4a0a-41ce-83c6-8b3e3ad3f531"
-  },
-  {
-    "role": null,
-    "collection": "canteens",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "8b6563ba-4972-464a-9382-968412f411b5"
+    "_syncId": "e5ec28a7-07c7-4061-8c54-05c6e4d541b0"
   },
   {
     "role": null,
@@ -1544,114 +1436,6 @@
       "*"
     ],
     "_syncId": "9807675c-b22d-4161-af7b-20601b98e084"
-  },
-  {
-    "role": null,
-    "collection": "directus_collections",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "027873dc-85ee-4585-aad3-ef98b60491da"
-  },
-  {
-    "role": null,
-    "collection": "directus_fields",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "32f73bd6-0d22-4df4-bcda-1a02cd75877f"
-  },
-  {
-    "role": null,
-    "collection": "directus_files",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "73eb2365-e8a9-457c-b60c-84be5a8567e1"
-  },
-  {
-    "role": null,
-    "collection": "directus_folders",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "8d6341eb-fae4-4b98-bbf5-a4ba4626b40d"
-  },
-  {
-    "role": null,
-    "collection": "directus_permissions",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "3d500d6b-656b-449f-a87c-bd0960c3104a"
-  },
-  {
-    "role": null,
-    "collection": "directus_relations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "9da4887f-ce43-4ee6-bb9c-a56ce786cc6f"
-  },
-  {
-    "role": null,
-    "collection": "directus_roles",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "ff7a9d3e-0966-4824-89a8-19816b3ba84e"
-  },
-  {
-    "role": null,
-    "collection": "directus_settings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "25aabbe6-1b86-416d-b32a-313cd219cfde"
-  },
-  {
-    "role": null,
-    "collection": "directus_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "3284e7d0-3622-4022-80f4-958691ffb79d"
   },
   {
     "role": null,
@@ -1679,18 +1463,6 @@
   },
   {
     "role": null,
-    "collection": "foods_markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "2f381ed7-b500-421e-aaea-fc472e00b9f9"
-  },
-  {
-    "role": null,
     "collection": "foods_translations",
     "action": "read",
     "permissions": {},
@@ -1700,18 +1472,6 @@
       "*"
     ],
     "_syncId": "d837d6ad-27d6-40d3-b530-92bfe764343b"
-  },
-  {
-    "role": null,
-    "collection": "foods",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "a15aa511-85d5-46d0-81e7-a5cd59cfcd62"
   },
   {
     "role": null,
@@ -1727,30 +1487,6 @@
   },
   {
     "role": null,
-    "collection": "foodsoffers",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "a7c54c43-9406-40f2-b353-12e06050f494"
-  },
-  {
-    "role": null,
-    "collection": "languages",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "113c5b22-83ad-4bee-9f9a-ef650f08afc0"
-  },
-  {
-    "role": null,
     "collection": "markings_translations",
     "action": "read",
     "permissions": {},
@@ -1760,149 +1496,5 @@
       "*"
     ],
     "_syncId": "13654312-c430-4b25-9784-ef29b09f02c3"
-  },
-  {
-    "role": null,
-    "collection": "markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "40607800-e7d7-482c-bbef-e7e43d78a52e"
-  },
-  {
-    "role": null,
-    "collection": "news_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "91a52098-f4d1-437b-83b2-4cc4d7798dee"
-  },
-  {
-    "role": null,
-    "collection": "news",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "865f7be0-77ab-468e-84a9-8baacbbb8774"
-  },
-  {
-    "role": null,
-    "collection": "popup_events_canteens",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "91af85d8-dc68-40db-938a-6bca7d64db58"
-  },
-  {
-    "role": null,
-    "collection": "popup_events_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "7dff14a1-d0c6-45a3-aa4d-4e59b36acb56"
-  },
-  {
-    "role": null,
-    "collection": "popup_events",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "56c90271-a0ec-47db-9bf1-5025becace86"
-  },
-  {
-    "role": null,
-    "collection": "utilizations_entries",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "4a89a6c9-2824-4618-86ff-17b918a19836"
-  },
-  {
-    "role": null,
-    "collection": "utilizations_groups",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "d492ab72-bd7f-4700-9db0-39bb272a7e02"
-  },
-  {
-    "role": null,
-    "collection": "washingmachines",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "0126b1a3-9216-42a0-b7d2-0cd638782b47"
-  },
-  {
-    "role": null,
-    "collection": "wikis_directus_roles",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "31a66ea5-2ad7-4292-b0d7-8b7ed3448833"
-  },
-  {
-    "role": null,
-    "collection": "wikis_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "19404023-c95d-4d40-ab69-20535ee4347a"
-  },
-  {
-    "role": null,
-    "collection": "wikis",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "bba20303-b11b-4136-a38c-e680f534db38"
   }
 ]
