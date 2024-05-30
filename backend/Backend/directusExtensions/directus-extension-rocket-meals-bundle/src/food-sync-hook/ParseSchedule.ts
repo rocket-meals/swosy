@@ -135,7 +135,7 @@ export class ParseSchedule {
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
                         console.log("Delete all food offers");
-                        let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
+                        let ISOStringDatesOfMealOffersToDelete = await this.getIsoDatesFromRawMealOfferJSONList(rawMealOffersJSONList, this.foodParser);
                         let datesOfMealOffers = this.parseISOStringDatesToDateOnlyDates(ISOStringDatesOfMealOffersToDelete);
                         await this.deleteAllFoodOffersWithDates(datesOfMealOffers);
 
@@ -157,6 +157,16 @@ export class ParseSchedule {
                 await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FAILED);
             }
         }
+    }
+
+    async getIsoDatesFromRawMealOfferJSONList(rawMealOfferJSONList, foodParser: FoodParserInterface) {
+        let isoDatesStringDict: { [key: string]: string } = {};
+        for (let rawFoodOffer of rawMealOfferJSONList) {
+            let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
+            isoDatesStringDict[isoDateStringOfMealOffer] = isoDateStringOfMealOffer;
+        }
+        let isoDatesStringList = Object.keys(isoDatesStringDict);
+        return isoDatesStringList;
     }
 
     parseISOStringDatesToDateOnlyDates(ISOStringDatesList) {
@@ -356,7 +366,7 @@ export class ParseSchedule {
             // Step 2: Delete the items using their IDs
             if (idsToDelete.length > 0) {
                 await itemService.deleteMany(idsToDelete).then(() => {
-                    //console.log(`Items deleted successfully for date: ${date}`);
+                    console.log(`Food offers deleted successfully for date: ${date}`);
                 }).catch(error => {
                     console.error(`Error deleting items for date: ${date}:`, error);
                 });

@@ -14,8 +14,6 @@ export interface FoodParserInterface {
 
     getAliasForMealOfferFromRawMealOffer(rawMealOffer: any): Promise<any>;
 
-    getMealOffersISOStringDatesToDelete(): Promise<any>;
-
     getRawMealOffersJSONList(): Promise<any>;
 
     getCanteenLabelFromRawMealOffer(rawMealOffer: any): Promise<any>;

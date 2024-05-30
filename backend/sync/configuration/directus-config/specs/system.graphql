@@ -232,9 +232,9 @@ type Subscription {
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
+  app_settings_mutated(event: EventEnum): app_settings_mutated
   buildings_mutated(event: EventEnum): buildings_mutated
   apartments_mutated(event: EventEnum): apartments_mutated
-  app_settings_mutated(event: EventEnum): app_settings_mutated
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
   languages_mutated(event: EventEnum): languages_mutated
   app_translations_mutated(event: EventEnum): app_translations_mutated
@@ -433,6 +433,7 @@ type app_settings {
   utilization_forecast_calculation_last_date: Date
   utilization_forecast_calculation_last_date_func: datetime_functions
   utilization_forecast_calculation_status: String
+  foods_parsing_hash: String
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
 }
@@ -2624,6 +2625,7 @@ input app_settings_filter {
   utilization_forecast_calculation_last_date: date_filter_operators
   utilization_forecast_calculation_last_date_func: datetime_function_filter_operators
   utilization_forecast_calculation_status: string_filter_operators
+  foods_parsing_hash: string_filter_operators
   housing_translations: app_settings_housing_translations_filter
   housing_translations_func: count_function_filter_operators
   _and: [app_settings_filter]

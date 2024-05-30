@@ -143,10 +143,6 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         return await this.getMealNutritionsFromFood(Meal)
     }
 
-    async getMealOffersISOStringDatesToDelete(rawMealOffersJSONList: any){
-        return this.getDatesOfAmountNextDaysIncludingToday(this.amountOfDaysToPull);
-    }
-
     getDatesOfAmountNextDaysIncludingToday(amount: number){
         let dates = [];
         let tempDate = new Date();

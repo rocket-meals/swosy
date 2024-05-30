@@ -83,16 +83,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         return FoodTL1Parser.getMealNutritionsFromRawMealOffer(rawMealOffer);
     }
 
-    async getMealOffersISOStringDatesToDelete(rawMealOffersJSONList){
-        let datesDict = {};
-        for(let rawMealOffer of rawMealOffersJSONList){
-            let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-            let date = FoodTL1Parser.getISODateFunction(parsedReportItem);
-            datesDict[date] = date;
-        }
-        return Object.keys(datesDict);
-    }
-
     async getRawMealOffersJSONList(){
         return this.rawMealOffers;
     }

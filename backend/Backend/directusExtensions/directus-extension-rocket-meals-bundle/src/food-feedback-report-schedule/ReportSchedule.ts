@@ -10,7 +10,6 @@ const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPI
 const SCHEDULE_NAME = "CanteenFoodFeedbackReportSchedule";
 
 export class ReportSchedule {
-    private finished: boolean;
     private schema: any;
     private database: any;
     private services: any;
@@ -18,7 +17,6 @@ export class ReportSchedule {
     private itemsServiceCreator: ItemsServiceCreator;
 
     constructor() {
-        this.finished = true;
     }
 
     async init(getSchema, services, database, logger) {
@@ -45,9 +43,8 @@ export class ReportSchedule {
     async run() {
         console.log("[Run] " + SCHEDULE_NAME)
         let enabled = await this.isEnabled();
-        if (enabled && this.finished) {
+        if (enabled) {
             console.log("[Start] " + SCHEDULE_NAME);
-            this.finished = false;
 
             let reportGenerator = new ReportGenerator(this.itemsServiceCreator);
 
@@ -99,7 +96,6 @@ export class ReportSchedule {
                 console.log("Error in " + SCHEDULE_NAME);
                 console.log(err);
             }
-            this.finished = true;
         }
     }
 
