@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_jrrlc",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      },
+      "payload": {
+        "foods_parsing_status": "start"
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "c5c0602c-889f-4d4a-8af3-90b4be91a20c",
+    "_syncId": "0fe81b52-6bf8-4464-93a2-a99ba09e81b2"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_jrrlc",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      },
+      "payload": {
+        "news_parsing_status": "start"
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "fcd01059-33f0-486e-a407-2eb361848025",
+    "_syncId": "1d3d7604-b5bc-4e1a-a1d5-9b57b6092093"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_jrrlc",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      },
+      "payload": {
+        "housing_parsing_status": "start"
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "d1b80b70-debc-442c-89f2-3a0f32731247",
+    "_syncId": "a2921f71-77e7-42d2-82a4-54968e7cdcb7"
+  }
+]

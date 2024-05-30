@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "name": "Food-Sync-Cron-5min",
+    "icon": "bolt",
+    "color": null,
+    "description": null,
+    "status": "active",
+    "trigger": "schedule",
+    "accountability": "all",
+    "options": {
+      "cron": "*/5 * * * *"
+    },
+    "operation": "0fe81b52-6bf8-4464-93a2-a99ba09e81b2",
+    "_syncId": "c5c0602c-889f-4d4a-8af3-90b4be91a20c"
+  },
+  {
+    "name": "Housing-Sync-Cron-4AM",
+    "icon": "bolt",
+    "color": null,
+    "description": null,
+    "status": "inactive",
+    "trigger": "schedule",
+    "accountability": "all",
+    "options": {
+      "cron": "0 4 * * *"
+    },
+    "operation": "a2921f71-77e7-42d2-82a4-54968e7cdcb7",
+    "_syncId": "d1b80b70-debc-442c-89f2-3a0f32731247"
+  },
+  {
+    "name": "News-Sync-Cron-4AM",
+    "icon": "bolt",
+    "color": null,
+    "description": null,
+    "status": "active",
+    "trigger": "schedule",
+    "accountability": "all",
+    "options": {
+      "cron": "0 4 * * *"
+    },
+    "operation": "1d3d7604-b5bc-4e1a-a1d5-9b57b6092093",
+    "_syncId": "fcd01059-33f0-486e-a407-2eb361848025"
+  }
+]

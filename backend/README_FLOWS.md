@@ -15,31 +15,15 @@
 - Collection: ```App Settings Foods```
 - Permission: ```Full Access```
 - Emit Events: ```true```  // in order to trigger the hooks
-- Payload : ```{ "parsing_status": "check"}```
-- Query : ```{ "filter": { "_and": [] } }```
+- Payload : ```{ "foods_parsing_status": "start"}```
+- Query : ```{ "filter": { "_and": [] } }
 
-## Cashregister flows
+## News flows
+- Same as Foods flows but with the following changes:
+- every morning at 4:00: ```0 4 * * *```
+- Payload : ```{ "news_parsing_status": "start"}```
 
-- Sidebar --> Settings --> Flows
-- Create a new directus flow
-- Trigger Setup --> ```Configure as Schedule (CRON)```
-  - every 5 minutes: ```*/5 * * * *```
-- Create a operation --> ```Update Data```
-- Collection: ```App Settings Cashregsiters```
-- Permission: ```Full Access```
-- Emit Events: ```true```  // in order to trigger the hooks
-- Payload : ```{ "parsing_status": "check"}```
-- Query : ```{ "filter": { "_and": [] } }```
-
-## Utilization flows
-
-- Sidebar --> Settings --> Flows
-- Create a new directus flow
-- Trigger Setup --> ```Configure as Schedule (CRON)```
-  - every 5 minutes: ```*/5 * * * *```
-- Create a operation --> ```Update Data```
-- Collection: ```App Settings Utilizations```
-- Permission: ```Full Access```
-- Emit Events: ```true```  // in order to trigger the hooks
-- Payload : ```{ "parsing_status": "check"}```
-- Query : ```{ "filter": { "_and": [] } }```
+# Apartmens/Housing flows
+- Same as Foods flows but with the following changes:
+- every morning at 4:00: ```0 4 * * *```
+- Payload : ```{ "housing_parsing_status": "start"}```

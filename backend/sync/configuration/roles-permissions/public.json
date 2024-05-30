@@ -1,5 +1,6 @@
 [
     {
+        "id": 1,
         "role": null,
         "collection": "apartments",
         "action": "read",
@@ -11,6 +12,7 @@
         ]
     },
     {
+        "id": 2,
         "role": null,
         "collection": "app_settings_housing_translations",
         "action": "read",
@@ -46,6 +48,7 @@
         ]
     },
     {
+        "id": 5,
         "role": null,
         "collection": "app_translations",
         "action": "read",
@@ -57,6 +60,7 @@
         ]
     },
     {
+        "id": 7,
         "role": null,
         "collection": "buildings_translations",
         "action": "read",
@@ -68,17 +72,7 @@
         ]
     },
     {
-        "role": null,
-        "collection": "buildings",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
+        "id": 9,
         "role": null,
         "collection": "businesshours",
         "action": "read",
@@ -90,19 +84,9 @@
         ]
     },
     {
+        "id": 10,
         "role": null,
         "collection": "canteens_foodservice_hours",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
-        "role": null,
-        "collection": "canteens",
         "action": "read",
         "permissions": {},
         "validation": {},
@@ -124,6 +108,7 @@
         ]
     },
     {
+        "id": 13,
         "role": null,
         "collection": "directus_collections",
         "action": "read",
@@ -135,6 +120,7 @@
         ]
     },
     {
+        "id": 14,
         "role": null,
         "collection": "directus_fields",
         "action": "read",
@@ -146,6 +132,7 @@
         ]
     },
     {
+        "id": 15,
         "role": null,
         "collection": "directus_files",
         "action": "read",
@@ -157,6 +144,7 @@
         ]
     },
     {
+        "id": 16,
         "role": null,
         "collection": "directus_folders",
         "action": "read",
@@ -168,6 +156,7 @@
         ]
     },
     {
+        "id": 17,
         "role": null,
         "collection": "directus_permissions",
         "action": "read",
@@ -179,6 +168,7 @@
         ]
     },
     {
+        "id": 18,
         "role": null,
         "collection": "directus_relations",
         "action": "read",
@@ -190,6 +180,7 @@
         ]
     },
     {
+        "id": 19,
         "role": null,
         "collection": "directus_roles",
         "action": "read",
@@ -201,6 +192,7 @@
         ]
     },
     {
+        "id": 20,
         "role": null,
         "collection": "directus_settings",
         "action": "read",
@@ -212,6 +204,7 @@
         ]
     },
     {
+        "id": 21,
         "role": null,
         "collection": "directus_translations",
         "action": "read",
@@ -247,6 +240,7 @@
         ]
     },
     {
+        "id": 24,
         "role": null,
         "collection": "foods_markings",
         "action": "read",
@@ -270,6 +264,7 @@
         ]
     },
     {
+        "id": 26,
         "role": null,
         "collection": "foods",
         "action": "read",
@@ -293,6 +288,7 @@
         ]
     },
     {
+        "id": 29,
         "role": null,
         "collection": "languages",
         "action": "read",
@@ -316,6 +312,7 @@
         ]
     },
     {
+        "id": 31,
         "role": null,
         "collection": "markings",
         "action": "read",
@@ -327,6 +324,7 @@
         ]
     },
     {
+        "id": 32,
         "role": null,
         "collection": "news_translations",
         "action": "read",
@@ -338,6 +336,7 @@
         ]
     },
     {
+        "id": 33,
         "role": null,
         "collection": "news",
         "action": "read",
@@ -349,6 +348,7 @@
         ]
     },
     {
+        "id": 34,
         "role": null,
         "collection": "popup_events_canteens",
         "action": "read",
@@ -360,17 +360,7 @@
         ]
     },
     {
-        "role": null,
-        "collection": "popup_events_translations",
-        "action": "read",
-        "permissions": {},
-        "validation": {},
-        "presets": null,
-        "fields": [
-            "*"
-        ]
-    },
-    {
+        "id": 36,
         "role": null,
         "collection": "popup_events",
         "action": "read",
@@ -382,6 +372,7 @@
         ]
     },
     {
+        "id": 37,
         "role": null,
         "collection": "utilizations_entries",
         "action": "read",
@@ -393,6 +384,7 @@
         ]
     },
     {
+        "id": 38,
         "role": null,
         "collection": "utilizations_groups",
         "action": "read",
@@ -404,6 +396,7 @@
         ]
     },
     {
+        "id": 39,
         "role": null,
         "collection": "washingmachines",
         "action": "read",
@@ -415,6 +408,7 @@
         ]
     },
     {
+        "id": 40,
         "role": null,
         "collection": "wikis_directus_roles",
         "action": "read",
@@ -426,6 +420,7 @@
         ]
     },
     {
+        "id": 41,
         "role": null,
         "collection": "wikis_translations",
         "action": "read",
@@ -437,6 +432,7 @@
         ]
     },
     {
+        "id": 42,
         "role": null,
         "collection": "wikis",
         "action": "read",
@@ -451,6 +447,66 @@
         "id": 180,
         "role": null,
         "collection": "buildings_businesshours",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 181,
+        "role": null,
+        "collection": "popup_events_translations",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 182,
+        "role": null,
+        "collection": "foodoffers",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 183,
+        "role": null,
+        "collection": "foodoffers_markings",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 184,
+        "role": null,
+        "collection": "canteens",
+        "action": "read",
+        "permissions": {},
+        "validation": {},
+        "presets": null,
+        "fields": [
+            "*"
+        ]
+    },
+    {
+        "id": 185,
+        "role": null,
+        "collection": "buildings",
         "action": "read",
         "permissions": {},
         "validation": {},
