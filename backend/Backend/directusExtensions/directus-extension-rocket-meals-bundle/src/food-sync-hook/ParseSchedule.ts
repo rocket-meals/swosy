@@ -5,6 +5,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {FoodParserInterface} from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MarkingParserInterface} from "./MarkingParserInterface";
+import {AppSettingsHelper} from "../helpers/AppSettingsHelper";
 
 const TABLENAME_MEALS = CollectionNames.FOODS;
 const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
@@ -12,8 +13,6 @@ const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS;
 const TABLENAME_CANTEENS = CollectionNames.CANTEENS;
 const TABLENAME_MARKINGS = CollectionNames.MARKINGS;
 const TABLENAME_MEALFOFFERS_MARKINGS = CollectionNames.FOODOFFER_MARKINGS
-
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
 const FIELD_FOODS_ID = "id";
 
@@ -27,8 +26,8 @@ export class ParseSchedule {
 
     private foodParser: FoodParserInterface | null
     private markingParser: MarkingParserInterface | null;
-    private previousMealOffersHash: string | null;
-    private finished: boolean;
+    //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
+    //private finished: boolean; // in multi instance environment this should be a field in the database
     private schema: any;
     private database: any;
     private logger: any;
@@ -42,8 +41,6 @@ export class ParseSchedule {
     constructor(foodParser: FoodParserInterface, markingParser: MarkingParserInterface) {
         this.foodParser = foodParser;
         this.markingParser = markingParser;
-        this.finished = true;
-        this.previousMealOffersHash = null;
     }
     
     // Todo create/generate documentation 
@@ -56,20 +53,17 @@ export class ParseSchedule {
         this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
     }
 
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            foods_parsing_status: status,
-            foods_parsing_last_date: new Date()
+    async setStatus(status: string) {
+        await AppSettingsHelper.setAppSettings(this.itemsServiceCreator, {
+            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS]: status,
+            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_LAST_RUN]: new Date()
         });
     }
 
     async isEnabled() {
         try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.foods_parsing_enabled;
-            }
+            let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator);
+            return currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_ENABLED];
         } catch (err) {
             console.log(err);
         }
@@ -78,11 +72,8 @@ export class ParseSchedule {
 
     async getStatus() {
         try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.foods_parsing_status;
-            }
+            let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator);
+            return currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS];
         } catch (err) {
             console.log(err);
         }
@@ -103,15 +94,10 @@ export class ParseSchedule {
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
 
-        if ((enabled && status === statusCheck && this.finished) || force) {
+        if ((enabled && status === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_START) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            this.finished = false;
-            await this.setStatus(statusRunning);
+            await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_RUNNING);
 
             try {
                 if(!!this.markingParser){
@@ -142,10 +128,11 @@ export class ParseSchedule {
                     console.log("Check if meal offers changed")
                     let currentMealOffersHash = await this.getHashOfJsonObject(rawMealOffersJSONList);
                     console.log("Current meal offers hash: " + currentMealOffersHash);
-                    console.log("Previous meal offers hash: " + this.previousMealOffersHash);
+                    let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator)
+                    let previousMealOffersHash = currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH];
 
                     // TODO: At the start of the server all food offers get deleted and created again. While this is okay, it would be nicer to check if there are realy new data and only to update/create these instead of recreating all offers new when a single thing changes due to our changed hash.
-                    const mealOffersChanged = !this.previousMealOffersHash || this.previousMealOffersHash !== currentMealOffersHash;
+                    const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
                         console.log("Delete all food offers");
                         let ISOStringDatesOfMealOffersToDelete = await this.foodParser.getMealOffersISOStringDatesToDelete(rawMealOffersJSONList) || [];
@@ -156,23 +143,19 @@ export class ParseSchedule {
                         await this.createFoodOffers(rawMealOffersJSONList);
 
                         console.log("Set previous meal offers hash");
-                        this.previousMealOffersHash = currentMealOffersHash;
+                        await AppSettingsHelper.setAppSettings(this.itemsServiceCreator, {
+                            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH]: currentMealOffersHash
+                        });
                     }
                 }
 
-
                 console.log("Finished");
-                this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED);
             } catch (err) {
                 console.log("[MealParseSchedule] Failed");
                 console.log(err);
-                this.finished = true;
-                await this.setStatus(statusFailed);
+                await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FAILED);
             }
-
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
         }
     }
 

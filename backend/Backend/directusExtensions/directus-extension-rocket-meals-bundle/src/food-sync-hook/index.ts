@@ -1,4 +1,6 @@
-import {ParseSchedule} from "./ParseSchedule"; 
+import {
+    ParseSchedule,
+} from "./ParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
@@ -10,6 +12,8 @@ import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {MarkingTL1Parser} from "./MarkingTL1Parser";
 import {MarkingParserInterface} from "./MarkingParserInterface";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {AppSettingsHelper} from "../helpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -142,7 +146,7 @@ async function checkForImageSynchronize(env: any, services: any, database: any, 
     }
 }
 
-export default defineHook(async ({action}, {
+export default defineHook(async ({action, init, filter}, {
     services,
     database,
     env,
@@ -169,6 +173,34 @@ export default defineHook(async ({action}, {
     let collection = CollectionNames.APP_SETTINGS
 
     await parseSchedule.init(getSchema, services, database, logger);
+
+    let schema = await getSchema();
+    let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
+        await AppSettingsHelper.setAppSettings(itemsServiceCreator, {
+            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS]: AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED,
+            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH]: null
+        });
+    });
+
+    // filter all update actions where from value running to start want to change, since this is not allowed
+    filter(collection+'.items.update', async (input, {keys, collection}) => {
+        // Fetch the current item from the database
+        if (!keys || keys.length === 0) {
+            throw new Error("No keys provided for update");
+        }
+        // check if input has field FIELD_APP_SETTINGS_FOODS_PARSING_STATUS and if it is set to start
+        if (input[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_START) {
+            const appSettings = await AppSettingsHelper.readAppSettings(itemsServiceCreator);
+            if (appSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_RUNNING) {
+                throw new Error("Parsing is already running. Please wait until it is finished or set to "+AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED+" manually.");
+            }
+        }
+
+        return input;
+    });
 
     action(
         collection + ".items.update",

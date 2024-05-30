@@ -20,18 +20,18 @@ export class StudentenwerkHannoverNews_Parser {
 
     async getRealNewsItems(limitAmountNews?: number | undefined) {
         try {
-            console.log("getRealNewsItems from: " + newsUrl);
+            //console.log("getRealNewsItems from: " + newsUrl);
             let response = await axios.get(newsUrl);
-            console.log("Fetched url");
+            //console.log("Fetched url");
             const $newsIndexArticle = cheerio.load(response.data);
 
             let data = [];
             let articleItems = $newsIndexArticle('div.article');
-            console.log("Found news items: " + articleItems.length);
+            //console.log("Found news items: " + articleItems.length);
             let limit = limitAmountNews ? Math.min(limitAmountNews, articleItems.length) : articleItems.length;
             for(let index = 0; index < articleItems.length && index < limit; index++) {
                 let element = articleItems[index];
-                console.log("Parsing news item index: " + index);
+                //console.log("Parsing news item index: " + index);
                 // Extract image URL from the inline style
                 let imageStyle = $newsIndexArticle(element).find('div.news-slider-image').attr('style');
                 let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
@@ -109,7 +109,7 @@ export class StudentenwerkHannoverNews_Parser {
 
             data.reverse(); // latest news are on top
 
-            console.log("Found news items: " + data.length);
+            //console.log("Found news items: " + data.length);
             return data;
         } catch (error) {
             console.log(error);
