@@ -80,6 +80,18 @@ export class ServerServiceCreator extends GetItemsService{
 
 }
 
+export class PermissionsServiceCreator extends GetItemsService{
+
+    getPermissionsService() {
+        const {PermissionsService} = this.services;
+        return new PermissionsService({
+            accountability: null, //this makes us admin
+            knex: this.database, //TODO: i think this is not neccessary
+            schema: this.schema,
+        });
+    }
+}
+
 export class AppSettingsService extends GetItemsService{
 
     async getAppSettings(): null | any {
