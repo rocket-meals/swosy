@@ -32,7 +32,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
     const optionKeyToName: {[key in ServerConfigurationsOptions]: string}
         = {
         	[ServerConfigurationsOptions.System]: 'System',
-        	[ServerConfigurationsOptions.RocketMeals]: 'Rocket-Meals',
+        	[ServerConfigurationsOptions.RocketMeals]: 'Rocket-Meals Test',
         	[ServerConfigurationsOptions.SWOSY]: 'SWOSY',
         	[ServerConfigurationsOptions.StudiFutter]: 'Studi|Futter',
         	[ServerConfigurationsOptions.LocalHost]: 'http://127.0.0.1/rocket-meals/api'
@@ -41,7 +41,7 @@ export const SettingsRowServerConfiguration: FunctionComponent<AppState> = ({...
     const optionKeyToUrl: {[key in ServerConfigurationsOptions]: string}
         = {
         	[ServerConfigurationsOptions.System]: ServerConfiguration.ServerUrl,
-        	[ServerConfigurationsOptions.RocketMeals]: 'https://rocket-meals.de/demo/api',
+        	[ServerConfigurationsOptions.RocketMeals]: 'https://test.rocket-meals.de/rocket-meals/api',
         	[ServerConfigurationsOptions.SWOSY]: 'https://swosy.rocket-meals.de/rocket-meals/api',
         	[ServerConfigurationsOptions.StudiFutter]: 'https://studi-futter.rocket-meals.de/rocket-meals/api',
         	[ServerConfigurationsOptions.LocalHost]: 'http://127.0.0.1/rocket-meals/api'
