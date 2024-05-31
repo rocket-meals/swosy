@@ -9,6 +9,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {DirectusImageDemoSources} from '@/components/project/DirectusImageDemoSources';
 import {useIsDebug} from '@/states/Debug';
 import {DirectusFiles} from '@/helper/database/databaseTypes/types';
+import {AssetHelperDirectus} from "@/helper/database/assets/AssetHelperDirectus";
 
 export type DirectusImageProps = {
     assetId: string | DirectusFiles | undefined | null;
@@ -35,7 +36,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const [imageUrl, setImageUrl] = useState<string | undefined>(url);
 
 	function getInitialImageUrl() {
-		let url = ServerAPI.getAssetImageURL(props.assetId);
+		let url = AssetHelperDirectus.getAssetImageURL(props.assetId);
 		if (!url && props.image_url) {
 			url = props.image_url;
 		}
@@ -96,7 +97,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const thumbHashBase64 = thumbHashStringToDataURL(thumbHashRaw)
 	let fallbackImage: any = props.fallbackImage
 	if (props.fallbackAssetId) {
-		fallbackImage = ServerAPI.getAssetImageURL(props.fallbackAssetId);
+		fallbackImage = AssetHelperDirectus.getAssetImageURL(props.fallbackAssetId, );
 	}
 
 	let placeHolderContent = null;

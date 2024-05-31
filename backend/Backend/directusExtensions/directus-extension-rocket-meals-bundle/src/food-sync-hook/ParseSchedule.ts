@@ -218,7 +218,8 @@ export class ParseSchedule {
                         const optionalFileParams: Partial<File> = {
                             // @ts-ignore
                             filename_download: meal_id + ".jpg",
-                            title: meal_id
+                            title: meal_id,
+                            folder: "7ca24fe5-f805-432a-a52e-623682eef9dc", // Folder ID for "Foods"
                         }
 
                         try{

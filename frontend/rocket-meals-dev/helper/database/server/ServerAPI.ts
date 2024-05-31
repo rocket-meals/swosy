@@ -272,42 +272,6 @@ export class ServerAPI {
 		return totalURL
 	}
 
-	/**
-     * TODO: Check if this problem still occurs when https://github.com/rocket-meals/rocket-meals/issues/11 is fixed
-     * Currently we could send a user a mail with a link. This link would redirect the user to an application that the attacker controls. the attacker could then grab the token and use it to login to the app.
-     */
-	static getUrlToLoginExploit() {
-		const redirectURL = UrlHelper.getURLToLogin();
-		//console.log("RedirectURL: "+redirectURL)
-		const totalURL = ServerAPI.getServerUrl()+'/redirect-with-token?redirect='+redirectURL+'?'+ServerAPI.getParamNameForDirectusAccessToken()+'=';
-		return totalURL
-	}
-
-	static getAssetImageURL(imageID: string | null | undefined | DirectusFiles) {
-		let usedImageId;
-
-		// maybe imageID is a http:// or https:// url that we can use directly
-		if (typeof imageID === 'string' && imageID.startsWith('http')) {
-			return imageID;
-		}
-
-		// Assuming DirectusFiles is a type and we need to check if imageID is of that type
-		if (typeof imageID === 'object' && imageID !== null && 'id' in imageID) {
-			usedImageId = imageID.id;
-		} else {
-			usedImageId = imageID;
-		}
-
-		return ServerAPI.getAssetURL(usedImageId);
-	}
-
-	static getAssetURL(file_id: string | null | undefined): any {
-		if (!file_id) {
-			return null;
-		}
-		return ServerAPI.getServerUrl()+'/assets/'+file_id
-	}
-
 	static async getMe(): Promise<any> {
 		const directus = ServerAPI.getClient();
 		const me = await directus.request(readMe(

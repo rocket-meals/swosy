@@ -28,7 +28,11 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
     }
 
     static getImageRemoteUrlForMealId(api_url: string, meal_id: string){
-        return api_url + "/meals/" + meal_id + "/photos?resTag=low&webp=false";
+        // high = 2048x2048
+        // medium = 1024x1024
+        // low = 512x512
+
+        return api_url + "/meals/" + meal_id + "/photos?resTag=high&webp=false"; // download already cropped image with high resolution
     }
 
     async getMarkingsJSONList(){
