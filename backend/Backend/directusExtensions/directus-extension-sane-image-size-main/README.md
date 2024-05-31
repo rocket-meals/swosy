@@ -1,15 +1,18 @@
-# Directus extension: Sane Image Size
+# Sane Image Size
 
-This extension modifies big images on upload to a preset maximum (width, height & quality).
+This Directus extension modifies big images on upload to a preset maximum (width, height & quality).
 
 This extension is based on [Christian Fuss example](https://github.com/directus/directus/discussions/8704#discussioncomment-2820302) with some minor tweaks to it:
 
-- Make it work with current Directus version (^10.1.0)
+- Make it work with current Directus version (^10.8.3)
 - Fix the return value of `getTransformation` function to make it compatible with current `getAsset` implementation.
 
 ## Installation
 
-1. Clone this repo inside your `extensions/hooks` Directus directory or simply copy the package.json file and the root index.js file into a folder named directus-extension-sane-image-size.
+1. There are now several ways to install this extension on your Directus instance (local or managed).
+    - Clone (and build) this repo inside your `extensions` Directus directory.
+    - Install into your project via npm.
+    - Install via Directus Marketplace.
 2. If desired, edit the .env file of your Directus installation to set the environment variables:
     ```bash
     # These are the default values if the env variables are not specified
