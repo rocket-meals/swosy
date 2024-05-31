@@ -10,9 +10,11 @@
     "field": "icon",
     "group": "visibility_settings",
     "hidden": false,
-    "interface": "select-icon",
-    "note": null,
-    "options": null,
+    "interface": "input",
+    "note": "Icon from: https://icons.expo.fyi/Index",
+    "options": {
+      "placeholder": "Iconfamily:Icon"
+    },
     "readonly": false,
     "required": false,
     "sort": 4,

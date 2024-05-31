@@ -2017,6 +2017,8 @@ type foods_feedbacks_labels {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
@@ -2121,6 +2123,8 @@ type markings {
   date_updated: Date
   date_updated_func: datetime_functions
   external_identifier: String
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
@@ -2484,6 +2488,8 @@ type wikis {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID!
   parent(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
@@ -3257,6 +3263,8 @@ input create_foods_feedbacks_labels_input {
   alias: String
   date_created: Date
   date_updated: Date
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID
   image: create_directus_files_input
@@ -3334,6 +3342,8 @@ input create_markings_input {
   date_created: Date
   date_updated: Date
   external_identifier: String
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID
   image: create_directus_files_input
@@ -4766,6 +4776,8 @@ input update_foods_feedbacks_labels_input {
   alias: String
   date_created: Date
   date_updated: Date
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID
   image: update_directus_files_input
@@ -4843,6 +4855,8 @@ input update_markings_input {
   date_created: Date
   date_updated: Date
   external_identifier: String
+
+  """Icon from: https://icons.expo.fyi/Index"""
   icon: String
   id: ID
   image: update_directus_files_input

@@ -24,7 +24,7 @@ import {config} from '@gluestack-ui/config';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 
 import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
-import {FontAwesome5, FontAwesome6, Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {Entypo, FontAwesome5, FontAwesome6, Ionicons, MaterialIcons} from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type ThemeProps = {
@@ -40,6 +40,27 @@ export type IconProps = DefaultIconProps<any> & {
     family?: string;
 };
 
+export class IconFamily {
+	static MaterialCommunityIcons = 'MaterialCommunityIcons';
+	static MaterialIcons = 'MaterialIcons';
+	static FontAwesome = 'FontAwesome';
+	static FontAwesome5 = 'FontAwesome5';
+	static FontAwesome6 = 'FontAwesome6';
+	static Ionicons = 'Ionicons';
+	static Entypo = 'Entypo';
+}
+
+export const IconParseDelimeter = ':';
+export function IconParseDirectusStringToIconAndFamily(iconString: string): {family: string, icon: string} {
+	// since in directus the icon is stored as "family:icon" we need to split it
+	const parts = iconString.split(IconParseDelimeter);
+	if(parts.length === 1){
+		return {family: IconFamily.MaterialIcons, icon: parts[0]}
+	} else {
+		return {family: parts[0], icon: parts[1]}
+	}
+}
+
 export function Icon({name, size, family, ...props}: IconProps) {
 	const defaultSize = 24
 	let useSize = defaultSize;
@@ -48,27 +69,30 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	}
 	let usedFamily = family;
 	if (usedFamily === undefined) {
-		usedFamily = 'MaterialCommunityIcons';
+		usedFamily = IconFamily.MaterialCommunityIcons;
 	}
 
 	let content = null;
-	if(usedFamily === 'MaterialCommunityIcons'){
+	if(usedFamily === IconFamily.MaterialCommunityIcons){
 		content = <MaterialCommunityIcons name={name} size={useSize} {...props} />
 	}
-	if(usedFamily === 'MaterialIcons'){
+	if(usedFamily === IconFamily.MaterialIcons){
 		content = <MaterialIcons name={name} size={useSize} {...props} />
 	}
-	if(usedFamily === 'FontAwesome'){
+	if(usedFamily === IconFamily.FontAwesome){
 		content = <FontAwesome name={name} size={useSize} {...props} />
 	}
-	if(usedFamily=== 'FontAwesome5'){
+	if(usedFamily=== IconFamily.FontAwesome5){
 		content = <FontAwesome5 name={name} size={useSize} {...props} />
 	}
-	if(usedFamily=== 'FontAwesome6'){
+	if(usedFamily=== IconFamily.FontAwesome6){
 		content = <FontAwesome6 name={name} size={useSize} {...props} />
 	}
-	if(usedFamily=== 'Ionicons'){
+	if(usedFamily=== IconFamily.Ionicons){
 		content = <Ionicons name={name} size={useSize} {...props} />
+	}
+	if(usedFamily === IconFamily.Entypo){
+		content = <Entypo name={name} size={useSize} {...props} />
 	}
 
 

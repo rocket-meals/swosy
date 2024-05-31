@@ -1,4 +1,4 @@
-import {Icon, View, Text} from '@/components/Themed';
+import {Icon, View, Text, IconFamily, IconParseDirectusStringToIconAndFamily} from '@/components/Themed';
 import React from 'react';
 import DirectusImage from "@/components/project/DirectusImage";
 import {StringHelper} from "@/helper/string/StringHelper";
@@ -7,13 +7,15 @@ export function hasResourceImageOrRemoteImage(resource: any){
 	return resource.image || resource.image_remote_url;
 }
 
-export default function DirectusImageOrIconComponent({ resource, widthImage, heightImage }: { resource: any, widthImage?: number, heightImage?: number }) {
+export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number }) {
 	let iconLeft = resource.icon
 	let iconLeftCustom = undefined
 	if(iconLeft){
-		if(iconLeft.includes("_")){ // a directus Icon
-			iconLeft = StringHelper.replaceAll(iconLeft, "_", "-") // directus uses _ instead of - for icon names
-			iconLeftCustom = <Icon family={"MaterialIcons"} name={iconLeft} />
+		if(!iconFamily){ // a directus Icon
+			let {
+				family, icon
+			} = IconParseDirectusStringToIconAndFamily(iconLeft)
+			iconLeftCustom = <Icon name={icon} family={family} />
 		} else {
 			iconLeftCustom = <Icon name={iconLeft} />
 		}

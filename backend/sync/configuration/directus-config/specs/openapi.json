@@ -29553,6 +29553,7 @@
           },
           "icon": {
             "nullable": true,
+            "description": "Icon from: https://icons.expo.fyi/Index",
             "type": "string"
           },
           "id": {
@@ -29734,6 +29735,7 @@
           },
           "icon": {
             "nullable": true,
+            "description": "Icon from: https://icons.expo.fyi/Index",
             "type": "string"
           },
           "id": {
@@ -30661,6 +30663,7 @@
           },
           "icon": {
             "nullable": true,
+            "description": "Icon from: https://icons.expo.fyi/Index",
             "type": "string"
           },
           "id": {
