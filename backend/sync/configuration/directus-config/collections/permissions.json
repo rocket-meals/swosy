@@ -548,6 +548,30 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "foodoffers_markings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "55b98d15-bca7-4e43-8878-48cd049bc269"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "foodoffers",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "5b7c6fbb-efcb-48b2-a83a-db8acf925068"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "foods_feedbacks_foods_feedbacks_labels",
     "action": "create",
     "permissions": null,
