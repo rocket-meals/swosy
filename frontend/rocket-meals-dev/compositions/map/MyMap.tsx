@@ -41,10 +41,11 @@ export function getMapMarkersFromBuildings(buildings: Buildings[], icon: string)
 }
 
 export type MyMapProps = {
-	markers: MapMarker[] | undefined
+	markers: MapMarker[] | undefined,
+	centerPosition?: { lat: number, lng: number }
 }
 
-export const MyMap = ({markers}: MyMapProps) => {
+export const MyMap = ({markers, centerPosition}: MyMapProps) => {
 
 	return (
 		<MySafeAreaView>
@@ -52,7 +53,7 @@ export const MyMap = ({markers}: MyMapProps) => {
 				<ExpoLeaflet
 					mapLayers={getMapLayers()}
 					mapMarkers={markers}
-					mapCenterPosition={POSITION_BUNDESTAG}
+					mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
 					maxZoom={18}
 					zoom={15}
 					loadingIndicator={() => <ActivityIndicator />}

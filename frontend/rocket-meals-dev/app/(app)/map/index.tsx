@@ -13,6 +13,7 @@ import type {PointTuple} from "leaflet";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {useSynchedApartmentsDict} from "@/states/SynchedApartments";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
+import {getBuildingLocation} from "@/compositions/buildings/BuildingDetails";
 
 export const MARKER_DEFAULT_SIZE = 48
 export const getDefaultIconAnchor = (x: number, y: number): PointTuple => {
@@ -77,6 +78,10 @@ export default function MapScreen() {
 		*/
 	}
 
+	const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
+
+	let centerPosition = POSITION_BUNDESTAG;
+
 	if(buildingsDict && icon){
 		let buildingIds = Object.keys(buildingsDict);
 		let buildings: Buildings[] = []
@@ -84,6 +89,13 @@ export default function MapScreen() {
 			let building = buildingsDict[buildingId]
 			if(building){
 				buildings.push(building)
+				const location = getBuildingLocation(building);
+				if(location){
+					centerPosition = {
+						lat: location.latitude,
+						lng: location.longitude
+					}
+				}
 			}
 		}
 		markers = getMapMarkersFromBuildings(buildings, icon)
