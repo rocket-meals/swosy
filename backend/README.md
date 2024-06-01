@@ -35,6 +35,13 @@ Similar steps can be made for local testing
         - Clone the Repo
             - `git clone <Your Rocket Meals Repo>`
     - At this step you should have the RocketMeals Repo on your Server
+    - Add Sudo Users
+      - in `/rocket-meals/backend/` is the file `add_user_to_sudo.sh`
+        - run `./add_user_to_sudo.sh`
+        - Enable passwordless sudo
+          - `sudo visudo`
+          - comment out the line: `# %sudo ALL=(ALL:ALL) ALL`
+          - add the line: `%sudo ALL=(ALL:ALL) NOPASSWD: ALL`
     - Enter "rocket-meals" folder
       - `cd rocket-meals`
       - Enter the Backend Folder
