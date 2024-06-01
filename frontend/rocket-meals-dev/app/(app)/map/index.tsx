@@ -101,8 +101,6 @@ export default function MapScreen() {
 		markers = getMapMarkersFromBuildings(buildings, icon)
 	}
 
-	const POSITION_BUNDESTAG = { lat: 52.518594247456804, lng: 13.376281624711964 };
-
 	if(markers.length === 0 && icon){
 		markers = [
 			{
@@ -139,7 +137,7 @@ export default function MapScreen() {
 
 	return (
 		<View style={{ flex: 1, width: "100%" }}>
-			<MyMap markers={markers} />
+			<MyMap markers={markers} centerPosition={centerPosition} />
 		</View>
 	);
 }
