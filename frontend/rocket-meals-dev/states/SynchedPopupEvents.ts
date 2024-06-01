@@ -96,7 +96,7 @@ export function useSynchedPopupEventsDict(): [( Record<string, PopupEvents | nul
 	const demo = useIsDemo()
 	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
-	if (demo || true) {
+	if (demo) {
 		usedResources = getDemoPopupEvents()
 	}
 
