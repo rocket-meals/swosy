@@ -1,4 +1,4 @@
-import {router, useLocalSearchParams} from 'expo-router';
+import {Redirect, router, useLocalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, TextInput, View} from '@/components/Themed';
@@ -14,6 +14,7 @@ import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowPro
 import {IconNames} from '@/constants/IconNames';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -51,6 +52,21 @@ export default function Login() {
 
 	const localSearchParams = useLocalSearchParams(); // get url params from router
 	const directus_token = ServerAPI.getDirectusAccessTokenFromParams(localSearchParams);
+
+	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
+	function isOnGithubPages() {
+		if(PlatformHelper.isWeb()){
+			if(window.location.origin.includes('github.io')){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
+	function reloadAndRemoveParamsForGithubPages() {
+		window.location.replace(window.location.origin + window.location.pathname);
+	}
 
 	function signIn() {
 		console.log('login.tsx signIn');
@@ -92,13 +108,21 @@ export default function Login() {
 	async function handleSuccessfulAuthenticationNonAnonymous(result: AuthenticationData) {
 		// the result is irrelevant, just to make sure authentication was successful
 		const me = await ServerAPI.getMe();
-		handleSuccessfulAuthenticationWithNewCurrentUser(me)
+		if(isOnGithubPages()){
+			reloadAndRemoveParamsForGithubPages();
+		} else {
+			handleSuccessfulAuthenticationWithNewCurrentUser(me)
+		}
 	}
 
 	async function handleFailedAuthentication(e: any) {
 		console.log('login.tsx authentication failed')
 		console.error(e)
-		router.replace('/home/');
+		if(isOnGithubPages()){
+			reloadAndRemoveParamsForGithubPages();
+		} else {
+			router.replace('/home/');
+		}
 	}
 
 	async function handleLoginAsAnonymous () {
@@ -114,7 +138,6 @@ export default function Login() {
 			handleLoginAsAnonymous()
 		}
 	}
-
 
 	async function authenticate_with_access_token(directus_token: string | null | undefined) {
 		console.log('login.tsx useEffect directus_token');
@@ -226,8 +249,8 @@ export default function Login() {
 		)
 	}
 
-	function renderWhenNotLoggedIn() {
-		if (!loggedIn) {
+	function renderLoginOptions() {
+		//if (!loggedIn) {
 			return (
 				<>
 					<ServerSsoAuthProviders />
@@ -238,7 +261,11 @@ export default function Login() {
 					{renderEmployeeLogin()}
 				</>
 			)
-		}
+		//}
+	}
+
+	if(loggedIn){
+		return <Redirect href="/(app)/home" />
 	}
 
 	return (
@@ -248,7 +275,7 @@ export default function Login() {
 			<SettingsRowProfileLanguage />
 			<View style={{height: 16}}></View>
 			{renderWhenLoggedIn()}
-			{renderWhenNotLoggedIn()}
+			{renderLoginOptions()}
 			<View style={{height: 16}}></View>
 		</LoginLayout>
 	);

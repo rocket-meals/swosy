@@ -4,6 +4,7 @@ import {DrawerContent} from '@react-navigation/drawer';
 import {useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {isUserLoggedIn} from '@/states/User';
+import {useRootNavigationState} from "expo-router";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
@@ -13,6 +14,19 @@ export const unstable_settings = {
 
 function DrawerContentWrapper(props: any) {
 	const registeredRoutes = props?.state?.routeNames;
+
+	const rootNavigationState = useRootNavigationState();
+
+	//https://stackoverflow.com/questions/76828511/expo-router-error-attempted-to-navigate-before-mounting-the-root-layout-compone
+	const isLoading = !rootNavigationState?.key
+
+	// AUTHENTICATION: Followed this guide: https://docs.expo.dev/router/reference/authentication/
+
+	// You can keep the splash screen open, or render a loading screen like we do here.
+
+	if (isLoading) {
+		return <Text>Loading...</Text>;
+	}
 
 	/**
      * TODO: Find a nice way to show only routes for users role
