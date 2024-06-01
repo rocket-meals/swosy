@@ -9,10 +9,11 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {DirectusImageDemoSources} from '@/components/project/DirectusImageDemoSources';
 import {useIsDebug} from '@/states/Debug';
 import {DirectusFiles} from '@/helper/database/databaseTypes/types';
-import {AssetHelperDirectus} from "@/helper/database/assets/AssetHelperDirectus";
+import {AssetHelperDirectus, ImageTransform} from "@/helper/database/assets/AssetHelperDirectus";
 
 export type DirectusImageProps = {
     assetId: string | DirectusFiles | undefined | null;
+	imageTransform?: ImageTransform;
     image_url?: string | undefined | null;
     style?: any;
     alt?: string;
@@ -36,7 +37,7 @@ export default function DirectusImage(props: DirectusImageProps) {
 	const [imageUrl, setImageUrl] = useState<string | undefined>(url);
 
 	function getInitialImageUrl() {
-		let url = AssetHelperDirectus.getAssetImageURL(props.assetId);
+		let url = AssetHelperDirectus.getAssetImageURL(props.assetId, props.imageTransform);
 		if (!url && props.image_url) {
 			url = props.image_url;
 		}
