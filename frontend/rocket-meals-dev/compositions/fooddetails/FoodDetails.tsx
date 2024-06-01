@@ -511,7 +511,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	// person responsible for the information
 	const responsible_person_name = appSettings?.food_responsible_organization_name || "Baumgartner Software UG (haftungsbeschränkt)"
 	// email of the person responsible
-	const responsible_person_webpage = appSettings?.responsible_person_webpage || "https://baumgartner-software.de"
+	const responsible_person_webpage = appSettings?.food_responsible_organization_link || "https://baumgartner-software.de"
 
 	// # ISSUE: https://github.com/rocket-meals/rocket-meals/issues/143
 	// Guideline 1.4.1 - Safety - Physical Harm
