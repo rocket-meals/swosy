@@ -240,7 +240,6 @@ type Subscription {
   app_translations_mutated(event: EventEnum): app_translations_mutated
   app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
   buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
-  businesshours_mutated(event: EventEnum): businesshours_mutated
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
@@ -251,6 +250,7 @@ type Subscription {
   profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
   foods_mutated(event: EventEnum): foods_mutated
+  businesshours_mutated(event: EventEnum): businesshours_mutated
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
@@ -597,6 +597,25 @@ type businesshours {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  time_start: String
+  time_start_func: time_functions
+  time_end: String
+  time_end_func: time_functions
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+  date_valid_from_func: date_functions
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
+  date_valid_till_func: date_functions
 }
 
 type businesshours_mutated {
@@ -742,6 +761,14 @@ type collections_dates_last_update_mutated {
 
 type count_functions {
   count: Int
+}
+
+type date_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
 }
 
 type datetime_functions {
@@ -2757,6 +2784,21 @@ input businesshours_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  time_start: string_filter_operators
+  time_start_func: time_function_filter_operators
+  time_end: string_filter_operators
+  time_end_func: time_function_filter_operators
+  monday: boolean_filter_operators
+  tuesday: boolean_filter_operators
+  wednesday: boolean_filter_operators
+  thursday: boolean_filter_operators
+  friday: boolean_filter_operators
+  saturday: boolean_filter_operators
+  sunday: boolean_filter_operators
+  date_valid_from: date_filter_operators
+  date_valid_from_func: date_function_filter_operators
+  date_valid_till: date_filter_operators
+  date_valid_till_func: date_function_filter_operators
   _and: [businesshours_filter]
   _or: [businesshours_filter]
 }
@@ -2891,6 +2933,21 @@ input create_businesshours_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  time_start: String
+  time_end: String
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
 }
 
 input create_canteens_foodservice_hours_input {
@@ -3461,6 +3518,14 @@ input date_filter_operators {
   _nin: [String]
   _between: [GraphQLStringOrFloat]
   _nbetween: [GraphQLStringOrFloat]
+}
+
+input date_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
 }
 
 input datetime_function_filter_operators {
@@ -4302,6 +4367,12 @@ input string_filter_operators {
   _nempty: Boolean
 }
 
+input time_function_filter_operators {
+  hour: number_filter_operators
+  minute: number_filter_operators
+  second: number_filter_operators
+}
+
 input update_apartments_input {
   available_from: Date
   building: update_buildings_input
@@ -4363,6 +4434,21 @@ input update_businesshours_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  time_start: String
+  time_end: String
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
 }
 
 input update_canteens_foodservice_hours_input {

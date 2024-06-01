@@ -39,10 +39,6 @@ type Query {
   buildings_businesshours_by_id(id: ID!, version: String): buildings_businesshours
   buildings_businesshours_aggregated(groupBy: [String], filter: buildings_businesshours_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [buildings_businesshours_aggregated!]!
   buildings_businesshours_by_version(version: String!, id: ID!): version_buildings_businesshours
-  businesshours(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [businesshours!]!
-  businesshours_by_id(id: ID!, version: String): businesshours
-  businesshours_aggregated(groupBy: [String], filter: businesshours_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [businesshours_aggregated!]!
-  businesshours_by_version(version: String!, id: ID!): version_businesshours
   buildings_translations(filter: buildings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [buildings_translations!]!
   buildings_translations_by_id(id: ID!, version: String): buildings_translations
   buildings_translations_aggregated(groupBy: [String], filter: buildings_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [buildings_translations_aggregated!]!
@@ -83,6 +79,10 @@ type Query {
   foods_by_id(id: ID!, version: String): foods
   foods_aggregated(groupBy: [String], filter: foods_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_aggregated!]!
   foods_by_version(version: String!, id: ID!): version_foods
+  businesshours(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [businesshours!]!
+  businesshours_by_id(id: ID!, version: String): businesshours
+  businesshours_aggregated(groupBy: [String], filter: businesshours_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [businesshours_aggregated!]!
+  businesshours_by_version(version: String!, id: ID!): version_businesshours
   foods_feedbacks_foods_feedbacks_labels(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks_foods_feedbacks_labels!]!
   foods_feedbacks_foods_feedbacks_labels_by_id(id: ID!, version: String): foods_feedbacks_foods_feedbacks_labels
   foods_feedbacks_foods_feedbacks_labels_aggregated(groupBy: [String], filter: foods_feedbacks_foods_feedbacks_labels_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_feedbacks_foods_feedbacks_labels_aggregated!]!
@@ -204,8 +204,6 @@ type Mutation {
   create_app_translations_translations_item(data: create_app_translations_translations_input!): app_translations_translations
   create_buildings_businesshours_items(filter: buildings_businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_buildings_businesshours_input!]): [buildings_businesshours!]!
   create_buildings_businesshours_item(data: create_buildings_businesshours_input!): buildings_businesshours
-  create_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_businesshours_input!]): [businesshours!]!
-  create_businesshours_item(data: create_businesshours_input!): businesshours
   create_buildings_translations_items(filter: buildings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_buildings_translations_input!]): [buildings_translations!]!
   create_buildings_translations_item(data: create_buildings_translations_input!): buildings_translations
   create_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_input!]): [canteens!]!
@@ -226,6 +224,8 @@ type Mutation {
   create_devices_item(data: create_devices_input!): devices
   create_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_input!]): [foods!]!
   create_foods_item(data: create_foods_input!): foods
+  create_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_businesshours_input!]): [businesshours!]!
+  create_businesshours_item(data: create_businesshours_input!): businesshours
   create_foods_feedbacks_foods_feedbacks_labels_items(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_foods_feedbacks_labels_input!]): [foods_feedbacks_foods_feedbacks_labels!]!
   create_foods_feedbacks_foods_feedbacks_labels_item(data: create_foods_feedbacks_foods_feedbacks_labels_input!): foods_feedbacks_foods_feedbacks_labels
   create_foods_feedbacks_labels_items(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_labels_input!]): [foods_feedbacks_labels!]!
@@ -305,9 +305,6 @@ type Mutation {
   update_buildings_businesshours_items(filter: buildings_businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_buildings_businesshours_input!): [buildings_businesshours!]!
   update_buildings_businesshours_batch(filter: buildings_businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_buildings_businesshours_input!]): [buildings_businesshours!]!
   update_buildings_businesshours_item(id: ID!, data: update_buildings_businesshours_input!): buildings_businesshours
-  update_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_businesshours_input!): [businesshours!]!
-  update_businesshours_batch(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_businesshours_input!]): [businesshours!]!
-  update_businesshours_item(id: ID!, data: update_businesshours_input!): businesshours
   update_buildings_translations_items(filter: buildings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_buildings_translations_input!): [buildings_translations!]!
   update_buildings_translations_batch(filter: buildings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_buildings_translations_input!]): [buildings_translations!]!
   update_buildings_translations_item(id: ID!, data: update_buildings_translations_input!): buildings_translations
@@ -338,6 +335,9 @@ type Mutation {
   update_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_input!): [foods!]!
   update_foods_batch(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_input!]): [foods!]!
   update_foods_item(id: ID!, data: update_foods_input!): foods
+  update_businesshours_items(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_businesshours_input!): [businesshours!]!
+  update_businesshours_batch(filter: businesshours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_businesshours_input!]): [businesshours!]!
+  update_businesshours_item(id: ID!, data: update_businesshours_input!): businesshours
   update_foods_feedbacks_foods_feedbacks_labels_items(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_feedbacks_foods_feedbacks_labels_input!): [foods_feedbacks_foods_feedbacks_labels!]!
   update_foods_feedbacks_foods_feedbacks_labels_batch(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_feedbacks_foods_feedbacks_labels_input!]): [foods_feedbacks_foods_feedbacks_labels!]!
   update_foods_feedbacks_foods_feedbacks_labels_item(id: ID!, data: update_foods_feedbacks_foods_feedbacks_labels_input!): foods_feedbacks_foods_feedbacks_labels
@@ -431,8 +431,6 @@ type Mutation {
   delete_app_translations_translations_item(id: ID!): delete_one
   delete_buildings_businesshours_items(ids: [ID]!): delete_many
   delete_buildings_businesshours_item(id: ID!): delete_one
-  delete_businesshours_items(ids: [ID]!): delete_many
-  delete_businesshours_item(id: ID!): delete_one
   delete_buildings_translations_items(ids: [ID]!): delete_many
   delete_buildings_translations_item(id: ID!): delete_one
   delete_canteens_items(ids: [ID]!): delete_many
@@ -453,6 +451,8 @@ type Mutation {
   delete_devices_item(id: ID!): delete_one
   delete_foods_items(ids: [ID]!): delete_many
   delete_foods_item(id: ID!): delete_one
+  delete_businesshours_items(ids: [ID]!): delete_many
+  delete_businesshours_item(id: ID!): delete_one
   delete_foods_feedbacks_foods_feedbacks_labels_items(ids: [ID]!): delete_many
   delete_foods_feedbacks_foods_feedbacks_labels_item(id: ID!): delete_one
   delete_foods_feedbacks_labels_items(ids: [ID]!): delete_many
@@ -535,7 +535,6 @@ type Subscription {
   app_translations_mutated(event: EventEnum): app_translations_mutated
   app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
   buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
-  businesshours_mutated(event: EventEnum): businesshours_mutated
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
@@ -546,6 +545,7 @@ type Subscription {
   profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
   foods_mutated(event: EventEnum): foods_mutated
+  businesshours_mutated(event: EventEnum): businesshours_mutated
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
@@ -1074,6 +1074,25 @@ type businesshours {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  time_start: String
+  time_start_func: time_functions
+  time_end: String
+  time_end_func: time_functions
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+  date_valid_from_func: date_functions
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
+  date_valid_till_func: date_functions
 }
 
 type businesshours_aggregated {
@@ -1097,6 +1116,21 @@ type businesshours_aggregated_count {
   status: Int
   user_created: Int
   user_updated: Int
+  time_start: Int
+  time_end: Int
+  monday: Int
+  tuesday: Int
+  wednesday: Int
+  thursday: Int
+  friday: Int
+  saturday: Int
+  sunday: Int
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Int
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Int
 }
 
 type businesshours_aggregated_fields {
@@ -1436,6 +1470,14 @@ type collections_dates_last_update_mutated {
 
 type count_functions {
   count: Int
+}
+
+type date_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
 }
 
 type datetime_functions {
@@ -3510,6 +3552,21 @@ type version_businesshours {
   status: String
   user_created: JSON
   user_updated: JSON
+  time_start: String
+  time_end: String
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
 }
 
 """"""
@@ -4460,6 +4517,21 @@ input businesshours_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  time_start: string_filter_operators
+  time_start_func: time_function_filter_operators
+  time_end: string_filter_operators
+  time_end_func: time_function_filter_operators
+  monday: boolean_filter_operators
+  tuesday: boolean_filter_operators
+  wednesday: boolean_filter_operators
+  thursday: boolean_filter_operators
+  friday: boolean_filter_operators
+  saturday: boolean_filter_operators
+  sunday: boolean_filter_operators
+  date_valid_from: date_filter_operators
+  date_valid_from_func: date_function_filter_operators
+  date_valid_till: date_filter_operators
+  date_valid_till_func: date_function_filter_operators
   _and: [businesshours_filter]
   _or: [businesshours_filter]
 }
@@ -4726,6 +4798,21 @@ input create_businesshours_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  time_start: String
+  time_end: String
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
 }
 
 input create_canteen_food_feedback_report_recipients_input {
@@ -5308,6 +5395,14 @@ input date_filter_operators {
   _nin: [String]
   _between: [GraphQLStringOrFloat]
   _nbetween: [GraphQLStringOrFloat]
+}
+
+input date_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
 }
 
 input datetime_function_filter_operators {
@@ -6181,6 +6276,21 @@ input update_businesshours_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  time_start: String
+  time_end: String
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+  saturday: Boolean
+  sunday: Boolean
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_from: Date
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
 }
 
 input update_canteen_food_feedback_report_recipients_input {
