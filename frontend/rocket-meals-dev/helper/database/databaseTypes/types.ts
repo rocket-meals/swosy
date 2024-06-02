@@ -14,6 +14,33 @@ export type Apartments = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type AppFeedbacks = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  profile?: string | Profiles | null;
+  contact_email: string | null;
+  negative: boolean | null;
+  title: string | null;
+  content: string | null;
+  response: string | null;
+  priority: number | null;
+  feedback_read_by_support?: boolean | null;
+  response_read_by_user?: boolean | null;
+  display_width?: number | null;
+  display_height?: number | null;
+  display_pixelratio?: number | null;
+  display_scale?: number | null;
+  display_fontscale?: number | null;
+  device_platform?: string | null;
+  device_brand?: string | null;
+  device_system_version?: string | null;
+};
+
 export type AppSettings = {
   app_stores: string;
   app_url_to_apple_store?: string | null;

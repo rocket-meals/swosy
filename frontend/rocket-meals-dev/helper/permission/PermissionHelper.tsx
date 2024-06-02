@@ -3,34 +3,86 @@ import {DirectusPermissions, DirectusRoles} from "@/helper/database/databaseType
 import {useCurrentRole, useCurrentUser} from "@/states/User";
 import {useSynchedPermissionsList} from "@/states/SynchedPermissions";
 
+export type PermissionHelperObject = {
+    currentRole: DirectusRoles | null,
+    permissions: DirectusPermissions[],
+}
+
+export enum PermissionActions {
+    CREATE = "create",
+    UPDATE = "update",
+    DELETE = "delete",
+    READ = "read",
+}
+
 export class PermissionHelper {
 
-    static canCreate(collection: string, field: string, role: DirectusRoles | null, permissions: DirectusPermissions[]){
-        return PermissionHelper.isFieldAllowedForAction(role, permissions, collection, field, "create");
+    static canCreate(permissionHelperObject: PermissionHelperObject, collection: string, field: string){
+        return PermissionHelper.isFieldAllowedForAction(permissionHelperObject, collection, field, PermissionActions.CREATE);
     }
 
-    static canUpdate(collection: string, field: string, role: DirectusRoles | null, permissions: DirectusPermissions[]){
-        return PermissionHelper.isFieldAllowedForAction(role, permissions, collection, field, "update");
-    }
-
-    static isAdmin(role: DirectusRoles){
-        return RoleHelper.isAdmin(role);
+    static canUpdate(permissionHelperObject: PermissionHelperObject, collection: string, field: string){
+        return PermissionHelper.isFieldAllowedForAction(permissionHelperObject, collection, field, PermissionActions.UPDATE);
     }
 
     static useCanCreate(collection: string, field: string){
+        let permissionHelperObject = PermissionHelper.usePermissionHelperObject();
+        return PermissionHelper.canCreate(permissionHelperObject, collection, field);
+    }
+
+    static usePermissionHelperObject(): PermissionHelperObject{
         const currentRole = useCurrentRole();
         const permissions = useSynchedPermissionsList();
-        return PermissionHelper.canCreate(collection, field, currentRole, permissions);
+        return {
+            currentRole: currentRole,
+            permissions: permissions,
+        }
+    }
+
+    static filterItemForAllowedCreateFields<T extends Object>(permissionHelperObject: PermissionHelperObject, collection: string, item: Partial<T>): Partial<T>{
+        const role = permissionHelperObject.currentRole;
+        if(RoleHelper.isAdmin(role)){
+            return item;
+        }
+        let fieldsOfItem = Object.keys(item);
+        let filteredItem: Partial<T> = {};
+        for(let field of fieldsOfItem){
+            if(PermissionHelper.canCreate(permissionHelperObject, collection, field)){
+                // @ts-ignore
+                filteredItem[field] = item[field];
+            }
+        }
+        return filteredItem;
     }
 
     static useCanUpdate(collection: string, field: string){
-        const currentRole = useCurrentRole();
-        const permissions = useSynchedPermissionsList();
-        return PermissionHelper.canUpdate(collection, field, currentRole, permissions);
+        let permissionHelperObject = PermissionHelper.usePermissionHelperObject();
+        return PermissionHelper.canUpdate(permissionHelperObject, collection, field);
     }
 
-    static isFieldAllowedForAction(role: DirectusRoles | null, permissions: DirectusPermissions[], collection: string, field: string, action: string){
-        if(role && RoleHelper.isAdmin(role)){
+    static filterItemForAllowedUpdateFields<T>(permissionHelperObject: PermissionHelperObject, collection: string, item: Partial<T>): Partial<T>{
+        const role = permissionHelperObject.currentRole;
+        if(RoleHelper.isAdmin(role)){
+            return item;
+        }
+        let fieldsOfItem = Object.keys(item);
+        let filteredItem: Partial<T> = {};
+        for(let field of fieldsOfItem){
+            if(PermissionHelper.canUpdate(permissionHelperObject, collection, field)){
+                // @ts-ignore
+                filteredItem[field] = item[field];
+            }
+        }
+        return filteredItem;
+    }
+
+
+
+    static isFieldAllowedForAction(permissionHelperObject: PermissionHelperObject, collection: string, field: string, action: PermissionActions){
+        const role = permissionHelperObject.currentRole;
+        const permissions = permissionHelperObject.permissions;
+
+        if(RoleHelper.isAdmin(role)){
             return true;
         }
 
@@ -43,7 +95,12 @@ export class PermissionHelper {
                 let fields = permission.fields;
                 const isSameCollection = collectionInPermission===collection;
                 const isSameAction = permissionsAction===action;
-                const isSameRole = role?.id===permission.role;
+
+                let roleForPermission = null;
+                if(!!role && !!role.id){
+                    roleForPermission = role.id;
+                }
+                const isSameRole = roleForPermission===permission.role;
 
                 if(isSameCollection && isSameAction && isSameRole && !!fields){
                     const fieldsAsArray = fields as string[] || [];
@@ -56,30 +113,5 @@ export class PermissionHelper {
         return false;
     }
 
-    static filterForAllowedUpdateFields(role, permissions, collection, item){
-        if(RoleHelper.isAdmin(role)){
-            return item;
-        }
-
-        let fieldsOfItem = Object.keys(item);
-        let filteredItem = {};
-
-        if(!!permissions && permissions.length>=0){
-            for(let permission of permissions){
-                let collectionInPermission = permission.collection;
-                let action = permission.action;
-                let fields = permission.fields;
-                if(collectionInPermission===collection && action==="update"){
-                    for(let field of fieldsOfItem){
-                        if(fields.includes(field) || fields.includes("*")){
-                            filteredItem[field] = item[field];
-                        }
-                    }
-                }
-            }
-        }
-        return filteredItem;
-
-    }
 
 }

@@ -34,6 +34,9 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const isCourseTimetableEnabled = useIsCourseTimetableEnabled();
 	const isAccountBalanceEnabled = useIsAccountBalanceEnabled()
 
+	const translation_feedback = useTranslation(TranslationKeys.feedback);
+	const translation_feedback_support_faq = useTranslation(TranslationKeys.feedback_support_faq);
+
 	const translation_accountbalance = useTranslation(TranslationKeys.accountbalance);
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_settings = useTranslation(TranslationKeys.settings);
@@ -169,7 +172,22 @@ export const MyDrawerAuthenticated = (props: any) => {
 				title: translation_settings,
 				icon: IconNames.settings_icon,
 			})}
-
+			{useRenderMyDrawerScreen({
+				routeName: 'support/index',
+				label: translation_feedback_support_faq,
+				title: translation_feedback_support_faq,
+				showBackButton: true,
+				icon: IconNames.support_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'support/app_feedbacks/index',
+				label: translation_feedback,
+				title: translation_feedback,
+				showBackButton: true,
+				icon: IconNames.support_icon,
+				visibleInDrawer: false
+			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'employee/index',
 				title: translation_role_employee,

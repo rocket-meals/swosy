@@ -8,6 +8,8 @@ import {KeyboardTypeOptions, Text as NativeText, View as NativeView} from 'react
 import {
 	Heading as DefaultHeading,
 	Input as DefaultInput,
+	Textarea as DefaultTextarea,
+	TextareaInput as DefaultTextareaInput,
 	InputField as DefaultInputField,
 	Text as DefaultText,
 	View as DefaultView
@@ -195,6 +197,67 @@ export function TextInput(props: TextInputProps) {
 			/>
 		</DefaultInput>
 	)
+}
+
+
+export function TestAreaInput(props: TextInputProps) {
+	const textContrastColor = useTextContrastColor();
+	const usedFontSize = getFontSizeInPixelBySize(props.size || TEXT_SIZE_DEFAULT);
+	let usedColor = props.style?.color;
+	if (usedColor === undefined) {
+		usedColor = textContrastColor;
+	}
+
+	const defaultInputProps: ComponentProps<typeof DefaultInput> = {
+		variant: props.variant,
+		isDisabled: props.isDisabled,
+		isInvalid: props.isInvalid,
+		isReadOnly: props.isReadOnly,
+	}
+
+	if (defaultInputProps.variant === undefined) {
+		defaultInputProps.variant = 'outline';
+	}
+
+	let keyboardType: KeyboardTypeOptions = 'default'
+	// set mask to password if isPassword is true
+	let type: 'text' | 'password' | undefined = 'text';
+	if (props.isPassword) {
+		type = 'password';
+	}
+	if (props.isNumber) {
+		keyboardType = 'numeric'
+	}
+
+	const defaultInputFieldProps: ComponentProps<typeof DefaultInputField> = {
+		value: props.value,
+		onChangeText: props.onChangeText,
+		keyboardType: keyboardType,
+		placeholder: props.placeholder,
+		type: type
+	}
+
+	return (
+		<DefaultTextarea
+			sx={{
+				_input:{
+					color: usedColor,
+				}
+			}}
+			{...defaultInputProps}
+		>
+			<DefaultTextareaInput
+				returnKeyType={props?.returnKeyType}
+				onSubmitEditing={props?.onSubmitEditing}
+				ref={props.myRef}
+				{...defaultInputFieldProps}
+				style={{
+					fontSize: usedFontSize
+				}}
+			/>
+		</DefaultTextarea>
+	)
+
 }
 
 export function useViewBackgroundColor() {

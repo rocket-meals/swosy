@@ -1,11 +1,12 @@
 import React, {FunctionComponent, useState} from 'react';
 import {Icon, Text, View, useTextContrastColor, useViewBackgroundColor} from '@/components/Themed';
 import {ActionsheetItem, ActionsheetItemText} from '@gluestack-ui/themed';
-import {AccessibilityRole, TouchableOpacity} from 'react-native';
+import {AccessibilityRole, TouchableOpacity, ViewStyle} from 'react-native';
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {useProjectColor} from '@/states/ProjectInfo';
 import {IconNames} from '@/constants/IconNames';
 import {MyActionsheetItem} from "@/components/settings/MyActionsheetItem";
+import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 
 export interface SettingsRowProps {
     key?: any;
@@ -152,47 +153,37 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		</View>
 	}
 
-	if(performance){
-		return (
-			<>
-				<MyActionsheetItem
-					disabled={!item.onSelect || props.disabled}
-					accessibilityLabel={item.accessibilityLabel}
-					onPress={item.onSelect}
-					active={isActive}
-					key={item.key}
-				>
-					{renderLeftIcon(renderedLeftIcon)}
-					{content}
-					{renderRightContent(!!item.onSelect)}
-				</MyActionsheetItem>
-				{/* Your rendered children go here */}
-			</>
-		);
-	} else {
-		return (
-			<>
-				<ActionsheetItem
-					padding={props.padding || SETTINGS_ROW_DEFAULT_PADDING}
-					disabled={!item.onSelect || props.disabled}
-					accessibilityLabel={item.accessibilityLabel}
-					sx={{
-						bg: usedViewBackgroundColor,
-						':hover': {
-							bg: lighterOrDarkerBackgroundColor,
-						},
-					}}
-					key={item.key}
-					onPress={item.onSelect}
-				>
-					<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
-					{content}
-					{renderRightContent(!!item.onSelect)}
-				</ActionsheetItem>
-				{renderedChildren}
-			</>
-		)
+	const isPressable = !!item.onSelect;
+
+	const disabledStyle: StyleProp<ViewStyle> = {
+		// @ts-ignore // This is a valid style on web
+		cursor: props.disabled ? 'not-allowed' : (isPressable ? 'pointer' : 'default'),
+		opacity: props.disabled ? 0.5 : 1,
 	}
+
+	return (
+		<>
+			<ActionsheetItem
+				padding={props.padding || SETTINGS_ROW_DEFAULT_PADDING}
+				disabled={!isPressable || props.disabled}
+				accessibilityLabel={item.accessibilityLabel}
+				style={[disabledStyle]}
+				sx={{
+					bg: usedViewBackgroundColor,
+					':hover': {
+						bg: lighterOrDarkerBackgroundColor,
+					},
+				}}
+				key={item.key}
+				onPress={item.onSelect}
+			>
+				<ActionsheetItemText>{renderedLeftIcon}</ActionsheetItemText>
+				{content}
+				{renderRightContent(!!item.onSelect)}
+			</ActionsheetItem>
+			{renderedChildren}
+		</>
+	)
 
 
 

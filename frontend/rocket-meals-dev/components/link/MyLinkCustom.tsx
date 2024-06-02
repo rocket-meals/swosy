@@ -5,12 +5,11 @@
 import {Platform} from 'react-native';
 import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
-import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper';
+import {CommonSystemActionHelper, HrefHelper} from '@/helper/device/CommonSystemActionHelper';
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {router} from "expo-router";
 import {Text} from "@/components/Themed";
 import React from "react";
-import * as Linking from 'expo-linking';
 // access app.json from expo
 import appJson from "../../app.json"
 
@@ -37,6 +36,15 @@ export type MyLinkCustomProps = {
 }
 // define the button component
 export const MyLinkCustom = ({onPress, routeInternal, hrefExternal, accessibilityLabel, children}: MyLinkCustomProps) => {
+	let newTab = false
+	if(!!hrefExternal){
+		newTab = true
+		if(hrefExternal.startsWith(HrefHelper.MAILTO)){
+			newTab = false
+		}
+	}
+
+
 	let onPressForLinks = undefined
 	if(PlatformHelper.isSmartPhone()){
 		onPressForLinks = () => {
@@ -44,7 +52,7 @@ export const MyLinkCustom = ({onPress, routeInternal, hrefExternal, accessibilit
 				router.navigate(routeInternal)
 			}
 			if(hrefExternal){
-				CommonSystemActionHelper.openExternalURL(hrefExternal)
+				CommonSystemActionHelper.openExternalURL(hrefExternal, newTab)
 			}
 		}
 	}
@@ -80,9 +88,12 @@ export const MyLinkCustom = ({onPress, routeInternal, hrefExternal, accessibilit
 					router.navigate(routeInternal)
 				}
 				if(hrefExternal){
-					CommonSystemActionHelper.openExternalURL(hrefExternal, true)
+					CommonSystemActionHelper.openExternalURL(hrefExternal, newTab)
 				}
-			}} style={{ textDecoration: 'none' }}>
+			}} style={{ textDecoration: 'none',
+				// mouse cursor
+				cursor: 'pointer',
+			}}>
 				{button}
 			</a>
 		)

@@ -137,6 +137,13 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 	return [usedSetResource, setResourceRaw]
 }
 
+export function useSynchedProfileId(): string | null | undefined {
+	const profile = useSynchedResourceSingleRawValue<Profiles, (string | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.id
+	});
+	return profile;
+}
+
 export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
 {
 	//const [resourceOnly, setResource, resourceRaw, setResourceRaw] = useSynchedResourceSingleRaw<Partial<Profiles>>(PersistentStore.profile);

@@ -225,7 +225,7 @@ export class ParseSchedule {
                         try{
                             let file_id = await fileServiceCreator.importByUrl(swosyImageUrl, optionalFileParams);
                             if(file_id) {
-                                //console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
+                                console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
                                 await foodsService.updateOne(meal_id, {
                                     image: file_id
                                 });

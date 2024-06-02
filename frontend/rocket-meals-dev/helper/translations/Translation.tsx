@@ -290,6 +290,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static switch = createTranslationKey('switch', 'Umschalten');
 	static edit = createTranslationKey('edit', 'Bearbeiten');
 	static save = createTranslationKey('save', 'Speichern');
+	static send = createTranslationKey('send', 'Absenden');
 	static button_disabled = createTranslationKey('button_disabled', 'Knopf deaktiviert');
 	static select = createTranslationKey('select', 'Auswählen');
 	static upload = createTranslationKey('upload', 'Hochladen');
@@ -320,4 +321,11 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = createTranslationKey('by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy', 'Mit dem Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutzerklärung zu.');
 
 	static cookies = createTranslationKey('cookies', 'Cookies');
+
+	static feedback = createTranslationKey('feedback', 'Feedback');
+	static feedback_support_faq = createTranslationKey('feedback_support_faq', 'Feedback, Hilfe und FAQ');
+	static optional = createTranslationKey('optional', 'Optional');
+
+	static date_created = createTranslationKey('date_created', 'Erstellt am');
+	static date_updated = createTranslationKey('date_updated', 'Aktualisiert am');
 }

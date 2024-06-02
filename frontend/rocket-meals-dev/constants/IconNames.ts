@@ -39,6 +39,9 @@ export enum IconNames {
     color_scheme_system_icon = 'theme-light-dark',
     calendar_icon = 'calendar-month',
 
+    title_icon = 'text',
+    content_icon = 'text-box',
+
     average_icon = 'chart-areaspline',
     amount_rating_icon = 'chart-bar',
 
@@ -48,7 +51,12 @@ export enum IconNames {
     utilization_icon = 'human-queue',
     businesshours_icon = 'clock-time-eight',
 
+    support_icon = 'lifebuoy',
+
     data_access_icon = 'database-eye',
+
+    brand_apple_icon = 'apple',
+    brand_google_play_icon = 'google-play',
 
     select_option_active_icon = 'check-circle',
     select_option_inactive_icon = 'checkbox-blank-circle-outline',
@@ -63,7 +71,7 @@ export enum IconNames {
     mail_icon = 'email',
 
     first_weekday_icon = 'calendar-week',
-    course_timetable_event_create_icon = 'calendar-plus',
+    course_timetable_create_icon = 'calendar-plus',
     identifier = 'identifier',
     edit_icon = 'pencil',
     attribute_text_icon = 'tag-text-outline',
@@ -71,6 +79,7 @@ export enum IconNames {
     time_start_icon = 'clock-start',
     time_end_icon = 'clock-end',
     cancel_icon = 'close',
+    create_icon = 'plus',
 
     server_icon = 'server',
 
@@ -103,6 +112,11 @@ export enum IconNames {
     like_inactive_icon = "thumb-up-outline",
     star_active_icon = "star",
     star_inactive_icon = "star-outline",
+
+    // support and chat - icon for a message is send, a response is unread and a response is read
+    message_send_icon = "send",
+    message_support_responded_icon = IconNames.notification_active,
+    message_response_read_by_user_icon = "email-open",
 
     role_employee = 'briefcase',
 

@@ -77,7 +77,9 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 		alignItems: 'center',
 		flexDirection: 'row'
 	}}>
-		<MyButton leftIcon={'thumb-up'}
+		<MyButton
+				  disabled={props.disabled}
+			      leftIcon={'thumb-up'}
 				  isActive={isLikeButtonActive}
 				  borderRightRadius={0}
 				  useOnlyNecessarySpace={true}
@@ -89,7 +91,9 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 					  onPress(true)
 				  }}
 		/>
-		<MyButton leftIcon={'thumb-down'}
+		<MyButton
+			      disabled={props.disabled}
+			      leftIcon={'thumb-down'}
 				  isActive={isDislikeButtonActive}
 				  borderLeftRadius={0}
 				  useOnlyNecessarySpace={true}

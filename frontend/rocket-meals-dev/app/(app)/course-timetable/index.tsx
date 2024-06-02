@@ -195,7 +195,7 @@ export default function CourseTimetableScreen() {
 				<View style={{paddingBottom: 10}}>
 					<MyButton leftIconColoredBox={true}
 						useOnlyNecessarySpace={true}
-						leftIcon={IconNames.course_timetable_event_create_icon}
+						leftIcon={IconNames.course_timetable_create_icon}
 						accessibilityLabel={translationCreateEvent}
 						onPress={() => {
 							handlePressCreateEvent()

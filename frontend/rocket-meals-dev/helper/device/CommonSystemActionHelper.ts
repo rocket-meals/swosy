@@ -7,6 +7,17 @@ const isAndroid = PlatformHelper.isAndroid();
 const isIOS = PlatformHelper.isIOS();
 const isMobile = isAndroid || isIOS;
 
+export class HrefHelper {
+	static MAILTO: string = 'mailto:'
+	static TEL: string = 'tel:'
+	static GEO_ANDROID: string = 'geo:'
+	static GEO_IOS: string = 'maps:'
+}
+
+const ANDROID_PARAM_NEW_ACTIVITY = {
+	flags: ['FLAG_ACTIVITY_NEW_TASK']
+}
+
 export class CommonSystemActionHelper {
 	static async openExternalURL(url: string, newWindow = false) {
 		if (isMobile) {
@@ -37,9 +48,9 @@ export class CommonSystemActionHelper {
 
 		if (!alwaysUseGoogleMaps) {
 			if (isIOS) {
-				url = 'maps:' + latitude + ',' + longitude;
+				url = HrefHelper.GEO_IOS + latitude + ',' + longitude;
 			} else if (isAndroid) {
-				url = 'geo:' + latitude + ',' + longitude
+				url = HrefHelper.GEO_ANDROID + latitude + ',' + longitude
 			}
 		}
 

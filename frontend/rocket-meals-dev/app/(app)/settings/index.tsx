@@ -101,6 +101,9 @@ export default function SettingsScreen() {
 					<SettingsRowUserDelete />
 					<SettingsRowDataAccess />
 				</SettingsRowGroup>
+				<SettingsRowGroup>
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.feedback_support_faq} iconLeft={IconNames.support_icon} route={"/(app)/support"} />
+				</SettingsRowGroup>
 				<ProjectVersionInformation />
 				{renderedDeveloperModeSettings}
 			</ScrollViewWithGradient>
