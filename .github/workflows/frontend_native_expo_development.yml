@@ -1,18 +1,9 @@
 name: Expo Update
 on:
-  merge:
-    branches:
-      - master
-      - dev
-      - production
-    paths:
-      - 'frontend/rocket-meals-dev/**'
-      - ".github/workflows/frontend_native_expo.yml"
   push:
     branches:
-      - master
       - dev
-      - production
+      # DO NOT INSERT master branch here
     paths:
       - 'frontend/rocket-meals-dev/**'
       - ".github/workflows/frontend_native_expo.yml"
@@ -46,5 +37,5 @@ jobs:
       - name: Install dependencies
         run: cd ./frontend/rocket-meals-dev && npm ci
 
-      - name: Publish update
+      - name: Publish update to channel specific for branch
         run: cd ./frontend/rocket-meals-dev && eas update --auto
