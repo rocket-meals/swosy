@@ -1,6 +1,6 @@
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import React from 'react';
-import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {TranslationKeys, useTranslation, useTranslationSupportAndFeedback} from '@/helper/translations/Translation';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
@@ -35,6 +35,8 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const isAccountBalanceEnabled = useIsAccountBalanceEnabled()
 
 	const translation_feedback = useTranslation(TranslationKeys.feedback);
+	const translation_support_and_feedback = useTranslationSupportAndFeedback();
+
 	const translation_feedback_support_faq = useTranslation(TranslationKeys.feedback_support_faq);
 
 	const translation_accountbalance = useTranslation(TranslationKeys.accountbalance);
@@ -182,8 +184,8 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'support/app_feedbacks/index',
-				label: translation_feedback,
-				title: translation_feedback,
+				label: translation_support_and_feedback,
+				title: translation_support_and_feedback,
 				showBackButton: true,
 				icon: IconNames.support_icon,
 				visibleInDrawer: false

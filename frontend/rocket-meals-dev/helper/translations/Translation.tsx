@@ -15,6 +15,12 @@ function createTranslationKey(key: string, getTranslation: GetTranslationFunctio
 	}
 }
 
+export function useTranslationSupportAndFeedback(): string {
+	const translation_feedback = useTranslation(TranslationKeys.feedback);
+	const translation_support = useTranslation(TranslationKeys.support);
+	return `${translation_feedback} & ${translation_support}`;
+}
+
 export function useTranslation(key: TranslationKey): string {
 	const [translationsDict, setTranslationsDict] = useSynchedAppTranslationsDict()
 	let fallback_text = key.getTranslation;

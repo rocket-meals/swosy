@@ -4,7 +4,7 @@ import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGrad
 import {IconNames} from '@/constants/IconNames';
 import {SettingsRowGroup} from '@/components/settings/SettingsRowGroup';
 import {SettingsRowSpacer} from '@/components/settings/SettingsRowSpacer';
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {TranslationKeys, useTranslation, useTranslationSupportAndFeedback} from "@/helper/translations/Translation";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {AppFeedbacks} from "@/helper/database/databaseTypes/types";
 import {useSynchedProfile} from "@/states/SynchedProfile";
@@ -26,7 +26,7 @@ export const TABLE_NAME_APP_FEEDBACKS = 'app_feedbacks';
 
 export default function AppfeedbackScreen() {
 	const translation_create = useTranslation(TranslationKeys.create);
-	const translation_feedback = useTranslation(TranslationKeys.feedback)
+	const translation_support_and_feedback = useTranslationSupportAndFeedback()
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
 
 	const [appSettings, setAppSettings] = useSynchedAppSettings();
@@ -158,7 +158,7 @@ export default function AppfeedbackScreen() {
 			<ScrollViewWithGradient>
 				<AnimationSupport />
 				<SettingsRowGroup>
-					<SettingsRowNavigateWithText labelLeft={translation_feedback+": "+translation_create} leftIcon={IconNames.course_timetable_create_icon} route={"/(app)/support/app_feedbacks"} />
+					<SettingsRowNavigateWithText labelLeft={translation_support_and_feedback} leftIcon={IconNames.support_icon} route={"/(app)/support/app_feedbacks"} />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					{renderedIosAppStoreLink}

@@ -52,7 +52,7 @@ export class IconFamily {
 	static Entypo = 'Entypo';
 }
 
-export const IconParseDelimeter = ':';
+export const IconParseDelimeter: string = ':';
 export function IconParseDirectusStringToIconAndFamily(iconString: string): {family: string, icon: string} {
 	// since in directus the icon is stored as "family:icon" we need to split it
 	const parts = iconString.split(IconParseDelimeter);
@@ -70,6 +70,15 @@ export function Icon({name, size, family, ...props}: IconProps) {
 		useSize = size;
 	}
 	let usedFamily = family;
+	if(!!name){
+		const parts = name.split(IconParseDelimeter);
+		if(parts.length === 1){
+			name = parts[0]
+		} else {
+			usedFamily = parts[0];
+			name = parts[1];
+		}
+	}
 	if (usedFamily === undefined) {
 		usedFamily = IconFamily.MaterialCommunityIcons;
 	}
