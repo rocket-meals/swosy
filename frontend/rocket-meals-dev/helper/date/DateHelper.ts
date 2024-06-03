@@ -401,20 +401,20 @@ export class DateHelper {
 		const days = splits[2];
 
 		let firstPart = '';
+
+		firstPart+=days+'.'+month+'.'
+		if (withYear) {
+			firstPart = firstPart+years;
+		}
+
 		const hours = date.getHours();
 		const minutes = date.getMinutes();
 		if (withTime) {
 			const hoursWithPad = hours < 10 ? '0'+hours : hours;
 			const minutesWithPad = minutes < 10 ? '0'+minutes : minutes;
-			firstPart = hoursWithPad+':'+minutesWithPad+' ';
+			firstPart = firstPart+" "+hoursWithPad+':'+minutesWithPad;
 		}
-
-		firstPart+=days+'.'+month+'.'
-		if (withYear) {
-			return firstPart+years;
-		} else {
-			return firstPart;
-		}
+		return firstPart;
 	}
 
 	static formatMinutesToReadable(minutes: number) {

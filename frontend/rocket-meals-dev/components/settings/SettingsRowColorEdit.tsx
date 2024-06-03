@@ -84,6 +84,7 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 			width: '100%',
 			flexShrink: 1,
 			marginTop: 10,
+			paddingHorizontal: 10,
 		}}
 		>
 			<View style={{

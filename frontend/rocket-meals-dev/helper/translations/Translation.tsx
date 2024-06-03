@@ -156,6 +156,9 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static role_employee = createTranslationKey('role_employee', 'Mitarbeitende');
 
+	static support_team = createTranslationKey('support_team', 'Support Team');
+	static response = createTranslationKey('response', 'Antwort');
+	static your_request = createTranslationKey('your_request', 'Deine Anfrage');
 
 	static no_permission = createTranslationKey('no_permission', 'Keine Berechtigung');
 	static please_create_an_account = createTranslationKey('please_create_an_account', 'Bitte erstelle einen Account');
@@ -269,6 +272,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 
 	static i_like_that = createTranslationKey('i_like_that', 'Gefällt mir');
 	static i_dislike_that = createTranslationKey('i_dislike_that', 'Gefällt mir nicht');
+	static like_status = createTranslationKey('like_status', 'Gefällt mir Status');
 
 	static show_login_with_username_and_password = createTranslationKey('show_login_with_username_and_password', 'Mitarbeiter-Login');
 	static email = createTranslationKey('email', 'E-Mail');
@@ -290,6 +294,7 @@ Fühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.
 	static switch = createTranslationKey('switch', 'Umschalten');
 	static edit = createTranslationKey('edit', 'Bearbeiten');
 	static save = createTranslationKey('save', 'Speichern');
+	static to_update = createTranslationKey('to_update', 'Aktualisieren');
 	static send = createTranslationKey('send', 'Absenden');
 	static button_disabled = createTranslationKey('button_disabled', 'Knopf deaktiviert');
 	static select = createTranslationKey('select', 'Auswählen');

@@ -24,7 +24,7 @@ export type AppFeedbacks = {
   user_updated?: string | DirectusUsers | null;
   profile?: string | Profiles | null;
   contact_email: string | null;
-  negative: boolean | null;
+  positive: boolean | null;
   title: string | null;
   content: string | null;
   response: string | null;

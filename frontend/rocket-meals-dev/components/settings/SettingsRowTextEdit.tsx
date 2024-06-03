@@ -50,6 +50,7 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 		<View style={{
 			width: '100%',
 			marginTop: 10,
+			paddingHorizontal: 10,
 		}}
 		>
 			<View style={{

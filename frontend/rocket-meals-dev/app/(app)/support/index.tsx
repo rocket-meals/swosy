@@ -20,6 +20,7 @@ import {AnimationSupport} from "@/compositions/animations/AnimationSupport";
 import {SEARCH_PARAM_APPFEEDBACK_ID} from "@/app/(app)/support/app_feedbacks";
 import {DeveloperInformation} from "@/constants/DeveloperInformation";
 import {HrefHelper} from "@/helper/device/CommonSystemActionHelper";
+import {DateHelper} from "@/helper/date/DateHelper";
 
 export const TABLE_NAME_APP_FEEDBACKS = 'app_feedbacks';
 
@@ -102,9 +103,15 @@ export default function AppfeedbackScreen() {
 		if(resource.response_read_by_user){
 			iconLeft = IconNames.message_response_read_by_user_icon
 		}
+		let now = new Date();
+		let labelRight = undefined
+		const usedDate = resource.date_updated || resource.date_created;
+		if(usedDate){
+			labelRight = DateHelper.formatOfferDateToReadable(new Date(usedDate), true, true);
+		}
 
 		return (
-			<SettingsRowNavigateWithText labelLeft={title} leftIcon={iconLeft} route={"/(app)/support/app_feedbacks?"+SEARCH_PARAM_APPFEEDBACK_ID+"="+resource_id} />
+			<SettingsRowNavigateWithText labelRight={labelRight} labelLeft={title} leftIcon={iconLeft} route={"/(app)/support/app_feedbacks?"+SEARCH_PARAM_APPFEEDBACK_ID+"="+resource_id} />
 		);
 
 	}

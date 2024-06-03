@@ -19,6 +19,7 @@ export const SettingsRowNavigateSimple = (props: SettingsRowNavigateSimpleProps)
 export type SettingsRowNavigateWithTextProps = {
 	// translation_key is a static field from the class TranslationKeys
 	labelLeft: string;
+	labelRight?: string;
 	leftIcon?: string;
 	route: AllRoutes
 }
@@ -30,7 +31,7 @@ export const SettingsRowNavigateWithText = (props: SettingsRowNavigateWithTextPr
 		router.push(props.route);
 	}
 
-	return <SettingsRowNavigate accessibilityLabel={accessibilityLabel} labelLeft={translation_title} onPress={onPress} leftIcon={props.leftIcon} />
+	return <SettingsRowNavigate accessibilityLabel={accessibilityLabel} labelLeft={translation_title} onPress={onPress} leftIcon={props.leftIcon} labelRight={props.labelRight} />
 }
 
 export const SettingsRowNavigate: FunctionComponent<SettingsRowProps> = ({accessibilityLabel, rightIcon, accessibilityRole, ...props}) => {

@@ -1,5 +1,5 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {useLocalSearchParams} from 'expo-router';
+import {router, useLocalSearchParams} from 'expo-router';
 import React, {useEffect} from 'react';
 import {AppFeedbacks} from "@/helper/database/databaseTypes/types";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
@@ -8,7 +8,7 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {MyButton} from "@/components/buttons/MyButton";
-import {View, Text} from "@/components/Themed";
+import {View, Text, Heading} from "@/components/Themed";
 import {getDeviceInformationWithoutPushToken} from "@/helper/device/DeviceHelper";
 import {useSynchedProfileId} from "@/states/SynchedProfile";
 import {SettingsRow} from "@/components/settings/SettingsRow";
@@ -20,6 +20,8 @@ import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {TABLE_NAME_APP_FEEDBACKS} from "@/app/(app)/support";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
 import {PermissionActions, PermissionHelper, PermissionHelperObject} from "@/helper/permission/PermissionHelper";
+import {DateHelper} from "@/helper/date/DateHelper";
+import useMyToast from "@/components/toast/MyToast";
 
 export const SEARCH_PARAM_APPFEEDBACK_ID = 'app_feedbacks_id';
 
@@ -34,7 +36,7 @@ const APP_FEEDBACK_FIELDS_LIST = [
 	"content",
 	"contact_email",
 	"device_brand",
-	"negative",
+	"positive",
 	"device_system_version",
 	"device_platform",
 	"display_height",
@@ -44,13 +46,10 @@ const APP_FEEDBACK_FIELDS_LIST = [
 	"display_scale"
 ] as const;
 
-const APP_FEEDBACKS_FIELDS: { [key in typeof APP_FEEDBACK_FIELDS_LIST[number]]: key } = Object.fromEntries(
-	APP_FEEDBACK_FIELDS_LIST.map(field => [field, field])
-) as any;
-
 export default function AppfeedbackDetails() {
 	const param_appfeedback_id = useAppfeedbackIdFromLocalSearchParams();
 	const profile_id = useSynchedProfileId();
+	const myToast = useMyToast();
 
 	const permissionHelperObject: PermissionHelperObject = PermissionHelper.usePermissionHelperObject();
 
@@ -63,13 +62,20 @@ export default function AppfeedbackDetails() {
 	const translation_unknown = useTranslation(TranslationKeys.unknown)
 	const translation_content = useTranslation(TranslationKeys.feedback);
 	const translation_is_loading = useTranslation(TranslationKeys.is_loading)
+	const translation_success = useTranslation(TranslationKeys.success)
+	const translation_error = useTranslation(TranslationKeys.error)
+	const translation_like_status = useTranslation(TranslationKeys.like_status)
 
 	const translation_date_created = useTranslation(TranslationKeys.date_created)
 	const translation_date_updated = useTranslation(TranslationKeys.date_updated)
 
+	const translation_response = useTranslation(TranslationKeys.response)
+	const translation_support_team = useTranslation(TranslationKeys.support_team)
+	const translation_your_request = useTranslation(TranslationKeys.your_request)
+
 	const translation_delete = useTranslation(TranslationKeys.delete)
 
-	const translation_save = useTranslation(TranslationKeys.save)
+	const translation_to_update = useTranslation(TranslationKeys.to_update)
 	const translation_send = useTranslation(TranslationKeys.send)
 	const deviceInformation = getDeviceInformationWithoutPushToken();
 
@@ -79,7 +85,7 @@ export default function AppfeedbackDetails() {
 	const unfilteredInitialAppfeedbackOnCreation: Partial<AppFeedbacks> = {
 		id: param_appfeedback_id,
 		device_brand: deviceInformation.brand,
-		negative: true,
+		positive: undefined,
 		device_system_version: deviceInformation.system_version,
 		device_platform: deviceInformation.platform,
 		display_height: deviceInformation.display_height,
@@ -110,40 +116,45 @@ export default function AppfeedbackDetails() {
 		return permission_map;
 	}
 
-
-	function isFieldAllowed(field: string){
-		const permissionAction: PermissionActions = create_new ? PermissionActions.CREATE : PermissionActions.UPDATE;
-		return PermissionHelper.isFieldAllowedForAction(permissionHelperObject, TABLE_NAME_APP_FEEDBACKS, field, permissionAction);
-	}
-
 	async function loadAppfeedback() {
-		if(!!appfeedback?.id) {
-			let feedbacks_remote = await collectionHelper.readItem(appfeedback?.id);
+		if(!!param_appfeedback_id) {
+			let feedbacks_remote = await collectionHelper.readItem(param_appfeedback_id);
 			setAppfeedback(feedbacks_remote);
 		}
 	}
 
 	useEffect(() => {
-		if(!create_new) {
-			loadAppfeedback();
-		}
-	}, []);
+		loadAppfeedback();
+	}, [param_appfeedback_id]);
 
 	// when state of createOrUpdating changes
 	useEffect(() => {
 		async function createOrUpdateAppfeedback() {
 			if(creatingOrUpdating) {
 				console.log("createOrUpdateAppfeedback", appfeedback)
-				if(create_new) {
-					let filteredItemForCreate = PermissionHelper.filterItemForAllowedCreateFields<AppFeedbacks>(permissionHelperObject, TABLE_NAME_APP_FEEDBACKS, appfeedback)
-					let newItem = await collectionHelper.createItem(filteredItemForCreate);
-					console.log("newItem", newItem)
-					setAppfeedback(newItem);
-				} else if(appfeedback?.id) {
-					let filteredItemForUpdate = PermissionHelper.filterItemForAllowedUpdateFields<AppFeedbacks>(permissionHelperObject, TABLE_NAME_APP_FEEDBACKS, unfilteredInitialAppfeedbackOnCreation);
-					let updatedItem = await collectionHelper.updateItem(appfeedback?.id, filteredItemForUpdate);
-					console.log("updatedItem", updatedItem)
-					setAppfeedback(updatedItem);
+				try{
+					if(create_new) {
+						let filteredItemForCreate = PermissionHelper.filterItemForAllowedCreateFields<AppFeedbacks>(permissionHelperObject, TABLE_NAME_APP_FEEDBACKS, appfeedback)
+						let newItem = await collectionHelper.createItem(filteredItemForCreate);
+						console.log("newItem", newItem)
+						myToast.show(translation_success);
+						if(newItem?.id){
+							router.push("(app)/support/app_feedbacks"+"?"+SEARCH_PARAM_APPFEEDBACK_ID+"="+newItem.id);
+						} else {
+							setAppfeedback(newItem);
+							setCreatingOrUpdating(false);
+						}
+					} else if(appfeedback?.id) {
+						let filteredItemForUpdate = PermissionHelper.filterItemForAllowedUpdateFields<AppFeedbacks>(permissionHelperObject, TABLE_NAME_APP_FEEDBACKS, appfeedback);
+						console.log("filteredItemForUpdate", filteredItemForUpdate)
+						let updatedItem = await collectionHelper.updateItem(appfeedback?.id, filteredItemForUpdate);
+						console.log("updatedItem", updatedItem)
+						myToast.show(translation_success);
+						loadAppfeedback();
+					}
+				} catch (e) {
+					myToast.show(translation_error);
+					console.error(e);
 				}
 				setCreatingOrUpdating(false);
 			}
@@ -186,11 +197,19 @@ export default function AppfeedbackDetails() {
 		await onEditField('contact_email', nextValue);
 	}
 
+	let renderedDateCreated: any = null;
+	if(appfeedback?.date_created){
+		renderedDateCreated = <SettingsRow labelLeft={translation_date_created} accessibilityLabel={translation_date_created} labelRight={DateHelper.formatOfferDateToReadable(new Date(appfeedback?.date_created), true ,true)} />
+	}
+	let renderedDateUpdated: any = null;
+	if(appfeedback?.date_updated){
+		renderedDateUpdated = <SettingsRow labelLeft={translation_date_updated} accessibilityLabel={translation_date_updated} labelRight={appfeedback?.date_updated} />
+	}
 
 	let renderedId: any = <SettingsRowGroup>
 		<SettingsRow labelLeft={"ID"} accessibilityLabel={"ID"} labelRight={param_appfeedback_id} />
-		<SettingsRow labelLeft={translation_date_created} accessibilityLabel={translation_date_created} labelRight={appfeedback?.date_created} />
-		<SettingsRow labelLeft={translation_date_updated} accessibilityLabel={translation_date_updated} labelRight={appfeedback?.date_updated} />
+		{renderedDateCreated}
+		{renderedDateUpdated}
 	</SettingsRowGroup>
 	if(!param_appfeedback_id){
 		renderedId = null;
@@ -206,13 +225,23 @@ export default function AppfeedbackDetails() {
 	let renderedResponse: any = null;
 	if(appfeedback?.response){
 		renderedResponse = <SettingsRowGroup>
-			<ThemedMarkdown markdown={appfeedback?.response} />
+
+			<View style={{
+				width: "100%",
+				paddingHorizontal: 20,
+			}}>
+				<Heading>
+					{translation_response+": "+translation_support_team}
+				</Heading>
+				<ThemedMarkdown markdown={appfeedback?.response} />
+			</View>
 		</SettingsRowGroup>
 	}
 
 	async function handleDelete() {
 		if(param_appfeedback_id) {
 			await collectionHelper.deleteItem(param_appfeedback_id);
+			router.push("(app)/support");
 		}
 	}
 
@@ -222,7 +251,7 @@ export default function AppfeedbackDetails() {
 	})
 
 	let renderedDeleteButton: any = <SettingsRowGroup>
-		<SettingsRow labelLeft={translation_delete} accessibilityLabel={translation_delete} onPress={() => {
+		<SettingsRow leftIcon={IconNames.delete_icon} labelLeft={translation_delete} accessibilityLabel={translation_delete} onPress={() => {
 			askForDeleteConfirmation();
 		}} />
 	</SettingsRowGroup>
@@ -232,7 +261,7 @@ export default function AppfeedbackDetails() {
 
 
 	let createOrSaveButtonEnabled = !!appfeedback?.title && !!appfeedback?.content
-	let createOrSaveButtonLabel = create_new ? translation_send : translation_save;
+	let createOrSaveButtonLabel = create_new ? translation_send : translation_to_update;
 	let createOrSaveButtonIcon = create_new ? IconNames.create_icon : IconNames.save_icon;
 	let createOrSaveButtonAccessibilityLabel = translation_feedback+": "+createOrSaveButtonLabel;
 	if(creatingOrUpdating){
@@ -260,19 +289,27 @@ export default function AppfeedbackDetails() {
 	return (
 		<MySafeAreaView>
 			<MyScrollView>
-				{renderedId}
+				{renderedResponse}
 				<SettingsRowGroup>
+					<View style={{
+						width: "100%",
+						paddingHorizontal: 20,
+					}}>
+						<Heading>
+							{translation_your_request}
+						</Heading>
+					</View>
 					<SettingsRowTextEdit disabled={!permissions_for_resource.title} onSave={getOnEditSpecialTextField("title")} labelLeft={translation_title} accessibilityLabel={translation_title} labelRight={appfeedback?.title} leftIcon={IconNames.title_icon} />
 					<SettingsRowTextAreaEdit disabled={!permissions_for_resource.content} onSave={getOnEditSpecialTextField("content")} labelLeft={translation_content} accessibilityLabel={translation_content} labelRight={appfeedback?.content} leftIcon={IconNames.content_icon} />
 					<SettingsRowTextEdit disabled={!permissions_for_resource.contact_email} onSave={onEditEmail} labelLeft={translation_email+" ("+translation_optional+")"} accessibilityLabel={translation_email} labelRight={appfeedback?.contact_email} leftIcon={IconNames.mail_icon} />
-					<SettingsRowTriStateLikeDislike disabled={!permissions_for_resource.negative} value={!appfeedback.negative} accessibilityLabel={"Like"} labelLeft={"Like/Dislike"} leftIcon={IconNames.like_active_icon} onPress={(nextValue: boolean) => {
-						let new_appfeedback = {...appfeedback || {}, negative: nextValue};
+					<SettingsRowTriStateLikeDislike disabled={!permissions_for_resource.positive} value={appfeedback.positive} accessibilityLabel={translation_like_status} labelLeft={translation_like_status} leftIcon={IconNames.like_active_icon} onSetState={(like: boolean | undefined) => {
+						console.log("nextValue boolean", like)
+						let new_appfeedback = {...appfeedback || {}, positive: like};
 						setAppfeedback(new_appfeedback)
 					}} />
 				</SettingsRowGroup>
 				{renderedCreateOrSaveButton}
 				{renderedDeleteButton}
-				{renderedResponse}
 				{renderedProfileId}
 				<SettingsRowGroup>
 					<SettingsRowTextEdit disabled={!permissions_for_resource.device_brand} labelLeft={"Device Brand"} accessibilityLabel={"Device Brand"} labelRight={appfeedback?.device_brand || translation_unknown} onSave={getOnEditSpecialTextField("device_brand")} />
@@ -284,6 +321,7 @@ export default function AppfeedbackDetails() {
 					<SettingsRowNumberEdit disabled={!permissions_for_resource.display_pixelratio} labelLeft={"Display Pixelratio"} accessibilityLabel={"Display Pixelratio"} labelRight={"x"+appfeedback?.display_pixelratio+""} onSave={getOnEditSpecialNumberField("display_pixelratio")} />
 					<SettingsRowNumberEdit disabled={!permissions_for_resource.display_scale} labelLeft={"Display Scale"} accessibilityLabel={"Display Scale"} labelRight={"x"+appfeedback?.display_scale+""} onSave={getOnEditSpecialNumberField("display_scale")} />
 				</SettingsRowGroup>
+				{renderedId}
 			</MyScrollView>
 		</MySafeAreaView>
 	)
