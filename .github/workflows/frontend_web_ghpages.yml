@@ -1,5 +1,11 @@
 name: GH-Pages Publish
 on:
+  merge:
+    branches:
+      - production
+    paths:
+      - 'frontend/rocket-meals-dev/**'
+      - ".github/workflows/frontend_web_ghpages.yml"
   push:
     branches:
       - production

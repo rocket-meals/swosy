@@ -1,5 +1,13 @@
 name: Expo Update
 on:
+  merge:
+    branches:
+      - master
+      - dev
+      - production
+    paths:
+      - 'frontend/rocket-meals-dev/**'
+      - ".github/workflows/frontend_native_expo.yml"
   push:
     branches:
       - master
