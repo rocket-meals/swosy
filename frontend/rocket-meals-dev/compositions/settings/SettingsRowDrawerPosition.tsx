@@ -69,9 +69,7 @@ export const SettingsRowDrawerPosition: FunctionComponent<AppState> = ({...props
 			accessibilityLabel: itemAccessibilityLabel,
 			onSelect: async (key: string, hide: () => void) => {
 				const nextValue: DrawerConfigPosition = key as DrawerConfigPosition
-				setSavedOptionKey((currentValue) => {
-					return nextValue;
-				})
+				setSavedOptionKey(nextValue)
 				hide()
 			}
 		})
