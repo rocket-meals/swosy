@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      # DO NOT INSERT master branch here
+      - master # Master will be also in Production run
     paths:
       - 'frontend/app/**'
       - ".github/workflows/frontend_native_expo.yml"
