@@ -13,6 +13,118 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "app_feedbacks",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "_or": [
+            {
+              "profile": {
+                "_eq": "$CURRENT_USER.profile"
+              }
+            },
+            {
+              "profile": {
+                "_null": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "positive",
+      "content",
+      "title",
+      "profile",
+      "contact_email",
+      "device_platform",
+      "device_brand",
+      "display_width",
+      "device_system_version",
+      "display_height",
+      "display_fontscale",
+      "display_scale",
+      "display_pixelratio"
+    ],
+    "_syncId": "35db5617-2069-4a59-adfd-c0bcf912dce0"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "app_feedbacks",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "_syncId": "f0da9f73-4ca4-4200-85db-f7ebf2bf7944"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "app_feedbacks",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "c88d34f7-e21e-478c-aab2-fc623db7c0cc"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "app_feedbacks",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "content",
+      "positive",
+      "date_updated",
+      "title",
+      "contact_email",
+      "response_read_by_user",
+      "device_brand",
+      "device_platform",
+      "device_system_version",
+      "display_width",
+      "display_fontscale",
+      "display_height",
+      "display_pixelratio",
+      "display_scale"
+    ],
+    "_syncId": "c5decab0-c43d-4a40-9da6-c68115d64f58"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "app_settings_housing_translations",
     "action": "read",
     "permissions": {},
@@ -574,15 +686,13 @@
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "foods_feedbacks_foods_feedbacks_labels",
     "action": "create",
-    "permissions": null,
-    "validation": null,
+    "permissions": {},
+    "validation": {},
     "presets": null,
     "fields": [
-      "foods_feedbacks_labels_id",
-      "dislike",
-      "foods_feedbacks_id"
+      "*"
     ],
-    "_syncId": "687d4a8b-d4b2-4c0c-a9fb-dfa779e3f243"
+    "_syncId": "a7e53222-b5c8-4188-a174-3d9f85366195"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -784,15 +894,7 @@
         }
       ]
     },
-    "validation": {
-      "_and": [
-        {
-          "profile": {
-            "_eq": "$CURRENT_USER.profile"
-          }
-        }
-      ]
-    },
+    "validation": null,
     "presets": null,
     "fields": [
       "id",
@@ -1145,7 +1247,7 @@
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "profiles_markings",
     "action": "create",
-    "permissions": null,
+    "permissions": {},
     "validation": {
       "_and": [
         {
@@ -1157,9 +1259,7 @@
     },
     "presets": null,
     "fields": [
-      "id",
-      "profiles_id",
-      "markings_id"
+      "*"
     ],
     "_syncId": "dd280255-92c7-435d-8513-3ba4b781a938"
   },
@@ -1424,6 +1524,30 @@
       "*"
     ],
     "_syncId": "5a0b2600-6af3-42aa-b0c7-44cb227d2f17"
+  },
+  {
+    "role": null,
+    "collection": "app_feedbacks",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "title",
+      "content",
+      "contact_email",
+      "negative",
+      "display_height",
+      "display_width",
+      "display_pixelratio",
+      "display_scale",
+      "device_platform",
+      "display_fontscale",
+      "device_brand",
+      "device_system_version",
+      "positive"
+    ],
+    "_syncId": "0c54056d-0aca-4b17-8e04-f3ce3cb49714"
   },
   {
     "role": null,

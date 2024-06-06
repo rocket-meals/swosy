@@ -276,6 +276,7 @@ type Subscription {
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
+  app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -363,6 +364,41 @@ type apartments_mutated {
   key: ID!
   event: EventEnum
   data: apartments
+}
+
+type app_feedbacks {
+  id: ID!
+  status: String
+  sort: Int
+  user_created: String
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  title: String
+  content: String
+  profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  contact_email: String
+  response: String
+  priority: Int
+  feedback_read_by_support: Boolean
+  response_read_by_user: Boolean
+  device_platform: String
+  device_brand: String
+  device_system_version: String
+  display_width: Int
+  display_height: Int
+  display_fontscale: Int
+  display_pixelratio: Int
+  display_scale: Int
+  positive: Boolean
+}
+
+type app_feedbacks_mutated {
+  key: ID!
+  event: EventEnum
+  data: app_feedbacks
 }
 
 type app_settings {

@@ -1,11 +1,10 @@
-// Required dependencies
 import fetch from 'node-fetch';
-import { CookieJar } from 'cookiejar';
+import {CookieJar} from 'cookiejar';
 import fs from 'fs';
 import FormData from 'form-data';
-import { execSync } from 'child_process';
+import {execSync} from 'child_process';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 import https from 'https';
 import inquirer from 'inquirer';
 
@@ -192,25 +191,21 @@ const configureVariables = async () => {
 /**
  * MAIN PUSH FUNCTION
  */
-// Main function to handle the "push" command
+    // Main function to handle the "push" command
 const mainPush = async () => {
-    console.log("Starting Push Sync")
-    await configureVariables();
-    const headers = await setupDirectusConnectionAndGetHeaders()
-    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
-    await enableRequiredSettings(headers);
-    await pushDirectusSyncSchemas();
-    await uploadPublicPermissions(headers);
-    await uploadSchemas(headers);
-};
+        console.log("Starting Push Sync")
+        await configureVariables();
+        const headers = await setupDirectusConnectionAndGetHeaders()
+        await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
+        await enableRequiredSettings(headers);
+        await pushDirectusSyncSchemas();
+        //await uploadPublicPermissions(headers);
+        await uploadSchemas(headers);
+    };
 
 // Function to enable required settings
 const enableRequiredSettings = async (headers) => {
     console.log("Enabling required settings...");
-
-    // fetch with ignoring self signed certificates
-
-
 
     // Patch settings with an empty object
     console.log(" -  Patching with empty");
@@ -226,13 +221,7 @@ const enableRequiredSettings = async (headers) => {
 
     // Fetch the current settings
     console.log(" -  Fetching settings");
-    const settingsResponse = await fetch(`${getUrlSettings()}`, {
-        agent: httpsAgent,
-        method: 'GET',
-        headers: { "Cookie": headers.get('cookie') },
-    });
-    const settings = await settingsResponse.json();
-    if (!settings) throw new Error("Failed to fetch settings!");
+    const settings = await fetchGetResponseJson(`${getUrlSettings()}`, headers);
 
     const modules = settings.data.module_bar;
     if (!modules) throw new Error("Failed to fetch modules!");
@@ -276,10 +265,9 @@ const escapeShellArg = (arg) => {
 
 const getDirectusSyncParams = () => {
     // Properly escape the password for shell command
-    const escaped_password = escapeShellArg(admin_password);
     const preserverIds = "dashboards,operations,panels,roles,translations";
     const preserveOption = "--preserve-ids "+preserverIds;
-    return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + escaped_password + '" --dump-path ' + dumpPath+ " "+preserveOption
+    return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + admin_password + '" --dump-path ' + dumpPath+ " "+preserveOption
 }
 
 const pushDirectusSyncSchemas = async () => {
@@ -293,105 +281,29 @@ const pushDirectusSyncSchemas = async () => {
     }
 
     // execSync and print the output
-    try{
-        execSync(command, {
-            env: { ...process.env },
-            stdio: 'pipe'
-        })
-        console.log(" -  Pushed schema changes to Directus");
-    } catch (error) {
-        console.log(error.message)
-        console.log("Please run the command manually and check the error")
-        console.log("Command: "+command)
-    }
-}
+    try {
+        console.log(" -  Pushing schema changes");
+        const output = execSync(command, {
+            env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe']
+        }).toString();
 
-// Function to sync public permissions
-const uploadPublicPermissions = async (headers) => {
-    console.log("Syncing public permissions...");
-
-    // Load public permissions data
-    const data = fs.readFileSync(`${configurationPathRolesPermissions}/public.json`, 'utf8');
-    const permissions_to_upload = JSON.parse(data);
-
-    let remote_permissions = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
-        agent: httpsAgent,
-        method: 'GET',
-        headers: { "Cookie": headers.get('cookie') },
-    }).then(response => response.json());
-    console.log("remote_permissions: "+JSON.stringify(remote_permissions, null, 4))
-
-
-    // Helper function to update a permission node
-    const updatePermissionNode = async (permission, id) => {
-        console.log("Set fields to: "+JSON.stringify(permission.fields))
-        const response = await fetch(`${getUrlPermissions()}/${id}`, {
-            agent: httpsAgent,
-            method: 'PATCH',
-            headers: {
-                "Cookie": headers.get('cookie'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                role: permission.role,
-                collection: permission.collection,
-                action: permission.action,
-                fields: permission.fields,
-                permissions: permission.permissions,
-                validation: permission.validation,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} message: ${response.statusText}`);
-        }
-    };
-
-    // Iterate through all permissions and update each
-    for (const permission_to_upload of permissions_to_upload) {
-        console.log(` -  Syncing ${permission_to_upload.collection} ${permission_to_upload.action}`);
-
-        let id_for_permission = permission_to_upload.id;
-        if (id_for_permission === undefined) {
-            console.log(" -  Permission object does not have an id, trying to find or create it: "+permission_to_upload.collection+" "+permission_to_upload.action);
-            // okay maybe the id is in the remote_permissions which should be found by collection and action and role=null
-            let remote_permission = remote_permissions.data.find(permission => permission.collection === permission_to_upload.collection && permission.action === permission_to_upload.action && permission.role === null);
-            if (remote_permission !== undefined) {
-                id_for_permission = remote_permission.id;
-            } else {
-                console.log(" -  Permission does not exist yet, trying to create it");
-                // okay the permission does not exist yet, so we need to create it
-                const response = await fetch(`${getUrlPermissions()}`, {
-                    agent: httpsAgent,
-                    method: 'POST',
-                    headers: {
-                        "Cookie": headers.get('cookie'),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        role: null,
-                        collection: permission_to_upload.collection,
-                        action: permission_to_upload.action,
-                    }),
-                });
-                let response_json = await response.json();
-                let new_created_permission = response_json.data;
-                console.log("new_created_permission with id: "+new_created_permission?.id);
-                id_for_permission = new_created_permission?.id;
+        const lines = output.split('\n');
+        for (const line of lines) {
+            console.log(line);
+            if (line.includes('✅  Done!')) {
+                console.log(" -  Pushed schema changes");
+                break;
             }
         }
-
-        if(id_for_permission === undefined) {
-            console.error("Could not find or create permission for: "+permission_to_upload.collection+" "+permission_to_upload.action);
-            continue;
-        } else {
-            console.log(" -  Updating permission with id: "+id_for_permission+" for: "+permission_to_upload.collection+" "+permission_to_upload.action);
-            await updatePermissionNode(permission_to_upload, id_for_permission);
-        }
+    } catch (error) {
+        console.error("Error during schema push:");
+        const errorOutput = error.stdout.toString() + error.stderr.toString();
+        console.error(errorOutput);
+        console.log("Please run the command manually and check the error");
+        console.log("Command: " + command);
     }
-
-    console.log(" -  Public permissions synced");
-};
+}
 
 const uploadSchemas = async (headers) => {
     console.log("Uploading schemas...");
@@ -413,13 +325,7 @@ const uploadSchema = async (headers, file) => {
     const displayName = name.split("-").pop();
 
     // Check if collection already exists
-    const firstElement = await fetch(`${getUrlItems()}/${displayName}?limit=1`, {
-        agent: httpsAgent,
-        method: 'GET',
-        headers: { "Cookie": headers.get('cookie') },
-    }).then(response => response.json());
-
-    console.log()
+    const firstElement = await fetchGetResponseJson(`${getUrlItems()}/${displayName}?limit=1`, headers);
 
     if (firstElement.data.length > 0) {
         console.log(` -  ${displayName} already exists`);
@@ -448,12 +354,7 @@ const getCollection = async (headers, name) => {
 
     // Retrieve collection data
     console.log(" -  Fetching collection data");
-    console.log(`${getUrlItems()}/${displayName}?limit=-1`);
-    const data = await fetch(`${getUrlItems()}/${displayName}?limit=-1`, {
-        agent: httpsAgent,
-        method: 'GET',
-        headers: { "Cookie": headers.get('cookie') },
-    }).then(response => response.json());
+    const data = await fetchGetResponseJson(`${getUrlItems()}/${displayName}?limit=-1`, headers);
 
     return data.data;
 };
@@ -463,16 +364,16 @@ const getCollection = async (headers, name) => {
  * MAIN PULL FUNCTION
  */
 
-// Main function to handle the "pull" command
+    // Main function to handle the "pull" command
 const mainPull = async () => {
-    console.log("Waiting for Directus to be ready...");
-    await configureVariables();
-    const headers = await setupDirectusConnectionAndGetHeaders()
-    await saveCollections(headers);
-    await savePublicRole(headers);
-    await saveDirectusSyncSchema();
-    await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
-};
+        console.log("Waiting for Directus to be ready...");
+        await configureVariables();
+        const headers = await setupDirectusConnectionAndGetHeaders()
+        await saveCollections(headers);
+        //await savePublicRolePermissions(headers);
+        await pullDirectusSyncSchema();
+        await copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder();
+    };
 
 const copyFromDirectusConfigOverwriteFolderIntoDirectusConfigFolder = async () => {
     // copy all files except .DS_Store from directusConfigOverwriteCollectionsPath to directusConfigCollectionsPath
@@ -517,26 +418,9 @@ const saveCollections = async (headers) => {
     console.log(" -  Saved collections");
 };
 
-// Function to save public role permissions
-const savePublicRole = async (headers) => {
-    console.log("Saving public role...");
-    const data = await fetch(`${getUrlPermissions()}?filter%5Brole%5D%5B_null%5D=true`, {
-        agent: httpsAgent,
-        method: 'GET',
-        headers: { "Cookie": headers.get('cookie') },
-    }).then(response => response.json());
-
-    const jsonData = JSON.stringify(data.data, null, 4);
-
-    // Save the public role permissions to file
-    fs.writeFileSync(`${configurationPathRolesPermissions}/public.json`, jsonData);
-    console.log(" -  Saved public role");
-};
 
 
-
-
-const saveDirectusSyncSchema = async() => {
+const pullDirectusSyncSchema = async() => {
     // Pull schema changes from Directus
     console.log("Pulling schema changes from Directus...");
     const directus_sync_params = getDirectusSyncParams();
@@ -547,16 +431,27 @@ const saveDirectusSyncSchema = async() => {
         command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 '+command;
     }
     // execSync and print the output
-    try{
-        execSync(command, {
-            env: { ...process.env, NODE_TLS_REJECT_UNAUTHORIZED: '0' },
-            stdio: 'pipe'
-        })
-        console.log(" -  Pulled schema changes from Directus");
+    try {
+        console.log(" -  Pulling schema changes from Directus");
+        const output = execSync(command, {
+            env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe']
+        }).toString();
+
+        const lines = output.split('\n');
+        for (const line of lines) {
+            console.log(line);
+            if (line.includes('✅  Done!')) {
+                console.log(" -  Pulled schema changes from Directus");
+                break;
+            }
+        }
     } catch (error) {
-        console.log(error.message)
-        console.log("Please run the command manually and check the error")
-        console.log("Command: "+command)
+        console.error("Error during schema pull:");
+        const errorOutput = error.stdout.toString() + error.stderr.toString();
+        console.error(errorOutput);
+        console.log("Please run the command manually and check the error");
+        console.log("Command: " + command);
     }
 }
 
@@ -579,10 +474,14 @@ const waitForDirectusToBeReady = async () => {
                 agent: httpsAgent,
                 method: 'GET',
             });
+            await fetchGetResponse(`${directus_url}/server/ping`, undefined);
+
             console.log("Directus is ready\n");
             ready = true;
             break;
         } catch (e) {
+            console.log("Directus is not ready yet")
+            console.log(e)
             const TIME_TO_WAIT = 1000;
             console.log("Trying again in " + TIME_TO_WAIT + "ms");
             await new Promise(resolve => setTimeout(resolve, TIME_TO_WAIT));
@@ -634,6 +533,48 @@ const login = async () => {
 
     return headers;
 };
+
+const fetchGetOptions = (headers, method) => {
+    return {
+        agent: httpsAgent,
+        method: method,
+        headers: headers,
+    };
+}
+
+// Refactored fetch GET function
+const fetchGetResponse = async (url, headers) => {
+    let headersObject = undefined
+    if(headers) {
+        headersObject = {"Cookie": headers.get('cookie')}
+    }
+
+    return await fetch(url, fetchGetOptions(headersObject, 'GET'));
+}
+
+const fetchGetResponseJson = async (url, headers) => {
+    const response = await fetchGetResponse(url, headers);
+    return await response.json();
+}
+
+const fetchPostResponse = async (url, headers, body) => {
+    return await fetch(url, {
+        agent: httpsAgent,
+        method: 'POST',
+        headers: headers,
+        body: body,
+    });
+}
+
+const fetchPatchResponse = async (url, headers, body) => {
+    return await fetch(url, {
+        agent: httpsAgent,
+        method: 'PATCH',
+        headers: headers,
+        body: body,
+    });
+}
+
 
 // Command-line argument processing
 if (process.argv[2] === "push") {
