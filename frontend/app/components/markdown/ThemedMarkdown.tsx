@@ -28,6 +28,19 @@ dignissima virgine posse coniectum suspiria, scilicet caelestia, cape.
 [Rocket Meals](https://rocket-meals.de)
 `
 
+export const replaceLinebreaks = (sourceContent: string) => {
+	const option_find_linebreaks = true;
+	if (option_find_linebreaks) {
+		sourceContent = sourceContent.replaceAll('<br/>', '\n');
+		sourceContent = sourceContent.replaceAll('</br>', '\n');
+		sourceContent = sourceContent.replaceAll('<br>', '\n');
+		sourceContent = sourceContent.replaceAll('<p/>', '\n');
+		sourceContent = sourceContent.replaceAll('</p>', '\n');
+		sourceContent = sourceContent.replaceAll('<p>', '\n');
+	}
+	return sourceContent;
+}
+
 interface AppState {
     darkmode?: boolean,
     hideSkeleton?: boolean,
@@ -63,12 +76,7 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
-		sourceContent = sourceContent.replaceAll('<br/>', '\n');
-		sourceContent = sourceContent.replaceAll('</br>', '\n');
-		sourceContent = sourceContent.replaceAll('<br>', '\n');
-		sourceContent = sourceContent.replaceAll('<p/>', '\n');
-		sourceContent = sourceContent.replaceAll('</p>', '\n');
-		sourceContent = sourceContent.replaceAll('<p>', '\n');
+		sourceContent = replaceLinebreaks(sourceContent);
 	}
 
 

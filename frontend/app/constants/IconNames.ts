@@ -138,4 +138,7 @@ export class IconNames {
     static sort_intelligent_icon = "brain"
     static sort_distance_icon = "map-marker-distance"
     static sort_free_rooms_icon = "door-open"
+
+    static expand_icon = "chevron-down"
+    static collapse_icon = "chevron-up"
 }

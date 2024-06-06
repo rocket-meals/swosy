@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import {CookieJar} from 'cookiejar';
 import fs from 'fs';
 import FormData from 'form-data';
-import {execSync} from 'child_process';
+import {spawn} from 'child_process';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import https from 'https';
@@ -259,10 +259,6 @@ const enableRequiredSettings = async (headers) => {
     console.log(" -  Enabled required settings");
 };
 
-const escapeShellArg = (arg) => {
-    return arg.replace(/([\\"'`$!&*()|;<>])/g, '\\$1');
-}
-
 const getDirectusSyncParams = () => {
     // Properly escape the password for shell command
     const preserverIds = "dashboards,operations,panels,roles,translations";
@@ -270,40 +266,74 @@ const getDirectusSyncParams = () => {
     return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + admin_password + '" --dump-path ' + dumpPath+ " "+preserveOption
 }
 
-const pushDirectusSyncSchemas = async () => {
-    console.log("Pushing schema changes to Directus...");
-    const directus_sync_params = getDirectusSyncParams();
-    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
+const execWithOutput = async (command) => {
+    // Split the command into arguments for spawn
+    const [cmd, ...args] = command.split(' ');
+    console.log(" -  Pushing schema changes");
 
-    let command = 'npx directus-sync@2.1.0 push ' + directus_sync_params;
-    if(directus_url.startsWith("https://127.0.0.1")) {
-        command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 '+command;
-    }
+    const child = spawn(cmd, args, {
+        env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
+        shell: true,
+        stdio: ['inherit', 'pipe', 'pipe']
+    });
 
-    // execSync and print the output
-    try {
-        console.log(" -  Pushing schema changes");
-        const output = execSync(command, {
-            env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
-            stdio: ['pipe', 'pipe', 'pipe']
-        }).toString();
+    let output = '';
 
-        const lines = output.split('\n');
-        for (const line of lines) {
-            console.log(line);
-            if (line.includes('✅  Done!')) {
+    child.stdout.on('data', (data) => {
+        process.stdout.write(data);  // Print the output to the console
+        output += data.toString();  // Capture the output
+    });
+
+    child.stderr.on('data', (data) => {
+        process.stderr.write(data);  // Print error output to the console
+        output += data.toString();  // Capture the error output
+    });
+
+    await new Promise((resolve, reject) => {
+        child.on('close', (code) => {
+            if (code === 0) {
                 console.log(" -  Pushed schema changes");
-                break;
+                resolve();
+            } else {
+                reject(new Error(`Command exited with code ${code}`));
             }
+        });
+    });
+
+    return output;
+}
+
+const execDirectusSync = async (params) => {
+    let command = 'npx directus-sync@2.1.0 ' + params;
+    let output = await execWithOutput(command);
+    const lines = output.split('\n');
+    for (const line of lines) {
+        if (line.includes('✅  Done!')) {
+            return true;
         }
-    } catch (error) {
-        console.error("Error during schema push:");
-        const errorOutput = error.stdout.toString() + error.stderr.toString();
-        console.error(errorOutput);
-        console.log("Please run the command manually and check the error");
-        console.log("Command: " + command);
+    }
+    console.error("Error during execution of directus-sync");
+    console.error(output);
+    return false;
+}
+
+const execDirectusSyncMethod = async (method, logText) => {
+    console.log(" - Directus Sync: "+logText);
+    const directus_sync_params = getDirectusSyncParams();
+    const params = method + ' ' + directus_sync_params;
+    let success = await execDirectusSync(params);
+    if(success) {
+        console.log(" -  Success: "+logText);
+    } else {
+        console.log(" -  No success: "+logText);
+        throw new Error("Error during execution of directus-sync");
     }
 }
+
+const pushDirectusSyncSchemas = async () => {
+    await execDirectusSyncMethod("push", "Pushing schema changes");
+};
+
 
 const uploadSchemas = async (headers) => {
     console.log("Uploading schemas...");
@@ -421,38 +451,7 @@ const saveCollections = async (headers) => {
 
 
 const pullDirectusSyncSchema = async() => {
-    // Pull schema changes from Directus
-    console.log("Pulling schema changes from Directus...");
-    const directus_sync_params = getDirectusSyncParams();
-    //execSync('NODE_TLS_REJECT_UNAUTHORIZED=0 npx directus-sync@2.1.0 pull ' + directus_sync_params);
-
-    let command = 'npx directus-sync@2.1.0 pull ' + directus_sync_params;
-    if(directus_url.startsWith("https://127.0.0.1")) {
-        command = 'NODE_TLS_REJECT_UNAUTHORIZED=0 '+command;
-    }
-    // execSync and print the output
-    try {
-        console.log(" -  Pulling schema changes from Directus");
-        const output = execSync(command, {
-            env: { NODE_TLS_REJECT_UNAUTHORIZED: '0', ...process.env },
-            stdio: ['pipe', 'pipe', 'pipe']
-        }).toString();
-
-        const lines = output.split('\n');
-        for (const line of lines) {
-            console.log(line);
-            if (line.includes('✅  Done!')) {
-                console.log(" -  Pulled schema changes from Directus");
-                break;
-            }
-        }
-    } catch (error) {
-        console.error("Error during schema pull:");
-        const errorOutput = error.stdout.toString() + error.stderr.toString();
-        console.error(errorOutput);
-        console.log("Please run the command manually and check the error");
-        console.log("Command: " + command);
-    }
+    await execDirectusSyncMethod("pull", "Pulling schema changes");
 }
 
 

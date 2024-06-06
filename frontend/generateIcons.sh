@@ -47,11 +47,11 @@ print_usage() {
     echo "Usage: $0 <path_to_icon> <path_to_company_logo> [output_folder]"
     echo "  <path_to_icon>         Path to the icon file"
     echo "  <path_to_company_logo> Path to the company logo file"
-    echo "  [output_folder]        Optional: Path to the output folder. Default is ./rocket-meals-dev/assets/images/"
+    echo "  [output_folder]        Optional: Path to the output folder. Default is ./app/assets/images/"
 }
 
 # Define default output folder
-DEFAULT_OUTPUT_FOLDER="./rocket-meals-dev/assets/images/"
+DEFAULT_OUTPUT_FOLDER="./app/assets/images/"
 OUTPUT_FOLDER="$DEFAULT_OUTPUT_FOLDER"
 
 # Define image sizes

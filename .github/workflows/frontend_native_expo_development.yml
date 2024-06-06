@@ -5,7 +5,7 @@ on:
       - dev
       # DO NOT INSERT master branch here
     paths:
-      - 'frontend/rocket-meals-dev/**'
+      - 'frontend/app/**'
       - ".github/workflows/frontend_native_expo.yml"
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: cd ./frontend/rocket-meals-dev && npm ci
+        run: cd ./frontend/app && npm ci
 
       - name: Publish update to channel specific for branch
-        run: cd ./frontend/rocket-meals-dev && eas update --auto
+        run: cd ./frontend/app && eas update --auto

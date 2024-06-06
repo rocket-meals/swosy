@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - 'frontend/rocket-meals-dev/**'
+      - 'frontend/app/**'
       - ".github/workflows/frontend_web_ghpages.yml"
       - ".github/workflows/frontend_native_expo.yml"
       
@@ -12,7 +12,7 @@ jobs:
   gh-pages:
     defaults:
       run:
-        working-directory: ./frontend/rocket-meals-dev
+        working-directory: ./frontend/app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

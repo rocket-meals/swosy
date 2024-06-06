@@ -15,7 +15,7 @@
     - projectId
 - Update the server url
   - You need to have the backend setup
-  - in /rocket-meals-dev/constants/ServerConfiguration.ts
+  - in /app/constants/ServerConfiguration.ts
 - Enable Github Pages
   - Set the homepage in package.json: "homepage": "/rocket-meals" to specify the sub-path
   - After the first deployment, set the to be hosted by branch gh-pages
