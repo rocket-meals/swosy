@@ -18,8 +18,8 @@ interface AppState {
 	children?: string
 }
 
-const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.ReactNode }> = ({titleSource, children}) => {
-	const [collapsed, setCollapsed] = useState(true);
+const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.ReactNode, initiallyOpen: boolean }> = ({titleSource, initiallyOpen, children}) => {
+	const [collapsed, setCollapsed] = useState(!initiallyOpen);
 	const toggleCollapse = () => setCollapsed(!collapsed);
 
 	const projectColor = useProjectColor()
@@ -151,9 +151,18 @@ const getSourceFromTokens = (tokens: any[] | undefined): string => {
 }
 
 
-const renderTokenOrSections = (tokenOrSections: TokenOrSection[], width: number, defaultTextProps: any) => {
+const renderTokenOrSections = (tokenOrSections: TokenOrSection[], width: number, defaultTextProps: any, initiallyOpenWhenOnlyOneSection: boolean) => {
 	let output = [];
 	let lastTokens = [];
+	let sectionCount = 0;
+	for(let i = 0; i < tokenOrSections.length; i++) {
+		let tokenOrSection = tokenOrSections[i];
+		if(tokenOrSection.section) {
+			sectionCount++;
+		}
+	}
+	let firstSection = true;
+	let moreThanOneSection = sectionCount > 1;
 
 	for(let i = 0; i < tokenOrSections.length; i++) {
 		let tokenOrSection = tokenOrSections[i];
@@ -172,11 +181,16 @@ const renderTokenOrSections = (tokenOrSections: TokenOrSection[], width: number,
 
 			let titleSource: string = tokenOrSection.section?.titleTokens.map((token: any) => token.content).join('') || '';
 
+			let initiallyOpenForThisSection = initiallyOpenWhenOnlyOneSection && firstSection && !moreThanOneSection;
+			let subSectionsInitialOpen = false
+
 			output.push(
-				<CollapsibleCard key={i} titleSource={titleSource}>
-					{renderTokenOrSections(tokenOrSection.section?.contentTokenOrSections || [], width, defaultTextProps)}
+				<CollapsibleCard key={i} titleSource={titleSource} initiallyOpen={initiallyOpenForThisSection}>
+					{renderTokenOrSections(tokenOrSection.section?.contentTokenOrSections || [], width, defaultTextProps, subSectionsInitialOpen)}
 				</CollapsibleCard>
 			);
+
+			firstSection = false;
 		}
 	}
 
@@ -187,7 +201,7 @@ const renderTokenOrSections = (tokenOrSections: TokenOrSection[], width: number,
 		output.push(
 			<ThemedMarkdown key={tokenOrSections.length} markdown={source} />
 		);
-		lastTokens = [];
+		//lastTokens = [];
 	}
 
 	return output;
@@ -225,7 +239,7 @@ export const ThemedMarkdownWithCards: FunctionComponent<AppState> = (props) => {
 	} else {
 		return (
 			<View>
-				{renderTokenOrSections(tokenOrSections, width, defaultTextProps)}
+				{renderTokenOrSections(tokenOrSections, width, defaultTextProps, true)}
 			</View>
 		)
 	}
