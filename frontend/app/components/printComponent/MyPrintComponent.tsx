@@ -3,31 +3,25 @@ import ViewShot, {captureRef} from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import {Platform} from 'react-native';
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export class DownloadHelper {
-    static async downloadBase64(base64: string, filename: string) {
+    static async downloadImage(base64ForWebAndUriForMobile: string, filename: string) {
         const fileUri = FileSystem.cacheDirectory + filename;
 
-        if (Platform.OS === 'web') {
+        if (PlatformHelper.isWeb()) {
+            let base64Href = base64ForWebAndUriForMobile;
             const link = document.createElement('a');
-            link.href = base64;
+            link.href = base64ForWebAndUriForMobile;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        } else {
+        }
+        if(PlatformHelper.isSmartPhone()){
             // Strip the data URL prefix before writing to file
-            const base64Data = base64.split(",")[1];
-            await FileSystem.writeAsStringAsync(fileUri, base64Data, {
-                encoding: FileSystem.EncodingType.Base64
-            });
-
-            if (!(await Sharing.isAvailableAsync())) {
-                alert(`Uh oh, sharing isn't available on your platform`);
-                return;
-            }
-
-            await Sharing.shareAsync(fileUri);
+            let uri = base64ForWebAndUriForMobile;
+            await Sharing.shareAsync(uri);
         }
     }
 }
@@ -41,10 +35,10 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
     const ref = useRef();
 
     async function captureAndShare() {
-        let base64 = "";
+        let base64ForWebAndUriForMobile = "";
         try {
             if (ref.current) {
-                base64 = await captureRef(ref.current, {
+                base64ForWebAndUriForMobile = await captureRef(ref.current, {
                     format: "jpg",
                     quality: 0.9
                 });
@@ -55,9 +49,9 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
         }
 
         console.log("Base64 is still");
-        console.log(base64);
-        if (base64) {
-            await DownloadHelper.downloadBase64(base64, "test.jpg");
+        console.log(base64ForWebAndUriForMobile);
+        if (base64ForWebAndUriForMobile) {
+            await DownloadHelper.downloadImage(base64ForWebAndUriForMobile, "test.jpg");
         }
     }
 
