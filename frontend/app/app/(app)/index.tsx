@@ -1,5 +1,5 @@
 import {router, useFocusEffect} from 'expo-router';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {View} from '@/components/Themed';
 
@@ -12,12 +12,12 @@ export default function TabOneScreen() {
 	});
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<View >
 
 				</View>
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

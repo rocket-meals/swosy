@@ -1,9 +1,8 @@
-import React, { useRef, useEffect } from "react";
-import ViewShot, { captureRef } from 'react-native-view-shot';
-import { MyButton } from "@/components/buttons/MyButton";
+import React, {useEffect, useRef} from "react";
+import ViewShot, {captureRef} from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 export class DownloadHelper {
     static async downloadBase64(base64: string, filename: string) {
@@ -33,12 +32,12 @@ export class DownloadHelper {
     }
 }
 
-export type PrintComponentProps = {
+export type MyPrintComponentProps = {
     children: React.ReactNode,
     setPrintCallback: (callback: () => void) => void
 }
 
-export default function PrintComponent(props: PrintComponentProps) {
+export default function MyPrintComponent(props: MyPrintComponentProps) {
     const ref = useRef();
 
     async function captureAndShare() {

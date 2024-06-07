@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import React, {useEffect, useState} from 'react';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Heading, Text, View} from "@/components/Themed";
@@ -80,7 +80,7 @@ export default function EatingHabitsScreen() {
 	}
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<SettingsRowGroup>
 			{preItem}
 			</SettingsRowGroup>
@@ -95,6 +95,6 @@ export default function EatingHabitsScreen() {
 					data={data} renderItem={renderResource} amountColumns={1}
 				/>
 			</SettingsRowGroup>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

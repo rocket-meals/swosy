@@ -321,6 +321,7 @@ export function Text({style, size,...props}: MyTextProps) {
 
 export function View({style, ...props}: ViewProps) {
 	// copy the style to not mutate the original style
+
 	let styleCopy: StyleProp<ViewStyle> = {}
 	if (style === undefined) {
 		styleCopy = {}

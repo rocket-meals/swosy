@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {useLocalSearchParams} from 'expo-router';
 import React from 'react';
 import FoodDetails from '@/compositions/fooddetails/FoodDetails';
@@ -14,8 +14,8 @@ export default function FoodOfferDetails() {
 	const foodoffer = useFoodoffersIdFromLocalSearchParams();
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<FoodDetails foodOfferId={foodoffer}/>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

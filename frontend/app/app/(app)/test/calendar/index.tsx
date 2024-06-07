@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Heading, Text, View} from '@/components/Themed';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {SimpleDatePicker} from '@/components/datePicker/SimpleDatePicker';
 
@@ -8,7 +8,7 @@ export default function ButtonTestScreen() {
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<Heading>{'Calendar Test'}</Heading>
 				<Text>{'Selected Date: '+selectedDate.toISOString()}</Text>
@@ -22,6 +22,6 @@ export default function ButtonTestScreen() {
 					/>
 				</View>
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

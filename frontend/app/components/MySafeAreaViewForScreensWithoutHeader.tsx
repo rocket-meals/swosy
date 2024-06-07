@@ -1,6 +1,6 @@
 import React from 'react';
 import {useInsets} from '@/helper/device/DeviceHelper';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {SafeAreaViewProps} from 'react-native-safe-area-context';
 import {useViewBackgroundColor, View} from "@/components/Themed";
 

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {Heading, Text, Icon, IconFamily, IconParseDelimeter, View} from "@/components/Themed";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
@@ -9,10 +9,10 @@ import {ThemedMarkdownWithCards} from "@/components/markdown/ThemedMarkdownWithC
 
 export default function HomeScreen() {
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<ThemedMarkdownWithCards markdown={realisticMarkdownTest} />
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

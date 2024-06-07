@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import React from 'react';
 import {useSyncState} from '@/helper/syncState/SyncState';
@@ -89,11 +89,11 @@ export default function HomeScreen() {
 	};
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<ScrollViewWithGradient>
 				<MyButton accessibilityLabel={'Use Persistent State'} onPress={() => setUsePersistentState(!usePersistentState)} text={'Use Persistent State: '+usePersistentState} />
 				<MyButton accessibilityLabel={'Open Modal'} onPress={onPress} text={'Open Modal'} />
 			</ScrollViewWithGradient>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

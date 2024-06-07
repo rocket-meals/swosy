@@ -1,5 +1,5 @@
 import {Heading, Text} from '@/components/Themed';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MyLottieAnimation} from '@/components/lottie/MyLottieAnimation';
 //import * as rocketSource from "../../../../assets/animations/rocket_purple.json"
@@ -11,7 +11,7 @@ export default function LottieTestScreen() {
 	const testLottieUrl = 'https://raw.githubusercontent.com/FireboltCasters/directus-extension-auto-backup/main/assets/stats-lottie.json'
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<Heading>{'Lottie Test Screen'}</Heading>
 				<Text>{'Normal Lottie from assets'}</Text>
@@ -29,6 +29,6 @@ export default function LottieTestScreen() {
 				<Text>{'Lottie from url'}</Text>
 				<MyLottieAnimation url={testLottieUrl} accessibilityLabel={'Test Rocket Remote'} style={{width: 200, height: 200, backgroundColor: 'blue'}}/>
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

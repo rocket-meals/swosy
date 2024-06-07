@@ -4,7 +4,7 @@ import * as Updates from 'expo-updates';
 import {useUpdates} from 'expo-updates';
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {IconNames} from "@/constants/IconNames";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
@@ -92,7 +92,7 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
         }
     }
 
-    return <MySafeAreaView>
+    return <MySafeAreaViewThemed>
         <MyScrollView>
             <SettingsRowGroup>
                 <SettingsRow labelLeft={"Channel"} accessibilityLabel={"Channel"} leftIcon={IconNames.fact_icon} labelRight={channel} />
@@ -108,7 +108,7 @@ export const UpdateComponent: FunctionComponent<AppState> = ({...props}) => {
                 <SettingsRow disabled={!downloadedUpdateIsNew} labelLeft={"Reload update"} accessibilityLabel={"Reload update"} leftIcon={IconNames.settings_system_auto_icon} onPress={() => reloadUpdates()} />
             </SettingsRowGroup>
         </MyScrollView>
-    </MySafeAreaView>
+    </MySafeAreaViewThemed>
 }
 
 

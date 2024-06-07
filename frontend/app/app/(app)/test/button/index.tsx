@@ -1,11 +1,11 @@
 import {Heading, View} from '@/components/Themed';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MyButton} from '@/components/buttons/MyButton';
 
 export default function ButtonTestScreen() {
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<Heading>{'Button Takes only space required'}</Heading>
 				<View style={{
@@ -47,6 +47,6 @@ export default function ButtonTestScreen() {
 					<MyButton accessibilityLabel={'Test'} text={'Hallo dies ist ein langer Text der umgebrochen werden soll'} leftIconColoredBox={true} useOnlyNecessarySpace={false} leftIcon={'account'} />
 				</View>
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

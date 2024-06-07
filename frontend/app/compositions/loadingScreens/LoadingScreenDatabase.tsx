@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {Text, View} from '@/components/Themed';
 import * as rocketSource from '@/assets/animations/rocket_purple.json';
 import {MyProjectColoredLottieAnimation} from '@/components/lottie/MyProjectColoredLottieAnimation';

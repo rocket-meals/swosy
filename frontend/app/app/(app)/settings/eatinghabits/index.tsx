@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import React from 'react';
 import {MarkingList} from "@/components/food/MarkingList";
 import {AnimationAllergene} from "@/compositions/animations/AnimationAllergene";
@@ -20,8 +20,8 @@ export default function EatingHabitsScreen() {
 	</>
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MarkingList preItem={preItem} />
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

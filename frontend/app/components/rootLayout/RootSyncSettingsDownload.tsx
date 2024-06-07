@@ -10,7 +10,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {AnimationUnderConstruction} from "@/compositions/animations/AnimationUnderConstruction";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {LoadingScreenFullScreenOverlay} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";

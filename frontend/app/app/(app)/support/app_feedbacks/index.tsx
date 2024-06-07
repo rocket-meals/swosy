@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {router, useLocalSearchParams} from 'expo-router';
 import React, {useEffect} from 'react';
 import {AppFeedbacks} from "@/helper/database/databaseTypes/types";
@@ -287,7 +287,7 @@ export default function AppfeedbackDetails() {
 	</SettingsRowGroup>
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				{renderedResponse}
 				<SettingsRowGroup>
@@ -323,6 +323,6 @@ export default function AppfeedbackDetails() {
 				</SettingsRowGroup>
 				{renderedId}
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

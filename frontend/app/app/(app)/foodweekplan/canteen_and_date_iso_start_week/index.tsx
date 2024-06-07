@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import React, {useEffect, useState} from 'react';
 import {
 	Heading,
@@ -9,7 +9,7 @@ import {
 	useViewBackgroundColor,
 	View
 } from '@/components/Themed';
-import {useLocalSearchParams} from 'expo-router';
+import {router, useLocalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
@@ -22,11 +22,32 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodweekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodweekplan/canteens";
+import {useProjectColor} from "@/states/ProjectInfo";
+import {MyScreenHeaderCustom} from "@/components/drawer/MyScreenHeader";
+import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/states/DrawerSyncConfig";
+import {ExpoRouter} from "@/.expo/types/router";
+import {IconNames} from "@/constants/IconNames";
+import {MyButton} from "@/components/buttons/MyButton";
+import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
 export const SEARCH_PARAM_DATE_ISO = 'date_iso';
+
+export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string, date_start_week_iso_or_undefined: string | undefined): ExpoRouter.Href {
+	let paramsRaw = []
+	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+canteen_id : null;
+	if(paramForCanteen){
+		paramsRaw.push(paramForCanteen)
+	}
+	let paramForDate = date_start_week_iso_or_undefined ? SEARCH_PARAM_DATE_ISO+"="+date_start_week_iso_or_undefined : null;
+	if(paramForDate){
+		paramsRaw.push(paramForDate)
+	}
+	let params = paramsRaw.join("&")
+	return `/(app)/foodweekplan/canteen_and_date_iso_start_week/?${params}` as ExpoRouter.Href;
+}
 
 export function useDateIsoFromLocalSearchParams() {
 	const params = useLocalSearchParams<{ [SEARCH_PARAM_DATE_ISO]?: string }>();
@@ -35,19 +56,28 @@ export function useDateIsoFromLocalSearchParams() {
 
 export default function FoodplanScreen() {
 	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
-	const date_start_week_iso_or_current: string | undefined = useDateIsoFromLocalSearchParams()
+	const date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
 	const canteen = useSynchedCanteenById(canteen_id);
 	const AMOUNT_DAYS = 7;
 	const viewBackgroundColor = useViewBackgroundColor();
+	const projectColor = useProjectColor();
+	const projectContrastColor = useMyContrastColor(projectColor);
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor);
 	const textColorForViewContrastColor = useMyContrastColor(viewContrastColor)
 	const translation_weekday = useTranslation(TranslationKeys.weekday)
 	const localeForJsDate = useProfileLocaleForJsDate()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
+	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
+	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
+	const [printCallback, setPrintCallback] = useState<() => void>();
 
-	let date_start_week_iso = date_start_week_iso_or_current+"";
-	if(!date_start_week_iso_or_current || date_start_week_iso_or_current===""){
+	const translation_fullscreen = "Fullscreen"
+	const translation_print = "Drucken"
+
+
+	let date_start_week_iso = date_start_week_iso_or_undefined_for_auto_update+"";
+	if(!date_start_week_iso_or_undefined_for_auto_update || date_start_week_iso_or_undefined_for_auto_update===""){
 		let today = new Date()
 		today.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
 		date_start_week_iso = DateHelper.getPreviousMonday(today).toISOString();
@@ -153,7 +183,7 @@ export default function FoodplanScreen() {
 		for(let category of categories){
 			renderedCategories.push(
 				<View style={{flex: 1, padding: 5}}>
-					<Text style={{color: textColorForViewContrastColor}}>{category}</Text>
+					<Text style={{color: projectContrastColor}}>{category}</Text>
 				</View>
 			)
 		}
@@ -162,9 +192,9 @@ export default function FoodplanScreen() {
 			<View style={{width: "100%"}}>
 				<Heading>{canteen?.alias}</Heading>
 			</View>
-			<View style={{backgroundColor: viewContrastColor, width: "100%", flexDirection: "row"}}>
+			<View style={{backgroundColor: projectColor, width: "100%", flexDirection: "row"}}>
 				<View style={{flex: FLEX_WEEKDAY}}>
-					<Text style={{color: textColorForViewContrastColor}}>{translation_weekday}</Text>
+					<Text style={{color: projectContrastColor}}>{translation_weekday}</Text>
 				</View>
 				<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
 					{renderedCategories}
@@ -283,11 +313,44 @@ export default function FoodplanScreen() {
 		return output;
 	}
 
+	function renderFullScreenButton(){
+		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_icon} onPress={() => {
+			let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", date_start_week_iso);
+			routeToThisScreen+="&"+SEARCH_PARAM_FULLSCREEN+"=true";
+			router.push(routeToThisScreen);
+		}} />
+	}
+
+	function renderScreenshotButton(){
+		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
+			if (printCallback) {
+				printCallback();
+			}
+		}} />
+	}
+
+	function renderSecondaryHeader(){
+		return <View style={{flexDirection: "row"}}>
+			{renderFullScreenButton()}
+			{renderScreenshotButton()}
+		</View>
+	}
+
+	let header: any = <MyScreenHeaderCustom title={translation_foodweekplan} showBackButton={true} secondaryHeaderContent={renderSecondaryHeader()} />
+	if(isFullScreenMode){
+		header = null;
+	}
+
 	return (
-		<MySafeAreaView>
-			<MyScrollView>
-				{renderWeekOffers()}
-			</MyScrollView>
-		</MySafeAreaView>
+		<>
+			{header}
+			<MyPrintComponent setPrintCallback={setPrintCallback}>
+			<MySafeAreaViewThemed>
+				<MyScrollView>
+						{renderWeekOffers()}
+				</MyScrollView>
+			</MySafeAreaViewThemed>
+			</MyPrintComponent>
+		</>
 	);
 }

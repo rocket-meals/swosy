@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import React from 'react';
 import {Text, View} from '@/components/Themed';
@@ -23,7 +23,7 @@ export default function HomeScreen() {
 			title: key,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return (
-					<MySafeAreaView>
+					<MySafeAreaViewThemed>
 						<MyScrollView>
 							<View style={{
 								width: '100%',
@@ -35,7 +35,7 @@ export default function HomeScreen() {
 								</Text>
 							</View>
 						</MyScrollView>
-					</MySafeAreaView>
+					</MySafeAreaViewThemed>
 				);
 			}
 		}
@@ -46,10 +46,10 @@ export default function HomeScreen() {
 	}
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<ScrollViewWithGradient>
 				{renderedRows}
 			</ScrollViewWithGradient>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

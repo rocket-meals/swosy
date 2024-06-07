@@ -19,7 +19,7 @@ import {MoneySad} from "@/compositions/animations/accountBalance/MoneySad";
 import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
-import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
 import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
@@ -195,7 +195,7 @@ export default function AccountbalanceScreen() {
 	}
 
 	return (
-		<MySafeAreaView style={{width: "100%"}} key={""+focusCounter}>
+		<MySafeAreaViewThemed style={{width: "100%"}} key={""+focusCounter}>
 			<MyScrollView>
 				<View style={{width: "100%", justifyContent: "center", alignItems: "center"}}>
 					<AccountBalanceAnimation balance={displayBalance} />
@@ -220,6 +220,6 @@ export default function AccountbalanceScreen() {
 					}} />
 				</View>
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }

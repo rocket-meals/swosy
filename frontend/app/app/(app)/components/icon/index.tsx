@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import {Heading, Text, Icon, IconFamily, IconParseDelimeter, View} from "@/components/Themed";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 
@@ -34,11 +34,11 @@ export default function HomeScreen() {
 	})
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<Heading>{"Gallery of all icons"}</Heading>
 				{renderIcons}
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	);
 }

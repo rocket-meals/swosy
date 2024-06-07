@@ -1,4 +1,4 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
+import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
 import React from 'react';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Text, View} from "@/components/Themed";
@@ -82,11 +82,11 @@ export default function EatingHabitsScreen() {
 
 
 	return (
-		<MySafeAreaView>
+		<MySafeAreaViewThemed>
 			<MyScrollView>
 				<AnimationAstronautComputer />
 				<SettingsRow onPress={askForConfirmation} leftIcon={IconNames.user_account_delete_icon} labelLeft={translation_title} accessibilityLabel={translation_title}  />
 			</MyScrollView>
-		</MySafeAreaView>
+		</MySafeAreaViewThemed>
 	)
 }
