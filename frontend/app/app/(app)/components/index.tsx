@@ -19,6 +19,7 @@ export default function HomeScreen() {
 					<SettingsRowNavigateWithText labelLeft={"Icon"} route={"/(app)/components/icon"} />
 					<SettingsRowNavigateWithText labelLeft={"Image Directus"} route={"/(app)/components/imageDirectus"} />
 					<SettingsRowNavigateWithText labelLeft={"Markdown"} route={"/(app)/components/markdown"} />
+					<SettingsRowNavigateWithText labelLeft={"Screenshot/Print"} route={"/(app)/components/screenshot"} />
 				</SettingsRowGroup>
 			</MyScrollView>
 		</MySafeAreaView>
