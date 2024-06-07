@@ -1,4 +1,4 @@
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {WikiComponentByCustomId} from '@/compositions/wikis/WikiComponentByCustomId';
 import {FunctionComponent} from 'react';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
@@ -8,7 +8,7 @@ interface AppState {
 }
 export const LegalScreenWithWiki: FunctionComponent<AppState> = ({custom_id}) => {
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient style={{
 				paddingHorizontal: 20,
 				paddingVertical: 10
@@ -16,6 +16,6 @@ export const LegalScreenWithWiki: FunctionComponent<AppState> = ({custom_id}) =>
 			>
 				<WikiComponentByCustomId custom_id={custom_id} />
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

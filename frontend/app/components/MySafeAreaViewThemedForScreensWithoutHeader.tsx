@@ -1,6 +1,6 @@
 import React from 'react';
 import {useInsets} from '@/helper/device/DeviceHelper';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {SafeAreaViewProps} from 'react-native-safe-area-context';
 import {useViewBackgroundColor, View} from "@/components/Themed";
 
@@ -9,7 +9,7 @@ import {useViewBackgroundColor, View} from "@/components/Themed";
  * @param props
  * @constructor
  */
-export function MySafeAreaViewForScreensWithoutHeader({children, ...props}: SafeAreaViewProps) {
+export function MySafeAreaViewThemedForScreensWithoutHeader({children, ...props}: SafeAreaViewProps) {
 	const insets = useInsets()
 	const viewBackgroundColor = useViewBackgroundColor()
 	const bottomColorPlaceholder = <View style={{backgroundColor: viewBackgroundColor, height: insets.bottom}} />

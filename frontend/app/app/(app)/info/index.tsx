@@ -1,5 +1,5 @@
 import React from 'react';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {useLocalSearchParams} from 'expo-router';
 import {useSynchedWikiByCustomId} from '@/states/SynchedWikis';
@@ -23,7 +23,7 @@ export default function WikisCustomScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient style={{
 				paddingHorizontal: 20,
 				paddingVertical: 10
@@ -31,6 +31,6 @@ export default function WikisCustomScreen() {
 			>
 				{content}
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

@@ -1,5 +1,5 @@
 import {Text, View} from '@/components/Themed';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {useCallback, useMemo, useState} from "react";
 import {action, createStore, StoreProvider, thunk, useStoreActions, useStoreState} from "easy-peasy";
 import {TouchableOpacity} from "react-native";
@@ -101,7 +101,7 @@ function MyButtonRowWithOptionKey ({optionKey}: {optionKey: string}) {
 export default function PlaygroundTestScreen() {
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<StoreProvider store={store}>
 			<View style={{
 				flex: 1,
@@ -114,6 +114,6 @@ export default function PlaygroundTestScreen() {
 				<MyButtonRowWithOptionKey optionKey={'option2'} />
 			</View>
 			</StoreProvider>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

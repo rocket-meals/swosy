@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal} from 'react-native';
 import {Heading, useViewBackgroundColor, View} from '@/components/Themed';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
@@ -145,7 +145,7 @@ export const MyModal = (props: MyModalProps) => {
 					borderTopRightRadius: 20,
 					paddingTop: 20,
 				}}>
-					<MySafeAreaViewThemed>
+					<MySafeAreaView>
 						<View style={{
 							flexDirection: "column",
 							height: "100%",
@@ -171,7 +171,7 @@ export const MyModal = (props: MyModalProps) => {
 							</View>
 						</View>
 
-					</MySafeAreaViewThemed>
+					</MySafeAreaView>
 				</View>
 			</View>
 		</Modal>

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {Heading, View, Text} from "@/components/Themed";
 import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
@@ -10,7 +10,7 @@ export default function HomeScreen() {
 	const [captureFunction, setCaptureFunction] = useState<() => void>();
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<MyScrollView>
 				<Heading>{"Screenshot & Print"}</Heading>
 				<MyButton text={"Print"} onPress={() => {
@@ -31,6 +31,6 @@ export default function HomeScreen() {
 					</View>
 				</MyPrintComponent>
 			</MyScrollView>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

@@ -1,12 +1,12 @@
 import React from 'react';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {Heading, View} from '@/components/Themed';
 import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSelectGridList';
 
 export default function SettingsScreen() {
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<Heading>{'Canteens'}</Heading>
 			<View style={{
 				width: '100%',
@@ -16,6 +16,6 @@ export default function SettingsScreen() {
 			>
 				<CanteenSelectGridList />
 			</View>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

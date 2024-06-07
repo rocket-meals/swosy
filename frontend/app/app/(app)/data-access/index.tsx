@@ -1,5 +1,5 @@
 import React from 'react';
-import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 import {useAllSyncStates} from "@/helper/syncState/SyncState";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
@@ -35,7 +35,7 @@ export default function DataAccessScreen() {
 
 	function renderDataOfObject(obj: any) {
 		return (
-			<MySafeAreaViewThemed>
+			<MySafeAreaView>
 				<MyScrollView>
 					<View style={{
 						width: '100%',
@@ -47,7 +47,7 @@ export default function DataAccessScreen() {
 						</Text>
 					</View>
 				</MyScrollView>
-			</MySafeAreaViewThemed>
+			</MySafeAreaView>
 		);
 	}
 
@@ -115,7 +115,7 @@ export default function DataAccessScreen() {
 			title: key,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return (
-					<MySafeAreaViewThemed>
+					<MySafeAreaView>
 						<MyScrollView>
 							<View style={{
 								width: '100%',
@@ -127,7 +127,7 @@ export default function DataAccessScreen() {
 								</Text>
 							</View>
 						</MyScrollView>
-					</MySafeAreaViewThemed>
+					</MySafeAreaView>
 				);
 			}
 		}
@@ -138,7 +138,7 @@ export default function DataAccessScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient>
 				<AnimationSupport />
 				<View style={{
@@ -172,6 +172,6 @@ export default function DataAccessScreen() {
 					{renderedRows}
 				</SettingsRowGroup>
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	)
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import {ActivityIndicator} from "react-native";
 import {ExpoLeaflet, MapMarker} from "@/components/leaflet";
-import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {getMapLayers} from "@/compositions/map/LeafletMapLayers";
 import {Buildings} from "@/helper/database/databaseTypes/types";
 import {getBuildingLocation} from "@/compositions/buildings/BuildingDetails";
@@ -48,7 +48,7 @@ export type MyMapProps = {
 export const MyMap = ({markers, centerPosition}: MyMapProps) => {
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<React.Suspense fallback={<ActivityIndicator size="large" color="#0000ff" />}>
 				<ExpoLeaflet
 					mapLayers={getMapLayers()}
@@ -66,6 +66,6 @@ export const MyMap = ({markers, centerPosition}: MyMapProps) => {
 				>
 				</ExpoLeaflet>
 			</React.Suspense>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 };

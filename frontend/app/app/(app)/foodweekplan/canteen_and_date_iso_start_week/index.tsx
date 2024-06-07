@@ -1,4 +1,4 @@
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import React, {useEffect, useState} from 'react';
 import {
 	Heading,
@@ -30,6 +30,7 @@ import {ExpoRouter} from "@/.expo/types/router";
 import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
+import {MySafeAreaViewThemedForScreensWithoutHeader} from "@/components/MySafeAreaViewThemedForScreensWithoutHeader";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -342,15 +343,15 @@ export default function FoodplanScreen() {
 	}
 
 	return (
-		<>
+		<MySafeAreaViewThemedForScreensWithoutHeader>
 			{header}
 			<MyPrintComponent setPrintCallback={setPrintCallback}>
-			<MySafeAreaViewThemed>
-				<MyScrollView>
+				<MySafeAreaView>
+					<MyScrollView>
 						{renderWeekOffers()}
-				</MyScrollView>
-			</MySafeAreaViewThemed>
+					</MyScrollView>
+				</MySafeAreaView>
 			</MyPrintComponent>
-		</>
+		</MySafeAreaViewThemedForScreensWithoutHeader>
 	);
 }

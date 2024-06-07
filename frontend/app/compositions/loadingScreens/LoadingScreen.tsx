@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {useViewBackgroundColor, View, Text} from "@/components/Themed";
 import {LoadingLogoProvider, useLoadingLogo} from "@/compositions/loadingScreens/LoadingLogoProvider";
 import {useDebug} from "@/states/Debug";
@@ -93,7 +93,7 @@ export const LoadingScreen: FunctionComponent<AppState> = ({children, ...props})
 		)
 	}
 
-	return <MySafeAreaViewThemed>
+	return <MySafeAreaView>
 		<View style={{
 			width: '100%',
 			height: '100%',
@@ -105,5 +105,5 @@ export const LoadingScreen: FunctionComponent<AppState> = ({children, ...props})
 		</View>
 		{children}
 		{renderDebugSwitch()}
-	</MySafeAreaViewThemed>;
+	</MySafeAreaView>;
 }

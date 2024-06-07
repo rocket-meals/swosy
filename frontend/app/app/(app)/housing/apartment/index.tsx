@@ -1,4 +1,4 @@
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {useLocalSearchParams} from 'expo-router';
 import React from 'react';
 import ApartmentDetails from "@/compositions/apartments/ApartmentDetails";
@@ -14,8 +14,8 @@ export default function ApartmentScreen() {
 	const apartment_id = useApartmentsIdFromLocalSearchParams();
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ApartmentDetails apartmentId={apartment_id}/>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	)
 }

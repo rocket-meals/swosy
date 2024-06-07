@@ -1,5 +1,5 @@
 import {ListRenderItemInfo} from 'react-native';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {DirectusFiles, News} from '@/helper/database/databaseTypes/types';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
@@ -150,12 +150,12 @@ export default function NewsScreen() {
   }
 
   return (
-  	<MySafeAreaViewThemed>
+  	<MySafeAreaView>
   		<MyGridFlatList
   			data={data}
   			renderItem={renderItem}
   			amountColumns={initialAmountColumns}
   		/>
-  	</MySafeAreaViewThemed>
+  	</MySafeAreaView>
   );
 }

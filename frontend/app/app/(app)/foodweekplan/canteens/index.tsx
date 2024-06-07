@@ -1,4 +1,4 @@
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {router, useLocalSearchParams} from 'expo-router';
 import React from 'react';
 import {Text, View} from "@/components/Themed";
@@ -82,7 +82,7 @@ export default function FoodOfferDetails() {
 
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<View>
 				{renderLinkToWeekPlan(translation_current, true, undefined)}
 			</View>
@@ -91,6 +91,6 @@ export default function FoodOfferDetails() {
 				renderItem={renderItem}
 				amountColumns={initialAmountColumns}
 			/>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

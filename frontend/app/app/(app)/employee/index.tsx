@@ -1,6 +1,6 @@
 import React from "react";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {MySafeAreaViewThemed} from "@/components/MySafeAreaViewThemed";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {TranslationKeys} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
@@ -9,13 +9,13 @@ import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNaviga
 export default function EmployeeScreen() {
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<MyScrollView>
 				<SettingsRowGroup>
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} iconLeft={IconNames.foodweekplan_icon} route={"/(app)/foodweekplan"} />
 				</SettingsRowGroup>
 			</MyScrollView>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	)
 
 }

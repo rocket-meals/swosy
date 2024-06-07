@@ -1,5 +1,5 @@
 import {ListRenderItemInfo} from 'react-native';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {
@@ -377,9 +377,9 @@ export default function FoodOfferScreen() {
 
   if (!isValidCanteenSelected) {
   	return (
-  		<MySafeAreaViewThemed>
+  		<MySafeAreaView>
   			<CanteenSelectionRequired/>
-  		</MySafeAreaViewThemed>
+  		</MySafeAreaView>
   	)
   } else {
   	if (foodOffersSorted === undefined) {
@@ -394,29 +394,29 @@ export default function FoodOfferScreen() {
 		</View>
 	} else if (foodOffersSorted === null) {
 		return (
-			<MySafeAreaViewThemed>
+			<MySafeAreaView>
 				<MyScrollView>
 					<ErrorGeneric />
 				</MyScrollView>
-			</MySafeAreaViewThemed>
+			</MySafeAreaView>
 		);
   	} else if (foodOffersSorted.length === 0) {
   		return (
-  			<MySafeAreaViewThemed>
+  			<MySafeAreaView>
   				<MyScrollView>
 					<NoFoodOffersFound />
   				</MyScrollView>
-  			</MySafeAreaViewThemed>
+  			</MySafeAreaView>
   		);
   	} else if (foodOffersSorted.length > 0) {
   		return (
-  			<MySafeAreaViewThemed>
+  			<MySafeAreaView>
   				<MyGridFlatList
   					data={data}
   					renderItem={renderItem}
   					amountColumns={initialAmountColumns}
   				/>
-  			</MySafeAreaViewThemed>
+  			</MySafeAreaView>
   		);
   	}
   }

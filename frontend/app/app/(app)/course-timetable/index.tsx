@@ -1,4 +1,4 @@
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {NoCourseTimetableFound} from '@/compositions/courseTimetable/NoCourseTimetableFound';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
@@ -241,9 +241,9 @@ export default function CourseTimetableScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			{renderActions()}
 			{renderContent()}
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	)
 }

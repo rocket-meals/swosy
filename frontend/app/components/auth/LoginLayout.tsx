@@ -7,7 +7,7 @@ import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGrad
 import {ProjectBanner} from '@/components/project/ProjectBanner';
 import {LegalRequiredLinks} from '@/components/legal/LegalRequiredLinks';
 import {ProjectBackgroundImage} from '@/components/project/ProjectBackgroundImage';
-import {MySafeAreaViewForScreensWithoutHeader} from '@/components/MySafeAreaViewForScreensWithoutHeader';
+import {MySafeAreaViewThemedForScreensWithoutHeader} from '@/components/MySafeAreaViewThemedForScreensWithoutHeader';
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export const LoginLayout = (props: any) => {
@@ -66,7 +66,7 @@ export const LoginLayout = (props: any) => {
 
 		const leftSizeContent = (
 			<View style={{width: width, height: '100%'}}>
-				<MySafeAreaViewForScreensWithoutHeader>
+				<MySafeAreaViewThemedForScreensWithoutHeader>
 					<KeyboardAvoidingView
 						keyboardVerticalOffset = {keyboardVerticalOffset} // adjust the value here if you need more padding
 						style={{flexShrink: 1, width: '100%', height: '100%'}}
@@ -117,7 +117,7 @@ export const LoginLayout = (props: any) => {
 							<LegalRequiredLinks />
 						</View>
 					</View>
-				</MySafeAreaViewForScreensWithoutHeader>
+				</MySafeAreaViewThemedForScreensWithoutHeader>
 			</View>
 		);
 

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {IconNames} from '@/constants/IconNames';
 import {SettingsRowGroup} from '@/components/settings/SettingsRowGroup';
@@ -154,7 +154,7 @@ export default function AppfeedbackScreen() {
 	</View>
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient>
 				<AnimationSupport />
 				<SettingsRowGroup>
@@ -172,6 +172,6 @@ export default function AppfeedbackScreen() {
 					/>
 				</SettingsRowGroup>
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {IconNames} from '@/constants/IconNames';
 import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup";
@@ -54,13 +54,13 @@ export default function SettingsScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient>
 				<AnimationPriceGroup />
 				<SettingsRowGroup>
 					{renderedPriceGroups}
 				</SettingsRowGroup>
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

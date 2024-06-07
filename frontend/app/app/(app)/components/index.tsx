@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRowNavigate, SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 
@@ -13,7 +13,7 @@ export default function HomeScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<MyScrollView>
 				<SettingsRowGroup>
 					<SettingsRowNavigateWithText labelLeft={"Icon"} route={"/(app)/components/icon"} />
@@ -22,6 +22,6 @@ export default function HomeScreen() {
 					<SettingsRowNavigateWithText labelLeft={"Screenshot/Print"} route={"/(app)/components/screenshot"} />
 				</SettingsRowGroup>
 			</MyScrollView>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

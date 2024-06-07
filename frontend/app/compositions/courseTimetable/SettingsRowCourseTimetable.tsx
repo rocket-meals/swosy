@@ -2,7 +2,7 @@ import React, {FunctionComponent} from 'react';
 import {useSettingTranslationCourseTimetable} from './useSettingTranslationCourseTimetable';
 import {useIsCourseTimetableEnabled} from '@/states/SynchedAppSettings';
 import {SettingsRowActionsheet} from '@/components/settings/SettingsRowActionsheet';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {Text, View} from '@/components/Themed';
 import {IconNames} from '@/constants/IconNames';
@@ -19,7 +19,7 @@ export const SettingsRowCourseTimetable: FunctionComponent = (props) => {
 		title: translation,
 		renderAsContentInsteadItems: (key: string, hide: () => void) => {
 			return (
-				<MySafeAreaViewThemed>
+				<MySafeAreaView>
 					<MyScrollView>
 						<View style={{
 							width: '100%',
@@ -31,7 +31,7 @@ export const SettingsRowCourseTimetable: FunctionComponent = (props) => {
 							</Text>
 						</View>
 					</MyScrollView>
-				</MySafeAreaViewThemed>
+				</MySafeAreaView>
 			);
 		}
 	}

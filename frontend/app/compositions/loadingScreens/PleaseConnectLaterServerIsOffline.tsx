@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {Heading, View} from '@/components/Themed';
 import * as noInternetConnectionSource from '@/assets/animations/no_internet_connection.json';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
@@ -19,7 +19,7 @@ export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({
 
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<View style={{
 				width: '100%',
 				height: '100%',
@@ -53,6 +53,6 @@ export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({
 				</View>
 			</View>
 
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

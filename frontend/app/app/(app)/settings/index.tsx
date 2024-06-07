@@ -6,7 +6,7 @@ import {SettingsRowDrawerPosition} from '@/compositions/settings/SettingsRowDraw
 import {SettingsRowProfileNickname} from '@/compositions/settings/SettingsRowProfileNickname';
 import {SettingsRowUser} from '@/compositions/settings/SettingsRowUser';
 import {SettingsRowProfileCanteen} from '@/compositions/settings/SettingsRowProfileCanteen';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowProfileLanguage';
 import {IconNames} from '@/constants/IconNames';
@@ -76,7 +76,7 @@ export default function SettingsScreen() {
 
 
 	return (
-		<MySafeAreaViewThemed>
+		<MySafeAreaView>
 			<ScrollViewWithGradient>
 				<SettingsRowSpacer />
 				<SettingsRowGroup>
@@ -107,6 +107,6 @@ export default function SettingsScreen() {
 				<ProjectVersionInformation />
 				{renderedDeveloperModeSettings}
 			</ScrollViewWithGradient>
-		</MySafeAreaViewThemed>
+		</MySafeAreaView>
 	);
 }

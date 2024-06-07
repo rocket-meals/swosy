@@ -1,5 +1,5 @@
 import {ListRenderItemInfo} from 'react-native';
-import {MySafeAreaViewThemed} from '@/components/MySafeAreaViewThemed';
+import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {Apartments, Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
@@ -246,7 +246,7 @@ export default function HousingScreen() {
   }
 
   return (
-  	<MySafeAreaViewThemed>
+  	<MySafeAreaView>
   		<MyGridFlatList
 			flatListProps={{
 				ListHeaderComponent: renderAdditionalInformation()
@@ -255,6 +255,6 @@ export default function HousingScreen() {
   			renderItem={renderItem}
   			amountColumns={initialAmountColumns}
   		/>
-  	</MySafeAreaViewThemed>
+  	</MySafeAreaView>
   );
 }
