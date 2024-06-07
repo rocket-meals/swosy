@@ -1,6 +1,7 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import React, {useEffect, useState} from 'react';
 import {
+	getLineHeightInPixelBySize,
 	Heading,
 	MySpinner,
 	Text,
@@ -263,9 +264,11 @@ export default function FoodplanScreen() {
 			flex: 1,
 			marginBottom: 5,
 		}}>
-			<View style={{
-			}}>
-				<Text size={TEXT_SIZE_EXTRA_SMALL}
+			<View style={{}}>
+				<Text style={{
+					// height between multiple lines
+					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
+				}} size={TEXT_SIZE_EXTRA_SMALL}
 					  numberOfLines={3}
 				>{title}</Text>
 				<Text size={TEXT_SIZE_EXTRA_SMALL} numberOfLines={2}>{price_information}</Text>
@@ -306,7 +309,7 @@ export default function FoodplanScreen() {
 				<View style={{
 					flex: 1,
 					flexDirection: "column",
-					padding: DEFAULT_PADDING
+					paddingHorizontal: DEFAULT_PADDING
 				}}>
 					{renderedOffers}
 				</View>
@@ -329,10 +332,6 @@ export default function FoodplanScreen() {
 					padding: DEFAULT_PADDING,
 				}}>
 					<Heading>{weekdayName}</Heading>
-				</View>
-				<View style={{
-					padding: DEFAULT_PADDING,
-				}}>
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
@@ -410,19 +409,19 @@ export default function FoodplanScreen() {
 	return (
 		<MySafeAreaViewForScreensWithoutHeader>
 			{header}
-			<MyPrintComponent setPrintCallback={setPrintCallback}>
-				<View style={{
-					width: "100%",
-					height: "100%",
-					backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
-				}}>
-					<MySafeAreaView>
-						<MyScrollView>
-							{renderWeekOffers()}
-						</MyScrollView>
-					</MySafeAreaView>
-				</View>
-			</MyPrintComponent>
+				<MySafeAreaView>
+					<MyScrollView>
+						<MyPrintComponent setPrintCallback={setPrintCallback}>
+							<View style={{
+								width: "100%",
+								height: "100%",
+								backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
+							}}>
+								{renderWeekOffers()}
+							</View>
+						</MyPrintComponent>
+					</MyScrollView>
+				</MySafeAreaView>
 		</MySafeAreaViewForScreensWithoutHeader>
 	);
 }

@@ -122,6 +122,13 @@ export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {
 	return fontSize[usedSize];
 }
 
+export function getLineHeightInPixelBySize(size: TextSizeType | undefined) {
+	const tokens = config.tokens;
+	const lineHeight = tokens.lineHeights
+	const usedSize = size || TEXT_SIZE_DEFAULT;
+	return lineHeight[usedSize];
+}
+
 type TextInputProps = {
     myRef?: MutableRefObject<any> // TODO: Fix this type and use forwardRef to pass the ref to the TextInput
     variant?: 'outline' | 'rounded' | 'underlined' | undefined
