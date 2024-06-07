@@ -135,7 +135,7 @@ export function useRenderedMyDrawerWikiScreens() {
 				title: 'Wikis',
 				icon: 'home',
 				visibleInDrawer: false,
-				header: getMyScreenHeaderWikis(),
+				getHeader: getMyScreenHeaderWikis(),
 			},
 			drawerActiveBackgroundColor
 		),
@@ -145,7 +145,7 @@ export function useRenderedMyDrawerWikiScreens() {
 				title: 'Information',
 				icon: 'home',
 				visibleInDrawer: false,
-				header: getMyScreenHeaderWikisByCustomId(),
+				getHeader: getMyScreenHeaderWikisByCustomId(),
 			},
 			drawerActiveBackgroundColor
 		)

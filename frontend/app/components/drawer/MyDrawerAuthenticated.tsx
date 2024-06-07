@@ -19,6 +19,7 @@ import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeade
 import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 import {useCurrentIsEmployee, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
+import {getFoodweekplanHeader} from "@/compositions/foodweekplanHeader/MyScreenHeaderFoodOffers";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDeveloperModeActive();
@@ -63,18 +64,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const customDrawerWikiItems = useMyDrawerWikiItems()
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
 
-	const customDrawerItems: MyDrawerCustomItemProps[] = [
-		/**
-     {
-     label: "Hallo",
-     onPress: undefined,
-     onPressInternalRouteTo: undefined,
-     onPressExternalRouteTo: undefined,
-     icon: "home",
-     position: 0
-     }
-     */
-	]
+	const customDrawerItems: MyDrawerCustomItemProps[] = []
 
 	if (customDrawerWikiItems) {
 		customDrawerItems.push(...customDrawerWikiItems)
@@ -97,7 +87,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_canteens,
 				title: translation_canteens,
 				icon: IconNames.foodoffers_icon,
-				header: getMyScreenHeaderFoodOffers(),
+				getHeader: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
@@ -127,7 +117,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_buildings,
 				title: translation_buildings,
 				icon: IconNames.building_icon,
-				header: getMyScreenHeaderBuildings(),
+				getHeader: getMyScreenHeaderBuildings(),
 				visibleInDrawer: isBuildingsEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
@@ -143,7 +133,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_housing,
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
-				header: getMyScreenHeaderHousing(),
+				getHeader: getMyScreenHeaderHousing(),
 				visibleInDrawer: isHousingEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
@@ -218,6 +208,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'foodweekplan/canteen_and_date_iso_start_week/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
+				getHeader: null,
 				showBackButton: true,
 				icon: IconNames.foodweekplan_icon,
 				visibleInDrawer: false
