@@ -32,7 +32,6 @@ import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
-import {SEARCH_PARAM_HIDE_POPUP_EVENTS} from "@/states/SynchedPopupEvents";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -366,7 +365,7 @@ export default function FoodplanScreen() {
 
 	function renderFullScreenButton(){
 		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_icon} onPress={() => {
-			let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", date_start_week_iso);
+			let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", param_date_start_week_iso_or_undefined_for_auto_update);
 			routeToThisScreen+="&"+SEARCH_PARAM_FULLSCREEN+"=true";
 			router.push(routeToThisScreen);
 		}} />
@@ -375,7 +374,7 @@ export default function FoodplanScreen() {
 	function renderExitFullScreenButton(){
 		if(isFullScreenMode){
 			return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen_exit} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_exit_icon} onPress={() => {
-				let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", date_start_week_iso);
+				let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", param_date_start_week_iso_or_undefined_for_auto_update);
 				router.push(routeToThisScreen);
 			}} />
 		}
