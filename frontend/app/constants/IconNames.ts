@@ -12,6 +12,7 @@ export class IconNames {
     static drawer_menu_go_back_rtl_icon = 'arrow-right'
     static canteen_icon = 'warehouse'
     static fullscreen_icon = 'fullscreen'
+    static fullscreen_exit_icon = 'fullscreen-exit'
     static print_icon = 'printer'
     static foodoffers_icon = 'silverware-variant'
     static foodweekplan_icon = "calendar"

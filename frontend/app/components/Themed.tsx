@@ -344,7 +344,11 @@ export function View({style, ...props}: ViewProps) {
 	return <DefaultView style={styleCopy} {...props} />;
 }
 
-export function MySpinner() {
+export function MySpinner({size}: {size?: "small" | "large" | undefined}) {
 	const textContrastColor = useTextContrastColor();
-	return <DefaultSpinner size={"large"} color={textContrastColor} />
+	let usedSize = "large";
+	if (!!size) {
+		usedSize = size
+	}
+	return <DefaultSpinner size={usedSize} color={textContrastColor} />
 }

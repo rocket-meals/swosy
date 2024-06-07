@@ -30,7 +30,7 @@ import {ExpoRouter} from "@/.expo/types/router";
 import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
-import {MySafeAreaViewThemedForScreensWithoutHeader} from "@/components/MySafeAreaViewThemedForScreensWithoutHeader";
+import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -57,7 +57,7 @@ export function useDateIsoFromLocalSearchParams() {
 
 export default function FoodplanScreen() {
 	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
-	const date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
+	const param_date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
 	const canteen = useSynchedCanteenById(canteen_id);
 	const AMOUNT_DAYS = 7;
@@ -73,18 +73,27 @@ export default function FoodplanScreen() {
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
 	const [printCallback, setPrintCallback] = useState<() => void>();
 
+	const DEFAULT_PADDING = 10;
+
 	const translation_fullscreen = "Fullscreen"
+	const translation_fullscreen_exit = "Exit Fullscreen"
 	const translation_print = "Drucken"
 
-
-	let date_start_week_iso = date_start_week_iso_or_undefined_for_auto_update+"";
-	if(!date_start_week_iso_or_undefined_for_auto_update || date_start_week_iso_or_undefined_for_auto_update===""){
-		let today = new Date()
-		today.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
-		date_start_week_iso = DateHelper.getPreviousMonday(today).toISOString();
+	function getStartDateIsoString(date_start_week_iso_or_undefined_for_auto_update: string | undefined): string{
+		if(!date_start_week_iso_or_undefined_for_auto_update || date_start_week_iso_or_undefined_for_auto_update===""){
+			let today = new Date()
+			today.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
+			let monday = DateHelper.getPreviousMonday(today);
+			return monday.toISOString();
+		}
+		let date = new Date(date_start_week_iso_or_undefined_for_auto_update);
+		date.setHours(11,0,0,0); // prevent retriggering of useEffect on every render when milliseconds change
+		return date.toISOString();
 	}
 
-	let startDate = new Date(date_start_week_iso+"");
+	const [date_start_week_iso, setDateStartWeekIso] = useState<string>(getStartDateIsoString(param_date_start_week_iso_or_undefined_for_auto_update));
+	const [fetchingNewDate, setFetchingNewDate] = useState<boolean>(false);
+
 
 	type DataItem = { date_iso: string, offers: Foodoffers[] | undefined }
 	const [weekOffers, setWeekOffers] = useState<DataItem[] | undefined | null>(undefined);
@@ -96,7 +105,9 @@ export default function FoodplanScreen() {
 		console.log("caneen: "+canteen);
 		if(!!canteen){
 			try{
+				setFetchingNewDate(true);
 				let nextWeekOffers: DataItem[] = [];
+				let startDate = new Date(date_start_week_iso+"");
 				let tempDate = new Date(startDate);
 				for(let i=0; i<AMOUNT_DAYS; i++){
 					console.log("Load offers for index: "+i)
@@ -109,6 +120,7 @@ export default function FoodplanScreen() {
 					});
 					tempDate = DateHelper.addDays(tempDate, 1);
 				}
+				setFetchingNewDate(false);
 				setWeekOffers(nextWeekOffers);
 			} catch (err: any){
 				setWeekOffers(null);
@@ -116,7 +128,6 @@ export default function FoodplanScreen() {
 		} else {
 			setWeekOffers(null)
 		}
-
 	}
 
 	function getFoodCategory(food: Foods){
@@ -170,11 +181,37 @@ export default function FoodplanScreen() {
 
 	useEffect(() => {
 		console.log("useEffect")
-		console.log("canteen_id: "+canteen?.id)
-		console.log("date_start_week_iso: "+date_start_week_iso)
-		console.log("isDemo: "+isDemo)
 		loadWeekOffers()
 	}, [canteen?.id, date_start_week_iso, isDemo])
+
+	// useEffect to check every minute if the date changed
+	useEffect(() => {
+		console.log("useEffect for date change")
+		const INTERVAL_IN_MINUTES = 10;
+		const INTERVAL = INTERVAL_IN_MINUTES * 60 * 1000;
+		const interval = setInterval(() => {
+			console.log("Check if date changed")
+			let newDateIso = getStartDateIsoString(param_date_start_week_iso_or_undefined_for_auto_update);
+			if(newDateIso!==date_start_week_iso){
+				console.log("Date changed, loading new week offers")
+				setDateStartWeekIso(newDateIso);
+			}
+		}, INTERVAL);
+		return () => clearInterval(interval);
+	}, [date_start_week_iso, param_date_start_week_iso_or_undefined_for_auto_update]);
+
+	// useEffect to load every 1 minutes the new offers
+	useEffect(() => {
+		console.log("useEffect for fetching new date")
+		const INTERVAL_IN_MINUTES = 1;
+		let INTERVAL = INTERVAL_IN_MINUTES * 60 * 1000;
+		//INTERVAL = 1000; // for testing
+		const interval = setInterval(() => {
+			console.log("Check if new date should be fetched")
+			loadWeekOffers();
+		}, INTERVAL);
+		return () => clearInterval(interval);
+	}, []);
 
 	const FLEX_WEEKDAY = 1;
 	const FLEX_CATEGORIES = 10;
@@ -183,19 +220,27 @@ export default function FoodplanScreen() {
 		let renderedCategories = [];
 		for(let category of categories){
 			renderedCategories.push(
-				<View style={{flex: 1, padding: 5}}>
+				<View style={{flex: 1, padding: DEFAULT_PADDING}}>
 					<Text style={{color: projectContrastColor}}>{category}</Text>
 				</View>
 			)
 		}
 
 		return <View>
-			<View style={{width: "100%"}}>
-				<Heading>{canteen?.alias}</Heading>
+			<View style={{width: "100%", justifyContent: "space-between", alignItems: "center", flexDirection: "row"
+			}}>
+				<View style={{paddingHorizontal: DEFAULT_PADDING}}>
+					<Heading>{canteen?.alias}</Heading>
+				</View>
+				<View>
+					{renderExitFullScreenButton()}
+				</View>
 			</View>
 			<View style={{backgroundColor: projectColor, width: "100%", flexDirection: "row"}}>
 				<View style={{flex: FLEX_WEEKDAY}}>
-					<Text style={{color: projectContrastColor}}>{translation_weekday}</Text>
+					<View style={{flex: 1, padding: DEFAULT_PADDING}}>
+						<Text style={{color: projectContrastColor}}>{translation_weekday}</Text>
+					</View>
 				</View>
 				<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
 					{renderedCategories}
@@ -261,7 +306,7 @@ export default function FoodplanScreen() {
 				<View style={{
 					flex: 1,
 					flexDirection: "column",
-					padding: 5
+					padding: DEFAULT_PADDING
 				}}>
 					{renderedOffers}
 				</View>
@@ -280,10 +325,14 @@ export default function FoodplanScreen() {
 
 		return <View style={{width: "100%", borderBottomColor: viewContrastColor, borderBottomWidth: 1, flexDirection: "row"}}>
 			<View style={{flex: FLEX_WEEKDAY}}>
-				<View>
+				<View style={{
+					padding: DEFAULT_PADDING,
+				}}>
 					<Heading>{weekdayName}</Heading>
 				</View>
-				<View>
+				<View style={{
+					padding: DEFAULT_PADDING,
+				}}>
 					<Text>{weekdayDate}</Text>
 				</View>
 			</View>
@@ -322,6 +371,15 @@ export default function FoodplanScreen() {
 		}} />
 	}
 
+	function renderExitFullScreenButton(){
+		if(isFullScreenMode){
+			return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen_exit} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_exit_icon} onPress={() => {
+				let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id+"", date_start_week_iso);
+				router.push(routeToThisScreen);
+			}} />
+		}
+	}
+
 	function renderScreenshotButton(){
 		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
 			if (printCallback) {
@@ -330,10 +388,17 @@ export default function FoodplanScreen() {
 		}} />
 	}
 
+	function renderLoadingStatus(){
+		if(fetchingNewDate){
+			return <MySpinner size={"small"} />
+		}
+	}
+
 	function renderSecondaryHeader(){
 		return <View style={{flexDirection: "row"}}>
-			{renderFullScreenButton()}
+			{renderLoadingStatus()}
 			{renderScreenshotButton()}
+			{renderFullScreenButton()}
 		</View>
 	}
 
@@ -343,15 +408,21 @@ export default function FoodplanScreen() {
 	}
 
 	return (
-		<MySafeAreaViewThemedForScreensWithoutHeader>
+		<MySafeAreaViewForScreensWithoutHeader>
 			{header}
 			<MyPrintComponent setPrintCallback={setPrintCallback}>
-				<MySafeAreaView>
-					<MyScrollView>
-						{renderWeekOffers()}
-					</MyScrollView>
-				</MySafeAreaView>
+				<View style={{
+					width: "100%",
+					height: "100%",
+					backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
+				}}>
+					<MySafeAreaView>
+						<MyScrollView>
+							{renderWeekOffers()}
+						</MyScrollView>
+					</MySafeAreaView>
+				</View>
 			</MyPrintComponent>
-		</MySafeAreaViewThemedForScreensWithoutHeader>
+		</MySafeAreaViewForScreensWithoutHeader>
 	);
 }

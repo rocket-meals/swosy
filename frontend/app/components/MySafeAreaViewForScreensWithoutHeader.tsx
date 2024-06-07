@@ -9,7 +9,7 @@ import {useViewBackgroundColor, View} from "@/components/Themed";
  * @param props
  * @constructor
  */
-export function MySafeAreaViewThemedForScreensWithoutHeader({children, ...props}: SafeAreaViewProps) {
+export function MySafeAreaViewForScreensWithoutHeader({children, ...props}: SafeAreaViewProps) {
 	const insets = useInsets()
 	const viewBackgroundColor = useViewBackgroundColor()
 	const bottomColorPlaceholder = <View style={{backgroundColor: viewBackgroundColor, height: insets.bottom}} />
