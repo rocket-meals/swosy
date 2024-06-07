@@ -18,7 +18,7 @@ export type PopupEventsOverlayProps = {
 
 }
 export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
-	const popupEventsHidden = usePopupEventsAreHidden()
+	const popupEventsHidden = false;
 	const [popupEventsDict, setPopupEventsDict, cacheHelperObjPopupEvents] = useSynchedPopupEventsDict()
 	const [popupEventsReadDict, setPopupEventsReadDict] = useSynchedPopupEventsReadDict()
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();

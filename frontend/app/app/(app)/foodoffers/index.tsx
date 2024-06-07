@@ -38,6 +38,7 @@ import {MarkingBadges} from "@/components/food/MarkingBadge";
 import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {SEARCH_PARAM_FOODOFFER_ID} from "@/app/(app)/foodoffers/details";
+import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -416,6 +417,7 @@ export default function FoodOfferScreen() {
   					renderItem={renderItem}
   					amountColumns={initialAmountColumns}
   				/>
+				<PopupEventsOverlay />
   			</MySafeAreaView>
   		);
   	}

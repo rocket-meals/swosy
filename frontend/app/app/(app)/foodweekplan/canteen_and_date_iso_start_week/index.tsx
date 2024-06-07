@@ -32,6 +32,7 @@ import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
+import {SEARCH_PARAM_HIDE_POPUP_EVENTS} from "@/states/SynchedPopupEvents";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -47,6 +48,7 @@ export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string,
 	if(paramForDate){
 		paramsRaw.push(paramForDate)
 	}
+
 	let params = paramsRaw.join("&")
 	return `/(app)/foodweekplan/canteen_and_date_iso_start_week/?${params}` as ExpoRouter.Href;
 }

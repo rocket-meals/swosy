@@ -72,24 +72,6 @@ function getDemoPopupEvents(): Record<string, PopupEvents | null | undefined> {
 	}
 }
 
-export function usePopupEventsAreHidden(): boolean {
-	const [firstRender, setFirstRender] = useState(true)
-	const globalSearchParams = useGlobalSearchParams()
-	// globalSearchParams is null in the first render we need to check for that so we will return true in the first render
-	useEffect(() => {
-		setFirstRender(false)
-	}, [])
-
-	if (firstRender) {
-		return true
-	}
-
-	const paramRaw = globalSearchParams?.hide_popup_events
-	const param = paramRaw === "true"
-
-	return param
-}
-
 export function useSynchedPopupEventsDict(): [( Record<string, PopupEvents | null | undefined> | null | undefined), (callback: (currentValue: (Record<string, PopupEvents | null | undefined> | null | undefined)) => Record<string, PopupEvents | null | undefined>, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
 {
 	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<PopupEvents>(PersistentStore.popup_events);
