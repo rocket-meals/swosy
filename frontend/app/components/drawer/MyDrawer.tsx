@@ -1,16 +1,19 @@
 import React, {ReactNode} from 'react';
-import {View, Text, useViewBackgroundColor} from '@/components/Themed';
+import {useViewBackgroundColor, View} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
-import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
-import {LegalRequiredLinks} from '@/components/legal/LegalRequiredLinks';
 import {ProjectBanner} from '@/components/project/ProjectBanner';
 import {MyTouchableOpacity} from '@/components/buttons/MyTouchableOpacity';
-import {useProjectColor, useProjectLogoAssetId, useProjectPublicForegroundAssetId} from '@/states/ProjectInfo';
+import {useProjectColor} from '@/states/ProjectInfo';
 import {DimensionValue} from 'react-native';
 import {useThemeDetermined} from '@/states/ColorScheme';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {DrawerConfigPosition, useDrawerPosition, useIsDrawerPermanentVisible} from '@/states/DrawerSyncConfig';
+import {
+	DrawerConfigPosition,
+	useDrawerPosition,
+	useIsFullscreenModeFromSearchParam,
+	useIsDrawerPermanentVisible
+} from '@/states/DrawerSyncConfig';
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
 import {getMyDrawerItemIcon} from '@/components/drawer/MyDrawerItemIcon';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
@@ -21,7 +24,6 @@ import {DrawerHeaderProps} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
 import {ProjectBackgroundImage} from '@/components/project/ProjectForegroundImage';
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {PlatformHelper} from "@/helper/PlatformHelper";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -30,7 +32,7 @@ export type MyDrawerItemProps = {
     icon: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
 	showBackButton?: boolean | null | undefined;
-    header?: ((props: DrawerHeaderProps) => ReactNode) | undefined
+    getHeader?: ((props: DrawerHeaderProps) => ReactNode) | undefined | null;
     params?: any
 };
 
@@ -47,13 +49,20 @@ export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, header, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
+export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, getHeader, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
+	const fullscreen = useIsFullscreenModeFromSearchParam()
 	let usedVisible = true;
 	if (visibleInDrawer!==undefined) {
 		usedVisible = !!visibleInDrawer;
 	}
 
-	const usedHeader: any = header || getMyScreenHeader();
+	let usedHeader: any = getHeader
+	if(usedHeader===undefined) {
+		usedHeader = getMyScreenHeader();
+	}
+	if(usedHeader===null || fullscreen){
+		usedHeader = () => null
+	}
 
 	return (
 		<Drawer.Screen

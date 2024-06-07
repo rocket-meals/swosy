@@ -134,7 +134,7 @@ export const MyModalActionSheet = ({item, ...props}: MyModalActionSheetProps) =>
 			afterContent =
 				<SettingsRow labelLeft={translation_navigate_back} accessibilityLabel={translation_navigate_back} onPress={() => {
 					setSelectedItemsHistory(selectedItemsHistory.slice(0, selectedItemsHistory.length - 1));
-				}} leftIcon={IconNames.drawe_menu_go_back_icon} />
+				}} leftIcon={IconNames.drawer_menu_go_back_icon} />
 		}
 
 
