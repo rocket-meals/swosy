@@ -1,39 +1,78 @@
-import {Foodoffers} from '@/helper/database/databaseTypes/types';
-import PricingBadge, {formatPrice, PricingBadgeProps} from '@/components/pricing/PricingBadge';
-import useProfilePricing from '@/components/pricing/useProfilePricing';
-import {usePriceGroupSelectedName, useNavigateToPriceGroup} from "@/compositions/settings/SettingsRowPriceGroup";
-import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
-import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import React from "react";
+import React, { useRef, useEffect } from "react";
+import ViewShot, { captureRef } from 'react-native-view-shot';
+import { MyButton } from "@/components/buttons/MyButton";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 
-export type IndivididualPricingBadgeProps = {
-    foodOffer: Foodoffers,
-    badgeProps?: Omit<PricingBadgeProps, 'price'>
+export class DownloadHelper {
+    static async downloadBase64(base64: string, filename: string) {
+        const fileUri = FileSystem.cacheDirectory + filename;
+
+        if (Platform.OS === 'web') {
+            const link = document.createElement('a');
+            link.href = base64;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            // Strip the data URL prefix before writing to file
+            const base64Data = base64.split(",")[1];
+            await FileSystem.writeAsStringAsync(fileUri, base64Data, {
+                encoding: FileSystem.EncodingType.Base64
+            });
+
+            if (!(await Sharing.isAvailableAsync())) {
+                alert(`Uh oh, sharing isn't available on your platform`);
+                return;
+            }
+
+            await Sharing.shareAsync(fileUri);
+        }
+    }
 }
 
-export default function IndividualPricingBadge(props: IndivididualPricingBadgeProps) {
-	const profilePricing = useProfilePricing(props.foodOffer);
+export type PrintComponentProps = {
+    children: React.ReactNode,
+    setPrintCallback: (callback: () => void) => void
+}
 
-	const title = useTranslation(TranslationKeys.price_group)
+export default function PrintComponent(props: PrintComponentProps) {
+    const ref = useRef();
 
-	const translation_edit = useTranslation(TranslationKeys.edit)
+    async function captureAndShare() {
+        let base64 = "";
+        try {
+            if (ref.current) {
+                base64 = await captureRef(ref.current, {
+                    format: "jpg",
+                    quality: 0.9
+                });
+            }
+        } catch (e) {
+            console.log("Error capturing view");
+            console.error(e);
+        }
 
-	const selectedPriceGroupName = usePriceGroupSelectedName();
-	const onPress = useNavigateToPriceGroup();
+        console.log("Base64 is still");
+        console.log(base64);
+        if (base64) {
+            await DownloadHelper.downloadBase64(base64, "test.jpg");
+        }
+    }
 
-	if (!profilePricing) {
-		return null;
-	}
+    useEffect(() => {
+        if (props.setPrintCallback) {
+            props.setPrintCallback(() => captureAndShare);
+        }
+    }, [props.setPrintCallback]);
 
-	const priceContent: string = formatPrice(profilePricing);
-
-	const accessibilityLabel = `${priceContent} - ${title}: ${selectedPriceGroupName}: ${translation_edit}`;
-
-	return (
-		<>
-			<MyTouchableOpacity accessibilityLabel={accessibilityLabel} onPress={onPress} >
-				<PricingBadge {...props.badgeProps} price={profilePricing}/>
-			</MyTouchableOpacity>
-		</>
-	)
+    return (
+        <>
+            <ViewShot ref={ref} options={{ fileName: "Your-File-Name", format: "jpg", quality: 0.9 }}>
+                {props.children}
+            </ViewShot>
+        </>
+    )
 }
