@@ -9,7 +9,7 @@ import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefau
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {setDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
-import {SEARCH_PARAM_DATE_ISO} from "../canteen_and_date_iso_start_week";
+import {getRouteToFoodplanCanteenAndDateIsoStartWeek, SEARCH_PARAM_DATE_ISO} from "../canteen_and_date_iso_start_week";
 
 export const SEARCH_PARAM_CANTEENS_ID = 'canteens_id';
 
@@ -17,6 +17,7 @@ export function useCanteensIdFromLocalSearchParams() {
 	const params = useLocalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
 	return params[SEARCH_PARAM_CANTEENS_ID];
 }
+
 
 export default function FoodOfferDetails() {
 	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
@@ -45,10 +46,11 @@ export default function FoodOfferDetails() {
 		data.push({ key: key, date_start_week_iso: date_start_week_iso, week_number: week_number });
 	}
 
-	function renderLinkToWeekPlan(label: string, isActive: boolean, date_start_week_iso_or_current: string){
+	function renderLinkToWeekPlan(label: string, isActive: boolean, date_start_week_iso_or_current: string | undefined){
 		return(
 			<MyButton accessibilityLabel={label} text={label} isActive={isActive} onPress={() => {
-				router.push(`/(app)/foodweekplan/canteen_and_date_iso_start_week/?${SEARCH_PARAM_CANTEENS_ID}=`+canteen_id+`&${SEARCH_PARAM_DATE_ISO}=`+date_start_week_iso_or_current);
+				let route = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id, date_start_week_iso_or_current);
+				router.push(route);
 			}} />
 		)
 	}
@@ -82,7 +84,7 @@ export default function FoodOfferDetails() {
 	return (
 		<MySafeAreaView>
 			<View>
-				{renderLinkToWeekPlan(translation_current, true, "")}
+				{renderLinkToWeekPlan(translation_current, true, undefined)}
 			</View>
 			<MyGridFlatList
 				data={data}
