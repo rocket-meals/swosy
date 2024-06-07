@@ -9,7 +9,7 @@ import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefau
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {setDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
-import {getRouteToFoodplanCanteenAndDateIsoStartWeek, SEARCH_PARAM_DATE_ISO} from "../canteen_and_date_iso_start_week";
+import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
 
 export const SEARCH_PARAM_CANTEENS_ID = 'canteens_id';
 
