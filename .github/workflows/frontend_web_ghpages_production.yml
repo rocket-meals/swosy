@@ -19,7 +19,7 @@ jobs:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
       - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+        run: npm ci
       - run: git config --global user.name 'Rocket Meals'
       - run: git config --global user.email 'nils@baumgartner-software.de'
       #https://www.npmjs.com/package/gh-pages

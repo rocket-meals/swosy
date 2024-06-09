@@ -10,6 +10,9 @@ on:
 
 jobs:
   update:
+    defaults:
+      run:
+        working-directory: ./frontend/app
     name: EAS Update Development
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +38,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+        run: npm ci
 
       - name: 🚀 Publish development update for branch
-        run: cd ./frontend/app && eas update --auto --non-interactive
+        run: eas update --auto --non-interactive
