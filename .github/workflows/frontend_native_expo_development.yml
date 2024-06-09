@@ -1,4 +1,4 @@
-name: Expo Update
+name: Expo Update Development
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   update:
-    name: EAS Update
+    name: EAS Update Development
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
@@ -20,22 +20,22 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout repository
+      - name: 🏗 Setup repository
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
-      - name: Setup EAS
+      - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: cd ./frontend/app && npm ci
 
-      - name: Publish update to channel specific for branch
-        run: cd ./frontend/app && eas update --auto
+      - name: 🚀 Publish development update for branch
+        run: cd ./frontend/app && eas update --auto --non-interactive

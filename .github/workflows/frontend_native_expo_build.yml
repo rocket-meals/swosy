@@ -1,12 +1,11 @@
-name: Expo Update Production
+name: Expo Build
 on:
   push:
     branches:
-      - master
+      - release_native
 
 jobs:
-  update:
-    name: EAS Update Production
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check for EXPO_TOKEN
@@ -16,7 +15,7 @@ jobs:
             exit 1
           fi
 
-      - name: 🏗 Setup repository
+      - name: 🏗 Setup repo
         uses: actions/checkout@v3
 
       - name: 🏗 Setup Node
@@ -24,6 +23,7 @@ jobs:
         with:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
+
       - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8
         with:
@@ -33,5 +33,15 @@ jobs:
       - name: 📦 Install dependencies
         run: cd ./frontend/app && npm ci
 
-      - name: 🚀 Publish update to channel 'production'
-        run: cd ./frontend/app && eas update --auto --channel production --non-interactive
+      - name: 🚀 Build app
+        run: cd ./frontend/app && eas build --non-interactive
+
+      - name: 📤 Submit iOS build
+        run: cd ./frontend/app && eas submit --platform ios --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📤 Submit Android build
+        run: cd ./frontend/app && eas submit --platform android --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

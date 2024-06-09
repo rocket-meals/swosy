@@ -11,12 +11,15 @@ jobs:
         working-directory: ./frontend/app
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
+      - name: 📦 Install dependencies
+        run: cd ./frontend/app && npm ci
       - run: git config --global user.name 'Rocket Meals'
       - run: git config --global user.email 'nils@baumgartner-software.de'
       #https://www.npmjs.com/package/gh-pages
