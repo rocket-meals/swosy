@@ -7,8 +7,8 @@ on:
 jobs:
   gh-pages:
     defaults:
-      run: # default folder is ./frontend/app
-        working-directory:
+      run:
+        working-directory: ./frontend/app
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repository
