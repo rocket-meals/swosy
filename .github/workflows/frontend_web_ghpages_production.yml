@@ -3,7 +3,10 @@ on:
   push:
     branches:
       - master
-      
+    paths:
+      - 'frontend/app/**'
+      - ".github/workflows/frontend_web_ghpages_production.yml"
+
 jobs:
   gh-pages:
     defaults:

@@ -6,7 +6,7 @@ on:
       - master # Master will be also in Production run
     paths:
       - 'frontend/app/**'
-      - ".github/workflows/frontend_native_expo.yml"
+      - ".github/workflows/frontend_native_expo_development.yml"
 
 jobs:
   update:
