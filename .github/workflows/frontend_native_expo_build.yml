@@ -2,7 +2,7 @@ name: Expo Build
 on:
   push:
     branches:
-      - release_native
+      - native_build
 
 jobs:
   build:
