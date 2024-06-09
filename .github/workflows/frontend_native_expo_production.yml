@@ -8,7 +8,7 @@ jobs:
   update:
     defaults:
       run:
-        working-directory: ./frontend/app
+        working-directory: frontend/app
     name: EAS Update Production
     runs-on: ubuntu-latest
     steps:
