@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - native_build
-    paths:
-      - 'frontend/app/**'
-      - ".github/workflows/frontend_native_expo_build.yml"
 
 jobs:
   build:
