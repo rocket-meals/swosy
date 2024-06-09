@@ -38,4 +38,4 @@ jobs:
         run: cd ./frontend/app && npm ci
 
       - name: 🚀 Publish development update for branch
-        run: cd ./frontend/app && eas update --auto --non-interactive
+        run: cd ./frontend/app && eas update --auto --platform all --non-interactive

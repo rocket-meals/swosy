@@ -37,4 +37,4 @@ jobs:
         run: cd ./frontend/app && npm ci
 
       - name: 🚀 Publish update to channel 'production'
-        run: cd ./frontend/app && eas update --auto --channel production --non-interactive
+        run: cd ./frontend/app && eas update --auto --platform all --non-interactive --channel production

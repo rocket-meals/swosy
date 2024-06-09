@@ -34,7 +34,7 @@ jobs:
         run: cd ./frontend/app && npm ci
 
       - name: 🚀 Build app
-        run: cd ./frontend/app && eas build --non-interactive
+        run: cd ./frontend/app && eas build --platform all --non-interactive
 
       - name: 📤 Submit iOS build
         run: cd ./frontend/app && eas submit --platform ios --non-interactive
