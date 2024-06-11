@@ -116,6 +116,7 @@ export default function FoodplanScreen() {
 					const copyDate = new Date(tempDate.toISOString());
 					console.log(copyDate.toISOString());
 					let offers = await getFoodOffersForSelectedDate(isDemo, copyDate, canteen)
+
 					nextWeekOffers.push({
 						date_iso: copyDate.toISOString(),
 						offers: offers
@@ -409,13 +410,11 @@ export default function FoodplanScreen() {
 
 	return (
 		<MySafeAreaViewForScreensWithoutHeader>
+			<MySafeAreaView>
 			{header}
-				<MySafeAreaView>
 					<MyScrollView>
 						<MyPrintComponent setPrintCallback={setPrintCallback}>
 							<View style={{
-								width: "100%",
-								height: "100%",
 								backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
 							}}>
 								{renderWeekOffers()}
