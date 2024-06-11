@@ -3,7 +3,6 @@ import {CSVExportParser} from "./CSVExportParser"
 
 import {FoodParserInterface} from "./FoodParserInterface";
 import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
-import {ParseSchedule} from "./ParseSchedule";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {PriceGroups} from "./PriceGroups";
 

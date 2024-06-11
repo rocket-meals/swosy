@@ -133,10 +133,11 @@ export class ParseSchedule {
                     // TODO: At the start of the server all food offers get deleted and created again. While this is okay, it would be nicer to check if there are realy new data and only to update/create these instead of recreating all offers new when a single thing changes due to our changed hash.
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
-                        console.log("["+SCHEDULE_NAME+"]"+" - Delete all food offers");
+                        console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
                         let ISOStringDatesOfMealOffersToDelete = await this.getIsoDatesFromRawMealOfferJSONList(rawMealOffersJSONList, this.foodParser);
                         let listIso8601StringDates = this.formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesOfMealOffersToDelete);
                         await this.deleteAllFoodOffersWithDates(listIso8601StringDates);
+                        await this.deleteAllFoodOffersNewerThanDatesAndInFuture(listIso8601StringDates);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
                         await this.createFoodOffers(rawMealOffersJSONList, this.foodParser);
@@ -442,11 +443,62 @@ export class ParseSchedule {
         }
     }
 
+    /**
+     * As we recieved a new food offer list, we delete all offers that are in the future and newer than the latest date in the list.
+     * @param listIso8601StringDates
+     */
+    async deleteAllFoodOffersNewerThanDatesAndInFuture(listIso8601StringDates: string[]) {
+        let latestDate: Date | null = null;
+        for (let iso8601StringDate of listIso8601StringDates) {
+            let date = new Date(iso8601StringDate);
+            if (!latestDate || date > latestDate) {
+                latestDate = date;
+            }
+        }
+        if(!!latestDate){
+            // add one day to the latest date and format it to iso8601
+            latestDate.setDate(latestDate.getDate() + 1);
+            let latestPlusOneDayIso8601StringDate = this.formatDateToIso8601WithoutTimezone(latestDate);
+            let nowAsIso8601StringDate = this.formatDateToIso8601WithoutTimezone(new Date());
+            // if the latest date is in the future, we delete all offers that are newer or equal to latestPlusOneDayIso8601StringDate
+            // we do only delete offers in the future automatically, as we do not want to delete offers that are in the past
+            if(new Date(latestPlusOneDayIso8601StringDate) > new Date(nowAsIso8601StringDate)){
+                await this.deleteAllFoodOffersNewerOrEqualThanDate(latestPlusOneDayIso8601StringDate);
+            }
+        }
+    }
+
+    async deleteAllFoodOffersNewerOrEqualThanDate(iso8601StringDate: string) {
+        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
+        let itemsToDelete = await itemService.readByQuery({
+            filter: {
+                date: {
+                    $gte: iso8601StringDate
+                }
+            },
+            fields: ['id'], // Assuming 'id' is the primary key field
+            limit: -1
+        });
+
+        let idsToDelete = itemsToDelete.map(item => item.id);
+
+        // Step 2: Delete the items using their IDs
+        if (idsToDelete.length > 0) {
+            await itemService.deleteMany(idsToDelete).then(() => {
+                console.log(`Food offers deleted successfully for new or equal date: ${iso8601StringDate} - amount: ${idsToDelete.length}`);
+            }).catch(error => {
+                console.error(`Error deleting items for new or equal date: ${iso8601StringDate}:`, error);
+            });
+        } else {
+            console.log(`No food offers found for date: ${iso8601StringDate} to delete.`);
+        }
+    }
+
     async deleteAllFoodOffersWithDates(listIso8601StringDates: string[]) {
         let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
         for (let iso8601StringDate of listIso8601StringDates) {
             // Step 1: Retrieve IDs of items to delete for the specific date
-            console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date: " + iso8601StringDate);
+            console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date in order to overwrite: " + iso8601StringDate);
 
             let itemsToDelete = await itemService.readByQuery({
                 filter: {
