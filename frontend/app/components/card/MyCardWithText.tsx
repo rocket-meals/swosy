@@ -6,6 +6,7 @@ import {VStack} from '@gluestack-ui/themed';
 import {Heading, Text, View, useViewBackgroundColor} from '@/components/Themed';
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {MyCard, MyCardDefaultBorderRadius, MyCardProps} from '@/components/card/MyCard';
+import {useProjectColor} from "@/states/ProjectInfo";
 
 export type MyCardWithTextProps = {
     heading?: string | null | undefined,
@@ -16,6 +17,7 @@ export type MyCardWithTextProps = {
 
 // define the button component
 export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) => {
+	const projectColor = useProjectColor();
 	const defaultViewBackgroundColor = useViewBackgroundColor()
 	let viewBackgroundColorForText = useLighterOrDarkerColorForSelection(defaultViewBackgroundColor)
 	viewBackgroundColorForText = props.viewBackgroundColor || viewBackgroundColorForText
@@ -44,9 +46,19 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
 		)
 	}
 
+	let renderedSeparator = null;
+	if(!!projectColor){
+		renderedSeparator = (
+			<View style={{backgroundColor: projectColor, width: '100%', height: 4}} />
+		)
+
+	}
+
 	renderedBottomComponent = (
 		<View style={{backgroundColor: viewBackgroundColorForText, width: '100%', height: '100%'}}>
+			{renderedSeparator}
 			<VStack px={borderRaidus/2} pt={2} pb={borderRaidus/2}>
+
 				{renderedHeading}
 				{renderedText}
 			</VStack>
