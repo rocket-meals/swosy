@@ -13,12 +13,16 @@ export function getFoodName(food: string | Foods | null | undefined, languageCod
 		if (translations) {
 			let translation = getDirectusTranslation(languageCode, translations, 'name', false, food.alias, undefined);
 			if (translation) {
+				// capitalize first letter
+				translation = translation.charAt(0).toUpperCase() + translation.slice(1);
 				return translation;
 			}
 		}
 
 		if (food?.alias) {
-			return food.alias
+			// capitalize first letter
+			return food.alias.charAt(0).toUpperCase() + food.alias.slice(1);
+			//return food.alias
 		}
 	}
 	return null;
