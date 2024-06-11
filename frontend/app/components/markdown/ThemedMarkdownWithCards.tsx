@@ -1,13 +1,12 @@
 import React, {FunctionComponent, useState} from 'react';
-import RenderHtml from 'react-native-render-html';
-import {Icon, Text, getFontSizeInPixelBySize, View, useViewBackgroundColor} from '@/components/Themed';
+import {getFontSizeInPixelBySize, Icon, Text, useTextContrastColor, View} from '@/components/Themed';
 import {TouchableOpacity, useWindowDimensions} from 'react-native';
-import {useTextContrastColor} from '@/components/Themed';
 import MarkdownIt from 'markdown-it';
 import {IconNames} from "@/constants/IconNames";
 import {replaceLinebreaks, ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
-import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
 import {useProjectColor, useProjectColorContrast} from "@/states/ProjectInfo";
+
+const BORDER_RADIUS = 8;
 
 interface AppState {
 	darkmode?: boolean,
@@ -24,9 +23,10 @@ const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.
 
 	const projectColor = useProjectColor()
 	const projectContrastColor = useProjectColorContrast()
+	const borderColor = useTextContrastColor()
 
 	return (
-		<View style={{marginVertical: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 8}}>
+		<View style={{marginVertical: 10, borderWidth: 1, borderColor: borderColor, borderRadius: BORDER_RADIUS, overflow: "hidden"}}>
 			<TouchableOpacity onPress={toggleCollapse} style={{padding: 10, backgroundColor: projectColor, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
 				<ThemedMarkdown markdown={titleSource} color={projectContrastColor} />
 				<Icon name={collapsed ? IconNames.expand_icon : IconNames.collapse_icon} color={projectContrastColor} />
@@ -93,7 +93,7 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 				result.push({
 					token: token,
 					section: undefined
-				});
+				}); /// <---
 			} else {
 				if(headingOpen) {
 					if(token.type === 'heading_close' && token.tag === 'h' + level) {
@@ -108,11 +108,12 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 	}
 
 	if(!anyHeaderFound) {
+		result = []; // if no header found, return all tokens as result
 		for(let i = 0; i < tokens.length; i++) {
 			result.push({
 				token: tokens[i],
 				section: undefined
-			});
+			}); /// <---
 		}
 	} else {
 		// close last section and push it to result

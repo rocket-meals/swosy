@@ -4,18 +4,23 @@
 
 import {VStack} from '@gluestack-ui/themed';
 import {Heading, Text, View, useViewBackgroundColor} from '@/components/Themed';
-import { useMyContrastColor} from '@/helper/color/MyContrastColor';
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {MyCard, MyCardDefaultBorderRadius, MyCardProps} from '@/components/card/MyCard';
 
 export type MyCardWithTextProps = {
     heading?: string | null | undefined,
+	viewBackgroundColor?: string,
+	textColor?: string,
     text?: string,
 } & MyCardProps
 
 // define the button component
 export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) => {
-	const viewBackgroundColor = useViewBackgroundColor()
-	const textContrastColor = useMyContrastColor(viewBackgroundColor)
+	const defaultViewBackgroundColor = useViewBackgroundColor()
+	let viewBackgroundColorForText = useLighterOrDarkerColorForSelection(defaultViewBackgroundColor)
+	viewBackgroundColorForText = props.viewBackgroundColor || viewBackgroundColorForText
+	let textContrastColor = useMyContrastColor(viewBackgroundColorForText)
+	textContrastColor = props.textColor || textContrastColor
 
 	const borderRaidus = props.borderRaidus || MyCardDefaultBorderRadius
 
@@ -24,7 +29,7 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
 	let renderedHeading = null;
 	if (heading) {
 		renderedHeading = (
-			<Heading style={{color: viewBackgroundColor}} size="sm">
+			<Heading style={{color: textContrastColor}} size="sm">
 				{heading}
 			</Heading>
 		)
@@ -33,14 +38,14 @@ export const MyCardWithText = ({heading, text, ...props}: MyCardWithTextProps) =
 	let renderedText = null;
 	if (text) {
 		renderedText = (
-			<Text style={{color: viewBackgroundColor}} my="$1.5" fontSize="$xs">
+			<Text style={{color: textContrastColor}} my="$1.5" fontSize="$xs">
 				{text}
 			</Text>
 		)
 	}
 
 	renderedBottomComponent = (
-		<View style={{backgroundColor: textContrastColor, width: '100%', height: '100%'}}>
+		<View style={{backgroundColor: viewBackgroundColorForText, width: '100%', height: '100%'}}>
 			<VStack px={borderRaidus/2} pt={2} pb={borderRaidus/2}>
 				{renderedHeading}
 				{renderedText}

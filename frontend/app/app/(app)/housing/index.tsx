@@ -10,7 +10,7 @@ import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {useEstimatedLocationUponSelectedCanteen, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getDirectusTranslationUnsafe, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {router} from "expo-router";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
@@ -21,6 +21,7 @@ import React from "react";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import {FreeRoomBadge} from "@/components/housing/FreeRoomBadge";
 import {SEARCH_PARAM_APARTMENTS_ID} from "@/app/(app)/housing/apartment";
+import {ThemedMarkdownWithCards} from "@/components/markdown/ThemedMarkdownWithCards";
 
 function useHousingAdditionalInformationMarkdown(): string |null {
 	const [appSettings] = useSynchedAppSettings();
@@ -239,7 +240,7 @@ export default function HousingScreen() {
 		  const borderRaidus = MyCardDefaultBorderRadius
 		  return (
 			  <View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
-				  <ThemedMarkdown markdown={additionalInformationMarkdown} />
+				  <ThemedMarkdownWithCards markdown={additionalInformationMarkdown} />
 			  </View>
 		  )
 	  }

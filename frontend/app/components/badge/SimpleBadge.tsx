@@ -39,6 +39,8 @@ export default function SimpleBadge(props: SimpleBadgeProps) {
 			borderTopRightRadius: props.borderTopRight ? usedBorderRadius : 0,
 			borderBottomRightRadius: props.borderBottomRight ? usedBorderRadius : 0,
 			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
 		}}
 		>
 			{renderedIcon}<Text style={{color: projectContrastColor}}>{props.text}</Text>
