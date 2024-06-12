@@ -22,6 +22,13 @@ export class AssetHelperTransformOptions {
 		quality: 100
 	}
 
+	static HIGH_QUALITY_IMAGE_TRANSFORM: ImageTransform = {
+		fit: 'cover',
+		width: 1024,
+		height: 1024,
+		quality: 100
+	}
+
 	static ORIGINAL_IMAGE_TRANSFORM: ImageTransform = {
 		fit: undefined,
 		width: undefined,

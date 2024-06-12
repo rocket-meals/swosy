@@ -1,15 +1,24 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {SEARCH_PARAM_CANTEENS_ID} from "@/app/(app)/foodoffers/weekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
-import {View, Text} from "@/components/Themed";
+import {Text, View} from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
-import {useEffect, useState} from "react";
-import {Foodoffers} from "@/helper/database/databaseTypes/types";
+import React, {useEffect, useState} from "react";
+import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import ImageWithComponents from "@/components/project/ImageWithComponents";
+import {Rectangle} from "@/components/shapes/Rectangle";
+import {useFoodImagePlaceholderAssetId, useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {getFoodName} from "@/helper/food/FoodTranslation";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
+import {Image} from "expo-image";
+
+const companyLogo = require("@/assets/images/company.png");
 
 export const SEARCH_PARAM_CATEGORY = 'category';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
@@ -63,12 +72,16 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 }
 
 export default function FoodBigScreenScreen() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
-	const canteen_id = params[SEARCH_PARAM_CANTEENS_ID];
+	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
+	const canteen_id = useCanteensIdFromLocalSearchParams()
 	const category = useFoodCategoryFromLocalSearchParams();
-	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams();
+	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 	const canteen = useSynchedCanteenById(canteen_id);
+	const [layout, setLayout] = useState({width: 0, height: 0});
+	const [food_index, setFoodIndex] = useState(0);
 
 	const isDemo = useIsDemo();
 
@@ -76,18 +89,24 @@ export default function FoodBigScreenScreen() {
 	const [loading, setLoading] = useState(true);
 
 	async function loadFoodOffers(){
-		console.log("Load foodOffers");
 		setLoading(true);
 		if(!!canteen){
-			console.log("Load foodOffers for canteen");
 			const date = new Date();
-			console.log("Load foodOffers for date: "+date);
 			let offers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			console.log("Load foodOffers: "+JSON.stringify(offers, null, 2));
 			setFoodOffers(offers);
 		}
 		setLoading(false);
 	}
+
+	function getFoodOffersForCategory(category: string | null | undefined): Foodoffers[] {
+		if(!category){
+			return foodOffers;
+		}
+		return foodOffers.filter(offer => offer?.food?.category === category);
+	}
+
+	const foodOffersForCategory = getFoodOffersForCategory(category);
+	const currentFoodOfferForCategory = foodOffersForCategory[food_index];
 
 	// Load foodOffers every 5 minutes
 	const INTERVAL = refreshFoodOffersIntervalInSeconds * 1000;
@@ -100,16 +119,96 @@ export default function FoodBigScreenScreen() {
 	}, [canteen, category, nextFoodIntervalInSeconds, refreshFoodOffersIntervalInSeconds]);
 
 
+	// UseEffect to increase food_index every nextFoodIntervalInSeconds
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setFoodIndex((food_index) => {
+				return (food_index + 1) % foodOffersForCategory.length;
+			});
+		}, nextFoodIntervalInSeconds * 1000);
+		return () => clearInterval(interval);
+	}, [foodOffersForCategory, nextFoodIntervalInSeconds]);
+
+	function renderContent(currentFoodOfferForCategory: Foodoffers | undefined){
+		let {width, height} = layout;
+		if(!width || !height){
+			return <Text>Loading...</Text>
+		}
+		let flexDirection = width > height ? 'row' : 'column';
+		let minimalDimension = Math.min(width, height);
+
+		const food = currentFoodOfferForCategory?.food as Foods | undefined;
+		const assetId = food?.image;
+		const image_url = food?.image_remote_url;
+		const thumbHash = food?.image_thumb_hash;
+
+		const foodName = getFoodName(food, languageCode);
+		const accessibilityLabel = foodName || "Food Image";
+
+		return <View style={{
+			width: '100%',
+			height: '100%',
+			flexDirection: flexDirection
+		}}>
+			<View style={{
+				flex: 1
+			}}>
+				<View style={{
+					flex: 1,
+					backgroundColor: "red"
+				}}>
+					<Image source={companyLogo} style={{
+						width: '100%',
+						height: '100%'
+					}}/>
+				</View>
+				<View style={{
+					flex: 1,
+					backgroundColor: "blue"
+				}}>
+
+				</View>
+				<View style={{
+					flex: 1,
+					backgroundColor: "red"
+				}}>
+
+				</View>
+				<View style={{
+					flex: 1,
+					backgroundColor: "blue"
+				}}>
+
+				</View>
+			</View>
+			<View style={{
+				width: minimalDimension,
+				height: minimalDimension
+			}}>
+				<Rectangle>
+					<ImageWithComponents image={{
+						imageTransform: AssetHelperTransformOptions.HIGH_QUALITY_IMAGE_TRANSFORM,
+						fallbackAssetId: foods_placeholder_image,
+						image_url: image_url,
+						assetId: assetId,
+						thumbHash: thumbHash,
+					}} accesibilityLabel={accessibilityLabel}
+					/>
+				</Rectangle>
+			</View>
+		</View>
+	}
+
 	return <MySafeAreaView>
-		<MyScrollView>
-			<Text>{"FoodBigScreenScreen"}</Text>
-			<Text>{"canteen_id: "+canteen_id}</Text>
-			<Text>{"canteen"}</Text>
-			<Text>{JSON.stringify(canteen, null, 2)}</Text>
-			<Text>{"category: "+category}</Text>
-			<Text>{"nextFoodIntervalInSeconds: "+nextFoodIntervalInSeconds}</Text>
-			<Text>{"FoodOffers:"}</Text>
-			<Text>{JSON.stringify(foodOffers, null, 2)}</Text>
-		</MyScrollView>
+		<View style={{
+			width: '100%',
+			height: '100%',
+			backgroundColor: "orange"
+		}} onLayout={(event) => {
+			const {width, height} = event.nativeEvent.layout;
+			setLayout({width, height});
+		}}>
+			{renderContent(currentFoodOfferForCategory)}
+		</View>
 	</MySafeAreaView>
 }

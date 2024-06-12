@@ -43,6 +43,11 @@ export function useSynchedAppSettings(): [( AppSettings | null | undefined), ((n
 	return [usedResources, setResourceOnly, cacheHelperObj]
 }
 
+export function useFoodImagePlaceholderAssetId(): string | null | undefined {
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.foods_placeholder_image as string | null | undefined;
+}
+
 export function useIsFoodsEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.foods_enabled || false;

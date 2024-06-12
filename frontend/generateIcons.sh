@@ -87,6 +87,9 @@ generate_images() {
     # Generate notification-icon.png
     convert "$icon_path" -resize $NOTIFICATION_ICON_SIZE "$OUTPUT_FOLDER/notification-icon.png"
 
+    # Copy the logo_path image to the output folder
+    cp "$logo_path" "$OUTPUT_FOLDER/company.png"
+
     # Generate splash.png with $logo_path
     # 1. Copy the logo_path image to the output folder but with 90% width of the splash image size and a white background
     calculate_splash_logo_width
