@@ -7,7 +7,7 @@ import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 const SEARCH_PARAM_CATEGORY = 'category';
 const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
 
-export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined): ExpoRouter.Href {
+export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean): ExpoRouter.Href {
 	let paramsRaw = []
 	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+canteen_id : null;
 	if(paramForCanteen){
@@ -22,8 +22,10 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 		paramsRaw.push(paramForNextFoodInterval)
 	}
 
-	let paramForFullScreen = SEARCH_PARAM_FULLSCREEN+"=true";
-	paramsRaw.push(paramForFullScreen)
+	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+fullscreen : null;
+	if(paramForFullScreen){
+		paramsRaw.push(paramForFullScreen)
+	}
 
 	let params = paramsRaw.join("&")
 	return `/(app)/foodoffers/bigscreen/details/?${params}` as ExpoRouter.Href;
