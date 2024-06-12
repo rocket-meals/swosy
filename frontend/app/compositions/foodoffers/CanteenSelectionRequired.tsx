@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {Heading, View} from '@/components/Themed';
-import {useEditProfileCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
+import {useEditCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {useSynchedCanteenById, useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSelectGridList';
@@ -19,7 +19,7 @@ interface AppState {
 
 }
 export const CanteenSelectionRequired: FunctionComponent<AppState> = ({...props}) => {
-	const tooltip = useEditProfileCanteenAccessibilityLabel();
+	const tooltip = useEditCanteenAccessibilityLabel();
 
 	//                <MyButton
 	//                     useOnlyNecessarySpace={true} accessibilityLabel={"Canteen"} leftIcon={IconNames.canteen_icon} {...props} onPress={onPress} />

@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {Heading, Text, View} from '@/components/Themed';
-import {useEditProfileCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
+import {useEditCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {useSynchedCanteenById, useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSelectGridList';

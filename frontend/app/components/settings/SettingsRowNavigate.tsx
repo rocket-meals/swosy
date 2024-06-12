@@ -27,11 +27,15 @@ export const SettingsRowNavigateWithText = (props: SettingsRowNavigateWithTextPr
 	const translation_title = props.labelLeft;
 	const accessibilityLabel = translation_title;
 
-	const onPress = () => {
-		router.push(props.route);
+	let onPress: any = null;
+	if(!!props.route){
+		onPress = () => {
+			router.push(props.route);
+		}
 	}
+	let disabled = !onPress;
 
-	return <SettingsRowNavigate accessibilityLabel={accessibilityLabel} labelLeft={translation_title} onPress={onPress} leftIcon={props.leftIcon} labelRight={props.labelRight} />
+	return <SettingsRowNavigate disabled={disabled} accessibilityLabel={accessibilityLabel} labelLeft={translation_title} onPress={onPress} leftIcon={props.leftIcon} labelRight={props.labelRight} />
 }
 
 export const SettingsRowNavigate: FunctionComponent<SettingsRowProps> = ({accessibilityLabel, rightIcon, accessibilityRole, ...props}) => {
