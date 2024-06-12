@@ -189,7 +189,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isEmployee || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/index',
+				routeName: 'foodoffers/weekplan/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
 				showBackButton: true,
@@ -197,7 +197,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/canteens/index',
+				routeName: 'foodoffers/weekplan/canteens/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
 				showBackButton: true,
@@ -205,9 +205,18 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodweekplan/canteen_and_date_iso_start_week/index',
+				routeName: 'foodoffers/weekplan/canteen_and_date_iso_start_week/index',
 				title: translation_foodweekplan,
 				label: translation_foodweekplan,
+				getHeader: null,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodoffers/bigscreen/details/index',
+				title: "",
+				label: "",
 				getHeader: null,
 				showBackButton: true,
 				icon: IconNames.foodweekplan_icon,
