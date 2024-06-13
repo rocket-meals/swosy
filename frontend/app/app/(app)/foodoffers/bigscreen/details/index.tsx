@@ -17,6 +17,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
 import {Image} from "expo-image";
+import {SearchParams} from "@/helper/searchParams/SearchParams";
 
 const companyLogo = require("@/assets/images/company.png");
 
@@ -43,6 +44,9 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 	if(paramForFullScreen){
 		paramsRaw.push(paramForFullScreen)
 	}
+
+	let paramForKioskMode = SearchParams.KIOSK_MODE+"="+"true";
+	paramsRaw.push(paramForKioskMode)
 
 	let params = paramsRaw.join("&")
 	return `/(app)/foodoffers/bigscreen/details/?${params}` as ExpoRouter.Href;
