@@ -1,16 +1,11 @@
-import {DirectusRoles} from "@/helper/database/databaseTypes/types";
+import {useGlobalSearchParams} from "expo-router";
 
-export class RoleHelper {
+export function useSearchParamKioskMode() {
+    const params = useGlobalSearchParams<{ [SearchParams.KIOSK_MODE]?: string }>();
+    let value = params[SearchParams.KIOSK_MODE];
+    return value === 'true';
+}
 
-    static isAdmin(role: DirectusRoles | null){
-        if(!role){
-            return false;
-        }
-        return !!role?.admin_access;
-    }
-
-    static isEmployee(role: DirectusRoles){
-        return role.name === "Mitarbeiter"
-    }
-
+export enum SearchParams {
+    KIOSK_MODE = 'kiosk_mode'
 }

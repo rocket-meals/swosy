@@ -2,16 +2,16 @@ import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import React from 'react';
 import {TranslationKeys, useTranslation, useTranslationSupportAndFeedback} from '@/helper/translations/Translation';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
-import {useSyncState} from '@/helper/syncState/SyncState';
-import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHeaderFoodOffers';
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
 	useIsAccountBalanceEnabled,
-	useIsBuildingsEnabled, useIsCourseTimetableEnabled,
+	useIsBuildingsEnabled,
+	useIsCourseTimetableEnabled,
 	useIsFoodsEnabled,
-	useIsHousingEnabled, useIsMapEnabled,
+	useIsHousingEnabled,
+	useIsMapEnabled,
 	useIsNewsEnabled
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
@@ -19,7 +19,6 @@ import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeade
 import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 import {useCurrentIsEmployee, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
-import {getFoodweekplanHeader} from "@/compositions/foodweekplanHeader/MyScreenHeaderFoodOffers";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDeveloperModeActive();

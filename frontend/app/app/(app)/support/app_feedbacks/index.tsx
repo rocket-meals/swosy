@@ -1,5 +1,5 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {router, useLocalSearchParams} from 'expo-router';
+import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import React, {useEffect} from 'react';
 import {AppFeedbacks} from "@/helper/database/databaseTypes/types";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
@@ -26,7 +26,7 @@ import useMyToast from "@/components/toast/MyToast";
 export const SEARCH_PARAM_APPFEEDBACK_ID = 'app_feedbacks_id';
 
 export function useAppfeedbackIdFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_APPFEEDBACK_ID]?: string }>();
+	const params = useGlobalSearchParams<{ [SEARCH_PARAM_APPFEEDBACK_ID]?: string }>();
 	return params[SEARCH_PARAM_APPFEEDBACK_ID];
 }
 

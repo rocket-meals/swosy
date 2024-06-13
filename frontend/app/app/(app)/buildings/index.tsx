@@ -5,7 +5,7 @@ import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
-import {router, useLocalSearchParams} from "expo-router";
+import {router, useGlobalSearchParams, useLocalSearchParams} from "expo-router";
 import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {useEstimatedLocationUponSelectedCanteen, useProfileLanguageCode} from "@/states/SynchedProfile";
@@ -84,7 +84,7 @@ function sortBuildings(resources: Buildings[], buildingsDict: Record<string, Bui
 export const SEARCH_PARAM_BUILDINGS_ID = 'buildings_id';
 
 export function useBuildingIdFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_BUILDINGS_ID]?: string }>();
+	const params = useGlobalSearchParams<{ [SEARCH_PARAM_BUILDINGS_ID]?: string }>();
 	return params[SEARCH_PARAM_BUILDINGS_ID];
 }
 

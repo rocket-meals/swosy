@@ -1,10 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {router, useLocalSearchParams, useRouter} from 'expo-router';
+import {router, useGlobalSearchParams, useLocalSearchParams, useRouter} from 'expo-router';
 import {MyButton} from "@/components/buttons/MyButton";
 
 export default function HomeScreen() {
-	const localSearchParams = useLocalSearchParams(); // TODO: Need to check which one to use
+	const globalSearchParams = useGlobalSearchParams(); // TODO: Need to check which one to use
 	const routerFromUseRouter = useRouter();
 
 	return (
@@ -35,8 +35,8 @@ export default function HomeScreen() {
 					routerFromUseRouter.setParams({test: undefined})
 				}}
 			/>
-			<Text>{'localSearchParams: '}</Text>
-			<Text>{JSON.stringify(localSearchParams, null, 2)}</Text>
+			<Text>{'globalSearchParams: '}</Text>
+			<Text>{JSON.stringify(globalSearchParams, null, 2)}</Text>
 		</View>
 	);
 }

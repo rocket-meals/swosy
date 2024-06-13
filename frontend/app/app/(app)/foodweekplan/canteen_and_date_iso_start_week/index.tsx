@@ -10,7 +10,7 @@ import {
 	useViewBackgroundColor,
 	View
 } from '@/components/Themed';
-import {router, useLocalSearchParams} from 'expo-router';
+import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
@@ -53,7 +53,7 @@ export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string,
 }
 
 export function useDateIsoFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_DATE_ISO]?: string }>();
+	const params = useGlobalSearchParams<{ [SEARCH_PARAM_DATE_ISO]?: string }>();
 	return params[SEARCH_PARAM_DATE_ISO];
 }
 

@@ -1,4 +1,4 @@
-import {Redirect, router, useLocalSearchParams} from 'expo-router';
+import {Redirect, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {Text, TextInput, View} from '@/components/Themed';
@@ -50,8 +50,8 @@ export default function Login() {
 	const [currentUser, setCurrentUser] = useCurrentUser()
 	const [loginWithAccessTokenResult, setLoginWithAccessTokenResult] = useState<any>()
 
-	const localSearchParams = useLocalSearchParams(); // get url params from router
-	const directus_token = ServerAPI.getDirectusAccessTokenFromParams(localSearchParams);
+	const globalSearchParams = useGlobalSearchParams(); // get url params from router
+	const directus_token = ServerAPI.getDirectusAccessTokenFromParams(globalSearchParams);
 
 	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
 	function isOnGithubPages() {

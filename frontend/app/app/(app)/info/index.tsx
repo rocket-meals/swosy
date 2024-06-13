@@ -1,13 +1,13 @@
 import React from 'react';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
-import {useLocalSearchParams} from 'expo-router';
+import {useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import {useSynchedWikiByCustomId} from '@/states/SynchedWikis';
 import {WikiComponent} from '@/compositions/wikis/WikiComponent';
 import NotFoundScreen from "@/app/+not-found";
 
 export function useWikiCustomIdFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ infos_id?: string }>();
+	const params = useGlobalSearchParams<{ infos_id?: string }>();
 	return params.infos_id as string;
 }
 

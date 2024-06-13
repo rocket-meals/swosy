@@ -1,5 +1,5 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {router, useLocalSearchParams} from 'expo-router';
+import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import React from 'react';
 import {Text, View} from "@/components/Themed";
 import {ListRenderItemInfo} from "react-native";
@@ -14,7 +14,7 @@ import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_
 export const SEARCH_PARAM_CANTEENS_ID = 'canteens_id';
 
 export function useCanteensIdFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
+	const params = useGlobalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
 	return params[SEARCH_PARAM_CANTEENS_ID];
 }
 
