@@ -32,7 +32,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {MarkingsDislikedWarningBadge} from "@/components/food/MarkingsDislikedWarningBadge";
 import {useDislikeColor} from "@/states/ColorScheme";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
-import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useFoodImagePlaceholderAssetId, useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 import {MarkingBadges} from "@/components/food/MarkingBadge";
 import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
@@ -232,6 +232,7 @@ export default function FoodOfferScreen() {
 	const isValidCanteenSelected = useIsValidProfileCanteenSelected();
 	const dislikeColor = useDislikeColor();
 	const [appSettings] = useSynchedAppSettings();
+	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 
 
 	const dateAsString = selectedDate.toISOString();
@@ -326,7 +327,7 @@ export default function FoodOfferScreen() {
 
 		const markingBadge = unwantedEatingHabitsFound ? <MarkingsDislikedWarningBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
 
-		const placeholderAssetId = appSettings?.foods_placeholder_image;
+		const placeholderAssetId = foods_placeholder_image;
 
 		return (
 			<MyCardForResourcesWithImage

@@ -2,14 +2,14 @@ import React, {FunctionComponent} from 'react';
 import {useShowMyCanteenSelectionModal} from '@/compositions/settings/UseGlobalActionSheetSettingProfileCanteen';
 import {IconNames} from '@/constants/IconNames';
 import {MyButton} from '@/components/buttons/MyButton';
-import {useEditProfileCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
+import {useEditCanteenAccessibilityLabel} from '@/compositions/settings/SettingsRowProfileCanteen';
 
 interface AppState {
 
 }
 export const SettingsButtonProfileCanteen: FunctionComponent<AppState> = ({...props}) => {
-	const accessibilityLabel = useEditProfileCanteenAccessibilityLabel();
-	const tooltip = useEditProfileCanteenAccessibilityLabel();
+	const accessibilityLabel = useEditCanteenAccessibilityLabel();
+	const tooltip = useEditCanteenAccessibilityLabel();
 
 	const onPress = useShowMyCanteenSelectionModal();
 

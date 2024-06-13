@@ -6,7 +6,6 @@ import {
 	MySpinner,
 	Text,
 	TEXT_SIZE_EXTRA_SMALL,
-	TEXT_SIZE_SMALL,
 	useViewBackgroundColor,
 	View
 } from '@/components/Themed';
@@ -23,7 +22,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodweekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
 import {useProjectColor} from "@/states/ProjectInfo";
 import {MyScreenHeaderCustom} from "@/components/drawer/MyScreenHeader";
 import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/states/DrawerSyncConfig";
@@ -49,7 +48,7 @@ export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string,
 	}
 
 	let params = paramsRaw.join("&")
-	return `/(app)/foodweekplan/canteen_and_date_iso_start_week/?${params}` as ExpoRouter.Href;
+	return `/(app)/foodoffers/weekplan/canteen_and_date_iso_start_week/?${params}` as ExpoRouter.Href;
 }
 
 export function useDateIsoFromLocalSearchParams() {

@@ -29,13 +29,15 @@ export function setDateForFoodSelection(date: Date): Date{
 
 export const TABLE_NAME_FOODOFFERS = 'foodoffers';
 export const TABLE_NAME_FOODS = 'foods';
+
+const QUERY_FIELDS_FOOD_OFFER = ['*','food.*','food.translations.*', 'markings.*'];
+const QUERY_FIELDS_FOOD = ['*','translations.*', 'markings.*'];
+
 async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
 	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
-	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];
-
 	const query = {
-		fields: food_offer_fields
+		fields: QUERY_FIELDS_FOOD_OFFER
 	}
 
 	return await collectionHelper.readItem(foodoffer_id, query);
@@ -44,10 +46,9 @@ async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers
 async function loadFoodFromServer(food_id: string): Promise<Foods> {
 	const collectionHelper = new CollectionHelper<Foods>(TABLE_NAME_FOODS);
 
-	const food_fields = ['*','translations.*', 'markings.*'];
 
 	const query = {
-		fields: food_fields
+		fields: QUERY_FIELDS_FOOD
 	}
 
 	return await collectionHelper.readItem(food_id, query);
@@ -104,8 +105,6 @@ export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, 
 async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
 	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
-	const food_offer_fields = ['*','food.*','food.translations.*', 'markings.*'];
-
 	if (amountDays===undefined) {
 		amountDays = 1;
 	}
@@ -155,7 +154,74 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 	const query = {
 		limit: -1,
 		filter: filter,
-		fields: food_offer_fields
+		fields: QUERY_FIELDS_FOOD_OFFER
+	}
+
+	return await collectionHelper.readItems(query);
+}
+
+export async function loadFoodCategoriesForNext7Days(isDemo: boolean): Promise<string[]> {
+	const foodOffers = await loadAllFoodOffersFromServer(isDemo, new Date(), 7);
+	const categories: {[key: string]: string} = {};
+	for (const foodOffer of foodOffers) {
+		const food = foodOffer.food;
+		if (food && food.category) {
+			categories[food.category] = food.category;
+		}
+	}
+	return Object.keys(categories);
+}
+
+async function loadAllFoodOffersFromServer(isDemo: boolean, date:Date, amountDays: number): Promise<Foodoffers[]> {
+	const copyDate = new Date(date);
+
+	if (isDemo) {
+		return getDemoFoodOffersForDate(copyDate);
+	}
+	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
+
+	if (amountDays===undefined) {
+		amountDays = 1;
+	}
+
+	const andFilters = [];
+
+	const paramDate = DateHelper.formatToOfferDate(date);
+	const formatedDate = new Date(paramDate);
+	const dateRanges = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountDays);
+
+	const startRange = dateRanges[0];
+	const start = new Date(startRange[0]);
+
+	const endRange = dateRanges[dateRanges.length-1];
+	const end = new Date(endRange[1]);
+
+	andFilters.push(
+		{
+			_or: [
+				{
+					date: {
+						_between: [start.toISOString(), end.toISOString()]
+					}
+				},
+				{
+					date: {
+						// is null or empty
+						_null: true
+					}
+				}
+			]
+		}
+	);
+
+	const filter = {
+		_and: andFilters
+	}
+
+	const query = {
+		limit: -1,
+		filter: filter,
+		fields: QUERY_FIELDS_FOOD_OFFER
 	}
 
 	return await collectionHelper.readItems(query);

@@ -78,6 +78,7 @@ export class TranslationKeys {
 	static free_rooms = createTranslationKey('free_rooms', 'Freie Zimmer');
 
 	static foodweekplan = createTranslationKey('foodweekplan', 'Speise Wochenplan');
+	static foodBigScreen = createTranslationKey('foodBigScreen', 'Speise Großbildschirm');
 
 	static data_access_introduction = createTranslationKey('data_access_introduction', `## 🌟 Deine Daten - Dein Recht
 

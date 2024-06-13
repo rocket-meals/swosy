@@ -5,10 +5,13 @@ import {CanteenSelectGridList} from '@/compositions/resourceGridList/canteenSele
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 
-export const useShowMyCanteenSelectionModal = () => {
+export interface CanteenSelectionModalProps {
+	onSelectCanteen: (canteen: Canteens | null) => void;
+}
+
+export const useShowCanteenSelectionModal = (props: CanteenSelectionModalProps) => {
 	const translation_title = useTranslation(TranslationKeys.canteen)
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
-	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 
 	const onPress = () => {
 		setModalConfig({
@@ -20,9 +23,9 @@ export const useShowMyCanteenSelectionModal = () => {
 				return(
 					<CanteenSelectGridList onPress={(canteen: Canteens | undefined) => {
 						if(canteen){
-							setProfileCanteen(canteen);
+							props.onSelectCanteen(canteen);
 						} else {
-							setProfileCanteen(null)
+							props.onSelectCanteen(null)
 						}
 						hide();
 					}} />
@@ -30,6 +33,18 @@ export const useShowMyCanteenSelectionModal = () => {
 			}
 		})
 	}
+
+	return onPress
+}
+
+
+export const useShowMyCanteenSelectionModal = () => {
+	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
+	const onSelectCanteen = (canteen: Canteens | null) => {
+		setProfileCanteen(canteen);
+	}
+
+	const onPress = useShowCanteenSelectionModal({onSelectCanteen: onSelectCanteen})
 
 	return onPress
 }

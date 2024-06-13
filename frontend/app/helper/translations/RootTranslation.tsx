@@ -1,7 +1,4 @@
-import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
-import {TranslationEntry, useDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {DirectusTranslationHelper} from "@/helper/translations/DirectusTranslationHelper";
 
 export enum RootTranslationKey {
 	CHECK_FOR_APP_UPDATES = 'CHECK_FOR_APP_UPDATES',

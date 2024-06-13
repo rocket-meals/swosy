@@ -108,6 +108,7 @@ interface SettingsRowTextEditSpeicificProps {
     labelLeft: string,
     // onSave is a function that returns a boolean or a promise that resolves to a boolean or void or Dispatch<SetStateAction<string>>
     onSave: (value: string | undefined | null, hide?: () => void) => (boolean | void | Promise<boolean | void>) | Dispatch<SetStateAction<string>>,
+	onCancel?: () => void | Promise<void> | void,
     onTrackColor?: string,
     debug?: boolean,
     value?: string,
@@ -157,7 +158,9 @@ export const SettingsRowTextEdit = ({accessibilityLabel, labelLeft, rightIcon,..
 	const config: MyModalActionSheetItem = {
 		onCancel: async () => {
 			setInputValue(initialValue)
-			return true;
+			if(props.onCancel){
+				await props.onCancel()
+			}
 		},
 		label: title,
 		accessibilityLabel: accessibilityLabel,
