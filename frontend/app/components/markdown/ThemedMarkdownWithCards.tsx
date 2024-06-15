@@ -27,9 +27,8 @@ const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.
 
 	return (
 		<View style={{marginVertical: 10, borderWidth: 1, borderColor: borderColor, borderRadius: BORDER_RADIUS, overflow: "hidden"}}>
-			<TouchableOpacity onPress={toggleCollapse} style={{padding: 10, backgroundColor: projectColor, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-				<ThemedMarkdown markdown={titleSource} color={projectContrastColor} />
-				<Icon name={collapsed ? IconNames.expand_icon : IconNames.collapse_icon} color={projectContrastColor} />
+			<TouchableOpacity onPress={toggleCollapse} style={{padding: 10, backgroundColor: projectColor, flexDirection: 'row', alignItems: 'center'}}>
+				<Icon name={collapsed ? IconNames.expand_icon : IconNames.collapse_icon} color={projectContrastColor} /><ThemedMarkdown markdown={titleSource} color={projectContrastColor} />
 			</TouchableOpacity>
 			{!collapsed && <View style={{padding: 10}}>{children}</View>}
 		</View>
@@ -46,6 +45,7 @@ const extractTokenOrSections = (md: MarkdownIt, content: string): TokenOrSection
 
 
 const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection[] => {
+	console.log("EXTRACT SECTIONS FROM TOKENS: level: ", level)
 	/**
 	 * Structure: TokenOrSection[] =
 	 * [
@@ -62,70 +62,88 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 	 */
 	let result: TokenOrSection[] = [];
 	let titleTokens = [];
-	let contentTokensToBeExtracted = [];
 	let headingOpen = false;
-	let anyHeaderFound = false;
+	let headingJustClosed = false;
+	let possibleSection = false;
+	let possibleSectionTokens = [];
 
 	for(let i = 0; i < tokens.length; i++) {
+		let resetSection = false;
 		let token = tokens[i];
-		if (token.type === 'heading_open' && token.tag === 'h' + level) {
-			if(anyHeaderFound){
-				// close previous section and push it to result
+		console.log("---".repeat(level)+" For: content: "+token.content+" type: "+token.type)
+		if (token.type === 'heading_open') {
+			console.log("---".repeat(level)+"# Header open")
+			headingOpen = true;
+			headingJustClosed = false;
+			possibleSection = true;
+			titleTokens = [];
+			possibleSectionTokens = [];
+		}
+		if (headingOpen) {
+			if (token.type === 'inline') {
+				console.log("---".repeat(level)+"TITLE TOKEN FOUND: ", token.content)
+				titleTokens.push(token);
+			}
+		}
+		if (headingJustClosed) {
+			headingJustClosed = false;
+			// code block is just an intention to create a new section
+			// for example:
+			// # Title
+			// 		This is a code block
+			//
+			if (token.type === 'code_block') {
+				console.log("---".repeat(level)+"Section found")
+				// add all tokens from possibleSectionTokens to the section
+				let contentForSection = token.content;
+				let md = new MarkdownIt();
+				let tokensForSection = md.parse(contentForSection, {});
+
+				let section = {
+					titleTokens: titleTokens,
+					contentTokenOrSections: extractSectionsFromTokens(tokensForSection, level + 1)
+				};
 				result.push({
 					token: undefined,
-					section: {
-						titleTokens: titleTokens,
-						contentTokenOrSections: extractSectionsFromTokens(contentTokensToBeExtracted, level + 1)
-					}
+					section: section
 				});
+				possibleSectionTokens = [];
+				resetSection = true;
 			} else {
-				anyHeaderFound = true;
-			}
+				console.log("---".repeat(level)+"No section found")
+				// add all tokens from possibleSectionTokens to the section
 
-			headingOpen = true;
-
-			titleTokens = [];
-			contentTokensToBeExtracted = [];
-
-			titleTokens.push(token);
-		} else{
-			if(!anyHeaderFound) {
-				result.push({
-					token: token,
-					section: undefined
-				}); /// <---
-			} else {
-				if(headingOpen) {
-					if(token.type === 'heading_close' && token.tag === 'h' + level) {
-						headingOpen = false;
-					}
-					titleTokens.push(token);
-				} else {
-					contentTokensToBeExtracted.push(token);
+				for(let i = 0; i < possibleSectionTokens.length; i++) {
+					let token = possibleSectionTokens[i];
+					result.push({
+						token: token,
+						section: undefined
+					});
 				}
+				possibleSection = false;
 			}
 		}
-	}
-
-	if(!anyHeaderFound) {
-		result = []; // if no header found, return all tokens as result
-		for(let i = 0; i < tokens.length; i++) {
+		if (token.type === 'heading_close') {
+			console.log("---".repeat(level)+"# Header close")
+			headingOpen = false;
+			headingJustClosed = true;
+		}
+		if (possibleSection) {
+			possibleSectionTokens.push(token);
+		} else {
+			console.log("---".repeat(level)+"Not possible section: "+token.content)
 			result.push({
-				token: tokens[i],
+				token: token,
 				section: undefined
-			}); /// <---
+			});
 		}
-	} else {
-		// close last section and push it to result
-		result.push({
-			token: undefined,
-			section: {
-				titleTokens: titleTokens,
-				contentTokenOrSections: extractSectionsFromTokens(contentTokensToBeExtracted, level + 1)
-			}
-		});
+		if(resetSection) {
+			possibleSection = false;
+		}
+		console.log("+".repeat(level));
 	}
 
+	console.log("---".repeat(level))
 	return result;
 };
 
