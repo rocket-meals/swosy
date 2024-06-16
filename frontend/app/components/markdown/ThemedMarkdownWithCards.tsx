@@ -1,10 +1,12 @@
 import React, {FunctionComponent, useState} from 'react';
 import {getFontSizeInPixelBySize, Icon, Text, useTextContrastColor, View} from '@/components/Themed';
-import {TouchableOpacity, useWindowDimensions} from 'react-native';
+import {Pressable, TouchableOpacity, useWindowDimensions} from 'react-native';
 import MarkdownIt from 'markdown-it';
 import {IconNames} from "@/constants/IconNames";
 import {replaceLinebreaks, ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {useProjectColor, useProjectColorContrast} from "@/states/ProjectInfo";
+import {MyButtonCustomContentPadder} from "@/components/buttons/MyButtonCustom";
+import {MyButton} from "@/components/buttons/MyButton";
 
 const BORDER_RADIUS = 8;
 
@@ -20,16 +22,20 @@ interface AppState {
 const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.ReactNode, initiallyOpen: boolean }> = ({titleSource, initiallyOpen, children}) => {
 	const [collapsed, setCollapsed] = useState(!initiallyOpen);
 	const toggleCollapse = () => setCollapsed(!collapsed);
+	const iconLeft = collapsed ? IconNames.expand_icon : IconNames.collapse_icon;
 
 	const projectColor = useProjectColor()
 	const projectContrastColor = useProjectColorContrast()
 	const borderColor = useTextContrastColor()
+	const textColor = collapsed ? borderColor : projectContrastColor;
 
 	return (
-		<View style={{marginVertical: 10, borderWidth: 1, borderColor: borderColor, borderRadius: BORDER_RADIUS, overflow: "hidden"}}>
-			<TouchableOpacity onPress={toggleCollapse} style={{padding: 10, backgroundColor: projectColor, flexDirection: 'row', alignItems: 'center'}}>
-				<Icon name={collapsed ? IconNames.expand_icon : IconNames.collapse_icon} color={projectContrastColor} /><ThemedMarkdown markdown={titleSource} color={projectContrastColor} />
-			</TouchableOpacity>
+		<View style={{marginVertical: 10, borderWidth: 1, borderColor: projectColor, borderRadius: BORDER_RADIUS, overflow: "hidden"}}>
+			<MyButton leftIconColoredBox={true} leftIcon={iconLeft} isActive={!collapsed} onPress={toggleCollapse} accessibilityLabel={""} renderedText={
+				<MyButtonCustomContentPadder>
+					<ThemedMarkdown markdown={titleSource} color={textColor} />
+				</MyButtonCustomContentPadder>
+			} />
 			{!collapsed && <View style={{padding: 10}}>{children}</View>}
 		</View>
 	);

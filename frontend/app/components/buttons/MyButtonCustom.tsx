@@ -39,7 +39,7 @@ export type MyNewButtonPropsCustom = {
     activeBorderColor?: string,
     inactiveBorderColor?: string,
 } & MyNewButtonProps // TODO change this to merge with MyButton
-export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab}: MyNewButtonPropsCustom) => {
+export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderBottomRadius, borderTopRadius, borderLeftRadius, borderRightRadius, tooltip, disabled, leftIconColoredBox, onPress, accessibilityLabel, text, leftIcon, activeBorderColor, inactiveBorderColor, leftIconActive, rightIcon, rightIconActive, useOnlyNecessarySpace, activeHoveredBackgroundColor, inactiveHoveredBackgroundColor, activeHoveredTextColor, inactiveHoveredTextColor, inactiveBackgroundColor, inactiveTextColor, activeTextColor, activeBackgroundColor, borderRadius, href, accessibilityRole, openHrefInNewTab, ...props}: MyNewButtonPropsCustom) => {
 	const [hovered, setHovered] = useState<boolean>(false)
 	const [isPressed, setIsPressed] = useState<boolean>(false)
 
@@ -146,6 +146,9 @@ export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderB
 				</Text>
 			</MyButtonCustomContentPadder>
 		)
+	}
+	if(props.renderedText){
+		renderedText = props.renderedText
 	}
 
 	if (icon) {

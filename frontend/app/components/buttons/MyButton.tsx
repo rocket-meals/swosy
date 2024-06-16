@@ -13,6 +13,7 @@ export type MyNewButtonProps = {
     accessibilityLabel: string,
     accessibilityRole?: MyAccessibilityRoles,
     text?: string,
+	renderedText?: any,
     leftIcon?: string,
     leftIconActive?: string,
     rightIcon?: string,
