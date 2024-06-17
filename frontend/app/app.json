@@ -74,7 +74,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.baumgartnersoftware.rocketmealsdev",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
