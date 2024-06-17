@@ -167,10 +167,6 @@ type Query {
   wikis_directus_roles_by_id(id: ID!, version: String): wikis_directus_roles
   wikis_directus_roles_aggregated(groupBy: [String], filter: wikis_directus_roles_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [wikis_directus_roles_aggregated!]!
   wikis_directus_roles_by_version(version: String!, id: ID!): version_wikis_directus_roles
-  wikis_translations(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis_translations!]!
-  wikis_translations_by_id(id: ID!, version: String): wikis_translations
-  wikis_translations_aggregated(groupBy: [String], filter: wikis_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [wikis_translations_aggregated!]!
-  wikis_translations_by_version(version: String!, id: ID!): version_wikis_translations
   foodoffers_markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings!]!
   foodoffers_markings_by_id(id: ID!, version: String): foodoffers_markings
   foodoffers_markings_aggregated(groupBy: [String], filter: foodoffers_markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foodoffers_markings_aggregated!]!
@@ -187,6 +183,10 @@ type Query {
   app_feedbacks_by_id(id: ID!, version: String): app_feedbacks
   app_feedbacks_aggregated(groupBy: [String], filter: app_feedbacks_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [app_feedbacks_aggregated!]!
   app_feedbacks_by_version(version: String!, id: ID!): version_app_feedbacks
+  wikis_translations(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis_translations!]!
+  wikis_translations_by_id(id: ID!, version: String): wikis_translations
+  wikis_translations_aggregated(groupBy: [String], filter: wikis_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [wikis_translations_aggregated!]!
+  wikis_translations_by_version(version: String!, id: ID!): version_wikis_translations
 }
 
 type Mutation {
@@ -272,8 +272,6 @@ type Mutation {
   create_wikis_item(data: create_wikis_input!): wikis
   create_wikis_directus_roles_items(filter: wikis_directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_wikis_directus_roles_input!]): [wikis_directus_roles!]!
   create_wikis_directus_roles_item(data: create_wikis_directus_roles_input!): wikis_directus_roles
-  create_wikis_translations_items(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_wikis_translations_input!]): [wikis_translations!]!
-  create_wikis_translations_item(data: create_wikis_translations_input!): wikis_translations
   create_foodoffers_markings_items(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_markings_input!]): [foodoffers_markings!]!
   create_foodoffers_markings_item(data: create_foodoffers_markings_input!): foodoffers_markings
   create_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
@@ -282,6 +280,8 @@ type Mutation {
   create_foodoffers_item(data: create_foodoffers_input!): foodoffers
   create_app_feedbacks_items(filter: app_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_app_feedbacks_input!]): [app_feedbacks!]!
   create_app_feedbacks_item(data: create_app_feedbacks_input!): app_feedbacks
+  create_wikis_translations_items(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_wikis_translations_input!]): [wikis_translations!]!
+  create_wikis_translations_item(data: create_wikis_translations_input!): wikis_translations
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
   update_directus_sync_id_map_item(id: ID!, data: update_directus_sync_id_map_input!): directus_sync_id_map
@@ -407,9 +407,6 @@ type Mutation {
   update_wikis_directus_roles_items(filter: wikis_directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_wikis_directus_roles_input!): [wikis_directus_roles!]!
   update_wikis_directus_roles_batch(filter: wikis_directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_wikis_directus_roles_input!]): [wikis_directus_roles!]!
   update_wikis_directus_roles_item(id: ID!, data: update_wikis_directus_roles_input!): wikis_directus_roles
-  update_wikis_translations_items(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_wikis_translations_input!): [wikis_translations!]!
-  update_wikis_translations_batch(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_wikis_translations_input!]): [wikis_translations!]!
-  update_wikis_translations_item(id: ID!, data: update_wikis_translations_input!): wikis_translations
   update_foodoffers_markings_items(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foodoffers_markings_input!): [foodoffers_markings!]!
   update_foodoffers_markings_batch(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foodoffers_markings_input!]): [foodoffers_markings!]!
   update_foodoffers_markings_item(id: ID!, data: update_foodoffers_markings_input!): foodoffers_markings
@@ -422,6 +419,9 @@ type Mutation {
   update_app_feedbacks_items(filter: app_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_app_feedbacks_input!): [app_feedbacks!]!
   update_app_feedbacks_batch(filter: app_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_app_feedbacks_input!]): [app_feedbacks!]!
   update_app_feedbacks_item(id: ID!, data: update_app_feedbacks_input!): app_feedbacks
+  update_wikis_translations_items(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_wikis_translations_input!): [wikis_translations!]!
+  update_wikis_translations_batch(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_wikis_translations_input!]): [wikis_translations!]!
+  update_wikis_translations_item(id: ID!, data: update_wikis_translations_input!): wikis_translations
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
   delete_foods_feedbacks_items(ids: [ID]!): delete_many
@@ -504,8 +504,6 @@ type Mutation {
   delete_wikis_item(id: ID!): delete_one
   delete_wikis_directus_roles_items(ids: [ID]!): delete_many
   delete_wikis_directus_roles_item(id: ID!): delete_one
-  delete_wikis_translations_items(ids: [ID]!): delete_many
-  delete_wikis_translations_item(id: ID!): delete_one
   delete_foodoffers_markings_items(ids: [ID]!): delete_many
   delete_foodoffers_markings_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_recipients_items(ids: [ID]!): delete_many
@@ -514,6 +512,8 @@ type Mutation {
   delete_foodoffers_item(id: ID!): delete_one
   delete_app_feedbacks_items(ids: [ID]!): delete_many
   delete_app_feedbacks_item(id: ID!): delete_one
+  delete_wikis_translations_items(ids: [ID]!): delete_many
+  delete_wikis_translations_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -578,11 +578,11 @@ type Subscription {
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
-  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
+  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -4222,6 +4222,11 @@ type version_wikis_translations {
   id: ID
   languages_code: JSON
   wikis_id: JSON
+  title: String
+  content: String
+  icon: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 type washingmachines {
@@ -4394,6 +4399,11 @@ type wikis_translations {
   id: ID!
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   wikis_id(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
+  title: String
+  content: String
+  icon: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 type wikis_translations_aggregated {
@@ -4413,6 +4423,11 @@ type wikis_translations_aggregated_count {
   id: Int
   languages_code: Int
   wikis_id: Int
+  title: Int
+  content: Int
+  icon: Int
+  be_source_for_translations: Int
+  let_be_translated: Int
 }
 
 type wikis_translations_aggregated_fields {
@@ -5563,6 +5578,11 @@ input create_wikis_translations_input {
   id: ID
   languages_code: create_languages_input
   wikis_id: create_wikis_input
+  title: String
+  content: String
+  icon: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input date_filter_operators {
@@ -7068,6 +7088,11 @@ input update_wikis_translations_input {
   id: ID
   languages_code: update_languages_input
   wikis_id: update_wikis_input
+  title: String
+  content: String
+  icon: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input utilizations_entries_filter {
@@ -7168,6 +7193,11 @@ input wikis_translations_filter {
   id: number_filter_operators
   languages_code: languages_filter
   wikis_id: wikis_filter
+  title: string_filter_operators
+  content: string_filter_operators
+  icon: string_filter_operators
+  be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   _and: [wikis_translations_filter]
   _or: [wikis_translations_filter]
 }

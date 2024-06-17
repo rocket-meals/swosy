@@ -272,11 +272,11 @@ type Subscription {
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
-  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
+  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2595,6 +2595,11 @@ type wikis_translations {
   id: ID!
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   wikis_id(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
+  title: String
+  content: String
+  icon: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 type wikis_translations_mutated {
@@ -5181,6 +5186,11 @@ input wikis_translations_filter {
   id: number_filter_operators
   languages_code: languages_filter
   wikis_id: wikis_filter
+  title: string_filter_operators
+  content: string_filter_operators
+  icon: string_filter_operators
+  be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   _and: [wikis_translations_filter]
   _or: [wikis_translations_filter]
 }
