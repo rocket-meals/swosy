@@ -14,6 +14,9 @@ export const UtilizationCanteenButton: FunctionComponent<AppState> = ({...props}
 	}
 
 	const utilizationGroup: string | UtilizationsGroups | null | undefined = profileCanteen?.utilization_group;
+	if(!utilizationGroup){
+		return null;
+	}
 
 	return <UtilizationButton utilizationGroup={utilizationGroup} {...props} />
 }

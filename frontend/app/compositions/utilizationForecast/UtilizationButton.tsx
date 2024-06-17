@@ -17,7 +17,7 @@ export const useTranslationUtilizationForecast = () => {
 }
 
 interface AppState {
-	utilizationGroup: string | UtilizationsGroups | null | undefined;
+	utilizationGroup: string | UtilizationsGroups;
 }
 export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup, ...props}) => {
 	const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();
@@ -34,11 +34,6 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	const refreshDependencyKey: string = refreshDate+selectedDateCopy.toISOString()+isDemo;
 
 	const onPress = () => {
-		const setVisible = (visible: boolean) => {
-			if(modalConfig){
-				setModalConfig({...modalConfig, visible: visible});
-			}
-		}
 		setModalConfig({
 			key: "eating_habits",
 			title: title,
@@ -82,7 +77,6 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 						  useOnlyNecessarySpace={true}
 						  tooltip={tooltip}
 						  accessibilityLabel={accessibilityLabel}
-						  useTransparentBackgroundColor={true}
 						  useTransparentBorderColor={true}
 						  leftIcon={IconNames.utilization_icon}
 						  {...props}

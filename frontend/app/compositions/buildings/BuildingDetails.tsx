@@ -77,7 +77,7 @@ function BuildingsInformation({ building }: { building: Buildings }) {
 		<SettingsRowGroup>
 			{buildingLocationInformation}
 			<SettingsRow labelLeft={translation_year_of_construction} accessibilityLabel={translation_year_of_construction} labelRight={building.date_of_construction} leftIcon={"hard-hat"} />
-			<SettingsRow labelLeft={translation_copy_url} accessibilityLabel={translation_copy_url} leftIcon={"link"} onPress={() => {
+			<SettingsRow labelLeft={translation_copy_url} accessibilityLabel={translation_copy_url} leftIcon={"link"} rightIcon={IconNames.copy_icon} onPress={() => {
 				copyText(building.url);
 			}} />
 		</SettingsRowGroup>
@@ -99,16 +99,16 @@ export function BuildingDetailsWithObject({ building, additionalTabs }: { buildi
 
 	let tabs: DetailsComponentTabProps[] = [
 		{
-			iconName: IconNames.description_icon,
-			accessibilityLabel: translation_description,
-			text: translation_description,
-			content: <BuildingDetailsDescription building={building} />
-		},
-		{
 			iconName: IconNames.fact_icon,
 			accessibilityLabel: translation_information,
 			text: translation_information,
 			content: <BuildingsInformation building={building} />
+		},
+		{
+			iconName: IconNames.description_icon,
+			accessibilityLabel: translation_description,
+			text: translation_description,
+			content: <BuildingDetailsDescription building={building} />
 		},
 	]
 	if(additionalTabs){

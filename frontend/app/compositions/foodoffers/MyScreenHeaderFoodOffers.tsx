@@ -15,9 +15,6 @@ import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesForFood} from "@/states/SynchedSortType";
 import {UtilizationCanteenButton} from "@/compositions/utilizationForecast/UtilizationCanteenButton";
 import {BusinesshoursCanteenButton} from "@/compositions/businesshours/BusinesshoursCanteenButton";
-import {MyButton} from "@/components/buttons/MyButton";
-import {IconNames} from "@/constants/IconNames";
-import {router} from "expo-router";
 
 const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 	let title = undefined //"TEST"
@@ -134,8 +131,8 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 
 				}}
 				>
-					<BusinesshoursCanteenButton />
 					<UtilizationCanteenButton />
+					<BusinesshoursCanteenButton />
 				</View>
 			</View>
 		)
