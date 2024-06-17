@@ -2,7 +2,7 @@ import {Buildings} from '@/helper/database/databaseTypes/types';
 import React from 'react';
 import {IconNames} from '@/constants/IconNames';
 import {useSynchedBuildingsDict} from "@/states/SynchedBuildings";
-import {DirectusTranslatedMarkdown} from "@/components/markdown/DirectusTranslatedMarkdown";
+import {DirectusTranslatedMarkdownWithCards} from "@/components/markdown/DirectusTranslatedMarkdownWithCards";
 import {TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {DetailsComponent, DetailsComponentTabProps} from "@/components/detailsComponent/DetailsComponent";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -36,7 +36,7 @@ function BuildingDetailsDescription({ building }: { building: Buildings }) {
 
 	let usedTranslations = translations as TranslationEntry[];
 
-	return <DirectusTranslatedMarkdown field={'content'} translations={usedTranslations} />
+	return <DirectusTranslatedMarkdownWithCards field={'content'} translations={usedTranslations} />
 }
 
 export function getBuildingLocation(building: Buildings) {

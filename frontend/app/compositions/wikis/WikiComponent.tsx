@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {Wikis} from '@/helper/database/databaseTypes/types';
-import {DirectusTranslatedMarkdown} from '@/components/markdown/DirectusTranslatedMarkdown';
+import {DirectusTranslatedMarkdownWithCards} from '@/components/markdown/DirectusTranslatedMarkdownWithCards';
 import {TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 
 interface AppState {
@@ -15,5 +15,5 @@ export const WikiComponent: FunctionComponent<AppState> = ({wiki}) => {
 
 	let usedTranslations = translations as TranslationEntry[];
 
-	return <DirectusTranslatedMarkdown field={'content'} translations={usedTranslations} />
+	return <DirectusTranslatedMarkdownWithCards field={'content'} translations={usedTranslations} />
 }
