@@ -248,14 +248,16 @@ function ApartmentDetailsWithObject({ apartment, building }: { apartment: Apartm
 
 	const translation_washing_machines = useTranslation(TranslationKeys.washing_machines)
 
-	let additionalTabs: DetailsComponentTabProps[] = [
-		{
-			iconName: IconNames.washing_machine_icon,
-			accessibilityLabel: translation_washing_machines,
-			text: translation_washing_machines,
-			content: <ApartmentDetailsWashingMachines apartment={apartment} />
-		},
-	]
+	let additionalTabs: DetailsComponentTabProps[] = []
+	let washingmachinesTab: DetailsComponentTabProps = {
+		iconName: IconNames.washing_machine_icon,
+		accessibilityLabel: translation_washing_machines,
+		text: translation_washing_machines,
+		content: <ApartmentDetailsWashingMachines apartment={apartment} />
+	}
+	if(apartment.washingmachines && apartment.washingmachines.length > 0){
+		additionalTabs.push(washingmachinesTab)
+	}
 
 	return <BuildingDetailsWithObject building={building} additionalTabs={additionalTabs}  />
 }
