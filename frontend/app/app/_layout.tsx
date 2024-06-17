@@ -17,9 +17,8 @@ import {SecureStorageHelperAbstractClass} from '@/helper/storage/SecureStorageHe
 import {SecureStorageHelper} from '@/helper/storage/SecureStorageHelper';
 import {KeyboardAvoidingView, Platform} from 'react-native';
 import {RootAppUpdateChecker} from "@/components/rootLayout/RootAppUpdateChecker";
-import {RootCustomerAdaptions} from "@/components/rootLayout/RootCustomerAdaptions";
-import Slot = Navigator.Slot;
 import {LoadingLogoProvider} from "@/compositions/loadingScreens/LoadingLogoProvider";
+import Slot = Navigator.Slot;
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -117,9 +116,7 @@ export default function RootLayout() {
 				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""}>
 					  <RootServerStatusFlowLoader key={reloadNumber+""} >
 						  <RootAuthUserFlowLoader key={reloadNumber+""}>
-							  <RootCustomerAdaptions key={reloadNumber}>
-								  <Slot key={reloadNumber} />
-							  </RootCustomerAdaptions>
+							  <Slot key={reloadNumber} />
 						  </RootAuthUserFlowLoader>
 					  </RootServerStatusFlowLoader>
 				  </RootAppUpdateChecker>
