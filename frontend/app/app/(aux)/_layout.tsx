@@ -3,10 +3,8 @@ import {isUserLoggedIn} from '@/states/User';
 import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
-import {getMyScreenHeaderWikisByCustomId, useMyDrawerWikiItems} from "@/components/drawer/useMyDrawerWikiItems";
-import {IconNames} from "@/constants/IconNames";
-import {getMyScreenHeaderFoodOffers} from "@/compositions/foodoffers/MyScreenHeaderFoodOffers";
-import {Custom_Wiki_Ids} from "@/states/SynchedWikis";
+import {DEFAULT_AUTHENTICATED_ROUTE} from "@/app/(app)/home";
+import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
@@ -19,6 +17,9 @@ export default function AppLayout() {
 
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_sign_in = useTranslation(TranslationKeys.sign_in);
+
+	const customDrawerWikiItems = useMyDrawerWikiItems()
+	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
 
 	const customDrawerItems: MyDrawerCustomItemProps[] = [
 		/**
@@ -51,7 +52,7 @@ export default function AppLayout() {
 			{
 				label: translation_home,
 				onPress: undefined,
-				onPressInternalRouteTo: '/(app)/home',
+				onPressInternalRouteTo: '/(app)'+DEFAULT_AUTHENTICATED_ROUTE,
 				visibleInDrawer: true,
 				onPressExternalRouteTo: undefined,
 				icon: 'chevron-left',
@@ -60,10 +61,15 @@ export default function AppLayout() {
 		)
 	}
 
+	if (customDrawerWikiItems) {
+		customDrawerItems.push(...customDrawerWikiItems)
+	}
+
 	return (
 		<MyDrawer
 			customDrawerItems={customDrawerItems}
 		>
+			{renderedMyDrawerWikiItems}
 		</MyDrawer>
 	)
 }

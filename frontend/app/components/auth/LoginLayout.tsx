@@ -5,7 +5,7 @@ import {Text, useViewBackgroundColor, View} from '@/components/Themed';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {ProjectBanner} from '@/components/project/ProjectBanner';
-import {LegalRequiredLinks} from '@/components/legal/LegalRequiredLinks';
+import {PublicLegalRequiredLinks} from '@/components/legal/PublicLegalRequiredLinks';
 import {ProjectBackgroundImage} from '@/components/project/ProjectBackgroundImage';
 import {MySafeAreaViewForScreensWithoutHeader} from '@/components/MySafeAreaViewForScreensWithoutHeader';
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
@@ -114,7 +114,7 @@ export const LoginLayout = (props: any) => {
 								flexWrap: 'wrap',
 							}}
 						>
-							<LegalRequiredLinks />
+							<PublicLegalRequiredLinks />
 						</View>
 					</View>
 				</MySafeAreaViewForScreensWithoutHeader>

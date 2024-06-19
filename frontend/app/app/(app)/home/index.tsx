@@ -1,18 +1,22 @@
 import {StyleSheet} from 'react-native';
 import {Text, View} from '@/components/Themed';
-import {router, useFocusEffect} from 'expo-router';
+import {Redirect, router, useFocusEffect} from 'expo-router';
+
+export const DEFAULT_AUTHENTICATED_ROUTE = '/foodoffers';
 
 export default function HomeScreen() {
 	useFocusEffect(() => {
 		// Call the replace method to redirect to a new route without adding to the history.
 		// We do this in a useFocusEffect to ensure the redirect happens every time the screen
 		// is focused.
-		router.push('/foodoffers')
+		router.push(DEFAULT_AUTHENTICATED_ROUTE)
 
 		// TODO: https://docs.expo.dev/router/reference/redirects/
 		// replace does not work on. Tested on web
 		// router.replace('/home')
 	});
+
+	//return <Redirect href={'/foodoffers'} />;
 
 	return (
 		<View style={styles.container}>

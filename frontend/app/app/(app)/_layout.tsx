@@ -3,7 +3,6 @@ import React, {useState} from 'react';
 import {Text} from '@/components/Themed'
 import {isUserLoggedIn} from '@/states/User';
 import {MyDrawerAuthenticated} from '@/components/drawer/MyDrawerAuthenticated';
-import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 import {useSearchParamKioskMode} from "@/helper/searchParams/SearchParams";
 
 export const unstable_settings = {

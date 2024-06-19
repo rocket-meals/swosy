@@ -2,9 +2,9 @@ import React from 'react';
 import {Text, View} from '@/components/Themed'
 import {DrawerContentComponentProps} from '@react-navigation/drawer/src/types';
 import {
-	MyDrawerCustomItemProps,
 	getMyDrawerCustomItemCenter,
-	MyDrawerCustomItemBottom
+	MyDrawerCustomItemBottom,
+	MyDrawerCustomItemProps
 } from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyDrawerItemExpoGenerated} from '@/components/drawer/MyDrawerItemExpoGenerated';
 import {ParamListBase, RouteProp} from '@react-navigation/native';
@@ -66,20 +66,33 @@ function configureCustomDrawerItemActiveIfInternalRouteIsUsed(customItem: MyDraw
 	return customItem;
 }
 
-export const getMyDrawerItemsBottom = (props: DrawerContentWrapperProps) => {
-	const customDrawerItems: MyDrawerCustomItemProps[] = props.customDrawerItems || [];
-
-	const filteredCustomDrawerItems = customDrawerItems.filter((item) => {
+const filterForVisibleInDrawerBottom = (customDrawerItems: MyDrawerCustomItemProps[]) => {
+	return customDrawerItems.filter((item) => {
 		// if item.visibleInDrawer is true then we will show the item in the drawer
-		return item.visibleInBottomDrawer !== false;
+		return item.visibleInBottomDrawer === true;
 	});
+}
 
-	const sortedCustomDrawerItems = (filteredCustomDrawerItems).sort((a, b) => {
+const sortCustomDrawerItems = (customDrawerItems: MyDrawerCustomItemProps[]) => {
+	return customDrawerItems.sort((a, b) => {
 		// Assuming items without a position should be placed at the end
 		const positionA = a.position !== undefined ? a.position : Number.MAX_VALUE;
 		const positionB = b.position !== undefined ? b.position : Number.MAX_VALUE;
 		return positionA - positionB;
 	});
+}
+
+export const filterAndSortForVisibleInDrawerBottom = (customDrawerItems: MyDrawerCustomItemProps[]) => {
+	return sortCustomDrawerItems(filterForVisibleInDrawerBottom(customDrawerItems));
+}
+
+export const getMyDrawerItemsBottom = (props: DrawerContentWrapperProps) => {
+	const customDrawerItems: MyDrawerCustomItemProps[] = props.customDrawerItems || [];
+	const sortedCustomDrawerItems = filterAndSortForVisibleInDrawerBottom(customDrawerItems)
+	return getBottomLegalRequiredLinks(sortedCustomDrawerItems);
+}
+
+export const getBottomLegalRequiredLinks = (drawerItems: MyDrawerCustomItemProps[]) => {
 
 	const PADDING = 5;
 
@@ -92,9 +105,9 @@ export const getMyDrawerItemsBottom = (props: DrawerContentWrapperProps) => {
 	}
 
 	const renderedContent = [];
-	for (let i = 0; i < sortedCustomDrawerItems.length; i++) {
-		let customItem = sortedCustomDrawerItems[i];
-		const last = i === sortedCustomDrawerItems.length - 1;
+	for (let i = 0; i < drawerItems.length; i++) {
+		let customItem = drawerItems[i];
+		const last = i === drawerItems.length - 1;
 		const first = i === 0;
 		if (first) {
 			renderedContent.push(renderSpacer('legalRequiredLinksSpacerFirst-'+i));

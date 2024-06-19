@@ -1,7 +1,7 @@
 import React from 'react';
-import {AllRoutes} from 'expo-router';
 import {View} from '@/components/Themed';
 import {MyLinkDefault} from "@/components/link/MyLinkCustom";
+import {AllRoutes} from "expo-router";
 
 export type LegalRequiredInternalLinkProps = {
 	externalHref?: string | null | undefined,

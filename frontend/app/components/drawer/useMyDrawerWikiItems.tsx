@@ -1,28 +1,27 @@
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
-import {Custom_Wiki_Ids, useSynchedWikiByCustomId, useSynchedWikisDict} from '@/states/SynchedWikis';
+import {useSynchedWikisDict} from '@/states/SynchedWikis';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
-import {TranslationEntry, getDirectusTranslation} from '@/helper/translations/DirectusTranslationUseFunction';
+import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
 import React from 'react';
 import {
 	getMyScreenHeaderFunction,
-	MyScreenHeader, MyScreenHeaderProps,
+	MyScreenHeader,
+	MyScreenHeaderProps,
 	MyScreenHeaderPropsRequired
 } from '@/components/drawer/MyScreenHeader';
 import {Wikis} from '@/helper/database/databaseTypes/types';
-import {
-	renderMyDrawerScreen,
-	useDrawerActiveBackgroundColor
-} from '@/components/drawer/MyDrawer';
-import { useLocalSearchParams} from 'expo-router';
-import {useWikiIdFromLocalSearchParams} from "@/app/(app)/wikis";
-import {useWikiCustomIdFromLocalSearchParams} from "@/app/(app)/info";
+import {renderMyDrawerScreen, useDrawerActiveBackgroundColor} from '@/components/drawer/MyDrawer';
+import {SEARCH_PARAM_WIKIS_CUSTOM_ID, SEARCH_PARAM_WIKIS_ID, useWikiFromLocalSearchParams} from "@/app/(aux)/wikis/index";
 
 export const getInternalRouteToWiki = (wiki: Wikis) => {
-	if(wiki.custom_id){
-		return `info/?infos_id=${wiki.custom_id}`
-	} else {
-		return `wikis/?wikis_id=${wiki.id}`
-	}
+	let custom_id = wiki.custom_id
+	let id = wiki.id
+	let search_value = custom_id ? custom_id : id
+	let screen = "wikis"
+	let search_param = custom_id ? SEARCH_PARAM_WIKIS_CUSTOM_ID : SEARCH_PARAM_WIKIS_ID
+	// aka wikis/?wikis_id=232j3h434ii2j3
+	// or wikis/?wikis_custom_id=about-us
+	return `/${screen}?${search_param}=${search_value}`
 }
 
 export function useMyDrawerWikiItems() {
@@ -48,26 +47,27 @@ export function useMyDrawerWikiItems() {
 		for (let i = 0; i < wikisDictKeys.length; i++) {
 			const wikiKey = wikisDictKeys[i]
 			const wiki = wikisDict[wikiKey]
+			if(!!wiki){
+				const visible = wiki.show_in_drawer || wiki.show_in_drawer_as_bottom_item
 
-			const visible = wiki.show_in_drawer || wiki.show_in_drawer_as_bottom_item
+				if (visible) {
+					const icon = wiki.icon || 'home'
 
-			if (visible) {
-				const icon = wiki.icon || 'home'
+					const translations = wiki.translations as TranslationEntry[]
+					const fallback_text = wiki.id
+					let label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
 
-				const translations = wiki.translations as TranslationEntry[]
-				const fallback_text = wiki.id
-				let label = getDirectusTranslation(languageCode, translations, 'title', false, fallback_text)
-
-				customDrawerItems.push({
-					label: label,
-					onPress: undefined,
-					onPressInternalRouteTo: getInternalRouteToWiki(wiki),
-					onPressExternalRouteTo: wiki?.url,
-					icon: icon,
-					position: wiki?.position || undefined,
-					visibleInDrawer: wiki.show_in_drawer,
-					visibleInBottomDrawer: wiki.show_in_drawer_as_bottom_item
-				})
+					customDrawerItems.push({
+						label: label,
+						onPress: undefined,
+						onPressInternalRouteTo: getInternalRouteToWiki(wiki),
+						onPressExternalRouteTo: wiki?.url,
+						icon: icon,
+						position: wiki?.position || undefined,
+						visibleInDrawer: wiki.show_in_drawer,
+						visibleInBottomDrawer: wiki.show_in_drawer_as_bottom_item
+					})
+				}
 			}
 		}
 	}
@@ -75,16 +75,9 @@ export function useMyDrawerWikiItems() {
 	return customDrawerItems;
 }
 
-function MyWikiCustomIdHeader(props: MyScreenHeaderPropsRequired) {
-	const customId = useWikiCustomIdFromLocalSearchParams();
-	const wiki = useSynchedWikiByCustomId(customId);
-	const wiki_id = wiki?.id
-
-	return <MyWikiHeaderById id={wiki_id} {...props} />
-}
-
 function MyWikiHeader(props: MyScreenHeaderPropsRequired) {
-	const wikiId = useWikiIdFromLocalSearchParams()
+	const wiki = useWikiFromLocalSearchParams();
+	const wikiId = wiki?.id
 
 	return <MyWikiHeaderById id={wikiId} {...props} />
 }
@@ -113,12 +106,6 @@ const MyWikiHeaderById = ({id, ...props}: MyWikiHeaderByIdProps) => {
 	return <MyScreenHeader custom_title={custom_title} {...props} />
 }
 
-export const getMyScreenHeaderWikisByCustomId: any = () => {
-	return (props: MyScreenHeaderProps) => {
-		return <MyWikiCustomIdHeader {...props} />
-	}
-}
-
 const getMyScreenHeaderWikis: getMyScreenHeaderFunction = () => {
 	return (props: MyScreenHeaderProps) => {
 		return <MyWikiHeader {...props} />
@@ -136,16 +123,6 @@ export function useRenderedMyDrawerWikiScreens() {
 				icon: 'home',
 				visibleInDrawer: false,
 				getHeader: getMyScreenHeaderWikis(),
-			},
-			drawerActiveBackgroundColor
-		),
-		renderMyDrawerScreen({
-				routeName: 'info/index',
-				label: 'Information',
-				title: 'Information',
-				icon: 'home',
-				visibleInDrawer: false,
-				getHeader: getMyScreenHeaderWikisByCustomId(),
 			},
 			drawerActiveBackgroundColor
 		)
