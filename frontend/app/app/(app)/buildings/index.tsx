@@ -1,7 +1,7 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
+import {Apartments, Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
@@ -14,6 +14,10 @@ import {DistanceHelper} from "@/helper/geo/DistanceHelper";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import React from "react";
 import BuildingDetails from "@/compositions/buildings/BuildingDetails";
+import {
+	filterAndSortResourcesBySearchValue,
+	useSearchTextFromGlobalSearchParams
+} from "@/compositions/header/HeaderSearchButtonParams";
 
 function getBuildingName(building: Buildings, languageCode: string): string | null {
 	if(building.alias){
@@ -92,36 +96,46 @@ export default function BuildingsScreen() {
 	return <BuildingsScreenIndex />
 }
 
+function filterForSearchValue(resources: Buildings[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
+	return filterAndSortResourcesBySearchValue(resources, searchValue, (resource) => {
+		return getBuildingName(resource, languageCode)
+	});
+}
+
 function BuildingsScreenIndex() {
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
+	const searchValue = useSearchTextFromGlobalSearchParams();
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigBuildings);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const estimatedLocation: LocationType | null = useEstimatedLocationUponSelectedCanteen();
 
-	const resources = [];
+	const resources: Buildings[] = []
 	if (buildingsDict) {
 		const buildingsKeys = Object.keys(buildingsDict)
 		for (let i = 0; i < buildingsKeys.length; i++) {
 			const key = buildingsKeys[i];
 			const building = buildingsDict[key];
-			resources.push(building)
+			if (building) {
+				resources.push(building)
+			}
 		}
 	}
 
-	let resourcesSorted = resources
-	if (resourcesSorted) {
-		resourcesSorted = sortBuildings(resourcesSorted, buildingsDict, sortType, languageCode, estimatedLocation)
+	let usedResources = resources
+	if (usedResources) {
+		usedResources = sortBuildings(usedResources, buildingsDict, sortType, languageCode, estimatedLocation)
+		usedResources = filterForSearchValue(usedResources, searchValue, buildingsDict, languageCode)
 	}
 
   type DataItem = { key: string; data: Buildings }
 
   const data: DataItem[] = []
-  if (resourcesSorted) {
-  	for (let i = 0; i < resourcesSorted.length; i++) {
-  		const resource = resourcesSorted[i];
+  if (usedResources) {
+  	for (let i = 0; i < usedResources.length; i++) {
+  		const resource = usedResources[i];
   		data.push({
   			key: resource.id + '', data: resource
   		})

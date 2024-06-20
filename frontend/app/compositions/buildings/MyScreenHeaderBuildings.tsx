@@ -7,6 +7,7 @@ import {SettingsButtonSort} from "@/compositions/settings/SettingsButtonSort";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
 import {sortTypesApartments, sortTypesBuildings} from "@/states/SynchedSortType";
 import {useBuildingIdFromLocalSearchParams} from "@/app/(app)/buildings";
+import {HeaderSearchButtonParams} from "@/compositions/header/HeaderSearchButtonParams";
 
 const MyScreenHeaderBuildings = ({ ...props }: MyScreenHeaderProps) => {
 	const translation_item_to_sort = useTranslation(TranslationKeys.buildings);
@@ -26,6 +27,7 @@ const MyScreenHeaderBuildings = ({ ...props }: MyScreenHeaderProps) => {
 					flexDirection: 'row',
 				}}
 				>
+					<HeaderSearchButtonParams titleAddition={translation_item_to_sort} />
 					<SettingsButtonSort itemToSort={translation_item_to_sort} synchKey={PersistentStore.sortConfigBuildings} availableSortTypes={sortTypesBuildings} />
 				</View>
 			</View>

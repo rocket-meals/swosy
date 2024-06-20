@@ -22,6 +22,11 @@ import DistanceBadge from "@/components/distance/DistanceBadge";
 import {FreeRoomBadge} from "@/components/housing/FreeRoomBadge";
 import {SEARCH_PARAM_APARTMENTS_ID} from "@/app/(app)/housing/apartment";
 import {ThemedMarkdownWithCards} from "@/components/markdown/ThemedMarkdownWithCards";
+import {
+	filterAndSortResourcesBySearchValue,
+	useSearchTextFromGlobalSearchParams
+} from "@/compositions/header/HeaderSearchButtonParams";
+import {StringHelper} from "@/helper/string/StringHelper";
 
 function useHousingAdditionalInformationMarkdown(): string |null {
 	const [appSettings] = useSynchedAppSettings();
@@ -125,11 +130,18 @@ function sortApartments(resources: Apartments[], buildingsDict: Record<string, B
 		copiedResources = sortByAvailableFromOldestDateFirst(copiedResources);
 	}
 	/**
-	else if(sortType === SortType.favorite){
-		copiedResources = sortByFavorite(copiedResources, foodFeedbacksDict);
-	}
-		*/
+	 else if(sortType === SortType.favorite){
+	 copiedResources = sortByFavorite(copiedResources, foodFeedbacksDict);
+	 }
+	 */
 	return copiedResources;
+}
+
+
+function filterForSearchValue(resources: Apartments[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
+	return filterAndSortResourcesBySearchValue(resources, searchValue, (resource) => {
+		return getApartmentName(resource, buildingsDict, languageCode);
+	});
 }
 
 export default function HousingScreen() {
@@ -137,125 +149,129 @@ export default function HousingScreen() {
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 	const additionalInformationMarkdown = useHousingAdditionalInformationMarkdown()
 
+	const searchValue = useSearchTextFromGlobalSearchParams();
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigApartments);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const estimatedLocation: LocationType | null = useEstimatedLocationUponSelectedCanteen();
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
-	const resources = [];
+	const resources: Apartments[] = []
 	if (apartmentsDict) {
 		const buildingsKeys = Object.keys(apartmentsDict)
 		for (let i = 0; i < buildingsKeys.length; i++) {
 			const key = buildingsKeys[i];
 			const apartment = apartmentsDict[key];
-			resources.push(apartment)
+			if(apartment){
+				resources.push(apartment)
+			}
 		}
 	}
 
-	let resourcesSorted = resources
-	if (resourcesSorted) {
-		resourcesSorted = sortApartments(resourcesSorted, buildingsDict, sortType, languageCode, estimatedLocation)
+	let usedResources = resources
+	if (usedResources) {
+		usedResources = sortApartments(usedResources, buildingsDict, sortType, languageCode, estimatedLocation)
+		usedResources = filterForSearchValue(usedResources, searchValue, buildingsDict, languageCode)
 	}
 
-  type DataItem = { key: string; data: Apartments }
+	type DataItem = { key: string; data: Apartments }
 
-  const data: DataItem[] = []
-  if (resourcesSorted) {
-  	for (let i = 0; i < resourcesSorted.length; i++) {
-  		const resource = resourcesSorted[i];
-  		data.push({
-  			key: resource.id + '', data: resource
-  		})
-  	}
-  }
+	const data: DataItem[] = []
+	if (usedResources) {
+		for (let i = 0; i < usedResources.length; i++) {
+			const resource = usedResources[i];
+			data.push({
+				key: resource.id + '', data: resource
+			})
+		}
+	}
 
-  const renderItem = (info: ListRenderItemInfo<DataItem>) => {
-  	const {item, index} = info;
-  	const resource = item.data;
+	const renderItem = (info: ListRenderItemInfo<DataItem>) => {
+		const {item, index} = info;
+		const resource = item.data;
 
-	  let location = getApartmentLocationType(resource, buildingsDict)
-	  let distance = null;
-	  let distanceBadge = null;
-	  if(location && estimatedLocation){
-		  distance = DistanceHelper.getDistanceOfLocationInM(estimatedLocation, location)
-		  distanceBadge = <DistanceBadge distanceInMeter={distance} />
-	  }
+		let location = getApartmentLocationType(resource, buildingsDict)
+		let distance = null;
+		let distanceBadge = null;
+		if(location && estimatedLocation){
+			distance = DistanceHelper.getDistanceOfLocationInM(estimatedLocation, location)
+			distanceBadge = <DistanceBadge distanceInMeter={distance} />
+		}
 
-  	let title: string | null | undefined = getApartmentName(resource, buildingsDict, languageCode)
-  	let assetId: string | DirectusFiles | null | undefined = undefined
-  	let image_url: string | undefined = undefined
-  	let thumb_hash: string | undefined = undefined
+		let title: string | null | undefined = getApartmentName(resource, buildingsDict, languageCode)
+		let assetId: string | DirectusFiles | null | undefined = undefined
+		let image_url: string | undefined = undefined
+		let thumb_hash: string | undefined = undefined
 
-    let building = undefined
-    let imageUploaderConfig = undefined
-  	if (!!buildingsDict && resource.building && typeof resource.building === 'string') {
-  		building = buildingsDict[resource.building]
+		let building = undefined
+		let imageUploaderConfig = undefined
+		if (!!buildingsDict && resource.building && typeof resource.building === 'string') {
+			building = buildingsDict[resource.building]
 
-  		if (typeof building !== 'string') {
-  			if (building?.image) {
-  				assetId = building.image
-  			}
-  			if (building?.image_remote_url) {
-  				image_url = building.image_remote_url
-  			}
-  			if (building?.image_thumb_hash) {
-  				thumb_hash = building.image_thumb_hash
-  			}
-  		}
+			if (typeof building !== 'string') {
+				if (building?.image) {
+					assetId = building.image
+				}
+				if (building?.image_remote_url) {
+					image_url = building.image_remote_url
+				}
+				if (building?.image_thumb_hash) {
+					thumb_hash = building.image_thumb_hash
+				}
+			}
 
-		imageUploaderConfig = {
-			resourceId: resource.building,
-			resourceCollectionName: 'buildings',
-			onImageUpdated: async () => {
-				await updateBuildingsFromServer();
+			imageUploaderConfig = {
+				resourceId: resource.building,
+				resourceCollectionName: 'buildings',
+				onImageUpdated: async () => {
+					await updateBuildingsFromServer();
+				}
 			}
 		}
-  	}
 
-  	return (
-  		<MyCardForResourcesWithImage
-  			key={item.key}
-  			heading={title}
-  			thumbHash={thumb_hash}
-  			image_url={image_url}
-  			assetId={assetId}
-			topLeftComponent={
-			  <FreeRoomBadge apartment={resource} />
-			}
-			bottomRightComponent={
-				distanceBadge
-			}
-  			onPress={() => {
-				router.push(`/(app)/housing/apartment/?${SEARCH_PARAM_APARTMENTS_ID}=${resource.id}`)
-			}}
-  			accessibilityLabel={title}
-			imageUploaderConfig={imageUploaderConfig}
-  		/>
-  	);
-  }
+		return (
+			<MyCardForResourcesWithImage
+				key={item.key}
+				heading={title}
+				thumbHash={thumb_hash}
+				image_url={image_url}
+				assetId={assetId}
+				topLeftComponent={
+					<FreeRoomBadge apartment={resource} />
+				}
+				bottomRightComponent={
+					distanceBadge
+				}
+				onPress={() => {
+					router.push(`/(app)/housing/apartment/?${SEARCH_PARAM_APARTMENTS_ID}=${resource.id}`)
+				}}
+				accessibilityLabel={title}
+				imageUploaderConfig={imageUploaderConfig}
+			/>
+		);
+	}
 
-  function renderAdditionalInformation() {
-	  if(!!additionalInformationMarkdown){
-		  const borderRaidus = MyCardDefaultBorderRadius
-		  return (
-			  <View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
-				  <ThemedMarkdownWithCards markdown={additionalInformationMarkdown} />
-			  </View>
-		  )
-	  }
-  }
+	function renderAdditionalInformation() {
+		if(!!additionalInformationMarkdown){
+			const borderRaidus = MyCardDefaultBorderRadius
+			return (
+				<View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus, height: "100%"}}>
+					<ThemedMarkdownWithCards markdown={additionalInformationMarkdown} />
+				</View>
+			)
+		}
+	}
 
-  return (
-  	<MySafeAreaView>
-  		<MyGridFlatList
-			flatListProps={{
-				ListHeaderComponent: renderAdditionalInformation()
-			}}
-  			data={data}
-  			renderItem={renderItem}
-  			amountColumns={initialAmountColumns}
-  		/>
-  	</MySafeAreaView>
-  );
+	return (
+		<MySafeAreaView>
+			<MyGridFlatList
+				flatListProps={{
+					ListHeaderComponent: renderAdditionalInformation()
+				}}
+				data={data}
+				renderItem={renderItem}
+				amountColumns={initialAmountColumns}
+			/>
+		</MySafeAreaView>
+	);
 }

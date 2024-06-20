@@ -135,6 +135,7 @@ export class IconNames {
     static camera_icon = "camera"
     static gallery_icon = "folder-image"
     static sort_icon = "sort"
+    static search_icon = "magnify"
     static sort_none_icon = "sort-variant-remove"
     static sort_alphabetical_icon = "sort-alphabetical-ascending"
     static sort_favorite_icon = "star"

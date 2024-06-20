@@ -51,7 +51,6 @@ const extractTokenOrSections = (md: MarkdownIt, content: string): TokenOrSection
 
 
 const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection[] => {
-	console.log("EXTRACT SECTIONS FROM TOKENS: level: ", level)
 	/**
 	 * Structure: TokenOrSection[] =
 	 * [
@@ -76,9 +75,7 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 	for(let i = 0; i < tokens.length; i++) {
 		let resetSection = false;
 		let token = tokens[i];
-		console.log("---".repeat(level)+" For: content: "+token.content+" type: "+token.type)
 		if (token.type === 'heading_open') {
-			console.log("---".repeat(level)+"# Header open")
 			headingOpen = true;
 			headingJustClosed = false;
 			possibleSection = true;
@@ -87,7 +84,6 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 		}
 		if (headingOpen) {
 			if (token.type === 'inline') {
-				console.log("---".repeat(level)+"TITLE TOKEN FOUND: ", token.content)
 				titleTokens.push(token);
 			}
 		}
@@ -99,7 +95,6 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 			// 		This is a code block
 			//
 			if (token.type === 'code_block') {
-				console.log("---".repeat(level)+"Section found")
 				// add all tokens from possibleSectionTokens to the section
 				let contentForSection = token.content;
 				let md = new MarkdownIt();
@@ -116,7 +111,6 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 				possibleSectionTokens = [];
 				resetSection = true;
 			} else {
-				console.log("---".repeat(level)+"No section found")
 				// add all tokens from possibleSectionTokens to the section
 
 				for(let i = 0; i < possibleSectionTokens.length; i++) {
@@ -130,14 +124,12 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 			}
 		}
 		if (token.type === 'heading_close') {
-			console.log("---".repeat(level)+"# Header close")
 			headingOpen = false;
 			headingJustClosed = true;
 		}
 		if (possibleSection) {
 			possibleSectionTokens.push(token);
 		} else {
-			console.log("---".repeat(level)+"Not possible section: "+token.content)
 			result.push({
 				token: token,
 				section: undefined
@@ -146,10 +138,7 @@ const extractSectionsFromTokens = (tokens: any[], level: number): TokenOrSection
 		if(resetSection) {
 			possibleSection = false;
 		}
-		console.log("+".repeat(level));
 	}
-
-	console.log("---".repeat(level))
 	return result;
 };
 

@@ -9,10 +9,11 @@ export function useTranslationSupportAndFeedback(): string {
 
 const getBestLanguageKeyFromProfileLanguage = (profileLanguage: string): LanguageKeys => {
 	// iterate over all language keys
-	let languageKeys = Object.keys(LanguageKeys) as LanguageKeys[];
+	let languageKeys = Object.keys(LanguageKeys) as (keyof typeof LanguageKeys)[];
 	// check for exact match
 	for (let i = 0; i < languageKeys.length; i++) {
-		let languageEnumValue = languageKeys[i];
+		let languageKey = languageKeys[i];
+		let languageEnumValue = LanguageKeys[languageKey];
 		if (profileLanguage === languageEnumValue) {
 			return languageEnumValue;
 		}
@@ -128,6 +129,7 @@ export enum TranslationKeys {
 	average_rating = "average_rating",
 	amount_ratings = "amount_ratings",
 	accountbalance = "accountbalance",
+	search = "search",
 	sort = "sort",
 	sort_option_none = "sort_option_none",
 	sort_option_alphabetical = "sort_option_alphabetical",
@@ -438,6 +440,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Прозвище',
 		[LanguageKeys.tr_TR]: 'Takma ad',
 		[LanguageKeys.zh_CN]: '昵称'
+	},
+	search: {
+		[LanguageKeys.de_DE]: 'Suche',
+		[LanguageKeys.en_US]: 'Search',
+		[LanguageKeys.ar_SA]: 'بحث',
+		[LanguageKeys.es_ES]: 'Buscar',
+		[LanguageKeys.fr_FR]: 'Rechercher',
+		[LanguageKeys.ru_RU]: 'Поиск',
+		[LanguageKeys.tr_TR]: 'Arama',
+		[LanguageKeys.zh_CN]: '搜索'
 	},
 	account: {
 		[LanguageKeys.de_DE]: 'Account',
