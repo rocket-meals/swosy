@@ -409,18 +409,16 @@ export default function FoodplanScreen() {
 
 	return (
 		<MySafeAreaViewForScreensWithoutHeader>
-			<MySafeAreaView>
 			{header}
-					<MyScrollView>
-						<MyPrintComponent setPrintCallback={setPrintCallback}>
-							<View style={{
-								backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
-							}}>
-								{renderWeekOffers()}
-							</View>
-						</MyPrintComponent>
-					</MyScrollView>
-				</MySafeAreaView>
+				<MyScrollView>
+					<MyPrintComponent setPrintCallback={setPrintCallback}>
+						<View style={{
+							backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
+						}}>
+							{renderWeekOffers()}
+						</View>
+					</MyPrintComponent>
+				</MyScrollView>
 		</MySafeAreaViewForScreensWithoutHeader>
 	);
 }
