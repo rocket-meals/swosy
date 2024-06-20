@@ -10,12 +10,12 @@ import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 
 interface MyContentProps {
     initialValue: string | undefined | null,
-    setInputValue: Dispatch<SetStateAction<string | undefined | null>>,
+    setInputValue?: Dispatch<SetStateAction<string | undefined | null>>,
     onSave: (value: string | undefined | null, hide: () => void) => void,
     placeholder?: string,
     hide: () => void,
 }
-const MyContent: FunctionComponent<MyContentProps> = (props) => {
+export const MyTextInputModalContent: FunctionComponent<MyContentProps> = (props) => {
 	const {setInputValue} = props;
 	const [inputValueLocal, setInputValueLocal] = useState(props?.initialValue)
 
@@ -70,8 +70,8 @@ const MyContent: FunctionComponent<MyContentProps> = (props) => {
 
 						if (setInputValue) {
 							setInputValue(usedNewText);
-							setInputValueLocal(usedNewText);
 						}
+						setInputValueLocal(usedNewText);
 					}}
 					returnKeyType={ReturnKeyType.done}
 					onSubmitEditing={handleOnSave}
@@ -169,7 +169,7 @@ export const SettingsRowTextEdit = ({accessibilityLabel, labelLeft, rightIcon,..
 		renderAsContentInsteadItems: (key: string, hide: () => void) => {
 			// Use the custom context provider to provide the input value and setter
 			return (
-				<MyContent
+				<MyTextInputModalContent
 					initialValue={initialValue}
 					setInputValue={setInputValue}
 					onSave={onSaveChange}
@@ -178,7 +178,6 @@ export const SettingsRowTextEdit = ({accessibilityLabel, labelLeft, rightIcon,..
 				/>
 			)
 		}
-
 	}
 
 	let usedIconRight = rightIcon;

@@ -106,7 +106,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 
 	return (
 		<>
-			<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBackgroundColor={true} useTransparentBorderColor={true} leftIcon={IconNames.sort_icon} {...props} onPress={onPress} />
+			<MyButton useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={accessibilityLabel} useTransparentBorderColor={true} leftIcon={IconNames.sort_icon} {...props} onPress={onPress} />
 		</>
 
 	)
