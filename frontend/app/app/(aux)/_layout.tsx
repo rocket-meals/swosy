@@ -8,7 +8,7 @@ import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
-	initialRouteName: 'about-us',
+	initialRouteName: 'wikis',
 };
 
 export default function AppLayout() {
