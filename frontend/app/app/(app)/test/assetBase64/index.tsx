@@ -13,6 +13,7 @@ const path = require(`@/assets/map/marker-icon-2x.png`);
 
 export default function AssetBase64() {
 
+	const [counter, setCounter] = React.useState<number>(0);
 	const [loadError, setLoadError] = React.useState<string | null>(null);
 	const [imageAsString, setImageAsString] = React.useState<string | null>(null);
 
@@ -30,8 +31,9 @@ export default function AssetBase64() {
 	};
 
 	async function loadImage(){
-		const htmlFile: Asset = await Asset.fromModule(path);
+		setCounter(counter+1);
 		try{
+			const htmlFile: Asset = await Asset.fromModule(path);
 			if(PlatformHelper.isWeb()){
 				/// for web everything is easy to handle with the uri
 				setImageAsString(MyMapMarkerIcons.getIconForWebByUri(htmlFile.uri))
@@ -41,7 +43,7 @@ export default function AssetBase64() {
 				console.log("htmlFile: ", htmlFile)
 				// format into base64
 				await htmlFile.downloadAsync()
-				const base64 = await loadImageAsBase64(htmlFile.localUri);
+				const base64 = await FileSystem.readAsStringAsync(htmlFile.localUri, { encoding: FileSystem.EncodingType.Base64 });
 				console.log("base64: ", base64)
 				if(base64) {
 					//setImageAsString(htmlFile.localUri)
@@ -60,7 +62,9 @@ export default function AssetBase64() {
 		<MySafeAreaView>
 			<MyScrollView>
 				<SettingsRowGroup>
+					<SettingsRow labelLeft={"Counter: "+counter} />
 					<SettingsRow labelLeft="Load Image" onPress={loadImage} />
+					<SettingsRow labelLeft={"path: "+path} />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRow labelLeft="Error" onPress={loadImage} />
