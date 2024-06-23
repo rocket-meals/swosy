@@ -63,6 +63,11 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 
 	console.log('updateFoodFeedbackRemote: existingFoodFeedback', existingFoodFeedback)
 
+	if (!existingFoodFeedback) {
+		console.error('updateFoodFeedbackRemote: existingFoodFeedback is undefined')
+		return
+	}
+
 	if(rating !== undefined) {
 		existingFoodFeedback.rating = rating;
 	}

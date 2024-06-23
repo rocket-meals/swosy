@@ -1,17 +1,9 @@
-import React, {useState} from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
-import {SettingsRowNavigate, SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
+import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 
 export default function HomeScreen() {
-	const [text, setText] = useState<string | undefined | null>('InitialText');
-	const [active, setActive] = useState<boolean>(false);
-
-	const switchActive = () => {
-		setActive(!active);
-	}
-
 	return (
 		<MySafeAreaView>
 			<MyScrollView>

@@ -1,4 +1,3 @@
-import React from 'react';
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
 import {useAllSyncStates} from "@/helper/syncState/SyncState";
@@ -8,7 +7,6 @@ import {Text, View} from "@/components/Themed";
 import {SettingsRowActionsheet} from "@/components/settings/SettingsRowActionsheet";
 import {useSynchedProfile} from "@/states/SynchedProfile";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
-import {SettingsRowLogout} from "@/components/settings/SettingsRowLogout";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {AnimationSupport} from "@/compositions/animations/AnimationSupport";
 import {useCurrentUser} from "@/states/User";
@@ -17,10 +15,9 @@ import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedba
 
 
 export default function DataAccessScreen() {
-
-	const [profile, setProfile] = useSynchedProfile();
-	const [currentUser, setUserWithCache] = useCurrentUser();
-	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
+	const [profile] = useSynchedProfile();
+	const [currentUser] = useCurrentUser();
+	const [foodFeedbacksDict] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 
 	const translation_data_access_introduction = useTranslation(TranslationKeys.data_access_introduction);
 	const translation_your_data_which_we_know_if_you_have_a_profile = useTranslation(TranslationKeys.your_data_which_we_know_if_you_have_a_profile);

@@ -1,7 +1,7 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {Apartments, Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
+import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
 import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
@@ -13,7 +13,6 @@ import {LocationType} from "@/helper/geo/LocationType";
 import {DistanceHelper} from "@/helper/geo/DistanceHelper";
 import DistanceBadge from "@/components/distance/DistanceBadge";
 import React from "react";
-import BuildingDetails from "@/compositions/buildings/BuildingDetails";
 import {
 	filterAndSortResourcesBySearchValue,
 	useSearchTextFromGlobalSearchParams
