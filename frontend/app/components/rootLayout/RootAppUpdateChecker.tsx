@@ -1,8 +1,7 @@
-import {useUpdates} from "expo-updates";
 import React, {useEffect, useState} from "react";
 import * as Updates from "expo-updates";
 import {PlatformHelper} from "@/helper/PlatformHelper";
-import {View, Text} from "@/components/Themed";
+import {Text} from "@/components/Themed";
 import {AppState} from "react-native";
 import {LoadingScreen, LoadingScreenTextInformationWrapper} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
@@ -54,9 +53,10 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
         try{
             console.log("await Updates.checkForUpdateAsync(); "+props.reloadNumber+" - initialCheckFinished: "+initialCheckFinished)
 
-            let updateCheckResult: Updates.UpdateCheckResult= {
+            let updateCheckResult: Updates.UpdateCheckResult = {
                 isAvailable: true,
                 manifest: {
+                    //@ts-ignore
                     version: "1.0.0"
                 }
             }

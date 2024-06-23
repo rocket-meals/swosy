@@ -1,4 +1,4 @@
-import {DependencyList, useEffect, useState} from 'react';
+import {DependencyList, ReactNode, useEffect, useState} from 'react';
 import {useIsServerCached, useIsServerOffline, useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {useCurrentUser, useIsCurrentUserAnonymous} from '@/states/User';
@@ -13,12 +13,12 @@ export {
 } from 'expo-router';
 
 export interface RootAuthUserFlowLoaderProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   syncForUserId: string | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   setSyncComplete: (finished: boolean) => void
 }
 
@@ -111,6 +111,8 @@ export const RootSyncDatabaseUploadInner = (props: RootAuthUserFlowLoaderInnerPr
 	}, itemsToLoad);
 
 	const key = JSON.stringify(synchedResourcesToDownloadFirst);
+	// @ts-ignore
+	//todo: fix this
 	return <LoadingScreenDatabase text={translation_sync_user_settings} nowInMs={nowInMs} key={key} synchedResources={synchedResourcesToDownloadFirst} />
 }
 
@@ -118,21 +120,20 @@ export const RootSyncDatabaseUpload = (props: RootAuthUserFlowLoaderProps) => {
 	const isServerOffline = useIsServerOffline()
 
 	const syncForUserId = props.syncForUserId;
-	const [synchedForUserId, setSynchedForUserId] = useState<any>({
+	const [syncedForUserId, setSyncedForUserId] = useState<any>({
 		userId: false
 	});
 	const setSyncComplete = (bool: boolean) => {
-		setSynchedForUserId({
+		setSyncedForUserId({
 			userId: syncForUserId
 		})
 	}
-
-	const syncComplete = synchedForUserId.userId === syncForUserId;
 
 	if (isServerOffline) {
 		return <PleaseConnectFirstTimeWithInternet />
 	}
 
+	const syncComplete = syncedForUserId.userId === syncForUserId;
 	if (!syncComplete) {
 		return <RootSyncDatabaseUploadInner setSyncComplete={setSyncComplete} />
 	}
