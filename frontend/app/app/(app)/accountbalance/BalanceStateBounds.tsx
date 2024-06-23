@@ -16,18 +16,24 @@ type AccountBalanceAnimationProps = {
 	balance: number | undefined | null
 }
 export const AccountBalanceAnimation = (props: AccountBalanceAnimationProps) => {
-	const balance = props?.balance;
+	const balance = props.balance;
 
 	let animation = <MoneyConfused />
 
-	if(balance===undefined || balance===null || balance < 0){
-		animation = <MoneyConfused />
-	} else if(balance >= BalanceStateLowerBound.CONFIDENT){
-		animation = <MoneyConfident />
-	} else if(balance >= BalanceStateLowerBound.FITNESS){
-		animation = <MoneyFitness />
-	} else if(balance >= BalanceStateLowerBound.SAD){
-		animation = <MoneySad />
+	switch (balance) {
+		case undefined:
+		case null:
+			animation = <MoneyConfused />
+			break;
+		default:
+			if(balance >= BalanceStateLowerBound.CONFIDENT){
+				animation = <MoneyConfident />
+			} else if(balance >= BalanceStateLowerBound.FITNESS){
+				animation = <MoneyFitness />
+			} else if(balance >= BalanceStateLowerBound.SAD){
+				animation = <MoneySad />
+			}
+			break;
 	}
 
 	return (

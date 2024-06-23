@@ -7,14 +7,11 @@ import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 
 
 export default function useCardReadInstruction(): [() => void, () => void] {
-
 	const isDemo = useIsDemo();
-	let title = "NFC";
-	if(isDemo){
-		title = "Demo: "+title;
-	}
 	const nfcInstruction = useTranslation(TranslationKeys.nfcInstructionRead);
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
+
+	const title = isDemo ? "Demo: NFC" : "NFC";
+	const [_, setModalConfig] = useModalGlobalContext();
 
 	const show = () => {
 		setModalConfig({

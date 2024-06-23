@@ -3,7 +3,6 @@ import {Heading, Text, View} from "@/components/Themed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {useIsDebug} from "@/states/Debug";
 import {useProjectColor} from "@/states/ProjectInfo";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -12,11 +11,6 @@ import {useFocusEffect} from "expo-router";
 import {SystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {IconNames} from "@/constants/IconNames";
 import {formatPrice} from "@/components/pricing/PricingBadge";
-import {MoneyConfused} from "@/compositions/animations/accountBalance/MoneyConfused";
-import {MoneyConfident} from "@/compositions/animations/accountBalance/MoneyConfident";
-import {MoneyFitness} from "@/compositions/animations/accountBalance/MoneyFitness";
-import {MoneySad} from "@/compositions/animations/accountBalance/MoneySad";
-import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
@@ -25,23 +19,16 @@ import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance
 import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
 import {AccountBalanceAnimation} from "@/app/(app)/accountbalance/BalanceStateBounds";
 
-
-const onBlur = () => {
-	//console.log("Tab is blurred");
-};
-
 export function useMyFocusHandler(onFocus: any, deps: any) {
 
 	if(PlatformHelper.isWeb()){
 		return useEffect(() => {
 			window.addEventListener("focus", onFocus);
-			window.addEventListener("blur", onBlur);
 			// Calls onFocus when the window first loads
 			onFocus();
-			// Specify how to clean up after this effect:
+
 			return () => {
 				window.removeEventListener("focus", onFocus);
-				window.removeEventListener("blur", onBlur);
 			};
 		}, deps);
 	} else {
@@ -56,14 +43,8 @@ export function useMyFocusHandler(onFocus: any, deps: any) {
 }
 
 export default function AccountbalanceScreen() {
-
-	const debug = useIsDebug()
 	const demo = useIsDemo()
 	const isExpoGo = isInExpoGo()
-
-	const projectColor = useProjectColor()
-	const readCardBackgroundColor = projectColor;
-	const textColorButton = useMyContrastColor(readCardBackgroundColor);
 
 	const translationReadNfc = useTranslation(TranslationKeys.nfcReadCard)
 	const translation_nfcNotSupported = useTranslation(TranslationKeys.nfcNotSupported)
@@ -84,7 +65,6 @@ export default function AccountbalanceScreen() {
 		await myCardReader.readCard(callBack, accountBalance, showInstruction, hideInstruction, translation_nfcInstructionRead);
 	}
 
-
 	const [nfcSupported, setNfcSupported] = useState<boolean | undefined>(undefined);
 	const [nfcEnabled, setNfcEnabled] = useState<boolean | undefined>(undefined);
 	let usedNfcSupported = nfcSupported || demo
@@ -104,7 +84,7 @@ export default function AccountbalanceScreen() {
 
 	async function checkNfcSupportAndEnableStatus(){
 		try{
-			let isSupported = await myCardReader.isNfcSuppported();
+			let isSupported = await myCardReader.isNfcSupported();
 			setNfcSupported(isSupported);
 			let isEnabled = await myCardReader.isNfcEnabled();
 			setNfcEnabled(isEnabled);
@@ -123,11 +103,12 @@ export default function AccountbalanceScreen() {
 		checkNfcSupportAndEnableStatus();
 	}, [])
 
+	//todo: remove this and include it directly in the render function
 	function renderNfcStatus(){
 		if(usedNfcSupported === undefined){
 			return null;
 		}
-		if(usedNfcSupported === false){
+		if(!usedNfcSupported){
 			if(isExpoGo){
 				return <Text>{
 					"Expo Go does not support NFC. Please use the built app."
@@ -139,7 +120,7 @@ export default function AccountbalanceScreen() {
 		if(usedNfcEnabled === undefined){
 			return null;
 		}
-		if(usedNfcEnabled === false){
+		if(!usedNfcEnabled){
 			if(isAndroid){
 				return(
 					<MyButton useOnlyNecessarySpace={true} leftIcon={IconNames.settings_icon} text={translation_nfcNotEnabled} onPress={async () => {
@@ -167,33 +148,6 @@ export default function AccountbalanceScreen() {
 		return null;
 	}
 
-
-
-	function renderReadCardButton(){
-		let text = translationReadNfc
-
-		if(demo){
-			text = "Demo: "+text;
-		}
-
-		if(canReadNfc){
-			return (
-				<MyButton useOnlyNecessarySpace={true} leftIcon={IconNames.nfc_icon} text={text} onPress={async () => {
-					try {
-						await onReadNfcPress();
-					} catch (e) {
-						/**
-						toast.show({
-							description: JSON.stringify(e)
-						});
-							*/
-					}
-				}}  accessibilityLabel={text}/>
-			);
-
-		}
-	}
-
 	return (
 		<MySafeAreaView style={{width: "100%"}} key={""+focusCounter}>
 			<MyScrollView>
@@ -211,7 +165,27 @@ export default function AccountbalanceScreen() {
 						padding: 10,
 						marginTop: 10
 					}}>
-						{renderReadCardButton()}
+						{canReadNfc && (
+							<MyButton
+								useOnlyNecessarySpace={true}
+								leftIcon={IconNames.nfc_icon}
+								text={(demo ? "Demo: " : "") + translationReadNfc}
+								onPress={
+									async () => {
+										try {
+											await onReadNfcPress();
+										} catch (e) {
+											/**
+											 toast.show({
+											 description: JSON.stringify(e)
+											 });
+											 */
+										}
+									}
+								}
+								accessibilityLabel={(demo ? "Demo: " : "") + translationReadNfc}
+							/>
+						)}
 					</View>
 					<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
 						translation_accountBalance

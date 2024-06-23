@@ -34,7 +34,7 @@ export default class MyDemoCardReader implements MyCardReaderInterface {
 		return true;
 	}
 
-	async isNfcSuppported(): Promise<boolean> {
+	async isNfcSupported(): Promise<boolean> {
 		return true
 	}
 
