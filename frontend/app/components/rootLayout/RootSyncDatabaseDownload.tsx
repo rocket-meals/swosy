@@ -1,4 +1,4 @@
-import {DependencyList, useEffect, useState} from 'react';
+import {DependencyList, ReactNode, useEffect, useState} from 'react';
 import {useIsServerCached, useIsServerOffline, useIsServerOnline} from '@/states/SyncStateServerInfo';
 import {useSynchedCanteensDict} from '@/states/SynchedCanteens';
 import {useIsDemo} from '@/states/SynchedDemo';
@@ -22,7 +22,6 @@ import {getSyncCacheComposedKey, MyCacheHelperType} from "@/helper/cache/MyCache
 import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types";
 import {Text} from "@/components/Themed";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
-import {LoadingScreenTextInformationWrapper} from "@/compositions/loadingScreens/LoadingScreen";
 import {useSynchedPopupEventsDict} from "@/states/SynchedPopupEvents";
 
 export {
@@ -31,12 +30,12 @@ export {
 } from 'expo-router';
 
 export interface RootAuthUserFlowLoaderProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   syncForUserId: string | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   setSyncComplete: (finished: boolean) => void
 }
 
@@ -130,12 +129,12 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			let resource = synchedResourcesToDownloadFirst[key];
 			let version_current = resource.version_current;
 			let version_desired = resource.version_desired;
-			let dependencyoObj = {
+			let dependencyObj = {
 				key: key,
 				version_current: version_current,
 				version_desired: version_desired
 			}
-			const dependencyKey = JSON.stringify(dependencyoObj, null, 2);
+			const dependencyKey = JSON.stringify(dependencyObj, null, 2);
 			dependencies.push(dependencyKey);
 		}
 		return dependencies;
@@ -167,7 +166,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 						return composedKey
 					}
 				} else {
-					// at this moment somethings wrong, we should have the collection dates last update dict cached from the previous screen
+					// at this moment something is wrong, we should have the collection dates last update dict cached from the previous screen
 					return undefined
 				}
 			}
@@ -227,6 +226,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 		await cacheHelperObj.updateFromServer(version_desired);
 		// small delay to make sure the server has time to update the data
+		//note: this is not a good solution!
 	}
 
 	useEffect(() => {
@@ -247,20 +247,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 		}
 	}, dependenciesToRecheckSyncStatus);
 
-	let renderedTexts: any[] = [];
-	for (let key in synchedResourcesToDownloadFirst) {
-		let resource = synchedResourcesToDownloadFirst[key];
-		let version_current = resource.version_current;
-		let version_desired = resource.version_desired;
-		let dependencyoObj = {
-			key: key,
-			version_current: version_current,
-			version_desired: version_desired
-		}
-		const dependencyKey = JSON.stringify(dependencyoObj, null, 2);
-		renderedTexts.push(<Text>{dependencyKey}</Text>)
-	}
-
 	const nextResourceToDownload = getNextResourceToDownload();
 
 	return <LoadingScreenDatabase text={translation_sync_database} nowInMs={0} synchedResources={{}}>
@@ -275,16 +261,16 @@ export const RootSyncDatabaseDownload = (props: RootAuthUserFlowLoaderProps) => 
 	const isServerOffline = useIsServerOffline()
 
 	const syncForUserId = props.syncForUserId;
-	const [synchedForUserId, setSynchedForUserId] = useState<any>({
+	const [syncedForUserId, setSyncedForUserId] = useState<any>({
 		userId: false
 	});
 	const setSyncComplete = (bool: boolean) => {
-		setSynchedForUserId({
+		setSyncedForUserId({
 			userId: syncForUserId
 		})
 	}
 
-	const syncComplete = synchedForUserId.userId === syncForUserId;
+	const syncComplete = syncedForUserId.userId === syncForUserId;
 
 	if (isServerOffline) {
 		return <PleaseConnectFirstTimeWithInternet />
@@ -294,7 +280,5 @@ export const RootSyncDatabaseDownload = (props: RootAuthUserFlowLoaderProps) => 
 		return <RootSyncDatabaseDownloadInner setSyncComplete={setSyncComplete} />
 	}
 
-	return (
-		props.children
-	)
+	return props.children
 }
