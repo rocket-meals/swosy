@@ -40,7 +40,7 @@ export function getMyColorSchemeKeyOptions(): MyColorSchemeKey[] {
  * @returns Tuple containing color scheme raw value and setter function.
  */
 export function useMyColorSchemeKeySavedOption(): [MyColorSchemeKey | null, (newValue: MyColorSchemeKey) => void] {
-	const [colorSchemeRaw, setColorSchemeRaw] = useSyncState<MyColorSchemeKey>(PersistentStore.colorSchemeName)
+	const [colorSchemeRaw, setColorSchemeRaw] = useSyncState<MyColorSchemeKey, MyColorSchemeKey>(PersistentStore.colorSchemeName)
 	return [colorSchemeRaw, setColorSchemeRaw]
 }
 
