@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from 'react';
+import React, {createContext, ReactNode, useContext, useState} from 'react';
 import {ThemeProvider} from '@react-navigation/native';
 import {StatusBar} from 'expo-status-bar';
 import {View, Text, useViewBackgroundColor, Icon} from '@/components/Themed'; // Import View from your themed components
@@ -10,6 +10,9 @@ import {MyModalActionSheetGlobal} from "@/components/modal/MyModalActionSheetGlo
 import {MyModalActionSheetItem, MyModalActionSheetProps} from "@/components/modal/MyModalActionSheet";
 import {IconNames} from "@/constants/IconNames";
 import {useIconWithInPixel} from "@/components/shapes/Rectangle";
+import {Dimensions, DimensionValue} from "react-native";
+import {DimensionType} from "@/types/DimensionType";
+import RootTextAndIconDimensions from "@/components/rootLayout/RootTextAndIconDimensions";
 
 // Create a Context for the modal
 const ModalContext = createContext<{
@@ -23,7 +26,7 @@ export const ModalProvider = ({ children }: {children: React.ReactNode | React.R
 
 	return (
 		<ModalContext.Provider value={{ modalValue, setModalValue }}>
-			{children}
+			{Array.isArray(children) ? children : [children]}
 		</ModalContext.Provider>
 	);
 };
@@ -37,111 +40,41 @@ export const useModalGlobalContext: () => [MyModalActionSheetItem | null, React.
 	return [context?.modalValue, context?.setModalValue];
 };
 
-export interface RootThemeProviderProps {
-    children?: React.ReactNode;
-}
-
-const RootTextAndIconDimensions = () => {
-	const [textDimensions, setTextDimensions] = useSyncState(NonPersistentStore.textDimensions);
-	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
-	const imageWidth = useIconWithInPixel(1);
-
-	return (
-		<View
-			pointerEvents="none" // Do not block touch events
-			style={{
-			position: 'absolute',
-			top: 0,
-			left: 0,
-//				width: 0, // has to be outcommented to get the width on iOS
-//				height: 0, // has to be outcommented to get the height on iOS
-			// hide the view
-			opacity: 0,
-		}}
-			  accessible={false} accessibilityElementsHidden={true}
-		>
-			<View style={{
-				backgroundColor: "red",
-				flexDirection: "row"
-			}}>
-				<Text onLayout={(event) => {
-					const {width, height} = event.nativeEvent.layout;
-					setTextDimensions((currentDimensions) => {
-						return {
-							width: width,
-							height: height
-						}
-					})
-				}}>{"M"}</Text>
-			</View>
-			<Text>{textDimensions?.width}</Text>
-			<View style={{
-				backgroundColor: "blue",
-				width: textDimensions?.width,
-				height: 10,
-			}} />
-			<View style={{
-				backgroundColor: "red",
-				flexDirection: "row"
-			}}>
-				<Icon name={IconNames.star_active_icon} onLayout={(event) => {
-					const {width, height} = event.nativeEvent.layout;
-					setIconDimensions((currentDimensions) => {
-						console.log("SetIconDimensions: "+width);
-						return {
-							width: width,
-							height: height
-						}
-					})
-				}} />
-			</View>
-			<Text>{iconDimensions?.width}</Text>
-			<Text>{imageWidth}</Text>
-			<View style={{
-				backgroundColor: "blue",
-				width: iconDimensions?.width,
-				height: 10,
-			}} />
-		</View>
-	)
-}
-
-const RootContent = (props: RootThemeProviderProps) => {
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
-
+const WrappedModalProvider = ({ children }: {children: React.ReactNode | React.ReactNode[]}) => {
 	const backgroundColor = useViewBackgroundColor();
-
+	const isDarkTheme = useIsDarkTheme();
+	const [modalConfig] = useModalGlobalContext();
+	const statusbarTextColorStyle = isDarkTheme ? 'light' : 'dark';
 	const appIsAccessible = !modalConfig
 
-	return(
+	return (
 		<>
+			<StatusBar style={statusbarTextColorStyle} />
+
+			{/* Set View to occupy all available space and control accessibility based on action sheet visibility */}
 			<RootTextAndIconDimensions />
 			<View style={{height: '100%', width: '100%', backgroundColor: backgroundColor}} accessible={appIsAccessible} accessibilityElementsHidden={!appIsAccessible}>
 				{/* Render the children respecting the action sheet's visibility */}
-				{props.children}
+				{children}
 			</View>
-			<RootFabHolder />
+			<RootFabHolder/>
+
+			<MyModalActionSheetGlobal />
 		</>
 	)
 }
 
-export const RootThemeProvider = (props: RootThemeProviderProps) => {
+export const RootThemeProvider = (props: { children: ReactNode }) => {
 	const theme = useThemeDetermined();
-	const isDarkTheme = useIsDarkTheme();
-	const statusbarTextColorStyle = isDarkTheme ? 'light' : 'dark';
 
 
 	return (
 		<ThemeProvider value={theme}>
 			<ModalProvider>
-				<StatusBar style={statusbarTextColorStyle} />
-				{/* Set View to occupy all available space and control accessibility based on action sheet visibility */}
-				<RootContent>
+				<WrappedModalProvider>
 					{props.children}
-				</RootContent>
-				<MyModalActionSheetGlobal />
+				</WrappedModalProvider>
 			</ModalProvider>
-
 		</ThemeProvider>
 	);
 }
