@@ -1,4 +1,4 @@
-import {DependencyList, ReactNode, useEffect, useState} from 'react';
+import {DependencyList, useEffect, useState} from 'react';
 import {useIsServerCached, useIsServerOffline, useIsServerOnline, useServerInfoRaw} from '@/states/SyncStateServerInfo';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {useSynchedAppSettings} from '@/states/SynchedAppSettings';
@@ -10,6 +10,8 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {AnimationUnderConstruction} from "@/compositions/animations/AnimationUnderConstruction";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {DateHelper} from "@/helper/date/DateHelper";
+import {MySafeAreaView} from "@/components/MySafeAreaView";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {LoadingScreenFullScreenOverlay} from "@/compositions/loadingScreens/LoadingScreen";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
@@ -19,12 +21,12 @@ export {
 } from 'expo-router';
 
 export interface RootAuthUserFlowLoaderProps {
-  children?: ReactNode;
+  children?: React.ReactNode;
   syncForUserId: string | undefined
 }
 
 export interface RootAuthUserFlowLoaderInnerProps {
-  children?: ReactNode;
+  children?: React.ReactNode;
   setSyncComplete: (finished: boolean) => void
 }
 
@@ -45,7 +47,12 @@ export const RootSyncSettingsDownloadInner = (props: RootAuthUserFlowLoaderInner
 
 	const synchedResourcesToDownloadFirst: {[key: string]: {data: any, lastUpdate: string | undefined}} = {}
 
+
+	//console.log("1_collectionsDatesLastUpdate: ",collectionsDatesLastUpdate);
+	//console.log(collectionsDatesLastUpdate);
 	function addSynchedResourceToDownloadFirst(label: string, resource: any, lastUpdate: string | undefined) {
+
+
 		registeredItemsToLoad.push(resource);
 		synchedResourcesToDownloadFirst[label] = {
 			data: resource,

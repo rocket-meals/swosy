@@ -39,8 +39,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	const nowAsKey = nowInMs.toString();
 	const [continueWithCache, setContinueWithCache] = useState<boolean>(false);
 
-	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw] = useServerInfoRaw();
-	const [authData, setAuthData] = useSyncState<AuthenticationData, AuthenticationData>(PersistentSecureStore.authentificationData)
+	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw
+	] = useServerInfoRaw();
+	const [authData, setAuthData] = useSyncState<AuthenticationData>(PersistentSecureStore.authentificationData)
 
 	// TODO: move this to a helper function
 	ServerAPI.createAuthentificationStorage(async () => {

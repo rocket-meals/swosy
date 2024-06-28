@@ -9,24 +9,28 @@ export function useServerInfoRaw() {
 
 export function useServerInfo() {
 	const [serverInfo, setServerInfo] = useServerInfoRaw();
+	let usedServerInfo = serverInfo
 	const isDemoMode = useIsDemo()
+	if (isDemoMode) {
+		usedServerInfo = {
+			status: 'cached',
+			info: {
+				project: {
+					project_name: 'Rocket Meals',
+					project_descriptor: 'Your company',
+					default_language: 'de-DE',
+					project_logo: null,
+					project_color: '#D14610',
+					public_foreground: null,
+					public_background: null,
+					public_note: null,
+					custom_css: null,
+				}
+			},
+		}
+	}
 
-	return isDemoMode ? {
-		status: 'cached',
-		info: {
-			project: {
-				project_name: 'Rocket Meals',
-				project_descriptor: 'Your company',
-				default_language: 'de-DE',
-				project_logo: null,
-				project_color: '#D14610',
-				public_foreground: null,
-				public_background: null,
-				public_note: null,
-				custom_css: null,
-			}
-		},
-	} : serverInfo;
+	return usedServerInfo;
 }
 
 export function useServerStatus() {
