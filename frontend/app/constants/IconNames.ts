@@ -90,7 +90,7 @@ export class IconNames {
 
     static nutrition_icon = 'food-apple'
     static nutrition_calories_icon = 'fire'
-    static nutrition_carbohydrate_icon = 'corn'
+    static nutrition_carbohydrate_icon = IconFamily.FontAwesome6+IconParseDelimeter+'wheat-awn'
     static nutrition_fat_icon = 'water'
     static nutrition_fiber_icon = 'leaf'
     static nutrition_protein_icon = 'fish'
