@@ -2419,14 +2419,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '系统语言'
 	},
 	drawer_config_position: {
-		[LanguageKeys.de_DE]: 'Schubladenkonfiguration',
-		[LanguageKeys.en_US]: 'Drawer Configuration',
-		[LanguageKeys.ar_SA]: 'تكوين الدرج',
-		[LanguageKeys.es_ES]: 'Configuración del cajón',
-		[LanguageKeys.fr_FR]: 'Configuration du tiroir',
-		[LanguageKeys.ru_RU]: 'Конфигурация ящика',
-		[LanguageKeys.tr_TR]: 'Çekmece Yapılandırması',
-		[LanguageKeys.zh_CN]: '抽屉配置'
+		[LanguageKeys.de_DE]: 'Menüposition',
+		[LanguageKeys.en_US]: 'Drawer Position',
+		[LanguageKeys.ar_SA]: 'موقف القائمة',
+		[LanguageKeys.es_ES]: 'Posición del cajón',
+		[LanguageKeys.fr_FR]: 'Position du tiroir',
+		[LanguageKeys.ru_RU]: 'Положение ящика',
+		[LanguageKeys.tr_TR]: 'Çekmece Konumu',
+		[LanguageKeys.zh_CN]: '抽屉位置'
 	},
 	drawer_config_position_left: {
 		[LanguageKeys.de_DE]: 'Links',
