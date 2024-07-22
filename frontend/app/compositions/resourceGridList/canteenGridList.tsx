@@ -6,6 +6,7 @@ import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesW
 import {Canteens} from '@/helper/database/databaseTypes/types';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
@@ -13,6 +14,8 @@ interface AppState {
 export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}) => {
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+
+	const translation_select = useTranslation(TranslationKeys.select);
 
 	const amountColumns = useMyGridListDefaultColumns();
 
@@ -45,6 +48,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
 
     	const canteen_label: string = canteen.alias || canteen_key+''
     	const text = canteen_label
+		const accessibilityLabel = translation_select + ': ' + canteen_label
 
     	const onPressCanteen = () => {
     		if (onPress) {
@@ -60,7 +64,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     			image_url={image_url}
     			thumbHash={thumbHash}
     			onPress={onPressCanteen}
-    			accessibilityLabel={text}
+    			accessibilityLabel={accessibilityLabel}
     		/>
     	);
     }
