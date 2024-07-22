@@ -20,7 +20,7 @@ export default function DataAccessScreen() {
 
 	const [profile, setProfile] = useSynchedProfile();
 	const [currentUser, setUserWithCache] = useCurrentUser();
-	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 
 	const translation_data_access_introduction = useTranslation(TranslationKeys.data_access_introduction);
 	const translation_your_data_which_we_know_if_you_have_a_profile = useTranslation(TranslationKeys.your_data_which_we_know_if_you_have_a_profile);
@@ -83,14 +83,14 @@ export default function DataAccessScreen() {
 		);
 	}
 
-	if (foodFeedbacksDict) {
+	if (ownFoodFeedbacksDict) {
 		const config: MyModalActionSheetItem = {
 			accessibilityLabel: translation_food_feedbacks,
 			key: translation_food_feedbacks,
 			label: translation_food_feedbacks,
 			title: translation_food_feedbacks,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return renderDataOfObject(foodFeedbacksDict);
+				return renderDataOfObject(ownFoodFeedbacksDict);
 			}
 		}
 

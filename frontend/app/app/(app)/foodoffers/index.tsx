@@ -241,14 +241,14 @@ export default function FoodOfferScreen() {
 
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [foodFeedbacksDict, setFoodFeedbacksDict, lastUpdate, updateFromServer] = useSynchedOwnFoodIdToFoodFeedbacksDict();
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
 
 	let [foodOffersSorted, setFoodoffersSorted] = useState<Foodoffers[] | undefined | null>(undefined);
 
 	if (foodOffersDownloaded && !foodOffersSorted) {
-		foodOffersSorted = sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
+		foodOffersSorted = sortFoodOffers(foodOffersDownloaded, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
 		setFoodoffersSorted(foodOffersSorted)
 	}
 
@@ -262,7 +262,7 @@ export default function FoodOfferScreen() {
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
 				setFoodOffers(downloadedFoodOffers);
 				// sort the food offers
-				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
+				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 			} catch (err){
 				console.error('loadFoodOffers error', err)
 				setFoodOffers(null);
@@ -285,7 +285,7 @@ export default function FoodOfferScreen() {
 	// Call useEffect when the sortType changes and the screen gets mounted
 	useEffect(() => {
 		if (foodOffersDownloaded) {
-			setFoodoffersSorted(sortFoodOffers(foodOffersDownloaded, foodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
+			setFoodoffersSorted(sortFoodOffers(foodOffersDownloaded, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 		}
 	}, [sortType])
 
