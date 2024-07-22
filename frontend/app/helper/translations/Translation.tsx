@@ -1979,14 +1979,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '导航到'
 	},
 	open_drawer: {
-		[LanguageKeys.de_DE]: 'Schublade öffnen',
-		[LanguageKeys.en_US]: 'Open drawer',
-		[LanguageKeys.ar_SA]: 'افتح الدرج',
-		[LanguageKeys.es_ES]: 'Abrir cajón',
-		[LanguageKeys.fr_FR]: 'Ouvrir le tiroir',
-		[LanguageKeys.ru_RU]: 'Открыть ящик',
-		[LanguageKeys.tr_TR]: 'Çekmeceyi aç',
-		[LanguageKeys.zh_CN]: '打开抽屉'
+		[LanguageKeys.de_DE]: "Seitenmenü öffnen",
+		[LanguageKeys.en_US]: "Open side menu",
+		[LanguageKeys.ar_SA]: "افتح القائمة الجانبية",
+		[LanguageKeys.es_ES]: "Abrir menú lateral",
+		[LanguageKeys.fr_FR]: "Ouvrir le menu latéral",
+		[LanguageKeys.ru_RU]: "Открыть боковое меню",
+		[LanguageKeys.tr_TR]: "Yan menüyü aç",
+		[LanguageKeys.zh_CN]: "打开侧边菜单"
 	},
 	navigate_back: {
 		[LanguageKeys.de_DE]: 'Zurück navigieren',
@@ -2019,7 +2019,7 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '地图'
 	},
 	news: {
-		[LanguageKeys.de_DE]: 'Nachrichten',
+		[LanguageKeys.de_DE]: 'News',
 		[LanguageKeys.en_US]: 'News',
 		[LanguageKeys.ar_SA]: 'أخبار',
 		[LanguageKeys.es_ES]: 'Noticias',
