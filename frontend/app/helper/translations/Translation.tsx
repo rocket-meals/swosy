@@ -283,7 +283,7 @@ export enum TranslationKeys {
 	i_like_that = "i_like_that",
 	i_dislike_that = "i_dislike_that",
 	like_status = "like_status",
-	show_login_with_username_and_password = "show_login_with_username_and_password",
+	show_login_for_management_with_email_and_password = "show_login_for_management_with_email_and_password",
 	email = "email",
 	password = "password",
 	show = "show",
@@ -2158,15 +2158,15 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Beğenme Durumu',
 		[LanguageKeys.zh_CN]: '喜欢状态'
 	},
-	show_login_with_username_and_password: {
-		[LanguageKeys.de_DE]: 'Anmeldung mit Benutzername und Passwort anzeigen',
-		[LanguageKeys.en_US]: 'Show login with username and password',
-		[LanguageKeys.ar_SA]: 'إظهار تسجيل الدخول باسم المستخدم وكلمة المرور',
-		[LanguageKeys.es_ES]: 'Mostrar inicio de sesión con nombre de usuario y contraseña',
-		[LanguageKeys.fr_FR]: 'Afficher la connexion avec nom d\'utilisateur et mot de passe',
-		[LanguageKeys.ru_RU]: 'Показать вход с именем пользователя и паролем',
-		[LanguageKeys.tr_TR]: 'Kullanıcı adı ve şifre ile giriş yapmayı göster',
-		[LanguageKeys.zh_CN]: '显示使用用户名和密码登录'
+	show_login_for_management_with_email_and_password: {
+		[LanguageKeys.de_DE]: 'Verwaltungs-Login mit E-Mail und Passwort anzeigen',
+		[LanguageKeys.en_US]: 'Show management login with email and password',
+		[LanguageKeys.ar_SA]: 'إظهار تسجيل الدخول للإدارة بالبريد الإلكتروني وكلمة المرور',
+		[LanguageKeys.es_ES]: 'Mostrar inicio de sesión de administración con correo electrónico y contraseña',
+		[LanguageKeys.fr_FR]: 'Afficher la connexion de gestion avec e-mail et mot de passe',
+		[LanguageKeys.ru_RU]: 'Показать управление входом с электронной почтой и паролем',
+		[LanguageKeys.tr_TR]: 'E-posta ve şifre ile yönetim girişini göster',
+		[LanguageKeys.zh_CN]: '显示使用电子邮件和密码的管理登录'
 	},
 	email: {
 		[LanguageKeys.de_DE]: 'E-Mail',
