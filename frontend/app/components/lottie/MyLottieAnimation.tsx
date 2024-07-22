@@ -43,6 +43,7 @@ export const MyLottieAnimation = ({
 	style, url, source, animationRef, colorReplaceMap, loop, zoom, ...props
 }: MyLottieAnimationProps) => {
 	// State to manage performance mode.
+	const animationsDisabled = false;
 	const isPerformanceMode = useIsPerformanceMode();
 
 	// Ref to control the Lottie animation programmatically.
@@ -54,7 +55,8 @@ export const MyLottieAnimation = ({
 	// Default to true if loop is not explicitly set.
 	const usedLoop = loop === undefined ? true : loop;
 	// Default to true if autoPlay is not explicitly set.
-	const usedAutoPlay = props.autoPlay === undefined ? true : props.autoPlay;
+	let usedAutoPlay = props.autoPlay === undefined ? true : props.autoPlay;
+	usedAutoPlay = isPerformanceMode ? false : usedAutoPlay;
 
 	const speed = props.speed || 1;
 
@@ -81,7 +83,7 @@ export const MyLottieAnimation = ({
 	}];
 
 	// Return a simplified view when in performance mode.
-	if (isPerformanceMode) {
+	if (animationsDisabled) {
 		return (
 			<View style={mergedPerformanceStyle}>
 				<Text>
@@ -151,10 +153,10 @@ export const MyLottieAnimation = ({
 
 	// Effect hook to download animation data if URL is provided and not in performance mode.
 	useEffect(() => {
-		if (!isPerformanceMode) {
+		if (!animationsDisabled) {
 			downloadInformations();
 		}
-	}, [url, isPerformanceMode])
+	}, [url, animationsDisabled])
 
 	// Cleanup effect for when the component unmounts.
 	useEffect(() => {
