@@ -5,13 +5,16 @@ import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequi
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {MyNotificationRemoteButton} from "@/compositions/notification/MyNotificationRemoteButton";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export type FoodNotifyButtonProps = {
 	food: Foods;
 }
 
 export const FoodNotifyButton : FunctionComponent<FoodNotifyButtonProps> = (props) => {
-	return <AccountRequiredTouchableOpacity>
+	const translation_notify = useTranslation(TranslationKeys.notification);
+
+	return <AccountRequiredTouchableOpacity translationOfDesiredAction={translation_notify}>
 		<FoodNotifyButtonWithPermission food={props.food} />
 	</AccountRequiredTouchableOpacity>
 }

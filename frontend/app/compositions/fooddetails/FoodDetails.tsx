@@ -85,6 +85,8 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
 
+	const translationSetRating = useTranslation(TranslationKeys.set_rating);
+
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
 	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
 	let dislikesRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislikes
@@ -96,7 +98,7 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	return <SettingsRowTriStateLikeDislike
 		iconLeftCustom={iconLeftCustom}
 		renderRightContentWrapper={(rightContent) => {
-			return <AccountRequiredTouchableOpacity>
+			return <AccountRequiredTouchableOpacity translationOfDesiredAction={translationSetRating}>
 					{rightContent}
 			</AccountRequiredTouchableOpacity>
 		}}

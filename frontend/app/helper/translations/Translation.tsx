@@ -169,6 +169,7 @@ export enum TranslationKeys {
 	set_rating_to = "set_rating_to",
 	set_rate_as_favorite = "set_rate_as_favorite",
 	set_rate_as_not_favorite = "set_rate_as_not_favorite",
+	set_rating = "set_rating",
 	feedback_labels = "feedback_labels",
 	open_navitation_to_location = "open_navitation_to_location",
 	distance_based_canteen_selection_or_if_asked_on_real_location = "distance_based_canteen_selection_or_if_asked_on_real_location",
@@ -198,7 +199,7 @@ export enum TranslationKeys {
 	support_team = "support_team",
 	response = "response",
 	your_request = "your_request",
-	no_permission = "no_permission",
+	no_permission_for = "no_permission_for",
 	please_create_an_account = "please_create_an_account",
 	create_account = "create_account",
 	washing_machine = "washing_machine",
@@ -1018,6 +1019,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Değerlendirmeyi Favori Olmayan Olarak Ayarla',
 		[LanguageKeys.zh_CN]: '将评分设为非收藏'
 	},
+	set_rating: {
+		[LanguageKeys.de_DE]: 'Bewertung setzen',
+		[LanguageKeys.en_US]: 'Set Rating',
+		[LanguageKeys.ar_SA]: 'تعيين التقييم',
+		[LanguageKeys.es_ES]: 'Establecer calificación',
+		[LanguageKeys.fr_FR]: 'Définir la note',
+		[LanguageKeys.ru_RU]: 'Установить рейтинг',
+		[LanguageKeys.tr_TR]: 'Değerlendirme Ayarla',
+		[LanguageKeys.zh_CN]: '设置评分'
+	},
 	feedback_labels: {
 		[LanguageKeys.de_DE]: 'Rückmeldungen',
 		[LanguageKeys.en_US]: 'Feedback Labels',
@@ -1308,14 +1319,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Talebiniz',
 		[LanguageKeys.zh_CN]: '你的请求'
 	},
-	no_permission: {
-		[LanguageKeys.de_DE]: 'Keine Berechtigung',
-		[LanguageKeys.en_US]: 'No Permission',
-		[LanguageKeys.ar_SA]: 'لا إذن',
-		[LanguageKeys.es_ES]: 'Sin permiso',
-		[LanguageKeys.fr_FR]: 'Pas de permission',
-		[LanguageKeys.ru_RU]: 'Нет разрешения',
-		[LanguageKeys.tr_TR]: 'İzin Yok',
+	no_permission_for: {
+		[LanguageKeys.de_DE]: 'Keine Berechtigung für',
+		[LanguageKeys.en_US]: 'No Permission for',
+		[LanguageKeys.ar_SA]: 'لا توجد إذن لـ',
+		[LanguageKeys.es_ES]: 'Sin permiso para',
+		[LanguageKeys.fr_FR]: 'Pas de permission pour',
+		[LanguageKeys.ru_RU]: 'Нет разрешения на',
+		[LanguageKeys.tr_TR]: 'İzin yok',
 		[LanguageKeys.zh_CN]: '没有权限'
 	},
 	please_create_an_account: {
