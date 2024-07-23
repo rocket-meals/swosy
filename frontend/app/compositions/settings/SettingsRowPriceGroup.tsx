@@ -108,7 +108,7 @@ export const SettingsRowPriceGroup: FunctionComponent<AppState> = ({...props}) =
 
 	let selectedOptionName = priceGroupToName[priceGroup]
 
-	const accessibilityLabel = translation_edit+': '+title + ' ' + selectedOptionName
+	const accessibilityLabel = translation_edit+': '+title + ': ' + selectedOptionName
 	const label = title
 
 

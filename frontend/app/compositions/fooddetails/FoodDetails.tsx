@@ -17,7 +17,7 @@ import {TranslationKeys, useTranslation} from '@/helper/translations/Translation
 import {MarkingListSelective} from '@/components/food/MarkingList';
 import {useIsDemo} from "@/states/SynchedDemo";
 import {useIsDebug} from "@/states/Debug";
-import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useFoodsAreaColor, useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
 import {DETAILS_COMPONENT_MARGIN_HORIZONTAL, DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
@@ -570,6 +570,8 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
+
+	const foodsAreaColor = useFoodsAreaColor();
 
 	// get device height
 	const screenHeight = Dimensions.get('window').height;

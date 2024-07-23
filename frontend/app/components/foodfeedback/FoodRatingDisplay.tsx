@@ -1,4 +1,4 @@
-import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useFoodsAreaColor, useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {Foods} from "@/helper/database/databaseTypes/types";
 import React from "react";
 import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
@@ -35,9 +35,11 @@ export const FoodFeedbackRating = ({food, showQuickAction, borderRadius}: {food:
 	const usedFoodId = food.id;
 	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
 
+	const foodsAreaColor = useFoodsAreaColor();
+
 	const rating: number | undefined | null = foodFeedback?.rating;
 
 	return <AccountRequiredTouchableOpacity>
-		<MyRatingButton borderRadius={borderRadius} rating={rating} showQuickAction={showQuickAction} ratingType={foods_ratings_type} setRating={setOwnRating} />
+		<MyRatingButton color={foodsAreaColor} borderRadius={borderRadius} rating={rating} showQuickAction={showQuickAction} ratingType={foods_ratings_type} setRating={setOwnRating} />
 	</AccountRequiredTouchableOpacity>
 }

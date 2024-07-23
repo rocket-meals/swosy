@@ -6,6 +6,8 @@ import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {RatingType} from "@/components/buttons/MyRatingButton";
 import {FeedbackCommentType, FeedbackLabelsType} from "@/compositions/fooddetails/FoodDetails";
 import {MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {useProjectColor} from "@/states/ProjectInfo";
+import {AppAreaColors} from "@/constants/Colors";
 
 export const TABLE_NAME_APP_SETTINGS = 'app_settings';
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
@@ -51,6 +53,11 @@ export function useFoodImagePlaceholderAssetId(): string | null | undefined {
 export function useIsFoodsEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.foods_enabled || false;
+}
+
+export function useFoodsAreaColor(): string | undefined {
+	const projectColor = useProjectColor();
+	return AppAreaColors.FOODS_COLOR || projectColor;
 }
 
 export function useIsHousingEnabled(): boolean {
