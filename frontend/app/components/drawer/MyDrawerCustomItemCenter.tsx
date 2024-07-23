@@ -20,6 +20,7 @@ export type MyDrawerCustomItemProps = {
     onPressInternalRouteTo?: string, // TODO: check if we can use StaticRoutes or something like that?
     onPressExternalRouteTo?: string | undefined | null,
     drawerIcon?: (props: {focused: boolean, size: number, color: string}) => React.ReactNode,
+	drawerActiveBackgroundColor?: string,
     icon?: string,
     position?: number,
 	visibleInDrawer?: boolean | null | undefined,
@@ -112,6 +113,9 @@ export const MyDrawerCustomItemCenter = (customItem: MyDrawerCustomItemProps) =>
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
 
 	const projectColor = useProjectColor()
+	let color = customItem.drawerActiveBackgroundColor || projectColor
+
+
 	const viewBackgroundColor = useViewBackgroundColor();
 
 	// @ts-ignore
@@ -119,7 +123,7 @@ export const MyDrawerCustomItemCenter = (customItem: MyDrawerCustomItemProps) =>
 	const drawer_item_accessibility_label = translation_navigate_to + ' ' + customItem.label
 	const key = customItem?.label
 	const isFocused = customItem.isFocused;
-	const backgroundColor = isFocused ? projectColor : viewBackgroundColor
+	const backgroundColor = isFocused ? color : viewBackgroundColor
 
 	let onPress: any = undefined;
 	if (customItem.onPress) {

@@ -7,6 +7,7 @@ import {Canteens} from '@/helper/database/databaseTypes/types';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
@@ -19,6 +20,8 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
 
 	const amountColumns = useMyGridListDefaultColumns();
 
+	const foodsAreaColor = useFoodsAreaColor();
+
     type DataItem = { key: string; data: Canteens }
     const data: DataItem[] = []
     if (canteenDict) {
@@ -26,7 +29,9 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     	for (let i=0; i<canteen_keys.length; i++) {
     		const canteen_key = canteen_keys[i];
     		const canteen = canteenDict[canteen_key]
-    		data.push({key: canteen_key, data: canteen})
+    		if(!!canteen) {
+				data.push({key: canteen_key, data: canteen})
+			}
     	}
     }
 
@@ -60,6 +65,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     		<MyCardForResourcesWithImage
     			key={item.key}
     			heading={text}
+				separatorColor={foodsAreaColor}
     			assetId={imageAssetId}
     			image_url={image_url}
     			thumbHash={thumbHash}

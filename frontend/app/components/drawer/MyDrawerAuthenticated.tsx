@@ -6,6 +6,7 @@ import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHea
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
+	useFoodsAreaColor,
 	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled,
 	useIsCourseTimetableEnabled,
@@ -69,6 +70,8 @@ export const MyDrawerAuthenticated = (props: any) => {
 		customDrawerItems.push(...customDrawerWikiItems)
 	}
 
+	const foodsAreaColor = useFoodsAreaColor();
+
 
 	return (
 		<MyDrawer
@@ -86,6 +89,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_canteens,
 				title: translation_canteens,
 				icon: IconNames.foodoffers_icon,
+				color: foodsAreaColor,
 				getHeader: getMyScreenHeaderFoodOffers(),
 				visibleInDrawer: isFoodsEnabled || develop
 			})}
@@ -93,6 +97,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'foodoffers/details/index',
 				title: translation_food_details,
 				label: translation_food_details,
+				color: foodsAreaColor,
 				showBackButton: true,
 				icon: null,
 				visibleInDrawer: false

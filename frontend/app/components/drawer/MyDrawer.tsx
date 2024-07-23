@@ -33,6 +33,7 @@ export type MyDrawerItemProps = {
     label: string;
     title: string;
     icon: string | undefined | null;
+	color?: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
 	showBackButton?: boolean | null | undefined;
     getHeader?: ((props: DrawerHeaderProps) => ReactNode) | undefined | null;
@@ -46,7 +47,11 @@ export function useDrawerActiveBackgroundColor(): string {
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
 export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
-	const drawerActiveBackgroundColor = useDrawerActiveBackgroundColor(); // Fetch the current project color for use in styling.
+	let drawerActiveBackgroundColor = useDrawerActiveBackgroundColor(); // Fetch the current project color for use in styling.
+	if(props.color){
+		drawerActiveBackgroundColor = props.color
+	}
+
 	return renderMyDrawerScreen({...props}, drawerActiveBackgroundColor); // Render the drawer screen with the current project color.
 }
 
