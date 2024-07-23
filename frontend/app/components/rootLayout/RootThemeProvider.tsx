@@ -10,6 +10,7 @@ import {MyModalActionSheetGlobal} from "@/components/modal/MyModalActionSheetGlo
 import {MyModalActionSheetItem, MyModalActionSheetProps} from "@/components/modal/MyModalActionSheet";
 import {IconNames} from "@/constants/IconNames";
 import {useIconWithInPixel} from "@/components/shapes/Rectangle";
+import InaccessibleAndHidden from "@/helper/accessibility/InaccessableAndHidden";
 
 // Create a Context for the modal
 const ModalContext = createContext<{
@@ -116,10 +117,10 @@ const RootContent = (props: RootThemeProviderProps) => {
 	return(
 		<>
 			<RootTextAndIconDimensions />
-			<View style={{height: '100%', width: '100%', backgroundColor: backgroundColor}} accessible={appIsAccessible} accessibilityElementsHidden={!appIsAccessible}>
+			<InaccessibleAndHidden style={{height: '100%', width: '100%', backgroundColor: backgroundColor}} inaccessible={!appIsAccessible}>
 				{/* Render the children respecting the action sheet's visibility */}
 				{props.children}
-			</View>
+			</InaccessibleAndHidden>
 			<RootFabHolder />
 		</>
 	)

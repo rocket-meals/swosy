@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import {useViewBackgroundColor, View} from '@/components/Themed';
+import {useViewBackgroundColor, View, Text} from '@/components/Themed';
 import {useInsets, useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {ProjectBanner} from '@/components/project/ProjectBanner';
@@ -20,11 +20,13 @@ import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCen
 import {getMyScreenHeader} from '@/components/drawer/MyScreenHeader';
 import {getMyDrawerItemsBottom, getMyDrawerItemsCenter} from '@/components/drawer/MyDrawerItems';
 import {MyDrawerSafeAreaView} from '@/components/drawer/MyDrawerSafeAreaView';
-import {DrawerHeaderProps} from '@react-navigation/drawer';
+import {DrawerHeaderProps, useDrawerStatus} from '@react-navigation/drawer';
 import {IconNames} from '@/constants/IconNames';
 import {ProjectBackgroundImage} from '@/components/project/ProjectForegroundImage';
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import {DrawerStatus} from "@react-navigation/native";
+import InaccessibleAndHidden from "@/helper/accessibility/InaccessableAndHidden";
 
 export type MyDrawerItemProps = {
     routeName: string;
@@ -193,6 +195,11 @@ function renderDrawerContentTop(props: DrawerContentComponentProps) {
 	)
 }
 
+function useDrawerIsOpen(){
+	const isDrawerStatus: DrawerStatus = useDrawerStatus()
+	return isDrawerStatus === 'open'
+}
+
 // Wrapper component for the content inside the drawer.
 // It manages the layout of custom drawer items, the project banner, and legal links.
 type DrawerContentWrapperProps = {
@@ -206,8 +213,10 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 
 	const renderedDrawerItemsWithSeparator = getMyDrawerItemsCenter(props); // Get the list of drawer items to render.
 
+	const isDrawerOpen = useDrawerIsOpen()
+
 	return (
-		<View style={{width: '100%', height: '100%', overflow: 'hidden', backgroundColor: viewBackgroundColor}}>
+		<InaccessibleAndHidden inaccessible={!isDrawerOpen} style={{width: '100%', height: '100%', overflow: 'hidden', backgroundColor: viewBackgroundColor}}>
 			<MyDrawerSafeAreaView>
 				{renderDrawerContentTop(props)}
 				<View style={{
@@ -225,6 +234,6 @@ function DrawerContentWrapper(props: DrawerContentWrapperProps) {
 				</View>
 				{getMyDrawerItemsBottom(props)}
 			</MyDrawerSafeAreaView>
-		</View>
+		</InaccessibleAndHidden>
 	);
 }
