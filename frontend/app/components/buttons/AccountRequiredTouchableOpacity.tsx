@@ -6,6 +6,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {Text, View} from "@/components/Themed";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {IconNames} from "@/constants/IconNames";
 
 
 export type AccountRequiredTouchableOpacityProps = {
@@ -46,7 +47,8 @@ export const AccountRequiredTouchableOpacity = ({translationOfDesiredAction, chi
 								}}>
 									<Text>{translation_please_create_an_account+"."}</Text>
 								</View>
-								<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
+								<MyButton
+									leftIconColoredBox={true}  leftIcon={IconNames.create_icon} useOnlyNecessarySpace={true} accessibilityLabel={translation_create_account} tooltip={translation_create_account} text={translation_create_account} onPress={() => {
 									logout()
 								}} />
 							</View>

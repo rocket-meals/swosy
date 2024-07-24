@@ -85,6 +85,8 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
 
+	const foodsAreaColor = useFoodsAreaColor()
+
 	const translationSetRating = useTranslation(TranslationKeys.set_rating);
 
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
@@ -96,6 +98,7 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
 	return <SettingsRowTriStateLikeDislike
+		color={foodsAreaColor}
 		iconLeftCustom={iconLeftCustom}
 		renderRightContentWrapper={(rightContent) => {
 			return <AccountRequiredTouchableOpacity translationOfDesiredAction={translationSetRating}>
@@ -125,6 +128,8 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
 	const [language, setLanguage] = useProfileLanguageCode()
+
+
 
 	const isDebug = useIsDebug()
 
@@ -509,6 +514,8 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 
 	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
 
+	const foodsAreaColor = useFoodsAreaColor()
+
 	const [appSettings] = useSynchedAppSettings();
 	// person responsible for the information
 	const responsible_person_name = appSettings?.food_responsible_organization_name || "Baumgartner Software UG (haftungsbeschränkt)"
@@ -522,7 +529,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 
 	let responsibleAdditionElement = null;
 	if(!!responsible_person_name && !!responsible_person_webpage){
-		responsibleAdditionElement = <ThemedMarkdown markdown={responsible_for_information_markdown_link} />
+		responsibleAdditionElement = <ThemedMarkdown buttonAndLinkColor={foodsAreaColor} markdown={responsible_for_information_markdown_link} />
 	}
 
 	return(
@@ -543,7 +550,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 				</View>
 			</View>
 			<View>
-				<ThemedMarkdown markdown={translation_disclaimer} />
+				<ThemedMarkdown buttonAndLinkColor={foodsAreaColor} markdown={translation_disclaimer} />
 				{responsibleAdditionElement}
 			</View>
 		</>
@@ -608,6 +615,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 								  [
 									  {
 										  iconName: IconNames.nutrition_icon,
+										  color: foodsAreaColor,
 										  accessibilityLabel: translations_nutrition,
 										  text: translations_nutrition,
 										  content: <View style={{
@@ -617,6 +625,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 									  },
 									  {
 										  iconName: IconNames.eating_habit_icon,
+										  color: foodsAreaColor,
 										  accessibilityLabel: translations_markings,
 										  text: translations_markings,
 										  content: <View style={{
@@ -626,6 +635,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 									  },
 									  {
 										  iconName: IconNames.comment_icon,
+										  color: foodsAreaColor,
 										  accessibilityLabel: translations_food_feedbacks,
 										  text: translations_food_feedbacks,
 										  content: <View style={{
