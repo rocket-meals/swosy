@@ -244,7 +244,7 @@ export enum TranslationKeys {
 	tomorrow = "tomorrow",
 	yesterday = "yesterday",
 	nutrition = "nutrition",
-	nutrition_disclaimer = "nutrition_disclaimer",
+	food_information_disclaimer = "food_information_disclaimer",
 	nutrition_calories = "nutrition_calories",
 	nutrition_protein = "nutrition_protein",
 	nutrition_fat = "nutrition_fat",
@@ -275,7 +275,6 @@ export enum TranslationKeys {
 	course_timetable = "course_timetable",
 	eating_habits = "eating_habits",
 	markings = "markings",
-	markings_disclaimer = "markings_disclaimer",
 	forecast = "forecast",
 	utilization = "utilization",
 	opens_at = "opens_at",
@@ -1769,15 +1768,15 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Beslenme',
 		[LanguageKeys.zh_CN]: '营养'
 	},
-	nutrition_disclaimer: {
-		[LanguageKeys.de_DE]: 'Bei der Angabe von der Nährwerte handelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten. Weitere Informationen zu den Nährwerten und der Berechnung können hier entnommen werden:',
-		[LanguageKeys.en_US]: 'The nutritional information provided is an average value per serving. Subject to change. Further information on the nutritional values and calculation can be found here:',
-		[LanguageKeys.ar_SA]: 'المعلومات الغذائية المقدمة هي قيمة متوسطة لكل وجبة. عرضة للتغيير. يمكن العثور على مزيد من المعلومات حول القيم الغذائية والحساب هنا:',
-		[LanguageKeys.es_ES]: 'La información nutricional proporcionada es un valor promedio por porción. Sujeto a cambios. Puede encontrar más información sobre los valores nutricionales y el cálculo aquí:',
-		[LanguageKeys.fr_FR]: 'Les informations nutritionnelles fournies sont une valeur moyenne par portion. Sujet à changement. De plus amples informations sur les valeurs nutritionnelles et le calcul peuvent être trouvées ici :',
-		[LanguageKeys.ru_RU]: 'Предоставленная информация о питании является средним значением на порцию. Может изменяться. Дополнительную информацию о питательных ценностях и расчетах можно найти здесь:',
-		[LanguageKeys.tr_TR]: 'Verilen beslenme bilgisi, porsiyon başına ortalama bir değerdir. Değişikliğe tabidir. Besin değerleri ve hesaplama hakkında daha fazla bilgi burada bulunabilir:',
-		[LanguageKeys.zh_CN]: '提供的营养信息是每份的平均值。如有更改，恕不另行通知。有关营养价值和计算的更多信息，请参见：'
+	food_information_disclaimer: {
+		[LanguageKeys.de_DE]: 'Die Angaben zu den medizinischen und gesundheitsbezogenen Daten basieren auf den Informationen, die uns zur Verfügung stehen. Die Kennzeichnungen können von den tatsächlichen Inhaltsstoffen abweichen. Bei der Angabe der Nährwerte handelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten. Weitere Informationen zu den Nährwerten und der Berechnung können hier entnommen werden:',
+		[LanguageKeys.en_US]: 'The information on medical and health-related data is based on the information available to us. The labels may differ from the actual ingredients. The nutritional values are average values per portion. Subject to change. Further information on the nutritional values and the calculation can be found here:',
+		[LanguageKeys.ar_SA]: 'تعتمد المعلومات حول البيانات الطبية والصحية على المعلومات المتاحة لدينا. قد تختلف التسميات عن المكونات الفعلية. القيم الغذائية هي قيم متوسطة لكل وجبة. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول القيم الغذائية والحساب هنا:',
+		[LanguageKeys.es_ES]: 'La información sobre datos médicos y relacionados con la salud se basa en la información disponible para nosotros. Las etiquetas pueden diferir de los ingredientes reales. Los valores nutricionales son valores promedio por porción. Sujeto a cambios. Puede encontrar más información sobre los valores nutricionales y el cálculo aquí:',
+		[LanguageKeys.fr_FR]: 'Les informations sur les données médicales et liées à la santé sont basées sur les informations dont nous disposons. Les étiquettes peuvent différer des ingrédients réels. Les valeurs nutritionnelles sont des valeurs moyennes par portion. Sous réserve de modifications. Vous trouverez plus d\'informations sur les valeurs nutritionnelles et le calcul ici:',
+		[LanguageKeys.ru_RU]: 'Информация о медицинских и здоровьесберегающих данных основана на имеющейся у нас информации. Метки могут отличаться от фактических ингредиентов. Пищевая ценность является средним значением на порцию. Подлежит изменению. Дополнительную информацию о пищевой ценности и расчете можно найти здесь:',
+		[LanguageKeys.tr_TR]: 'Tıbbi ve sağlıkla ilgili veriler hakkındaki bilgiler, bize sunulan bilgilere dayanmaktadır. Etiketler gerçek içeriklerden farklı olabilir. Besin değerleri porsiyon başına ortalama değerlerdir. Değişiklik yapılabilir. Besin değerleri ve hesaplama hakkında daha fazla bilgi burada bulunabilir:',
+		[LanguageKeys.zh_CN]: '关于医疗和与健康相关的数据的信息基于我们掌握的信息。标签可能与实际成分不同。营养价值是每份的平均值。如有更改。有关营养价值和计算的更多信息，请参见此处：'
 	},
 	nutrition_calories: {
 		[LanguageKeys.de_DE]: 'Kalorien',
@@ -2078,16 +2077,6 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Метки',
 		[LanguageKeys.tr_TR]: 'Etiketler',
 		[LanguageKeys.zh_CN]: '标签'
-	},
-	markings_disclaimer: {
-		[LanguageKeys.de_DE]: 'Die Kennzeichnungen basieren auf den Informationen, die uns zur Verfügung stehen. Sie können von den tatsächlichen Inhaltsstoffen abweichen.',
-		[LanguageKeys.en_US]: 'The labels are based on the information available to us. They may differ from the actual ingredients.',
-		[LanguageKeys.ar_SA]: 'تعتمد العلامات على المعلومات المتاحة لدينا. قد تختلف عن المكونات الفعلية.',
-		[LanguageKeys.es_ES]: 'Las etiquetas se basan en la información disponible para nosotros. Pueden diferir de los ingredientes reales.',
-		[LanguageKeys.fr_FR]: 'Les étiquettes sont basées sur les informations disponibles. Elles peuvent différer des ingrédients réels.',
-		[LanguageKeys.ru_RU]: 'Метки основаны на имеющейся у нас информации. Они могут отличаться от фактических ингредиентов.',
-		[LanguageKeys.tr_TR]: 'Etiketler, elimizdeki bilgilere dayanmaktadır. Gerçek bileşenlerden farklı olabilirler.',
-		[LanguageKeys.zh_CN]: '这些标签基于我们掌握的信息。它们可能与实际成分有所不同。'
 	},
 	forecast: {
 		[LanguageKeys.de_DE]: 'Vorhersage',

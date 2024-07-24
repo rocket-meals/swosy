@@ -477,42 +477,8 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	)
 }
 
-const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
-	const isDebug = useIsDebug()
-
-	const markingIds: string[] = [];
-	let foodOfferMarkings = foodOfferData?.markings || [];
-	foodOfferMarkings.forEach((marking) => {
-		markingIds.push(marking.markings_id);
-	});
-
-	const translation_markings_disclaimer = useTranslation(TranslationKeys.markings_disclaimer)
-
-	let debugMarkings = undefined
-	if(isDebug){
-		debugMarkings = <View>
-			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
-		</View>
-	}
-
-	return(
-		<>
-			<MarkingListSelective markingIds={markingIds}/>
-			<Text italic={true}>{translation_markings_disclaimer}</Text>
-			{debugMarkings}
-		</>
-	)
-}
-
-const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
-	const nutritionColumns = useBreakPointValue<number>({
-		sm: 2,
-		md: 2,
-		lg: 3,
-		xl: 3,
-	})
-
-	const translation_disclaimer = useTranslation(TranslationKeys.nutrition_disclaimer);
+export const FoodInformationDisclaimer = () => {
+	const translation_disclaimer = useTranslation(TranslationKeys.food_information_disclaimer);
 
 	const foodsAreaColor = useFoodsAreaColor()
 
@@ -533,6 +499,48 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	}
 
 	return(
+		<View>
+			<Text italic={true}>{translation_disclaimer}</Text>
+			{responsibleAdditionElement}
+		</View>
+	)
+}
+
+const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
+	const isDebug = useIsDebug()
+
+	const markingIds: string[] = [];
+	let foodOfferMarkings = foodOfferData?.markings || [];
+	foodOfferMarkings.forEach((marking) => {
+		markingIds.push(marking.markings_id);
+	});
+
+	let debugMarkings = undefined
+	if(isDebug){
+		debugMarkings = <View>
+			<Text>{JSON.stringify(foodOfferData?.markings, null, 2)}</Text>
+		</View>
+	}
+
+	return(
+		<>
+			<MarkingListSelective markingIds={markingIds}/>
+			<FoodInformationDisclaimer />
+			{debugMarkings}
+		</>
+	)
+}
+
+
+const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
+	const nutritionColumns = useBreakPointValue<number>({
+		sm: 2,
+		md: 2,
+		lg: 3,
+		xl: 3,
+	})
+
+	return(
 		<>
 			<View style={{ justifyContent: 'space-between' }}>
 				<View>
@@ -549,10 +557,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 					/>
 				</View>
 			</View>
-			<View>
-				<ThemedMarkdown buttonAndLinkColor={foodsAreaColor} markdown={translation_disclaimer} />
-				{responsibleAdditionElement}
-			</View>
+			<FoodInformationDisclaimer />
 		</>
 	)
 }
