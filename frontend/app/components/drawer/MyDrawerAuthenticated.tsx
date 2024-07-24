@@ -13,7 +13,7 @@ import {
 	useIsFoodsEnabled,
 	useIsHousingEnabled,
 	useIsMapEnabled,
-	useIsNewsEnabled
+	useIsNewsEnabled, useNewsAreaColor
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
@@ -71,6 +71,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	}
 
 	const foodsAreaColor = useFoodsAreaColor();
+	const newsAreaColor = useNewsAreaColor();
 
 
 	return (
@@ -150,6 +151,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'news/index',
+				color: newsAreaColor,
 				label: translation_news,
 				title: translation_news,
 				icon: IconNames.news_icon,
