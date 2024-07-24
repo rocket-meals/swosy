@@ -1,13 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {MyScrollView} from '@/components/scrollview/MyScrollView';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {Heading, Text, Icon, IconFamily, IconParseDelimeter, View} from "@/components/Themed";
-import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
+import {Heading, View} from "@/components/Themed";
 import DirectusImage from "@/components/project/DirectusImage";
 import {RectangleWithLayoutCharactersWide} from "@/components/shapes/Rectangle";
 
 export default function HomeScreen() {
-
 	let asset_large_example_image = "d44c11a0-2dd0-46a1-838d-55c85f6bc64a";
 
 	return (

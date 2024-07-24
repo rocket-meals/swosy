@@ -65,6 +65,9 @@ export default function CourseTimetableScreen() {
 						console.log(usedEvent)
 						// update the event in the timetableEvents with the id
 						timetableEvents[usedEvent.id] = usedEvent;
+
+						//@NilsBaumgartner: why is this a function instead of the value?
+						//@ts-ignore
 						setTimetableEvents((usedCourseTimetable) => {
 							return timetableEvents
 						})
@@ -160,66 +163,46 @@ export default function CourseTimetableScreen() {
 		setTimetableEvents(newEvents)
 	}
 
-	function renderImportAction() {
-		const title_import = translation_import
+	const coursesFound = Object.keys(timetableEvents).length > 0;
 
-		if (hasImportProviders) {
-			return (
-				<View style={{paddingBottom: 10, paddingRight: 10}}>
-					<MyButton leftIconColoredBox={true}
-						useOnlyNecessarySpace={true}
-						leftIcon={IconNames.calendar_import_icon}
-						accessibilityLabel={title_import}
-						text={title_import}
-						onPress={() => {
-							setModalConfig({
-								label: title_import,
-								accessibilityLabel: title_import,
-								key: 'import',
-								title: title_import,
-								items: importProviders
-							})
-						}}
-					/>
-				</View>
-			)
-		} else {
-			return null;
-		}
-	}
-
-	function renderActions() {
-		return (
+	return (
+		<MySafeAreaView>
 			<View style={{flexDirection: 'row', marginTop: 10, marginHorizontal: 10, flexWrap: 'wrap'}}>
-				{renderImportAction()}
+				{hasImportProviders && (
+					<View style={{paddingBottom: 10, paddingRight: 10}}>
+						<MyButton leftIconColoredBox={true}
+								  useOnlyNecessarySpace={true}
+								  leftIcon={IconNames.calendar_import_icon}
+								  accessibilityLabel={translation_import}
+								  text={translation_import}
+								  onPress={() => {
+									  setModalConfig({
+										  label: translation_import,
+										  accessibilityLabel: translation_import,
+										  key: 'import',
+										  title: translation_import,
+										  items: importProviders
+									  })
+								  }}
+						/>
+					</View>
+				)}
+
+
 				<View style={{paddingBottom: 10}}>
 					<MyButton leftIconColoredBox={true}
-						useOnlyNecessarySpace={true}
-						leftIcon={IconNames.course_timetable_create_icon}
-						accessibilityLabel={translationCreateEvent}
-						onPress={() => {
-							handlePressCreateEvent()
-						}}
-						text={translationCreateEvent}
+							  useOnlyNecessarySpace={true}
+							  leftIcon={IconNames.course_timetable_create_icon}
+							  accessibilityLabel={translationCreateEvent}
+							  onPress={() => {
+								  handlePressCreateEvent()
+							  }}
+							  text={translationCreateEvent}
 					/>
 				</View>
 			</View>
-		)
-	}
 
-	function renderContent() {
-		const coursesFound = Object.keys(timetableEvents).length > 0;
-		if (!coursesFound) {
-			return (
-				<MyScrollView style={{
-					paddingHorizontal: 10
-				}}
-				>
-					<NoCourseTimetableFound />
-				</MyScrollView>
-			)
-		} else {
-			return (
+			{coursesFound ? (
 				<View style={{width: '100%', flex: 1}}>
 					<CourseTimetableSchedule
 						key={amountOfDaysToShowOnScreen+'-'+firstDayOfWeek+'-'+startTime+'-'+endTime}
@@ -236,14 +219,14 @@ export default function CourseTimetableScreen() {
 						toHour={parseInt(endTime)}
 					/>
 				</View>
-			)
-		}
-	}
-
-	return (
-		<MySafeAreaView>
-			{renderActions()}
-			{renderContent()}
+			) : (
+				<MyScrollView style={{
+					paddingHorizontal: 10
+				}}
+				>
+					<NoCourseTimetableFound />
+				</MyScrollView>
+			)}
 		</MySafeAreaView>
 	)
 }

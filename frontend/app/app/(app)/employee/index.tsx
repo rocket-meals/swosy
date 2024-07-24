@@ -7,7 +7,6 @@ import {IconNames} from "@/constants/IconNames";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 
 export default function EmployeeScreen() {
-
 	return (
 		<MySafeAreaView>
 			<MyScrollView>
@@ -18,5 +17,4 @@ export default function EmployeeScreen() {
 			</MyScrollView>
 		</MySafeAreaView>
 	)
-
 }

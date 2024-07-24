@@ -8,7 +8,9 @@ export default function BuildingsDetails() {
 
 	return (
 		<MySafeAreaView>
-			<BuildingDetails buildingId={buildings_id}/>
+			{buildings_id && (
+				<BuildingDetails buildingId={buildings_id}/>
+			)}
 		</MySafeAreaView>
 	)
 }

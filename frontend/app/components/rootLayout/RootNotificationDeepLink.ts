@@ -1,10 +1,4 @@
-import { Slot} from 'expo-router';
 import React, {useEffect} from 'react';
-
-
-
-
-
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import {PlatformHelper} from '@/helper/PlatformHelper';

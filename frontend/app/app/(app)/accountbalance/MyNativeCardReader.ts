@@ -11,14 +11,12 @@ let CardReader: any
 
 if (!isExpoGo) {
 	// Expo Go does not have this module boundled by default, therefore we need to lazy load it to prevent errors
-	// @ts-ignore
 	import("react-native-nfc-manager").then(nfcManager => {
 		NfcManager = nfcManager.default;
 		NfcTech = nfcManager.NfcTech;
 	});
 
 	// Expo Go does not have this module boundled by default, therefore we need to lazy load it to prevent errors
-	// @ts-ignore
 	import("react-native-nfc-manager-sw-os").then(nfcManagerSwOs => {
 		CardReader = nfcManagerSwOs.CardReader;
 	});
@@ -27,14 +25,12 @@ if (!isExpoGo) {
 export default class MyNativeCardReader implements MyCardReaderInterface {
 	async isNfcEnabled(): Promise<boolean> {
 		if (isExpoGo || !NfcManager) return false;
-		let isEnabled = await NfcManager.isEnabled();
-		return isEnabled;
+		return await NfcManager.isEnabled();
 	}
 
-	async isNfcSuppported(): Promise<boolean> {
+	async isNfcSupported(): Promise<boolean> {
 		if (isExpoGo || !NfcManager) return false;
-		let isSupported = await NfcManager.isSupported();
-		return isSupported;
+		return await NfcManager.isSupported();
 	}
 
 	async readCard(callBack: (balance: number | undefined | null) => Promise<void>, accountBalance: number | undefined | null, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
@@ -42,9 +38,11 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 			console.error("NFC operations are not supported in this environment.");
 			return;
 		}
+
 		if(PlatformHelper.isAndroid()){ // only show instruction on android since ios has a built in instruction
 			showInstruction();
 		}
+
 		let reader = new CardReader(NfcManager, NfcTech, Platform);
 		try{
 			console.log("DEBUG: start reading card");
