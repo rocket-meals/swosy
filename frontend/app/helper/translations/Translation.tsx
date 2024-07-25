@@ -292,6 +292,7 @@ export enum TranslationKeys {
 	sign_in_with = "sign_in_with",
 	home = "home",
 	canteens = "canteens",
+	campus = "campus",
 	buildings = "buildings",
 	housing = "housing",
 	settings = "settings",
@@ -2257,6 +2258,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Здания',
 		[LanguageKeys.tr_TR]: 'Binalar',
 		[LanguageKeys.zh_CN]: '建筑物'
+	},
+	campus: {
+		[LanguageKeys.de_DE]: "Campus",
+		[LanguageKeys.en_US]: "Campus",
+		[LanguageKeys.ar_SA]: "حرم الجامعة",
+		[LanguageKeys.es_ES]: "Instalaciones",
+		[LanguageKeys.fr_FR]: "Campus",
+		[LanguageKeys.ru_RU]: "Кампус",
+		[LanguageKeys.tr_TR]: "Yerleşke",
+		[LanguageKeys.zh_CN]: "校园"
 	},
 	housing: {
 		[LanguageKeys.de_DE]: 'Wohnen',

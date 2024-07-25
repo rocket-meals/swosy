@@ -60,6 +60,11 @@ export function useFoodsAreaColor(): string | undefined {
 	return AppAreaColors.FOODS_COLOR || projectColor;
 }
 
+export function useCampusAreaColor(): string | undefined {
+	const projectColor = useProjectColor();
+	return AppAreaColors.CAMPUS_COLOR || projectColor;
+}
+
 export function useNewsAreaColor(): string | undefined {
 	const projectColor = useProjectColor();
 	return AppAreaColors.NEWS_COLOR || projectColor;

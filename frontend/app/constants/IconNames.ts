@@ -17,7 +17,7 @@ export class IconNames {
     static foodoffers_icon = 'silverware-variant'
     static foodweekplan_icon = "calendar"
     static map_icon = 'map'
-    static building_icon = 'home-city'
+    static campus_icon = IconFamily.FontAwesome5+IconParseDelimeter+"university"
     static apartments_icon = 'home-account'
     static news_icon = 'newspaper'
     static course_timetable_icon = 'calendar-clock'

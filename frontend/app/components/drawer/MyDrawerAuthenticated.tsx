@@ -6,6 +6,7 @@ import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHea
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
+	useCampusAreaColor,
 	useFoodsAreaColor, useHousingAreaColor,
 	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled,
@@ -44,7 +45,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_settings = useTranslation(TranslationKeys.settings);
 	const translation_canteens = useTranslation(TranslationKeys.canteens);
-	const translation_buildings = useTranslation(TranslationKeys.buildings);
+	const translation_campus = useTranslation(TranslationKeys.campus);
 	const translation_housing = useTranslation(TranslationKeys.housing);
 	const translation_news = useTranslation(TranslationKeys.news);
 	const translation_map = useTranslation(TranslationKeys.map);
@@ -73,6 +74,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const foodsAreaColor = useFoodsAreaColor();
 	const newsAreaColor = useNewsAreaColor();
 	const housingAreaColor = useHousingAreaColor()
+	const campusAreaColor = useCampusAreaColor()
 
 
 	return (
@@ -119,10 +121,11 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: isAccountBalanceEnabled || develop
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'buildings/index',
-				label: translation_buildings,
-				title: translation_buildings,
-				icon: IconNames.building_icon,
+				routeName: 'campus/index',
+				color: campusAreaColor,
+				label: translation_campus,
+				title: translation_campus,
+				icon: IconNames.campus_icon,
 				getHeader: getMyScreenHeaderBuildings(),
 				visibleInDrawer: isBuildingsEnabled || develop
 			})}

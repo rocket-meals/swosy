@@ -15,13 +15,16 @@ import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper
 import {View} from "@/components/Themed";
 import {MyButtonNavigationToLocation} from "@/components/buttons/MyButtonNavigationToLocation";
 import NotFoundScreen from "@/app/+not-found";
+import {useCampusAreaColor} from "@/states/SynchedAppSettings";
 
 export default function BuildingDetails({ buildingId }: { buildingId: string }) {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 	let building = buildingsDict?.[buildingId];
 
+	const campusAreaColor = useCampusAreaColor();
+
 	if(building && typeof building === 'object'){
-		return <BuildingDetailsWithObject building={building} />
+		return <BuildingDetailsWithObject color={campusAreaColor} building={building} />
 	} else {
 		return <NotFoundScreen />
 	}
