@@ -15,6 +15,7 @@ export type MyLottieAnimationProps = {
     url?: string,
     source?: any,
     colorReplaceMap?: {[key: string]: string},
+	projectColor?: string,
     loop?: boolean,
 	speed?: number,
     autoPlay?: boolean,

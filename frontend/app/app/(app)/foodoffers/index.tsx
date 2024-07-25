@@ -403,7 +403,7 @@ export default function FoodOfferScreen() {
 		return (
 			<MySafeAreaView>
 				<MyScrollView>
-					<ErrorGeneric />
+					<ErrorGeneric color={foodsAreaColor} />
 				</MyScrollView>
 			</MySafeAreaView>
 		);
