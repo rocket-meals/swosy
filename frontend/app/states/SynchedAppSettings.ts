@@ -65,6 +65,11 @@ export function useNewsAreaColor(): string | undefined {
 	return AppAreaColors.NEWS_COLOR || projectColor;
 }
 
+export function useHousingAreaColor(): string | undefined {
+	const projectColor = useProjectColor();
+	return AppAreaColors.HOUSING_COLOR || projectColor;
+}
+
 export function useIsHousingEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
 	return appSettings?.housing_enabled || false;

@@ -6,7 +6,7 @@ import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHea
 import {IconNames} from '@/constants/IconNames';
 import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
-	useFoodsAreaColor,
+	useFoodsAreaColor, useHousingAreaColor,
 	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled,
 	useIsCourseTimetableEnabled,
@@ -72,6 +72,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 
 	const foodsAreaColor = useFoodsAreaColor();
 	const newsAreaColor = useNewsAreaColor();
+	const housingAreaColor = useHousingAreaColor()
 
 
 	return (
@@ -135,6 +136,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'housing/index',
+				color: housingAreaColor,
 				label: translation_housing,
 				title: translation_housing,
 				icon: IconNames.apartments_icon,
@@ -143,6 +145,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'housing/apartment/index',
+				color: housingAreaColor,
 				title: "Apartment Details",
 				label: "Apartment Details",
 				showBackButton: true,

@@ -121,7 +121,11 @@ export const MyDrawerCustomItemCenter = (customItem: MyDrawerCustomItemProps) =>
 	const drawer_item_accessibility_label = translation_navigate_to + ' ' + customItem.label
 	const key = customItem?.label
 	const isFocused = customItem.isFocused;
-	const backgroundColor = isFocused ? drawerActiveBackgroundColor : (viewBackgroundColor || drawerActiveBackgroundColor)
+
+	const inactiveBackgroundColor = (viewBackgroundColor || drawerActiveBackgroundColor)
+	const backgroundColor = isFocused ? drawerActiveBackgroundColor : inactiveBackgroundColor
+	const backgroundContrastColor = useMyContrastColor(backgroundColor);
+	const inactiveTextColor = useMyContrastColor(inactiveBackgroundColor)
 
 	let label = getMyDrawerItemLabel(customItem.label, backgroundColor);
 
@@ -149,20 +153,24 @@ export const MyDrawerCustomItemCenter = (customItem: MyDrawerCustomItemProps) =>
 		}
 	}
 
-	let renderIcon: (props: {focused: boolean, size: number, color: string}) => React.ReactNode = getMyDrawerItemIcon(customItem.icon, backgroundColor)
+	let renderIcon: (props: {focused: boolean, size: number, color: string}) => React.ReactNode = getMyDrawerItemIcon(customItem.icon)
 	if (!customItem.icon && !!customItem.drawerIcon) {
 		renderIcon = customItem.drawerIcon
 	}
 
 	return (
 		<DrawerItem
+			activeTintColor={backgroundContrastColor}
+			activeBackgroundColor={backgroundColor}
+			inactiveBackgroundColor={inactiveBackgroundColor}
+			inactiveTintColor={inactiveTextColor}
 			to={to}
 			accessibilityLabel={drawer_item_accessibility_label}
 			label={label}
 			key={key}
 			focused={isFocused}
 			onPress={onPress}
-			style={{backgroundColor: backgroundColor}}
+			//style={{backgroundColor: backgroundColor}}
 			icon={renderIcon}
 		/>
 	);
