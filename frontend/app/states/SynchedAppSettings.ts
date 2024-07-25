@@ -87,7 +87,7 @@ export function useIsMapEnabled(): boolean {
 
 export function useIsBuildingsEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
-	return appSettings?.buildings_enabled || false;
+	return appSettings?.campus_enabled || false;
 }
 
 export function useIsNewsEnabled(): boolean {
@@ -118,7 +118,7 @@ function getDemoAppSettings(): AppSettings {
 		api_version: '',
 		balance_enabled: true,
 		balance_settings: '',
-		buildings_enabled: true,
+		campus_enabled: true,
 		buildings_parsing_enabled: false,
 		buildings_parsing_last_date: '',
 		buildings_parsing_status: '',
