@@ -143,7 +143,7 @@ export const MyDrawer = (props: MyDrawerProps) => {
 	const drawerWidth = useDrawerWidth(); // Calculate the dynamic width of the drawer.
 	const [drawerPosition, setDrawerPosition] = useDrawerPosition(); // Get and set the current drawer position.
 
-	const drawerTypeDefaultIOS = 'slide'; // Default drawer type for iOS devices.
+	const drawerTypeDefaultIOS = 'front'; // Default drawer type for iOS devices is 'slide' but we think thats ugly. We will use front
 	const drawerTypeDefaultAndroid = 'front'; // Default drawer type for Android devices.
 	const drawerTypeDefaultWeb = 'front'; // Default drawer type for web browsers.
 
