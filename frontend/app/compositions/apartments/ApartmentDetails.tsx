@@ -22,6 +22,7 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {DisabledTouchableOpacity} from "@/components/buttons/DisabledTouchableOpacity";
 import {useProjectName} from "@/states/ProjectInfo";
 import {useIsDemo} from "@/states/SynchedDemo";
+import {useHousingAreaColor} from "@/states/SynchedAppSettings";
 
 export default function ApartmentDetails({ apartmentId }: { apartmentId: string }) {
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -248,9 +249,12 @@ function ApartmentDetailsWithObject({ apartment, building }: { apartment: Apartm
 
 	const translation_washing_machines = useTranslation(TranslationKeys.washing_machines)
 
+	const housingAreaColor = useHousingAreaColor();
+
 	let additionalTabs: DetailsComponentTabProps[] = []
 	let washingmachinesTab: DetailsComponentTabProps = {
 		iconName: IconNames.washing_machine_icon,
+		color: housingAreaColor,
 		accessibilityLabel: translation_washing_machines,
 		text: translation_washing_machines,
 		content: <ApartmentDetailsWashingMachines apartment={apartment} />
@@ -259,5 +263,5 @@ function ApartmentDetailsWithObject({ apartment, building }: { apartment: Apartm
 		additionalTabs.push(washingmachinesTab)
 	}
 
-	return <BuildingDetailsWithObject building={building} additionalTabs={additionalTabs}  />
+	return <BuildingDetailsWithObject building={building} additionalTabs={additionalTabs} color={housingAreaColor}  />
 }
