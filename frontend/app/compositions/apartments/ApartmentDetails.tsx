@@ -44,6 +44,8 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 
 	const deviceCanBeNotified = !PlatformHelper.isWeb();
 
+	const housingAreaColor = useHousingAreaColor();
+
 	async function loadNotification(){
 		let notification = null;
 		try{
@@ -104,7 +106,7 @@ function Washingmachine({ washingmachine, index }: { washingmachine: Washingmach
 				secondsFromNow: secondsFromNow
 			}
 
-			renderedNotifyButton = <MyButtonNotify tooltip={tooltip} accessibilityLabel={tooltip} active={notificationActive} onPress={() => {
+			renderedNotifyButton = <MyButtonNotify color={housingAreaColor} tooltip={tooltip} accessibilityLabel={tooltip} active={notificationActive} onPress={() => {
 				setError(null);
 				try{
 					if(notificationActive){
