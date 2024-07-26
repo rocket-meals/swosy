@@ -43,7 +43,8 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const lighterOrDarkerBackgroundColor = useLighterOrDarkerColorForSelection(viewBackgroundColor)
 	const lighterOrDarkerTextColor = useMyContrastColor(lighterOrDarkerBackgroundColor)
 	const projectColor = useProjectColor()
-	const projectColorContrast = useMyContrastColor(projectColor)
+	const activeColor = props.color || projectColor
+	const activeColorContrast = useMyContrastColor(activeColor)
 	const isActive = props.active || false;
 
 	const [isHovered, setIsHovered] = useState(false);
@@ -93,8 +94,8 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		)
 	}
 
-	const usedViewBackgroundColor = isActive ? projectColor : viewBackgroundColor;
-	const usedTextColor = isActive ? projectColorContrast : textColor;
+	const usedViewBackgroundColor = isActive ? activeColor : viewBackgroundColor;
+	const usedTextColor = isActive ? activeColorContrast : textColor;
 
 
 
