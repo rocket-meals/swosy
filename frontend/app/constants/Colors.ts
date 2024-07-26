@@ -3,10 +3,10 @@ const tintColorDark = '#fff';
 
 export class AppAreaColors {
 	static DEFAULT_PROJECT_COLOR: string = "#D14610";
-	static FOODS_COLOR: string | undefined = "#FF0000"; // #cb2f1d hannover
-	static CAMPUS_COLOR: string | undefined = "#BB11AA";
-	static HOUSING_COLOR: string | undefined = "#FF66AA";
-	static NEWS_COLOR: string | undefined = "#FF6600";
+	static FOODS_COLOR: string | undefined = "#DD0000";
+	static CAMPUS_COLOR: string | undefined = "#00DD00";
+	static HOUSING_COLOR: string | undefined = "#0000DD";
+	static NEWS_COLOR: string | undefined = "#DDDD00";
 }
 
 export default {
