@@ -23,6 +23,15 @@ export class LeafletMapLayers {
 		attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
 	};
 
+static StamenToner: MapLayer = {
+    baseLayerName: "Stamen Toner",
+    baseLayerIsChecked: true,
+    layerType: "TileLayer",
+    baseLayer: true,
+    url: "https://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png",
+    attribution: "&copy; <a href='http://maps.stamen.com/'>Stamen Design</a>, <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>, &copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
+};
+
 //	static DarkMatter: MapLayer = {
 //		baseLayerName: "Dark Matter",
 //		baseLayerIsChecked: false,
