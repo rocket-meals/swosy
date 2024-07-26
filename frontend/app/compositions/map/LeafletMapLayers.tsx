@@ -28,7 +28,7 @@ static StamenToner: MapLayer = {
     baseLayerIsChecked: true,
     layerType: "TileLayer",
     baseLayer: true,
-    url: "https://tiles-eu.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png"
+    url: "https://tiles-eu.stadiamaps.com/tiles/stamen_toner/{z}/{x}/{y}{r}.png",
     attribution: "&copy; <a href='http://maps.stamen.com/'>Stamen Design</a>, <a href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>, &copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
 };
 
