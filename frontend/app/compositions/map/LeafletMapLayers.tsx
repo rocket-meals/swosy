@@ -19,7 +19,7 @@ export class LeafletMapLayers {
 		baseLayerIsChecked: true,
 		layerType: "TileLayer",
 		baseLayer: true,
-		url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+		url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?api_key=e56b8d08-10a4-41d1-a103-30744b6ccf06",
 		attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
 	};
 
