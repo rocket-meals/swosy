@@ -115,6 +115,10 @@ export enum TranslationKeys {
 	CHECK_SERVER_STATUS = 'CHECK_SERVER_STATUS',
 	SERVER_IS_OFFLINE = 'SERVER_IS_OFFLINE',
 	CONTINUE_WITH_CACHE = 'CONTINUE_WITH_CACHE',
+	developer = "developer",
+	developer_homepage = "developer_homepage",
+	software_homepage = "software_homepage",
+	software_name = "software_name",
 	profile = "profile",
 	nickname = "nickname",
 	account = "account",
@@ -421,6 +425,46 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Продолжить с кэшем',
 		[LanguageKeys.tr_TR]: 'Önbellekle devam et',
 		[LanguageKeys.zh_CN]: '继续使用缓存'
+	},
+	developer: {
+		[LanguageKeys.de_DE]: 'Entwickler',
+		[LanguageKeys.en_US]: 'Developer',
+		[LanguageKeys.ar_SA]: 'مطور',
+		[LanguageKeys.es_ES]: 'Desarrollador',
+		[LanguageKeys.fr_FR]: 'Développeur',
+		[LanguageKeys.ru_RU]: 'Разработчик',
+		[LanguageKeys.tr_TR]: 'Geliştirici',
+		[LanguageKeys.zh_CN]: '开发者'
+	},
+	developer_homepage: {
+		[LanguageKeys.de_DE]: 'Entwickler-Homepage',
+		[LanguageKeys.en_US]: 'Developer Homepage',
+		[LanguageKeys.ar_SA]: 'الصفحة الرئيسية للمطور',
+		[LanguageKeys.es_ES]: 'Página de inicio del desarrollador',
+		[LanguageKeys.fr_FR]: "Page d'accueil du développeur",
+		[LanguageKeys.ru_RU]: 'Домашняя страница разработчика',
+		[LanguageKeys.tr_TR]: 'Geliştirici Ana Sayfası',
+		[LanguageKeys.zh_CN]: '开发者主页'
+	},
+	software_homepage: {
+		[LanguageKeys.de_DE]: 'Software-Homepage',
+		[LanguageKeys.en_US]: 'Software Homepage',
+		[LanguageKeys.ar_SA]: 'الصفحة الرئيسية للبرنامج',
+		[LanguageKeys.es_ES]: 'Página de inicio del software',
+		[LanguageKeys.fr_FR]: "Page d'accueil du logiciel",
+		[LanguageKeys.ru_RU]: 'Домашняя страница программного обеспечения',
+		[LanguageKeys.tr_TR]: 'Yazılım Ana Sayfası',
+		[LanguageKeys.zh_CN]: '软件主页'
+	},
+	software_name: {
+		[LanguageKeys.de_DE]: 'Software-Name',
+		[LanguageKeys.en_US]: 'Software Name',
+		[LanguageKeys.ar_SA]: 'اسم البرنامج',
+		[LanguageKeys.es_ES]: 'Nombre del software',
+		[LanguageKeys.fr_FR]: 'Nom du logiciel',
+		[LanguageKeys.ru_RU]: 'Название программы',
+		[LanguageKeys.tr_TR]: 'Yazılım Adı',
+		[LanguageKeys.zh_CN]: '软件名称'
 	},
 	profile: {
 		[LanguageKeys.de_DE]: 'Profil',
