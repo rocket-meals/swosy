@@ -2480,14 +2480,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '一周的第一天'
 	},
 	first_day_of_week_system: {
-		[LanguageKeys.de_DE]: 'Erster Tag der Woche (System)',
-		[LanguageKeys.en_US]: 'First Day of Week (System)',
-		[LanguageKeys.ar_SA]: 'أول يوم في الأسبوع (النظام)',
-		[LanguageKeys.es_ES]: 'Primer día de la semana (sistema)',
-		[LanguageKeys.fr_FR]: 'Premier jour de la semaine (système)',
-		[LanguageKeys.ru_RU]: 'Первый день недели (система)',
-		[LanguageKeys.tr_TR]: 'Haftanın İlk Günü (Sistem)',
-		[LanguageKeys.zh_CN]: '一周的第一天（系统）'
+		[LanguageKeys.de_DE]: 'System',
+		[LanguageKeys.en_US]: 'System',
+		[LanguageKeys.ar_SA]: 'نظام',
+		[LanguageKeys.es_ES]: 'Sistema',
+		[LanguageKeys.fr_FR]: 'Système',
+		[LanguageKeys.ru_RU]: 'Система',
+		[LanguageKeys.tr_TR]: 'Sistem',
+		[LanguageKeys.zh_CN]: '系统'
 	},
 	color_scheme: {
 		[LanguageKeys.de_DE]: 'Farbschema',
