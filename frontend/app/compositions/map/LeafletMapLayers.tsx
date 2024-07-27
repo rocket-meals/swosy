@@ -23,6 +23,16 @@ export class LeafletMapLayers {
 		attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
 	};
 
+static OpenTopoMapMapnik: MapLayer = {
+		baseLayerName: "OpenTopoMap",
+		baseLayerIsChecked: true,
+		layerType: "TileLayer",
+		baseLayer: true,
+		url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+		attribution: "Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap (CC-BY-SA)",
+	};
+
+
 //	static DarkMatter: MapLayer = {
 //		baseLayerName: "Dark Matter",
 //		baseLayerIsChecked: false,
