@@ -54,7 +54,7 @@ export const MyLottieAnimation = ({
 	let usedColorReplaceMap = colorReplaceMap;
 
 	// Default to true if loop is not explicitly set.
-	const usedLoop = loop === undefined ? true : loop;
+	const usedLoop = loop === undefined ? false : loop; // Accessibility tells that animations should only play onces. for abother play the user should trigger it by touching it again.
 	// Default to true if autoPlay is not explicitly set.
 	let usedAutoPlay = props.autoPlay === undefined ? true : props.autoPlay;
 	usedAutoPlay = isPerformanceMode ? false : usedAutoPlay;
