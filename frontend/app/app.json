@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rocket Meals Demo",
     "slug": "rocket-meals-dev",
-    "version": "0.9.1",
+    "version": "20.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
