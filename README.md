@@ -1,4 +1,4 @@
-# rocket-meals
+# Rocket Meals
 
 [![Expo Update](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo.yml/badge.svg?branch=expo)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo.yml)
 
