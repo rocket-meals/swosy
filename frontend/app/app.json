@@ -76,7 +76,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.baumgartnersoftware.rocketmealsdev",
-      "versionCode": 2
+      "versionCode": 100
     },
     "web": {
       "bundler": "metro",
