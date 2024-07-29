@@ -30,12 +30,15 @@ const CollapsibleCard: FunctionComponent<{ titleSource: string, children: React.
 
 	let outerBorderColor = buttonAndLinkColor || projectColor;
 	const contrastOuterBorderColor = useMyContrastColor(outerBorderColor);
+	const textColorCollapsed = useTextContrastColor();
+	const textColorExpanded = contrastOuterBorderColor
+	const textColor = collapsed ? textColorCollapsed : textColorExpanded
 
 	return (
 		<View style={{marginVertical: 10, borderWidth: 1, borderColor: outerBorderColor, borderRadius: BORDER_RADIUS, overflow: "hidden"}}>
-			<MyButton backgroundColor={buttonAndLinkColor} leftIconColoredBox={true} leftIcon={iconLeft} isActive={!collapsed} onPress={toggleCollapse} accessibilityLabel={""} renderedText={
+			<MyButton backgroundColor={outerBorderColor} leftIconColoredBox={true} leftIcon={iconLeft} isActive={!collapsed} onPress={toggleCollapse} accessibilityLabel={""} renderedText={
 				<MyButtonCustomContentPadder>
-					<ThemedMarkdown buttonAndLinkColor={buttonAndLinkColor} markdown={titleSource} color={contrastOuterBorderColor} />
+					<ThemedMarkdown buttonAndLinkColor={outerBorderColor} markdown={titleSource} color={textColor} />
 				</MyButtonCustomContentPadder>
 			} />
 			{!collapsed && <View style={{padding: 10}}>{children}</View>}
