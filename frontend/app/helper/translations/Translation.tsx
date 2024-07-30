@@ -1814,14 +1814,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '营养'
 	},
 	food_information_disclaimer: {
-		[LanguageKeys.de_DE]: 'Die Angaben zu den medizinischen und gesundheitsbezogenen Daten basieren auf den Informationen, die uns zur Verfügung stehen. Die Kennzeichnungen können von den tatsächlichen Inhaltsstoffen abweichen. Bei der Angabe der Nährwerte handelt es sich um Durchschnittswerte pro Portion. Änderungen vorbehalten. Weitere Informationen zu den Nährwerten und der Berechnung können hier entnommen werden:',
-		[LanguageKeys.en_US]: 'The information on medical and health-related data is based on the information available to us. The labels may differ from the actual ingredients. The nutritional values are average values per portion. Subject to change. Further information on the nutritional values and the calculation can be found here:',
-		[LanguageKeys.ar_SA]: 'تعتمد المعلومات حول البيانات الطبية والصحية على المعلومات المتاحة لدينا. قد تختلف التسميات عن المكونات الفعلية. القيم الغذائية هي قيم متوسطة لكل وجبة. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول القيم الغذائية والحساب هنا:',
-		[LanguageKeys.es_ES]: 'La información sobre datos médicos y relacionados con la salud se basa en la información disponible para nosotros. Las etiquetas pueden diferir de los ingredientes reales. Los valores nutricionales son valores promedio por porción. Sujeto a cambios. Puede encontrar más información sobre los valores nutricionales y el cálculo aquí:',
-		[LanguageKeys.fr_FR]: 'Les informations sur les données médicales et liées à la santé sont basées sur les informations dont nous disposons. Les étiquettes peuvent différer des ingrédients réels. Les valeurs nutritionnelles sont des valeurs moyennes par portion. Sous réserve de modifications. Vous trouverez plus d\'informations sur les valeurs nutritionnelles et le calcul ici:',
-		[LanguageKeys.ru_RU]: 'Информация о медицинских и здоровьесберегающих данных основана на имеющейся у нас информации. Метки могут отличаться от фактических ингредиентов. Пищевая ценность является средним значением на порцию. Подлежит изменению. Дополнительную информацию о пищевой ценности и расчете можно найти здесь:',
-		[LanguageKeys.tr_TR]: 'Tıbbi ve sağlıkla ilgili veriler hakkındaki bilgiler, bize sunulan bilgilere dayanmaktadır. Etiketler gerçek içeriklerden farklı olabilir. Besin değerleri porsiyon başına ortalama değerlerdir. Değişiklik yapılabilir. Besin değerleri ve hesaplama hakkında daha fazla bilgi burada bulunabilir:',
-		[LanguageKeys.zh_CN]: '关于医疗和与健康相关的数据的信息基于我们掌握的信息。标签可能与实际成分不同。营养价值是每份的平均值。如有更改。有关营养价值和计算的更多信息，请参见此处：'
+		[LanguageKeys.de_DE]: 'Die Angaben zu den Daten basieren auf den Informationen, die uns zur Verfügung stehen und können von den tatsächlichen Werten abweichen. Änderungen vorbehalten. Weitere Informationen zu den Daten können hier entnommen werden:',
+		[LanguageKeys.en_US]: 'The data is based on the information available to us and may differ from the actual values. Subject to change. Further information on the data can be found here:',
+		[LanguageKeys.ar_SA]: 'تعتمد البيانات على المعلومات المتاحة لدينا وقد تختلف عن القيم الفعلية. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول البيانات هنا:',
+		[LanguageKeys.es_ES]: 'Los datos se basan en la información disponible para nosotros y pueden diferir de los valores reales. Sujeto a cambios. Puede encontrar más información sobre los datos aquí:',
+		[LanguageKeys.fr_FR]: 'Les données sont basées sur les informations dont nous disposons et peuvent différer des valeurs réelles. Sous réserve de modifications. Vous trouverez plus d\'informations sur les données ici:',
+		[LanguageKeys.ru_RU]: 'Данные основаны на информации, доступной нам, и могут отличаться от фактических значений. Подлежит изменению. Дополнительную информацию о данных можно найти здесь:',
+		[LanguageKeys.tr_TR]: 'Veriler, bize sunulan bilgilere dayanmaktadır ve gerçek değerlerden farklı olabilir. Değişikliklere tabidir. Verilerle ilgili daha fazla bilgi burada bulunabilir:',
+		[LanguageKeys.zh_CN]: '数据基于我们掌握的信息，可能与实际值有所不同。如有更改。有关数据的更多信息，请参见此处：'
 	},
 	nutrition_calories: {
 		[LanguageKeys.de_DE]: 'Kalorien',
