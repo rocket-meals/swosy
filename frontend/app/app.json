@@ -43,6 +43,7 @@
             "NSPrivacyCollectedDataTypeLinked": true,
             "NSPrivacyCollectedDataTypeTracking": false,
             "NSPrivacyCollectedDataTypePurposes": [
+              "NSPrivacyCollectedDataTypePurposeProductPersonalization",
               "NSPrivacyCollectedDataTypePurposeAppFunctionality"
             ]
           },
