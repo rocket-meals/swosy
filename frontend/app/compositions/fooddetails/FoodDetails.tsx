@@ -91,9 +91,9 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
 	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
-	let dislikesRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislike
-	let statusSet = dislikesRaw === true || dislikesRaw === false;
-	const likes = statusSet ? !dislikesRaw : undefined;
+	let dislikeRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislike
+	let statusSet = dislikeRaw === true || dislikeRaw === false;
+	const likes = statusSet ? !dislikeRaw : undefined;
 
 	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 

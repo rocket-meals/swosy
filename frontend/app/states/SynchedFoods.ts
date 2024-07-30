@@ -104,17 +104,17 @@ export function getDictFoodFeedbackLabelsIdToAmount(feedbacks: FoodsFeedbacks[] 
 		for (let feedback of feedbacks) {
 			for(let label of feedback.labels){
 				let feedbacksLabelsId = label.foods_feedbacks_labels_id
-				let dislikes: boolean | undefined | null = label.dislikes;
+				let dislike: boolean | undefined | null = label.dislike;
 				let counted = feedbacksLabelsIdsCounted[feedbacksLabelsId] || {
 					amount_likes: 0,
 					amount_dislikes: 0,
 				};
-				if(dislikes === true){
+				if(dislike === true){
 					counted.amount_dislikes++;
-				} else if(dislikes === false){
+				} else if(dislike === false){
 					counted.amount_likes++;
 				} else {
-					// skip if dislikes is undefined or null
+					// skip if dislike is undefined or null
 				}
 				feedbacksLabelsIdsCounted[feedbacksLabelsId] = counted;
 			}

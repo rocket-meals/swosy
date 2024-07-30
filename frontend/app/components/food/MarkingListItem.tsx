@@ -60,8 +60,8 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			if(removeMarking){
 				removeProfileMarking()
 			} else {
-				const dislikes = like === false;
-				setProfileMarking(dislikes)
+				const dislike = like === false;
+				setProfileMarking(dislike)
 			}
 		}
 

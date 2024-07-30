@@ -101,7 +101,7 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 				nextLabels.push({
 					foods_feedbacks_labels_id: newLabelId.foods_feedbacks_labels_id,
 					foods_feedbacks_id: existingFoodFeedback.id,
-					dislikes: newLabelId.dislikes,
+					dislike: newLabelId.dislike,
 					// @ts-ignore the id will be set by the server
 					id: undefined
 				})
