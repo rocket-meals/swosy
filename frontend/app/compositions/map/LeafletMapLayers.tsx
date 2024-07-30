@@ -23,14 +23,15 @@ export class LeafletMapLayers {
 		attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors",
 	};
 
-static OpenTopoMapMapnik: MapLayer = {
-		baseLayerName: "OpenTopoMap",
-		baseLayerIsChecked: true,
-		layerType: "TileLayer",
-		baseLayer: true,
-		url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-		attribution: "Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap (CC-BY-SA)",
-	};
+	// License is CC BY-SA 3.0, but the max zoom is not enough for our use case
+//static OpenTopoMapMapnik: MapLayer = {
+//		baseLayerName: "OpenTopoMap",
+//		baseLayerIsChecked: true,
+//		layerType: "TileLayer",
+//		baseLayer: true,
+//		url: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+//		attribution: "Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap (CC-BY-SA)",
+//	};
 
 
 //	static DarkMatter: MapLayer = {
