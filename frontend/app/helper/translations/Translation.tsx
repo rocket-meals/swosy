@@ -1224,14 +1224,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '请启用通知以使用此功能。'
 	},
 	notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified: {
-		[LanguageKeys.de_DE]: 'Bitte benachrichtige mich auf meinen Smartphones, wenn sie benachrichtigt werden dürfen.',
-		[LanguageKeys.en_US]: 'Please notify me on my smartphones if they allow to be notified.',
-		[LanguageKeys.ar_SA]: 'يرجى إعلامي على هواتفي الذكية إذا سمح لهم بتلقي الإشعارات.',
-		[LanguageKeys.es_ES]: 'Por favor, notifícame en mis teléfonos inteligentes si se les permite recibir notificaciones.',
-		[LanguageKeys.fr_FR]: 'Veuillez me notifier sur mes smartphones s\'ils permettent d\'être notifiés.',
-		[LanguageKeys.ru_RU]: 'Пожалуйста, уведомляйте меня на моих смартфонах, если они позволяют получать уведомления.',
-		[LanguageKeys.tr_TR]: 'Bildirim almalarına izin veriliyorsa lütfen akıllı telefonlarımda bana bildirin.',
-		[LanguageKeys.zh_CN]: '如果允许接收通知，请在我的智能手机上通知我。'
+		[LanguageKeys.de_DE]: 'Bitte benachrichtige mich auf meinen Smartphones. Die Benachrichtigungen müssen auf den Geräten erlaubt sein.',
+		[LanguageKeys.en_US]: 'Please notify me on my smartphones. Notifications must be allowed on the devices.',
+		[LanguageKeys.ar_SA]: 'يرجى إعلامي على هواتفي الذكية. يجب أن تكون الإشعارات مسموح بها على الأجهزة.',
+		[LanguageKeys.es_ES]: 'Por favor, notifíqueme en mis teléfonos inteligentes. Las notificaciones deben estar permitidas en los dispositivos.',
+		[LanguageKeys.fr_FR]: 'Veuillez me notifier sur mes smartphones. Les notifications doivent être autorisées sur les appareils.',
+		[LanguageKeys.ru_RU]: 'Пожалуйста, уведомите меня на моих смартфонах. Уведомления должны быть разрешены на устройствах.',
+		[LanguageKeys.tr_TR]: 'Lütfen beni akıllı telefonlarımda bilgilendirin. Bildirimler cihazlarda izin verilmelidir.',
+		[LanguageKeys.zh_CN]: '请在我的智能手机上通知我。设备上必须允许通知。'
 	},
 	this_feature_is_not_available_currently_reason: {
 		[LanguageKeys.de_DE]: 'Diese Funktion ist derzeit nicht verfügbar. Grund:',
@@ -2204,14 +2204,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '喜欢状态'
 	},
 	show_login_for_management_with_email_and_password: {
-		[LanguageKeys.de_DE]: 'Verwaltungs-Login mit E-Mail und Passwort anzeigen',
-		[LanguageKeys.en_US]: 'Show management login with email and password',
-		[LanguageKeys.ar_SA]: 'إظهار تسجيل الدخول للإدارة بالبريد الإلكتروني وكلمة المرور',
-		[LanguageKeys.es_ES]: 'Mostrar inicio de sesión de administración con correo electrónico y contraseña',
-		[LanguageKeys.fr_FR]: 'Afficher la connexion de gestion avec e-mail et mot de passe',
-		[LanguageKeys.ru_RU]: 'Показать управление входом с электронной почтой и паролем',
-		[LanguageKeys.tr_TR]: 'E-posta ve şifre ile yönetim girişini göster',
-		[LanguageKeys.zh_CN]: '显示使用电子邮件和密码的管理登录'
+		[LanguageKeys.de_DE]: 'Verwaltungs-Login',
+		[LanguageKeys.en_US]: 'Management Login',
+		[LanguageKeys.ar_SA]: 'تسجيل الدخول للإدارة',
+		[LanguageKeys.es_ES]: 'Inicio de sesión de administración',
+		[LanguageKeys.fr_FR]: 'Connexion de gestion',
+		[LanguageKeys.ru_RU]: 'Вход в систему управления',
+		[LanguageKeys.tr_TR]: 'Yönetim Girişi',
+		[LanguageKeys.zh_CN]: '管理登录'
 	},
 	email: {
 		[LanguageKeys.de_DE]: 'E-Mail',
