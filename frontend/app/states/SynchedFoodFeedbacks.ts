@@ -77,9 +77,16 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 	if(notify !== undefined) {
 		existingFoodFeedback.notify = notify;
 	}
-	if(foodFeedbackLabelIds !== undefined) {
+
+	let ignoreLabels = false;
+	//if(foodFeedbackLabelIds !== undefined) {
 		if(foodFeedbackLabelIds === null) {
 			existingFoodFeedback.labels = []
+		} if(foodFeedbackLabelIds === undefined) {
+			console.log('updateFoodFeedbackRemote: foodFeedbackLabelIds is undefined, the existing labels are')
+			console.log(existingFoodFeedback.labels)
+			existingFoodFeedback.labels = undefined
+			ignoreLabels = true;
 		} else {
 			let nextLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = [];
 
@@ -113,20 +120,26 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 			existingFoodFeedback.labels = nextLabels
 		}
 
-	}
+	//}
 
 	const ratingIsNull = existingFoodFeedback.rating === null || existingFoodFeedback.rating === undefined;
+		console.log('updateFoodFeedbackRemote: ratingIsNull', ratingIsNull)
 	const commentIsNull = existingFoodFeedback.comment === null || existingFoodFeedback.comment === undefined;
+		console.log('updateFoodFeedbackRemote: commentIsNull', commentIsNull)
 	const notifyIsNull = existingFoodFeedback.notify === null || existingFoodFeedback.notify === undefined || existingFoodFeedback.notify === false;
-	const labelsIsNull = existingFoodFeedback.labels === null || existingFoodFeedback.labels === undefined || existingFoodFeedback.labels.length === 0;
+		console.log('updateFoodFeedbackRemote: notifyIsNull', notifyIsNull)
+	let labelsIsNull = !ignoreLabels && (existingFoodFeedback.labels === null || existingFoodFeedback.labels === undefined || existingFoodFeedback.labels.length === 0);
+		console.log('updateFoodFeedbackRemote: labelsIsNull', labelsIsNull)
 
 	const shouldDelete = ratingIsNull && commentIsNull && notifyIsNull && labelsIsNull;
+	console.log('updateFoodFeedbackRemote: shouldDelete', shouldDelete)
 
 	if(shouldDelete) {
 		if(existingFoodFeedback.id) {
 			await resourceCollectionHelper.deleteItem(existingFoodFeedback.id);
 		}
 	} else {
+		console.log('updateFoodFeedbackRemote: now updateItem with data', existingFoodFeedback)
 		await resourceCollectionHelper.updateItem(existingFoodFeedback.id, existingFoodFeedback);
 	}
 

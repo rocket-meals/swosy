@@ -91,36 +91,36 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 
 	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
 	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
-	let dislikesRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislikes
+	let dislikesRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislike
 	let statusSet = dislikesRaw === true || dislikesRaw === false;
 	const likes = statusSet ? !dislikesRaw : undefined;
 
 	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
 	return <SettingsRowTriStateLikeDislike
-		color={foodsAreaColor}
-		iconLeftCustom={iconLeftCustom}
-		renderRightContentWrapper={(rightContent) => {
-			return <AccountRequiredTouchableOpacity translationOfDesiredAction={translationSetRating}>
+			color={foodsAreaColor}
+			iconLeftCustom={iconLeftCustom}
+			renderRightContentWrapper={(rightContent) => {
+				return <AccountRequiredTouchableOpacity translationOfDesiredAction={translationSetRating}>
 					{rightContent}
-			</AccountRequiredTouchableOpacity>
-		}}
-		onSetState={async (nextLike: boolean | undefined) => {
-		let ownFoodFeedbackLabelsWithoutThisLabel = ownFoodFeedbackLabels.filter((value) => value.foods_feedbacks_labels_id !== feedback_label_id)
+				</AccountRequiredTouchableOpacity>
+			}}
+			onSetState={async (nextLike: boolean | undefined) => {
+				let ownFoodFeedbackLabelsWithoutThisLabel = ownFoodFeedbackLabels.filter((value) => value.foods_feedbacks_labels_id !== feedback_label_id)
 
-		if(nextLike === undefined){
-			await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
-		} else {
-			let newLabel: FoodsFeedbacksFoodsFeedbacksLabels = {
-				foods_feedbacks_labels_id: feedback_label_id,
-				foods_feedbacks_id: foodFeedback?.id,
-				dislikes: !nextLike
-			}
-			ownFoodFeedbackLabelsWithoutThisLabel.push(newLabel)
-			await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
-		}
-		await refresh()
-	}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
+				if(nextLike === undefined){
+					await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+				} else {
+					let newLabel: FoodsFeedbacksFoodsFeedbacksLabels = {
+						foods_feedbacks_labels_id: feedback_label_id,
+						foods_feedbacks_id: foodFeedback?.id,
+						dislike: !nextLike
+					}
+					ownFoodFeedbackLabelsWithoutThisLabel.push(newLabel)
+					await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+				}
+				await refresh()
+			}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
 }
 
 export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined, refresh: () => void}) => {
