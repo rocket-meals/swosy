@@ -9,8 +9,8 @@
   - Anwendungsname: `<Name des Projectes>`
   - Support E-Mail: `<E-Mail Adresse>`
   - Anwendungslogo: Auswählen
-  - Startseite der Anwendung: `<URL>` (https://rocket-meals.github.io/RocketMealsApp)
-  - Link zur Datenschutzerklärung: `<URL>` (https://rocket-meals.github.io/RocketMealsApp/#/PrivacyPolicy)
+  - Startseite der Anwendung: `<URL>` (https://rocket-meals.github.io/<rocket-meals>/)
+  - Link zur Datenschutzerklärung: `<URL>` (https://rocket-meals.github.io/<rocket-meals>/wikis?wikis_custom_id=privacy-policy)
   - Authorisierte Domains
     - ``rocket-meals.github.io``
     - ``rocket-meals.de``
@@ -33,7 +33,7 @@
     - Anwendungstyp: Webanwendung
     - Name: `<Name des Projectes>`
     - Authorisierte Weiterleitungs-URIs
-      - ``https://<SUBDOMAIN>.rocket-meals.de/backend/api/auth/login/google/callback``
+      - ``https://<SUBDOMAIN>.rocket-meals.de/rocket-meals/api/auth/login/google/callback``
       - ``http://127.0.0.1/rocketmeals/api/auth/login/google/callback``
     - Erstellen
   - Client-ID und Client-Geheimnis kopieren

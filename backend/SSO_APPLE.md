@@ -10,26 +10,30 @@ Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-w
   - https://developer.apple.com/account/resources/identifiers/list
   - Top right corner, after your name like: "... - 6U99XXXXXX"
 - 2. Create a new App ID
-  - Visit Identifiers (https://developer.apple.com/account/resources/certificates/list)
+  - Visit Identifiers (https://developer.apple.com/account/resources/identifiers/list)
   - Press on the "+" Button
-  - Register a new App ID
+  - Select "App IDs"
   - Fill in a name and a Bundle ID
   - Activate "Sign in with Apple"
   - Save and Register
 - 3. Create a Service ID (Configuration of the Return URL)
-  - Visit Identifiers (https://developer.apple.com/account/resources/certificates/list)
+  - Visit Identifiers (https://developer.apple.com/account/resources/identifiers/list)
   - Press top right on the search icon and search for "Service IDs"
-  - Select one or create a new service ID
+  - Select one or create a new "Service ID"
   - The name of the service will be our "AUTH_APPLE_CLIENT_ID"
   - Check "Sign in with Apple"
   - Click "Configure" (Sign in with Apple)
     - Select or create a primary App ID
-    - Choose you Domain (example.com)
+    - Enter Domains: "<PUBLIC_URL>"
+      - Replace <PUBLIC_URL> with your instance of your server
+      - Eg. "XXX.rocket-meals.de"
     - Enter the return URLs: "https://<PUBLIC_URL>/api/auth/login/apple/callback"
       - Replace <PUBLIC_URL> with your instance of your server
+      - eg. "https://XXX.rocket-meals.de/api/auth/login/apple/callback"
       - Continue --> Save
-- Keys (https://developer.apple.com/account/resources/certificates/list)
+- Keys (https://developer.apple.com/account/resources/authkeys/list)
   - Create a new key
+  - Fill in a name: "SSO"
   - Check "Sign in with Apple"
   - Click Configure (Sign in with Apple)
     - Select same primary App ID as before
