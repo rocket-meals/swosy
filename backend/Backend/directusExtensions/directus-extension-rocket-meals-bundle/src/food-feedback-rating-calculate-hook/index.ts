@@ -134,12 +134,23 @@ export default defineHook(async ({action, filter}, {
 	//action( // we cannot use action here, because we would only get the keys of the deleted food_feedbacks. From this we dont know the food_id. Therefore we need to use filter, but we do not block the deletion of the food_feedbacks
 	filter(
 		collection + ".items.delete",
-		async (payloadModifiable, meta) => {
+		async (payloadModifiable, meta, context) => {
 			// get the collection which was deleted
 			console.log("DELETE FOOD FEEDBACKS");
-			console.log(meta);
+			console.log("payloadModifiable");
+			console.log(payloadModifiable);
 
-			let food_feedbacks_ids = meta.keys;
+			console.log("meta");
+			console.log(meta);
+			// {
+			//   event: 'foods_feedbacks.items.delete',
+			//   collection: 'foods_feedbacks'
+			// }
+
+			console.log("context");
+			console.log(context);
+
+			let food_feedbacks_ids = payloadModifiable.keys;
 			//await // we do not block the deletion of the food_feedbacks
 
 			recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
