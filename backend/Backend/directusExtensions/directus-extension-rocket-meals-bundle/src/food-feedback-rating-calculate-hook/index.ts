@@ -5,7 +5,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "food_feedback_rating_calculate";
 
-export default defineHook(async ({action}, {
+export default defineHook(async ({action, filter}, {
 	services,
 	database,
 	getSchema
@@ -131,21 +131,25 @@ export default defineHook(async ({action}, {
 		}
 	);
 
-	action(
+	//action( // we cannot use action here, because we would only get the keys of the deleted food_feedbacks. From this we dont know the food_id. Therefore we need to use filter, but we do not block the deletion of the food_feedbacks
+	filter(
 		collection + ".items.delete",
-		async (meta) => {
+		async (payloadModifiable, meta) => {
 			// get the collection which was deleted
 			console.log("DELETE FOOD FEEDBACKS");
 			console.log(meta);
 
 			let food_feedbacks_ids = meta.keys;
-			await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+			//await // we do not block the deletion of the food_feedbacks
+
+			recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
 			// {
 			//   event: 'foods_feedbacks.items.delete',
 			//   payload: [ '73e6dd26-f570-428d-8f8c-0a452beb222e' ],
 			//   keys: [ '73e6dd26-f570-428d-8f8c-0a452beb222e' ],
 			//   collection: 'foods_feedbacks'
 			// }
+			return payloadModifiable;
 		}
 	);
 });
