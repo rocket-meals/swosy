@@ -27,11 +27,10 @@ export default defineHook(async ({action}, {
 		//console.log("recalculateFoodFeedbackIdsRatings: food_feedback_ids: "+food_feedback_ids.length);
 		// so maybe a lot off food_feedback for the same food are deleted.
 		// we should therefore just get the unique food_ids which we need to recalculate the rating for
-		let food_id_dict: {[key: string]: boolean}
-			= {}
+		let food_id_dict: {[key: string]: boolean} = {}
 
 		for(let food_feedback_id of food_feedback_ids){
-			//console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
+			console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
 			let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
 			let food_id = food_feedback?.food;
 			if(!!food_id){
@@ -48,7 +47,7 @@ export default defineHook(async ({action}, {
 	}
 
 	async function recalculateFoodRating(food_id: string){
-		//console.log("recalculateFoodRating: food_id: "+food_id);
+		console.log("recalculateFoodRating: food_id: "+food_id);
 
 		let food_feedbacks = [];
 		try{
@@ -136,8 +135,8 @@ export default defineHook(async ({action}, {
 		collection + ".items.delete",
 		async (meta) => {
 			// get the collection which was deleted
-			//console.log("DELETE FOOD FEEDBACKS");
-			//console.log(meta);
+			console.log("DELETE FOOD FEEDBACKS");
+			console.log(meta);
 
 			let food_feedbacks_ids = meta.keys;
 			await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
