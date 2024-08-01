@@ -684,29 +684,45 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "foods_feedbacks_labels_entries",
     "action": "create",
-    "permissions": {},
-    "validation": {},
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
     "presets": null,
     "fields": [
-      "*"
+      "id",
+      "profile",
+      "status",
+      "sort",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "canteen",
+      "foodoffer",
+      "label",
+      "food",
+      "dislike"
     ],
-    "_syncId": "a7e53222-b5c8-4188-a174-3d9f85366195"
+    "_syncId": "bc4e18fe-75f7-4e1c-9c5c-ae7a3a814c5f"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "foods_feedbacks_labels_entries",
     "action": "delete",
     "permissions": {
       "_and": [
         {
-          "foods_feedbacks_id": {
-            "profile": {
-              "id": {
-                "_eq": "$CURRENT_USER.profile"
-              }
-            }
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
           }
         }
       ]
@@ -714,21 +730,17 @@
     "validation": null,
     "presets": null,
     "fields": null,
-    "_syncId": "22781df8-b850-4dc8-8b7b-303216aa853e"
+    "_syncId": "862d6151-b03f-4fbb-8c2e-8f6525a24cf6"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "foods_feedbacks_labels_entries",
     "action": "read",
     "permissions": {
       "_and": [
         {
-          "foods_feedbacks_id": {
-            "profile": {
-              "id": {
-                "_eq": "$CURRENT_USER.profile"
-              }
-            }
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
           }
         }
       ]
@@ -737,25 +749,30 @@
     "presets": null,
     "fields": [
       "id",
-      "foods_feedbacks_labels_id",
-      "dislike",
-      "foods_feedbacks_id"
+      "status",
+      "sort",
+      "user_updated",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "profile",
+      "canteen",
+      "foodoffer",
+      "label",
+      "food",
+      "dislike"
     ],
-    "_syncId": "3595c215-0076-47c8-9c7b-1d99fb85822d"
+    "_syncId": "ad79922e-17f9-470c-8db1-cd141437bba4"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "foods_feedbacks_labels_entries",
     "action": "update",
     "permissions": {
       "_and": [
         {
-          "foods_feedbacks_id": {
-            "profile": {
-              "id": {
-                "_eq": "$CURRENT_USER.profile"
-              }
-            }
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
           }
         }
       ]
@@ -763,9 +780,21 @@
     "validation": null,
     "presets": null,
     "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_updated",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "profile",
+      "canteen",
+      "foodoffer",
+      "label",
+      "food",
       "dislike"
     ],
-    "_syncId": "819ee0ca-5948-40ba-9026-e670373ec13e"
+    "_syncId": "70b528bc-ee17-4cf4-8137-4b63d3460762"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -816,14 +845,13 @@
       "date_updated",
       "comment",
       "notify",
-      "canteen",
-      "labels",
       "food",
       "foodoffer",
+      "rating",
       "profile",
-      "rating"
+      "canteen"
     ],
-    "_syncId": "83f53542-c128-4a81-ae62-984f9318b6cd"
+    "_syncId": "a027f566-ce19-40cf-b4bb-bb0b1961e3c5"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -833,9 +861,7 @@
       "_and": [
         {
           "profile": {
-            "id": {
-              "_eq": "$CURRENT_USER.profile"
-            }
+            "_eq": "$CURRENT_USER.profile"
           }
         }
       ]
@@ -843,7 +869,7 @@
     "validation": null,
     "presets": null,
     "fields": null,
-    "_syncId": "4f64ab41-c3f7-4305-8af6-85482dbd1f0d"
+    "_syncId": "2ac86b71-c511-46fe-821b-610445014fae"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -853,9 +879,7 @@
       "_and": [
         {
           "profile": {
-            "id": {
-              "_eq": "$CURRENT_USER.profile"
-            }
+            "_eq": "$CURRENT_USER.profile"
           }
         }
       ]
@@ -866,20 +890,19 @@
       "id",
       "status",
       "sort",
-      "user_updated",
       "date_created",
+      "user_updated",
       "user_created",
       "date_updated",
       "comment",
-      "rating",
-      "foodoffer",
-      "food",
       "notify",
-      "canteen",
-      "labels",
-      "profile"
+      "food",
+      "foodoffer",
+      "rating",
+      "profile",
+      "canteen"
     ],
-    "_syncId": "417ed164-9957-418f-8dd0-0732b1e171b6"
+    "_syncId": "37d5f290-d881-4d81-8750-006578d707c4"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -898,22 +921,21 @@
     "presets": null,
     "fields": [
       "id",
-      "user_created",
-      "date_updated",
-      "comment",
-      "date_created",
       "status",
       "sort",
       "user_updated",
-      "rating",
-      "foodoffer",
-      "food",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "comment",
       "notify",
-      "canteen",
-      "labels",
-      "profile"
+      "food",
+      "foodoffer",
+      "rating",
+      "profile",
+      "canteen"
     ],
-    "_syncId": "b8991c10-870f-4876-96df-188e34db62d9"
+    "_syncId": "a8943330-91c7-4499-9273-994b5593cd71"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",

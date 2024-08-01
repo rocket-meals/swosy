@@ -5,8 +5,6 @@ import {useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Drawer} from 'expo-router/drawer';
 import {isUserLoggedIn} from '@/states/User';
 import {useRootNavigationState} from "expo-router";
-import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
-import {MyDrawerCustomItemProps} from "@/components/drawer/MyDrawerCustomItemCenter";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.

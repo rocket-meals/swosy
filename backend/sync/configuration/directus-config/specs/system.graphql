@@ -249,11 +249,9 @@ type Subscription {
   profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
-  foods_mutated(event: EventEnum): foods_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   markings_mutated(event: EventEnum): markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
-  foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
   foods_markings_mutated(event: EventEnum): foods_markings_mutated
@@ -265,18 +263,20 @@ type Subscription {
   popup_events_mutated(event: EventEnum): popup_events_mutated
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
+  foods_mutated(event: EventEnum): foods_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
-  wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
+  foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
+  wikis_mutated(event: EventEnum): wikis_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2032,12 +2032,14 @@ type foods {
   sugar_g: Float
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
+  translations_func: count_functions
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
-  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
-  translations_func: count_functions
 }
 
 type foods_feedbacks {
@@ -2057,21 +2059,6 @@ type foods_feedbacks {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  labels(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks_foods_feedbacks_labels]
-  labels_func: count_functions
-}
-
-type foods_feedbacks_foods_feedbacks_labels {
-  dislike: Boolean
-  foods_feedbacks_id(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks
-  foods_feedbacks_labels_id(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
-  id: ID!
-}
-
-type foods_feedbacks_foods_feedbacks_labels_mutated {
-  key: ID!
-  event: EventEnum
-  data: foods_feedbacks_foods_feedbacks_labels
 }
 
 type foods_feedbacks_labels {
@@ -2094,6 +2081,30 @@ type foods_feedbacks_labels {
   visible: Boolean
   translations(filter: foods_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks_labels_translations]
   translations_func: count_functions
+}
+
+type foods_feedbacks_labels_entries {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
+  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  foodoffer(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foodoffers
+  label(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
+  dislike: Boolean
+}
+
+type foods_feedbacks_labels_entries_mutated {
+  key: ID!
+  event: EventEnum
+  data: foods_feedbacks_labels_entries
 }
 
 type foods_feedbacks_labels_mutated {
@@ -2552,9 +2563,6 @@ type wikis {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-
-  """Icon from: https://icons.expo.fyi/Index"""
-  icon: String
   id: ID!
   parent(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
   position: Int
@@ -2566,6 +2574,9 @@ type wikis {
   url: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+
+  """Icon from: https://icons.expo.fyi/Index"""
+  icon: String
   children(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis]
   children_func: count_functions
   translations(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis_translations]
@@ -2600,7 +2611,6 @@ type wikis_translations {
   content: String
   let_be_translated: Boolean
   title: String
-  icon: String
 }
 
 type wikis_translations_mutated {
@@ -3333,13 +3343,6 @@ input create_foodoffers_markings_input {
   markings_id: create_markings_input
 }
 
-input create_foods_feedbacks_foods_feedbacks_labels_input {
-  dislike: Boolean
-  foods_feedbacks_id: create_foods_feedbacks_input
-  foods_feedbacks_labels_id: create_foods_feedbacks_labels_input
-  id: ID
-}
-
 input create_foods_feedbacks_input {
   canteen: create_canteens_input
   comment: String
@@ -3355,35 +3358,6 @@ input create_foods_feedbacks_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
-  labels: [create_foods_feedbacks_foods_feedbacks_labels_input]
-}
-
-input create_foods_feedbacks_labels_input {
-  alias: String
-  date_created: Date
-  date_updated: Date
-
-  """Icon from: https://icons.expo.fyi/Index"""
-  icon: String
-  id: ID
-  image: create_directus_files_input
-  image_remote_url: String
-  image_thumb_hash: String
-  sort: Int
-  status: String
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
-  visible: Boolean
-  translations: [create_foods_feedbacks_labels_translations_input]
-}
-
-input create_foods_feedbacks_labels_translations_input {
-  be_source_for_translations: Boolean
-  foods_feedbacks_labels_id: create_foods_feedbacks_labels_input
-  id: ID
-  languages_code: create_languages_input
-  let_be_translated: Boolean
-  text: String
 }
 
 input create_foods_input {
@@ -3410,9 +3384,11 @@ input create_foods_input {
   sugar_g: Float
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  translations: [create_foods_translations_input]
   feedbacks: [create_foods_feedbacks_input]
   markings: [create_foods_markings_input]
-  translations: [create_foods_translations_input]
 }
 
 input create_foods_markings_input {
@@ -4078,19 +4054,8 @@ input foods_feedbacks_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  labels: foods_feedbacks_foods_feedbacks_labels_filter
-  labels_func: count_function_filter_operators
   _and: [foods_feedbacks_filter]
   _or: [foods_feedbacks_filter]
-}
-
-input foods_feedbacks_foods_feedbacks_labels_filter {
-  dislike: boolean_filter_operators
-  foods_feedbacks_id: foods_feedbacks_filter
-  foods_feedbacks_labels_id: foods_feedbacks_labels_filter
-  id: number_filter_operators
-  _and: [foods_feedbacks_foods_feedbacks_labels_filter]
-  _or: [foods_feedbacks_foods_feedbacks_labels_filter]
 }
 
 input foods_feedbacks_labels_filter {
@@ -4152,12 +4117,14 @@ input foods_filter {
   sugar_g: number_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  rating_average_legacy: number_filter_operators
+  rating_amount_legacy: number_filter_operators
+  translations: foods_translations_filter
+  translations_func: count_function_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
-  translations: foods_translations_filter
-  translations_func: count_function_filter_operators
   _and: [foods_filter]
   _or: [foods_filter]
 }
@@ -4877,13 +4844,6 @@ input update_foodoffers_markings_input {
   markings_id: update_markings_input
 }
 
-input update_foods_feedbacks_foods_feedbacks_labels_input {
-  dislike: Boolean
-  foods_feedbacks_id: update_foods_feedbacks_input
-  foods_feedbacks_labels_id: update_foods_feedbacks_labels_input
-  id: ID
-}
-
 input update_foods_feedbacks_input {
   canteen: update_canteens_input
   comment: String
@@ -4899,35 +4859,6 @@ input update_foods_feedbacks_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
-  labels: [update_foods_feedbacks_foods_feedbacks_labels_input]
-}
-
-input update_foods_feedbacks_labels_input {
-  alias: String
-  date_created: Date
-  date_updated: Date
-
-  """Icon from: https://icons.expo.fyi/Index"""
-  icon: String
-  id: ID
-  image: update_directus_files_input
-  image_remote_url: String
-  image_thumb_hash: String
-  sort: Int
-  status: String
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
-  visible: Boolean
-  translations: [update_foods_feedbacks_labels_translations_input]
-}
-
-input update_foods_feedbacks_labels_translations_input {
-  be_source_for_translations: Boolean
-  foods_feedbacks_labels_id: update_foods_feedbacks_labels_input
-  id: ID
-  languages_code: update_languages_input
-  let_be_translated: Boolean
-  text: String
 }
 
 input update_foods_input {
@@ -4954,9 +4885,11 @@ input update_foods_input {
   sugar_g: Float
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  translations: [update_foods_translations_input]
   feedbacks: [update_foods_feedbacks_input]
   markings: [update_foods_markings_input]
-  translations: [update_foods_translations_input]
 }
 
 input update_foods_markings_input {
@@ -5164,7 +5097,6 @@ input wikis_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  icon: string_filter_operators
   id: string_filter_operators
   parent: wikis_filter
   position: number_filter_operators
@@ -5176,6 +5108,7 @@ input wikis_filter {
   url: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  icon: string_filter_operators
   children: wikis_filter
   children_func: count_function_filter_operators
   translations: wikis_translations_filter
@@ -5194,7 +5127,6 @@ input wikis_translations_filter {
   content: string_filter_operators
   let_be_translated: boolean_filter_operators
   title: string_filter_operators
-  icon: string_filter_operators
   _and: [wikis_translations_filter]
   _or: [wikis_translations_filter]
 }

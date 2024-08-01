@@ -34,7 +34,7 @@ export const useFeedbackRatingType = (): RatingType => {
 export const FoodFeedbackRating = ({food, showQuickAction, borderRadius}: {food: Foods, showQuickAction: boolean, borderRadius?: number}) => {
 	let foods_ratings_type = useFeedbackRatingType();
 	const usedFoodId = food.id;
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 	const translation_set_rating = useTranslation(TranslationKeys.set_rating);
 
 	const foodsAreaColor = useFoodsAreaColor();

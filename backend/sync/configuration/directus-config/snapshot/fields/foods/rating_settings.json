@@ -1,23 +1,25 @@
 {
-  "collection": "foods_feedbacks",
-  "field": "labels",
+  "collection": "foods",
+  "field": "rating_settings",
   "type": "alias",
   "meta": {
-    "collection": "foods_feedbacks",
+    "collection": "foods",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "labels",
+    "field": "rating_settings",
     "group": null,
     "hidden": false,
-    "interface": "list-m2m",
+    "interface": "group-raw",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 25,
     "special": [
-      "m2m"
+      "alias",
+      "group",
+      "no-data"
     ],
     "translations": null,
     "validation": null,

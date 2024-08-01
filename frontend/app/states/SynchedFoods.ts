@@ -2,7 +2,8 @@ import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {
 	Foods,
 	FoodsFeedbacks,
-	FoodsFeedbacksFoodsFeedbacksLabels,
+	FoodsFeedbacksLabels,
+	FoodsFeedbacksLabelsEntries,
 	FoodsMarkings
 } from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
@@ -91,58 +92,16 @@ function getDemoResource(index: number, id: string, name: string, category: stri
 	)
 }
 
-
-export function getDictFoodFeedbackLabelsIdToAmount(feedbacks: FoodsFeedbacks[] | null | undefined): Record<string, {
-	amount_likes: number,
-	amount_dislikes: number,
-} | undefined> {
-	let feedbacksLabelsIdsCounted: Record<string, {
-		amount_likes: number,
-		amount_dislikes: number,
-	}> = {}
-	if(feedbacks) {
-		for (let feedback of feedbacks) {
-			for(let label of feedback.labels){
-				let feedbacksLabelsId = label.foods_feedbacks_labels_id
-				let dislike: boolean | undefined | null = label.dislike;
-				let counted = feedbacksLabelsIdsCounted[feedbacksLabelsId] || {
-					amount_likes: 0,
-					amount_dislikes: 0,
-				};
-				if(dislike === true){
-					counted.amount_dislikes++;
-				} else if(dislike === false){
-					counted.amount_likes++;
-				} else {
-					// skip if dislike is undefined or null
-				}
-				feedbacksLabelsIdsCounted[feedbacksLabelsId] = counted;
-			}
-		}
-	}
-	return feedbacksLabelsIdsCounted
-}
-
-export function getFoodFeedbackLabelsIdsFromFeedbacksWithLabels(feedbacks: (FoodsFeedbacks)[]): string[] {
-	let feedbacksLabelsIds: string[] = []
-	for (let feedback of feedbacks) {
-		for (let label of feedback.labels) {
-			feedbacksLabelsIds.push(label.foods_feedbacks_labels_id)
-		}
-	}
-	return feedbacksLabelsIds
-}
-
-export async function loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId: string, isDemo?: boolean): Promise<FoodsFeedbacks[]> {
+export async function loadFoodsFeedbacksForFood(foodId: string, isDemo?: boolean): Promise<FoodsFeedbacks[]> {
 	if(isDemo) {
-		return getDemoFoodsFeedbacks()
+		return getDemoFoodsFeedbacks(foodId)
 	}
 
 	let foodCollectionHelper = new CollectionHelper<FoodsFeedbacks>('foods_feedbacks')
 
 	// create a query which finds all labels for the given foodId
 	let query = {
-		fields: ["*", "labels.*"],
+		fields: ["*"],
 		filter: {
 			_and: [
 				{
@@ -159,28 +118,22 @@ export async function loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId: str
 	return foodsFeedbacks
 }
 
-function getDemoFoodsFeedbacks(): FoodsFeedbacks[] {
+
+
+function getDemoFoodsFeedbacks(foodId: string): FoodsFeedbacks[] {
 	let amountResources = 100;
 	let demoFoodsFeedbacks: FoodsFeedbacks[] = []
 	for (let i = 0; i < amountResources; i++) {
-		demoFoodsFeedbacks.push(getDemoFoodFeedbackWithLabels(i))
+		demoFoodsFeedbacks.push(getDemoFoodFeedback(i, foodId))
 	}
 	return demoFoodsFeedbacks
 }
 
-export function getDemoFoodFeedbackWithLabels(index: number): FoodsFeedbacks {
+
+
+export function getDemoFoodFeedback(index: number, foodId: string): FoodsFeedbacks {
 	let feedbackId = "demoFeedbackId" + index
 	let rating = index % 5
-
-	let demoLabelsDict = getDemoFoodsFeedbacksLabelsDict();
-	let demoLabelKeys = Object.keys(demoLabelsDict)
-	let labelKey = demoLabelKeys[(index % demoLabelKeys.length)]
-
-	let labelRelation: FoodsFeedbacksFoodsFeedbacksLabels = {
-		foods_feedbacks_id: feedbackId,
-		foods_feedbacks_labels_id: labelKey,
-		id: index
-	}
 
 	let date_updated = new Date();
 	// add 1 day for each feedback in the past
@@ -190,15 +143,12 @@ export function getDemoFoodFeedbackWithLabels(index: number): FoodsFeedbacks {
 	return {
 		status: "published",
 		id: feedbackId,
-		food: "demoFoodId",
+		food: foodId	,
 		profile: "demoProfileId "+index,
 		date_updated: date_updated_string,
 		date_created: date_updated_string,
 		rating: rating,
 		comment: "demoComment "+index,
 		notify: true,
-		labels: [
-			labelRelation
-		]
 	}
 }

@@ -71,12 +71,28 @@ export class CollectionHelper<CollectionScheme> {
 	}
 
 	static convertListToDict<CollectionScheme>(list: CollectionScheme[], key: string) {
-		const dict: Record<any, CollectionScheme> = {};
+		const dict: Record<any, CollectionScheme | undefined | null> = {};
+		console.log("convertListToDict", list)
 		for (const item of list) {
 			// @ts-ignore
 			const id = item[key];
 			// @ts-ignore
 			dict[item[key]] = item;
+		}
+		return dict;
+	}
+
+	static convertListToDictWithListAsValue<CollectionScheme>(list: CollectionScheme[], key: string) {
+		const dict: Record<any, CollectionScheme[] | undefined | null> = {};
+		for (const item of list) {
+			// @ts-ignore
+			const id = item[key];
+			// @ts-ignore
+			if (!dict[id]) {
+				dict[id] = [];
+			}
+			// @ts-ignore
+			dict[id].push(item);
 		}
 		return dict;
 	}

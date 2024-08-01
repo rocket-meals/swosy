@@ -3,6 +3,7 @@ import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
 import {View} from "@/components/Themed";
 import React from "react";
+import {useFeedbackRatingType} from "@/components/foodfeedback/FoodRatingDisplay";
 
 export enum RatingType{
 	disabled='disabled',
@@ -22,6 +23,20 @@ export function isRatingPositive(rating: number | null | undefined): boolean {
 
 export function isRatingNegative(rating: number | null | undefined): boolean {
 	return rating !== null && rating !== undefined && rating < MINIMUM_RATING_AS_FAVORITE;
+}
+
+export function useMyRatingMaxIcon(rating: number | null | undefined): string {
+	let ratingType = useFeedbackRatingType();
+	if(ratingType === RatingType.favorite || ratingType === RatingType.hearts){
+		return isRatingPositive(rating) ? IconNames.favorite_active_icon : IconNames.favorite_inactive_icon
+	}
+	if(ratingType === RatingType.likes){
+		return isRatingPositive(rating) ? IconNames.like_active_icon : IconNames.like_inactive_icon
+	}
+	if(ratingType === RatingType.stars){
+		return isRatingPositive(rating) ? IconNames.star_active_icon : IconNames.star_inactive_icon
+	}
+	return IconNames.star_inactive_icon
 }
 
 /**

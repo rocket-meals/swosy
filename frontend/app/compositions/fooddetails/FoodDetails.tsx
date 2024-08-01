@@ -2,7 +2,8 @@ import {
 	Foodoffers,
 	Foods,
 	FoodsFeedbacks,
-	FoodsFeedbacksFoodsFeedbacksLabels
+	FoodsFeedbacksLabels,
+	FoodsFeedbacksLabelsEntries
 } from '@/helper/database/databaseTypes/types';
 import {Heading, Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
@@ -20,15 +21,12 @@ import {useIsDebug} from "@/states/Debug";
 import {useFoodsAreaColor, useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
 import {useServerInfo} from "@/states/SyncStateServerInfo";
-import {DETAILS_COMPONENT_MARGIN_HORIZONTAL, DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
+import {DetailsComponent} from "@/components/detailsComponent/DetailsComponent";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
-import {
-	getDictFoodFeedbackLabelsIdToAmount,
-	loadFoodsFeedbacksForFoodWithFeedbackLabelsIds
-} from "@/states/SynchedFoods";
+import {loadFoodsFeedbacksForFood,} from "@/states/SynchedFoods";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
@@ -37,6 +35,12 @@ import {ReturnKeyType} from "@/helper/input/ReturnKeyType";
 import {SettingsRowTriStateLikeDislike} from "@/components/settings/SettingsRowTriStateLikeDislike";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
+import {
+	getDictFoodFeedbackLabelsIdToAmount,
+	loadFoodsFeedbacksLabelsEntriesForFood,
+	useSynchedOwnFoodFeedbackLabelEntries
+} from "@/states/SynchedFoodFeedbacksLabelsEntries";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -78,19 +82,19 @@ export const useFeedbackLabelsType = (): FeedbackLabelsType => {
 	return feedbackLabelsType
 }
 
-type FoodFeedbackSettingsRowDataProps = {food_id: string, feedback_label_id: string, translation: string, amount_likes: number|undefined|null, amount_dislikes: number|undefined|null}
+type FoodFeedbackSettingsRowDataProps = {food_id: string, label: FoodsFeedbacksLabels, translation: string, amount_likes: number|undefined|null, amount_dislikes: number|undefined|null}
 type FoodFeedbackSettingsRowProps = {refresh: () => void} & FoodFeedbackSettingsRowDataProps
-const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
+const FoodFeedbackSettingsRow = ({food_id, label, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
+	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food_id);
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
+	const feedback_label_id = label.id;
 	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
 
 	const foodsAreaColor = useFoodsAreaColor()
 
 	const translationSetRating = useTranslation(TranslationKeys.set_rating);
 
-	let ownFoodFeedbackLabels: FoodsFeedbacksFoodsFeedbacksLabels[] = foodFeedback?.labels || [];
-	let ownFoodFeedbackLabel: FoodsFeedbacksFoodsFeedbacksLabels | undefined |null = ownFoodFeedbackLabels.find((value) => value.foods_feedbacks_labels_id === feedback_label_id);
+	let ownFoodFeedbackLabel:  FoodsFeedbacksLabelsEntries | undefined |null = ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict?.[feedback_label_id];
 	let dislikeRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislike
 	let statusSet = dislikeRaw === true || dislikeRaw === false;
 	const likes = statusSet ? !dislikeRaw : undefined;
@@ -106,30 +110,21 @@ const FoodFeedbackSettingsRow = ({food_id, feedback_label_id, translation, amoun
 				</AccountRequiredTouchableOpacity>
 			}}
 			onSetState={async (nextLike: boolean | undefined) => {
-				let ownFoodFeedbackLabelsWithoutThisLabel = ownFoodFeedbackLabels.filter((value) => value.foods_feedbacks_labels_id !== feedback_label_id)
-
 				if(nextLike === undefined){
-					await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+					await setFoodFeedbackLabel(label, null)
 				} else {
-					let newLabel: FoodsFeedbacksFoodsFeedbacksLabels = {
-						foods_feedbacks_labels_id: feedback_label_id,
-						foods_feedbacks_id: foodFeedback?.id,
-						dislike: !nextLike
-					}
-					ownFoodFeedbackLabelsWithoutThisLabel.push(newLabel)
-					await setOwnLabels(ownFoodFeedbackLabelsWithoutThisLabel)
+					await setFoodFeedbackLabel(label, !nextLike)
 				}
 				await refresh()
 			}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
 }
 
-export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined, refresh: () => void}) => {
+export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacksLabelsEntries, refresh}: {food: Foods, remoteFoodFeedbacksLabelsEntries: FoodsFeedbacksLabelsEntries[] | null | undefined, refresh: () => void}) => {
 	const foods_feedbacks_labels_type = useFeedbackLabelsType()
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
-	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food.id)
+
 	const [language, setLanguage] = useProfileLanguageCode()
-
-
 
 	const isDebug = useIsDebug()
 
@@ -139,11 +134,13 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 	if(!!foodFeedbackLabelsDict){
 		Object.keys(foodFeedbackLabelsDict).forEach((key) => {
 			let label = foodFeedbackLabelsDict[key];
-			let id = label.id;
-			let labelTranslations = label.translations as TranslationEntry[];
-			let translation = getDirectusTranslation(language, labelTranslations, 'text');
-			if(translation){
-				feedbackLabelIdToTranslation[id] = translation;
+			if(!!label){
+				let id = label.id;
+				let labelTranslations = label.translations as TranslationEntry[];
+				let translation = getDirectusTranslation(language, labelTranslations, 'text');
+				if(translation){
+					feedbackLabelIdToTranslation[id] = translation;
+				}
 			}
 		})
 	}
@@ -154,7 +151,7 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 
 	const food_id = food.id;
 
-	let dictFoodFeedbackLabelsIdToAmount = getDictFoodFeedbackLabelsIdToAmount(remoteFoodFeedbacks);
+	let dictFoodFeedbackLabelsIdToAmount = getDictFoodFeedbackLabelsIdToAmount(remoteFoodFeedbacksLabelsEntries);
 
 	type DataItem = { key: string; sort: number | undefined | null, data: FoodFeedbackSettingsRowDataProps}
 	const data: DataItem[] = []
@@ -163,22 +160,24 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 		let translation = feedbackLabelIdToTranslation[key];
 		if(foodFeedbackLabelsDict){
 			let label = foodFeedbackLabelsDict[key];
-			let sort = label?.sort
-			let visible = label?.visible || isDebug
-			let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
-			let amount_likes = amount_information?.amount_likes ?? null;
-			let amount_dislikes = amount_information?.amount_dislikes ?? null;
+			if(!!label){
+				let sort = label?.sort
+				let visible = label?.visible || isDebug
+				let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
+				let amount_likes = amount_information?.amount_likes ?? null;
+				let amount_dislikes = amount_information?.amount_dislikes ?? null;
 
-			if(visible){
-				data.push({key: key,
-					sort: sort,
-					data: {
-						food_id: food_id,
-						feedback_label_id: key,
-						translation: translation,
-						amount_likes: amount_likes,
-						amount_dislikes: amount_dislikes
-					}})
+				if(visible){
+					data.push({key: key,
+						sort: sort,
+						data: {
+							food_id: food_id,
+							label: label,
+							translation: translation,
+							amount_likes: amount_likes,
+							amount_dislikes: amount_dislikes
+						}})
+				}
 			}
 		}
 	});
@@ -206,8 +205,8 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacks, refresh
 	let debugContent = null;
 	if (isDebug) {
 		debugContent = <View>
-			<Text>{"ownFoodFeedback"}</Text>
-			<Text>{JSON.stringify(ownFoodFeedback, null, 2)}</Text>
+			<Text>{"ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict"}</Text>
+			<Text>{JSON.stringify(ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, null, 2)}</Text>
 		</View>
 
 	}
@@ -250,7 +249,7 @@ export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFe
 
 export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined;}) => {
 	const usedFoodId = food.id;
-	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 
 	const [language, setLanguage] = useProfileLanguageCode()
 
@@ -296,7 +295,7 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 
 		commentContent = (
 			<View style={{ width: "100%", paddingBottom: 20}}>
-				<AccountRequiredTouchableOpacity>
+				<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_save_comment}>
 					<TextInput placeholder={translation_your_comment} value={comment ?? ''} returnKeyType={ReturnKeyType.send} onChangeText={onChangeText} onSubmitEditing={() => {
 						onSubmit();
 					}} />
@@ -381,61 +380,49 @@ export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
 
 	const translation_average_rating = useTranslation(TranslationKeys.average_rating);
 	const translation_amount_rating = useTranslation(TranslationKeys.amount_ratings);
+	const translation_no_value = useTranslation(TranslationKeys.no_value);
 
 
 	let ratingAmount = food.rating_amount;
 	let ratingAverage = food.rating_average;
 
-	let details = [];
+	let renderedAmountRating: any = null;
 
-	if(foods_ratings_amount_display && ratingAmount !== null && ratingAmount !== undefined){
-		let borderRadiusRight = foods_ratings_average_display ? 0 : undefined
-
-		details.push(
-			<MyButton useTransparentBorderColor={true} useOnlyNecessarySpace={true} accessibilityLabel={translation_amount_rating} tooltip={translation_amount_rating} borderRightRadius={borderRadiusRight} text={ratingAmount+""} leftIcon={IconNames.amount_rating_icon} />
-		)
+	if(foods_ratings_amount_display){
+		let usedRatingAmount = ratingAmount ? ratingAmount : 0
+		renderedAmountRating = <SettingsRow labelLeft={translation_amount_rating} accessibilityLabel={translation_amount_rating} labelRight={usedRatingAmount+""} leftIcon={IconNames.amount_rating_icon} />
 	}
 
-	if(foods_ratings_average_display && ratingAverage !== null && ratingAverage !== undefined){
-		let borderRadiusLeft = foods_ratings_amount_display ? 0 : undefined
-
-		details.push(
-			<MyButton useTransparentBorderColor={true} useOnlyNecessarySpace={true} accessibilityLabel={translation_average_rating} tooltip={translation_average_rating} text={ratingAverage+""} borderLeftRadius={borderRadiusLeft} leftIcon={IconNames.average_icon} />
-		)
+	let renderedAverageRating: any = null;
+	if (foods_ratings_average_display) {
+		let usedRatingAverage = ratingAverage ? ratingAverage : translation_no_value
+		renderedAverageRating = <SettingsRow labelLeft={translation_average_rating} accessibilityLabel={translation_average_rating} labelRight={usedRatingAverage+""} leftIcon={IconNames.average_icon} />
 	}
 
-	return <View style={{
-		width: "100%",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		flexWrap: "wrap",
-	}}>
-		<View style={{
-			paddingTop: 10,
-		}}>
-			<FoodFeedbackRating food={food} showQuickAction={false}/>
-		</View>
-		<View style={{
-			paddingTop: 10,
-			flexDirection: "row",
-			justifyContent: "space-between",
-			alignItems: "center",
-		}}>
-			{details}
-		</View>
-	</View>
+	return <SettingsRowGroup >
+				{renderedAmountRating}
+				{renderedAverageRating}
+			</SettingsRowGroup>
 }
 
 export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	// get app_settings
 	const [usedFood, setUsedFood] = useState<Foods>(food);
 
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
+	const ownFoodFeedbackReloadKey = ownFoodFeedback?.date_updated+""
 	const [remoteFoodFeedbacks, setRemoteFoodFeedbacks] = useState<FoodsFeedbacks[] | null | undefined>(undefined);
+	const [remoteFoodFeedbacksLabelsEntries, setRemoteFoodsFeedbacksLabelsEntries] = useState< FoodsFeedbacksLabelsEntries[] | null | undefined>(undefined);
+
 	const isDemo = useIsDemo();
 
 	async function loadRemoteFoodsFeedbacksForFood(foodId: string): Promise<FoodsFeedbacks[]> {
-		let result = await loadFoodsFeedbacksForFoodWithFeedbackLabelsIds(foodId, isDemo);
+		let result = await loadFoodsFeedbacksForFood(foodId, isDemo);
+		return result;
+	}
+
+	async function loadRemoteFoodsFeedbacksLabelsEntriesForFood(foodId: string): Promise< FoodsFeedbacksLabelsEntries[]> {
+		let result = await loadFoodsFeedbacksLabelsEntriesForFood(foodId, isDemo);
 		return result;
 	}
 
@@ -444,6 +431,9 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 		// load the labels from the server for the food
 		loadRemoteFoodsFeedbacksForFood(food.id)
 			.then(setRemoteFoodFeedbacks)
+			.catch(console.error);
+		loadRemoteFoodsFeedbacksLabelsEntriesForFood(food.id)
+			.then(setRemoteFoodsFeedbacksLabelsEntries)
 			.catch(console.error);
 		loadFood(isDemo, food.id)
 			.then(setUsedFood)
@@ -459,7 +449,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	useEffect(() => {
 		// load the labels from the server for the food
 		loadData();
-	}, [food.id]);
+	}, [food.id, ownFoodFeedbackReloadKey]);
 
 	return (
 		<View style={{
@@ -471,7 +461,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 			}}>
 				<FoodFeedbackRatingDetails food={usedFood} />
 			</View>
-			<FoodFeedbacksLabelsComponent food={usedFood} remoteFoodFeedbacks={remoteFoodFeedbacks} refresh={refresh}/>
+			<FoodFeedbacksLabelsComponent food={usedFood} remoteFoodFeedbacksLabelsEntries={remoteFoodFeedbacksLabelsEntries} refresh={refresh}/>
 			<FoodFeedbackCommentDetails food={usedFood} remoteFoodFeedbacks={remoteFoodFeedbacks}/>
 		</View>
 	)

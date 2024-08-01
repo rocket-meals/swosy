@@ -1,6 +1,6 @@
 import {Icon, Text, View} from '@/components/Themed';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {TranslationKeys, useTranslations} from '@/helper/translations/Translation';
+import {TranslationKeys, useTranslation, useTranslations} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
 
 export type NutritionListProps = {
@@ -16,6 +16,8 @@ export type NutritionListProps = {
 }
 
 export function NutritionListElement(props: {renderedIcon: any, label: string, value?: number | null}) {
+	const translation_no_value = useTranslation(TranslationKeys.no_value);
+
 	return (
 		<View style={{ flex: 1, flexDirection: 'row', paddingBottom: 12 }}>
 			<View style={{ flexDirection: 'column' }}>
@@ -23,7 +25,7 @@ export function NutritionListElement(props: {renderedIcon: any, label: string, v
 			</View>
 			<View style={{ marginLeft: 4, flex: 1}}>
 				<Text>
-					{props.value ? props.value + 'g' : 'N/A'}
+					{props.value ? props.value + 'g' : translation_no_value}
 				</Text>
 				<View style={{
 					flex: 1

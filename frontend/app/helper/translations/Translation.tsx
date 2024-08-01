@@ -211,6 +211,7 @@ export enum TranslationKeys {
 	washingmachine_state_finished = "washingmachine_state_finished",
 	washingmachine_estimate_finished_at = "washingmachine_estimate_finished_at",
 	washingmachine_state_unknown = "washingmachine_state_unknown",
+	no_value = "no_value",
 	current = "current",
 	active = "active",
 	inactive = "inactive",
@@ -605,6 +606,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Количество оценок',
 		[LanguageKeys.tr_TR]: 'Değerlendirme sayısı',
 		[LanguageKeys.zh_CN]: '评分数量'
+	},
+	no_value: {
+		[LanguageKeys.de_DE]: 'N/A',
+		[LanguageKeys.en_US]: 'N/A',
+		[LanguageKeys.ar_SA]: 'N/A',
+		[LanguageKeys.es_ES]: 'N/A',
+		[LanguageKeys.fr_FR]: 'N/A',
+		[LanguageKeys.ru_RU]: 'N/A',
+		[LanguageKeys.tr_TR]: 'N/A',
+		[LanguageKeys.zh_CN]: 'N/A'
 	},
 	accountbalance: {
 		[LanguageKeys.de_DE]: 'Guthaben',

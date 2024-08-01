@@ -77,6 +77,8 @@ export default defineHook(async ({action}, {
 		}
 		if(rating_amount > 0){
 			let rating_average = sum / rating_amount;
+			console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
+
 			await foodsService.updateOne(food_id, {
 				rating_average: rating_average,
 				rating_amount: rating_amount
@@ -86,7 +88,7 @@ export default defineHook(async ({action}, {
 			// set for food both values to null
 			await foodsService.updateOne(food_id, {
 				rating_average: null,
-				rating_amount: null
+				rating_amount: 0
 			})
 		}
 	}

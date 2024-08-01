@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {SettingsRowSpacer} from '@/components/settings/SettingsRowSpacer';
+import {View, Text} from "@/components/Themed";
 
 export interface SettingsRowGroupProps {
     children?: React.ReactNode | React.ReactNode[]
@@ -25,5 +26,13 @@ export const SettingsRowGroup: FunctionComponent<SettingsRowGroupProps> = ({chil
 		renderedChildren.push(<SettingsRowSpacer />)
 	}
 
-	return renderedChildren
+	return <View style={
+		{
+			width: "100%",
+			flexDirection: "row",
+			flexWrap: "wrap"
+		}
+	}>
+		{renderedChildren}
+	</View>
 }

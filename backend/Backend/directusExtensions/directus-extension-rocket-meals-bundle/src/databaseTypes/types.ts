@@ -759,7 +759,11 @@ export type Foods = {
   markings: any[] | FoodsMarkings[];
   protein_g?: number | null;
   rating_amount?: number | null;
+  rating_amount_legacy?: number | null;
   rating_average?: number | null;
+  rating_average_legacy?: number | null;
+  rating_legacy_settings: string;
+  rating_settings: string;
   saturated_fat_g?: number | null;
   sodium_g?: number | null;
   sort?: number | null;
@@ -778,7 +782,6 @@ export type FoodsFeedbacks = {
   food?: string | Foods | null;
   foodoffer?: string | Foodoffers | null;
   id: string;
-  labels: any[] | FoodsFeedbacksFoodsFeedbacksLabels[];
   notify?: boolean | null;
   profile?: string | Profiles | null;
   rating?: number | null;
@@ -786,13 +789,6 @@ export type FoodsFeedbacks = {
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
-};
-
-export type FoodsFeedbacksFoodsFeedbacksLabels = {
-  dislike?: boolean | null;
-  foods_feedbacks_id?: string | FoodsFeedbacks | null;
-  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
-  id: number;
 };
 
 export type FoodsFeedbacksLabels = {
@@ -810,6 +806,22 @@ export type FoodsFeedbacksLabels = {
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   visible?: boolean | null;
+};
+
+export type FoodsFeedbacksLabelsEntries = {
+  canteen?: string | Canteens | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  dislike?: boolean | null;
+  food?: string | Foods | null;
+  foodoffer?: string | Foodoffers | null;
+  id: string;
+  label?: string | FoodsFeedbacksLabels | null;
+  profile?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type FoodsFeedbacksLabelsTranslations = {
@@ -1082,7 +1094,6 @@ export type WikisDirectusRoles = {
 export type WikisTranslations = {
   be_source_for_translations?: boolean | null;
   content?: string | null;
-  icon?: string | null;
   id: number;
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
@@ -1139,8 +1150,8 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
-  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
+  foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];

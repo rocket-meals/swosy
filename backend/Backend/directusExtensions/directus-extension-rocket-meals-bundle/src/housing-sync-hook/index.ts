@@ -49,7 +49,7 @@ export default defineHook(async ({action}, {
     action(
         collection + ".items.update",
         async () => {
-            console.log("housing-sync-hook: update")
+            console.log(SCHEDULE_NAME+" hook: update")
             try {
                 await parseSchedule.parse();
             } catch (err) {

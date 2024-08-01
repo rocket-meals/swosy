@@ -38,6 +38,7 @@ export class PersistentStore {
 	static permissions = 'PersistentStore.permissions'
 	static foods = 'PersistentStore.foods'
 	static ownFoodFeedbacks = 'PersistentStore.ownFoodFeedbacks'
+	static ownFoodFeedbacksLabelsEntries = 'PersistentStore.ownFoodFeedbacksLabelsEntries'
 	static foodOffers = 'PersistentStore.foodOffers'
 
 	static sortConfigFoodoffers = 'PersistentStore.sortConfigFoodoffers'

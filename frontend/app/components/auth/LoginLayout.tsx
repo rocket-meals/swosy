@@ -9,7 +9,11 @@ import {PublicLegalRequiredLinks} from '@/components/legal/PublicLegalRequiredLi
 import {ProjectBackgroundImage} from '@/components/project/ProjectBackgroundImage';
 import {MySafeAreaViewForScreensWithoutHeader} from '@/components/MySafeAreaViewForScreensWithoutHeader';
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import React from "react";
 
+export type LoginLayoutProps = {
+	children: React.ReactNode | React.ReactNode[]
+}
 export const LoginLayout = (props: any) => {
 	/**
      breakpoints = {

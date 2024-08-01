@@ -44,6 +44,8 @@ export class CollectionNames{
 
     static APARTMENTS = "apartments"
 
+    static WASHINGMACHINES = "washingmachines"
+
     static NEWS = "news"
 
     static PROFILES = "profiles"

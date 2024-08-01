@@ -8,19 +8,19 @@
     "display": null,
     "display_options": null,
     "field": "rating_amount",
-    "group": null,
+    "group": "rating_settings",
     "hidden": false,
     "interface": "input",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 27,
+    "sort": 2,
     "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "rating_amount",

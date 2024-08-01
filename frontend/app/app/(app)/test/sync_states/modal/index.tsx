@@ -8,7 +8,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {NonPersistentStore} from "@/helper/syncState/NonPersistentStore";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {getDemoFoodFeedbackWithLabels} from "@/states/SynchedFoods";
+import {getDemoFoodFeedback} from "@/states/SynchedFoods";
 import {loadMarkingsFromServer} from "@/states/SynchedMarkings";
 
 export const MyTestItem = ({id, usePersistentState}: {id: string, usePersistentState: boolean}) => {
@@ -53,7 +53,7 @@ export default function HomeScreen() {
 		let newItems = [];
 		let amount = 20;
 		for (let i = 0; i < amount; i++) {
-			let demoFoodFeedback = getDemoFoodFeedbackWithLabels(i);
+			let demoFoodFeedback = getDemoFoodFeedback(i, "demoFoodId");
 			newItems.push(demoFoodFeedback);
 		}
 

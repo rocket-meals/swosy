@@ -23,6 +23,12 @@
 
 ## Update/Upgrade
 
+### Update from fork
+
+ATTENTION: Please check the README in the top level directory of this repository.
+
+### Update Expo or dependencies
+
 https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/
 
 1. Upgrade the Expo SDK

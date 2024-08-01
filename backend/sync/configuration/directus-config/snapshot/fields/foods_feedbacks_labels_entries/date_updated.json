@@ -1,34 +1,36 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
-  "field": "dislike",
-  "type": "boolean",
+  "collection": "foods_feedbacks_labels_entries",
+  "field": "date_updated",
+  "type": "timestamp",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "foods_feedbacks_labels_entries",
     "conditions": null,
-    "display": null,
-    "display_options": null,
-    "field": "dislike",
+    "display": "datetime",
+    "display_options": {
+      "relative": true
+    },
+    "field": "date_updated",
     "group": null,
-    "hidden": false,
-    "interface": "boolean",
+    "hidden": true,
+    "interface": "datetime",
     "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 4,
+    "sort": 7,
     "special": [
-      "cast-boolean"
+      "date-updated"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "dislike",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
-    "data_type": "boolean",
-    "default_value": true,
+    "name": "date_updated",
+    "table": "foods_feedbacks_labels_entries",
+    "data_type": "timestamp with time zone",
+    "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

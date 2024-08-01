@@ -23,7 +23,7 @@ export const FoodNotifyButton : FunctionComponent<FoodNotifyButtonProps> = (prop
 const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> = (props) => {
 	const food = props.food;
 	const food_id = food.id;
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food.id);
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 
 	const food_name = useFoodTranslation(food) || food_id
 
@@ -41,7 +41,7 @@ export type FoodNotifyButtonWithNameProps = {
 }
 export const FoodNotifyButtonWithPermissionWithName : FunctionComponent<FoodNotifyButtonWithNameProps> = (props) => {
 	const food_id = props.food_id;
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify, setOwnLabels] = useSynchedOwnFoodFeedback(food_id);
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food_id);
 
 	const color = useFoodsAreaColor()
 
