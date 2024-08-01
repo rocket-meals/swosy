@@ -23,14 +23,19 @@ export default defineHook(async ({action, filter}, {
 	let foodfeedbacksService = itemsServiceCreator.getItemsService(collection);
 
 
+
 	async function recalculateFoodFeedbackIdsRatings(food_feedback_ids: string[]){
-		//console.log("recalculateFoodFeedbackIdsRatings: food_feedback_ids: "+food_feedback_ids.length);
-		// so maybe a lot off food_feedback for the same food are deleted.
-		// we should therefore just get the unique food_ids which we need to recalculate the rating for
+		// so we need to block the deletion of the food_feedbacks, because we need to get the food_id from the food_feedbacks
+		let food_ids = await getFoodIdsFromFoodFeedbackIds(food_feedback_ids);
+		console.log("recalculateFoodFeedbackIdsRatings: food_ids: "+food_ids);
+		// so as we have the food_ids, we can now recalculate the ratings for the food_ids non-blocking
+		recalculateFoodIdsRatingsNonBlocking(food_ids);
+	}
+
+	async function getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){
 		let food_id_dict: {[key: string]: boolean} = {}
 
 		for(let food_feedback_id of food_feedback_ids){
-			//console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
 			let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
 			let food_id = food_feedback?.food;
 			if(!!food_id){
@@ -38,16 +43,18 @@ export default defineHook(async ({action, filter}, {
 			}
 		}
 
-		let uniqueFoodIds = Object.keys(food_id_dict)
-		//console.log("Amount unique food ids: "+uniqueFoodIds.length);
+		return Object.keys(food_id_dict);
+	}
 
-		for(let food_id of uniqueFoodIds){
-			await recalculateFoodRating(food_id);
+	function recalculateFoodIdsRatingsNonBlocking(food_ids: string[]){
+		for(let food_id of food_ids){
+			// await // we do not want to block the deletion of the food_feedbacks
+			recalculateFoodRating(food_id);
 		}
 	}
 
 	async function recalculateFoodRating(food_id: string){
-		//console.log("recalculateFoodRating: food_id: "+food_id);
+		console.log("recalculateFoodRating: food_id: "+food_id);
 
 		let food_feedbacks = [];
 		try{
@@ -76,7 +83,7 @@ export default defineHook(async ({action, filter}, {
 		}
 		if(rating_amount > 0){
 			let rating_average = sum / rating_amount;
-			//console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
+			console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
 
 			await foodsService.updateOne(food_id, {
 				rating_average: rating_average,
@@ -84,6 +91,7 @@ export default defineHook(async ({action, filter}, {
 			})
 
 		} else {
+			console.log("recalculateFoodRating: food_id: "+food_id+" | rating_amount: "+rating_amount+" | food_feedbacks.length: "+food_feedbacks.length);
 			// set for food both values to null
 			await foodsService.updateOne(food_id, {
 				rating_average: null,
@@ -138,9 +146,9 @@ export default defineHook(async ({action, filter}, {
 			   // @ts-ignore
 			   meta, context) => {
 			// get the collection which was deleted
-			//console.log("DELETE FOOD FEEDBACKS");
-			//console.log("payloadModifiable");
-			//console.log(payloadModifiable);
+			console.log("DELETE FOOD FEEDBACKS");
+			console.log("payloadModifiable");
+			console.log(payloadModifiable);
 			// [ '78d05b3b-7939-4308-9d38-098426d687cd' ]
 
 			//console.log("meta");
@@ -161,8 +169,7 @@ export default defineHook(async ({action, filter}, {
 			if(!food_feedbacks_ids || !Array.isArray(food_feedbacks_ids) || food_feedbacks_ids.length === 0){
 				// do nothing
 			} else {
-				//await // we do not block the deletion of the food_feedbacks
-				recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+				await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
 			}
 			return payloadModifiable;
 		}
