@@ -23,15 +23,6 @@ export default defineHook(async ({action, filter}, {
 	let foodfeedbacksService = itemsServiceCreator.getItemsService(collection);
 
 
-
-	async function recalculateFoodFeedbackIdsRatings(food_feedback_ids: string[]){
-		// so we need to block the deletion of the food_feedbacks, because we need to get the food_id from the food_feedbacks
-		let food_ids = await getFoodIdsFromFoodFeedbackIds(food_feedback_ids);
-		console.log("recalculateFoodFeedbackIdsRatings: food_ids: "+food_ids);
-		// so as we have the food_ids, we can now recalculate the ratings for the food_ids non-blocking
-		recalculateFoodIdsRatingsNonBlocking(food_ids);
-	}
-
 	async function getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){
 		let food_id_dict: {[key: string]: boolean} = {}
 
@@ -46,15 +37,22 @@ export default defineHook(async ({action, filter}, {
 		return Object.keys(food_id_dict);
 	}
 
-	function recalculateFoodIdsRatingsNonBlocking(food_ids: string[]){
+	function recalculateFoodIdsRatingsNonBlocking(food_ids: string[], ignore_food_feedback_ids?: string[]){
 		for(let food_id of food_ids){
 			// await // we do not want to block the deletion of the food_feedbacks
-			recalculateFoodRating(food_id);
+			recalculateFoodRating(food_id, ignore_food_feedback_ids);
 		}
 	}
 
-	async function recalculateFoodRating(food_id: string){
-		console.log("recalculateFoodRating: food_id: "+food_id);
+	async function recalculateFoodRating(food_id: string, ignore_food_feedback_ids?: string[]){
+		//console.log("recalculateFoodRating: food_id: "+food_id);
+
+		let ignore_food_feedbacks_ids_dict: {[key: string]: boolean} = {}
+		if(!!ignore_food_feedback_ids){
+			for(let ignore_food_feedback_id of ignore_food_feedback_ids){
+				ignore_food_feedbacks_ids_dict[ignore_food_feedback_id] = true;
+			}
+		}
 
 		let food_feedbacks = [];
 		try{
@@ -73,17 +71,22 @@ export default defineHook(async ({action, filter}, {
 		const MAX_RATING = 5;
 		const MIN_RATING = 1;
 		for(let food_feedback of food_feedbacks){
-			let rating = food_feedback?.rating;
-			if(rating!==undefined && rating!==null){ // then must be a number
-				if(MIN_RATING <= rating && rating <= MAX_RATING){ // rating is in valid range // Altough we checked that in directus, better safe than sorry
-					sum += rating;
-					rating_amount++;
+			let food_feedback_id = food_feedback.id;
+			let ignore = ignore_food_feedbacks_ids_dict[food_feedback_id];
+
+			if(!ignore){
+				let rating = food_feedback?.rating;
+				if(rating!==undefined && rating!==null){ // then must be a number
+					if(MIN_RATING <= rating && rating <= MAX_RATING){ // rating is in valid range // Altough we checked that in directus, better safe than sorry
+						sum += rating;
+						rating_amount++;
+					}
 				}
 			}
 		}
 		if(rating_amount > 0){
 			let rating_average = sum / rating_amount;
-			console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
+			//console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
 
 			await foodsService.updateOne(food_id, {
 				rating_average: rating_average,
@@ -91,7 +94,7 @@ export default defineHook(async ({action, filter}, {
 			})
 
 		} else {
-			console.log("recalculateFoodRating: food_id: "+food_id+" | rating_amount: "+rating_amount+" | food_feedbacks.length: "+food_feedbacks.length);
+			//console.log("recalculateFoodRating: food_id: "+food_id+" | rating_amount: "+rating_amount+" | food_feedbacks.length: "+food_feedbacks.length);
 			// set for food both values to null
 			await foodsService.updateOne(food_id, {
 				rating_average: null,
@@ -109,7 +112,9 @@ export default defineHook(async ({action, filter}, {
 			//console.log(meta);
 
 			let food_feedbacks_ids = meta.keys;
-			await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+			let food_ids = await getFoodIdsFromFoodFeedbackIds(food_feedbacks_ids);
+			let ignore_food_feedback_ids: string[] = [] // we do not want to ignore any food_feedbacks since we just created them
+			recalculateFoodIdsRatingsNonBlocking(food_ids, ignore_food_feedback_ids);
 			// {
 			//   event: 'foods_feedbacks.items.update',
 			//   payload: { rating: 4 },
@@ -128,7 +133,9 @@ export default defineHook(async ({action, filter}, {
 			//console.log(meta);
 			let food_feedback_id = meta.key;
 			let food_feedbacks_ids = [food_feedback_id];
-			await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+			let food_ids = await getFoodIdsFromFoodFeedbackIds(food_feedbacks_ids);
+			let ignore_food_feedback_ids: string[] = [] // we do not want to ignore any food_feedbacks since we just updated them
+			recalculateFoodIdsRatingsNonBlocking(food_ids, ignore_food_feedback_ids);
 			//{
 			//  |   event: 'foods_feedbacks.items.create',
 			//  payload: { rating: 4, food: '1090' },
@@ -146,9 +153,9 @@ export default defineHook(async ({action, filter}, {
 			   // @ts-ignore
 			   meta, context) => {
 			// get the collection which was deleted
-			console.log("DELETE FOOD FEEDBACKS");
-			console.log("payloadModifiable");
-			console.log(payloadModifiable);
+			//console.log("DELETE FOOD FEEDBACKS");
+			//console.log("payloadModifiable");
+			//console.log(payloadModifiable);
 			// [ '78d05b3b-7939-4308-9d38-098426d687cd' ]
 
 			//console.log("meta");
@@ -169,7 +176,11 @@ export default defineHook(async ({action, filter}, {
 			if(!food_feedbacks_ids || !Array.isArray(food_feedbacks_ids) || food_feedbacks_ids.length === 0){
 				// do nothing
 			} else {
-				await recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+				let food_ids = await getFoodIdsFromFoodFeedbackIds(food_feedbacks_ids);
+				let ignore_food_feedback_ids: string[] = food_feedbacks_ids // ATTENTION: we want to ignore the deleted food_feedbacks.
+				// Because we are filtering, the feedback is not deleted yet, resulting in a wrong rating calculation considering the to be deleted feedbacks
+				// Therefore we want to ignore the deleted feedbacks
+				recalculateFoodIdsRatingsNonBlocking(food_ids, ignore_food_feedback_ids);
 			}
 			return payloadModifiable;
 		}
