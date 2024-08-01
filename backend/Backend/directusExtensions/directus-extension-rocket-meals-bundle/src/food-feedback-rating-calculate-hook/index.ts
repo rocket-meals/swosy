@@ -30,7 +30,7 @@ export default defineHook(async ({action, filter}, {
 		let food_id_dict: {[key: string]: boolean} = {}
 
 		for(let food_feedback_id of food_feedback_ids){
-			console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
+			//console.log("Get food Feedback for: food_feedback_id: "+food_feedback_id);
 			let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
 			let food_id = food_feedback?.food;
 			if(!!food_id){
@@ -47,7 +47,7 @@ export default defineHook(async ({action, filter}, {
 	}
 
 	async function recalculateFoodRating(food_id: string){
-		console.log("recalculateFoodRating: food_id: "+food_id);
+		//console.log("recalculateFoodRating: food_id: "+food_id);
 
 		let food_feedbacks = [];
 		try{
@@ -76,7 +76,7 @@ export default defineHook(async ({action, filter}, {
 		}
 		if(rating_amount > 0){
 			let rating_average = sum / rating_amount;
-			console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
+			//console.log("recalculateFoodRating: food_id: "+food_id+" | sum: "+sum+" | rating_amount: "+rating_amount+" | rating_average: "+rating_average+" | food_feedbacks.length: "+food_feedbacks.length);
 
 			await foodsService.updateOne(food_id, {
 				rating_average: rating_average,
@@ -134,32 +134,36 @@ export default defineHook(async ({action, filter}, {
 	//action( // we cannot use action here, because we would only get the keys of the deleted food_feedbacks. From this we dont know the food_id. Therefore we need to use filter, but we do not block the deletion of the food_feedbacks
 	filter(
 		collection + ".items.delete",
-		async (payloadModifiable, meta, context) => {
+		async (payloadModifiable,
+			   // @ts-ignore
+			   meta, context) => {
 			// get the collection which was deleted
-			console.log("DELETE FOOD FEEDBACKS");
-			console.log("payloadModifiable");
-			console.log(payloadModifiable);
+			//console.log("DELETE FOOD FEEDBACKS");
+			//console.log("payloadModifiable");
+			//console.log(payloadModifiable);
+			// [ '78d05b3b-7939-4308-9d38-098426d687cd' ]
 
-			console.log("meta");
-			console.log(meta);
+			//console.log("meta");
+			//console.log(meta);
 			// {
 			//   event: 'foods_feedbacks.items.delete',
 			//   collection: 'foods_feedbacks'
 			// }
 
-			console.log("context");
-			console.log(context);
+			//console.log("context");
+			//console.log(context);
+			// Information about the user and the permissions and so on
 
-			let food_feedbacks_ids = payloadModifiable.keys;
-			//await // we do not block the deletion of the food_feedbacks
+			let food_feedbacks_ids = payloadModifiable;
 
-			recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
-			// {
-			//   event: 'foods_feedbacks.items.delete',
-			//   payload: [ '73e6dd26-f570-428d-8f8c-0a452beb222e' ],
-			//   keys: [ '73e6dd26-f570-428d-8f8c-0a452beb222e' ],
-			//   collection: 'foods_feedbacks'
-			// }
+
+			// check if food_feedbacks_ids is an array and the object exists
+			if(!food_feedbacks_ids || !Array.isArray(food_feedbacks_ids) || food_feedbacks_ids.length === 0){
+				// do nothing
+			} else {
+				//await // we do not block the deletion of the food_feedbacks
+				recalculateFoodFeedbackIdsRatings(food_feedbacks_ids);
+			}
 			return payloadModifiable;
 		}
 	);
