@@ -243,7 +243,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'settings/delete-account/index',
+				routeName: 'settings/delete-user/index',
 				label: translation_delete_account,
 				title: translation_delete_account,
 				icon: IconNames.user_account_delete_icon,

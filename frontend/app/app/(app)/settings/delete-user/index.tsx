@@ -13,7 +13,7 @@ import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 
 
-export default function EatingHabitsScreen() {
+export default function DeleteAccountScreen() {
 
 	const translation_title = useTranslationAccountDelete();
 
