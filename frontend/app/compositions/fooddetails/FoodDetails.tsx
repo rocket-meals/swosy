@@ -41,6 +41,7 @@ import {
 	loadFoodsFeedbacksLabelsEntriesForFood,
 	useSynchedOwnFoodFeedbackLabelEntries
 } from "@/states/SynchedFoodFeedbacksLabelsEntries";
+import {AppConfiguration} from "@/constants/AppConfiguration";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -596,50 +597,58 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 		</View>
 	</View>
 
-	return(
+	let tabs = [
 
+		]
+
+	if(AppConfiguration.DEFAULT_FOOD_NUTRITION_SHOW){
+		let nutritionTab = {
+			iconName: IconNames.nutrition_icon,
+			color: foodsAreaColor,
+			accessibilityLabel: translations_nutrition,
+			text: translations_nutrition,
+			content: <View style={{
+				width: "100%",
+				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+			}}><FoodNutritionDetails foodOfferData={foodOfferData}/></View>
+		};
+		tabs.push(nutritionTab)
+	}
+
+	tabs.push( {
+			iconName: IconNames.eating_habit_icon,
+			color: foodsAreaColor,
+			accessibilityLabel: translations_markings,
+			text: translations_markings,
+			content: <View style={{
+				width: "100%",
+				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+			}}><FoodMarkingDetails foodOfferData={foodOfferData}/></View>
+		})
+
+	tabs.push(
+		{
+			iconName: IconNames.comment_icon,
+			color: foodsAreaColor,
+			accessibilityLabel: translations_food_feedbacks,
+			text: translations_food_feedbacks,
+			content: <View style={{
+				width: "100%",
+				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+			}}><FoodFeedbackDetails food={food} /></View>
+		})
+
+
+	return(
 			<DetailsComponent item={food} heading={
 				food.alias
 			}
-							  subHeadingComponent={quickActions}
-							  image={{
-								  assetId: food.image,
-								  image_url: food.image_remote_url,
-							  }}
-							  tabs={
-								  [
-									  {
-										  iconName: IconNames.nutrition_icon,
-										  color: foodsAreaColor,
-										  accessibilityLabel: translations_nutrition,
-										  text: translations_nutrition,
-										  content: <View style={{
-											  width: "100%",
-											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-										  }}><FoodNutritionDetails foodOfferData={foodOfferData}/></View>
-									  },
-									  {
-										  iconName: IconNames.eating_habit_icon,
-										  color: foodsAreaColor,
-										  accessibilityLabel: translations_markings,
-										  text: translations_markings,
-										  content: <View style={{
-											  width: "100%",
-											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-										  }}><FoodMarkingDetails foodOfferData={foodOfferData}/></View>
-									  },
-									  {
-										  iconName: IconNames.comment_icon,
-										  color: foodsAreaColor,
-										  accessibilityLabel: translations_food_feedbacks,
-										  text: translations_food_feedbacks,
-										  content: <View style={{
-											  width: "100%",
-											  minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-										  }}><FoodFeedbackDetails food={food} /></View>
-									  },
-								  ]
-							  }
+			  subHeadingComponent={quickActions}
+			  image={{
+				  assetId: food.image,
+				  image_url: food.image_remote_url,
+			  }}
+			  tabs={tabs}
 			/>
 	)
 }
