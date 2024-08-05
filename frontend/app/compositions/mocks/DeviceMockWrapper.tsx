@@ -84,20 +84,13 @@ interface AppState {
 export const DeviceMockWrapper: FunctionComponent<AppState> = ({children, ...props}) => {
 
 	let deviceMockState = useDeviceMockTypeState();
-	deviceMockState = "iphone"
 
 	const statusBarHeight = getStatusBarHeightByDeviceMockType(deviceMockState);
 	let time = getStatusBarTimeByDeviceMockType(deviceMockState);
-	const isLandscape = getIsLandScape();
 
 	if(statusBarHeight === 0) {
 		return children;
 	}
-
-	if(isLandscape) { // no status bar in landscape
-		return children;
-	}
-
 
 	return <View style={{
 		width: "100%",
