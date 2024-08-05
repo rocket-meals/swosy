@@ -115,11 +115,11 @@ export const TEXT_SIZE_SMALL = "sm";
 export const TEXT_SIZE_EXTRA_SMALL = "xs";
 
 export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
-export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {
+export function getFontSizeInPixelBySize(size: TextSizeType | undefined): number | undefined {
 	const tokens = config.tokens;
 	const fontSize = tokens.fontSizes
 	const usedSize = size || TEXT_SIZE_DEFAULT;
-	return fontSize[usedSize];
+	return fontSize[usedSize]
 }
 
 export function getLineHeightInPixelBySize(size: TextSizeType | undefined) {

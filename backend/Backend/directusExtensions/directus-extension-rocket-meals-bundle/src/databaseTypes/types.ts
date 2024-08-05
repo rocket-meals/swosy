@@ -746,8 +746,12 @@ export type Foods = {
   calories_kcal?: number | null;
   carbohydrate_g?: number | null;
   category?: string | null;
+  co2_g?: number | null;
+  co2_rating?: string | null;
+  co2_saving_percentage?: number | null;
   date_created?: string | null;
   date_updated?: string | null;
+  environmental_impact: string;
   extra?: string | null;
   fat_g?: number | null;
   feedbacks: any[] | FoodsFeedbacks[];
@@ -757,6 +761,7 @@ export type Foods = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   markings: any[] | FoodsMarkings[];
+  nutrition: string;
   protein_g?: number | null;
   rating_amount?: number | null;
   rating_amount_legacy?: number | null;

@@ -4,7 +4,6 @@ import {Devices} from '@/helper/database/databaseTypes/types';
 import * as DeviceInfo from 'expo-device';
 import {DeviceType} from 'expo-device';
 import {PlatformHelper} from '@/helper/PlatformHelper';
-import {NotificationHelper} from '@/helper/notification/NotificationHelper';
 
 /**
  * Defines the breakpoints for responsive design.
@@ -112,6 +111,15 @@ export function useInsets(): EdgeInsets {
 	};
 }
 
+export function getIsLandScape(): boolean {
+	const windowWidth = Dimensions.get('screen').width;
+	const windowHeight = Dimensions.get('screen').height;
+	let isLandscape = windowWidth > windowHeight;
+	if (PlatformHelper.isWeb()) {
+		isLandscape = windowWidth > windowHeight;
+	}
+	return isLandscape;
+}
 
 export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Promise<DeviceInformationType>
 	const windowWidth = Dimensions.get('screen').width;
@@ -122,10 +130,7 @@ export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Pr
 	const brand = DeviceInfo.brand;
 	const platform = PlatformHelper.getPlatformDisplayName();
 	const systemVersion = DeviceInfo.osVersion;
-	let isLandscape = windowWidth > windowHeight;
-	if (PlatformHelper.isWeb()) {
-		isLandscape = windowWidth > windowHeight;
-	}
+	let isLandscape = getIsLandScape();
 
 	/**
 	 * ATTENTION !!!

@@ -19,6 +19,7 @@ import {KeyboardAvoidingView, Platform} from 'react-native';
 import {RootAppUpdateChecker} from "@/components/rootLayout/RootAppUpdateChecker";
 import {LoadingLogoProvider} from "@/compositions/loadingScreens/LoadingLogoProvider";
 import Slot = Navigator.Slot;
+import {DeviceMockWrapper} from "@/compositions/mocks/DeviceMockWrapper";
 
 // Setting up Secure Storage and Sync State
 // Preventing the splash screen from auto-hiding before asset loading is complete
@@ -112,15 +113,17 @@ export default function RootLayout() {
       <StoreProvider store={store} key={reloadNumber+""}>
         <GluestackUIProvider config={config} key={reloadNumber+""}>
           <RootThemeProvider key={reloadNumber+""}>
-			  <LoadingLogoProvider key={reloadNumber+""}>
-				  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""}>
-					  <RootServerStatusFlowLoader key={reloadNumber+""} >
-						  <RootAuthUserFlowLoader key={reloadNumber+""}>
-							  <Slot key={reloadNumber} />
-						  </RootAuthUserFlowLoader>
-					  </RootServerStatusFlowLoader>
-				  </RootAppUpdateChecker>
-			  </LoadingLogoProvider>
+			  <DeviceMockWrapper key={reloadNumber+""}>
+				  <LoadingLogoProvider key={reloadNumber+""}>
+					  <RootAppUpdateChecker key={reloadNumber+""} reloadNumber={reloadNumber+""}>
+						  <RootServerStatusFlowLoader key={reloadNumber+""} >
+							  <RootAuthUserFlowLoader key={reloadNumber+""}>
+								  <Slot key={reloadNumber} />
+							  </RootAuthUserFlowLoader>
+						  </RootServerStatusFlowLoader>
+					  </RootAppUpdateChecker>
+				  </LoadingLogoProvider>
+			  </DeviceMockWrapper>
           </RootThemeProvider>
         </GluestackUIProvider>
       </StoreProvider>

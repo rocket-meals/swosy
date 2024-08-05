@@ -148,4 +148,9 @@ export class IconNames {
 
     static expand_icon = "chevron-down"
     static collapse_icon = "chevron-up"
+
+    // Phone mock
+    static phone_mock_iphone_battery_full_icon = IconFamily.FontAwesome+IconParseDelimeter+"battery-full"
+    static phone_mock_iphone_wifi_icon = IconFamily.FontAwesome+IconParseDelimeter+"wifi"
+    static phone_mock_iphone_signal_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+"signal"
 }
