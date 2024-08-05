@@ -30565,6 +30565,20 @@
             "nullable": true,
             "type": "integer"
           },
+          "co2_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "co2_saving_percentage": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "co2_rating": {
+            "nullable": true,
+            "type": "string"
+          },
           "translations": {
             "nullable": true,
             "type": "array",

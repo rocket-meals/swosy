@@ -2324,6 +2324,9 @@ type foods {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   rating_average_legacy: Float
   rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
   translations_func: count_functions
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
@@ -2371,6 +2374,9 @@ type foods_aggregated_count {
   user_updated: Int
   rating_average_legacy: Int
   rating_amount_legacy: Int
+  co2_g: Int
+  co2_saving_percentage: Int
+  co2_rating: Int
   translations: Int
   feedbacks: Int
   markings: Int
@@ -2390,6 +2396,8 @@ type foods_aggregated_fields {
   sugar_g: Float
   rating_average_legacy: Float
   rating_amount_legacy: Float
+  co2_g: Float
+  co2_saving_percentage: Float
 }
 
 type foods_feedbacks {
@@ -3905,6 +3913,9 @@ type version_foods {
   user_updated: JSON
   rating_average_legacy: Float
   rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   translations: JSON
   feedbacks: JSON
   markings: JSON
@@ -5356,6 +5367,9 @@ input create_foods_input {
   user_updated: create_directus_users_input
   rating_average_legacy: Float
   rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   translations: [create_foods_translations_input]
   feedbacks: [create_foods_feedbacks_input]
   markings: [create_foods_markings_input]
@@ -6066,6 +6080,9 @@ input foods_filter {
   user_updated: directus_users_filter
   rating_average_legacy: number_filter_operators
   rating_amount_legacy: number_filter_operators
+  co2_g: number_filter_operators
+  co2_saving_percentage: number_filter_operators
+  co2_rating: string_filter_operators
   translations: foods_translations_filter
   translations_func: count_function_filter_operators
   feedbacks: foods_feedbacks_filter
@@ -6888,6 +6905,9 @@ input update_foods_input {
   user_updated: update_directus_users_input
   rating_average_legacy: Float
   rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   translations: [update_foods_translations_input]
   feedbacks: [update_foods_feedbacks_input]
   markings: [update_foods_markings_input]

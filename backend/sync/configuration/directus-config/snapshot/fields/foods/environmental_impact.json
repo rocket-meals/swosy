@@ -1,26 +1,27 @@
 {
   "collection": "foods",
-  "field": "translations",
+  "field": "environmental_impact",
   "type": "alias",
   "meta": {
     "collection": "foods",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "translations",
+    "field": "environmental_impact",
     "group": null,
     "hidden": false,
-    "interface": "translations",
+    "interface": "group-detail",
     "note": null,
     "options": {
-      "defaultOpenSplitView": true,
-      "userLanguage": true
+      "headerIcon": "nature"
     },
     "readonly": false,
     "required": false,
-    "sort": 15,
+    "sort": 19,
     "special": [
-      "translations"
+      "alias",
+      "group",
+      "no-data"
     ],
     "translations": null,
     "validation": null,
