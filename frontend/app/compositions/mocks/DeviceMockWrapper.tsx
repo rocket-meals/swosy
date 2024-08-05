@@ -25,69 +25,57 @@ const getStatusBarTimeByDeviceMockType = (deviceMockType: DeviceMockType): strin
 	return "12:34";
 }
 
-interface DeviceMockWrapperPhoneProps {
-	deviceMockState: DeviceMockType;
+interface DeviceMockWrapperStatusBarProps {
+	statusBarHeight: number;
+	time: string;
 }
-const DeviceMockWrapperPhone: FunctionComponent<DeviceMockWrapperPhoneProps> = ({deviceMockState, ...props}) => {
-
-	const statusBarHeight = getStatusBarHeightByDeviceMockType(deviceMockState);
-	let time = getStatusBarTimeByDeviceMockType(deviceMockState);
-	const isLandscape = getIsLandScape();
-
-	if(statusBarHeight === 0) {
-		return null;
-	}
-
-	if(isLandscape) { // no status bar in landscape
-		return null;
-	}
-
+export const DeviceMockWrapperStatusBar: FunctionComponent<DeviceMockWrapperStatusBarProps> = ({statusBarHeight, time, ...props}) => {
 	const iconMargin = 5;
 
 	return <View style={{
-		width: "100%",
-		height: statusBarHeight,
-		flexDirection: "row",
-		justifyContent: "center",
-		alignItems: "center",
-	}}>
-		<View style={{
-			paddingLeft: statusBarHeight/2,
-			flex: 1,
+			width: "100%",
+			height: statusBarHeight,
 			flexDirection: "row",
+			justifyContent: "center",
 			alignItems: "center",
 		}}>
-			<Text size={TEXT_SIZE_SMALL}>
-				{time}
-			</Text>
+			<View style={{
+				paddingLeft: statusBarHeight/2,
+				flex: 1,
+				flexDirection: "row",
+				alignItems: "center",
+			}}>
+				<Text size={TEXT_SIZE_SMALL}>
+					{time}
+				</Text>
+			</View>
+			<View style={{
+				paddingRight: statusBarHeight/2,
+				flex: 1,
+				justifyContent: "flex-end",
+				flexDirection: "row",
+				alignItems: "center",
+			}}>
+				<Icon name={IconNames.phone_mock_iphone_signal_icon}
+					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  style={{
+						  margin: iconMargin,
+					  }}
+				/>
+				<Icon name={IconNames.phone_mock_iphone_wifi_icon}
+					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  style={{
+						  margin: iconMargin,
+					  }}
+				/>
+				<Icon name={IconNames.phone_mock_iphone_battery_full_icon}
+					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  style={{
+						  margin: iconMargin,
+					  }}
+				/>
+			</View>
 		</View>
-		<View style={{
-			paddingRight: statusBarHeight/2,
-			flex: 1,
-			justifyContent: "flex-end",
-			flexDirection: "row",
-			alignItems: "center",
-		}}>
-			<Icon name={IconNames.phone_mock_iphone_signal_icon}
-				  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
-				  style={{
-					  margin: iconMargin,
-				  }}
-			/>
-			<Icon name={IconNames.phone_mock_iphone_wifi_icon}
-				  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
-				  style={{
-					  margin: iconMargin,
-				  }}
-			/>
-			<Icon name={IconNames.phone_mock_iphone_battery_full_icon}
-				  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
-				  style={{
-					  margin: iconMargin,
-				  }}
-			/>
-		</View>
-	</View>
 }
 
 interface AppState {
@@ -98,12 +86,26 @@ export const DeviceMockWrapper: FunctionComponent<AppState> = ({children, ...pro
 	let deviceMockState = useDeviceMockTypeState();
 	deviceMockState = "iphone"
 
+	const statusBarHeight = getStatusBarHeightByDeviceMockType(deviceMockState);
+	let time = getStatusBarTimeByDeviceMockType(deviceMockState);
+	const isLandscape = getIsLandScape();
+
+	if(statusBarHeight === 0) {
+		return children;
+	}
+
+	if(isLandscape) { // no status bar in landscape
+		return children;
+	}
+
+
 	return <View style={{
 		width: "100%",
 		height: "100%",
+		flex: 1,
 		flexDirection: "column",
 	}}>
-		<DeviceMockWrapperPhone deviceMockState={deviceMockState} />
+		<DeviceMockWrapperStatusBar statusBarHeight={statusBarHeight} time={time}/>
 		{children}
 	</View>
 }
