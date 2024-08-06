@@ -1,7 +1,7 @@
 import {Redirect, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
-import {Text, TextInput, View} from '@/components/Themed';
+import {Text, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
 import {AuthenticationData} from '@directus/sdk';
 import {ButtonAuthAnonym} from '@/components/buttons/ButtonAuthAnonym';
 import {getAnonymousUser, isUserLoggedIn, useCurrentUser, useLogoutCallback} from '@/states/User';
@@ -15,6 +15,7 @@ import {IconNames} from '@/constants/IconNames';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -250,13 +251,16 @@ export default function Login() {
 	}
 
 	function renderLoginOptions() {
+		let backgroundColor = useViewBackgroundColor()
+		const backgroundContrastColor = useMyContrastColor(backgroundColor)
+
 		//if (!loggedIn) {
 			return (
 				<>
 					<ServerSsoAuthProviders />
 					{renderAnoynmousLoginOption()}
 					<View style={{height: 16}}></View>
-					<View style={{width: '100%', height: 1, backgroundColor: 'black'}}></View>
+					<View style={{width: '100%', height: 1, backgroundColor: backgroundContrastColor}}></View>
 					<View style={{height: 16}}></View>
 					{renderInternalLogin()}
 				</>
