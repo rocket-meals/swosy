@@ -49,6 +49,20 @@ export function useCourseTimetableEvents(): [CourseTimetableDictType, (value: Co
 	const [profile, setProfile] = useSynchedProfile();
 
 	let profileCourseTimetable = profile.course_timetable || {};
+	if(typeof profileCourseTimetable === 'string'){
+		try {
+			profileCourseTimetable = JSON.parse(profileCourseTimetable);
+		} catch (e) {
+			profileCourseTimetable = {};
+			console.error("Failed to parse course_timetable from profile")
+		}
+	}
+
+	console.log("profileCourseTimetable")
+	console.log(profileCourseTimetable)
+	console.log("typeof profileCourseTimetable")
+	console.log(typeof profileCourseTimetable)
+
 	const usedCourseTimetable = profileCourseTimetable || {};
 
 	const setCourseTimetable = (callback: (value: CourseTimetableDictType) => void) => {
