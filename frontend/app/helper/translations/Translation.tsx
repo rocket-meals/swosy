@@ -199,7 +199,7 @@ export enum TranslationKeys {
 	price_group_student = "price_group_student",
 	price_group_employee = "price_group_employee",
 	price_group_guest = "price_group_guest",
-	role_employee = "role_employee",
+	role_management = "role_management",
 	support_team = "support_team",
 	response = "response",
 	your_request = "your_request",
@@ -1334,7 +1334,7 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Misafirler',
 		[LanguageKeys.zh_CN]: '来宾'
 	},
-	role_employee: {
+	role_management: {
 		[LanguageKeys.de_DE]: 'Mitarbeitende',
 		[LanguageKeys.en_US]: 'Employees',
 		[LanguageKeys.ar_SA]: 'الموظفين',

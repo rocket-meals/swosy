@@ -20,13 +20,13 @@ import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHou
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
 import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
-import {useCurrentIsEmployee, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
+import {useCurrentRoleIsAtleastManagement, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDeveloperModeActive();
 	const role = useCurrentRole();
 	const isAdmin = useCurrentRoleIsAdmin();
-	const isEmployee = useCurrentIsEmployee()
+	const isManagement = useCurrentRoleIsAtleastManagement()
 
 	const isFoodsEnabled = useIsFoodsEnabled();
 	const isHousingEnabled = useIsHousingEnabled();
@@ -58,7 +58,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 
-	const translation_role_employee = useTranslation(TranslationKeys.role_employee)
+	const translation_role_management = useTranslation(TranslationKeys.role_management)
 
 	const translation_delete_account = useTranslationAccountDelete();
 
@@ -193,12 +193,12 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'employee/index',
-				title: translation_role_employee,
-				label: translation_role_employee,
+				routeName: 'management/index',
+				title: translation_role_management,
+				label: translation_role_management,
 				showBackButton: true,
-				icon: IconNames.role_employee,
-				visibleInDrawer: isEmployee || develop
+				icon: IconNames.role_management,
+				visibleInDrawer: isManagement || develop
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'foodoffers/weekplan/index',

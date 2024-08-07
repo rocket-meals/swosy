@@ -6,7 +6,7 @@ import {TranslationKeys} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 
-export default function EmployeeScreen() {
+export default function ManagementScreen() {
 	return (
 		<MySafeAreaView>
 			<MyScrollView>
