@@ -33,13 +33,19 @@ jobs:
       - name: 📦 Install dependencies
         run: cd ./frontend/app && npm ci
 
-      - name: 🚀 Build app
-        run: cd ./frontend/app && eas build --platform all --non-interactive
+      - name: 🚀 Build iOS app
+        run: cd ./frontend/app && eas build --platform ios --non-interactive
 
       - name: 📤 Submit iOS build
         run: cd ./frontend/app && eas submit --platform ios --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Build Android app - previewApk
+        run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
+
+      - name: 🚀 Build Android app - production
+        run: cd ./frontend/app && eas build --platform android --non-interactive
 
       - name: 📤 Submit Android build
         run: cd ./frontend/app && eas submit --platform android --non-interactive
