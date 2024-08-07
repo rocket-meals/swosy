@@ -1,11 +1,12 @@
-import {NewsParseSchedule} from "./NewsParseSchedule"; 
-import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser";
+import {NewsParseSchedule} from "./NewsParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; 
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {TestNews_Parser} from "./TestNews_Parser";
 
+let usedParser = new TestNews_Parser()
 
-const parseSchedule = new NewsParseSchedule(StudentenwerkHannoverNews_Parser);
+const parseSchedule = new NewsParseSchedule(usedParser);
 
 const SCHEDULE_NAME = "news_parse";
 /**

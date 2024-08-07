@@ -1,31 +1,32 @@
 import axios from "axios";
 import cheerio from 'cheerio';
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 
 const baseUrl = 'https://www.studentenwerk-hannover.de';
 const newsUrl = `${baseUrl}/unternehmen/news`;
 const newsDetailArticleUrlStart = "/unternehmen/news";
 
-export class StudentenwerkHannoverNews_Parser {
+export class StudentenwerkHannoverNews_Parser implements NewsParserInterface{
 
     constructor() {
 
     }
 
-    async getJSONList(){
+    async getNewsItems(): Promise<NewsTypeForParser[]> {
         //let demoNewsItem = await this.getDemoNewsItem();
         let realNewsItems = await this.getRealNewsItems();
         return [...realNewsItems];
     }
 
-    async getRealNewsItems(limitAmountNews?: number | undefined) {
+    async getRealNewsItems(limitAmountNews?: number | undefined): Promise<NewsTypeForParser[]> {
         try {
             //console.log("getRealNewsItems from: " + newsUrl);
             let response = await axios.get(newsUrl);
             //console.log("Fetched url");
             const $newsIndexArticle = cheerio.load(response.data);
 
-            let data = [];
+            let data: NewsTypeForParser[] = [];
             let articleItems = $newsIndexArticle('div.article');
             //console.log("Found news items: " + articleItems.length);
             let limit = limitAmountNews ? Math.min(limitAmountNews, articleItems.length) : articleItems.length;
@@ -50,7 +51,7 @@ export class StudentenwerkHannoverNews_Parser {
 
 
                 // Extract link URL
-                let date = undefined;
+                let date: string | null | undefined = null;
                 let articleUrl = $newsIndexArticle(element).find('a.articleLink').attr('href');
                 if(!!articleUrl){
                     if(articleUrl.startsWith(newsDetailArticleUrlStart)) {
@@ -69,9 +70,10 @@ export class StudentenwerkHannoverNews_Parser {
                         //console.log("Date published: " + datePublishedText);
                         // has format: 24.05.2024
                         let dateParts = datePublishedText.split('.');
-                        date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                        let dateAsDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
                         // set date time to 12:00
-                        date.setHours(12, 0, 0, 0);
+                        dateAsDate.setHours(12, 0, 0, 0);
+                        date = dateAsDate.toISOString();
                     } catch (error) {
                         console.log("Error fetching article page: " + articleUrl);
                     }
@@ -80,7 +82,7 @@ export class StudentenwerkHannoverNews_Parser {
 
 
                 // Extract categories
-                let categories = {};
+                let categories: {[key: string]: string} = {};
                 $newsIndexArticle(element).find('div.news_slider-content_categorie').each((index, el) => {
                     let categoryName = $newsIndexArticle(el).text()
                     if(!!categoryName) {
@@ -114,22 +116,7 @@ export class StudentenwerkHannoverNews_Parser {
         } catch (error) {
             console.log(error);
         }
+        return [];
     }
 
-    async getDemoNewsItem() {
-        return {
-            external_identifier: "demo",
-            image_remote_url: "https://www.studentenwerk-hannover.de/fileadmin/user_upload/Bilder/4_Beratung/JEE_151007_DSW-Berlin_0709.jpg",
-            url: "https://www.studentenwerk-hannover.de/unternehmen/news/detail/semesterbeitragsstipendium",
-            translations: {
-                [TranslationHelper.LANGUAGE_CODE_DE]: {
-                    title: "Semesterbeitragsstipendium",
-                    content: "Bewerbung jetzt auch digital möglich",
-                    be_source_for_translations: true,
-                    let_be_translated: false,
-                    create_translations_for_all_languages: true,
-                }
-            }
-        }
-    }
 }

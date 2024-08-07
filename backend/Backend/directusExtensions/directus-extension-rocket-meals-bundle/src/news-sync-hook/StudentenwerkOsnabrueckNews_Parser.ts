@@ -1,32 +1,35 @@
 import axios from "axios";
 import JSSoup from 'jssoup';
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 
 
 const baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
 const newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
 
-export class StudentenwerkOsnabrueckNews_Parser {
+export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
 
     constructor() {
 
     }
 
-    async getJSONList(){
+    async getNewsItems(): Promise<NewsTypeForParser[]> {
         //let demoNewsItem = await this.getDemoNewsItem();
         let realNewsItems = await this.getRealNewsItems();
         return [...realNewsItems];
     }
 
-    async getRealNewsItems(){
+    async getRealNewsItems(): Promise<NewsTypeForParser[]> {
         try {
             console.log("getRealNewsItems");
             let response = await axios.get(newsUrl);
             console.log("Fetched url");
-            let soup = new JSSoup.default(response.data);
+            let soup = new JSSoup(response.data);
             let articles = soup.findAll('div', 'article');
 
-            let data = articles.map((article, index) => {
+            let news: NewsTypeForParser[] = [];
+
+            articles.map((article, index) => {
                 let imageElement = article.find('img'); // Changed this line
                 let imageUrl = imageElement ? baseUrl + imageElement.attrs.src : ''; // Changed this line
 
@@ -48,11 +51,11 @@ export class StudentenwerkOsnabrueckNews_Parser {
 
                 // Categories processing can be added here if available
 
-                return {
+                news.push({
                     external_identifier: "news_" + header.replace(/\W+/g, '_'),
                     image_remote_url: imageUrl,
                     alias: header,
-                    date: new Date(),
+                    date: new Date().toISOString(),
                     url: articleUrl,
                     translations: {
                         [TranslationHelper.LANGUAGE_CODE_DE]: {
@@ -63,34 +66,15 @@ export class StudentenwerkOsnabrueckNews_Parser {
                         },
                     },
                     categories: {} // Assuming no category data; fill in as needed
-                };
+                });
             });
 
-            data.reverse(); // latest news are on top
+            news.reverse(); // latest news are on top
 
-            return data;
+            return news;
         } catch(error) {
             console.log(error);
         };
-    }
-
-
-    async getDemoNewsItem(){
-        return {
-            external_identifier: "demo",
-            image_remote_url: "https://www.studentenwerk-hannover.de/fileadmin/user_upload/Bilder/4_Beratung/JEE_151007_DSW-Berlin_0709.jpg",
-            url: "https://www.studentenwerk-hannover.de/unternehmen/news/detail/semesterbeitragsstipendium",
-            translations: {
-                [TranslationHelper.LANGUAGE_CODE_DE]: {
-                    title: "Semesterbeitragsstipendium",
-                    content: "Bewerbung jetzt auch digital möglich",
-                    be_source_for_translations: true,
-                    let_be_translated: false,
-                    create_translations_for_all_languages: true,
-                },
-//                "en-US": {"name": food?.nameEng}
-            }
-        }
     }
 
 }

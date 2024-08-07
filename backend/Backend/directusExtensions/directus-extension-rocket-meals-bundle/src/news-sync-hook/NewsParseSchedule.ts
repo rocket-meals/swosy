@@ -1,5 +1,6 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 
 const TABLENAME_NEWS = CollectionNames.NEWS;
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
@@ -9,7 +10,7 @@ const SCHEDULE_NAME = "NewsParseSchedule";
 export class NewsParseSchedule {
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
-    private parser: any;
+    private parser: NewsParserInterface | null;
     private finished: boolean;
     private schema: any;
     private database: any;
@@ -18,8 +19,8 @@ export class NewsParseSchedule {
     private itemsServiceCreator: ItemsServiceCreator;
     private newsService: any;
 
-    constructor(ParserClass) {
-        this.parser = new ParserClass();
+    constructor(parser: NewsParserInterface | null) {
+        this.parser = parser;
         this.finished = true;
     }
 
@@ -64,6 +65,11 @@ export class NewsParseSchedule {
     }
 
     async parse() {
+        if(!this.parser){
+            console.log("No parser set");
+            return
+        }
+
         this.newsService = this.itemsServiceCreator.getItemsService(TABLENAME_NEWS);
 
         let enabled = await this.isEnabled();
@@ -79,7 +85,7 @@ export class NewsParseSchedule {
             await this.setStatus(statusRunning);
 
             try {
-                let newsJSONList = await this.parser.getJSONList();
+                let newsJSONList = await this.parser.getNewsItems();
                 await this.updateNews(newsJSONList);
 
                 console.log("Finished");
@@ -102,7 +108,7 @@ export class NewsParseSchedule {
         return json;
     }
 
-    async findOrCreateSingleNews(newsJSON) {
+    async findOrCreateSingleNews(newsJSON: NewsTypeForParser) {
         console.log("Make copy of");
         console.log(newsJSON);
         let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
@@ -122,8 +128,8 @@ export class NewsParseSchedule {
         return item;
     }
 
-    async updateNewsTranslations(meal, newsJSON) {
-        await this.updateItemTranslations(meal, newsJSON, "news_id", this.newsService);
+    async updateNewsTranslations(item, newsJSON: NewsTypeForParser) {
+        await this.updateItemTranslations(item, newsJSON, "news_id", this.newsService);
     }
 
     async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
@@ -226,7 +232,7 @@ export class NewsParseSchedule {
         await itemService.updateOne(item?.id, copyNewsJSON);
     }
 
-    async updateNews(newsJSONList) {
+    async updateNews(newsJSONList: NewsTypeForParser[]) {
         for (let newsJSON of newsJSONList) {
             let news = await this.findOrCreateSingleNews(newsJSON);
             if (!!news && news?.id) {
