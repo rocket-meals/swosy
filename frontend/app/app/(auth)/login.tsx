@@ -24,6 +24,9 @@ export default function Login() {
 	const logout = useLogoutCallback()
 	const [nickname, setNickname] = useNickname()
 
+	let backgroundColor = useViewBackgroundColor()
+	const backgroundContrastColor = useMyContrastColor(backgroundColor)
+
 	const [changedLoginStatus, setChangedLoginStatus] = useState(false)
 	const onWarnAboutAnonymousLogin = useMyModalConfirmer({
 		onConfirm: handleLoginAsAnonymous,
@@ -242,7 +245,7 @@ export default function Login() {
 		)
 	}
 
-	function renderAnoynmousLoginOption() {
+	function renderAnonymousLoginOption() {
 		return(
 			<>
 				<ButtonAuthAnonym onPress={proceed_to_authenticate_as_anonymous} />
@@ -251,14 +254,11 @@ export default function Login() {
 	}
 
 	function renderLoginOptions() {
-		let backgroundColor = useViewBackgroundColor()
-		const backgroundContrastColor = useMyContrastColor(backgroundColor)
-
 		//if (!loggedIn) {
 			return (
 				<>
 					<ServerSsoAuthProviders />
-					{renderAnoynmousLoginOption()}
+					{renderAnonymousLoginOption()}
 					<View style={{height: 16}}></View>
 					<View style={{width: '100%', height: 1, backgroundColor: backgroundContrastColor}}></View>
 					<View style={{height: 16}}></View>
