@@ -43,7 +43,7 @@ export class MarkingHelper {
 	}
 
 
-	static getFoodOfferMarkingIds(foodOffer: Foodoffers) {
+	static getFoodOfferMarkingIds(foodOffer: Foodoffers | null | undefined) {
 		const aMarkingsRelation = foodOffer?.markings as FoodoffersMarkings[]
 		let aMarkingsIds: string[] = [];
 		if(aMarkingsRelation){

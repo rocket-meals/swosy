@@ -6,19 +6,19 @@ import {
 	TEXT_SIZE_3_EXTRA_LARGE,
 	TEXT_SIZE_5_EXTRA_LARGE,
 	TEXT_SIZE_DEFAULT,
-	TEXT_SIZE_EXTRA_LARGE,
+	TEXT_SIZE_EXTRA_LARGE, useTextContrastColor, useViewBackgroundColor,
 	View
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import React, {useEffect, useRef, useState} from "react";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {Rectangle} from "@/components/shapes/Rectangle";
-import {useFoodImagePlaceholderAssetId} from "@/states/SynchedAppSettings";
+import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {PriceGroups, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
@@ -28,6 +28,10 @@ import {formatPrice} from "@/components/pricing/PricingBadge";
 import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Animated} from "react-native";
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {MarkingHelper} from "@/helper/food/MarkingHelper";
+import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
+import {getMarkingName} from "@/components/food/MarkingListItem";
 
 const companyLogo = require("@/assets/images/company.png");
 
@@ -88,9 +92,11 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 type ProgressBarProps = {
 	duration: number,
 	color: string,
+	backgroundColor?: string
 }
-const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color, backgroundColor }) => {
 	const progress = useRef(new Animated.Value(0)).current;
+
 
 	if(duration <= 0){
 		return null;
@@ -116,6 +122,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color }) => {
 			height: "100%",
 			width: "100%",
 			overflow: "hidden",
+			backgroundColor: backgroundColor
 		}}>
 			<Animated.View
 				style={[
@@ -131,9 +138,49 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color }) => {
 	);
 };
 
+const MarkingNamesList: React.FC<{markingIds: string[], markingsDict: Record<string, Markings>, languageCode: string}> = ({markingIds, markingsDict, languageCode}) => {
+	const textColor = useTextContrastColor()
+
+	let renderedMarkings: any[] = [];
+	for(let markingId of markingIds) {
+		const marking: Markings | undefined | null = markingsDict?.[markingId];
+		if (!!marking) {
+			const translated_name = getMarkingName(marking, languageCode);
+			renderedMarkings.push(<View style={{
+					borderRadius: 3,
+					borderColor: textColor,
+					borderWidth: 1,
+					padding: 2,
+				margin: 2
+				}}>
+				<Text>{translated_name}</Text>
+			</View>
+			)
+		}
+	}
+	return <View style={{
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+		width: '100%',
+	}}>
+		{renderedMarkings}
+	</View>
+}
+
 export default function FoodBigScreenScreen() {
 	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+
+	const viewBackgroundColor = useViewBackgroundColor()
+	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
+	const lightContrastColor = useLighterOrDarkerColorForSelection(viewContrastColor);
+
+	const foodAreaColor = useFoodsAreaColor();
+	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
 	const canteen_id = useCanteensIdFromLocalSearchParams()
 	const category = useFoodCategoryFromLocalSearchParams();
@@ -203,7 +250,7 @@ export default function FoodBigScreenScreen() {
 
 		const food = currentFoodOfferForCategory?.food as Foods | undefined;
 
-
+		const markingsIds = MarkingHelper.getFoodOfferMarkingIds(currentFoodOfferForCategory);
 
 		const priceStudent: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Student));
 		const priceEmployee: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Employee));
@@ -216,6 +263,30 @@ export default function FoodBigScreenScreen() {
 		const foodName = getFoodName(food, languageCode);
 		const accessibilityLabel = foodName || "Food Image";
 
+		let divider = <View style={{
+			width: '100%',
+			alignItems: 'center',
+			justifyContent: 'center',
+		}}>
+			<View style={{
+				height: 1,
+				borderRadius: 2,
+				width: '15%',
+				backgroundColor: lightContrastColor
+			}} />
+		</View>
+		divider = null;
+
+		// 16:9
+
+		// 425 height
+		// 150 logo
+
+		const designHeight = 425;
+		const designHeightLogo = 100;
+		const designHeightContent = designHeight - designHeightLogo;
+
+
 		return <View style={{
 			width: '100%',
 			height: '100%',
@@ -225,78 +296,96 @@ export default function FoodBigScreenScreen() {
 				flex: 1
 			}}>
 				<View style={{
-					flex: 1,
+					flex: designHeightLogo,
 				}}>
-					<Image contentFit={"contain"} source={companyLogo} style={{
+					<View style={{flex: 1}} />
+					<View style={{
+						flex: 2,
 						width: '100%',
-						height: '100%'
-					}}/>
+						justifyContent: 'center',
+						alignItems: 'center'
+					}}>
+						<Image contentFit={"contain"} source={companyLogo} style={{
+							width: '100%',
+							height: '100%'
+						}}/>
+					</View>
+					<View style={{flex: 1}} />
+				</View>
+				{divider}
+				<View style={{
+					flex: designHeightContent,
+					width: '100%',
+					justifyContent: 'center',
+					alignItems: 'center'
+				}}>
+					<View style={{
+						flex: 1,
+						width: '80%',
+						paddingTop: 20,
+						paddingBottom: 10
+					}}>
+						<View style={{
+							flex: 1,
+							width: '100%',
+							alignItems: 'flex-end'
+						}}>
+							<Text style={{
+								width: '100%',
+								textAlign: 'right'
+							}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
+								{foodName}
+							</Text>
+						</View>
+						{divider}
+						<View style={{
+							flex: 1,
+							width: '100%',
+						}}>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_student+":"}
+								</Text>
+								<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
+									{priceStudent}
+								</Text>
+							</View>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_employee+": "+priceEmployee}
+								</Text>
+							</View>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_guest+": "+priceGuest}
+								</Text>
+							</View>
+
+						</View>
+						{divider}
+						<View style={{
+							flex: 1,
+							alignItems: 'flex-end',
+							//backgroundColor: "blue"
+						}}>
+							<MarkingNamesList markingIds={markingsIds} markingsDict={markingsDict} languageCode={languageCode} />
+						</View>
+					</View>
 				</View>
 				<View style={{
-					flex: 3,
+					height: 2,
 					width: '100%',
-					paddingTop: 20,
-					paddingHorizontal: 20,
-					paddingBottom: 10
 				}}>
-					<View style={{
-						flex: 1,
-						width: '100%',
-						alignItems: 'flex-end'
-					}}>
-						<Text style={{
-							width: '100%',
-							textAlign: 'right'
-						}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
-							{foodName}
-						</Text>
-					</View>
-					<View style={{
-						flex: 1,
-						width: '100%',
-					}}>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_student+":"}
-							</Text>
-							<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
-								{priceStudent}
-							</Text>
-						</View>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_employee+": "+priceEmployee}
-							</Text>
-						</View>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_guest+": "+priceGuest}
-							</Text>
-						</View>
-
-					</View>
-					<View style={{
-						flex: 1,
-						backgroundColor: "blue"
-					}}>
-
-					</View>
-				</View>
-				<View style={{
-					height: 10,
-					width: '100%',
-					backgroundColor: 'red'
-				}}>
-					<ProgressBar duration={nextFoodIntervalInSeconds} color={"green"} key={food_index+""}/>
+					<ProgressBar duration={nextFoodIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={food_index+""}/>
 				</View>
 			</View>
 			<View style={{
