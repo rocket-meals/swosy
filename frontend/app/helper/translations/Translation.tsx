@@ -115,6 +115,7 @@ export enum TranslationKeys {
 	CHECK_SERVER_STATUS = 'CHECK_SERVER_STATUS',
 	SERVER_IS_OFFLINE = 'SERVER_IS_OFFLINE',
 	CONTINUE_WITH_CACHE = 'CONTINUE_WITH_CACHE',
+	loggingInPleaseWait = "loggingInPleaseWait",
 	developer = "developer",
 	developer_homepage = "developer_homepage",
 	software_homepage = "software_homepage",
@@ -426,6 +427,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Продолжить с кэшем',
 		[LanguageKeys.tr_TR]: 'Önbellekle devam et',
 		[LanguageKeys.zh_CN]: '继续使用缓存'
+	},
+	loggingInPleaseWait: {
+		[LanguageKeys.de_DE]: 'Anmelden, bitte warten',
+		[LanguageKeys.en_US]: 'Logging in, please wait',
+		[LanguageKeys.ar_SA]: 'تسجيل الدخول، يرجى الانتظار',
+		[LanguageKeys.es_ES]: 'Iniciando sesión, por favor espere',
+		[LanguageKeys.fr_FR]: 'Connexion, veuillez patienter',
+		[LanguageKeys.ru_RU]: 'Вход, пожалуйста, подождите',
+		[LanguageKeys.tr_TR]: 'Giriş yapılıyor, lütfen bekleyin',
+		[LanguageKeys.zh_CN]: '登录中，请稍候'
 	},
 	developer: {
 		[LanguageKeys.de_DE]: 'Entwickler',

@@ -1,7 +1,7 @@
 import {Redirect, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
-import {Text, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
+import {MySpinner, Text, TEXT_SIZE_SMALL, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
 import {AuthenticationData} from '@directus/sdk';
 import {ButtonAuthAnonym} from '@/components/buttons/ButtonAuthAnonym';
 import {getAnonymousUser, isUserLoggedIn, useCurrentUser, useLogoutCallback} from '@/states/User';
@@ -44,6 +44,7 @@ export default function Login() {
 	const translation_logout = useTranslation(TranslationKeys.logout);
 	const translation_email = useTranslation(TranslationKeys.email);
 	const translation_password = useTranslation(TranslationKeys.password);
+	const translation_loggingInPleaseWait = useTranslation(TranslationKeys.loggingInPleaseWait);
 
 	const translation_anonymous_limitations = useTranslation(TranslationKeys.without_account_limitations);
 
@@ -52,10 +53,15 @@ export default function Login() {
 	const [password, setPassword] = useState('')
 
 	const [currentUser, setCurrentUser] = useCurrentUser()
-	const [loginWithAccessTokenResult, setLoginWithAccessTokenResult] = useState<any>()
 
 	const globalSearchParams = useGlobalSearchParams(); // get url params from router
 	const directus_token = ServerAPI.getDirectusAccessTokenFromParams(globalSearchParams);
+	const loggingInWithToken = !!directus_token && directus_token.length > 0;
+
+	const [loggingInWithMailAndPassword, setLoggingInWithMailAndPassword] = useState(false)
+
+	const loggingIn = loggingInWithToken || loggingInWithMailAndPassword;
+
 
 	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
 	function isOnGithubPages() {
@@ -178,6 +184,16 @@ export default function Login() {
 		authenticate_with_access_token(directus_token);
 	}, [directus_token]);
 
+	// UseEffect when loggingInWithMailAndPassword changes, then call login with email and password
+	useEffect(() => {
+		if (loggingInWithMailAndPassword) {
+			(async () => {
+				await authenticate_with_email_and_password(email, password);
+				setLoggingInWithMailAndPassword(false);
+			})();
+		}
+	}, [loggingInWithMailAndPassword]);
+
 	function renderWhenLoggedIn() {
 		if (loggedIn) {
 			return (
@@ -223,7 +239,7 @@ export default function Login() {
 						tooltip={translation_sign_in}
 						disabled={loggedIn || !email || !password}
 						onPress={() => {
-							authenticate_with_email_and_password(email, password)
+							setLoggingInWithMailAndPassword(true)
 						}}
 					/>
 				</>
@@ -254,7 +270,22 @@ export default function Login() {
 	}
 
 	function renderLoginOptions() {
-		//if (!loggedIn) {
+		if(loggingIn){
+			return (
+				<View style={{
+					width: '100%',
+					height: '100%',
+					flexDirection: 'column',
+					alignItems: 'center',
+
+				}}>
+					<MySpinner />
+					<Text size={TEXT_SIZE_SMALL} >
+						{translation_loggingInPleaseWait}
+					</Text>
+				</View>
+			)
+		} else {
 			return (
 				<>
 					<ServerSsoAuthProviders />
@@ -265,7 +296,7 @@ export default function Login() {
 					{renderInternalLogin()}
 				</>
 			)
-		//}
+		}
 	}
 
 	if(loggedIn){
