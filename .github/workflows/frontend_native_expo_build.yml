@@ -33,29 +33,18 @@ jobs:
       - name: 📦 Install dependencies
         run: cd ./frontend/app && npm ci
 
-      - name: 🚀 Build iOS app
-        run: cd ./frontend/app && eas build --platform ios --non-interactive
-
-      - name: Get iOS build URL
-        id: get-ios-build-url
-        run: echo "iOS_BUILD_URL=$(eas build:list --platform ios --status finished --limit 1 --json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
-
-      - name: 📤 Submit iOS build
-        run: cd ./frontend/app && eas submit --platform ios --url ${{ env.iOS_BUILD_URL }} --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
       - name: 🚀 Build Android app - previewApk
         run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
 
-      - name: 🚀 Build Android app - production
-        run: cd ./frontend/app && eas build --platform android --non-interactive
+      - name: 🚀 Build app - all platforms
+        run: cd ./frontend/app && eas build --platform all --non-interactive
 
-      - name: Get Android build URL
-        id: get-android-build-url
-        run: echo "ANDROID_BUILD_URL=$(eas build:list --platform android --status finished --limit 1 --json | jq -r '.[0].artifacts.buildUrl')" >> $GITHUB_ENV
+      - name: 📤 Submit iOS build
+        run: cd ./frontend/app && eas submit --platform ios --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📤 Submit Android build
-        run: cd ./frontend/app && eas submit --platform android --url ${{ env.ANDROID_BUILD_URL }} --non-interactive
+        run: cd ./frontend/app && eas submit --platform android --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
