@@ -1335,14 +1335,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '来宾'
 	},
 	role_management: {
-		[LanguageKeys.de_DE]: 'Mitarbeitende',
-		[LanguageKeys.en_US]: 'Employees',
-		[LanguageKeys.ar_SA]: 'الموظفين',
-		[LanguageKeys.es_ES]: 'Empleados',
-		[LanguageKeys.fr_FR]: 'Employés',
-		[LanguageKeys.ru_RU]: 'Сотрудники',
-		[LanguageKeys.tr_TR]: 'Çalışanlar',
-		[LanguageKeys.zh_CN]: '员工'
+		[LanguageKeys.de_DE]: 'Verwaltung',
+		[LanguageKeys.en_US]: 'Management',
+		[LanguageKeys.ar_SA]: 'الإدارة',
+		[LanguageKeys.es_ES]: 'Gestión',
+		[LanguageKeys.fr_FR]: 'Gestion',
+		[LanguageKeys.ru_RU]: 'Управление',
+		[LanguageKeys.tr_TR]: 'Yönetim',
+		[LanguageKeys.zh_CN]: '管理'
 	},
 	support_team: {
 		[LanguageKeys.de_DE]: 'Support Team',
