@@ -1,23 +1,33 @@
 import {ExpoRouter} from "@/.expo/types/router";
 import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
-import {Text, View} from "@/components/Themed";
+import {
+	Text,
+	TEXT_SIZE_3_EXTRA_LARGE,
+	TEXT_SIZE_5_EXTRA_LARGE,
+	TEXT_SIZE_DEFAULT,
+	TEXT_SIZE_EXTRA_LARGE,
+	View
+} from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {Rectangle} from "@/components/shapes/Rectangle";
-import {useFoodImagePlaceholderAssetId, useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {useFoodImagePlaceholderAssetId} from "@/states/SynchedAppSettings";
 import {getFoodName} from "@/helper/food/FoodTranslation";
-import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {PriceGroups, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
 import {Image} from "expo-image";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
+import {formatPrice} from "@/components/pricing/PricingBadge";
+import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {Animated} from "react-native";
 
 const companyLogo = require("@/assets/images/company.png");
 
@@ -75,6 +85,52 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 	return undefined;
 }
 
+type ProgressBarProps = {
+	duration: number,
+	color: string,
+}
+const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color }) => {
+	const progress = useRef(new Animated.Value(0)).current;
+
+	if(duration <= 0){
+		return null;
+	}
+
+	useEffect(() => {
+		// Start the animation when the component mounts
+		Animated.timing(progress, {
+			toValue: 100, // Animate the progress to 100%
+			duration: duration * 1000, // Convert duration to milliseconds
+			useNativeDriver: false, // useNativeDriver is false because we're animating layout properties
+		}).start();
+	}, [duration, progress]);
+
+	// Interpolate the animated value to convert it to width percentage
+	const widthInterpolation = progress.interpolate({
+		inputRange: [0, 100],
+		outputRange: ['0%', '100%'],
+	});
+
+	return (
+		<View style={{
+			height: "100%",
+			width: "100%",
+			overflow: "hidden",
+		}}>
+			<Animated.View
+				style={[
+					{
+						height: "100%",
+						borderBottomRightRadius: 5,
+						borderTopRightRadius: 5,
+					},
+					{ backgroundColor: color, width: widthInterpolation },
+				]}
+			/>
+		</View>
+	);
+};
+
 export default function FoodBigScreenScreen() {
 	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
@@ -86,6 +142,10 @@ export default function FoodBigScreenScreen() {
 	const canteen = useSynchedCanteenById(canteen_id);
 	const [layout, setLayout] = useState({width: 0, height: 0});
 	const [food_index, setFoodIndex] = useState(0);
+
+	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
+	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
+	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
 
 	const isDemo = useIsDemo();
 
@@ -142,6 +202,13 @@ export default function FoodBigScreenScreen() {
 		let minimalDimension = Math.min(width, height);
 
 		const food = currentFoodOfferForCategory?.food as Foods | undefined;
+
+
+
+		const priceStudent: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Student));
+		const priceEmployee: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Employee));
+		const priceGuest: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Guest));
+
 		const assetId = food?.image;
 		const image_url = food?.image_remote_url;
 		const thumbHash = food?.image_thumb_hash;
@@ -159,30 +226,77 @@ export default function FoodBigScreenScreen() {
 			}}>
 				<View style={{
 					flex: 1,
-					backgroundColor: "red"
 				}}>
-					<Image source={companyLogo} style={{
+					<Image contentFit={"contain"} source={companyLogo} style={{
 						width: '100%',
 						height: '100%'
 					}}/>
 				</View>
 				<View style={{
-					flex: 1,
-					backgroundColor: "blue"
+					flex: 3,
+					width: '100%',
+					paddingTop: 20,
+					paddingHorizontal: 20,
+					paddingBottom: 10
 				}}>
+					<View style={{
+						flex: 1,
+						width: '100%',
+						alignItems: 'flex-end'
+					}}>
+						<Text style={{
+							width: '100%',
+							textAlign: 'right'
+						}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
+							{foodName}
+						</Text>
+					</View>
+					<View style={{
+						flex: 1,
+						width: '100%',
+					}}>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_student+":"}
+							</Text>
+							<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
+								{priceStudent}
+							</Text>
+						</View>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_employee+": "+priceEmployee}
+							</Text>
+						</View>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_guest+": "+priceGuest}
+							</Text>
+						</View>
 
+					</View>
+					<View style={{
+						flex: 1,
+						backgroundColor: "blue"
+					}}>
+
+					</View>
 				</View>
 				<View style={{
-					flex: 1,
-					backgroundColor: "red"
+					height: 10,
+					width: '100%',
+					backgroundColor: 'red'
 				}}>
-
-				</View>
-				<View style={{
-					flex: 1,
-					backgroundColor: "blue"
-				}}>
-
+					<ProgressBar duration={nextFoodIntervalInSeconds} color={"green"} key={food_index+""}/>
 				</View>
 			</View>
 			<View style={{
@@ -207,7 +321,6 @@ export default function FoodBigScreenScreen() {
 		<View style={{
 			width: '100%',
 			height: '100%',
-			backgroundColor: "orange"
 		}} onLayout={(event) => {
 			const {width, height} = event.nativeEvent.layout;
 			setLayout({width, height});

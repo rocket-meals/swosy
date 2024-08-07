@@ -3,7 +3,10 @@ import {PriceGroups, useProfilePriceGroup} from '@/states/SynchedProfile';
 
 export default function useProfilePricing(foodOfferData: Foodoffers | undefined) {
 	const [priceGroup, setPriceGroup] = useProfilePriceGroup();
+	return getPriceForPriceGroup(foodOfferData, priceGroup);
+}
 
+export function getPriceForPriceGroup(foodOfferData: Foodoffers | undefined, priceGroup: PriceGroups) {
 	let price = foodOfferData?.price_student;
 	switch (priceGroup) {
 	case PriceGroups.Student:

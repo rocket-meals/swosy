@@ -113,6 +113,13 @@ export function Icon({name, size, family, ...props}: IconProps) {
 export const TEXT_SIZE_DEFAULT = 'md';
 export const TEXT_SIZE_SMALL = "sm";
 export const TEXT_SIZE_EXTRA_SMALL = "xs";
+export const TEXT_SIZE_LARGE = "lg";
+export const TEXT_SIZE_EXTRA_LARGE = "xl";
+export const TEXT_SIZE_2_EXTRA_LARGE = "2xl";
+export const TEXT_SIZE_3_EXTRA_LARGE = "3xl";
+export const TEXT_SIZE_4_EXTRA_LARGE = "4xl";
+export const TEXT_SIZE_5_EXTRA_LARGE = "5xl";
+export const TEXT_SIZE_6_EXTRA_LARGE = "6xl";
 
 export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
 export function getFontSizeInPixelBySize(size: TextSizeType | undefined): number | undefined {
