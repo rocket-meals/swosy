@@ -200,7 +200,7 @@ export enum TranslationKeys {
 	price_group_student = "price_group_student",
 	price_group_employee = "price_group_employee",
 	price_group_guest = "price_group_guest",
-	role_employee = "role_employee",
+	role_management = "role_management",
 	support_team = "support_team",
 	response = "response",
 	your_request = "your_request",
@@ -1345,15 +1345,15 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Misafirler',
 		[LanguageKeys.zh_CN]: '来宾'
 	},
-	role_employee: {
-		[LanguageKeys.de_DE]: 'Mitarbeitende',
-		[LanguageKeys.en_US]: 'Employees',
-		[LanguageKeys.ar_SA]: 'الموظفين',
-		[LanguageKeys.es_ES]: 'Empleados',
-		[LanguageKeys.fr_FR]: 'Employés',
-		[LanguageKeys.ru_RU]: 'Сотрудники',
-		[LanguageKeys.tr_TR]: 'Çalışanlar',
-		[LanguageKeys.zh_CN]: '员工'
+	role_management: {
+		[LanguageKeys.de_DE]: 'Verwaltung',
+		[LanguageKeys.en_US]: 'Management',
+		[LanguageKeys.ar_SA]: 'الإدارة',
+		[LanguageKeys.es_ES]: 'Gestión',
+		[LanguageKeys.fr_FR]: 'Gestion',
+		[LanguageKeys.ru_RU]: 'Управление',
+		[LanguageKeys.tr_TR]: 'Yönetim',
+		[LanguageKeys.zh_CN]: '管理'
 	},
 	support_team: {
 		[LanguageKeys.de_DE]: 'Support Team',

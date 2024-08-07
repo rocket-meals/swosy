@@ -7,6 +7,7 @@ import {DirectusRoles, DirectusUsers} from '@/helper/database/databaseTypes/type
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {useSynchedRolesDict} from "@/states/SynchedRoles";
 import {useIsDemo} from "@/states/SynchedDemo";
+import {RoleHelper} from "@/helper/role/RoleHelper";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,
@@ -110,13 +111,13 @@ export function useCurrentRoleIsAdmin(): boolean | null{
 	return false;
 }
 
-export function useCurrentIsEmployee(){
+export function useCurrentRoleIsAtleastManagement(){
 	const role = useCurrentRole();
-	if(role?.admin_access){
+	if(RoleHelper.isAdmin(role)){
 		return true;
 	}
 
-	if(role?.name==="Employee"){
+	if(RoleHelper.isManagement(role)){
 		return true;
 	}
 	return false;

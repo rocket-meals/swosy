@@ -9,8 +9,11 @@ export class RoleHelper {
         return !!role?.admin_access;
     }
 
-    static isEmployee(role: DirectusRoles){
-        return role.name === "Mitarbeiter"
+    static isManagement(role: DirectusRoles | null){
+        if(!role){
+            return false;
+        }
+        return role.name === "Management"
     }
 
 }

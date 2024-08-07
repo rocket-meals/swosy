@@ -122,7 +122,7 @@ export class IconNames {
     static message_support_responded_icon = IconNames.notification_active
     static message_response_read_by_user_icon = "email-open"
 
-    static role_employee = 'briefcase'
+    static role_management = 'briefcase'
 
     static description_icon = "text"
     static fact_icon = "information"
