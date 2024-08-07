@@ -55,22 +55,22 @@ export function useIsFoodsEnabled(): boolean {
 	return appSettings?.foods_enabled || false;
 }
 
-export function useFoodsAreaColor(): string | undefined {
+export function useFoodsAreaColor(): string {
 	const projectColor = useProjectColor();
 	return AppAreaColors.FOODS_COLOR || projectColor;
 }
 
-export function useCampusAreaColor(): string | undefined {
+export function useCampusAreaColor(): string {
 	const projectColor = useProjectColor();
 	return AppAreaColors.CAMPUS_COLOR || projectColor;
 }
 
-export function useNewsAreaColor(): string | undefined {
+export function useNewsAreaColor(): string {
 	const projectColor = useProjectColor();
 	return AppAreaColors.NEWS_COLOR || projectColor;
 }
 
-export function useHousingAreaColor(): string | undefined {
+export function useHousingAreaColor(): string {
 	const projectColor = useProjectColor();
 	return AppAreaColors.HOUSING_COLOR || projectColor;
 }

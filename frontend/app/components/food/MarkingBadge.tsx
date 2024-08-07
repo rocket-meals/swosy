@@ -8,12 +8,12 @@ import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/
 import {BUTTON_DEFAULT_Padding, MyButtonCustomContentPadder} from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {getMarkingName, getMarkingShortIdentifier} from "@/components/food/MarkingListItem";
+import {getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
-import {useCharacterWithInPixel, useIconMaxDimension, useIconWithInPixel} from "@/components/shapes/Rectangle";
+import {useCharacterWithInPixel, useIconMaxDimension} from "@/components/shapes/Rectangle";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";

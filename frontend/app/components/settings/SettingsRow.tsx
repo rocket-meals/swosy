@@ -47,18 +47,6 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const activeColorContrast = useMyContrastColor(activeColor)
 	const isActive = props.active || false;
 
-	const [isHovered, setIsHovered] = useState(false);
-
-	// Function to handle mouse enter event
-	const handleMouseEnter = () => {
-		setIsHovered(true);
-	};
-
-	// Function to handle mouse leave event
-	const handleMouseLeave = () => {
-		setIsHovered(false);
-	};
-
 	const item = {
 		key: props?.key,
 		icon: props.leftIcon,
@@ -151,6 +139,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 								disabled={!isPressable || props.disabled}
 								accessibilityLabel={item.accessibilityLabel}
 								style={[disabledStyle]}
+
 								sx={{
 									bg: usedViewBackgroundColor,
 									':hover': {
