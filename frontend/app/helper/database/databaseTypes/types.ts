@@ -876,6 +876,7 @@ export type Markings = {
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  show_on_card?: boolean | null;
   sort?: number | null;
   status: string;
   translations: any[] | MarkingsTranslations[];
