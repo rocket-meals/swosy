@@ -1,8 +1,8 @@
 import {defineEndpoint} from '@directus/extensions-sdk';
 import ms from 'ms';
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {AppSettingsService} from "../helpers/ItemsServiceCreator";
 import {StringHelper} from "../helpers/StringHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const SCHEDULE_NAME = "redirect_with_token";
 const env = process.env;
@@ -27,7 +27,10 @@ function startsWithUntilWildcardReplacement(inputStr: string, whitelistStrWithWi
 }
 
 // function to check if a url is allowed/matches a whitelist entry
-function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string, redirectUrl: URL): boolean {
+function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string | undefined, redirectUrl: URL): boolean {
+	if(!redirect_whitelist_entry){
+		return false;
+	}
 	//console.log("isRedirectUrlAllowedForWhitelistEntry")
 	//console.log("redirect_whitelist_entry: " + redirect_whitelist_entry)
 	//console.log("redirectUrl: " + redirectUrl)
@@ -153,6 +156,8 @@ export default defineEndpoint({
 				logger
 			} = apiContext;
 
+			const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+
 
 			//console.log("#################################")
 			//console.log("Redirect with token endpoint: settings")
@@ -165,13 +170,7 @@ export default defineEndpoint({
 					let redirectUrl = getValidUrl(redirect);
 
 					if(!!redirectUrl) {
-						//let settings = await database(TABLENAME_FLOWHOOKS).first();
-						let schema = await getSchema();
-						let appSettingsService = new AppSettingsService(services, database, schema);
-						let settings = await appSettingsService.getAppSettings();
-						//console.log("App Settings")
-						//console.log(JSON.stringify(settings, null, 2))
-						let redirect_whitelist = settings?.redirect_whitelist;
+						const redirect_whitelist = await myDatabaseHelper.getAppSettingsHelper().getRedirectWhitelist();
 						if (!!redirect_whitelist) {
 							let foundValidRedirect = false;
 							if (redirect_whitelist.length === 0) {

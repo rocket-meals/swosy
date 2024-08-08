@@ -1,4 +1,30 @@
-import {CollectionNames} from "./CollectionNames";
+import type {Accountability, PrimaryKey, Query, SchemaOverview} from '@directus/types';
+import type {Knex} from 'knex';
+
+export type AbstractServiceOptions = {
+    knex?: Knex | undefined;
+    accountability?: Accountability | null | undefined;
+    schema: SchemaOverview;
+};
+
+// Copy / Import from https://github.com/directus/directus/blob/main/api/src/types/services.ts
+export interface AbstractService<Item> {
+    knex: Knex;
+    accountability: Accountability | null | undefined;
+
+    createOne(data: Partial<Item>): Promise<PrimaryKey>;
+    createMany(data: Partial<Item>[]): Promise<PrimaryKey[]>;
+
+    readOne(key: PrimaryKey, query?: Query): Promise<Item>;
+    readMany(keys: PrimaryKey[], query?: Query): Promise<Item[]>;
+    readByQuery(query: Query): Promise<Item[]>;
+
+    updateOne(key: PrimaryKey, data: Partial<Item>): Promise<PrimaryKey>;
+    updateMany(keys: PrimaryKey[], data: Partial<Item>): Promise<PrimaryKey[]>;
+
+    deleteOne(key: PrimaryKey): Promise<PrimaryKey>;
+    deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>;
+}
 
 class GetItemsService {
     public services: any;
@@ -15,7 +41,7 @@ class GetItemsService {
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts
 export class ItemsServiceCreator extends GetItemsService{
 
-    getItemsService(tablename: string) {
+    getItemsService<Item>(tablename: string): AbstractService<Item> {
         const {ItemsService} = this.services;
         return new ItemsService(tablename, {
             accountability: null, //this makes us admin
@@ -90,26 +116,4 @@ export class PermissionsServiceCreator extends GetItemsService{
             schema: this.schema,
         });
     }
-}
-
-export class AppSettingsService extends GetItemsService{
-
-    async getAppSettings(): null | any {
-        let itemsService = new ItemsServiceCreator(this.services, this.database, this.schema);
-        let appSettingsService = itemsService.getItemsService(CollectionNames.APP_SETTINGS);
-        try{
-            let appSettingsList = await appSettingsService.readByQuery({});
-            if(!!appSettingsList && appSettingsList.length !== 0){
-                let appSettings = appSettingsList[0];
-                return appSettings;
-            } else {
-                return null;
-            }
-        } catch (err){
-            console.log("Error getting app settings")
-            console.log(err);
-            return null;
-        }
-    }
-
 }

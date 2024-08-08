@@ -1,5 +1,6 @@
 import {ApiContext} from "./ApiContext";
 import {AppSettingsHelper} from "./AppSettingsHelper";
+import {CashregisterHelper} from "./CashregisterHelper";
 
 export class MyDatabaseHelper {
 
@@ -11,6 +12,10 @@ export class MyDatabaseHelper {
 
     getAppSettingsHelper() {
         return new AppSettingsHelper(this.apiExtensionContext);
+    }
+
+    getCashregisterHelper() {
+        return new CashregisterHelper(this.apiExtensionContext);
     }
 
 }
