@@ -6,11 +6,19 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "profile_create";
 
-export default defineHook(async ({ filter, schedule}, {services, getSchema, database}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({ filter, schedule}, apiContext) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
+
+	const {
+		services,
+		database,
+		getSchema,
+		env,
+		logger
+	} = apiContext;
 
 
 	// every minute

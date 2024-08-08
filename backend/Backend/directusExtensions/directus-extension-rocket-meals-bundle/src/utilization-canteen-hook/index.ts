@@ -6,18 +6,21 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 const parseSchedule = new ParseSchedule();
 
 const SCHEDULE_NAME = "utilization_canteen";
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
+export default defineHook(async ({action}, apiContext) => {
     let collection = CollectionNames.APP_SETTINGS
 
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
 
     try {
         console.log("foodParseSchedule init");

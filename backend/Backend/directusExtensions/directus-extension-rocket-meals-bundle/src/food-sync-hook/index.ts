@@ -63,17 +63,19 @@ function getMarkingParser(env: any): MarkingParserInterface | null {
     return null;
 }
 
-export default defineHook(async ({action, init, filter}, {
-    services,
-    database,
-    env,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action, init, filter}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
 
     let usedFoodParser = getFoodParser(env);
     if(!usedFoodParser) {

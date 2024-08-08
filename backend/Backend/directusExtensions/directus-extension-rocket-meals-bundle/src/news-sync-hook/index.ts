@@ -21,16 +21,19 @@ const SCHEDULE_NAME = "news_parse";
  └───────────────────────── second (0 - 59, OPTIONAL)
  */
 
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
 
        try {
             await parseSchedule.init(getSchema, services, database, logger);

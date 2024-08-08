@@ -75,6 +75,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
         } catch(error) {
             console.log(error);
         };
+        return [];
     }
 
 }

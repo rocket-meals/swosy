@@ -1,4 +1,4 @@
-import {ParseSchedule} from "./ParseSchedule"
+import {ParseSchedule, SCHEDULE_NAME} from "./ParseSchedule"
 import {Cashregisters_SWOSY} from "./Cashregisters_SWOSY"
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
@@ -7,17 +7,18 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 const parser = new Cashregisters_SWOSY("https://share.sw-os.de/swosy-kassendaten-2h", `Nils:qYoTHeyPyRljfEGRWW52`);
 const parseSchedule = new ParseSchedule(parser);
 
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(ParseSchedule.SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
 
+    const {
+        services,
+        database,
+        getSchema,
+        logger
+    } = apiContext;
 
     let collection = CollectionNames.APP_SETTINGS;
 

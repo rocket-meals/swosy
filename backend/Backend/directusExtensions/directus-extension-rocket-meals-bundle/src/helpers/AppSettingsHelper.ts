@@ -1,32 +1,50 @@
-import moment from "moment";
-import hash from 'object-hash';
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
-import {FoodParserInterface} from "./FoodParserInterface";
-import {TranslationHelper} from "../helpers/TranslationHelper";
-import {MarkingParserInterface} from "./MarkingParserInterface";
+import {CollectionNames} from "./CollectionNames";
+import {AppSettings} from "../databaseTypes/types";
+import {ApiContext} from "./ApiContext";
 
-
+export type FlowStatusType = "start" | "finished" | "running" | "failed";
+export class FlowStatus {
+    static readonly START: FlowStatusType = "start";
+    static readonly FINISHED: FlowStatusType = "finished";
+    static readonly RUNNING: FlowStatusType = "running";
+    static readonly FAILED: FlowStatusType = "failed";
+}
 
 export class AppSettingsHelper {
 
-    static FIELD_APP_SETTINGS_FOODS_PARSING_ENABLED = "foods_parsing_enabled";
-    static FIELD_APP_SETTINGS_FOODS_PARSING_STATUS = "foods_parsing_status";
-    static FIELD_APP_SETTINGS_FOODS_PARSING_HASH = "foods_parsing_hash";
-    static FIELD_APP_SETTINGS_FOODS_PARSING_LAST_RUN = "foods_parsing_last_date";
-    static VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_START = "start";
-    static VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_RUNNING = "running";
-    static VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED = "finished";
-    static VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FAILED = "failed";
+    private apiExtensionContext: ApiContext;
 
-    static async readAppSettings(itemsServiceCreator: ItemsServiceCreator){
-        let appSettingsService = itemsServiceCreator.getItemsService(CollectionNames.APP_SETTINGS);
-        let appSettings = await appSettingsService.readSingleton({});
-        return appSettings;
+    constructor(apiExtensionContext: ApiContext) {
+        this.apiExtensionContext = apiExtensionContext;
     }
 
-    static async setAppSettings(itemsServiceCreator: ItemsServiceCreator, appSettings: any){
-        let appSettingsService = itemsServiceCreator.getItemsService(CollectionNames.APP_SETTINGS);
-        return await appSettingsService.upsertSingleton(appSettings);
+    private getDatabase() {
+        return this.apiExtensionContext.database;
     }
+
+    async getAppSettingsEntry(): Promise<AppSettings | undefined | null> {
+        let database = this.getDatabase();
+        try {
+            return await database(CollectionNames.APP_SETTINGS).first();
+        } catch (err) {
+            console.log(err);
+        }
+        return undefined;
+    }
+
+    async getFoodNotificationStatus(): Promise<FlowStatus | undefined> {
+        const appSettings = await this.getAppSettingsEntry();
+        if (appSettings?.notifications_foods_status) {
+            return appSettings.notifications_foods_status as FlowStatus;
+        }
+        return undefined
+    }
+
+    async setFoodNotificationStatus(status: FlowStatus) {
+        let database = this.getDatabase();
+        await database(CollectionNames.APP_SETTINGS).update({
+            notifications_foods_status: status
+        });
+    }
+
 }

@@ -8,18 +8,19 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 const parseSchedule = new ApartmentsParseSchedule(StudentenwerkHannoverApartments_Parser);
 
 const SCHEDULE_NAME = "housing_parse";
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    logger.info("housing-sync-hook: init");
-
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
 
     try {
         await parseSchedule.init(getSchema, services, database, logger);

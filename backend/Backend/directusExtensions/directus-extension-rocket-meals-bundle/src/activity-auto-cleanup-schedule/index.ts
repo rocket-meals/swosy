@@ -4,16 +4,18 @@ import {ActivityServiceCreator} from "../helpers/ItemsServiceCreator";
 
 const SCHEDULE_NAME = "activity_auto_cleanup";
 
-export default defineHook(async ({schedule}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({schedule}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        logger
+    } = apiContext;
 
     const isProduction = true;
 

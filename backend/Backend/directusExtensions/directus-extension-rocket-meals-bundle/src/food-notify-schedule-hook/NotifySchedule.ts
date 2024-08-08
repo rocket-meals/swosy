@@ -1,6 +1,8 @@
 import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {ApiContext} from "../helpers/ApiContext";
 
 
 const TABLENAME_MEALS = CollectionNames.FOODS
@@ -15,7 +17,12 @@ const FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
 
 export class NotifySchedule {
 
-    constructor() {
+    private appSettingsHelper: AppSettingsHelper;
+
+    constructor(
+        apiExtensionContext: ApiContext
+    ) {
+        this.appSettingsHelper = new AppSettingsHelper(apiExtensionContext);
         this.finished = true;
     }
     
@@ -37,35 +44,18 @@ export class NotifySchedule {
         });
     }
 
-    async getStatus() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.notifications_foods_status;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
-    }
-
     async notify(aboutMealsInDays = 1, force = false) {
         let enabled = true
-        let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
+        let status = await this.appSettingsHelper.getFoodNotificationStatus();
 
         this.finished = !!this.finished;
 
-        if ((enabled && status === statusCheck && this.finished) || force) {
+        if ((enabled && status === FlowStatus.START && this.finished) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Schedule");
             console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
             this.finished = false;
             //console.log("Set status to running");
-            await this.setStatus(statusRunning);
+            await this.appSettingsHelper.setFoodNotificationStatus(FlowStatus.RUNNING);
 
             try {
                 // We need to notify all devices, which want to get notified about new food offers which they are interested in
@@ -122,16 +112,16 @@ export class NotifySchedule {
                 }
                 //console.log("Finished");
                 this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("["+SCHEDULE_NAME+"] Failed");
                 console.log(err);
                 this.finished = true;
-                await this.setStatus(statusFailed);
+                await this.setStatus(FlowStatus.FAILED);
             }
 
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
+        } else if (!this.finished && status !== FlowStatus.RUNNING) {
+            await this.setStatus(FlowStatus.RUNNING);
         }
     }
 
@@ -209,32 +199,11 @@ export class NotifySchedule {
         }
     }
 
-    async getAppTranslationText(translationKey, profileLanguage) {
-        let appTranslationsService = this.itemsServiceCreator.getItemsService(CollectionNames.APP_TRANSLATIONS);
-        try{
-            let app_translation_item = await appTranslationsService.readOne(translationKey, {fields: ["*", "translations.*"]});
-            let foundTranslation = this.getTranslation(app_translation_item?.translations, profileLanguage, "text");
-            if(foundTranslation) {
-                return foundTranslation;
-            }
-        } catch (err) {
-            if(err.message.includes("You don't have permission to access this")){ // means that the app_translation_today does not exist
-                // we can ignore this error
-            } else {
-                console.log("Error while reading app_translation_today");
-                console.log(err);
-            }
-        }
-        return undefined;
-    }
-
     async getTranslationDate(profileLanguage, aboutMealsInDays, date) {
         if(aboutMealsInDays === 0) {
-            let app_translation_today = await this.getAppTranslationText("today", profileLanguage);
-            return app_translation_today || "Heute";
+            return "Heute";
         } else if(aboutMealsInDays === 1) {
-            let app_translation_tomorrow = await this.getAppTranslationText("tomorrow", profileLanguage);
-            return app_translation_tomorrow || "Morgen";
+            return "Morgen";
         }
 
         // from date get TT.MM with date.getDate() and date.getMonth()

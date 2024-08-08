@@ -6,7 +6,7 @@ const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
-let SCHEDULE_NAME = "Cashregister"
+export const SCHEDULE_NAME = "Cashregister"
 
 export class ParseSchedule {
 

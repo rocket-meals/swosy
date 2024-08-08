@@ -5,11 +5,19 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "users_avatar_delete";
 
-export default defineHook(async({ filter }, {services, getSchema, database}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async({ filter }, apiContext) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
+
+	const {
+		services,
+		database,
+		getSchema,
+		env,
+		logger
+	} = apiContext;
 
 	filter(
 		EventHelper.USERS_DELETE_EVENT,

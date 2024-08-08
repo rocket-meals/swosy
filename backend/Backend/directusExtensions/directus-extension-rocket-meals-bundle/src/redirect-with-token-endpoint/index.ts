@@ -136,20 +136,24 @@ function getValidUrl(url: string): URL | null {
 // Where http://127.0.0.1/rocket-meals/api is the URL of the Directus API
 export default defineEndpoint({
 	id: 'redirect-with-token', // this will be the URL at which this endpoint is accessible
-	handler: (router, {
-		services,
-		database,
-		env,
-		getSchema,
-		logger
-	}) => {
+	handler: (router, apiContext) => {
 
 
 		router.get('/', async (req, res) => {
-			let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+			let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 			if (!allTablesExist) {
 				return;
 			}
+
+			const {
+				services,
+				database,
+				getSchema,
+				env,
+				logger
+			} = apiContext;
+
+
 			//console.log("#################################")
 			//console.log("Redirect with token endpoint: settings")
 			let redirectUrlIsValid = true;
@@ -202,7 +206,7 @@ export default defineEndpoint({
 
 
 			if(!redirectUrlIsValid){
-				res.status(400).send("Invalid redirect URL");
+				res.status(400).send("Invalid redirect URL (" + redirect + "). Please contact the administrator: info@rocket-meals.de");
 				return;
 			}
 
