@@ -30,6 +30,13 @@ services:
       service: rocket-meals-database
       file: backend/docker-compose.yaml
 
+  rocket-meals-database-backup:
+    env_file:
+      - .env
+    extends:
+      service: rocket-meals-database-backup
+      file: backend/docker-compose.yaml
+
   rocket-meals-cache:
     env_file:
       - .env
