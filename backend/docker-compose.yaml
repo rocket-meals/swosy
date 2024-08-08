@@ -184,7 +184,7 @@ services:
       - CRON_SCHEDULE=0 * * * * #Every hour
       - PGDB=directus
       - PGHOST=rocket-meals-database
-      - DELETE_OLDER_THAN=44640 # 31 days
+      - DELETE_OLDER_THAN=44640 # 44640 Minutes = 31 days
     volumes:
       - ./database_backup:/dump
     command: dump-cron
