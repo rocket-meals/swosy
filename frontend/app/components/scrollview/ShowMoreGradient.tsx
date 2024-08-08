@@ -6,7 +6,7 @@ import {useThemeDetermined} from '@/states/ColorScheme';
 interface AppState {
     horizontal?: boolean | undefined | null
     gradientBackgroundColor?: string
-    gradientHeight?: number
+    gradientHeight: number
 	amountOfGradientSteps?: number
 }
 export const ShowMoreGradient: FunctionComponent<AppState> = (props) => {

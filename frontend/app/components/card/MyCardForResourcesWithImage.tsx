@@ -18,6 +18,7 @@ import {uploadFiles} from "@directus/sdk";
 import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {ImagePickerOptions} from "expo-image-picker/src/ImagePicker.types";
+import {useIsDebug} from "@/states/Debug";
 
 
 export type MyCardForResourcesWithImageProps = {
@@ -46,6 +47,8 @@ export type ImageUploaderComponentProps = {
 function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 	const onImageUpdated = props?.onImageUpdated;
 
+	const debug = useIsDebug();
+
 	const [permissionForCamera, requestPermissionForCamera] = ImagePicker.useCameraPermissions();
 	const [permissionForMediaLibrary, requestPermissionForMediaLibrary] = ImagePicker.useMediaLibraryPermissions();
 
@@ -58,7 +61,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 	const translation_camera = useTranslation(TranslationKeys.camera);
 	const translation_gallery = useTranslation(TranslationKeys.gallery);
 
-	const title = translation_edit + " " + translation_image;
+	const title = translation_edit + ": " + translation_image;
 
 	const accessibilityLabel = title;
 
@@ -67,6 +70,8 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 	// DirectusFiles
 	const canCreateFile = PermissionHelper.useCanCreate('directus_files', 'file');
+
+	const hasPermission = canUpdateImageField || canUpdateImageRemoteUrlField || canCreateFile || debug
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
@@ -253,7 +258,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 		}
 	}
 
-	const hasPermission = canUpdateImageField || canUpdateImageRemoteUrlField || canCreateFile;
+
 
 	if(!hasPermission){
 		return null;

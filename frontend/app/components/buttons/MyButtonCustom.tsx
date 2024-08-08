@@ -13,13 +13,16 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 export const BUTTON_DEFAULT_Padding = 12;
 export const BUTTON_DEFAULT_BorderRadius = BUTTON_DEFAULT_Padding/2
 
+export function getButtonDefaultPadding(): number {
+	return BUTTON_DEFAULT_Padding
+}
+
 export const MyButtonCustomContentPadder = ({children}: ViewProps) => {
 	return(
 		<View style={{
 			marginVertical: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
 			marginHorizontal: BUTTON_DEFAULT_Padding, // https://stackoverflow.com/questions/37785345/how-to-get-flexbox-to-include-padding-in-calculations
 			flexDirection: 'row', flexWrap: 'wrap',
-
 		}}
 		>
 			{children}

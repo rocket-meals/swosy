@@ -64,14 +64,31 @@ export default function ImageWithComponents(props: ImageWithComponentProps) {
 			>
 				{props.bottomLeftComponent}
 			</View>
-			<View style={{
+			<View
+				accessibilityElementsHidden={true}
+				accessible={false}
+
+
+				pointerEvents={"box-none"}
+				style={{
 				position: 'absolute',
 				top: 0,
 				left: 0,
+				width: '50%',
+				height: '50%',
+				//backgroundColor: "blue",
 				padding: innerPadding,
 			}}
 			>
-				{props.topLeftComponent}
+				<View pointerEvents={"box-none"} style={{ flexShrink: 1, flexDirection: 'row',
+					//backgroundColor: "black"
+					}}>
+					<View style={{
+						//backgroundColor: "yellow",
+						flexShrink: 1 }}>
+						{props.topLeftComponent}
+					</View>
+				</View>
 			</View>
 		</View>
 	)

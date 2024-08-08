@@ -24,10 +24,14 @@ export const useCharacterWithInPixel = (amount: number) => {
 	return widthByCharacters;
 }
 
-export const useIconWithInPixel = (amount: number) => {
+export const useIconWithInPixel = (amount?: number) => {
 	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
 	console.log("useIconWithInPixel textDimensions: ",iconDimensions);
 	const width = iconDimensions?.width || 0;
+	if(amount === undefined){
+		amount = 1;
+	}
+
 	const widthTimesAmount = amount * width;
 	return widthTimesAmount;
 }

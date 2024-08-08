@@ -5,18 +5,25 @@ import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
-import {BUTTON_DEFAULT_Padding, MyButtonCustomContentPadder} from "@/components/buttons/MyButtonCustom";
+import {
+	BUTTON_DEFAULT_Padding,
+	getButtonDefaultPadding,
+	MyButtonCustomContentPadder
+} from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
-import {useCharacterWithInPixel, useIconMaxDimension} from "@/components/shapes/Rectangle";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+import {Image} from "expo-image";
+import {useIconWithInPixel} from "@/components/shapes/Rectangle";
+import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 
 export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color: string}) => {
 	const markingsIds = MarkingHelper.getFoodOfferMarkingIds(foodoffer);
@@ -45,14 +52,20 @@ export type MarkingBadgeProps = {
 	markingId: string
 	borderRadius?: number,
 }
-export const MarkingBadge = ({markingId, borderRadius}: MarkingBadgeProps) => {
+export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const viewBackgroundColor = useViewBackgroundColor();
 	const textColor = useTextContrastColor();
 
-	const imageWidth = useIconMaxDimension()+(BUTTON_DEFAULT_Padding*2);
+	const foodsAreaColor = useFoodsAreaColor()
+
+	const iconWidth = useIconWithInPixel();
+
+	const borderRadius = props.borderRadius || MyCardDefaultBorderRadius;
+
+	const imageWidth = (BUTTON_DEFAULT_Padding);
 
 	const marking: Markings | undefined | null = markingsDict?.[markingId];
 
@@ -92,11 +105,39 @@ export const MarkingBadge = ({markingId, borderRadius}: MarkingBadgeProps) => {
 
 	let hasImage = hasResourceImageOrRemoteImage(marking);
 
-	let usedIcon = marking.icon || IconNames.identifier;
+	let customIcon = null;
 
-	let imageAsCustomIcon = null;
+	let usedIcon = marking.icon
+	let markingExternalIdentifier = getMarkingExternalIdentifier(marking);
+	if(markingExternalIdentifier){
+		const defaultPadding = getButtonDefaultPadding();
+		let outerPadding = defaultPadding/2;
+		let innerPadding = defaultPadding - outerPadding; // maybe by dividing 1/2 the outer padding is 0, so we need to subtract it
+
+		customIcon = <View style={{
+			marginVertical: outerPadding,
+			marginHorizontal: outerPadding,
+		}}>
+			<View style={{
+				height: iconWidth+innerPadding*2, // we need more space for the text
+				width: iconWidth+innerPadding*2, // we need more space for the text
+				alignItems: "center",
+				justifyContent: "center",
+				overflow: "hidden",
+			}}>
+				<Text numberOfLines={1}>
+					{markingExternalIdentifier}
+				</Text>
+			</View>
+		</View>
+	}
+
 	if(hasImage){
-	 imageAsCustomIcon = <DirectusImageOrIconComponent resource={marking} widthImage={imageWidth} heightImage={imageWidth} />
+		customIcon = <MyButtonCustomContentPadder><DirectusImageOrIconComponent resource={marking} widthImage={iconWidth} heightImage={iconWidth} /></MyButtonCustomContentPadder>
+	}
+
+	if(!usedIcon && !customIcon){
+		usedIcon = IconNames.identifier;
 	}
 
 	let transparentBackgroundColor = "#FFFFFF00";
@@ -104,15 +145,14 @@ export const MarkingBadge = ({markingId, borderRadius}: MarkingBadgeProps) => {
 
 	return 	<>
 		<MyButton
-			isActive={true}
-			useTransparentBorderColor={true}
-			backgroundColor={usedBackgroundColor}
+			useOnlyNecessarySpace={true}
 			borderRadius={borderRadius}
+			backgroundColor={foodsAreaColor}
 			onPress={onPress}
 			accessibilityLabel={accessibilityLabel}
 			tooltip={accessibilityLabel}
 			icon={usedIcon}
-			customIcon={imageAsCustomIcon}
+			customIcon={customIcon}
 		/>
 	</>
 }

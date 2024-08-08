@@ -352,13 +352,9 @@ export default function FoodOfferScreen() {
 					}}/>
 				}
 				topLeftComponent={
-					<View style={{
-						width: "50%",
-					}}>
-						<ScrollViewWithGradient hideGradient={true} horizontal={true}>
-							<MarkingBadges foodoffer={foodOffer} />
-						</ScrollViewWithGradient>
-					</View>
+							<ScrollViewWithGradient hideGradient={true} >
+								<MarkingBadges foodoffer={foodOffer} />
+							</ScrollViewWithGradient>
 				}
 				topRightComponent={
 					<View style={{
