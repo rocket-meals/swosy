@@ -173,6 +173,26 @@ services:
       - directus_network
 
 
+  rocket-meals-database-backup:
+    image: annixa/docker-pg_dump
+    container_name: postgres-backup
+    links:
+      - postgres:db #Maps postgres as "db"
+    environment:
+      - PGUSER=directus
+      - PGPASSWORD=directus
+      - CRON_SCHEDULE=0 * * * * #Every hour
+      - PGDB=directus
+      - PGHOST=rocket-meals-database
+      - DELETE_OLDER_THAN=44640 # 44640 Minutes = 31 days
+    volumes:
+      - ./database_backup:/dump
+    command: dump-cron
+    depends_on:
+      - rocket-meals-database
+
+
+
   # The cache service for Directus
   rocket-meals-cache:
     restart: ${RESTART}
