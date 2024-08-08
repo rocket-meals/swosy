@@ -1,14 +1,14 @@
 import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {TranslationHelper} from "../helpers/TranslationHelper";
-import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
 import {ApiContext} from "../helpers/ApiContext";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 
 const TABLENAME_MEALS = CollectionNames.FOODS
 const TABLENAME_FOODS_FEEDBACKS = CollectionNames.FOODS_FEEDBACKS
 const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
@@ -17,12 +17,12 @@ const FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
 
 export class NotifySchedule {
 
-    private appSettingsHelper: AppSettingsHelper;
+    private databaseHelper: MyDatabaseHelper;
 
     constructor(
         apiExtensionContext: ApiContext
     ) {
-        this.appSettingsHelper = new AppSettingsHelper(apiExtensionContext);
+        this.databaseHelper = new MyDatabaseHelper(apiExtensionContext);
         this.finished = true;
     }
     
@@ -38,15 +38,13 @@ export class NotifySchedule {
         await this.getProjectName();
     }
 
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            notifications_foods_status: status
-        });
+    async setStatus(status: FlowStatus) {
+        await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(status)
     }
 
     async notify(aboutMealsInDays = 1, force = false) {
         let enabled = true
-        let status = await this.appSettingsHelper.getFoodNotificationStatus();
+        let status = await this.databaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
 
         this.finished = !!this.finished;
 
@@ -55,7 +53,7 @@ export class NotifySchedule {
             console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
             this.finished = false;
             //console.log("Set status to running");
-            await this.appSettingsHelper.setFoodNotificationStatus(FlowStatus.RUNNING);
+            await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(FlowStatus.RUNNING);
 
             try {
                 // We need to notify all devices, which want to get notified about new food offers which they are interested in
