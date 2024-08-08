@@ -30579,20 +30579,6 @@
             "nullable": true,
             "type": "string"
           },
-          "translations": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsFoodsTranslations"
-                }
-              ]
-            }
-          },
           "feedbacks": {
             "nullable": true,
             "type": "array",
@@ -30604,6 +30590,20 @@
                 },
                 {
                   "$ref": "#/components/schemas/ItemsFoodsFeedbacks"
+                }
+              ]
+            }
+          },
+          "translations": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsFoodsTranslations"
                 }
               ]
             }

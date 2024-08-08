@@ -2037,10 +2037,10 @@ type foods {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
-  translations_func: count_functions
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
+  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
+  translations_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
 }
@@ -3392,8 +3392,8 @@ input create_foods_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations: [create_foods_translations_input]
   feedbacks: [create_foods_feedbacks_input]
+  translations: [create_foods_translations_input]
   markings: [create_foods_markings_input]
 }
 
@@ -4128,10 +4128,10 @@ input foods_filter {
   co2_g: number_filter_operators
   co2_saving_percentage: number_filter_operators
   co2_rating: string_filter_operators
-  translations: foods_translations_filter
-  translations_func: count_function_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
+  translations: foods_translations_filter
+  translations_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
   _and: [foods_filter]
@@ -4899,8 +4899,8 @@ input update_foods_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations: [update_foods_translations_input]
   feedbacks: [update_foods_feedbacks_input]
+  translations: [update_foods_translations_input]
   markings: [update_foods_markings_input]
 }
 

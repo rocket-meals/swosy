@@ -1,5 +1,19 @@
 [
   {
+    "name": "Food-Notify-Cron-18:00",
+    "icon": "bolt",
+    "color": null,
+    "description": null,
+    "status": "active",
+    "trigger": "schedule",
+    "accountability": "all",
+    "options": {
+      "cron": "0 18 * * *"
+    },
+    "operation": "20fb7fd4-2daa-41d2-b9b0-e2d95e4efd38",
+    "_syncId": "017ffe97-5499-43ce-87fc-f755815d2b62"
+  },
+  {
     "name": "Food-Sync-Cron-5min",
     "icon": "bolt",
     "color": null,
