@@ -81,10 +81,6 @@ type Query {
   foodoffers_markings_by_id(id: ID!, version: String): foodoffers_markings
   foodoffers_markings_aggregated(groupBy: [String], filter: foodoffers_markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foodoffers_markings_aggregated!]!
   foodoffers_markings_by_version(version: String!, id: ID!): version_foodoffers_markings
-  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
-  markings_by_id(id: ID!, version: String): markings
-  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
-  markings_by_version(version: String!, id: ID!): version_markings
   foods_feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks!]!
   foods_feedbacks_by_id(id: ID!, version: String): foods_feedbacks
   foods_feedbacks_aggregated(groupBy: [String], filter: foods_feedbacks_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_feedbacks_aggregated!]!
@@ -137,6 +133,10 @@ type Query {
   foods_by_id(id: ID!, version: String): foods
   foods_aggregated(groupBy: [String], filter: foods_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_aggregated!]!
   foods_by_version(version: String!, id: ID!): version_foods
+  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
+  markings_by_id(id: ID!, version: String): markings
+  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
+  markings_by_version(version: String!, id: ID!): version_markings
   app_settings(version: String): app_settings
   app_settings_by_version(version: String!): version_app_settings
   profiles_buildings_favorites(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_favorites!]!
@@ -230,8 +230,6 @@ type Mutation {
   create_foodoffers_item(data: create_foodoffers_input!): foodoffers
   create_foodoffers_markings_items(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_markings_input!]): [foodoffers_markings!]!
   create_foodoffers_markings_item(data: create_foodoffers_markings_input!): foodoffers_markings
-  create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
-  create_markings_item(data: create_markings_input!): markings
   create_foods_feedbacks_items(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_input!]): [foods_feedbacks!]!
   create_foods_feedbacks_item(data: create_foods_feedbacks_input!): foods_feedbacks
   create_foods_feedbacks_labels_items(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_labels_input!]): [foods_feedbacks_labels!]!
@@ -258,6 +256,8 @@ type Mutation {
   create_popup_events_translations_item(data: create_popup_events_translations_input!): popup_events_translations
   create_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_input!]): [foods!]!
   create_foods_item(data: create_foods_input!): foods
+  create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
+  create_markings_item(data: create_markings_input!): markings
   create_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
   create_profiles_buildings_favorites_item(data: create_profiles_buildings_favorites_input!): profiles_buildings_favorites
   create_profiles_buildings_last_opened_items(filter: profiles_buildings_last_opened_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_last_opened_input!]): [profiles_buildings_last_opened!]!
@@ -343,9 +343,6 @@ type Mutation {
   update_foodoffers_markings_items(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foodoffers_markings_input!): [foodoffers_markings!]!
   update_foodoffers_markings_batch(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foodoffers_markings_input!]): [foodoffers_markings!]!
   update_foodoffers_markings_item(id: ID!, data: update_foodoffers_markings_input!): foodoffers_markings
-  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
-  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
-  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_foods_feedbacks_items(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_feedbacks_input!): [foods_feedbacks!]!
   update_foods_feedbacks_batch(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_feedbacks_input!]): [foods_feedbacks!]!
   update_foods_feedbacks_item(id: ID!, data: update_foods_feedbacks_input!): foods_feedbacks
@@ -385,6 +382,9 @@ type Mutation {
   update_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_input!): [foods!]!
   update_foods_batch(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_input!]): [foods!]!
   update_foods_item(id: ID!, data: update_foods_input!): foods
+  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
+  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
+  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_app_settings(data: update_app_settings_input!): app_settings
   update_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_buildings_favorites_input!): [profiles_buildings_favorites!]!
   update_profiles_buildings_favorites_batch(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
@@ -462,8 +462,6 @@ type Mutation {
   delete_foodoffers_item(id: ID!): delete_one
   delete_foodoffers_markings_items(ids: [ID]!): delete_many
   delete_foodoffers_markings_item(id: ID!): delete_one
-  delete_markings_items(ids: [ID]!): delete_many
-  delete_markings_item(id: ID!): delete_one
   delete_foods_feedbacks_items(ids: [ID]!): delete_many
   delete_foods_feedbacks_item(id: ID!): delete_one
   delete_foods_feedbacks_labels_items(ids: [ID]!): delete_many
@@ -490,6 +488,8 @@ type Mutation {
   delete_popup_events_translations_item(id: ID!): delete_one
   delete_foods_items(ids: [ID]!): delete_many
   delete_foods_item(id: ID!): delete_one
+  delete_markings_items(ids: [ID]!): delete_many
+  delete_markings_item(id: ID!): delete_one
   delete_profiles_buildings_favorites_items(ids: [ID]!): delete_many
   delete_profiles_buildings_favorites_item(id: ID!): delete_one
   delete_profiles_buildings_last_opened_items(ids: [ID]!): delete_many
@@ -556,7 +556,6 @@ type Subscription {
   devices_mutated(event: EventEnum): devices_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
@@ -570,6 +569,7 @@ type Subscription {
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
   foods_mutated(event: EventEnum): foods_mutated
+  markings_mutated(event: EventEnum): markings_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
@@ -2327,10 +2327,10 @@ type foods {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
-  translations_func: count_functions
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
+  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
+  translations_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
 }
@@ -2377,8 +2377,8 @@ type foods_aggregated_count {
   co2_g: Int
   co2_saving_percentage: Int
   co2_rating: Int
-  translations: Int
   feedbacks: Int
+  translations: Int
   markings: Int
 }
 
@@ -2780,6 +2780,7 @@ type markings {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  show_on_card: Boolean
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
 }
@@ -2813,6 +2814,7 @@ type markings_aggregated_count {
   status: Int
   user_created: Int
   user_updated: Int
+  show_on_card: Int
   translations: Int
 }
 
@@ -3916,8 +3918,8 @@ type version_foods {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations: JSON
   feedbacks: JSON
+  translations: JSON
   markings: JSON
 }
 
@@ -4033,6 +4035,7 @@ type version_markings {
   status: String
   user_created: JSON
   user_updated: JSON
+  show_on_card: Boolean
   translations: JSON
 }
 
@@ -5370,8 +5373,8 @@ input create_foods_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations: [create_foods_translations_input]
   feedbacks: [create_foods_feedbacks_input]
+  translations: [create_foods_translations_input]
   markings: [create_foods_markings_input]
 }
 
@@ -5417,6 +5420,7 @@ input create_markings_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  show_on_card: Boolean
   translations: [create_markings_translations_input]
 }
 
@@ -6083,10 +6087,10 @@ input foods_filter {
   co2_g: number_filter_operators
   co2_saving_percentage: number_filter_operators
   co2_rating: string_filter_operators
-  translations: foods_translations_filter
-  translations_func: count_function_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
+  translations: foods_translations_filter
+  translations_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
   _and: [foods_filter]
@@ -6150,6 +6154,7 @@ input markings_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  show_on_card: boolean_filter_operators
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
   _and: [markings_filter]
@@ -6908,8 +6913,8 @@ input update_foods_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
-  translations: [update_foods_translations_input]
   feedbacks: [update_foods_feedbacks_input]
+  translations: [update_foods_translations_input]
   markings: [update_foods_markings_input]
 }
 
@@ -6955,6 +6960,7 @@ input update_markings_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  show_on_card: Boolean
   translations: [update_markings_translations_input]
 }
 

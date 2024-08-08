@@ -1,20 +1,18 @@
 {
   "collection": "foods",
-  "field": "nutritions",
+  "field": "nutrition",
   "type": "alias",
   "meta": {
     "collection": "foods",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "nutritions",
+    "field": "nutrition",
     "group": null,
     "hidden": false,
     "interface": "group-detail",
     "note": null,
-    "options": {
-      "headerIcon": "nutrition"
-    },
+    "options": null,
     "readonly": false,
     "required": false,
     "sort": 9,
