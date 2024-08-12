@@ -1,9 +1,9 @@
 {
-  "collection": "foods",
+  "collection": "foodoffers",
   "field": "nutrition",
   "type": "alias",
   "meta": {
-    "collection": "foods",
+    "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -17,7 +17,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 14,
     "special": [
       "alias",
       "group",

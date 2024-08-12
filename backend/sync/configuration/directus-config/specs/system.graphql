@@ -248,9 +248,7 @@ type Subscription {
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
@@ -264,6 +262,8 @@ type Subscription {
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
   foods_mutated(event: EventEnum): foods_mutated
+  markings_mutated(event: EventEnum): markings_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
@@ -1984,6 +1984,9 @@ type foodoffers {
   sugar_g: Float
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
 }
@@ -2039,10 +2042,10 @@ type foods {
   co2_rating: String
   feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   feedbacks_func: count_functions
-  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
-  translations_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
+  translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
+  translations_func: count_functions
 }
 
 type foods_feedbacks {
@@ -2211,6 +2214,7 @@ type markings {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  show_on_card: Boolean
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
 }
@@ -3337,6 +3341,9 @@ input create_foodoffers_input {
   sugar_g: Float
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   markings: [create_foodoffers_markings_input]
 }
 
@@ -3393,8 +3400,8 @@ input create_foods_input {
   co2_saving_percentage: Float
   co2_rating: String
   feedbacks: [create_foods_feedbacks_input]
-  translations: [create_foods_translations_input]
   markings: [create_foods_markings_input]
+  translations: [create_foods_translations_input]
 }
 
 input create_foods_markings_input {
@@ -3434,6 +3441,7 @@ input create_markings_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  show_on_card: Boolean
   translations: [create_markings_translations_input]
 }
 
@@ -4029,6 +4037,9 @@ input foodoffers_filter {
   sugar_g: number_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  co2_g: number_filter_operators
+  co2_saving_percentage: number_filter_operators
+  co2_rating: string_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
   _and: [foodoffers_filter]
@@ -4130,10 +4141,10 @@ input foods_filter {
   co2_rating: string_filter_operators
   feedbacks: foods_feedbacks_filter
   feedbacks_func: count_function_filter_operators
-  translations: foods_translations_filter
-  translations_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
+  translations: foods_translations_filter
+  translations_func: count_function_filter_operators
   _and: [foods_filter]
   _or: [foods_filter]
 }
@@ -4188,6 +4199,7 @@ input markings_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  show_on_card: boolean_filter_operators
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
   _and: [markings_filter]
@@ -4844,6 +4856,9 @@ input update_foodoffers_input {
   sugar_g: Float
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   markings: [update_foodoffers_markings_input]
 }
 
@@ -4900,8 +4915,8 @@ input update_foods_input {
   co2_saving_percentage: Float
   co2_rating: String
   feedbacks: [update_foods_feedbacks_input]
-  translations: [update_foods_translations_input]
   markings: [update_foods_markings_input]
+  translations: [update_foods_translations_input]
 }
 
 input update_foods_markings_input {
@@ -4941,6 +4956,7 @@ input update_markings_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  show_on_card: Boolean
   translations: [update_markings_translations_input]
 }
 

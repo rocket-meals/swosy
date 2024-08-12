@@ -1,23 +1,23 @@
 {
-  "collection": "foods",
-  "field": "nutrition",
+  "collection": "foodoffers",
+  "field": "environmental_impact",
   "type": "alias",
   "meta": {
-    "collection": "foods",
+    "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "nutrition",
+    "field": "environmental_impact",
     "group": null,
     "hidden": false,
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "nutrition"
+      "headerIcon": "potted_plant"
     },
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 15,
     "special": [
       "alias",
       "group",

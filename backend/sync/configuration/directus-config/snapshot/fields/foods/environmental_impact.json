@@ -13,7 +13,7 @@
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "nature"
+      "headerIcon": "potted_plant"
     },
     "readonly": false,
     "required": false,

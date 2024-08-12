@@ -1,23 +1,23 @@
 {
-  "collection": "foods",
-  "field": "nutrition",
+  "collection": "foodoffers",
+  "field": "prices",
   "type": "alias",
   "meta": {
-    "collection": "foods",
+    "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "nutrition",
+    "field": "prices",
     "group": null,
     "hidden": false,
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "nutrition"
+      "headerIcon": "euro"
     },
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 13,
     "special": [
       "alias",
       "group",
