@@ -28578,7 +28578,7 @@
             "type": "integer"
           },
           "status": {
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           "user_created": {
@@ -30270,7 +30270,7 @@
             "type": "integer"
           },
           "status": {
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           "sugar_g": {
@@ -30580,7 +30580,7 @@
             "type": "integer"
           },
           "status": {
-            "nullable": false,
+            "nullable": true,
             "type": "string"
           },
           "sugar_g": {

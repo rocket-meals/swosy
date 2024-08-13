@@ -1,26 +1,30 @@
 import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser"
 
-import {FoodParserInterface, FoodsInformationTypeForParser, FoodWithBasicData} from "./FoodParserInterface";
+import {
+    CanteensTypeForParser,
+    FoodNutritionType,
+    FoodoffersTypeForParser, FoodofferTypeWithBasicData,
+    FoodParserInterface,
+    FoodsInformationTypeForParser,
+    FoodWithBasicData
+} from "./FoodParserInterface";
 import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
-import {LanguageCodes, TranslationHelper, TranslationsFromParsingType} from "../helpers/TranslationHelper";
-import {PriceGroups} from "./PriceGroups";
+import {LanguageCodes, TranslationsFromParsingType} from "../helpers/TranslationHelper";
+import {PriceGroupEnum} from "./PriceGroupEnum";
 
-const _FOODOFFERITEM_FOOD_ID = "food_id";
-const _MEALOFFERITEM_ITEM = "raw_foodoffer_item";
-const _MEALOFFERITEM_DATE = "date";
-const _MEALOFFERITEM_CANTEEN_LABEL = "canteen_label";
 
-type MealofferIdentifierType = string
-type RawFoodofferJSONType = {
-    [_FOODOFFERITEM_FOOD_ID]: string,
-    [_MEALOFFERITEM_ITEM]: { [x: string]: string; },
-    [_MEALOFFERITEM_DATE]: string,
-    [_MEALOFFERITEM_CANTEEN_LABEL]: string
+type FoodofferIdentifierType = string
+export type RawTL1FoodofferType = { [x: string]: string; }
+
+type RawFoodofferInformationType = {
+    food_id: string,
+    raw_tl1_foodoffer_json: RawTL1FoodofferType,
+    dateAsString: string,
+    canteen_external_identifier: string
 }
 
-
-type RawFoodofferJSONListType = RawFoodofferJSONType[] | null
+type RawFoodofferInformationListType = RawFoodofferInformationType[]
 
 export class FoodTL1Parser implements FoodParserInterface {
 
@@ -43,7 +47,7 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_MARKING_LABELS_FIELD = "ZSNUMMERN";
     static DEFAULT_MARKING_NAMES_FIELD = "ZSNAMEN";
 
-    rawFoodoffersJSONList: RawFoodofferJSONListType = null;
+    private rawFoodoffersJSONList: RawFoodofferInformationListType = [];
     private rawFoodofferReader: FoodTL1Parser_GetRawReportInterface;
 
     constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
@@ -52,14 +56,14 @@ export class FoodTL1Parser implements FoodParserInterface {
     }
 
     private resetData(){
-        this.rawFoodoffersJSONList = null;
+        this.rawFoodoffersJSONList = [];
     }
 
     public async createNeededData(){
         this.resetData()
 
         let rawReport = await this.rawFoodofferReader.getRawReport();
-        this.rawFoodoffersJSONList = await FoodTL1Parser.createRawFoodofferJSONList(rawReport);
+        this.rawFoodoffersJSONList = await FoodTL1Parser.getRawFoodofferJSONListFromRawReport(rawReport);
     }
 
     async getFoodsListForParser(){
@@ -78,62 +82,67 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodsJSONList;
     }
 
-    async getCanteensList(){
-        let rawMealOffers = await this.getFoodoffersForParser();
-        let canteenLabelsDict = {};
+    async getCanteensList(): Promise<CanteensTypeForParser[]> {
+        let rawMealOffers = this.rawFoodoffersJSONList;
+        let canteenLabelsDict: { [x: string]: CanteensTypeForParser } = {};
         for(let rawMealOffer of rawMealOffers){
             let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
             let canteenLabel = FoodTL1Parser.getCanteenLabelFunction(parsedReportItem);
-            canteenLabelsDict[canteenLabel] = {
-                label: canteenLabel,
-                external_identifier: canteenLabel,
-            };
+            if(!!canteenLabel){
+                canteenLabelsDict[canteenLabel] = {
+                    external_identifier: canteenLabel,
+                    alias: canteenLabel,
+                }
+            }
+
         }
         return FoodTL1Parser.getValueListFromDict(canteenLabelsDict);
     }
 
-    async getMealNutritionsForRawMealOffer(rawMealOffer){
-        return FoodTL1Parser.getMealNutritionsFromRawMealOffer(rawMealOffer);
+    async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]>{
+        const result: FoodoffersTypeForParser[] = [];
+        let rawMealOffers = this.rawFoodoffersJSONList;
+        for(let rawMealOffer of rawMealOffers){
+            let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
+
+            const mealNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
+            const basicFoodofferData: FoodofferTypeWithBasicData = {
+                date: rawMealOffer.dateAsString,
+                price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
+                price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
+                price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
+                ...mealNutritions,
+            }
+
+            const foodofferForParser: FoodoffersTypeForParser = {
+                basicFoodofferData: basicFoodofferData,
+                marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer),
+                canteen_external_identifier: rawMealOffer.canteen_external_identifier,
+                food_id: rawMealOffer.food_id
+            }
+            result.push(foodofferForParser);
+        }
+
+        return result;
     }
 
-    async getFoodoffersForParser(){
-        return this.rawFoodoffersJSONList;
+    async getCanteenExternalIdentifierFromRawMealOffer(rawMealOffer: RawFoodofferInformationType){
+        return rawMealOffer.canteen_external_identifier;
     }
 
-    async getCanteenExternalIdentifierFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_CANTEEN_LABEL];
+    async getISODateStringOfMealOffer(rawMealOffer: RawFoodofferInformationType){
+        return rawMealOffer.dateAsString;
     }
 
-    async getMealIdFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[FoodTL1Parser._FOODOFFERITEM_FOOD_ID]
+    static getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer: RawFoodofferInformationType){
+        // For us the external identifier is the marking label itself
+        return FoodTL1Parser.getFoodofferMarkingLabelsFromRawFoodofferInformation(rawMealOffer);
     }
 
-    async getISODateStringOfMealOffer(rawMealOffer){
-        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_DATE];
-    }
-
-    async getPriceForGroupFromRawMealOffer(group: string, rawMealOffer){
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        return FoodTL1Parser.getPriceForGroup(parsedReportItem, group)
-    }
-
-    async getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer){
-        return FoodTL1Parser.getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer);
-    }
-
-    /**
-     * Parser for TL1 Reports
-     */
-
-    static _FOODOFFERITEM_FOOD_ID = _FOODOFFERITEM_FOOD_ID
-    static _MEALOFFERITEM_ITEM = _MEALOFFERITEM_ITEM
-    static _MEALOFFERITEM_DATE = _MEALOFFERITEM_DATE
-    static _MEALOFFERITEM_CANTEEN_LABEL = _MEALOFFERITEM_CANTEEN_LABEL
-
-    static async createRawFoodofferJSONList(rawReport: string | Buffer | undefined): Promise<RawFoodofferJSONListType> {
-        let parsedReportAsJsonList = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
-        let groupedReportItems = FoodTL1Parser._groupParsedReportItemsToMealOfferListsItems(parsedReportAsJsonList);
-        return FoodTL1Parser.getRawFoodofferJSONListFromGroupedList(groupedReportItems);
+    static async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
+        let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
+        let groupedRawFoodofferItemsFromReport = FoodTL1Parser._groupParsedReportItemsToMealOfferListsItems(jsonListFromCsvString);
+        return FoodTL1Parser.getRawFoodofferJSONListFromGroupedList(groupedRawFoodofferItemsFromReport);
     }
 
     /**
@@ -157,10 +166,10 @@ export class FoodTL1Parser implements FoodParserInterface {
      *  So we want to group these lines to one meal offer as our Identifier (MENSA, DATUM, TEXT1, TEXT2) is the same
      * @param parsedReportAsJsonList
      */
-    static _groupParsedReportItemsToMealOfferListsItems(parsedReportAsJsonList: {[p: string]: string }[]): {[p: MealofferIdentifierType]: {[p: string]: string }[]} {
-        let dictOfItemsForAMealOffer: {[p: MealofferIdentifierType]: {[p: string]: string }[]} = {};
+    static _groupParsedReportItemsToMealOfferListsItems(parsedReportAsJsonList: RawTL1FoodofferType[]): {[p: FoodofferIdentifierType]: RawTL1FoodofferType[]} {
+        let dictOfItemsForAMealOffer: {[p: FoodofferIdentifierType]: {[p: string]: string }[]} = {};
         for(let item of parsedReportAsJsonList){
-            let identifier: MealofferIdentifierType | null = FoodTL1Parser.getMealOfferIdentifier(item);
+            let identifier: FoodofferIdentifierType | null = FoodTL1Parser.getMealOfferIdentifier(item);
             if(!!identifier){
                 let listOfParsedItemsForSameMealOffer = dictOfItemsForAMealOffer[identifier] || [];
                 listOfParsedItemsForSameMealOffer.push(item);
@@ -170,12 +179,12 @@ export class FoodTL1Parser implements FoodParserInterface {
         return dictOfItemsForAMealOffer;
     }
 
-    static getRawFoodofferJSONListFromGroupedList(groupedReportItems: {[p: MealofferIdentifierType]: {[p: string]: string }[]}): RawFoodofferJSONListType {
-        let foodOfferJSONList: RawFoodofferJSONType[] = [];
-        let keys: MealofferIdentifierType[] = Object.keys(groupedReportItems) as MealofferIdentifierType[];
+    static getRawFoodofferJSONListFromGroupedList(groupedReportItems: {[p: FoodofferIdentifierType]: RawTL1FoodofferType[]}): RawFoodofferInformationListType {
+        let foodOfferJSONList: RawFoodofferInformationType[] = [];
+        let keys: FoodofferIdentifierType[] = Object.keys(groupedReportItems) as FoodofferIdentifierType[];
         for(let key of keys){
             let listOfItemsForSameFoodoffer = groupedReportItems[key];
-            let foodOfferJSON = FoodTL1Parser.getRawFoodofferFromGroupedItems(listOfItemsForSameFoodoffer);
+            let foodOfferJSON = FoodTL1Parser.getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer);
             if(!!foodOfferJSON){
                 foodOfferJSONList.push(foodOfferJSON);
             }
@@ -183,30 +192,43 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodOfferJSONList;
     }
 
-    static getRawFoodofferFromGroupedItems(listOfItemsForSameMealOffer: {[p: string]: string }[] | undefined): RawFoodofferJSONType | null{
+    static getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): RawFoodofferInformationType | null{
 
-        if(!listOfItemsForSameMealOffer || listOfItemsForSameMealOffer.length === 0){
+        if(!listOfItemsForSameFoodoffer || listOfItemsForSameFoodoffer.length === 0){
             return null;
         }
-        let parsedReportItem = listOfItemsForSameMealOffer[0];
+        let parsedReportItem = listOfItemsForSameFoodoffer[0];
         if(!parsedReportItem){
             return null;
         }
 
         let recipe_ids: string[] = [];
-        for(let item of listOfItemsForSameMealOffer){
+        for(let item of listOfItemsForSameFoodoffer){
             let item_id = FoodTL1Parser.getRecipeIdFunction(item);
-            recipe_ids.push(item_id);
+            if(!!item_id){
+                recipe_ids.push(item_id);
+            }
         }
         let food_id = FoodTL1Parser.getSortedMealId(recipe_ids);
+        if(!food_id){
+            return null;
+        }
+
         let date = FoodTL1Parser.getISODateFunction(parsedReportItem)
+        if(!date){
+            return null;
+        }
+
         let canteen_label = FoodTL1Parser.getCanteenLabelFunction(parsedReportItem)
+        if(!canteen_label){
+            return null;
+        }
 
         return {
-            [_FOODOFFERITEM_FOOD_ID]: food_id,
-            [_MEALOFFERITEM_ITEM]: parsedReportItem,
-            [_MEALOFFERITEM_DATE]: date,
-            [_MEALOFFERITEM_CANTEEN_LABEL]: canteen_label,
+            food_id: food_id,
+            raw_tl1_foodoffer_json: parsedReportItem,
+            dateAsString: date,
+            canteen_external_identifier: canteen_label,
         };
     }
 
@@ -216,6 +238,10 @@ export class FoodTL1Parser implements FoodParserInterface {
      * @returns {string} returns the sorted MealIds as a string with - as a delimiter
      */
     static getSortedMealId(string_recipe_ids: string[]){
+        if(string_recipe_ids.length <= 0){
+            return null
+        }
+
         let numbers = string_recipe_ids.map(Number);
         let uniques = [...new Set(numbers)].map(Number).sort(function(a, b) {return a-b});
         return uniques.map(String).join("-");
@@ -225,8 +251,8 @@ export class FoodTL1Parser implements FoodParserInterface {
      *
      */
 
-    static getFoodIdToRawFoodofferDict(rawFoodofferJSONList: RawFoodofferJSONListType){
-        let foodIdsDictToRawMealOffers: { [x: string]: RawFoodofferJSONType; } = {};
+    static getFoodIdToRawFoodofferDict(rawFoodofferJSONList: RawFoodofferInformationListType){
+        let foodIdsDictToRawMealOffers: { [x: string]: RawFoodofferInformationType; } = {};
         if(!!rawFoodofferJSONList){
             for(let rawFoodoffer of rawFoodofferJSONList){
                 let foodId = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawFoodoffer);
@@ -238,56 +264,48 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodIdsDictToRawMealOffers
     }
 
-    static getMealJSONFromRawMealOffer(rawMealOffer: RawFoodofferJSONType): FoodsInformationTypeForParser | null {
+    static getMealJSONFromRawMealOffer(rawMealOffer: RawFoodofferInformationType): FoodsInformationTypeForParser | null {
         const meal_id = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawMealOffer);
         if(!meal_id){
             return null;
         }
 
-        let parsedReportItem = rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
 
         const translations: TranslationsFromParsingType = {
             [LanguageCodes.DE]: {"name": FoodTL1Parser._getMealNameDe(parsedReportItem)},
             [LanguageCodes.EN]: {"name": FoodTL1Parser._getMealNameEn(parsedReportItem)}
         };
 
+        const mealNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
         const basicFoodData: FoodWithBasicData = {
             id: meal_id,
             alias: FoodTL1Parser._getMealNameDe(parsedReportItem),
             category: parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
-        }
-
-        const result: FoodsInformationTypeForParser = {
-            basicFoodData: basicFoodData,
-            translations: translations,
+            ...mealNutritions
         }
 
         return {
-            id: meal_id,
-            alias: FoodTL1Parser._getMealNameDe(parsedReportItem),
-            category: parsedReportItem[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
-//            name: TL1Parser._getMealName(parsedReportItem),
-            translations: {
-                [TranslationHelper.LANGUAGE_CODE_DE]: {"name": FoodTL1Parser._getMealNameDe(parsedReportItem)},
-                [TranslationHelper.LANGUAGE_CODE_EN]: {"name": FoodTL1Parser._getMealNameEn(parsedReportItem)}
-            }
+            basicFoodData: basicFoodData,
+            translations: translations,
+            marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer)
         };
     }
 
-    async getAliasForMealOfferFromRawMealOffer(rawMealOffer){
-        let parsedReportItem = rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
+    async getAliasForMealOfferFromRawMealOffer(rawMealOffer: RawFoodofferInformationType){
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer)
         return FoodTL1Parser._getMealNameDe(parsedReportItem);
     }
 
-    static getParsedReportItemFromRawMealOffer(rawMealOffer){
-        return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_ITEM];
+    static getParsedReportItemFromRawMealOffer(rawMealOffer: RawFoodofferInformationType){
+        return rawMealOffer.raw_tl1_foodoffer_json
     }
 
-    static getFoodIdFromRawFoodoffer(rawMealOffer: RawFoodofferJSONType){
-        return rawMealOffer[FoodTL1Parser._FOODOFFERITEM_FOOD_ID];
+    static getFoodIdFromRawFoodoffer(rawMealOffer: RawFoodofferInformationType){
+        return rawMealOffer.food_id
     }
 
-    static _hasValidName(parsedReportItem){
+    static _hasValidName(parsedReportItem: RawTL1FoodofferType){
         let rawNamesList = FoodTL1Parser._getRawNamesList(parsedReportItem);
         if(!!rawNamesList && rawNamesList.length>0){
             let rawName = rawNamesList.join("");
@@ -297,36 +315,40 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
     }
 
-    static getMealOfferIdentifier(parsedReportItem: { [p: string]: string }): MealofferIdentifierType | null {
+    static getMealOfferIdentifier(parsedReportItem: RawTL1FoodofferType): FoodofferIdentifierType | null {
         if(FoodTL1Parser._hasValidName(parsedReportItem)){
             let mealOfferIdentifier = "";
             mealOfferIdentifier += FoodTL1Parser._getCanteenName(parsedReportItem)
             mealOfferIdentifier += FoodTL1Parser._getDatum(parsedReportItem)
             mealOfferIdentifier += FoodTL1Parser._getMealIdentifier(parsedReportItem)
-            return mealOfferIdentifier as MealofferIdentifierType;
+            return mealOfferIdentifier as FoodofferIdentifierType;
         } else {
             return null;
         }
     }
 
-    static getRecipeIdFunction(parsedReportItem) {
+    static getRecipeIdFunction(parsedReportItem: RawTL1FoodofferType){
         return parsedReportItem[FoodTL1Parser.DEFAULT_RECIPE_ID_FIELD];
     }
 
-    static getISODateFunction(parsedReportItem){
+    static getISODateFunction(parsedReportItem: RawTL1FoodofferType){
         /**
          *   "DATUM": "25.01.2022",
          */
         let rawDate = FoodTL1Parser._getDatum(parsedReportItem);
+        if(!rawDate){
+            return null;
+        }
+
         let isoDate = moment(rawDate, "DD-MM-YYYY");
         return isoDate.toISOString();
     }
 
-    static getCanteenLabelFunction(parsedReportItem){
+    static getCanteenLabelFunction(parsedReportItem: RawTL1FoodofferType){
         return parsedReportItem[FoodTL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
-    static findFirstPriceValueForFields(parsedReportItem, fields: string[]){
+    static findFirstPriceValueForFields(parsedReportItem: RawTL1FoodofferType, fields: string[]){
         for(let field of fields){
             let value = parsedReportItem[field];
             if(!!value){
@@ -336,12 +358,12 @@ export class FoodTL1Parser implements FoodParserInterface {
         return null;
     }
 
-    static getPriceForGroup(parsedReportItem, groupName: string){
+    static getPriceForGroup(parsedReportItem: RawTL1FoodofferType, groupName: PriceGroupEnum): number | null | undefined {
         let foundPrice = null;
         switch (groupName){
-            case PriceGroups.PRICE_GROUP_STUDENT: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_STUDENT_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_STUDENT_HANNOVER]); break;
-            case PriceGroups.PRICE_GROUP_EMPLOYEE: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_EMPLOYEE_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_EMPLOYEE_HANNOVER]); break;
-            case PriceGroups.PRICE_GROUP_GUEST: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_GUEST_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_GUEST_HANNOVER]); break;
+            case PriceGroupEnum.PRICE_GROUP_STUDENT: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_STUDENT_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_STUDENT_HANNOVER]); break;
+            case PriceGroupEnum.PRICE_GROUP_EMPLOYEE: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_EMPLOYEE_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_EMPLOYEE_HANNOVER]); break;
+            case PriceGroupEnum.PRICE_GROUP_GUEST: foundPrice = FoodTL1Parser.findFirstPriceValueForFields(parsedReportItem, [FoodTL1Parser.FIELD_PRICE_GUEST_OSNABRUECK, FoodTL1Parser.FIELD_PRICE_GUEST_HANNOVER]); break;
             default: return null
         }
         if(!!foundPrice){
@@ -349,8 +371,9 @@ export class FoodTL1Parser implements FoodParserInterface {
              *    "STD_PREIS": "0,50",
              */
             foundPrice = foundPrice.replace(",", ".");
+            return parseFloat(foundPrice);
         }
-        return foundPrice;
+        return null;
 
     }
 
@@ -359,13 +382,12 @@ export class FoodTL1Parser implements FoodParserInterface {
      * Nutritions
      */
 
-    static getMealNutritionsFromRawMealOffer(rawMealOffer){
+    static getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodNutritionType {
         /**
          * e. G.
          * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
          */
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        let nutritionValuesJSON = {};
+        let nutritionValuesJSON: FoodNutritionType = {};
         let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
         if(!!nutritionValuesString){
             let kcalEndString = " kcal)";
@@ -376,31 +398,24 @@ export class FoodTL1Parser implements FoodParserInterface {
                 nutritionValuesJSON.calories_kcal = parseInt(kcal);
             }
 
-            let fatInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Fett");
-            nutritionValuesJSON.fat_g = fatInGrams;
+            nutritionValuesJSON.fat_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fett");
 
-            let saturatedFatInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Fettsäuren");
-            nutritionValuesJSON.saturated_fat_g = saturatedFatInGrams;
+            nutritionValuesJSON.saturated_fat_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fettsäuren");
 
-            let carbohydratesInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Kohlenhydrate");
-            nutritionValuesJSON.carbohydrate_g = carbohydratesInGrams;
+            nutritionValuesJSON.carbohydrate_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Kohlenhydrate");
 
-            let sugarInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Zucker");
-            nutritionValuesJSON.sugar_g = sugarInGrams;
+            nutritionValuesJSON.sugar_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Zucker");
 
-            let fiberInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Ballaststoffe");
-            nutritionValuesJSON.fiber_g = fiberInGrams;
+            nutritionValuesJSON.fiber_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Ballaststoffe");
 
-            let proteinInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Eiweiß");
-            nutritionValuesJSON.protein_g = proteinInGrams;
+            nutritionValuesJSON.protein_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Eiweiß");
 
-            let saltInGrams = FoodTL1Parser.parseNutritionValue(nutritionValuesString,"Salz");
-            nutritionValuesJSON.sodium_g = saltInGrams;
+            nutritionValuesJSON.sodium_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Salz");
         }
         return nutritionValuesJSON;
     }
 
-    static parseFloatWithOneDecimal(str) {
+    static parseFloatWithOneDecimal(str: string){
         let num = parseFloat(str);
         if (isNaN(num)) {
             return NaN; // or some other value to indicate the parse failed
@@ -408,7 +423,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return Math.round(num * 10) / 10;
     }
 
-    static parseNutritionValue(nutritionValuesString,searchValue){
+    static parseNutritionValue(nutritionValuesString: string, searchValue: string){
         try{
             let searchText = searchValue+"=";
             let regex = new RegExp(searchText+"\\d*,\\d*","gm");
@@ -417,8 +432,7 @@ export class FoodTL1Parser implements FoodParserInterface {
                 let matchString = match[0];
                 let valueString = matchString.slice(searchText.length);
                 valueString = valueString.replace(",",".");
-                let value = FoodTL1Parser.parseFloatWithOneDecimal(valueString);
-                return value;
+                return FoodTL1Parser.parseFloatWithOneDecimal(valueString);
             }
         } catch(err){
             return null;
@@ -430,16 +444,16 @@ export class FoodTL1Parser implements FoodParserInterface {
      *
      */
 
-    static getMealOfferMarkingLabelsFromRawMealOffer(rawMealOffer){
+    static getFoodofferMarkingLabelsFromRawFoodofferInformation(rawMealOffer: RawFoodofferInformationType){
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
         let markingsDict = {};
         let rawName = FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
-        markingsDict = FoodTL1Parser.getMarkingLabelsDictFromName(rawName);
+        markingsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(rawName);
         return Object.keys(markingsDict);
     }
 
-    static getMarkingLabelsDictFromName(name){
-        let markingsDict = {};
+    static getMarkingLabelsDictFromFoodName(name: string){
+        let markingsDict: { [x: string]: string } = {};
         //e. G. "Strawberries (g, b) with Cream (2)"
         let rawMarkingsInName = name.match(/\([^\)]+\)/gm); //http://regex.inginf.units.it/
         //e. G. ["(g, b)", "(2)"]
@@ -457,7 +471,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return markingsDict;
     }
 
-    static removeValuesAndWhitespacesAndSeperators(string, valuesToRemove, seperator){
+    static removeValuesAndWhitespacesAndSeperators(string: string, valuesToRemove: string[], seperator: string){
         //e. G. string is "(g, b)"  valuesToRemove ["(", ")"]   seperator ","
         let output = [];
         let workingString = new String(string);
@@ -511,19 +525,19 @@ export class FoodTL1Parser implements FoodParserInterface {
      */
 
 
-    static _getCanteenName(parsedReportItem) {
+    static _getCanteenName(parsedReportItem: RawTL1FoodofferType){
         return parsedReportItem[FoodTL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
-    static _getDatum(parsedReportItem) {
+    static _getDatum(parsedReportItem:RawTL1FoodofferType){
         return parsedReportItem[FoodTL1Parser.DEFAULT_DATE_FIELD];
     }
 
-    static _getMealIdentifier(parsedReportItem) {
+    static _getMealIdentifier(parsedReportItem: RawTL1FoodofferType){
         return FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
     }
 
-    static _getRawNamesList(parsedReportItem, postFieldName){
+    static _getRawNamesList(parsedReportItem: RawTL1FoodofferType, postFieldName: string = ""){
         if(!postFieldName){
             postFieldName = "";
         }
@@ -537,27 +551,40 @@ export class FoodTL1Parser implements FoodParserInterface {
         return meal_partials_names;
     }
 
+    static sanitizeFoodNameFromMarkingLabels(name: string){
+        //example: "Strawberries (g, b,)"
+        //expected: "Strawberries"
+        // Remove all brackets and their content and a possible whitespace before the brackets
+        let sanitizedName = name.replace(/\s?\([^\)]+\)/gm, "");
 
-
-    static _getMealNameDe(parsedReportItem){
-        let rawMealName = FoodTL1Parser._getRawNamesList(parsedReportItem, "").join(", ");
-        return rawMealName.replace(/ \([^ ]+/gm, ""); //remove all (1,3,) stuff
+        // Remove all commas at the end of the string
+        sanitizedName = sanitizedName.replace(/,\s*$/gm, "");
+        return sanitizedName;
     }
 
-    static _getMealNameEn(parsedReportItem){
+
+    static _getMealNameDe(parsedReportItem: RawTL1FoodofferType){
+        let rawMealName = FoodTL1Parser._getRawNamesList(parsedReportItem, "").join(", ");
+        return FoodTL1Parser.sanitizeFoodNameFromMarkingLabels(rawMealName);
+    }
+
+    static _getMealNameEn(parsedReportItem: RawTL1FoodofferType){
         let rawMealName = FoodTL1Parser._getRawNamesList(parsedReportItem, "_1").join(", ");
-        return rawMealName.replace(/ \([^ ]+/gm, ""); //remove all (1,3,) stuff
+        return FoodTL1Parser.sanitizeFoodNameFromMarkingLabels(rawMealName);
     }
 
     /**
      *
      */
 
-    static getValueListFromDict(dict){
+    static getValueListFromDict<T>(dict: { [p: string]: T }): T[] {
         let keys = Object.keys(dict);
-        let values = [];
+        let values: T[] = [];
         for(let key of keys){
-            values.push(dict[key]);
+            let value = dict[key];
+            if(!!value){
+                values.push(value);
+            }
         }
         return values;
     }

@@ -102,7 +102,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
             name += textX;
         }
 
-        let markingsDict = await FoodTL1Parser.getMarkingLabelsDictFromName(name)
+        let markingsDict = await FoodTL1Parser.getMarkingLabelsDictFromFoodName(name)
         return Object.keys(markingsDict)
     }
 

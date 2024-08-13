@@ -77,7 +77,7 @@ export class CSVExportParser {
             const identifier = identifierList[i];
             if(!!identifier){
                 const value = lineItemList[i];
-                if(!!value){
+                if(value !== undefined && value !== null){ // allow empty strings
                     output[identifier] = value
                 }
             }

@@ -735,7 +735,7 @@ export type Foodoffers = {
   saturated_fat_g?: number | null;
   sodium_g?: number | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   sugar_g?: number | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;

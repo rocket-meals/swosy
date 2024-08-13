@@ -3,8 +3,9 @@ import { describe, it, expect } from '@jest/globals';
 import {FoodTL1Parser} from "../FoodTL1Parser";
 import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
 import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawReportTestReaderHannover";
+import {FoodoffersTypeForParser} from "../FoodParserInterface";
 
-describe("FoodTL1Parser Test", () => {
+describe("FoodTL1ParserHannover Test", () => {
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
     let foodParser: FoodTL1Parser = new FoodTL1Parser(testFileGetter);
 
@@ -36,61 +37,69 @@ describe("FoodTL1Parser Test", () => {
     it("Have no critical duplicates", async () => {
         await foodParser.createNeededData();
 
-        let rawMealOffersJSONList = await foodParser.getFoodoffersForParser();
+        let foodoffersTypeForParserList = await foodParser.getFoodoffersForParser();
         let uniqueOffers: {[key: string]: any} = {};
-        let uncheckedDuplicateOffers: {[key: string]: any} = {};
-        if(!!rawMealOffersJSONList){
-            for(let rawFoodOffer of rawMealOffersJSONList){
-                let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
-                let food_id = await foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
-                let canteenLabel = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(rawFoodOffer);
+        let uncheckedDuplicateOffers: {[key: string]: FoodoffersTypeForParser[]} = {};
+        if(!!foodoffersTypeForParserList){
+            for(let foodofferTypeForParser of foodoffersTypeForParserList){
+                let isoDateStringOfMealOffer = foodofferTypeForParser.basicFoodofferData.date;
+                let food_id = foodofferTypeForParser.food_id
+                let canteenLabel = foodofferTypeForParser.canteen_external_identifier
                 let compositeKey = isoDateStringOfMealOffer + "_" + food_id + "_" + canteenLabel;
                 if(uniqueOffers[compositeKey] === undefined) {
-                    uniqueOffers[compositeKey] = rawFoodOffer;
+                    uniqueOffers[compositeKey] = foodofferTypeForParser;
                 } else {
                     let uniqueOffer = uniqueOffers[compositeKey];
                     let duplicateList = uncheckedDuplicateOffers[compositeKey] || [uniqueOffer];
-                    duplicateList.push(rawFoodOffer);
+                    duplicateList.push(foodofferTypeForParser);
                     uncheckedDuplicateOffers[compositeKey] = duplicateList;
                 }
             }
         }
 
 
-        let criticalDuplicates: {[key: string]: any} = {};
+        let criticalDuplicates: {[key: string]: FoodoffersTypeForParser[]} = {};
 
         // print duplicates amount and keys
         let uncheckedDuplicateKeys = Object.keys(uncheckedDuplicateOffers);
         //console.log("duplicateKeys.length: ", uncheckedDuplicateKeys.length);
         for(let key of uncheckedDuplicateKeys){
-            let listOfDuplicatesForThisKey = uncheckedDuplicateOffers[key];
+            const listOfDuplicatesForThisKey = uncheckedDuplicateOffers[key];
 
-            // Check for Niedersachsenmenü duplicates - These are okay, since they currently have the same name until 30.06.2024
-            if(listOfDuplicatesForThisKey.length===2){
-                let firstDuplicate = listOfDuplicatesForThisKey[0];
-                let secondDuplicate = listOfDuplicatesForThisKey[1];
-                let name1 = await foodParser.getAliasForMealOfferFromRawMealOffer(firstDuplicate);
-                let name2 = await foodParser.getAliasForMealOfferFromRawMealOffer(secondDuplicate);
-                const allowedPrefix = "Niedersachsenmenü: ";
-                // if exactly one of the names has the prefix, then it is not a critical duplicate
-                if(name1.startsWith(allowedPrefix) !== name2.startsWith(allowedPrefix)){
-                    continue;
+            if(!!listOfDuplicatesForThisKey){
+                // Check for Niedersachsenmenü duplicates - These are okay, since they currently have the same name until 30.06.2024
+                if(listOfDuplicatesForThisKey.length===2){
+                    let firstDuplicate = listOfDuplicatesForThisKey[0];
+                    let secondDuplicate = listOfDuplicatesForThisKey[1];
+                    let name1 = firstDuplicate?.basicFoodofferData.alias;
+                    let name2 = secondDuplicate?.basicFoodofferData.alias;
+                    const allowedPrefix = "Niedersachsenmenü: ";
+                    // if exactly one of the names has the prefix, then it is not a critical duplicate
+                    if(!name1){
+                        continue
+                    }
+                    if(!name2){
+                        continue
+                    }
+                    if(name1.startsWith(allowedPrefix) !== name2.startsWith(allowedPrefix)){
+                        continue;
+                    }
                 }
-            }
 
-            // check for canteen Zentralproduktion duplicates - These are okay, since Zentralproduktion is a special canteen which will not be in the production system
-            if(listOfDuplicatesForThisKey.length===2){
-                let firstDuplicate = listOfDuplicatesForThisKey[0];
-                let secondDuplicate = listOfDuplicatesForThisKey[1];
-                let canteen1 = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(firstDuplicate);
-                let canteen2 = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(secondDuplicate);
-                if(canteen1 === "Zentralproduktion" && canteen2 === "Zentralproduktion"){
-                    continue;
+                // check for canteen Zentralproduktion duplicates - These are okay, since Zentralproduktion is a special canteen which will not be in the production system
+                if(listOfDuplicatesForThisKey.length===2){
+                    let firstDuplicate = listOfDuplicatesForThisKey[0];
+                    let secondDuplicate = listOfDuplicatesForThisKey[1];
+                    let canteen1 = firstDuplicate?.canteen_external_identifier
+                    let canteen2 = secondDuplicate?.canteen_external_identifier
+                    if(canteen1 === "Zentralproduktion" && canteen2 === "Zentralproduktion"){
+                        continue;
+                    }
                 }
+
+
+                criticalDuplicates[key] = listOfDuplicatesForThisKey;
             }
-
-
-            criticalDuplicates[key] = listOfDuplicatesForThisKey;
         }
 
         // print critical duplicates
@@ -100,9 +109,11 @@ describe("FoodTL1Parser Test", () => {
             for(let key of criticalDuplicateKeys){
                 console.log("key: ", key);
                 let listOfDuplicatesForThisKey = criticalDuplicates[key];
-                for(let duplicate of listOfDuplicatesForThisKey){
-                    let name = await foodParser.getAliasForMealOfferFromRawMealOffer(duplicate);
-                    console.log("-- name: ", name);
+                if(!!listOfDuplicatesForThisKey){
+                    for(let duplicate of listOfDuplicatesForThisKey){
+                        let name = duplicate.basicFoodofferData.alias
+                        console.log("-- name: ", name);
+                    }
                 }
             }
         }
