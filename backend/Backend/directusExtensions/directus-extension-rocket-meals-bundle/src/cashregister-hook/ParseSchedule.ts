@@ -40,10 +40,10 @@ export class ParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
-        this.cashregisters_service = this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS);
-        this.cashregisters_transactions_service = this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
+        this.cashregisters_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS);
+        this.cashregisters_transactions_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
     }
 
     async setStatus(status: FlowStatus) {

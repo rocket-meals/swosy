@@ -20,10 +20,9 @@ export default defineHook(async ({action, filter}, apiContext) => {
 
 	const collection = CollectionNames.FOODS_FEEDBACKS
 
-	let schema = await getSchema();
-	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
-	let foodfeedbacksService = itemsServiceCreator.getItemsService(collection);
+	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+	let foodsService = await itemsServiceCreator.getItemsService(CollectionNames.FOODS);
+	let foodfeedbacksService = await itemsServiceCreator.getItemsService(collection);
 
 
 	async function getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){

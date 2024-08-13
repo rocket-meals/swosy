@@ -6,11 +6,12 @@ import {FoodParserInterface} from "./FoodParserInterface";
 import {FoodTL1Parser} from "./FoodTL1Parser";
 import {FoodTL1Parser_RawReportFtpReader} from "./FoodTL1Parser_RawReportFtpReader";
 import {FoodTL1Parser_RawReportUrlReader} from "./FoodTL1Parser_RawReportUrlReader";
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {MarkingTL1Parser} from "./MarkingTL1Parser";
 import {MarkingParserInterface} from "./MarkingParserInterface";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {AppSettingsHelper} from "../helpers/AppSettingsHelper";
+import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {ApiContext} from "../helpers/ApiContext";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -47,7 +48,8 @@ function getFoodParser(env: any): FoodParserInterface | null {
     return null;
 }
 
-function getMarkingParser(env: any): MarkingParserInterface | null {
+function getMarkingParser(apiContext: ApiContext): MarkingParserInterface | null {
+    const env = apiContext.env;
     const MARKING_SYNC_MODE = env.MARKING_SYNC_MODE; // Options: "TL1CSV", "TL1WEB"
 
     switch (MARKING_SYNC_MODE) {
@@ -57,7 +59,7 @@ function getMarkingParser(env: any): MarkingParserInterface | null {
             const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "utf8";
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-            return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+            return new MarkingTL1Parser(apiContext, DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
     }
 
     return null;
@@ -82,26 +84,23 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         console.log(SCHEDULE_NAME + ": no food parser configured");
     }
 
-    let usedMarkingParser = getMarkingParser(env);
+    let usedMarkingParser = getMarkingParser(apiContext);
     if(!usedMarkingParser) {
         console.log(SCHEDULE_NAME + ": no marking parser configured");
     }
 
-    const parseSchedule = new ParseSchedule(usedFoodParser, usedMarkingParser);
+    const parseSchedule = new ParseSchedule(apiContext, usedFoodParser, usedMarkingParser);
+
+    const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
     let collection = CollectionNames.APP_SETTINGS
 
-    await parseSchedule.init(getSchema, services, database, logger, env);
+    await parseSchedule.init();
 
-    let schema = await getSchema();
-    let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
 
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
         console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
-        await AppSettingsHelper.setAppSettings(itemsServiceCreator, {
-            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS]: AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED,
-            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH]: null
-        });
+        await myDatabaseHelper.getAppSettingsHelper().setFoodParsingStatus(FlowStatus.FINISHED, null);
     });
 
     // filter all update actions where from value running to start want to change, since this is not allowed
@@ -111,10 +110,10 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
             throw new Error("No keys provided for update");
         }
         // check if input has field FIELD_APP_SETTINGS_FOODS_PARSING_STATUS and if it is set to start
-        if (input[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_START) {
-            const appSettings = await AppSettingsHelper.readAppSettings(itemsServiceCreator);
-            if (appSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_RUNNING) {
-                throw new Error("Parsing is already running. Please wait until it is finished or set to "+AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED+" manually.");
+        if (input[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === FlowStatus.START) {
+            const parsingStatus = await myDatabaseHelper.getAppSettingsHelper().getFoodParsingStatus();
+            if (parsingStatus === FlowStatus.RUNNING) {
+                throw new Error("Parsing is already running. Please wait until it is finished or set to "+FlowStatus.FINISHED+" manually.");
             }
         }
 

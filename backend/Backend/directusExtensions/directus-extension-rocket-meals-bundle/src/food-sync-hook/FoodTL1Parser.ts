@@ -43,7 +43,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         this.foodIdToRawMealOfferDict = FoodTL1Parser.createMealIdToRawMealOfferDict(this.rawMealOffers);
     }
 
-    async getMealsJSONList(){
+    async getFoodsListForParser(){
         let foodIdToRawMealOfferDict = this.foodIdToRawMealOfferDict;
         let foodIds = Object.keys(foodIdToRawMealOfferDict);
         let foodsJSONList = [];
@@ -55,8 +55,8 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodsJSONList;
     }
 
-    async getCanteensJSONList(){
-        let rawMealOffers = await this.getRawMealOffersJSONList();
+    async getCanteensList(){
+        let rawMealOffers = await this.getFoodoffersForParser();
         let canteenLabelsDict = {};
         for(let rawMealOffer of rawMealOffers){
             let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
@@ -83,11 +83,11 @@ export class FoodTL1Parser implements FoodParserInterface {
         return FoodTL1Parser.getMealNutritionsFromRawMealOffer(rawMealOffer);
     }
 
-    async getRawMealOffersJSONList(){
+    async getFoodoffersForParser(){
         return this.rawMealOffers;
     }
 
-    async getCanteenLabelFromRawMealOffer(rawMealOffer){
+    async getCanteenExternalIdentifierFromRawMealOffer(rawMealOffer){
         return rawMealOffer[FoodTL1Parser._MEALOFFERITEM_CANTEEN_LABEL];
     }
 
@@ -395,46 +395,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
         //transform dict into list
         return markingsDict;
-    }
-
-    /**
-     * WARNING ! These are not the markings for an meal_offer ! These are only markings in general.
-     * @alternative getMealOfferMarkingLabelsFromParsedItem to get the markings for a meal
-     * @param parsedReportItem
-     */
-    static getGenerelMarkingsFromRawMealOffer(rawMealOffer){
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromRawMealOffer(rawMealOffer);
-        let markingLabelString = parsedReportItem[FoodTL1Parser.DEFAULT_MARKING_LABELS_FIELD];
-        //  e. G. "ZSNUMMERN": "2, 9, a, c, j, m, 40, 0",
-
-        let markingNamesString = parsedReportItem[FoodTL1Parser.DEFAULT_MARKING_NAMES_FIELD];
-        // e. G. "ZSNAMEN": "mit Konservierungsstoff, mit Süßungsmitteln, Glutenhaltiges Getreide (a), Hühnerei (c), Senf (j), Sesam (m), Geflügel, zusatzstoff- und allergenfrei",
-
-        // The idea is, each number corresponds in position with each list, so we split
-        let markingLabelSplits = markingLabelString.split(",");
-        let markingNamesSplits = markingNamesString.split(",");
-
-        let markings = [];
-        if(markingLabelSplits.length===markingNamesSplits.length){
-            //we should now have to lists where each correspond to the other
-            for(let i=0; i<markingLabelSplits.length; i++){
-                let label = markingLabelSplits[i];
-                label = label.trim();
-
-                let name = markingNamesSplits[i];//Glutenhaltiges Getreide (a)
-                name = name.split("(")[0];// "Glutenhaltiges Getreide "
-                name = name.trim();
-
-                if(!!name && !!label){
-                    markings.push({
-                        label: label,
-                        external_identifier: label,
-                    })
-                }
-            }
-        }
-
-        return markings;
     }
 
     static removeValuesAndWhitespacesAndSeperators(string, valuesToRemove, seperator){

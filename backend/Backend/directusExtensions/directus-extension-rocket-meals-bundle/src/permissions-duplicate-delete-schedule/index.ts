@@ -21,8 +21,8 @@ export default defineHook(async ({schedule}, apiContext) => {
 	} = apiContext;
 
 	let schema = await getSchema();
-	const permissionsServiceCreator = new PermissionsServiceCreator(services, database, schema);
-	const permissionsService = permissionsServiceCreator.getPermissionsService();
+	const permissionsServiceCreator = new PermissionsServiceCreator(apiContext);
+	const permissionsService = await permissionsServiceCreator.getPermissionsService();
 
 	const cronFrequencyEveryMinute =   '0 * * * * *';
 	const cronFrequency = cronFrequencyEveryMinute;

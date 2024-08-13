@@ -22,9 +22,8 @@ export default defineHook(async ({action, init}, apiContext) => {
 	// create a function which will be called after any update, create or delete of a collection, except the collection "collections_dates_last_update"
 	// this function will update the collection "collections_dates_last_update" with the current date for the collection which was updated, created or deleted
 
-	let schema = await getSchema();
-	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let collectionsDatesLastUpdateService = itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
+	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+	let collectionsDatesLastUpdateService = await itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
 
 	//console.log("collection-last-update-hook: register hook")
 

@@ -1,6 +1,7 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
+import {ApiContext} from "../helpers/ApiContext";
 
 const TABLENAME_NEWS = CollectionNames.NEWS;
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
@@ -18,8 +19,10 @@ export class NewsParseSchedule {
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
     private newsService: any;
+    private apiContext: ApiContext;
 
-    constructor(parser: NewsParserInterface | null) {
+    constructor(apiContext: ApiContext, parser: NewsParserInterface | null) {
+        this.apiContext = apiContext;
         this.parser = parser;
         this.finished = true;
     }
@@ -29,7 +32,7 @@ export class NewsParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
     }
 
     async setStatus(status) {
@@ -70,7 +73,7 @@ export class NewsParseSchedule {
             return
         }
 
-        this.newsService = this.itemsServiceCreator.getItemsService(TABLENAME_NEWS);
+        this.newsService = await this.itemsServiceCreator.getItemsService(TABLENAME_NEWS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()

@@ -5,25 +5,25 @@ import {Cashregisters, CashregistersTransactions} from "../databaseTypes/types";
 
 export class CashregisterHelper {
 
-    private apiExtensionContext: ApiContext;
+    private apiContext: ApiContext;
 
-    constructor(apiExtensionContext: ApiContext) {
-        this.apiExtensionContext = apiExtensionContext;
+    constructor(apiContext: ApiContext) {
+        this.apiContext = apiExtensionContext;
     }
 
     async getCashregisterTransactionsService() {
-        const services = this.apiExtensionContext.services;
-        const database = this.apiExtensionContext.database;
-        const schema = await this.apiExtensionContext.getSchema();
-        const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+        const services = this.apiContext.services;
+        const database = this.apiContext.database;
+        const schema = await this.apiContext.getSchema();
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         return itemsServiceCreator.getItemsService<CashregistersTransactions>(CollectionNames.CASHREGISTERS_TRANSACTIONS);
     }
 
     async getCashregisterService() {
-        const services = this.apiExtensionContext.services;
-        const database = this.apiExtensionContext.database;
-        const schema = await this.apiExtensionContext.getSchema();
-        const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+        const services = this.apiContext.services;
+        const database = this.apiContext.database;
+        const schema = await this.apiContext.getSchema();
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         return itemsServiceCreator.getItemsService<Cashregisters>(CollectionNames.CASHREGISTERS);
     }
 

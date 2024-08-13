@@ -18,10 +18,12 @@ const FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
 export class NotifySchedule {
 
     private databaseHelper: MyDatabaseHelper;
+    private apiContext: ApiContext;
 
     constructor(
         apiExtensionContext: ApiContext
     ) {
+        this.apiContext = apiExtensionContext;
         this.databaseHelper = new MyDatabaseHelper(apiExtensionContext);
         this.finished = true;
     }
@@ -33,8 +35,8 @@ export class NotifySchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
-        this.serverServiceCreator = new ServerServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        this.serverServiceCreator = new ServerServiceCreator(this.apiContext);
         await this.getProjectName();
     }
 
@@ -125,7 +127,7 @@ export class NotifySchedule {
 
     async notifyDeviceAboutFoodOffer(device, foodOffer, foodWithTranslations, language, aboutMealsInDays, date) {
         // Create a new push_notification entry in the database
-        let pushNotificationService = this.itemsServiceCreator.getItemsService(CollectionNames.PUSH_NOTIFICATIONS);
+        let pushNotificationService = await this.itemsServiceCreator.getItemsService(CollectionNames.PUSH_NOTIFICATIONS);
         let pushTokenObj = device.pushTokenObj;
         /**
          pushTokenObj = {
@@ -191,7 +193,7 @@ export class NotifySchedule {
                 //console.log("Failed to send notification");
                 //console.log("We better reset on the device the pushTokenObj to null");
                 // Reset the pushTokenObj to null
-                let devicesService = this.itemsServiceCreator.getItemsService(CollectionNames.DEVICES);
+                let devicesService = await this.itemsServiceCreator.getItemsService(CollectionNames.DEVICES);
                 await devicesService.updateOne(device.id, {pushTokenObj: null});
             }
         }
@@ -228,19 +230,19 @@ export class NotifySchedule {
     }
 
     async getFoodWithTranslations(food_id) {
-        let foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
+        let foodsService = await this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
         let food = await foodsService.readOne(food_id, {fields: ["*", "translations.*"]});
         return food;
     }
 
     async getProfileAndDevicesForProfile(profile_id) {
-        let profileService = this.itemsServiceCreator.getItemsService("profiles");
+        let profileService = await this.itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
         let profile = await profileService.readOne(profile_id, {fields: ["*", "devices.*"]});
         return profile;
     }
 
     async getFoodFeedbacksForFood(food_id) {
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODS_FEEDBACKS)
+        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_FOODS_FEEDBACKS)
         let foodFeedbacks = await itemService.readByQuery({filter: { // filter where food_id is food AND notify is true
                 _and: [
                     {food: food_id},
@@ -258,7 +260,7 @@ export class NotifySchedule {
         startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
         endOfTheDay.setHours(23,59,59,999); //set to end of day
 
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
+        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
         let foodOffers = await itemService.readByQuery({filter: {
             date: {
                 _between: [startOfTheDay.toISOString(), endOfTheDay.toISOString()]

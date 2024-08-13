@@ -1,5 +1,6 @@
 import type {Accountability, PrimaryKey, Query, SchemaOverview} from '@directus/types';
 import type {Knex} from 'knex';
+import {ApiContext} from "./ApiContext";
 
 export type AbstractServiceOptions = {
     knex?: Knex | undefined;
@@ -24,29 +25,31 @@ export interface AbstractService<Item> {
 
     deleteOne(key: PrimaryKey): Promise<PrimaryKey>;
     deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>;
+
+    upsertSingleton(data: Partial<Item>): Promise<PrimaryKey>;
+    readSingleton(): Promise<Item>;
 }
 
 class GetItemsService {
-    public services: any;
-    public schema: any;
-    public database: any;
+    public apiContext: ApiContext;
 
-    constructor(services: any, database: any, schema: any) {
-        this.services = services;
-        this.database = database;
-        this.schema = schema;
+    constructor(apiContext: ApiContext) {
+        this.apiContext = apiContext;
     }
+
 }
 
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts
 export class ItemsServiceCreator extends GetItemsService{
 
-    getItemsService<Item>(tablename: string): AbstractService<Item> {
-        const {ItemsService} = this.services;
+    async getItemsService<Item>(tablename: string): Promise<AbstractService<Item>> {
+        const {ItemsService} = this.apiContext.services;
+        let schema = await this.apiContext.getSchema();
+        let database = this.apiContext.database;
         return new ItemsService(tablename, {
             accountability: null, //this makes us admin
-            knex: this.database, //TODO: i think this is not neccessary
-            schema: this.schema,
+            knex: database, //TODO: i think this is not neccessary
+            schema: schema,
         });
     }
 
@@ -55,34 +58,38 @@ export class ItemsServiceCreator extends GetItemsService{
 export class FileServiceCreator extends GetItemsService{
 
     //https://github.com/directus/directus/blob/main/api/src/services/files.ts
-        getFileService() {
-            const {FilesService} = this.services;
+        async getFileService() {
+            const {FilesService} = this.apiContext.services;
+            const schema = await this.apiContext.getSchema();
+            const database = this.apiContext.database;
             return new FilesService({
                 accountability: null, //this makes us admin
-                knex: this.database, //TODO: i think this is not neccessary
-                schema: this.schema,
+                knex: database, //TODO: i think this is not neccessary
+                schema: schema,
             });
         }
 
         async importByUrl(url: string, body: Partial<File>){
-            const fileService = this.getFileService();
+            const fileService = await this.getFileService();
             return await fileService.importOne(url, body);
         }
 
         async deleteOne(id: string){
-            const fileService = this.getFileService();
+            const fileService = await this.getFileService();
             return await fileService.deleteOne(id);
         }
 }
 
 export class ActivityServiceCreator extends GetItemsService{
 
-        getActivityService() {
-            const {ActivityService} = this.services;
+        async getActivityService() {
+            const {ActivityService} = this.apiContext.services;
+            const schema = await this.apiContext.getSchema();
+            const database = this.apiContext.database;
             return new ActivityService({
                 accountability: null, //this makes us admin
-                knex: this.database, //TODO: i think this is not neccessary
-                schema: this.schema,
+                knex: database, //TODO: i think this is not neccessary
+                schema: schema,
             });
         }
 }
@@ -90,17 +97,19 @@ export class ActivityServiceCreator extends GetItemsService{
 export class ServerServiceCreator extends GetItemsService{
 
     // https://github.com/directus/directus/blob/main/api/src/services/server.ts
-    getServerService() {
-        const {ServerService} = this.services;
+    async getServerService() {
+        const {ServerService} = this.apiContext.services;
+        const schema = await this.apiContext.getSchema();
+        const database = this.apiContext.database;
         return new ServerService({
             accountability: null, //this makes us admin
-            knex: this.database, //TODO: i think this is not neccessary
-            schema: this.schema,
+            knex: database, //TODO: i think this is not neccessary
+            schema: schema,
         });
     }
 
     async getServerInfo() {
-        const serverService = this.getServerService();
+        const serverService = await this.getServerService();
         return await serverService.serverInfo();
     }
 
@@ -108,12 +117,14 @@ export class ServerServiceCreator extends GetItemsService{
 
 export class PermissionsServiceCreator extends GetItemsService{
 
-    getPermissionsService() {
-        const {PermissionsService} = this.services;
+    async getPermissionsService() {
+        const {PermissionsService} = this.apiContext.services;
+        const schema = this.apiContext.getSchema()
+        const database = this.apiContext.database
         return new PermissionsService({
             accountability: null, //this makes us admin
-            knex: this.database, //TODO: i think this is not neccessary
-            schema: this.schema,
+            knex: database, //TODO: i think this is not neccessary
+            schema: schema,
         });
     }
 }

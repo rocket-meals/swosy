@@ -1,6 +1,6 @@
 export type Apartments = {
   available_from?: string | null;
-  building?: (string & Buildings) | null;
+  building?: string | Buildings | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
@@ -10,9 +10,9 @@ export type Apartments = {
   singleflat?: boolean | null;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
-  washingmachines: any[] & Washingmachines[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  washingmachines: any[] | Washingmachines[];
 };
 
 export type AppFeedbacks = {
@@ -32,14 +32,14 @@ export type AppFeedbacks = {
   id: string;
   positive?: boolean | null;
   priority?: number | null;
-  profile?: (string & Profiles) | null;
+  profile?: string | Profiles | null;
   response?: string | null;
   response_read_by_user?: boolean | null;
   sort?: number | null;
   status: string;
   title?: string | null;
   user_created?: string | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type AppSettings = {
@@ -75,7 +75,7 @@ export type AppSettings = {
   foods_parsing_hash?: string | null;
   foods_parsing_last_date?: string | null;
   foods_parsing_status?: string | null;
-  foods_placeholder_image?: (string & DirectusFiles) | null;
+  foods_placeholder_image?: string | DirectusFiles | null;
   foods_placeholder_image_remote_url?: string | null;
   foods_placeholder_image_thumb_hash?: string | null;
   foods_ratings_amount_display?: boolean | null;
@@ -87,7 +87,7 @@ export type AppSettings = {
   housing_parsing_last_date?: string | null;
   housing_parsing_status?: string | null;
   housing_settings: string;
-  housing_translations: any[] & AppSettingsHousingTranslations[];
+  housing_translations: any[] | AppSettingsHousingTranslations[];
   id: number;
   legal_requirements_settings: string;
   maintenance_end?: string | null;
@@ -109,8 +109,8 @@ export type AppSettings = {
   redirect_settings: string;
   redirect_whitelist?: unknown | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
   utilization_forecast_calculation_enabled?: boolean | null;
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
@@ -118,11 +118,11 @@ export type AppSettings = {
 };
 
 export type AppSettingsHousingTranslations = {
-  app_settings_id?: (number & AppSettings) | null;
+  app_settings_id?: number | AppSettings | null;
   be_source_for_translations?: boolean | null;
   content?: string | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   translation_settings: string;
 };
@@ -133,16 +133,16 @@ export type AppTranslations = {
   id: string;
   sort?: number | null;
   status: string;
-  translations: any[] & AppTranslationsTranslations[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  translations: any[] | AppTranslationsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type AppTranslationsTranslations = {
-  app_translations_id?: (string & AppTranslations) | null;
+  app_translations_id?: string | AppTranslations | null;
   be_source_for_translations?: boolean | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   text?: string | null;
   translation_settings: string;
@@ -164,37 +164,37 @@ export type AutoTranslationSettings = {
 
 export type Buildings = {
   alias?: string | null;
-  apartments: any[] & Apartments[];
-  businesshours: any[] & BuildingsBusinesshours[];
+  apartments: any[] | Apartments[];
+  businesshours: any[] | BuildingsBusinesshours[];
   coordinates?: unknown | null;
   date_created?: string | null;
   date_of_construction?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
-  translations: any[] & BuildingsTranslations[];
+  translations: any[] | BuildingsTranslations[];
   url?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type BuildingsBusinesshours = {
-  buildings_id?: (string & Buildings) | null;
-  businesshours_id?: (string & Businesshours) | null;
+  buildings_id?: string | Buildings | null;
+  businesshours_id?: string | Businesshours | null;
   id: number;
 };
 
 export type BuildingsTranslations = {
   be_source_for_translations?: boolean | null;
-  buildings_id?: (string & Buildings) | null;
+  buildings_id?: string | Buildings | null;
   content?: string | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   translation_settings: string;
 };
@@ -215,15 +215,15 @@ export type Businesshours = {
   time_end?: string | null;
   time_start?: string | null;
   tuesday?: boolean | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
   valid_days: string;
   valid_range: string;
   wednesday?: boolean | null;
 };
 
 export type CanteenFoodFeedbackReportRecipients = {
-  canteen?: (string & Canteens) | null;
+  canteen?: string | Canteens | null;
   date_created?: string | null;
   date_next_report_is_due?: string | null;
   date_updated?: string | null;
@@ -242,29 +242,29 @@ export type CanteenFoodFeedbackReportRecipients = {
   sort?: number | null;
   status: string;
   to_recipient_email?: string | null;
-  to_recipient_user?: (string & DirectusUsers) | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  to_recipient_user?: string | DirectusUsers | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Canteens = {
   alias?: string | null;
-  building?: (string & Buildings) | null;
+  building?: string | Buildings | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
-  foodservice_hours: any[] & CanteensFoodserviceHours[];
+  foodservice_hours: any[] | CanteensFoodserviceHours[];
   id: string;
   sort?: number | null;
-  status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
-  utilization_group?: (string & UtilizationsGroups) | null;
+  status?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_group?: string | UtilizationsGroups | null;
 };
 
 export type CanteensFoodserviceHours = {
-  businesshours_id?: (string & Businesshours) | null;
-  canteens_id?: (string & Canteens) | null;
+  businesshours_id?: string | Businesshours | null;
+  canteens_id?: string | Canteens | null;
   id: number;
 };
 
@@ -276,13 +276,13 @@ export type Cashregisters = {
   id: string;
   sort?: number | null;
   status: string;
-  transactions: any[] & CashregistersTransactions[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  transactions: any[] | CashregistersTransactions[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type CashregistersTransactions = {
-  cashregister?: (string & Cashregisters) | null;
+  cashregister?: string | Cashregisters | null;
   date?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
@@ -291,8 +291,8 @@ export type CashregistersTransactions = {
   quantity?: number | null;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type CollectionsDatesLastUpdate = {
@@ -301,8 +301,8 @@ export type CollectionsDatesLastUpdate = {
   id: string;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Devices = {
@@ -324,14 +324,14 @@ export type Devices = {
   is_tablet?: boolean | null;
   is_web?: boolean | null;
   platform?: string | null;
-  profile?: (string & Profiles) | null;
+  profile?: string | Profiles | null;
   pushTokenObj?: unknown | null;
   sort?: number | null;
   status: string;
   system_group: string;
   system_version?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type DirectusActivity = {
@@ -342,9 +342,9 @@ export type DirectusActivity = {
   ip?: string | null;
   item: string;
   origin?: string | null;
-  revisions: any[] & DirectusRevisions[];
+  revisions: any[] | DirectusRevisions[];
   timestamp: string;
-  user?: (string & DirectusUsers) | null;
+  user?: string | DirectusUsers | null;
   user_agent?: string | null;
 };
 
@@ -357,7 +357,7 @@ export type DirectusCollections = {
   collection: string;
   color?: string | null;
   display_template?: string | null;
-  group?: (string & DirectusCollections) | null;
+  group?: string | DirectusCollections | null;
   hidden: boolean;
   icon?: string | null;
   item_duplication_fields?: unknown | null;
@@ -378,8 +378,8 @@ export type DirectusDashboards = {
   id: string;
   name: string;
   note?: string | null;
-  panels: any[] & DirectusPanels[];
-  user_created?: (string & DirectusUsers) | null;
+  panels: any[] | DirectusPanels[];
+  user_created?: string | DirectusUsers | null;
 };
 
 export type DirectusExtensions = {
@@ -391,12 +391,12 @@ export type DirectusExtensions = {
 };
 
 export type DirectusFields = {
-  collection: string & DirectusCollections;
+  collection: string | DirectusCollections;
   conditions?: unknown | null;
   display?: string | null;
   display_options?: unknown | null;
   field: string;
-  group?: (string & DirectusFields) | null;
+  group?: string | DirectusFields | null;
   hidden: boolean;
   id: number;
   interface?: string | null;
@@ -422,18 +422,18 @@ export type DirectusFiles = {
   filesize?: number | null;
   focal_point_x?: number | null;
   focal_point_y?: number | null;
-  folder?: (string & DirectusFolders) | null;
+  folder?: string | DirectusFolders | null;
   height?: number | null;
   id: string;
   location?: string | null;
   metadata?: unknown | null;
-  modified_by?: (string & DirectusUsers) | null;
+  modified_by?: string | DirectusUsers | null;
   modified_on: string;
   storage: string;
   tags?: unknown | null;
   title?: string | null;
   type?: string | null;
-  uploaded_by?: (string & DirectusUsers) | null;
+  uploaded_by?: string | DirectusUsers | null;
   uploaded_on: string;
   width?: number | null;
 };
@@ -446,18 +446,18 @@ export type DirectusFlows = {
   icon?: string | null;
   id: string;
   name: string;
-  operation?: (string & DirectusOperations) | null;
-  operations: any[] & DirectusOperations[];
+  operation?: string | DirectusOperations | null;
+  operations: any[] | DirectusOperations[];
   options?: unknown | null;
   status: string;
   trigger?: string | null;
-  user_created?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
 };
 
 export type DirectusFolders = {
   id: string;
   name: string;
-  parent?: (string & DirectusFolders) | null;
+  parent?: string | DirectusFolders | null;
 };
 
 export type DirectusMigrations = {
@@ -471,8 +471,8 @@ export type DirectusNotifications = {
   id: number;
   item?: string | null;
   message?: string | null;
-  recipient: string & DirectusUsers;
-  sender?: (string & DirectusUsers) | null;
+  recipient: string | DirectusUsers;
+  sender?: string | DirectusUsers | null;
   status?: string | null;
   subject: string;
   timestamp?: string | null;
@@ -480,22 +480,22 @@ export type DirectusNotifications = {
 
 export type DirectusOperations = {
   date_created?: string | null;
-  flow: string & DirectusFlows;
+  flow: string | DirectusFlows;
   id: string;
   key: string;
   name?: string | null;
   options?: unknown | null;
   position_x: number;
   position_y: number;
-  reject?: (string & DirectusOperations) | null;
-  resolve?: (string & DirectusOperations) | null;
+  reject?: string | DirectusOperations | null;
+  resolve?: string | DirectusOperations | null;
   type: string;
-  user_created?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
 };
 
 export type DirectusPanels = {
   color?: string | null;
-  dashboard: string & DirectusDashboards;
+  dashboard: string | DirectusDashboards;
   date_created?: string | null;
   height: number;
   icon?: string | null;
@@ -507,7 +507,7 @@ export type DirectusPanels = {
   position_y: number;
   show_header: boolean;
   type: string;
-  user_created?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
   width: number;
 };
 
@@ -518,7 +518,7 @@ export type DirectusPermissions = {
   id: number;
   permissions?: unknown | null;
   presets?: unknown | null;
-  role?: (string & DirectusRoles) | null;
+  role?: string | DirectusRoles | null;
   validation?: unknown | null;
 };
 
@@ -533,9 +533,9 @@ export type DirectusPresets = {
   layout_options?: unknown | null;
   layout_query?: unknown | null;
   refresh_interval?: number | null;
-  role?: (string & DirectusRoles) | null;
+  role?: string | DirectusRoles | null;
   search?: string | null;
-  user?: (string & DirectusUsers) | null;
+  user?: string | DirectusUsers | null;
 };
 
 export type DirectusRelations = {
@@ -552,14 +552,14 @@ export type DirectusRelations = {
 };
 
 export type DirectusRevisions = {
-  activity: number & DirectusActivity;
+  activity: number | DirectusActivity;
   collection: string;
   data?: unknown | null;
   delta?: unknown | null;
   id: number;
   item: string;
-  parent?: (number & DirectusRevisions) | null;
-  version?: (string & DirectusVersions) | null;
+  parent?: number | DirectusRevisions | null;
+  version?: string | DirectusVersions | null;
 };
 
 export type DirectusRoles = {
@@ -571,7 +571,7 @@ export type DirectusRoles = {
   id: string;
   ip_access?: unknown | null;
   name: string;
-  users: any[] & DirectusUsers[];
+  users: any[] | DirectusUsers[];
 };
 
 export type DirectusSessions = {
@@ -579,9 +579,9 @@ export type DirectusSessions = {
   ip?: string | null;
   next_token?: string | null;
   origin?: string | null;
-  share?: (string & DirectusShares) | null;
+  share?: string | DirectusShares | null;
   token: string;
-  user?: (string & DirectusUsers) | null;
+  user?: string | DirectusUsers | null;
   user_agent?: string | null;
 };
 
@@ -600,12 +600,12 @@ export type DirectusSettings = {
   module_bar?: unknown | null;
   project_color: string;
   project_descriptor?: string | null;
-  project_logo?: (string & DirectusFiles) | null;
+  project_logo?: string | DirectusFiles | null;
   project_name: string;
   project_url?: string | null;
-  public_background?: (string & DirectusFiles) | null;
-  public_favicon?: (string & DirectusFiles) | null;
-  public_foreground?: (string & DirectusFiles) | null;
+  public_background?: string | DirectusFiles | null;
+  public_favicon?: string | DirectusFiles | null;
+  public_foreground?: string | DirectusFiles | null;
   public_note?: string | null;
   public_registration: boolean;
   public_registration_email_filter?: unknown | null;
@@ -616,14 +616,14 @@ export type DirectusSettings = {
   report_feature_url?: string | null;
   storage_asset_presets?: unknown | null;
   storage_asset_transform?: string | null;
-  storage_default_folder?: (string & DirectusFolders) | null;
+  storage_default_folder?: string | DirectusFolders | null;
   theme_dark_overrides?: unknown | null;
   theme_light_overrides?: unknown | null;
   theming_group: string;
 };
 
 export type DirectusShares = {
-  collection: string & DirectusCollections;
+  collection: string | DirectusCollections;
   date_created?: string | null;
   date_end?: string | null;
   date_start?: string | null;
@@ -632,9 +632,9 @@ export type DirectusShares = {
   max_uses?: number | null;
   name?: string | null;
   password?: string | null;
-  role?: (string & DirectusRoles) | null;
+  role?: string | DirectusRoles | null;
   times_used?: number | null;
-  user_created?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
 };
 
 export type DirectusSyncIdMap = {
@@ -655,7 +655,7 @@ export type DirectusTranslations = {
 export type DirectusUsers = {
   appearance?: string | null;
   auth_data?: unknown | null;
-  avatar?: (string & DirectusFiles) | null;
+  avatar?: string | DirectusFiles | null;
   description?: string | null;
   email?: string | null;
   email_notifications?: boolean | null;
@@ -668,9 +668,9 @@ export type DirectusUsers = {
   last_page?: string | null;
   location?: string | null;
   password?: string | null;
-  profile?: (string & Profiles) | null;
+  profile?: string | Profiles | null;
   provider: string;
-  role?: (string & DirectusRoles) | null;
+  role?: string | DirectusRoles | null;
   status: string;
   tags?: unknown | null;
   tfa_secret?: string | null;
@@ -683,7 +683,7 @@ export type DirectusUsers = {
 };
 
 export type DirectusVersions = {
-  collection: string & DirectusCollections;
+  collection: string | DirectusCollections;
   date_created?: string | null;
   date_updated?: string | null;
   hash?: string | null;
@@ -691,8 +691,8 @@ export type DirectusVersions = {
   item: string;
   key: string;
   name?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type DirectusWebhooks = {
@@ -712,7 +712,7 @@ export type DirectusWebhooks = {
 export type Foodoffers = {
   alias?: string | null;
   calories_kcal?: number | null;
-  canteen?: (string & Canteens) | null;
+  canteen?: string | Canteens | null;
   carbohydrate_g?: number | null;
   co2_g?: number | null;
   co2_rating?: string | null;
@@ -723,9 +723,9 @@ export type Foodoffers = {
   environmental_impact: string;
   fat_g?: number | null;
   fiber_g?: number | null;
-  food?: (string & Foods) | null;
+  food?: string | Foods | null;
   id: string;
-  markings: any[] & FoodoffersMarkings[];
+  markings: any[] | FoodoffersMarkings[];
   nutrition: string;
   price_employee?: number | null;
   price_guest?: number | null;
@@ -737,14 +737,14 @@ export type Foodoffers = {
   sort?: number | null;
   status: string;
   sugar_g?: number | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type FoodoffersMarkings = {
-  foodoffers_id?: (string & Foodoffers) | null;
+  foodoffers_id?: string | Foodoffers | null;
   id: number;
-  markings_id?: (string & Markings) | null;
+  markings_id?: string | Markings | null;
 };
 
 export type Foods = {
@@ -760,13 +760,13 @@ export type Foods = {
   environmental_impact: string;
   extra?: string | null;
   fat_g?: number | null;
-  feedbacks: any[] & FoodsFeedbacks[];
+  feedbacks: any[] | FoodsFeedbacks[];
   fiber_g?: number | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
-  markings: any[] & FoodsMarkings[];
+  markings: any[] | FoodsMarkings[];
   nutrition: string;
   protein_g?: number | null;
   rating_amount?: number | null;
@@ -780,26 +780,26 @@ export type Foods = {
   sort?: number | null;
   status: string;
   sugar_g?: number | null;
-  translations: any[] & FoodsTranslations[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  translations: any[] | FoodsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type FoodsFeedbacks = {
-  canteen?: (string & Canteens) | null;
+  canteen?: string | Canteens | null;
   comment?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  food?: (string & Foods) | null;
-  foodoffer?: (string & Foodoffers) | null;
+  food?: string | Foods | null;
+  foodoffer?: string | Foodoffers | null;
   id: string;
   notify?: boolean | null;
-  profile?: (string & Profiles) | null;
+  profile?: string | Profiles | null;
   rating?: number | null;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type FoodsFeedbacksLabels = {
@@ -808,54 +808,54 @@ export type FoodsFeedbacksLabels = {
   date_updated?: string | null;
   icon?: string | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
-  translations: any[] & FoodsFeedbacksLabelsTranslations[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  translations: any[] | FoodsFeedbacksLabelsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
   visible?: boolean | null;
 };
 
 export type FoodsFeedbacksLabelsEntries = {
-  canteen?: (string & Canteens) | null;
+  canteen?: string | Canteens | null;
   date_created?: string | null;
   date_updated?: string | null;
   dislike?: boolean | null;
-  food?: (string & Foods) | null;
-  foodoffer?: (string & Foodoffers) | null;
+  food?: string | Foods | null;
+  foodoffer?: string | Foodoffers | null;
   id: string;
-  label?: (string & FoodsFeedbacksLabels) | null;
-  profile?: (string & Profiles) | null;
+  label?: string | FoodsFeedbacksLabels | null;
+  profile?: string | Profiles | null;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type FoodsFeedbacksLabelsTranslations = {
   be_source_for_translations?: boolean | null;
-  foods_feedbacks_labels_id?: (string & FoodsFeedbacksLabels) | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   text?: string | null;
   translation_settings: string;
 };
 
 export type FoodsMarkings = {
-  foods_id?: (string & Foods) | null;
+  foods_id?: string | Foods | null;
   id: number;
-  markings_id?: (string & Markings) | null;
+  markings_id?: string | Markings | null;
 };
 
 export type FoodsTranslations = {
   be_source_for_translations?: boolean | null;
-  foods_id?: (string & Foods) | null;
+  foods_id?: string | Foods | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   name?: string | null;
   translation_settings: string;
@@ -863,7 +863,7 @@ export type FoodsTranslations = {
 
 export type FoodsoffersMarkings = {
   id: number;
-  markings_id?: (string & Markings) | null;
+  markings_id?: string | Markings | null;
 };
 
 export type Languages = {
@@ -879,23 +879,23 @@ export type Markings = {
   external_identifier?: string | null;
   icon?: string | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   show_on_card?: boolean | null;
   sort?: number | null;
   status: string;
-  translations: any[] & MarkingsTranslations[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  translations: any[] | MarkingsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type MarkingsTranslations = {
   be_source_for_translations?: boolean | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
-  markings_id?: (string & Markings) | null;
+  markings_id?: string | Markings | null;
   name?: string | null;
   translation_settings: string;
 };
@@ -908,105 +908,105 @@ export type News = {
   date_updated?: string | null;
   external_identifier?: string | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
-  translations: any[] & NewsTranslations[];
+  translations: any[] | NewsTranslations[];
   url?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type NewsTranslations = {
   be_source_for_translations?: boolean | null;
   content?: string | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
-  news_id?: (string & News) | null;
+  news_id?: string | News | null;
   title?: string | null;
   translation_settings: string;
 };
 
 export type PopupEvents = {
   alias?: string | null;
-  canteens: any[] & PopupEventsCanteens[];
+  canteens: any[] | PopupEventsCanteens[];
   date_created?: string | null;
   date_end?: string | null;
   date_start?: string | null;
   date_updated?: string | null;
   id: string;
-  image?: (string & DirectusFiles) | null;
+  image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   send_notification?: boolean | null;
   sort?: number | null;
   status: string;
-  translations: any[] & PopupEventsTranslations[];
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  translations: any[] | PopupEventsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type PopupEventsCanteens = {
-  canteens_id?: (string & Canteens) | null;
+  canteens_id?: string | Canteens | null;
   id: number;
-  popup_events_id?: (string & PopupEvents) | null;
+  popup_events_id?: string | PopupEvents | null;
 };
 
 export type PopupEventsTranslations = {
   be_source_for_translations?: boolean | null;
   content?: string | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
-  popup_events_id?: (string & PopupEvents) | null;
+  popup_events_id?: string | PopupEvents | null;
   title?: string | null;
   translation_settings: string;
 };
 
 export type Profiles = {
   avatar?: unknown | null;
-  buildings_favorites: any[] & ProfilesBuildingsFavorites[];
-  buildings_last_opened: any[] & ProfilesBuildingsLastOpened[];
-  canteen?: (string & Canteens) | null;
+  buildings_favorites: any[] | ProfilesBuildingsFavorites[];
+  buildings_last_opened: any[] | ProfilesBuildingsLastOpened[];
+  canteen?: string | Canteens | null;
   course_timetable?: string | null;
   credit_balance?: number | null;
   date_created?: string | null;
   date_privacy_policy_accepted?: string | null;
   date_updated?: string | null;
-  devices: any[] & Devices[];
-  foods_feedbacks: any[] & FoodsFeedbacks[];
+  devices: any[] | Devices[];
+  foods_feedbacks: any[] | FoodsFeedbacks[];
   id: string;
-  language?: (string & Languages) | null;
-  markings: any[] & ProfilesMarkings[];
+  language?: string | Languages | null;
+  markings: any[] | ProfilesMarkings[];
   nickname?: string | null;
   notifiy_on_free_apartments?: boolean | null;
   price_group?: string | null;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type ProfilesBuildingsFavorites = {
-  buildings_id?: (string & Buildings) | null;
+  buildings_id?: string | Buildings | null;
   id: number;
-  profiles_id?: (string & Profiles) | null;
+  profiles_id?: string | Profiles | null;
 };
 
 export type ProfilesBuildingsLastOpened = {
-  buildings_id?: (string & Buildings) | null;
+  buildings_id?: string | Buildings | null;
   id: number;
-  profiles_id?: (string & Profiles) | null;
+  profiles_id?: string | Profiles | null;
 };
 
 export type ProfilesMarkings = {
   dislike?: boolean | null;
   id: number;
-  markings_id?: (string & Markings) | null;
-  profiles_id?: (string & Profiles) | null;
+  markings_id?: string | Markings | null;
+  profiles_id?: string | Profiles | null;
 };
 
 export type PushNotifications = {
@@ -1029,8 +1029,8 @@ export type PushNotifications = {
   sort?: number | null;
   status: string;
   status_log?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type UtilizationsEntries = {
@@ -1041,9 +1041,9 @@ export type UtilizationsEntries = {
   id: string;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
-  utilization_group?: (string & UtilizationsGroups) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_group?: string | UtilizationsGroups | null;
   value_forecast_current?: number | null;
   value_real?: number | null;
 };
@@ -1055,14 +1055,14 @@ export type UtilizationsGroups = {
   id: string;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
-  utilization_entries: any[] & UtilizationsEntries[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  utilization_entries: any[] | UtilizationsEntries[];
 };
 
 export type Washingmachines = {
   alias?: string | null;
-  apartment?: (string & Apartments) | null;
+  apartment?: string | Apartments | null;
   date_created?: string | null;
   date_finished?: string | null;
   date_updated?: string | null;
@@ -1070,48 +1070,48 @@ export type Washingmachines = {
   id: string;
   sort?: number | null;
   status: string;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Wikis = {
   alias?: string | null;
-  children: any[] & Wikis[];
+  children: any[] | Wikis[];
   custom_id?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   icon?: string | null;
   id: string;
-  parent?: (string & Wikis) | null;
+  parent?: string | Wikis | null;
   position?: number | null;
   public?: boolean | null;
-  roles_required: any[] & WikisDirectusRoles[];
+  roles_required: any[] | WikisDirectusRoles[];
   show_in_drawer?: boolean | null;
   show_in_drawer_as_bottom_item?: boolean | null;
   sort?: number | null;
   status: string;
-  translations: any[] & WikisTranslations[];
+  translations: any[] | WikisTranslations[];
   url?: string | null;
-  user_created?: (string & DirectusUsers) | null;
-  user_updated?: (string & DirectusUsers) | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
   visibility_settings: string;
 };
 
 export type WikisDirectusRoles = {
-  directus_roles_id?: (string & DirectusRoles) | null;
+  directus_roles_id?: string | DirectusRoles | null;
   id: number;
-  wikis_id?: (string & Wikis) | null;
+  wikis_id?: string | Wikis | null;
 };
 
 export type WikisTranslations = {
   be_source_for_translations?: boolean | null;
   content?: string | null;
   id: number;
-  languages_code?: (string & Languages) | null;
+  languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   title?: string | null;
   translation_settings: string;
-  wikis_id?: (string & Wikis) | null;
+  wikis_id?: string | Wikis | null;
 };
 
 export type CustomDirectusTypes = {

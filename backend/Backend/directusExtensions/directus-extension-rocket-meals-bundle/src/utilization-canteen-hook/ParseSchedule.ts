@@ -1,5 +1,6 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {ApiContext} from "../helpers/ApiContext";
 
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 const TABLENAME_CANTEENS = CollectionNames.CANTEENS
@@ -22,10 +23,12 @@ export class ParseSchedule {
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
     private newsService: any;
+    private apiContext: ApiContext;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
 
-    constructor() {
+    constructor(apiContext: ApiContext) {
+        this.apiContext = apiContext;
         this.finished = true;
     }
 
@@ -34,7 +37,7 @@ export class ParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
     }
 
     async setStatus(status) {
@@ -329,7 +332,7 @@ export class ParseSchedule {
                     utilizationEntryCurrent.value_real = value_real
                 }
 
-                let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
+                let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
                 await itemService.updateOne(utilizationEntryCurrent.id, utilizationEntryCurrent);
             } else {
                 console.log("Houston we got a problem")
@@ -413,8 +416,8 @@ export class ParseSchedule {
 
 
     async getBusinesshours(canteen){
-        let canteenService = this.itemsServiceCreator.getItemsService(TABLENAME_CANTEENS);
-        let businessHoursService = this.itemsServiceCreator.getItemsService(TABLENAME_BUSINESSHOURS);
+        let canteenService = await this.itemsServiceCreator.getItemsService(TABLENAME_CANTEENS);
+        let businessHoursService = await this.itemsServiceCreator.getItemsService(TABLENAME_BUSINESSHOURS);
 
         let canteenWithBusinesshours = await canteenService.readOne(canteen?.id,  {"fields": ["*", "businesshours.*"]})
         let businessHoursDetails = [];
@@ -529,7 +532,7 @@ export class ParseSchedule {
 
     async getAllCanteens(){
         let tablename = TABLENAME_CANTEENS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename)
+        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
         let list = await itemService.readByQuery({
             limit: -1});
         return list;
@@ -538,7 +541,7 @@ export class ParseSchedule {
     async getAllCashreigsterIdsForCanteen(canteen){
         //console.log("getAllCashreigsterIdsForCanteen");
         let tablename = TABLENAME_CASHREGISTERS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename)
+        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
 
         let list_of_cashregisters = await itemService.readByQuery({filter: {
                 canteen: canteen?.id
@@ -559,7 +562,7 @@ export class ParseSchedule {
 
         let utilization_group_id = canteen?.["utilization_group"];
         let tablename = TABLENAME_UTILIZATION_GROUS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
+        let itemService = await this.itemsServiceCreator.getItemsService(tablename);
         let foundOrCreatedGroup = null;
         if(utilization_group_id){ // since we have an id, there must be a group
             //console.log("if(utilization_group_id){")

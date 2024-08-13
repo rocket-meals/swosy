@@ -6,8 +6,6 @@ import {TestNews_Parser} from "./TestNews_Parser";
 
 let usedParser = new TestNews_Parser()
 
-const parseSchedule = new NewsParseSchedule(usedParser);
-
 const SCHEDULE_NAME = "news_parse";
 /**
  *    *    *    *    *    *
@@ -34,6 +32,8 @@ export default defineHook(async ({action}, apiContext) => {
         env,
         logger
     } = apiContext;
+
+    const parseSchedule = new NewsParseSchedule(apiContext, usedParser);
 
        try {
             await parseSchedule.init(getSchema, services, database, logger);

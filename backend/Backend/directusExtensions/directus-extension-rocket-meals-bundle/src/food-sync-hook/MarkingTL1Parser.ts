@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import {CSVExportParser} from "./CSVExportParser";
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {ApiContext} from "../helpers/ApiContext";
 
 const FIELD_MARKING_TRANSLATION_NAME = "name"
 
@@ -11,8 +12,10 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     private path_to_tl1_export: string;
     private encoding: string;
     private parsedReport: any;
+    private apiContext: ApiContext
 
-    constructor(path_to_tl1_marking_export: string, encoding: string) {
+    constructor(apiContext: ApiContext, path_to_tl1_marking_export: string, encoding: string) {
+        this.apiContext = apiContext
         this.path_to_tl1_export = path_to_tl1_marking_export;
         this.encoding = encoding;
     }

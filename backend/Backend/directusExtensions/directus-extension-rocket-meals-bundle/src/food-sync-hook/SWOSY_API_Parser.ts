@@ -51,7 +51,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         return itemJSONList;
     }
 
-    async getCanteensJSONList(){
+    async getCanteensList(){
         let canteens = this.canteens;
         let canteenIds = Object.keys(canteens);
         let itemJSONList = [];
@@ -65,7 +65,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         return itemJSONList;
     }
 
-    async getMealsJSONList(){
+    async getFoodsListForParser(){
         let foods = this.foods;
         let foodIds = Object.keys(foods);
         let itemJSONList = [];
@@ -162,7 +162,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         return dates;
     }
 
-    async getRawMealOffersJSONList(){
+    async getFoodoffersForParser(){
         let foodOffers: any[] = [];
         let canteens = this.canteens;
         let canteenIds = Object.keys(canteens);
@@ -176,7 +176,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         return foodOffers;
     }
 
-    async getCanteenLabelFromRawMealOffer(rawMealOffer: any){
+    async getCanteenExternalIdentifierFromRawMealOffer(rawMealOffer: any){
         let canteenId = rawMealOffer["CanteenId"];
         let canteen = this.canteens[canteenId];
         return canteen?.name;

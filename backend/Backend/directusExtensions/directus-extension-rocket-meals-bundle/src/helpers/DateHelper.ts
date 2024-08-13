@@ -1,5 +1,14 @@
 export class DateHelper {
 
+    static formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesList: string[]) {
+        let listOfDateOnlyDates = [];
+        for (let isoDateString of ISOStringDatesList) {
+            let date = new Date(isoDateString);
+            listOfDateOnlyDates.push(DateHelper.formatDateToIso8601WithoutTimezone(date));
+        }
+        return listOfDateOnlyDates;
+    }
+
     /**
      * Formats a date to ISO 8601 without timezone
      * @param date

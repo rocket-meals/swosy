@@ -2,7 +2,6 @@ import {defineHook} from '@directus/extensions-sdk';
 import {ReportSchedule} from "./ReportSchedule";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
-const parseSchedule = new ReportSchedule();
 
 const SCHEDULE_NAME = "food_feedback_report";
 
@@ -18,6 +17,8 @@ export default defineHook(async ({schedule}, apiContext) => {
 		getSchema,
 		logger
 	} = apiContext;
+
+	const parseSchedule = new ReportSchedule(apiContext);
 
 	try {
 		console.log("Canteen Food Feedback Report Schedule init");

@@ -11,21 +11,21 @@ describe("FoodTL1Parser Test", () => {
     // should find atleast one food
     it("Find more than one food", async () => {
         await foodParser.createNeededData();
-        let foodsJson = await foodParser.getMealsJSONList();
+        let foodsJson = await foodParser.getFoodsListForParser();
         expect(foodsJson.length).toBeGreaterThan(0);
     });
 
     // should find atleast one canteen
     it("Find more than one canteen", async () => {
         await foodParser.createNeededData();
-        let canteensJson = await foodParser.getCanteensJSONList();
+        let canteensJson = await foodParser.getCanteensList();
         expect(canteensJson.length).toBeGreaterThan(0);
     });
 
     // should find atleast one meal offer
     it("Find more than one meal offer", async () => {
         await foodParser.createNeededData();
-        let mealOffersJson = await foodParser.getRawMealOffersJSONList();
+        let mealOffersJson = await foodParser.getFoodoffersForParser();
         if(!!mealOffersJson){
             expect(mealOffersJson.length).toBeGreaterThan(0);
         } else {
@@ -36,13 +36,13 @@ describe("FoodTL1Parser Test", () => {
     it("Have no critical duplicates", async () => {
         await foodParser.createNeededData();
 
-        let rawMealOffersJSONList = await foodParser.getRawMealOffersJSONList();
+        let rawMealOffersJSONList = await foodParser.getFoodoffersForParser();
         let uniqueOffers: {[key: string]: any} = {};
         let uncheckedDuplicateOffers: {[key: string]: any} = {};
         for(let rawFoodOffer of rawMealOffersJSONList){
             let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
             let food_id = await foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
-            let canteenLabel = await foodParser.getCanteenLabelFromRawMealOffer(rawFoodOffer);
+            let canteenLabel = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(rawFoodOffer);
             let compositeKey = isoDateStringOfMealOffer + "_" + food_id + "_" + canteenLabel;
             if(uniqueOffers[compositeKey] === undefined) {
                 uniqueOffers[compositeKey] = rawFoodOffer;
@@ -79,8 +79,8 @@ describe("FoodTL1Parser Test", () => {
             if(listOfDuplicatesForThisKey.length===2){
                 let firstDuplicate = listOfDuplicatesForThisKey[0];
                 let secondDuplicate = listOfDuplicatesForThisKey[1];
-                let canteen1 = await foodParser.getCanteenLabelFromRawMealOffer(firstDuplicate);
-                let canteen2 = await foodParser.getCanteenLabelFromRawMealOffer(secondDuplicate);
+                let canteen1 = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(firstDuplicate);
+                let canteen2 = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(secondDuplicate);
                 if(canteen1 === "Zentralproduktion" && canteen2 === "Zentralproduktion"){
                     continue;
                 }

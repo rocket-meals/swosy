@@ -43,7 +43,7 @@ export default defineHook(async ({schedule}, apiContext) => {
     schedule(cronFrequency, async () => {
         logger.info(SCHEDULE_NAME+ ": start schedule run: "+new Date().toISOString());
         let schema = await getSchema();
-        const activityServiceCreator = new ActivityServiceCreator(services, database, schema);
+        const activityServiceCreator = new ActivityServiceCreator(apiContext);
         const activityService = activityServiceCreator.getActivityService();
 
         if(MODE_SELECTED===MODE_DELETE_OLD_LOGS){

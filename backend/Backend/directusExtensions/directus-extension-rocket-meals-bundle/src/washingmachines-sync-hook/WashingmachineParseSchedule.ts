@@ -2,6 +2,7 @@ import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
 import {SCHEDULE_NAME_WASHING_MACHINE} from "./index";
+import {ApiContext} from "../helpers/ApiContext";
 
 const TABLENAME_APARTMENTS = CollectionNames.WASHINGMACHINES;
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
@@ -18,8 +19,10 @@ export class WashingmachineParseSchedule {
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
     private itemService: any;
+    private apiContext: ApiContext;
 
-    constructor(parser?: WashingmachineParserInterface) {
+    constructor(apiContext: ApiContext, parser?: WashingmachineParserInterface) {
+        this.apiContext = apiContext
         this.parser = parser
         this.finished = true;
     }
@@ -29,7 +32,7 @@ export class WashingmachineParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
     }
 
     async setStatus(status) {
@@ -72,7 +75,7 @@ export class WashingmachineParseSchedule {
 
         return;
 
-        this.itemService = this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
+        this.itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
@@ -117,7 +120,7 @@ export class WashingmachineParseSchedule {
         console.log(newsJSON);
         let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
         let tablename = TABLENAME_APARTMENTS
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
+        let itemService = await this.itemsServiceCreator.getItemsService(tablename);
         let items = await itemService.readByQuery({
             filter: {external_identifier: copyNewsJSON?.external_identifier}
         });

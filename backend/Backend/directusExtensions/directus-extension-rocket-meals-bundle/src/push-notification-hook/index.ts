@@ -40,9 +40,9 @@ export default defineHook(async ({filter}, apiContext) => {
 		//console.log(input)
 
 		let schema = await getSchema();
-		const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+		const itemsServiceCreator = new ItemsServiceCreator(apiContext);
 
-		let itemService = itemsServiceCreator.getItemsService(collection);
+		let itemService = await itemsServiceCreator.getItemsService(collection);
 
 		// Fetch the current item from the database
 		if (!keys || keys.length === 0) {

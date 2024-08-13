@@ -1,5 +1,6 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {ApiContext} from "../helpers/ApiContext";
 
 const TABLENAME_APARTMENTS = CollectionNames.APARTMENTS;
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
@@ -16,8 +17,10 @@ export class ApartmentsParseSchedule {
     private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
     private itemService: any;
+    private apiContext: ApiContext;
 
-    constructor(ParserClass) {
+    constructor(apiContext: ApiContext, ParserClass) {
+        this.apiContext = apiContext;
         this.parser = new ParserClass();
         this.finished = true;
     }
@@ -27,7 +30,7 @@ export class ApartmentsParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
     }
 
     async setStatus(status) {
@@ -63,7 +66,7 @@ export class ApartmentsParseSchedule {
     }
 
     async parse() {
-        this.itemService = this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
+        this.itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
@@ -108,7 +111,7 @@ export class ApartmentsParseSchedule {
         console.log(newsJSON);
         let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
         let tablename = TABLENAME_APARTMENTS
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
+        let itemService = await this.itemsServiceCreator.getItemsService(tablename);
         let items = await itemService.readByQuery({
             filter: {external_identifier: copyNewsJSON?.external_identifier}
         });
