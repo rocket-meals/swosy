@@ -44,7 +44,7 @@ export default defineHook(async ({schedule}, apiContext) => {
         logger.info(SCHEDULE_NAME+ ": start schedule run: "+new Date().toISOString());
         let schema = await getSchema();
         const activityServiceCreator = new ActivityServiceCreator(apiContext);
-        const activityService = activityServiceCreator.getActivityService();
+        const activityService = await activityServiceCreator.getActivityService();
 
         if(MODE_SELECTED===MODE_DELETE_OLD_LOGS){
             const FIELD_TIMESTAMP = "timestamp";

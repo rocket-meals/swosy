@@ -1,4 +1,4 @@
-import type {Accountability, PrimaryKey, Query, SchemaOverview} from '@directus/types';
+import type {Accountability, PrimaryKey, Query, SchemaOverview, Item as DirectusItem, PermissionsAction} from '@directus/types';
 import type {Knex} from 'knex';
 import {ApiContext} from "./ApiContext";
 
@@ -25,9 +25,45 @@ export interface AbstractService<Item> {
 
     deleteOne(key: PrimaryKey): Promise<PrimaryKey>;
     deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>;
+}
 
-    upsertSingleton(data: Partial<Item>): Promise<PrimaryKey>;
-    readSingleton(): Promise<Item>;
+
+// https://github.com/directus/directus/blob/main/api/src/types/items.ts
+export type MutationOptions = any // TODO: check if we ever need this
+
+// https://github.com/directus/directus/blob/main/api/src/services/items.ts#L35
+export type QueryOptions = {
+    stripNonRequested?: boolean;
+    permissionsAction?: PermissionsAction;
+    emitEvents?: boolean;
+};
+
+
+// https://github.com/directus/directus/blob/main/api/src/services/items.ts#L46
+export interface ItemsService<Item> extends AbstractService<Item> {
+    getKeysByQuery(query: Query): Promise<PrimaryKey[]>
+
+    createOne(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>
+    createMany(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>
+
+    readByQuery(query: Query, opts?: QueryOptions): Promise<Item[]>
+    readOne(key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<Item>
+    readMany(keys: PrimaryKey[], query?: Query, opts?: QueryOptions): Promise<Item[]>
+
+    updateByQuery(query: Query, data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey[]>
+    updateOne(key: PrimaryKey, data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>
+    updateBatch(data: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>
+    updateMany(keys: PrimaryKey[], data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey[]>
+
+    upsertOne(payload: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>
+    upsertMany(payloads: Partial<Item>[], opts?: MutationOptions): Promise<PrimaryKey[]>
+
+    deleteByQuery(query: Query, opts?: MutationOptions): Promise<PrimaryKey[]>
+    deleteOne(key: PrimaryKey, opts?: MutationOptions): Promise<PrimaryKey>
+    deleteMany(keys: PrimaryKey[], opts?: MutationOptions): Promise<PrimaryKey[]>
+
+    readSingleton(query: Query, opts?: QueryOptions): Promise<Partial<Item>>
+    upsertSingleton(data: Partial<Item>, opts?: MutationOptions): Promise<PrimaryKey>
 }
 
 class GetItemsService {
@@ -80,9 +116,10 @@ export class FileServiceCreator extends GetItemsService{
         }
 }
 
+export type ActivityServiceType = ItemsService<DirectusItem>
 export class ActivityServiceCreator extends GetItemsService{
 
-        async getActivityService() {
+        async getActivityService(): Promise<ActivityServiceType> {
             const {ActivityService} = this.apiContext.services;
             const schema = await this.apiContext.getSchema();
             const database = this.apiContext.database;
