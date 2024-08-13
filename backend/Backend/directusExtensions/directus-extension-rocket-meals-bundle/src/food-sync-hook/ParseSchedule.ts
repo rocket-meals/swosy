@@ -482,7 +482,6 @@ export class ParseSchedule {
                 let date = DateHelper.formatDateToIso8601WithoutTimezone(new Date(isoDateStringOfMealOffer));
                 if (!!date) {
                     let foodOfferToCreate: FoodofferTypeForCreation = {
-                        ...basicFoodofferData,
                         canteen: canteen.id,
                         food: food_id,
                         date: date,

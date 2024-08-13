@@ -25,7 +25,7 @@ export type FoodoffersTypeForParser = {
     food_id: string
 }
 
-export type FoodofferTypeForCreation = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "markings"> & {
+export type FoodofferTypeForCreation = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "markings" | "environmental_impact" | "nutrition" | "prices"> & {
     date: string,
     canteen: string, // we require the primary key of the canteen
     food: string // we require the primary key of the food

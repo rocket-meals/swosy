@@ -1,65 +1,54 @@
-import {MarkingParserInterface} from "./MarkingParserInterface";
-import path from "path";
-import fs from "fs";
+import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
 import {CSVExportParser} from "./CSVExportParser";
-import {TranslationHelper} from "../helpers/TranslationHelper";
+import {TranslationHelper, TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {ApiContext} from "../helpers/ApiContext";
+import {SystemFileHelper} from "../helpers/SystemFileHelper";
 
 const FIELD_MARKING_TRANSLATION_NAME = "name"
 
 export class MarkingTL1Parser implements MarkingParserInterface {
 
     private path_to_tl1_export: string;
-    private encoding: string;
-    private parsedReport: any;
+    private encoding: BufferEncoding;
+    private parsedReport: {[p: string]: string}[];
+    // @ts-ignore
     private apiContext: ApiContext
 
-    constructor(apiContext: ApiContext, path_to_tl1_marking_export: string, encoding: string) {
+    constructor(apiContext: ApiContext, path_to_tl1_marking_export: string, encoding: BufferEncoding) {
         this.apiContext = apiContext
+        this.parsedReport = [];
         this.path_to_tl1_export = path_to_tl1_marking_export;
         this.encoding = encoding;
     }
 
     async createNeededData(){
+        this.parsedReport = [];
         let rawExport = await this.getRawReport();
         this.parsedReport = CSVExportParser.getListOfLineObjects(rawExport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_SEMICOLON, true);
     }
 
     async getRawReport(): Promise<string | undefined> {
-        console.log("TL1Parser: getRawReport");
-        console.log("TL1Parser: path_to_tl1_export: "+this.path_to_tl1_export)
-        if (this.path_to_tl1_export) {
-            try{
-                const absolutePath = path.resolve(this.path_to_tl1_export)
-                console.log("TL1Parser: absolutePath: "+absolutePath)
-                const options = {encoding: this.encoding};
-                const content = fs.readFileSync(path.resolve(this.path_to_tl1_export), options);
-                console.log("TL1 Report; length= "+content.length);
-                const contentAsString = content.toString();
-                return contentAsString;
-            } catch (err: any){
-                console.log("TL1 Report read error: ")
-                console.log(err.toString())
-            }
-        }
-        return undefined
+        return SystemFileHelper.readFileSync(this.path_to_tl1_export, this.encoding);
     }
 
-    async getMarkingsJSONList(){
-        let markings = [];
+    async getMarkingsJSONList(): Promise<MarkingsTypeForParser[]> {
+        let markings: MarkingsTypeForParser[] = [];
         for (let i = 0; i < this.parsedReport.length; i++){
             let parsedLineObject = this.parsedReport[i];
-            let marking = MarkingTL1Parser.getMarkingJSONFromRawMarking(parsedLineObject);
-            if(!!marking){
-                markings.push(marking);
+            if(!!parsedLineObject){
+                let marking = MarkingTL1Parser.getMarkingJSONFromRawMarking(parsedLineObject);
+                if(!!marking){
+                    markings.push(marking);
+                }
             }
         }
         return markings;
     }
 
-    private static getMarkingJSONFromRawMarking(rawMarking: any){
+    private static getMarkingJSONFromRawMarking(rawMarking: { [p: string]: string }): MarkingsTypeForParser | null {
         let id = rawMarking["ID"];
         let name = rawMarking["BESCHREIBUNG"];
+        // @ts-ignore
         let hint = rawMarking["HINWEISE"];
         let short = rawMarking["KUERZEL"];
 
@@ -70,7 +59,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
             return null;
         }
 
-        let translations = {};
+        let translations: TranslationsFromParsingType = {};
         if (name){
             let nameDe = MarkingTL1Parser.getMarkingNameDe(name);
             if(nameDe){
@@ -82,7 +71,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
             }
         }
 
-        let marking = {
+        let marking: MarkingsTypeForParser = {
             external_identifier: external_identifier,
             alias: name,
             translations: translations

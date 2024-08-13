@@ -884,7 +884,7 @@ export type Markings = {
   image_thumb_hash?: string | null;
   show_on_card?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | MarkingsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
