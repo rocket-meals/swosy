@@ -105,15 +105,15 @@ export class TranslationHelper {
             } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, item, translationsFromParsing, items_primary_field_in_translation_table);
 
             if(updateNeeded){
-                const createTranslations = updateObject.translations.create;
-                const updateTranslations = updateObject.translations.update;
-                const deleteTranslations = updateObject.translations.delete;
+                //const createTranslations = updateObject.translations.create;
+                //const updateTranslations = updateObject.translations.update;
+                //const deleteTranslations = updateObject.translations.delete;
                 // @ts-ignore
-                console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
-                console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
-                console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
-                console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
-                console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
+                //console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
+                //console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
+                //console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
+                //console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
+                //console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
                 //console.log(JSON.stringify(updateObject, null, 2));
 
                 // @ts-ignore
@@ -190,9 +190,9 @@ export class TranslationHelper {
 
                 if(TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)){
                     existingTranslationsDifferentFromParsing = true;
-                    console.log("existingTranslation is different from parsing")
-                    console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
-                    console.log("translationFromParsing: "+JSON.stringify(translationFromParsingCopy, null, 2))
+                    //console.log("existingTranslation is different from parsing")
+                    //console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
+                    //console.log("translationFromParsing: "+JSON.stringify(translationFromParsingCopy, null, 2))
 
                     // be_source_for_translations if language Code is German
                     let be_source_for_translations: boolean = false;

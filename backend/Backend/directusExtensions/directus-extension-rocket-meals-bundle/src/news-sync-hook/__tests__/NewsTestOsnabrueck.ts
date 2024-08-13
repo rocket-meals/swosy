@@ -7,7 +7,7 @@ describe("NewsTestOsnabrueck", () => {
 
     it("should find news with fields", async () => {
         let news = await newsParser.getRealNewsItems();
-        console.log("Found news: " + news.length);
+        //console.log("Found news: " + news.length);
         expect(news.length).toBeGreaterThan(0);
     });
 });

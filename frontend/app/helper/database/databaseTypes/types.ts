@@ -778,7 +778,7 @@ export type Foods = {
   saturated_fat_g?: number | null;
   sodium_g?: number | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   sugar_g?: number | null;
   translations: any[] | FoodsTranslations[];
   user_created?: string | DirectusUsers | null;

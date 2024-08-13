@@ -21,9 +21,9 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
 
     async getRealNewsItems(): Promise<NewsTypeForParser[]> {
         try {
-            console.log("getRealNewsItems");
+            //console.log("getRealNewsItems");
             let response = await axios.get(newsUrl);
-            console.log("Fetched url");
+            //console.log("Fetched url");
             let soup = new JSSoup(response.data);
             let articles = soup.findAll('div', 'article');
 

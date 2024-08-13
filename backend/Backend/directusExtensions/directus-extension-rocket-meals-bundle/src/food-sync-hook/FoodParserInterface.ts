@@ -3,7 +3,7 @@ import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 
 
 // Remove all fields with relation to other tables
-export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations">;
+export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings">;
 
 export type FoodsInformationTypeForParser = {
     basicFoodData: FoodWithBasicData,
@@ -32,16 +32,24 @@ export type FoodofferTypeForCreation = Omit<Foodoffers, "id" | "user_created" | 
 
 export interface FoodParserInterface {
 
+    /**
+     * This method should create the needed data for the parser to work on every call of the parser.
+     */
     createNeededData(): Promise<void>;
 
+    /**
+     * This method should return the list of all canteens
+     */
     getCanteensList(): Promise<CanteensTypeForParser[]>;
 
+    /**
+     * This method should return the list of all foods
+     */
     getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]>;
 
-    getAliasForMealOfferFromRawMealOffer(rawMealOffer: any): Promise<any>;
-
+    /**
+     * This method should return the list of all foodoffers
+     */
     getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]>;
-
-    getISODateStringOfMealOffer(rawMealOffer: any): Promise<any>;
 
 }

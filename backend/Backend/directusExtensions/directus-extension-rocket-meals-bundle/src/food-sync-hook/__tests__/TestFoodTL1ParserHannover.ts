@@ -39,20 +39,23 @@ describe("FoodTL1Parser Test", () => {
         let rawMealOffersJSONList = await foodParser.getFoodoffersForParser();
         let uniqueOffers: {[key: string]: any} = {};
         let uncheckedDuplicateOffers: {[key: string]: any} = {};
-        for(let rawFoodOffer of rawMealOffersJSONList){
-            let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
-            let food_id = await foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
-            let canteenLabel = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(rawFoodOffer);
-            let compositeKey = isoDateStringOfMealOffer + "_" + food_id + "_" + canteenLabel;
-            if(uniqueOffers[compositeKey] === undefined) {
-                uniqueOffers[compositeKey] = rawFoodOffer;
-            } else {
-                let uniqueOffer = uniqueOffers[compositeKey];
-                let duplicateList = uncheckedDuplicateOffers[compositeKey] || [uniqueOffer];
-                duplicateList.push(rawFoodOffer);
-                uncheckedDuplicateOffers[compositeKey] = duplicateList;
+        if(!!rawMealOffersJSONList){
+            for(let rawFoodOffer of rawMealOffersJSONList){
+                let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
+                let food_id = await foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
+                let canteenLabel = await foodParser.getCanteenExternalIdentifierFromRawMealOffer(rawFoodOffer);
+                let compositeKey = isoDateStringOfMealOffer + "_" + food_id + "_" + canteenLabel;
+                if(uniqueOffers[compositeKey] === undefined) {
+                    uniqueOffers[compositeKey] = rawFoodOffer;
+                } else {
+                    let uniqueOffer = uniqueOffers[compositeKey];
+                    let duplicateList = uncheckedDuplicateOffers[compositeKey] || [uniqueOffer];
+                    duplicateList.push(rawFoodOffer);
+                    uncheckedDuplicateOffers[compositeKey] = duplicateList;
+                }
             }
         }
+
 
         let criticalDuplicates: {[key: string]: any} = {};
 
