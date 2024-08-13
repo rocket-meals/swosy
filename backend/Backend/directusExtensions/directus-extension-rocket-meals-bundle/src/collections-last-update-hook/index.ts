@@ -67,7 +67,9 @@ export default defineHook(async ({action, init}, apiContext) => {
 			// find if the item with the id: collection exists in the collection "collections_dates_last_update"
 			let items = await collectionsDatesLastUpdateService.readByQuery({
 				filter: {
-					id: collection
+					id: {
+						_eq: collection
+					}
 				}
 			});
 
