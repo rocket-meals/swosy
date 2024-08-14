@@ -82,12 +82,15 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         logger
     } = apiContext;
 
-    const debug = true;
+    const debug = false;
 
-    let usedFoodParser = getFoodParser(env);
+    let usedFoodParser = null
     if(debug) {
         usedFoodParser = testFoodParser
     }
+    usedFoodParser = getFoodParser(env);
+    
+
     if(!usedFoodParser) {
         console.log(SCHEDULE_NAME + ": no food parser configured");
     }
