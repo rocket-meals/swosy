@@ -50,7 +50,7 @@ Similar steps can be made for local testing
           - `./install-docker.sh`
           - Check if Docker is installed
             - `docker --version` should return a "26.1.3"
-            - `docker-compose --version` should return "Docker Compose version v2.27.1"
+            - `docker compose --version` should return "Docker Compose version v2.27.1"
         - Go back to "rocket-meals" folder
           - `cd ..`
       - Install nvm and nodejs
