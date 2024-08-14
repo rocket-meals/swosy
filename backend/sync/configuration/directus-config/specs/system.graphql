@@ -235,8 +235,6 @@ type Subscription {
   apartments_mutated(event: EventEnum): apartments_mutated
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
   languages_mutated(event: EventEnum): languages_mutated
-  app_translations_mutated(event: EventEnum): app_translations_mutated
-  app_translations_translations_mutated(event: EventEnum): app_translations_translations_mutated
   buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
@@ -493,41 +491,6 @@ type app_settings_mutated {
   key: ID!
   event: EventEnum
   data: app_settings
-}
-
-type app_translations {
-  date_created: Date
-  date_created_func: datetime_functions
-  date_updated: Date
-  date_updated_func: datetime_functions
-  id: ID!
-  sort: Int
-  status: String
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  translations(filter: app_translations_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_translations_translations]
-  translations_func: count_functions
-}
-
-type app_translations_mutated {
-  key: ID!
-  event: EventEnum
-  data: app_translations
-}
-
-type app_translations_translations {
-  app_translations_id(filter: app_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_translations
-  be_source_for_translations: Boolean
-  id: ID!
-  languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
-  let_be_translated: Boolean
-  text: String
-}
-
-type app_translations_translations_mutated {
-  key: ID!
-  event: EventEnum
-  data: app_translations_translations
 }
 
 type auth_tokens {
@@ -2733,33 +2696,6 @@ input app_settings_housing_translations_filter {
   let_be_translated: boolean_filter_operators
   _and: [app_settings_housing_translations_filter]
   _or: [app_settings_housing_translations_filter]
-}
-
-input app_translations_filter {
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
-  id: string_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
-  translations: app_translations_translations_filter
-  translations_func: count_function_filter_operators
-  _and: [app_translations_filter]
-  _or: [app_translations_filter]
-}
-
-input app_translations_translations_filter {
-  app_translations_id: app_translations_filter
-  be_source_for_translations: boolean_filter_operators
-  id: number_filter_operators
-  languages_code: languages_filter
-  let_be_translated: boolean_filter_operators
-  text: string_filter_operators
-  _and: [app_translations_translations_filter]
-  _or: [app_translations_translations_filter]
 }
 
 input big_int_filter_operators {

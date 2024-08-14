@@ -149,30 +149,6 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "app_translations_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "3197b713-7c54-4887-9e89-55ed6195ea08"
-  },
-  {
-    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "app_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "75b4fdc4-b0a8-42a0-ba23-29d49293fb98"
-  },
-  {
-    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "buildings_businesshours",
     "action": "read",
     "permissions": {},
@@ -1596,30 +1572,6 @@
       "*"
     ],
     "_syncId": "350bcc12-a206-4e84-9ea2-014e2c94c31d"
-  },
-  {
-    "role": null,
-    "collection": "app_translations_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "e3d49553-a73c-4231-94fb-ef757166df68"
-  },
-  {
-    "role": null,
-    "collection": "app_translations",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "79e1f644-12fa-49b6-8635-9889f17fe068"
   },
   {
     "role": null,
