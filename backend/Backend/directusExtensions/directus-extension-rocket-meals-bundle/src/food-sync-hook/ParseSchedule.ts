@@ -55,12 +55,6 @@ export class ParseSchedule {
         this.foodParser = foodParser;
         this.markingParser = markingParser;
     }
-    
-    // Todo create/generate documentation 
-
-    async init() {
-
-    }
 
     async setStatus(status: FlowStatus) {
         await this.myAppSettingsHelper.setAppSettings({

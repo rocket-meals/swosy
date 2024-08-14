@@ -16,7 +16,10 @@ export type FoodsInformationTypeForParser = {
 type CanteenTypeOmitedFields = Omit<Canteens, "id" | "user_created" | "user_updated" | "building" | "foodservice_hours" | "utilization_group">;
 export type CanteensTypeForParser = CanteenTypeOmitedFields & {external_identifier: string}; // make external_identifier required
 
-type FoodofferRequiredFields = {date: string}
+type FoodofferRequiredFields = {
+    date: string
+    dateAsIsoString:
+}
 export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "environmental_impact" | "nutrition" | "prices"> & FoodofferRequiredFields;
 export type FoodoffersTypeForParser = {
     basicFoodofferData: FoodofferTypeWithBasicData,

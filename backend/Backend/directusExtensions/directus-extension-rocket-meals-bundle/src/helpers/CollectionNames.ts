@@ -24,7 +24,6 @@ export function getAllCollectionNames() {
         CollectionNames.CANTEENS,
         CollectionNames.PUSH_NOTIFICATIONS,
         CollectionNames.DEVICES,
-        CollectionNames.APP_TRANSLATIONS,
         CollectionNames.FOODOFFERS,
     ];
 }
@@ -62,7 +61,6 @@ export class CollectionNames{
 
     static PUSH_NOTIFICATIONS = "push_notifications"
     static DEVICES = "devices"
-    static APP_TRANSLATIONS = "app_translations"
 
     static FOODOFFERS = "foodoffers"
 

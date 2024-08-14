@@ -3,6 +3,7 @@ import {ReportGenerator} from "./ReportGenerator";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
+import {CanteenFoodFeedbackReportRecipients, Canteens, DirectusUsers} from "../databaseTypes/types";
 
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS
@@ -111,7 +112,7 @@ export class ReportSchedule {
         }
 
         let to_recipient_user_id = recipientEntry?.to_recipient_user; // this is a DirectusUser object
-        let userService = await this.itemsServiceCreator.getItemsService(CollectionNames.USERS);
+        let userService = await this.itemsServiceCreator.getItemsService<DirectusUsers>(CollectionNames.USERS);
         if(!!to_recipient_user_id){
             let to_recipient_user = await userService.readOne(to_recipient_user_id);
             let to_recipient_user_email = to_recipient_user?.email;
@@ -126,7 +127,7 @@ export class ReportSchedule {
 
     async getCanteenEntry(recipientEntry){
         let canteen_id = recipientEntry.canteen;
-        let canteenService = await this.itemsServiceCreator.getItemsService(CollectionNames.CANTEENS)
+        let canteenService = await this.itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
         let canteen = await canteenService.readOne(canteen_id);
         return canteen;
     }
@@ -159,8 +160,8 @@ export class ReportSchedule {
 
     async setNextReportDate(generateReportForDate, recipientEntry){
         // update when the next report is due
-        let tablename = TABLENAME_RECIPIENTS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
+        let tablename = TABLENAME_RECIPIENTS;//
+        let itemService = await this.itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
         let generateReportForNextDate_moment = moment(generateReportForDate).add(1, 'days').toDate();
         let send_amount_days_before_offer_date = recipientEntry.send_amount_days_before_offer_date;
         let date_when_the_next_report_should_be_generated_iso = moment(generateReportForNextDate_moment).subtract(send_amount_days_before_offer_date, 'days').toISOString();
@@ -184,7 +185,7 @@ export class ReportSchedule {
     async updateReportLog(recipientEntry, log){
         try{
             let tablename = TABLENAME_RECIPIENTS;
-            let itemService = await this.itemsServiceCreator.getItemsService(tablename)
+            let itemService = await this.itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
             let updateData = {
                 report_status_log: log
             }
@@ -199,7 +200,7 @@ export class ReportSchedule {
     async getDateForWhichTheReportShouldBeSend(recipientEntry){
         //console.log("Checking if report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
         let tablename = TABLENAME_RECIPIENTS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
+        let itemService = await this.itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
 
 
         let enabled = recipientEntry.enabled;
@@ -304,7 +305,7 @@ export class ReportSchedule {
 
     async getAllRecipientsEntries(){
         let tablename = TABLENAME_RECIPIENTS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
+        let itemService = await this.itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
         let list = await itemService.readByQuery({
             limit: -1});
         return list;

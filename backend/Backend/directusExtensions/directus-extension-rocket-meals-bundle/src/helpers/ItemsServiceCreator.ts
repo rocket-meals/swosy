@@ -78,7 +78,7 @@ class GetItemsService {
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts
 export class ItemsServiceCreator extends GetItemsService{
 
-    async getItemsService<Item>(tablename: string): Promise<AbstractService<Item>> {
+    async getItemsService<Item>(tablename: string): Promise<ItemsService<Item>> {
         const {ItemsService} = this.apiContext.services;
         let schema = await this.apiContext.getSchema();
         let database = this.apiContext.database;
@@ -155,6 +155,9 @@ export class ServerServiceCreator extends GetItemsService{
 export class PermissionsServiceCreator extends GetItemsService{
 
     async getPermissionsService() {
+        console.log("getPermissionsService")
+        console.log("All services: ")
+        console.log(Object.keys(this.apiContext.services))
         const {PermissionsService} = this.apiContext.services;
         const schema = this.apiContext.getSchema()
         const database = this.apiContext.database

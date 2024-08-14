@@ -5,7 +5,6 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const parser = new Cashregisters_SWOSY("https://share.sw-os.de/swosy-kassendaten-2h", `Nils:qYoTHeyPyRljfEGRWW52`);
-const parseSchedule = new ParseSchedule(parser);
 
 export default defineHook(async ({action}, apiContext) => {
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
@@ -21,6 +20,8 @@ export default defineHook(async ({action}, apiContext) => {
     } = apiContext;
 
     let collection = CollectionNames.APP_SETTINGS;
+    const parseSchedule = new ParseSchedule(parser, apiContext);
+
 
     try {
         await parseSchedule.init(getSchema, services, database, logger);

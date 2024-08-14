@@ -12,11 +12,14 @@ import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelpe
 import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ApiContext} from "../helpers/ApiContext";
+import {FoodTL1Parser_RawReportTestReaderHannover} from "./FoodTL1Parser_RawReportTestReaderHannover";
 
 const SCHEDULE_NAME = "food_parse";
 
 const DIRECTUS_TL1_FOOD_PATH = "/directus/tl1/foodPlan.csv"; // This is defined in docker-compose.yaml statically
 const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defined in docker-compose.yaml statically
+
+const testFoodParser = new FoodTL1Parser(new FoodTL1Parser_RawReportTestReaderHannover());
 
 function getFoodParser(env: any): FoodParserInterface | null {
     const FOOD_SYNC_MODE = env.FOOD_SYNC_MODE; // Options: "TL1CSV", "TL1WEB", "SWOSY"
@@ -79,7 +82,12 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         logger
     } = apiContext;
 
+    const debug = true;
+
     let usedFoodParser = getFoodParser(env);
+    if(debug) {
+        usedFoodParser = testFoodParser
+    }
     if(!usedFoodParser) {
         console.log(SCHEDULE_NAME + ": no food parser configured");
     }
@@ -94,8 +102,6 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
     let collection = CollectionNames.APP_SETTINGS
-
-    await parseSchedule.init();
 
 
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {

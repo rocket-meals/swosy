@@ -1,9 +1,11 @@
 import {CollectionNames} from "../helpers/CollectionNames";
+import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {Foodoffers, FoodsFeedbacks, FoodsFeedbacksLabels} from "../databaseTypes/types";
 
 export class ReportGenerator {
-    private itemServiceCreator: any;
+    private itemServiceCreator: ItemsServiceCreator;
 
-    constructor(itemServiceCreator) {
+    constructor(itemServiceCreator: ItemsServiceCreator) {
         this.itemServiceCreator = itemServiceCreator;
     }
 
@@ -50,7 +52,8 @@ export class ReportGenerator {
             foods: {}
         }
 
-        let foods_feedbacks_labels = await this.itemServiceCreator.getItemsService(CollectionNames.FOODS_FEEDBACK_LABELS).readByQuery({fields: ['*'], limit: -1});
+        let foodFeedbackLabelsService = await this.itemServiceCreator.getItemsService<FoodsFeedbacksLabels>(CollectionNames.FOODS_FEEDBACK_LABELS)
+        let foods_feedbacks_labels = await foodFeedbackLabelsService.readByQuery({fields: ['*'], limit: -1});
         //console.log("Found amount of foods_feedbacks_labels: "+foods_feedbacks_labels.length)
         let foods_feedbacks_labels_dict = this.convertFeedbacksLabelsToDict(foods_feedbacks_labels);
 
@@ -150,7 +153,7 @@ export class ReportGenerator {
     }
 
     async getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days){
-        let itemService = this.itemServiceCreator.getItemsService(CollectionNames.FOODS_FEEDBACKS)
+        let itemService = await this.itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
         let end = new Date();
         let start = new Date(end);
         // subtract report_feedback_period_days amount days from start
@@ -182,7 +185,7 @@ export class ReportGenerator {
         startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
         endOfTheDay.setHours(23,59,59,999); //set to end of day
 
-        let itemService = this.itemServiceCreator.getItemsService(CollectionNames.FOODOFFERS)
+        let itemService = await this.itemServiceCreator.getItemsService<Foodoffers>(CollectionNames.FOODOFFERS)
         let foodOffers = await itemService.readByQuery({filter: {
                     _and: [
                         {

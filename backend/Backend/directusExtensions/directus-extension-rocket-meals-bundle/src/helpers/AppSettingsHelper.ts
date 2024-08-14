@@ -39,12 +39,17 @@ export class AppSettingsHelper {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext);
         const itemsService = await itemsServiceCreator.getItemsService<AppSettings>(CollectionNames.APP_SETTINGS);
         await itemsService.upsertSingleton(appSettings);
+        /**
+         * await this.database(TABLENAME_FLOWHOOKS).update({
+         *             cashregisters_parsing_status: status
+         *         });
+         */
     }
 
-    async getAppSettings(): Promise<AppSettings | undefined | null> {
+    async getAppSettings(): Promise<Partial<AppSettings> | undefined | null> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext);
         const itemsService = await itemsServiceCreator.getItemsService<AppSettings>(CollectionNames.APP_SETTINGS);
-        return await itemsService.readSingleton();
+        return await itemsService.readSingleton({});
     }
 
     async getRedirectWhitelist(): Promise<string[] | undefined> {

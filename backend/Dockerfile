@@ -19,8 +19,6 @@ USER root
 RUN corepack enable
 USER node
 
-#RUN pnpm install directus-extension-auto-backup@10.8.5
-
 RUN pnpm install directus-extension-auto-translation@10.11.6
 RUN pnpm install directus-extension-sync@2.0.0
 RUN pnpm install directus-extension-flow-manager@1.4.1
