@@ -3,7 +3,7 @@ import {CSVExportParser} from "./CSVExportParser"
 
 import {
     CanteensTypeForParser,
-    FoodNutritionType,
+    FoodNutritionType, FoodofferDateType,
     FoodoffersTypeForParser, FoodofferTypeWithBasicData,
     FoodParserInterface,
     FoodsInformationTypeForParser,
@@ -21,7 +21,7 @@ export type RawTL1FoodofferType = { [x: string]: string; }
 type RawFoodofferInformationType = {
     food_id: string,
     raw_tl1_foodoffer_json: RawTL1FoodofferType,
-    dateAsString: string,
+    date: FoodofferDateType,
     canteen_external_identifier: string
 }
 
@@ -108,7 +108,6 @@ export class FoodTL1Parser implements FoodParserInterface {
 
             const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
             const basicFoodofferData: FoodofferTypeWithBasicData = {
-                date: rawFoodoffer.dateAsString,
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
                 price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
                 price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
@@ -116,6 +115,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             }
 
             const foodofferForParser: FoodoffersTypeForParser = {
+                date: rawFoodoffer.date,
                 basicFoodofferData: basicFoodofferData,
                 marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromrawFoodoffer(rawFoodoffer),
                 canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
@@ -207,7 +207,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             return null;
         }
 
-        let date = FoodTL1Parser.getISODateFunction(parsedReportItem)
+        let date = FoodTL1Parser.getDirectusDateFunction(parsedReportItem)
         if(!date){
             return null;
         }
@@ -220,7 +220,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return {
             food_id: food_id,
             raw_tl1_foodoffer_json: parsedReportItem,
-            dateAsString: date,
+            date: date,
             canteen_external_identifier: canteen_label,
         };
     }
@@ -307,7 +307,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         if(FoodTL1Parser._hasValidName(parsedReportItem)){
             let foodofferIdentifier = "";
             foodofferIdentifier += FoodTL1Parser._getCanteenName(parsedReportItem)
-            foodofferIdentifier += FoodTL1Parser._getDatum(parsedReportItem)
+            foodofferIdentifier += FoodTL1Parser._getRawDatum(parsedReportItem)
             foodofferIdentifier += FoodTL1Parser._getFoodIdentifierByName(parsedReportItem)
             return foodofferIdentifier as FoodofferIdentifierType;
         } else {
@@ -323,17 +323,42 @@ export class FoodTL1Parser implements FoodParserInterface {
         return parsedReportItem[FoodTL1Parser.DEFAULT_RECIPE_ID_FIELD];
     }
 
-    static getISODateFunction(parsedReportItem: RawTL1FoodofferType){
+    static getDirectusDateFunction(parsedReportItem: RawTL1FoodofferType): FoodofferDateType | null{
         /**
          *   "DATUM": "25.01.2022",
          */
-        let rawDate = FoodTL1Parser._getDatum(parsedReportItem);
+        let rawDate = FoodTL1Parser._getRawDatum(parsedReportItem);
         if(!rawDate){
             return null;
         }
+        if(rawDate.length !== 10){
+            return null;
+        }
+        let dateParts = rawDate.split(".");
+        if(dateParts.length !== 3){
+            return null;
+        }
+        const dayPartString = dateParts[0];
+        const monthPartString = dateParts[1];
+        const yearPartString = dateParts[2];
 
-        let isoDate = moment(rawDate, "DD-MM-YYYY");
-        return isoDate.toISOString();
+        if(!dayPartString || !monthPartString || !yearPartString){
+            return null;
+        }
+        const day = parseInt(dayPartString);
+        const month = parseInt(monthPartString);
+        const year = parseInt(yearPartString);
+        if(isNaN(day) || isNaN(month) || isNaN(year)){
+            return null;
+        }
+        return {
+            day: day,
+            month: month,
+            year: year
+        }
+
+        //let isoDate = moment(rawDate, "DD-MM-YYYY");
+        //return isoDate.toISOString();
     }
 
     static getCanteenLabelFunction(parsedReportItem: RawTL1FoodofferType){
@@ -520,7 +545,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return parsedReportItem[FoodTL1Parser.DEFAULT_CANTEEN_FIELD];
     }
 
-    static _getDatum(parsedReportItem:RawTL1FoodofferType){
+    static _getRawDatum(parsedReportItem:RawTL1FoodofferType){
         return parsedReportItem[FoodTL1Parser.DEFAULT_DATE_FIELD];
     }
 

@@ -1,7 +1,7 @@
 {
   "collection": "canteen_food_feedback_report_recipients",
   "field": "send_once_now_for_date",
-  "type": "dateTime",
+  "type": "date",
   "meta": {
     "collection": "canteen_food_feedback_report_recipients",
     "conditions": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "send_once_now_for_date",
     "table": "canteen_food_feedback_report_recipients",
-    "data_type": "timestamp without time zone",
+    "data_type": "date",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

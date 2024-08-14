@@ -1,3 +1,5 @@
+import {FoodofferDateType} from "../food-sync-hook/FoodParserInterface";
+
 export class DateHelper {
 
     static formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesList: string[]) {
@@ -7,6 +9,22 @@ export class DateHelper {
             listOfDateOnlyDates.push(DateHelper.formatDateToIso8601WithoutTimezone(date));
         }
         return listOfDateOnlyDates;
+    }
+
+    static getFoodofferDateTypeFromDate(date: Date): FoodofferDateType {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate()
+        };
+    }
+
+    static foodofferDateTypeToString(date: FoodofferDateType){
+        // 2024-08-14
+        const year = date.year
+        const month = String(date.month).padStart(2, '0');
+        const day = String(date.day).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     /**

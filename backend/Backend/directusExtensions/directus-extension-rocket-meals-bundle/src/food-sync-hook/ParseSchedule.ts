@@ -2,7 +2,7 @@ import hash from 'object-hash';
 import {AbstractService, FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {
-    CanteensTypeForParser,
+    CanteensTypeForParser, FoodofferDateType,
     FoodoffersTypeForParser,
     FoodofferTypeForCreation,
     FoodParserInterface,
@@ -123,10 +123,9 @@ export class ParseSchedule {
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
                         console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
-                        let ISOStringDatesOfMealOffersToDelete = await this.getIsoDatesFromRawMealOfferJSONList(foodofferListForParser);
-                        let listIso8601StringDates = DateHelper.formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesOfMealOffersToDelete);
-                        await this.deleteAllFoodOffersWithDates(listIso8601StringDates);
-                        await this.deleteAllFoodOffersNewerThanDatesAndInFuture(listIso8601StringDates);
+                        let foodoffersToDelete = this.getFoodofferDatesFromRawFoodofferJSONList(foodofferListForParser);
+                        //await this.deleteAllFoodOffersWithDates(foodoffersToDelete);
+                        await this.deleteAllFoodOffersFromTheEarliestFoodofferDateUpToTheFuture(foodoffersToDelete);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
                         await this.createFoodOffers(foodofferListForParser);
@@ -242,15 +241,14 @@ export class ParseSchedule {
         }
     }
 
-    async getIsoDatesFromRawMealOfferJSONList(foodoffersForParser: FoodoffersTypeForParser[]) {
-        let isoDatesStringDict: { [key: string]: string } = {};
+    getFoodofferDatesFromRawFoodofferJSONList(foodoffersForParser: FoodoffersTypeForParser[]): FoodofferDateType[] {
+        let isoDatesStringDict: { [key: string]: FoodofferDateType } = {};
         for (let foodofferForParser of foodoffersForParser) {
-            let foodoffer = foodofferForParser.basicFoodofferData;
-            let isoDateStringOfMealOffer = foodoffer.date;
-            isoDatesStringDict[isoDateStringOfMealOffer] = isoDateStringOfMealOffer;
+            const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+            isoDatesStringDict[directusDateOnlyFormat] = foodofferForParser.date;
         }
-        let isoDatesStringList = Object.keys(isoDatesStringDict);
-        return isoDatesStringList;
+        let foodofferDates = Object.values(isoDatesStringDict);
+        return foodofferDates;
     }
 
     async findOrCreateMarkingByExternalIdentifier(marking_external_identifier: string) {
@@ -358,35 +356,49 @@ export class ParseSchedule {
 
     /**
      * As we recieved a new food offer list, we delete all offers that are in the future and newer than the latest date in the list.
-     * @param listIso8601StringDates
+     * @param foodofferDatesToDelete
      */
-    async deleteAllFoodOffersNewerThanDatesAndInFuture(listIso8601StringDates: string[]) {
-        let latestDate: Date | null = null;
-        for (let iso8601StringDate of listIso8601StringDates) {
-            let date = new Date(iso8601StringDate);
-            if (!latestDate || date > latestDate) {
-                latestDate = date;
+    async deleteAllFoodOffersFromTheEarliestFoodofferDateUpToTheFuture(foodofferDatesToDelete: FoodofferDateType[]) {
+        let oldestFoodofferDate: FoodofferDateType | null = null;
+        for (let foodofferDateToDelete of foodofferDatesToDelete) {
+            let foodofferDateToDeleteAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDateToDelete));
+
+            if (!!oldestFoodofferDate) {
+                let oldestFoodofferDateAsDate = new Date(DateHelper.foodofferDateTypeToString(oldestFoodofferDate))
+                if(foodofferDateToDeleteAsDate < oldestFoodofferDateAsDate){
+                    oldestFoodofferDate = foodofferDateToDelete;
+                }
+            } else {
+                oldestFoodofferDate = foodofferDateToDelete;
             }
         }
-        if(!!latestDate){
+        if(!!oldestFoodofferDate){
             // add one day to the latest date and format it to iso8601
-            latestDate.setDate(latestDate.getDate() + 1);
-            let latestPlusOneDayIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(latestDate);
-            let nowAsIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(new Date());
+            //oldestFoodofferDate.setDate(oldestFoodofferDate.getDate() + 1);
+            //let latestPlusOneDayIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(oldestFoodofferDate);
+            //let nowAsIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(new Date());
             // if the latest date is in the future, we delete all offers that are newer or equal to latestPlusOneDayIso8601StringDate
             // we do only delete offers in the future automatically, as we do not want to delete offers that are in the past
-            if(new Date(latestPlusOneDayIso8601StringDate) > new Date(nowAsIso8601StringDate)){
-                await this.deleteAllFoodOffersNewerOrEqualThanDate(latestPlusOneDayIso8601StringDate);
-            }
+            // - Why not? When we receive a new list of food offers, we want to delete all offers that are in the future and newer than the latest date in the list.
+            //if(new Date(latestPlusOneDayIso8601StringDate) > new Date(nowAsIso8601StringDate)){
+            //    await this.deleteAllFoodOffersNewerOrEqualThanDate(latestPlusOneDayIso8601StringDate);
+            //}
+
+            await this.deleteAllFoodOffersNewerOrEqualThanDate(oldestFoodofferDate);
         }
     }
 
-    async deleteAllFoodOffersNewerOrEqualThanDate(iso8601StringDate: string) {
+    async deleteAllFoodOffersNewerOrEqualThanDate(iso8601StringDate: FoodofferDateType) {
+        const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
+
         let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
+        //await itemService.deleteByQuery()
+        // TODO: Überprüfen ob deleteByQuery funktioniert und ob es dadurch schneller geht bzw. es zu einem Blockieren der Datenbank kommt
+
         let itemsToDelete = await itemService.readByQuery({
             filter: {
                 date: {
-                    _gte: iso8601StringDate
+                    _gte: directusDateOnlyString
                 }
             },
             fields: ['id'], // Assuming 'id' is the primary key field
@@ -398,25 +410,26 @@ export class ParseSchedule {
         // Step 2: Delete the items using their IDs
         if (idsToDelete.length > 0) {
             await itemService.deleteMany(idsToDelete).then(() => {
-                console.log(`Food offers deleted successfully for new or equal date: ${iso8601StringDate} - amount: ${idsToDelete.length}`);
+                console.log(`Food offers deleted successfully for new or equal date: ${directusDateOnlyString} - amount: ${idsToDelete.length}`);
             }).catch(error => {
-                console.error(`Error deleting items for new or equal date: ${iso8601StringDate}:`, error);
+                console.error(`Error deleting items for new or equal date: ${directusDateOnlyString}:`, error);
             });
         } else {
-            console.log(`No food offers found for date: ${iso8601StringDate} to delete.`);
+            console.log(`No food offers found for date: ${directusDateOnlyString} to delete.`);
         }
     }
 
-    async deleteAllFoodOffersWithDates(listIso8601StringDates: string[]) {
+    async deleteAllFoodOffersWithDates(foodofferDatesToDelete: FoodofferDateType[]) {
         let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
-        for (let iso8601StringDate of listIso8601StringDates) {
+        for (let foodofferDateToDelete of foodofferDatesToDelete) {
             // Step 1: Retrieve IDs of items to delete for the specific date
-            console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date in order to overwrite: " + iso8601StringDate);
+            console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date in order to overwrite: " + foodofferDateToDelete);
+            const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(foodofferDateToDelete);
 
             let itemsToDelete = await itemService.readByQuery({
                 filter: {
                     date: {
-                        _eq: iso8601StringDate
+                        _eq: directusDateOnlyFormat
                     }
                 },
                 fields: ['id'], // "Filtering" only for the ID field to reduce the amount of data fetched
@@ -428,12 +441,12 @@ export class ParseSchedule {
             // Step 2: Delete the items using their IDs
             if (idsToDelete.length > 0) {
                 await itemService.deleteMany(idsToDelete).then(() => {
-                    console.log(`Food offers deleted successfully for date: ${iso8601StringDate} - amount: ${idsToDelete.length}`);
+                    console.log(`Food offers deleted successfully for date: ${foodofferDateToDelete} - amount: ${idsToDelete.length}`);
                 }).catch(error => {
-                    console.error(`Error deleting items for date: ${iso8601StringDate}:`, error);
+                    console.error(`Error deleting items for date: ${foodofferDateToDelete}:`, error);
                 });
             } else {
-                console.log(`No food offers found for date: ${iso8601StringDate} to delete.`);
+                console.log(`No food offers found for date: ${foodofferDateToDelete} to delete.`);
             }
         }
     }
@@ -469,28 +482,22 @@ export class ParseSchedule {
                 if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
                     basicFoodofferData.alias = foodFound.alias; // Add alias to meal offer from meal
                 }
+                let foodOfferToCreate: FoodofferTypeForCreation = {
+                    ...foodofferForParser.basicFoodofferData,
+                    canteen: canteen.id,
+                    food: food_id,
+                    date: DateHelper.foodofferDateTypeToString(foodofferForParser.date),
+                    date_created: new Date().toISOString(),
+                    date_updated: new Date().toISOString()
+                }
 
-                let isoDateStringOfMealOffer = basicFoodofferData.date
-                //console.log("["+SCHEDULE_NAME+"]"+" - get alias for meal offer")
-                //console.log(this.parser)
-                let date = DateHelper.formatDateToIso8601WithoutTimezone(new Date(isoDateStringOfMealOffer));
-                if (!!date) {
-                    let foodOfferToCreate: FoodofferTypeForCreation = {
-                        canteen: canteen.id,
-                        food: food_id,
-                        date: date,
-                        date_created: new Date().toISOString(),
-                        date_updated: new Date().toISOString()
-                    }
+                let foodoffer_id = await ItemsServiceHelper.createItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodOfferToCreate);
+                let foodoffer = await ItemsServiceHelper.readOneItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodoffer_id);
 
-                    let foodoffer_id = await ItemsServiceHelper.createItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodOfferToCreate);
-                    let foodoffer = await ItemsServiceHelper.readOneItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodoffer_id);
-
-                    if (!!foodoffer) {
-                        let markings_external_identifiers = foodofferForParser.marking_external_identifiers
-                        let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
-                        await this.assignMarkingsToMealOffer(markings, foodoffer);
-                    }
+                if (!!foodoffer) {
+                    let markings_external_identifiers = foodofferForParser.marking_external_identifiers
+                    let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
+                    await this.assignMarkingsToMealOffer(markings, foodoffer);
                 }
             }
         }

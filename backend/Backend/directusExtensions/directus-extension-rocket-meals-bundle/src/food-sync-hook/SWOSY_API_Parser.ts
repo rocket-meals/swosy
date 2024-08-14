@@ -305,7 +305,6 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
 
             if(!!canteen_external_identifier){
                 const basicFoodofferData: FoodofferTypeWithBasicData = {
-                    date: swosyMealOffer.date,
                     price_student: swosyMealOffer.priceStudent,
                     price_employee: swosyMealOffer.priceEmployee,
                     price_guest: swosyMealOffer.priceGuest,
@@ -313,6 +312,11 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
 
                 foodoffersForParser.push({
                     food_id: swosyMealOffer.MealId,
+                    date: {
+                        year: year,
+                        month: parseInt(month),
+                        day: parseInt(day)
+                    },
                     basicFoodofferData: basicFoodofferData,
                     canteen_external_identifier: canteen_external_identifier,
                     marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawMealOffer(swosyMealOffer),

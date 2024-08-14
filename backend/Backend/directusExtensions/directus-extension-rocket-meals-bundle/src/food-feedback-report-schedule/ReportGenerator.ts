@@ -1,6 +1,7 @@
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {Foodoffers, FoodsFeedbacks, FoodsFeedbacksLabels} from "../databaseTypes/types";
+import {Canteens, Foodoffers, FoodsFeedbacks, FoodsFeedbacksLabels, Foods} from "../databaseTypes/types";
+import {DateHelper} from "../helpers/DateHelper";
 
 export class ReportGenerator {
     private itemServiceCreator: ItemsServiceCreator;
@@ -39,7 +40,7 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days, canteenEntry){
+    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens){
         //console.log("generateReportJSON");
 
         let date = generateReportForDate;
@@ -63,43 +64,47 @@ export class ReportGenerator {
             let food = foodOfferWithFood?.food;
             //console.log("Get summary for food_id: "+food?.id);
 
-            let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food?.id, report_feedback_period_days);
-            //console.log("Found amount of feedbacks: "+feedbacksWithLabels.length)
-            let labels_counted_as_list = this.countLabelsAsList(feedbacksWithLabels, foods_feedbacks_labels_dict);
+            if(!!food && typeof food !== "string"){
+                let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food?.id, report_feedback_period_days);
+                //console.log("Found amount of feedbacks: "+feedbacksWithLabels.length)
+                //let labels_counted_as_list = this.countLabelsAsList(feedbacksWithLabels, foods_feedbacks_labels_dict);
+                // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
+                let labels_counted_as_list = [];
 
-            let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
-            //console.log("Found amount of comments: "+comments.length)
+                let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
+                //console.log("Found amount of comments: "+comments.length)
 
-            let image_url = null;
-            if(food?.image){
-                let file_id = food?.image;
-                let publicUrl = process.env.PUBLIC_URL;
-                if(publicUrl){
-                    image_url = publicUrl+'/assets/'+file_id
+                let image_url = null;
+                if(food?.image){
+                    let file_id = food?.image;
+                    let publicUrl = process.env.PUBLIC_URL;
+                    if(publicUrl){
+                        image_url = publicUrl+'/assets/'+file_id
+                    }
                 }
-            }
-            if(food?.image_remote_url){
-                image_url = food?.image_remote_url;
-            }
+                if(food?.image_remote_url){
+                    image_url = food?.image_remote_url;
+                }
 
-            let foodSummary = {
-                id: food.id,
-                alias: food.alias,
-                image_url: image_url,
-                rating_average: food?.rating_average,
-                rating_amount: food?.rating_amount,
-                comments: comments,
-                labels: labels_counted_as_list
-            };
+                let foodSummary = {
+                    id: food.id,
+                    alias: food.alias,
+                    image_url: image_url,
+                    rating_average: food?.rating_average,
+                    rating_amount: food?.rating_amount,
+                    comments: comments,
+                    labels: labels_counted_as_list
+                };
 
-            foods.push(foodSummary)
+                foods.push(foodSummary)
+            }
         }
 
         report.foods = foods;
         return report
     }
 
-    getFoodFeedbackComments(feedbacks){
+    getFoodFeedbackComments(feedbacks: FoodsFeedbacks[]){
         let comments = [];
         for(let feedback of feedbacks){
             let comment = feedback?.comment;
@@ -114,16 +119,16 @@ export class ReportGenerator {
 
 
 
-    convertFeedbacksLabelsToDict(foods_feedbacks_labels){
-        let labels_dict = {};
+    convertFeedbacksLabelsToDict(foods_feedbacks_labels: FoodsFeedbacksLabels[]){
+        let labels_dict: {[key: string]: FoodsFeedbacksLabels} = {};
         for(let label of foods_feedbacks_labels){
             labels_dict[label?.id] = label;
         }
         return labels_dict;
     }
 
-    countLabelsAsList(feedbacks, foods_feedbacks_labels_dict){
-        let labels_counted_dict = {};
+    countLabelsAsList(feedbacks: FoodsFeedbacks[], foods_feedbacks_labels_dict: { [p: string]: FoodsFeedbacksLabels }){
+        let labels_counted_dict: {[key: string]: {id: string, alias: string, count: number}} = {};
         for(let feedback of feedbacks){
             let labels_relations = feedback?.labels;
             for(let label_relation of labels_relations){
@@ -152,7 +157,7 @@ export class ReportGenerator {
         return labels_counted_as_list;
     }
 
-    async getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days){
+    async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number){
         let itemService = await this.itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
         let end = new Date();
         let start = new Date(end);
@@ -179,18 +184,18 @@ export class ReportGenerator {
         return food_feedbacks;
     }
 
-    async getFoodOffersWithFoodAtDateInCanteen(date, canteen_id){
+    async getFoodOffersWithFoodAtDateInCanteen(date: Date, canteen_id: string){
         let startOfTheDay = new Date(date); // copy the date
-        let endOfTheDay = new Date(date); // copy the date
-        startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
-        endOfTheDay.setHours(23,59,59,999); //set to end of day
+        const foodofferDate = DateHelper.getFoodofferDateTypeFromDate(startOfTheDay);
+        const foodofferDateString = DateHelper.foodofferDateTypeToString(foodofferDate);
 
         let itemService = await this.itemServiceCreator.getItemsService<Foodoffers>(CollectionNames.FOODOFFERS)
+
         let foodOffers = await itemService.readByQuery({filter: {
                     _and: [
                         {
                             date: {
-                                _between: [startOfTheDay.toISOString(), endOfTheDay.toISOString()]
+                                _eq: foodofferDateString
                             }
                         },
                         {

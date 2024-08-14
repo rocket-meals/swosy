@@ -16,20 +16,23 @@ export type FoodsInformationTypeForParser = {
 type CanteenTypeOmitedFields = Omit<Canteens, "id" | "user_created" | "user_updated" | "building" | "foodservice_hours" | "utilization_group">;
 export type CanteensTypeForParser = CanteenTypeOmitedFields & {external_identifier: string}; // make external_identifier required
 
-type FoodofferRequiredFields = {
-    date: string
-    dateAsIsoString:
+export type FoodofferDateType = {
+    year: number, // e.g. 2021
+    month: number, // 01-12
+    day: number // 01-31
 }
-export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "environmental_impact" | "nutrition" | "prices"> & FoodofferRequiredFields;
+export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "date" | "environmental_impact" | "nutrition" | "prices">;
 export type FoodoffersTypeForParser = {
     basicFoodofferData: FoodofferTypeWithBasicData,
     marking_external_identifiers: string[]
+    date: FoodofferDateType
     canteen_external_identifier: string,
     food_id: string
 }
 
-export type FoodofferTypeForCreation = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "markings" | "environmental_impact" | "nutrition" | "prices"> & {
-    date: string,
+
+export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
+    date: string, // in the format "YYYY-MM-DD" e.g. "2021-01-01" where month 01 is January
     canteen: string, // we require the primary key of the canteen
     food: string // we require the primary key of the food
 };
