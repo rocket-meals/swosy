@@ -7,10 +7,10 @@ export class FoodTL1Parser_RawReportTestReaderHannover implements FoodTL1Parser_
     }
 
     async getRawReport(): Promise<string | undefined> {
-        return this.getRawReport2();
+        return this.getSavedRawReport();
     }
 
-    async getRawReport2(): Promise<string | undefined> {
+    private async getSavedRawReport(): Promise<string | undefined> {
         return `MENSA\tVBORT_ID\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tPREIS_STUDENT\tPREIS_BEDIENSTETER\tPREIS_GAST\tPREIS_STUDENT_KARTE\tPREIS_BEDIENSTETER_KARTE\tPREIS_GAST_KARTE\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tNW_KJ\tNW_KCAL\tNW_FETT\tNW_GESFETT\tNW_EIWEISS\tNW_KH\tNW_ZUCKER\tNW_SALZ
 Contine\t190\t28.05.2024\t309328\t291991\tVEGGIE & VEGAN\t\t801454\tMini-Frühlingsrollen (k,20A,25)\tMango-Ingwer-Chutney (3,k)\tAsiagemüse (20A,25)\tBasmatireis\t\t\tmango-ginger chutney (3,k)\tasian vegetables (20A,25)\tbasmati rice\t\t\t\t3,00\t6,30\t7,90\t3,00\t6,30\t7,90\t\t\t\t3, k, 20, 20A, 25, 99\tmit Antioxidationsmittel / antioxidant, mit Knoblauch / contains garlic, Glutenhaltiges Getreide, enthält Glutenhaltiges Getreide: Weizen, enthält Soja und Sojaerzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe\t-\tBrennwert=2658 kJ (635 kcal), Fett=11,2g, davon gesättigte Fettsäuren=1,1g, Kohlenhydrate=114,5g, davon Zucker=22,1g, Ballaststoffe=3,8g, Eiweiß=17,4g, Salz=4,6g,\t2657,9\t635\t11,2\t1,1\t17,4\t114,5\t22,1\t4,6
 Contine\t190\t28.05.2024\t303432\t235129\tQUEERBEET\t\t801857\tKarottensalat\thausgemachtes Orangen-Ingwer-Dressing (29,kt)\t\t\t\t\tcarrot salad\torange-ginger dressing (29,kt)\t\t\t\t\t0,65\t1,00\t1,20\t0,65\t1,00\t1,20\t\t\t\t29, 99, kt\tenthält Senf und Senferzeugnisse, ohne kennzeichnungspflichtige Zusatzstoffe, KlimaTeller\t-\tBrennwert=923 kJ (221 kcal), Fett=19,8g, davon gesättigte Fettsäuren=1,9g, Kohlenhydrate=9,3g, davon Zucker=9,0g, Ballaststoffe=0,0g, Eiweiß=1,7g, Salz=0,7g,\t923,5\t221\t19,8\t1,9\t1,7\t9,3\t9,0\t0,7

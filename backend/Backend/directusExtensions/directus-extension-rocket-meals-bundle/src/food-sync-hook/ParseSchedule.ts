@@ -1,21 +1,38 @@
 import hash from 'object-hash';
-import {FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {AbstractService, FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {FoodParserInterface} from "./FoodParserInterface";
+import {
+    CanteensTypeForParser,
+    FoodoffersTypeForParser,
+    FoodofferTypeForCreation,
+    FoodParserInterface,
+    FoodsInformationTypeForParser,
+    FoodWithBasicData
+} from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
-import {MarkingParserInterface} from "./MarkingParserInterface";
-import {AppSettingsHelper} from "../helpers/AppSettingsHelper";
+import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
-import {PriceGroups} from "./PriceGroups";
+import {ApiContext} from "../helpers/ApiContext";
+import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {DateHelper} from "../helpers/DateHelper";
+import {ListHelper} from "../helpers/ListHelper";
+import {
+    Canteens,
+    Foodoffers,
+    Foods,
+    FoodsMarkings,
+    FoodsTranslations,
+    Markings,
+    MarkingsTranslations
+} from "../databaseTypes/types";
+import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 
-const TABLENAME_MEALS = CollectionNames.FOODS;
+const TABLENAME_FOODS = CollectionNames.FOODS;
 const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
 const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS;
 const TABLENAME_CANTEENS = CollectionNames.CANTEENS;
 const TABLENAME_MARKINGS = CollectionNames.MARKINGS;
 const TABLENAME_MEALFOFFERS_MARKINGS = CollectionNames.FOODOFFER_MARKINGS
-
-const FIELD_FOODS_ID = "id";
 
 const SCHEDULE_NAME = "FoodParseSchedule";
 
@@ -25,58 +42,39 @@ export class ParseSchedule {
     private markingParser: MarkingParserInterface | null;
     //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
     //private finished: boolean; // in multi instance environment this should be a field in the database
-    private schema: any;
-    private database: any;
-    private logger: any;
-    private services: any;
-    private env: any;
+    private apiContext: ApiContext;
     private itemsServiceCreator: ItemsServiceCreator;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
-    private foodsService: any;
-    private markingsService: any;
+    private myAppSettingsHelper: AppSettingsHelper;
 
-    constructor(foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+    constructor(apiContext: ApiContext, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+        this.apiContext = apiContext;
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        this.myAppSettingsHelper = new AppSettingsHelper(apiContext);
         this.foodParser = foodParser;
         this.markingParser = markingParser;
     }
     
     // Todo create/generate documentation 
 
-    async init(getSchema, services, database, logger, env) {
-        this.schema = await getSchema();
-        this.database = database;
-        this.logger = logger;
-        this.services = services;
-        this.env = env;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+    async init() {
+
     }
 
-    async setStatus(status: string) {
-        await AppSettingsHelper.setAppSettings(this.itemsServiceCreator, {
+    async setStatus(status: FlowStatus) {
+        await this.myAppSettingsHelper.setAppSettings({
             [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS]: status,
             [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_LAST_RUN]: new Date()
-        });
+        })
     }
 
     async isEnabled() {
-        try {
-            let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator);
-            return currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_ENABLED];
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myAppSettingsHelper.isFoodParsingEnabled();
     }
 
     async getStatus() {
-        try {
-            let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator);
-            return currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS];
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myAppSettingsHelper.getFoodParsingStatus();
     }
 
     async getHashOfJsonObject(object: any) {
@@ -88,22 +86,21 @@ export class ParseSchedule {
     }
 
     async parse(force = false) {
-        this.foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
-        this.markingsService = this.itemsServiceCreator.getItemsService(TABLENAME_MARKINGS);
+
 
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
 
-        if ((enabled && status === AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_START) || force) {
+        if ((enabled && status === FlowStatus.START) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_RUNNING);
+            await this.setStatus(FlowStatus.RUNNING);
 
             try {
                 if(!!this.markingParser){
                     console.log("["+SCHEDULE_NAME+"]"+" - Create Needed Data for MarkingParser");
                     await this.markingParser.createNeededData()
                     console.log("["+SCHEDULE_NAME+"]"+" - Update Markings")
-                    let markingsJSONList = await this.markingParser.getMarkingsJSONList() || [];
+                    let markingsJSONList = await this.markingParser.getMarkingsJSONList();
                     await this.updateMarkings(markingsJSONList);
                 }
 
@@ -112,52 +109,47 @@ export class ParseSchedule {
                     await this.foodParser.createNeededData()
 
                     console.log("["+SCHEDULE_NAME+"]"+" - Update Canteens")
-                    let canteensJSONList = await this.foodParser.getCanteensJSONList() || [];
+                    let canteensJSONList = await this.foodParser.getCanteensList();
                     // TODO also check if previous values changed or not using hash
                     await this.updateCanteens(canteensJSONList);
 
-
                     console.log("["+SCHEDULE_NAME+"]"+" - Update Foods")
-                    let foodsJSONList = await this.foodParser.getMealsJSONList() || [];
+                    let foodsJSONList = await this.foodParser.getFoodsListForParser();
                     // TODO also check if previous values changed or not using hash
                     await this.updateFoods(foodsJSONList);
 
-                    let rawMealOffersJSONList = await this.foodParser.getRawMealOffersJSONList() || [];
+                    let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
 
                     console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
-                    let currentMealOffersHash = await this.getHashOfJsonObject(rawMealOffersJSONList);
+                    let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
+                    // We calculate a hash of the current meal offers to check if they changed
                     console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
-                    let currentAppSettings = await AppSettingsHelper.readAppSettings(this.itemsServiceCreator)
-                    let previousMealOffersHash = currentAppSettings[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH];
+                    let previousMealOffersHash = await this.myAppSettingsHelper.getFoodParsingHash();
 
-                    // TODO: At the start of the server all food offers get deleted and created again. While this is okay, it would be nicer to check if there are realy new data and only to update/create these instead of recreating all offers new when a single thing changes due to our changed hash.
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
                         console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
-                        let ISOStringDatesOfMealOffersToDelete = await this.getIsoDatesFromRawMealOfferJSONList(rawMealOffersJSONList, this.foodParser);
-                        let listIso8601StringDates = this.formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesOfMealOffersToDelete);
+                        let ISOStringDatesOfMealOffersToDelete = await this.getIsoDatesFromRawMealOfferJSONList(foodofferListForParser);
+                        let listIso8601StringDates = DateHelper.formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesOfMealOffersToDelete);
                         await this.deleteAllFoodOffersWithDates(listIso8601StringDates);
                         await this.deleteAllFoodOffersNewerThanDatesAndInFuture(listIso8601StringDates);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
-                        await this.createFoodOffers(rawMealOffersJSONList, this.foodParser);
-
+                        await this.createFoodOffers(foodofferListForParser);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Set previous meal offers hash");
-                        await AppSettingsHelper.setAppSettings(this.itemsServiceCreator, {
-                            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_HASH]: currentMealOffersHash
-                        });
+                        await this.myAppSettingsHelper.setFoodParsingHash(currentMealOffersHash);
                     }
                 }
 
                 await this.reimportImages();
 
                 console.log("["+SCHEDULE_NAME+"]"+" - Finished");
-                await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FINISHED);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("["+SCHEDULE_NAME+"]"+" - Failed");
                 console.log(err);
-                await this.setStatus(AppSettingsHelper.VALUE_APP_SETTINGS_FOODS_PARSING_STATUS_FAILED);
+                await this.setStatus(FlowStatus.FAILED);
             }
         }
     }
@@ -167,25 +159,29 @@ export class ParseSchedule {
         console.log("["+SCHEDULE_NAME+"]"+" - Check for image synchronize");
         console.log("["+SCHEDULE_NAME+"]"+" - -- TODO: Remove this after switched to new project --");
         try{
-            await this.checkForImageSynchronize(this.env, this.services, this.database, this.schema);
+            await this.checkForImageSynchronize();
         } catch (err) {
             console.log("["+SCHEDULE_NAME+"]"+" - Error while checking for image synchronize");
             console.log(err);
         }
     }
 
-    async checkForImageSynchronize(env: any, services: any, database: any, schema: any){
+    async getFoodsService(): Promise<AbstractService<Foods>>{
+        return await this.itemsServiceCreator.getItemsService<Foods>(TABLENAME_FOODS);
+    }
+
+    async checkForImageSynchronize(){
+        const env = this.apiContext.env
         //console.log(SCHEDULE_NAME + ": Checking for image synchronize");
         const FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY = env.FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY;
         const FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
 
-        const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-        const fileServiceCreator = new FileServiceCreator(services, database, schema);
+        const fileServiceCreator = new FileServiceCreator(this.apiContext);
 
         const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
         if(canImportImages){
-            console.log(SCHEDULE_NAME + ": Importing images from a SWOSY API: " + FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL);
-            const foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
+            console.log(SCHEDULE_NAME + ": Importing images from a extern SWOSY API: " + FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL);
+            const foodsService = await this.getFoodsService();
             const meals = await foodsService.readByQuery({
                 limit: -1
             });
@@ -252,57 +248,31 @@ export class ParseSchedule {
         }
     }
 
-    async getIsoDatesFromRawMealOfferJSONList(rawMealOfferJSONList, foodParser: FoodParserInterface) {
+    async getIsoDatesFromRawMealOfferJSONList(foodoffersForParser: FoodoffersTypeForParser[]) {
         let isoDatesStringDict: { [key: string]: string } = {};
-        for (let rawFoodOffer of rawMealOfferJSONList) {
-            let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
+        for (let foodofferForParser of foodoffersForParser) {
+            let foodoffer = foodofferForParser.basicFoodofferData;
+            let isoDateStringOfMealOffer = foodoffer.date;
             isoDatesStringDict[isoDateStringOfMealOffer] = isoDateStringOfMealOffer;
         }
         let isoDatesStringList = Object.keys(isoDatesStringDict);
         return isoDatesStringList;
     }
 
-    formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesList: string[]) {
-        let listOfDateOnlyDates = [];
-        for (let isoDateString of ISOStringDatesList) {
-            let date = new Date(isoDateString);
-            listOfDateOnlyDates.push(this.formatDateToIso8601WithoutTimezone(date));
-        }
-        return listOfDateOnlyDates;
-    }
-
-    formatDateToIso8601WithoutTimezone(date: Date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = '00';
-        const minutes = '00';
-        const seconds = '00';
-
-        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-    }
-
-    setStatusPublished(json) {
-        json["status"] = "published";
-        return json;
-    }
-
-    async findOrCreateMarkingByExternalIdentifier(marking_external_identifier) {
+    async findOrCreateMarkingByExternalIdentifier(marking_external_identifier: string) {
         let tablename = TABLENAME_MARKINGS;
         let searchJSON = {
             external_identifier: marking_external_identifier
         };
-        let markingJSON = {
+        let createJSON = {
             alias: marking_external_identifier,
             external_identifier: marking_external_identifier,
         };
-        markingJSON = this.setStatusPublished(markingJSON);
-        let marking = await this.createIfNotFound(tablename, searchJSON, markingJSON);
-        return marking;
+        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Markings>(this.apiContext, tablename, searchJSON, createJSON);
     }
 
-    async findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers) {
-        let markings = [];
+    async findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers: string[]): Promise<Markings[]> {
+        let markings: Markings[] = [];
         for (let marking_external_identifier of markings_external_identifiers) {
             let marking = await this.findOrCreateMarkingByExternalIdentifier(marking_external_identifier);
             if(marking){
@@ -312,133 +282,82 @@ export class ParseSchedule {
         return markings;
     }
 
-    async createIfNotFound(tablename, searchJson, createJSON = searchJson) {
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
-
-        let items = await itemService.readByQuery({
-            filter: searchJson
-        })
-        let item = items[0]
-        if (!item) {
-            await itemService.createOne(createJSON)
-            let items = await itemService.readByQuery({
-                filter: searchJson
-            })
-            item = items[0]
-        }
-        return item;
-    }
-
-    async updateCanteens(canteenJSONList) {
-        let amountOfCanteens = canteenJSONList.length;
+    async updateCanteens(canteenList: CanteensTypeForParser[]): Promise<void> {
+        let amountOfCanteens = canteenList.length;
         let currentCanteen = 0;
-        for (let canteenJSON of canteenJSONList) {
+        for (let canteen of canteenList) {
             currentCanteen++;
             console.log("["+SCHEDULE_NAME+"]"+" - Update Canteen " + currentCanteen + " / " + amountOfCanteens);
-            let canteen = await this.findOrCreateCanteen(canteenJSON.external_identifier);
+            let canteenFoundOrCreated = await this.findOrCreateCanteen(canteen);
+            if (!!canteenFoundOrCreated) {
+                await ItemsServiceHelper.updateItemWithApiContext<Canteens>(this.apiContext, TABLENAME_CANTEENS, canteenFoundOrCreated.id, canteen);
+            }
         }
     }
 
-    async assignMarkingsToFood(markings, food) {
+    async assignMarkingsToFood(markings: Markings[], food: Foods) {
         let tablename = TABLENAME_MEAL_MARKINGS;
         for (let marking of markings) {
             let food_marking_json = {foods_id: food.id, markings_id: marking.id};
-            await this.createIfNotFound(tablename, food_marking_json, food_marking_json);
+            const searchJSON = food_marking_json;
+            const createJSON = food_marking_json;
+            await ItemsServiceHelper.findOrCreateItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, searchJSON, createJSON);
         }
     }
 
-    async assignMarkingsToMealOffer(markings, foodoffer) {
+    async assignMarkingsToMealOffer(markings: Markings[], foodoffer: Foodoffers) {
         let tablename = TABLENAME_MEALFOFFERS_MARKINGS;
         for (let marking of markings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
-            await this.createIfNotFound(tablename, foodoffer_marking_json, foodoffer_marking_json);
+            await ItemsServiceHelper.createItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, foodoffer_marking_json);
         }
     }
 
-    async assignNutritionsToFoodOffer(foodoffer, nutritionsJSON) {
-        let tablename = TABLENAME_FOODOFFERS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename)
-        await itemService.updateOne(foodoffer.id, nutritionsJSON);
-    }
-
-    async assignNutritionsToFood(food, nutritionsJSON) {
-        let tablename = TABLENAME_MEALS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename)
-        await itemService.updateOne(food.id, nutritionsJSON);
-    }
-
-    async findOrCreateFood(mealJSON) {
-        let mealJSONCopy = JSON.parse(JSON.stringify(mealJSON));
-        //TODO use the "createIfNotFound" method above
-        delete mealJSONCopy.translations; //remove meals translations, we need to add it later
-        let tablename = TABLENAME_MEALS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename)
-        let meals = await itemService.readByQuery({filter: {id: mealJSONCopy.id}});
-        let meal = meals[0]
-        if (!meal) {
-            mealJSON = this.setStatusPublished(mealJSONCopy);
-            await itemService.createOne(mealJSONCopy)
-
+    async findOrCreateFood(food: FoodWithBasicData): Promise<Foods | undefined> {
+        let tablename = TABLENAME_FOODS;
+        const searchJSON = {
+            id: food.id
         }
-        meals = await itemService.readByQuery({filter: {id: mealJSONCopy.id}});
-        meal = meals[0]
-        return meal;
+        const createJSON = searchJSON
+        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Foods>(this.apiContext, tablename, searchJSON, createJSON);
     }
 
-    async updateFoodTranslations(meal, mealJSON) {
-        await TranslationHelper.updateItemTranslations(meal, mealJSON, "foods_id", this.foodsService);
+    async updateFoodBasicFields(food: FoodWithBasicData){
+        let tablename = TABLENAME_FOODS;
+        return ItemsServiceHelper.updateItemWithApiContext(this.apiContext, tablename, food.id, food);
     }
 
-
-    removeDuplicatesFromJsonList(jsonList: any[], key: string, collection_name?: string) {
-        let valueList: any = [];
-        let keyDict: any = {};
-
-        for (let json of jsonList) {
-            let keyValue = json[key];
-            const savedValue = keyDict[keyValue];
-            if(!savedValue){
-                keyDict[keyValue] = json;
-                valueList.push(json);
-            } else {
-                // Duplicate found - ignore it
-            }
-        }
-
-        return valueList;
+    async updateFoodTranslations(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
+        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", TABLENAME_FOODS, this.apiContext);
     }
 
-    async updateFoods(foodsJSONList) {
-        let amountOfMeals = foodsJSONList.length;
+    async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[]) {
+        //let amountOfMeals = foodsInformationForParserList.length;
         let currentFoodIndex = 0;
 
+        foodsInformationForParserList = ListHelper.removeDuplicatesFromJsonListWithSelector(foodsInformationForParserList, (
+            foodsInformationForParser: FoodsInformationTypeForParser
+        ) => {
+            return foodsInformationForParser.basicFoodData.id;
+            }
+        ); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
-        foodsJSONList = this.removeDuplicatesFromJsonList(foodsJSONList, FIELD_FOODS_ID, "foods"); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
-
-        for (let foodJSON of foodsJSONList) {
+        for (let foodsInformationForParser of foodsInformationForParserList) {
             currentFoodIndex++;
+
+            const basicFoodData = foodsInformationForParser.basicFoodData;
             //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
-            let food = await this.findOrCreateFood(foodJSON);
-            if (!!food && food.id && this.foodParser) {
-                let marking_external_identifier_list = await this.foodParser.getMarkingExternalIdentifierListForFoodJSON(foodJSON) || [];
+            let foundFood = await this.findOrCreateFood(basicFoodData);
+            if (!!foundFood && foundFood.id && this.foodParser) {
+
+                let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
                 let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
-                await this.assignMarkingsToFood(markings, food);
+                await this.assignMarkingsToFood(markings, foundFood);
 
-                let nutritionsJSON = await this.foodParser.getMealNutritionsForMealJSON(foodJSON);
-                if (!!nutritionsJSON) {
-                    await this.assignNutritionsToFood(food, nutritionsJSON);
-                }
+                await this.updateFoodBasicFields(basicFoodData);
 
-                let tablename = TABLENAME_MEALS;
-                let itemService = this.itemsServiceCreator.getItemsService(tablename)
-                //console.log("["+SCHEDULE_NAME+"]"+" - Update Food with alias (and category): " + foodJSON.alias + " (" + foodJSON.category + ")");
-                await itemService.updateOne(food.id, {
-                    alias: foodJSON.alias,
-                    category: foodJSON.category,
-                });
-
-
-                await this.updateFoodTranslations(food, foodJSON);
+                // TODO: Adapt for TypeScript
+                await this.updateFoodTranslations(foundFood, foodsInformationForParser);
             }
         }
     }
@@ -458,8 +377,8 @@ export class ParseSchedule {
         if(!!latestDate){
             // add one day to the latest date and format it to iso8601
             latestDate.setDate(latestDate.getDate() + 1);
-            let latestPlusOneDayIso8601StringDate = this.formatDateToIso8601WithoutTimezone(latestDate);
-            let nowAsIso8601StringDate = this.formatDateToIso8601WithoutTimezone(new Date());
+            let latestPlusOneDayIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(latestDate);
+            let nowAsIso8601StringDate = DateHelper.formatDateToIso8601WithoutTimezone(new Date());
             // if the latest date is in the future, we delete all offers that are newer or equal to latestPlusOneDayIso8601StringDate
             // we do only delete offers in the future automatically, as we do not want to delete offers that are in the past
             if(new Date(latestPlusOneDayIso8601StringDate) > new Date(nowAsIso8601StringDate)){
@@ -469,11 +388,11 @@ export class ParseSchedule {
     }
 
     async deleteAllFoodOffersNewerOrEqualThanDate(iso8601StringDate: string) {
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
+        let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
         let itemsToDelete = await itemService.readByQuery({
             filter: {
                 date: {
-                    $gte: iso8601StringDate
+                    _gte: iso8601StringDate
                 }
             },
             fields: ['id'], // Assuming 'id' is the primary key field
@@ -495,16 +414,18 @@ export class ParseSchedule {
     }
 
     async deleteAllFoodOffersWithDates(listIso8601StringDates: string[]) {
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
+        let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
         for (let iso8601StringDate of listIso8601StringDates) {
             // Step 1: Retrieve IDs of items to delete for the specific date
             console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date in order to overwrite: " + iso8601StringDate);
 
             let itemsToDelete = await itemService.readByQuery({
                 filter: {
-                    date: iso8601StringDate
+                    date: {
+                        _eq: iso8601StringDate
+                    }
                 },
-                fields: ['id'], // Assuming 'id' is the primary key field
+                fields: ['id'], // "Filtering" only for the ID field to reduce the amount of data fetched
                 limit: -1
             });
 
@@ -523,108 +444,80 @@ export class ParseSchedule {
         }
     }
 
-    async findOrCreateCanteen(external_identifier) {
-        //console.log("["+SCHEDULE_NAME+"]"+" - Find or create canteen: " + external_identifier)
-
+    async findOrCreateCanteen(canteen: CanteensTypeForParser) {
         let tablename = TABLENAME_CANTEENS;
-        let canteenJSON = {
-            alias: external_identifier,
-            external_identifier: external_identifier
-        };
-
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
-
-        // Step 1: Try to find the canteen by its external identifier
-        let canteens = await itemService.readByQuery({
-            filter: {
-                external_identifier: canteenJSON.external_identifier
-            },
-            limit: 1
-        });
-
-        let canteen = canteens.length > 0 ? canteens[0] : null;
-
-        // Step 2: If canteen doesn't exist, create a new one
-        if (!canteen) {
-            console.log("["+SCHEDULE_NAME+"]"+" - Canteen "+canteenJSON.alias+" not found, creating a new one.");
-            canteenJSON = this.setStatusPublished(canteenJSON);
-            let createdCanteen_id = await itemService.createOne(canteenJSON);
-            canteen = await itemService.readOne(createdCanteen_id);
-        } else {
-            //console.log("["+SCHEDULE_NAME+"]"+" - Canteen found")
+        let searchJSON = {
+            external_identifier: canteen.external_identifier
         }
+        let createJSON = canteen
+        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Canteens>(this.apiContext, tablename, searchJSON, createJSON);
+    }
 
-        return canteen;
+    async findOrCreateCanteenByExternalIdentifier(external_identifier: string) {
+        let searchJSON: CanteensTypeForParser = {
+            external_identifier: external_identifier
+        }
+        return await this.findOrCreateCanteen(searchJSON);
     }
 
 
-    async createFoodOffer(rawFoodOffer, foodParser: FoodParserInterface) {
+    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser) {
         let tablename = TABLENAME_FOODOFFERS;
-        let canteenLabel = await foodParser.getCanteenLabelFromRawMealOffer(rawFoodOffer);
-        if (!!canteenLabel) {
-            let canteen = await this.findOrCreateCanteen(canteenLabel);
-            if (!!canteen) {
-                let food_id = await foodParser.getMealIdFromRawMealOffer(rawFoodOffer);
-                let mealFromServiceByReadOne = await this.foodsService.readOne(food_id);
-                if (!!mealFromServiceByReadOne) { // Check if meal exists
-                    let isoDateStringOfMealOffer = await foodParser.getISODateStringOfMealOffer(rawFoodOffer)
-                    //console.log("["+SCHEDULE_NAME+"]"+" - get alias for meal offer")
-                    //console.log(this.parser)
-                    let alias = await foodParser.getAliasForMealOfferFromRawMealOffer(rawFoodOffer);
-                    let date = this.formatDateToIso8601WithoutTimezone(new Date(isoDateStringOfMealOffer));
-                    if (!!food_id && !!date) {
-                        let foodOfferJSON = {
-                            food: food_id,
-                            alias: alias,
-                            canteen: canteen.id,
-                            date: date,
-                            price_student: await foodParser.getPriceForGroupFromRawMealOffer(PriceGroups.PRICE_GROUP_STUDENT, rawFoodOffer) || null,
-                            price_employee: await foodParser.getPriceForGroupFromRawMealOffer(PriceGroups.PRICE_GROUP_EMPLOYEE, rawFoodOffer) || null,
-                            price_guest: await foodParser.getPriceForGroupFromRawMealOffer(PriceGroups.PRICE_GROUP_GUEST, rawFoodOffer) || null,
-                            date_updated: new Date(),
-                            date_created: new Date(),
-                        };
-                        foodOfferJSON = this.setStatusPublished(foodOfferJSON);
-                        let mealofferService = this.itemsServiceCreator.getItemsService(tablename);
+        let canteen_external_identifier = foodofferForParser.canteen_external_identifier
+        let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteen_external_identifier);
+        if (!!canteen) {
+            let food_id = foodofferForParser.food_id
+            const foodsService = await this.getFoodsService();
+            let foodFound = await foodsService.readOne(food_id);
+            if (!!foodFound) { // Check if meal exists
+                const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
-                        // Create a new meal offer using the ItemsService
-                        let createdMealoffer_id = await mealofferService.createOne(foodOfferJSON);
+                if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
+                    basicFoodofferData.alias = foodFound.alias; // Add alias to meal offer from meal
+                }
 
-                        // Fetch the newly created meal offer
-                        // You can use readOne if you just need to fetch the created item by its ID
-                        let mealoffer = await mealofferService.readOne(createdMealoffer_id);
+                let isoDateStringOfMealOffer = basicFoodofferData.date
+                //console.log("["+SCHEDULE_NAME+"]"+" - get alias for meal offer")
+                //console.log(this.parser)
+                let date = DateHelper.formatDateToIso8601WithoutTimezone(new Date(isoDateStringOfMealOffer));
+                if (!!date) {
+                    let foodOfferToCreate: FoodofferTypeForCreation = {
+                        canteen: canteen.id,
+                        food: food_id,
+                        date: date,
+                        date_created: new Date().toISOString(),
+                        date_updated: new Date().toISOString()
+                    }
 
-                        if (!!mealoffer) {
-                            let markings_external_identifiers = await foodParser.getMarkingsExternalIdentifiersFromRawMealOffer(rawFoodOffer) || [];
-                            let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
-                            await this.assignMarkingsToMealOffer(markings, mealoffer);
-                        }
-                        let nutritionsJSON = await foodParser.getMealNutritionsForRawMealOffer(rawFoodOffer);
-                        if (!!nutritionsJSON) {
-                            await this.assignNutritionsToFoodOffer(mealoffer, nutritionsJSON);
-                        }
+                    let foodoffer_id = await ItemsServiceHelper.createItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodOfferToCreate);
+                    let foodoffer = await ItemsServiceHelper.readOneItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodoffer_id);
+
+                    if (!!foodoffer) {
+                        let markings_external_identifiers = foodofferForParser.marking_external_identifiers
+                        let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
+                        await this.assignMarkingsToMealOffer(markings, foodoffer);
                     }
                 }
             }
         }
     }
 
-    async createFoodOffers(rawMealOffers, foodParser: FoodParserInterface) {
-        let amountOfRawMealOffers = rawMealOffers.length;
+    async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[]) {
+        let amountOfRawMealOffers = foodofferListForParser.length;
         let currentRawMealOffer = 0;
         console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers")
-        for (let rawMealOffer of rawMealOffers) {
+        for (let foodofferForParser of foodofferListForParser) {
             currentRawMealOffer++;
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
-            await this.createFoodOffer(rawMealOffer, foodParser);
+            await this.createFoodOffer(foodofferForParser);
         }
     }
 
-    async updateMarkings(markingsJSONList) {
+    async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
         let tablename = TABLENAME_MARKINGS;
-        let itemService = this.itemsServiceCreator.getItemsService(tablename);
+        let itemService = await this.itemsServiceCreator.getItemsService<Markings>(tablename);
 
-        markingsJSONList = this.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier", "markings");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
+        markingsJSONList = ListHelper.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
         let amountOfMarkings = markingsJSONList.length;
         let currentMarking = 0;
@@ -646,7 +539,7 @@ export class ParseSchedule {
             if (!marking) {
                 // If marking does not exist, create a new one
                 let marking_id = await itemService.createOne(markingJSONCopy);
-                marking_id = await itemService.readOne(marking_id);
+                marking = await itemService.readOne(marking_id);
             } else {
                 // If marking exists, update it
                 await itemService.updateOne(marking.id, markingJSONCopy);
@@ -659,8 +552,8 @@ export class ParseSchedule {
     }
 
 
-    async updateMarkingTranslations(marking, markingJSON) {
-        await TranslationHelper.updateItemTranslations(marking, markingJSON, "markings_id", this.markingsService);
+    async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
+        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", TABLENAME_MARKINGS, this.apiContext);
     }
 
 }

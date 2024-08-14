@@ -4,69 +4,83 @@ export class CSVExportParser {
     static INLINE_DELIMITER_TAB = "\t";
     static INLINE_DELIMITER_SEMICOLON = ";";
 
-    static getListOfLineObjects(text, newLineDelimiter, inlineDelimiter, removeTailoringQuotes=true){
+    static getListOfLineObjects(text: string | Buffer | undefined, newLineDelimiter: string, inlineDelimiter: string, removeTailoringQuotes=true){
         let lines = CSVExportParser.splitTextIntoLines(text, newLineDelimiter);
         return CSVExportParser.parseFileLinesToJSONList(lines, inlineDelimiter, removeTailoringQuotes)
     }
 
-    static splitTextIntoLines(text, delimiter=CSVExportParser.NEW_LINE_DELIMITER){
+    private static splitTextIntoLines(text: string | Buffer | undefined, delimiter=CSVExportParser.NEW_LINE_DELIMITER){
+        if(!text){
+            return [];
+        }
+        text = text.toString();
         return text.split(delimiter);
     }
 
-    static splitLineByDelimiter(line, delimiter = CSVExportParser.INLINE_DELIMITER_TAB, removeTailoringQuotes){
-        // raw line: " 040";"enthält Schalenfrüchte: Mandeln";"";"27J"
+    private static splitLineByDelimiter(line: string, delimiter = CSVExportParser.INLINE_DELIMITER_TAB, removeTailoringQuotes: boolean){
+        // raw line: '" 040";"enthält Schalenfrüchte: Mandeln";"";"27J"'
         let lineItemsList = line.split(delimiter);
         if(removeTailoringQuotes){
             for(let i=0; i<lineItemsList.length; i++){
                 let item = lineItemsList[i];
-                // Strip away carriage return
-                if(item.endsWith('\r')){
-                    item = item.substring(0, item.length-1);
-                }
+                if(!!item){
+                    // Strip away carriage return
+                    if(item.endsWith('\r')){
+                        item = item.substring(0, item.length-1);
+                    }
 
-                if(item.startsWith('"')){
-                    item = item.substring(1);
-                }
-                if(item.endsWith('"')){
-                    item = item.substring(0, item.length-1);
-                }
+                    if(item.startsWith('"')){
+                        item = item.substring(1);
+                    }
+                    if(item.endsWith('"')){
+                        item = item.substring(0, item.length-1);
+                    }
 
-                // remove escaped quotes
-                if(item.startsWith('\\"')){
-                    item = item.substring(2);
-                }
-                if(item.endsWith('\\"')){
-                    item = item.substring(0, item.length-2);
-                }
+                    // remove escaped quotes
+                    if(item.startsWith('\\"')){
+                        item = item.substring(2);
+                    }
+                    if(item.endsWith('\\"')){
+                        item = item.substring(0, item.length-2);
+                    }
 
-                lineItemsList[i] = item;
+                    lineItemsList[i] = item;
+                }
             }
         }
         return lineItemsList;
     }
 
-    static parseFileLinesToJSONList(lines, inlineDelimiter, removeTailoringQuotes){
+    private static parseFileLinesToJSONList(lines: string[], inlineDelimiter: string, removeTailoringQuotes: boolean){
+        let output: { [p: string]: string }[] = [];
         let identifierLineRaw = lines[0];
-        let identifierLine = identifierLineRaw.trim();
-        let identifierList = CSVExportParser.splitLineByDelimiter(identifierLine, inlineDelimiter, removeTailoringQuotes);
-        let output = [];
-        for(let i=1; i<lines.length; i++){
-            let line = lines[i];
-            if(!!line && line!==""){
-                let lineItemList = CSVExportParser.splitLineByDelimiter(line, inlineDelimiter, removeTailoringQuotes);
-                let lineObject = CSVExportParser.parseLineToJSON(lineItemList, identifierList);
-                output.push(lineObject);
+        if(!!identifierLineRaw){
+            let identifierLine = identifierLineRaw.trim();
+            let identifierList = CSVExportParser.splitLineByDelimiter(identifierLine, inlineDelimiter, removeTailoringQuotes);
+            for(let i=1; i<lines.length; i++){
+                let line = lines[i];
+                if(!!line && line!==""){
+                    let lineItemList = CSVExportParser.splitLineByDelimiter(line, inlineDelimiter, removeTailoringQuotes);
+                    let lineObject = CSVExportParser.parseLineToJSON(lineItemList, identifierList);
+                    output.push(lineObject);
+                }
             }
         }
         return output;
     }
 
-    static parseLineToJSON(lineItemList, identifierList){
-        let output = {};
+    private static parseLineToJSON(lineItemList: string[], identifierList: string[]){
+        let output: {
+            [key: string]: string
+        } = {};
         for(let i=0; i<identifierList.length; i++){
-            let identifier = identifierList[i];
-            let value = lineItemList[i];
-            output[identifier] = value;
+            const identifier = identifierList[i];
+            if(!!identifier){
+                const value = lineItemList[i];
+                if(value !== undefined && value !== null){ // allow empty strings
+                    output[identifier] = value
+                }
+            }
         }
         return output;
     }

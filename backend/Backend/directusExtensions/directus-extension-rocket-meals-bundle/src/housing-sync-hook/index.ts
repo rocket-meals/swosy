@@ -2,24 +2,24 @@ import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule";
 import {StudentenwerkHannoverApartments_Parser} from "./StudentenwerkHannoverApartments_Parser";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck"; 
-
-
-const parseSchedule = new ApartmentsParseSchedule(StudentenwerkHannoverApartments_Parser);
+import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "housing_parse";
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    logger.info("housing-sync-hook: init");
-
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
+
+    const parseSchedule = new ApartmentsParseSchedule(apiContext, StudentenwerkHannoverApartments_Parser);
 
     try {
         await parseSchedule.init(getSchema, services, database, logger);

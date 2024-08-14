@@ -6,8 +6,6 @@ import {TestNews_Parser} from "./TestNews_Parser";
 
 let usedParser = new TestNews_Parser()
 
-const parseSchedule = new NewsParseSchedule(usedParser);
-
 const SCHEDULE_NAME = "news_parse";
 /**
  *    *    *    *    *    *
@@ -21,16 +19,21 @@ const SCHEDULE_NAME = "news_parse";
  └───────────────────────── second (0 - 59, OPTIONAL)
  */
 
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
+
+    const parseSchedule = new NewsParseSchedule(apiContext, usedParser);
 
        try {
             await parseSchedule.init(getSchema, services, database, logger);

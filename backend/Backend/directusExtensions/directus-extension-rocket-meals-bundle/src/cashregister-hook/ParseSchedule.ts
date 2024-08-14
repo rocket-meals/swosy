@@ -1,16 +1,22 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {TimerHelper} from "../helpers/TimerHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {ApiContext} from "../helpers/ApiContext";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
-let SCHEDULE_NAME = "Cashregister"
+export const SCHEDULE_NAME = "Cashregister"
 
 export class ParseSchedule {
 
     static SCHEDULE_NAME = SCHEDULE_NAME;
+
+    private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper
 
     private parser: any;
     private finished: boolean;
@@ -22,7 +28,9 @@ export class ParseSchedule {
     private cashregisters_service: any;
     private cashregisters_transactions_service: any;
 
-    constructor(parser) {
+    constructor(parser, apiContext: ApiContext) {
+        this.apiContext = apiContext
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext)
         this.parser = parser;
         this.finished = true;
     }
@@ -32,93 +40,35 @@ export class ParseSchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
-        this.cashregisters_service = this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS);
-        this.cashregisters_transactions_service = this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
+        this.cashregisters_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS);
+        this.cashregisters_transactions_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
     }
 
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            cashregisters_parsing_status: status
-        });
+    async setStatus(status: FlowStatus) {
+        await this.myDatabaseHelper.getAppSettingsHelper().setCashregisterParsingStatus(status);
     }
 
     async isEnabled() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.cashregisters_parsing_enabled;
-            }
-        } catch (err: any) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().isCashregisterParsingEnabled();
     }
 
     async getStatus() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.cashregisters_parsing_status;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().getCashregisterParsingStatus();
     }
-
-    async deleteAllTransactions() {
-        let hasMore = true;
-
-        console.log("deleteAllTransactions");
-        let amountToDeleteInABatch = 10000
-        let times = 0;
-        while (hasMore) {
-            // Fetch transactions in batches
-            let itemsToDelete = await this.cashregisters_transactions_service.readByQuery({
-                filter: {},
-                limit: amountToDeleteInABatch // Adjust the limit as needed, but keep it manageable
-            });
-
-            // Check if there are items to delete
-            if (itemsToDelete.length > 0) {
-                // Prepare array of IDs to delete
-                let idsToDelete = itemsToDelete.map(item => item.id);
-
-                // Delete transactions by IDs
-                await this.cashregisters_transactions_service.deleteMany(idsToDelete);
-            } else {
-                // No more items to delete
-                hasMore = false;
-            }
-            times++;
-            console.log("-- "+times);
-        }
-        console.log("FINISHED DELETION");
-    }
-
 
     async parse() {
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
 
-        if (enabled && status === statusCheck && this.finished) {
+        if (enabled && status === FlowStatus.START && this.finished) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             this.finished = false;
-            await this.setStatus(statusRunning);
+            await this.setStatus(FlowStatus.RUNNING);
 
             try {
                 console.log("Create Needed Data");
-                await this.parser.loadData();
-
-
                 let transactions = await this.parser.getTransactionsList();
 
                 let totalTransactionsToCheck = transactions.length;
@@ -132,7 +82,7 @@ export class ParseSchedule {
                 // DEBUG: DELETE ALL TRANSACTIONS
                 let clearAllData = false;
                 if(clearAllData){
-                    await this.deleteAllTransactions();
+                    await this.myDatabaseHelper.getCashregisterHelper().deleteAllTransactions();
                 }
 
 
@@ -154,7 +104,7 @@ export class ParseSchedule {
                     let cached_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
                     let cashregister_internal_id = undefined;
                     if(!cached_id){ // TODO: change to check for undefined and null instead
-                        let cashRegister = await this.findOrCreateCashregister(cashregister_external_id);
+                        let cashRegister = await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
                         if(!!cashRegister){
                             cached_id = cashRegister?.id;
                             external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_id;
@@ -179,16 +129,16 @@ export class ParseSchedule {
 
                 console.log("[CashregisterParseSchedule] Finished");
                 this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("[CashregisterParseSchedule] Failed");
                 console.log(err);
                 this.finished = true;
-                await this.setStatus(statusFailed);
+                await this.setStatus(FlowStatus.FAILED);
             }
 
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
+        } else if (!this.finished && status !== FlowStatus.RUNNING) {
+            await this.setStatus(FlowStatus.RUNNING);
         }
     }
 

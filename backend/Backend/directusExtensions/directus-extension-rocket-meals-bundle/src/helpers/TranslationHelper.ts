@@ -1,29 +1,145 @@
+import {PrimaryKey} from "@directus/types";
+import {Languages} from "../databaseTypes/types";
+import {ApiContext} from "./ApiContext";
+import {ItemsServiceCreator} from "./ItemsServiceCreator";
+
 const FIELD_TRANSLATION_LANGUAGE_CODE = "languages_code"; // TODO Import from directus-extension-auto-translation package the field name
 const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-translation package the field name
 
+
+export type ExistingTranslation = {
+    be_source_for_translations?: boolean | null;
+    id: PrimaryKey,
+    languages_code?: string | Languages | null;
+    let_be_translated?: boolean | null;
+    [key: string]: any,
+}
+type NewTranslationForCreation = Omit<ExistingTranslation, "id">
+
+export class LanguageCodes {
+    public static readonly _codes = {
+        de: "de-DE" as const,
+        en: "en-US" as const,
+    };
+
+    static readonly DE = LanguageCodes._codes.de;
+    static readonly EN = LanguageCodes._codes.en;
+}
+
+export type LanguageCodesType = (typeof LanguageCodes._codes)[keyof typeof LanguageCodes._codes];
+
+export type TranslationBaseFields = {
+    be_source_for_translations?: boolean | null;
+    let_be_translated?: boolean | null;
+};
+export type TranslationDynamicFields = {
+    [key: string]: string | boolean | null;
+};
+export type TranslationFields = TranslationBaseFields & TranslationDynamicFields;
+
+export type TranslationsFromParsingType = {
+    [key in LanguageCodesType]?: TranslationFields;
+}
+
+export type ItemWithExistingTranslations = {
+    id: PrimaryKey,
+    translations: ExistingTranslation[]
+}
+
+export const NonRelationFieldsArrayFieldId = "id";
+const NonRelationFieldsArray = [
+    NonRelationFieldsArrayFieldId,
+    "be_source_for_translations",
+    "let_be_translated",
+    "languages_code",
+    "translation_settings"
+] as const;
+
+type NonRelationFields = typeof NonRelationFieldsArray[number];
+
+export type TranslationRelationField<E> = Exclude<keyof E, NonRelationFields> & string;
+
 export class TranslationHelper {
 
-    static LANGUAGE_CODE_DE = "de-DE";
-    static LANGUAGE_CODE_EN = "en-US";
+    static LANGUAGE_CODE_DE: LanguageCodesType = LanguageCodes.DE
+    static LANGUAGE_CODE_EN: LanguageCodesType = LanguageCodes.EN
 
-    static async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
-        let itemWithTranslations = await specificItemService.readOne(item?.id, {"fields": ["*", "translations.*"]});
-        let translationsFromParsing = itemJSON?.translations || {}
+    static hasSignificantTranslationChange<E extends Record<string, any>>(
+        existingTranslation: E,
+        translationFromParsing: Partial<E>
+    ): boolean {
+        for (const key in existingTranslation) {
+            if (!existingTranslation.hasOwnProperty(key)) continue;
+
+            // Skip keys that are in NonRelationFields
+            if (NonRelationFieldsArray.includes(key as NonRelationFields)) {
+                continue;
+            }
+
+            // Check if the key is present in translationFromParsing and if the values differ
+            if (key in translationFromParsing && existingTranslation[key] !== translationFromParsing[key]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static async updateItemTranslations<
+        T extends ItemWithExistingTranslations, // T must have an id and translations field
+        E extends ExistingTranslation // the collection of the related translations
+    >(
+        item: T, // the item we want to update the translations for
+        translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
+        items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
+        itemsTablename: string, // the name of the table of our item
+        apiContext: ApiContext
+    ) {
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+
+        let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {"fields": ["*", "translations.*"]});
+        if (!!itemWithTranslations) {
+            const {
+                updateObject: updateObject,
+                updateNeeded: updateNeeded
+            } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, item, translationsFromParsing, items_primary_field_in_translation_table);
+
+            if(updateNeeded){
+                //const createTranslations = updateObject.translations.create;
+                //const updateTranslations = updateObject.translations.update;
+                //const deleteTranslations = updateObject.translations.delete;
+                // @ts-ignore
+                //console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
+                //console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
+                //console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
+                //console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
+                //console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
+                //console.log(JSON.stringify(updateObject, null, 2));
+
+                // @ts-ignore
+                await specificItemServiceReader.updateOne(item?.id, {id: item?.id, ...updateObject});
+            }
+        }
+    }
+
+    static async _getUpdateInformationForTranslations<
+        T extends ItemWithExistingTranslations, // T must have an id and translations field
+        E extends ExistingTranslation // the collection of the related translations
+    >(
+        itemWithTranslations: T, // the item we want to update the translations for
+        item: T, // the item we want to update the translations for
+        translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
+        items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
+    ) {
         /** translationsFromParsing is an object with the following structure:
-         translations: [
          {
-         id: 5166,
-         foods_id: '6',
-         languages_code: 'de-DE',
-         name: 'Hallo mein Name ist'
-         },
-         {
-         id: 5167,
-         foods_id: '6',
-         languages_code: 'en-US',
-         name: 'Hi my name is'
+         [LanguageCodes.DE]: {
+         name: "...",
+         description: "...",
+         ... (other fields)
+         ... (be_source_for_translations, let_be_translated)
          }
-         ]
+         }
          */
         let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
         /** remaining_translationsFromParsing is an object with the following structure:
@@ -32,58 +148,79 @@ export class TranslationHelper {
          [TranslationHelper.]: {....}
          }
          */
-        let createTranslations = [];
-        let updateTranslations = [];
-        let deleteTranslations = [];
+        let createTranslations: NewTranslationForCreation[] = [];
+        let updateTranslations: ExistingTranslation[] = [];
+        let deleteTranslations: ExistingTranslation[] = [];
 
-        if (!!itemWithTranslations) {
-            let existingTranslations = itemWithTranslations?.translations || [];
+        let existingTranslations = itemWithTranslations?.translations || [];
 
 
-            let existingTranslationsDifferentFromParsing = false;
-            let newTranslationsFromParsing = false;
+        let existingTranslationsDifferentFromParsing = false;
+        let newTranslationsFromParsing = false;
 
-            for (let existingTranslation of existingTranslations) { //check all existing translations
-                let existingLanguageCode = existingTranslation?.[FIELD_TRANSLATION_LANGUAGE_CODE];
-                let translationFromParsing = translationsFromParsing[existingLanguageCode];
-                if (!!translationFromParsing) { //we also got a translation from the parse
-                    /* Update translation */
-                    translationFromParsing = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
 
-                    if (existingTranslation?.name !== translationFromParsing?.name) {
-                        existingTranslationsDifferentFromParsing = true;
-                        console.log("existingTranslation is different from parsing")
-                        console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
-                        console.log("translationFromParsing: "+JSON.stringify(translationFromParsing, null, 2))
-
-                        // be_source_for_translations if language Code is German
-                        let be_source_for_translations: boolean = false;
-                        if(existingLanguageCode === TranslationHelper.LANGUAGE_CODE_DE){
-                            be_source_for_translations = true;
-                        }
-
-                        updateTranslations.push({
-                            id: existingTranslation?.id,
-                            let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
-                            be_source_for_translations: be_source_for_translations,
-                            ...translationFromParsing,
-                            [FIELD_TRANSLATION_LANGUAGE_CODE]: {[FIELD_LANGUAGE_ID]: existingLanguageCode}
-                        });
-                        //console.log("existingTranslation is different from parsing")
-                    } else {
-                        //translation is the same, do nothing
-                        //console.log("translation is the same, do nothing")
-                    }
-                } else { //the parser dont provide a translation, we should delete it?
-                    //TODO check if translation was generated or manually typed
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
+        // find the existing language which is source for translations
+        let defaultLanguageCodeForSourceTranslation: LanguageCodesType = TranslationHelper.LANGUAGE_CODE_DE;
+        let usedLanguageCodeForSourceTranslation: LanguageCodesType = defaultLanguageCodeForSourceTranslation;
+        for(let existingTranslation of existingTranslations) {
+            if (existingTranslation?.be_source_for_translations) {
+                if(!existingTranslation?.languages_code || typeof existingTranslation?.languages_code !== "string"){
+                    // if the language code is not a string, we use the default language code
+                } else {
+                    usedLanguageCodeForSourceTranslation = existingTranslation?.languages_code as LanguageCodesType;
                 }
             }
-            //check remaining translationsFromParsing, then put into createTranslations
-            let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
-            for (let i = 0; i < remaining_languageKeys?.length; i++) {
-                let remaining_languageKey = remaining_languageKeys[i];
+        }
+
+
+
+
+        for (let existingTranslation of existingTranslations) { //check all existing translations
+            let existingLanguageCode = existingTranslation?.[FIELD_TRANSLATION_LANGUAGE_CODE];
+            if (!existingLanguageCode || typeof existingLanguageCode !== "string") {
+                continue;
+            }
+            const existingLanguageCodeAsString = existingLanguageCode as LanguageCodesType;
+
+            const translationFromParsing = translationsFromParsing[existingLanguageCodeAsString];
+            if (!!translationFromParsing) { //we also got a translation from the parse
+                /* Update translation */
+                const translationFromParsingCopy = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
+                delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
+
+                if(TranslationHelper.hasSignificantTranslationChange(existingTranslation, translationFromParsingCopy)){
+                    existingTranslationsDifferentFromParsing = true;
+                    //console.log("existingTranslation is different from parsing")
+                    //console.log("existingTranslation: "+JSON.stringify(existingTranslation, null, 2))
+                    //console.log("translationFromParsing: "+JSON.stringify(translationFromParsingCopy, null, 2))
+
+                    // be_source_for_translations if language Code is German
+                    let be_source_for_translations: boolean = false;
+                    if(existingLanguageCode === usedLanguageCodeForSourceTranslation){
+                        be_source_for_translations = true;
+                    }
+
+                    updateTranslations.push({
+                        id: existingTranslation?.id,
+                        let_be_translated: false, // if we have a translation from the parser, we do not need to translate it
+                        be_source_for_translations: be_source_for_translations,
+                        ...translationFromParsingCopy,
+                        [FIELD_TRANSLATION_LANGUAGE_CODE]: {[FIELD_LANGUAGE_ID]: existingLanguageCode}
+                    });
+                } else {
+                    //translation is the same, do nothing
+                    //console.log("translation is the same, do nothing")
+                }
+            } else { //the parser dont provide a translation, we should delete it?
+                //TODO check if translation was generated or manually typed
+                delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
+            }
+        }
+        //check remaining translationsFromParsing, then put into createTranslations
+        let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
+        for (let i = 0; i < remaining_languageKeys?.length; i++) {
+            let remaining_languageKey = remaining_languageKeys[i] as LanguageCodesType | undefined;
+            if(!!remaining_languageKey){
                 let translationFromParsing = translationsFromParsing[remaining_languageKey];
                 if(!!translationFromParsing){
                     newTranslationsFromParsing = true;
@@ -95,7 +232,7 @@ export class TranslationHelper {
                     }
 
                     createTranslations.push({
-                        [item_primary_key_in_translation_table]: item?.id,
+                        [items_primary_field_in_translation_table]: item?.id,
                         be_source_for_translations: be_source_for_translations,
                         let_be_translated: false, // if we have a translation from the parser, we dont need to translate it
                         ...translationFromParsing,
@@ -103,25 +240,21 @@ export class TranslationHelper {
                     });
                 }
             }
+        }
 
-            let updateObject = {
-                "translations": {
-                    "create": createTranslations,
-                    "update": updateTranslations,
-                    "delete": deleteTranslations
-                }
-            };
-
-            let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
-            if(updateNeeded){
-                console.log("Update Translations for item with id: " + item?.id+ " - alias: "+item?.alias);
-                console.log("Update Translations: create (" + createTranslations.length + "), update (" + updateTranslations.length + "), delete (" + deleteTranslations.length + ")");
-                console.log("createTranslations: "+JSON.stringify(createTranslations, null, 2));
-                console.log("updateTranslations: "+JSON.stringify(updateTranslations, null, 2));
-                console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
-                //console.log(JSON.stringify(updateObject, null, 2));
-                await specificItemService.updateOne(item?.id, {id: item?.id, ...updateObject});
+        let updateObject = {
+            "translations": {
+                "create": createTranslations,
+                "update": updateTranslations,
+                "delete": deleteTranslations
             }
+        };
+
+        let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
+
+        return {
+            updateObject: updateObject,
+            updateNeeded: updateNeeded,
         }
     }
 

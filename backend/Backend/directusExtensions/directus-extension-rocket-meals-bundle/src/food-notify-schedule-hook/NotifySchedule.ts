@@ -1,12 +1,14 @@
 import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {ApiContext} from "../helpers/ApiContext";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 
 const TABLENAME_MEALS = CollectionNames.FOODS
 const TABLENAME_FOODS_FEEDBACKS = CollectionNames.FOODS_FEEDBACKS
 const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
@@ -15,7 +17,14 @@ const FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
 
 export class NotifySchedule {
 
-    constructor() {
+    private databaseHelper: MyDatabaseHelper;
+    private apiContext: ApiContext;
+
+    constructor(
+        apiExtensionContext: ApiContext
+    ) {
+        this.apiContext = apiExtensionContext;
+        this.databaseHelper = new MyDatabaseHelper(apiExtensionContext);
         this.finished = true;
     }
     
@@ -26,46 +35,27 @@ export class NotifySchedule {
         this.database = database;
         this.logger = logger;
         this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(services, database, this.schema);
-        this.serverServiceCreator = new ServerServiceCreator(services, database, this.schema);
+        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        this.serverServiceCreator = new ServerServiceCreator(this.apiContext);
         await this.getProjectName();
     }
 
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            notifications_foods_status: status
-        });
-    }
-
-    async getStatus() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.notifications_foods_status;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+    async setStatus(status: FlowStatus) {
+        await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(status)
     }
 
     async notify(aboutMealsInDays = 1, force = false) {
         let enabled = true
-        let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
+        let status = await this.databaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
 
         this.finished = !!this.finished;
 
-        if ((enabled && status === statusCheck && this.finished) || force) {
+        if ((enabled && status === FlowStatus.START && this.finished) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Schedule");
             console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
             this.finished = false;
             //console.log("Set status to running");
-            await this.setStatus(statusRunning);
+            await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(FlowStatus.RUNNING);
 
             try {
                 // We need to notify all devices, which want to get notified about new food offers which they are interested in
@@ -122,22 +112,22 @@ export class NotifySchedule {
                 }
                 //console.log("Finished");
                 this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("["+SCHEDULE_NAME+"] Failed");
                 console.log(err);
                 this.finished = true;
-                await this.setStatus(statusFailed);
+                await this.setStatus(FlowStatus.FAILED);
             }
 
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
+        } else if (!this.finished && status !== FlowStatus.RUNNING) {
+            await this.setStatus(FlowStatus.RUNNING);
         }
     }
 
     async notifyDeviceAboutFoodOffer(device, foodOffer, foodWithTranslations, language, aboutMealsInDays, date) {
         // Create a new push_notification entry in the database
-        let pushNotificationService = this.itemsServiceCreator.getItemsService(CollectionNames.PUSH_NOTIFICATIONS);
+        let pushNotificationService = await this.itemsServiceCreator.getItemsService(CollectionNames.PUSH_NOTIFICATIONS);
         let pushTokenObj = device.pushTokenObj;
         /**
          pushTokenObj = {
@@ -203,38 +193,17 @@ export class NotifySchedule {
                 //console.log("Failed to send notification");
                 //console.log("We better reset on the device the pushTokenObj to null");
                 // Reset the pushTokenObj to null
-                let devicesService = this.itemsServiceCreator.getItemsService(CollectionNames.DEVICES);
+                let devicesService = await this.itemsServiceCreator.getItemsService(CollectionNames.DEVICES);
                 await devicesService.updateOne(device.id, {pushTokenObj: null});
             }
         }
     }
 
-    async getAppTranslationText(translationKey, profileLanguage) {
-        let appTranslationsService = this.itemsServiceCreator.getItemsService(CollectionNames.APP_TRANSLATIONS);
-        try{
-            let app_translation_item = await appTranslationsService.readOne(translationKey, {fields: ["*", "translations.*"]});
-            let foundTranslation = this.getTranslation(app_translation_item?.translations, profileLanguage, "text");
-            if(foundTranslation) {
-                return foundTranslation;
-            }
-        } catch (err) {
-            if(err.message.includes("You don't have permission to access this")){ // means that the app_translation_today does not exist
-                // we can ignore this error
-            } else {
-                console.log("Error while reading app_translation_today");
-                console.log(err);
-            }
-        }
-        return undefined;
-    }
-
     async getTranslationDate(profileLanguage, aboutMealsInDays, date) {
         if(aboutMealsInDays === 0) {
-            let app_translation_today = await this.getAppTranslationText("today", profileLanguage);
-            return app_translation_today || "Heute";
+            return "Heute";
         } else if(aboutMealsInDays === 1) {
-            let app_translation_tomorrow = await this.getAppTranslationText("tomorrow", profileLanguage);
-            return app_translation_tomorrow || "Morgen";
+            return "Morgen";
         }
 
         // from date get TT.MM with date.getDate() and date.getMonth()
@@ -261,19 +230,19 @@ export class NotifySchedule {
     }
 
     async getFoodWithTranslations(food_id) {
-        let foodsService = this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
+        let foodsService = await this.itemsServiceCreator.getItemsService(TABLENAME_MEALS);
         let food = await foodsService.readOne(food_id, {fields: ["*", "translations.*"]});
         return food;
     }
 
     async getProfileAndDevicesForProfile(profile_id) {
-        let profileService = this.itemsServiceCreator.getItemsService("profiles");
+        let profileService = await this.itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
         let profile = await profileService.readOne(profile_id, {fields: ["*", "devices.*"]});
         return profile;
     }
 
     async getFoodFeedbacksForFood(food_id) {
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODS_FEEDBACKS)
+        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_FOODS_FEEDBACKS)
         let foodFeedbacks = await itemService.readByQuery({filter: { // filter where food_id is food AND notify is true
                 _and: [
                     {food: food_id},
@@ -291,7 +260,7 @@ export class NotifySchedule {
         startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
         endOfTheDay.setHours(23,59,59,999); //set to end of day
 
-        let itemService = this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
+        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_FOODOFFERS)
         let foodOffers = await itemService.readByQuery({filter: {
             date: {
                 _between: [startOfTheDay.toISOString(), endOfTheDay.toISOString()]

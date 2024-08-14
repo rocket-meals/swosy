@@ -1,29 +1,56 @@
+import {Canteens, Foodoffers, Foods} from "../databaseTypes/types";
+import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
+
+
+// Remove all fields with relation to other tables
+export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings">;
+export type FoodNutritionType = Omit<FoodWithBasicData, "id">
+
+export type FoodsInformationTypeForParser = {
+    basicFoodData: FoodWithBasicData,
+    marking_external_identifiers: string[],
+    translations: TranslationsFromParsingType
+}
+
+// Remove all fields with relation to other tables
+type CanteenTypeOmitedFields = Omit<Canteens, "id" | "user_created" | "user_updated" | "building" | "foodservice_hours" | "utilization_group">;
+export type CanteensTypeForParser = CanteenTypeOmitedFields & {external_identifier: string}; // make external_identifier required
+
+type FoodofferRequiredFields = {date: string}
+export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "environmental_impact" | "nutrition" | "prices"> & FoodofferRequiredFields;
+export type FoodoffersTypeForParser = {
+    basicFoodofferData: FoodofferTypeWithBasicData,
+    marking_external_identifiers: string[]
+    canteen_external_identifier: string,
+    food_id: string
+}
+
+export type FoodofferTypeForCreation = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "markings" | "environmental_impact" | "nutrition" | "prices"> & {
+    date: string,
+    canteen: string, // we require the primary key of the canteen
+    food: string // we require the primary key of the food
+};
+
 export interface FoodParserInterface {
 
+    /**
+     * This method should create the needed data for the parser to work on every call of the parser.
+     */
     createNeededData(): Promise<void>;
 
-    getCanteensJSONList(): Promise<any>;
+    /**
+     * This method should return the list of all canteens
+     */
+    getCanteensList(): Promise<CanteensTypeForParser[]>;
 
-    getMealsJSONList(): Promise<any>;
+    /**
+     * This method should return the list of all foods
+     */
+    getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]>;
 
-    getMarkingExternalIdentifierListForFoodJSON(foodJSON: any): Promise<any>;
-
-    getMealNutritionsForMealJSON(foodJSON: any): Promise<any>;
-
-    getMealNutritionsForRawMealOffer(rawMealOffer: any): Promise<any>;
-
-    getAliasForMealOfferFromRawMealOffer(rawMealOffer: any): Promise<any>;
-
-    getRawMealOffersJSONList(): Promise<any>;
-
-    getCanteenLabelFromRawMealOffer(rawMealOffer: any): Promise<any>;
-
-    getMealIdFromRawMealOffer(rawMealOffer: any): Promise<any>;
-
-    getISODateStringOfMealOffer(rawMealOffer: any): Promise<any>;
-
-    getPriceForGroupFromRawMealOffer(group: string, rawMealOffer: any): Promise<any>;
-
-    getMarkingsExternalIdentifiersFromRawMealOffer(rawMealOffer: any): Promise<any>;
+    /**
+     * This method should return the list of all foodoffers
+     */
+    getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]>;
 
 }

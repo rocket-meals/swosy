@@ -5,23 +5,25 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "collections_dates_last_update";
 
-export default defineHook(async ({action, init}, {
-	services,
-	database,
-	getSchema
-}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action, init}, apiContext) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
+
+	const {
+		services,
+		database,
+		getSchema,
+		logger
+	} = apiContext;
 
 	const excludeCollections = [CollectionNames.COLLECTIONS_DATES_LAST_UPDATE];
 	// create a function which will be called after any update, create or delete of a collection, except the collection "collections_dates_last_update"
 	// this function will update the collection "collections_dates_last_update" with the current date for the collection which was updated, created or deleted
 
-	let schema = await getSchema();
-	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let collectionsDatesLastUpdateService = itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
+	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+	let collectionsDatesLastUpdateService = await itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
 
 	//console.log("collection-last-update-hook: register hook")
 
@@ -65,7 +67,9 @@ export default defineHook(async ({action, init}, {
 			// find if the item with the id: collection exists in the collection "collections_dates_last_update"
 			let items = await collectionsDatesLastUpdateService.readByQuery({
 				filter: {
-					id: collection
+					id: {
+						_eq: collection
+					}
 				}
 			});
 

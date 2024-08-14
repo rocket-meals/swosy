@@ -6,20 +6,28 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "profile_create";
 
-export default defineHook(async ({ filter, schedule}, {services, getSchema, database}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({ filter, schedule}, apiContext) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
+
+	const {
+		services,
+		database,
+		getSchema,
+		env,
+		logger
+	} = apiContext;
 
 
 	// every minute
 	schedule('0 * * * * *', async () => {
 		// search for users without profiles and create profiles for them
 		let schema = await getSchema();
-		let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-		let users_service = itemsServiceCreator.getItemsService(CollectionNames.USERS);
-		let profiles_service = itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
+		let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+		let users_service = await itemsServiceCreator.getItemsService(CollectionNames.USERS);
+		let profiles_service = await itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
 		// users without profiles
 		let users = await users_service.readByQuery({
 			filter: {
@@ -56,11 +64,11 @@ export default defineHook(async ({ filter, schedule}, {services, getSchema, data
 		//     async (input: any, actionContext: any) => { /** action */
 		async (input, meta, actionContext) => {
 			/** filter */
-			const {database, schema} = actionContext;
+			const {database} = actionContext;
 
-			let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-			let profiles_service = itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
-			let users_service = itemsServiceCreator.getItemsService(CollectionNames.USERS);
+			let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+			let profiles_service = await itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
+			let users_service = await itemsServiceCreator.getItemsService(CollectionNames.USERS);
 
 			//const currentProvider = input.provider; //get the current provider
 			//        let userId = input.user; // action

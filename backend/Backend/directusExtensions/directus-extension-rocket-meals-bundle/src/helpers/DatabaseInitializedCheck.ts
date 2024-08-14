@@ -1,4 +1,5 @@
 import {getAllCollectionNames} from "./CollectionNames";
+import {ApiContext} from "./ApiContext";
 
 /**
  * Helper for Account things
@@ -6,8 +7,9 @@ import {getAllCollectionNames} from "./CollectionNames";
 const EXTENSION_NAME = "directus-extension-rocket-meals-bundle";
 
 export class DatabaseInitializedCheck{
-    static async checkAllTablesExist(scheduleName: string, getSchema: any): Promise<boolean> {
-        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, getSchema, getAllCollectionNames());
+
+    static async checkAllTablesExistWithApiContext(scheduleName: string, apiContext: ApiContext){
+        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, apiContext.getSchema, getAllCollectionNames());
     }
 
     static async getTableNames(getSchema: any): Promise<string[]> {

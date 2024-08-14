@@ -4,16 +4,18 @@ import {ActivityServiceCreator} from "../helpers/ItemsServiceCreator";
 
 const SCHEDULE_NAME = "activity_auto_cleanup";
 
-export default defineHook(async ({schedule}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({schedule}, apiContext) => {
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        logger
+    } = apiContext;
 
     const isProduction = true;
 
@@ -41,8 +43,8 @@ export default defineHook(async ({schedule}, {
     schedule(cronFrequency, async () => {
         logger.info(SCHEDULE_NAME+ ": start schedule run: "+new Date().toISOString());
         let schema = await getSchema();
-        const activityServiceCreator = new ActivityServiceCreator(services, database, schema);
-        const activityService = activityServiceCreator.getActivityService();
+        const activityServiceCreator = new ActivityServiceCreator(apiContext);
+        const activityService = await activityServiceCreator.getActivityService();
 
         if(MODE_SELECTED===MODE_DELETE_OLD_LOGS){
             const FIELD_TIMESTAMP = "timestamp";

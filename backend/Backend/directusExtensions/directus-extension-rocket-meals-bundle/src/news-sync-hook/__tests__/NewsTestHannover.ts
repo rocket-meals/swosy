@@ -8,7 +8,6 @@ describe("NewsTestHannover", () => {
     it("should find news with fields", async () => {
         let limitAmountNews = 2;
         let news = await newsParser.getRealNewsItems(limitAmountNews);
-        console.log("Found news: " + news.length);
         expect(news.length).toBeGreaterThan(0);
     });
 });

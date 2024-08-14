@@ -5,22 +5,24 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "food_feedback_rating_calculate";
 
-export default defineHook(async ({action, filter}, {
-	services,
-	database,
-	getSchema
-}) => {
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+export default defineHook(async ({action, filter}, apiContext) => {
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
 
+	const {
+		services,
+		database,
+		getSchema,
+		logger
+	} = apiContext;
+
 	const collection = CollectionNames.FOODS_FEEDBACKS
 
-	let schema = await getSchema();
-	let itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
-	let foodsService = itemsServiceCreator.getItemsService(CollectionNames.FOODS);
-	let foodfeedbacksService = itemsServiceCreator.getItemsService(collection);
+	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+	let foodsService = await itemsServiceCreator.getItemsService(CollectionNames.FOODS);
+	let foodfeedbacksService = await itemsServiceCreator.getItemsService(collection);
 
 
 	async function getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){

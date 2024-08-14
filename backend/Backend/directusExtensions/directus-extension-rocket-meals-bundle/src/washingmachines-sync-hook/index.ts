@@ -16,18 +16,23 @@ if(EnvVariableHelper.isDevelopmentServerOrLocal()){
 const parseSchedule = new WashingmachineParseSchedule(parseInterface);
 
 export const SCHEDULE_NAME_WASHING_MACHINE = "washingmachine_parse";
-export default defineHook(async ({action}, {
-    services,
-    database,
-    getSchema,
-    logger
-}) => {
+export default defineHook(async ({action}, apiContext) => {
     logger.info(SCHEDULE_NAME_WASHING_MACHINE+" hook: init");
 
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME_WASHING_MACHINE,getSchema);
+    const SCHEDULE_NAME = SCHEDULE_NAME_WASHING_MACHINE;
+
+    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
+
+    const {
+        services,
+        database,
+        getSchema,
+        env,
+        logger
+    } = apiContext;
 
     try {
         await parseSchedule.init(getSchema, services, database, logger);

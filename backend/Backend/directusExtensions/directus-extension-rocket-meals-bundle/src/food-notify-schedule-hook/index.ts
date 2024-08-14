@@ -5,35 +5,23 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "food_notify";
 
-export default defineHook(async ({action}, {
-	services,
-	database,
-	getSchema,
-	logger
-}) => {
+export default defineHook(async ({action}, apiContext) => {
+
 	let collection = CollectionNames.APP_SETTINGS
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
 
-	const notifySchedule = new NotifySchedule();
+	const {
+		services,
+		database,
+		getSchema,
+		logger
+	} = apiContext;
 
-	try {
-		console.log("foodNotify init");
-		await notifySchedule.init(getSchema, services, database, logger);
-	} catch (err: any) {
-		let errMsg = err.toString();
-		if (errMsg.includes("no such table: directus_collections")) {
-			console.log("+++++++++ Meal Parse Schedule +++++++++");
-			console.log("++++ Database not initialized yet +++++");
-			console.log("+++ Restart Server again after init +++");
-			console.log("+++++++++++++++++++++++++++++++++++++++");
-		} else {
-			console.log("foodNotify Schedule init error: ");
-			console.log(err);
-		}
-	}
+	const notifySchedule = new NotifySchedule(apiContext);
+	await notifySchedule.init(getSchema, services, database, logger);
 
 	action(
 		collection + ".items.update",

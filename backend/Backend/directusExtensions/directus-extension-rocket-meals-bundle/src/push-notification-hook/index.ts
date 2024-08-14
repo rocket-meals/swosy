@@ -6,17 +6,21 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 
 const SCHEDULE_NAME = "push_notification";
 
-export default defineHook(async ({filter}, {
-	services,
-	database,
-	getSchema,
-}) => {
+export default defineHook(async ({filter}, apiContext) => {
 	const collectionName = CollectionNames.PUSH_NOTIFICATIONS
 
-	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExist(SCHEDULE_NAME,getSchema);
+	let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
 	if (!allTablesExist) {
 		return;
 	}
+
+	const {
+		services,
+		database,
+		getSchema,
+		env,
+		logger
+	} = apiContext;
 
 	// Trigger before the item is created or updated
 	filter(collectionName+'.items.create', async (input, {collection}) => {
@@ -36,9 +40,9 @@ export default defineHook(async ({filter}, {
 		//console.log(input)
 
 		let schema = await getSchema();
-		const itemsServiceCreator = new ItemsServiceCreator(services, database, schema);
+		const itemsServiceCreator = new ItemsServiceCreator(apiContext);
 
-		let itemService = itemsServiceCreator.getItemsService(collection);
+		let itemService = await itemsServiceCreator.getItemsService(collection);
 
 		// Fetch the current item from the database
 		if (!keys || keys.length === 0) {
