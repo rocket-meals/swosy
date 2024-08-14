@@ -14,7 +14,6 @@ import {useSynchedPermissionsDict} from '@/states/SynchedPermissions';
 import {LoadingScreenDatabase} from '@/compositions/loadingScreens/LoadingScreenDatabase';
 import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
-import {useSynchedAppTranslationsDict} from '@/states/SynchedTranslations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
@@ -53,7 +52,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [startSyncTimeRequest, setStartSyncTimeRequest] = useState<string>(new Date().getTime().toString());
 	const [collectionsDatesLastUpdateDict, setCollectionsDatesLastUpdateDict, cacheHelperLastUpdateDict] = useSynchedCollectionsDatesLastUpdateDict()
 
-	const [translationsDict, setTranslationsDict, cacheHelperObjTranslations] = useSynchedAppTranslationsDict()
 	const [canteensDict, setCanteens, cacheHelperObjCanteens] = useSynchedCanteensDict()
 	const [businesshoursDict, setBusinesshoursDict, cacheHelperObjBusinesshours] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
@@ -109,7 +107,6 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	/**
    * Needs to be called before the useEffect
    */
-	addResourceToCheckForUpdates('translations', translationsDict, cacheHelperObjTranslations)
 	addResourceToCheckForUpdates('canteens', canteensDict, cacheHelperObjCanteens)
 	addResourceToCheckForUpdates('businesshours', businesshoursDict, cacheHelperObjBusinesshours)
 	addResourceToCheckForUpdates('buildings', buildingsDict, cacheHelperObjBuildings)
