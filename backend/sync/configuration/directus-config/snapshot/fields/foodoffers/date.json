@@ -1,7 +1,7 @@
 {
   "collection": "foodoffers",
   "field": "date",
-  "type": "dateTime",
+  "type": "date",
   "meta": {
     "collection": "foodoffers",
     "conditions": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 10,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "date",
     "table": "foodoffers",
-    "data_type": "timestamp without time zone",
+    "data_type": "date",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

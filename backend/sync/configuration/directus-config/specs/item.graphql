@@ -2063,8 +2063,6 @@ type foodoffers {
   calories_kcal: Float
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
   carbohydrate_g: Float
-  date: Date
-  date_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -2087,6 +2085,8 @@ type foodoffers {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
+  date: Date
+  date_func: date_functions
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
 }
@@ -2109,7 +2109,6 @@ type foodoffers_aggregated_count {
   calories_kcal: Int
   canteen: Int
   carbohydrate_g: Int
-  date: Int
   date_created: Int
   date_updated: Int
   fat_g: Int
@@ -2130,6 +2129,7 @@ type foodoffers_aggregated_count {
   co2_g: Int
   co2_saving_percentage: Int
   co2_rating: Int
+  date: Int
   markings: Int
 }
 
@@ -3733,7 +3733,6 @@ type version_foodoffers {
   calories_kcal: Float
   canteen: JSON
   carbohydrate_g: Float
-  date: Date
   date_created: Date
   date_updated: Date
   fat_g: Float
@@ -3754,6 +3753,7 @@ type version_foodoffers {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
+  date: Date
   markings: JSON
 }
 
@@ -5085,7 +5085,6 @@ input create_foodoffers_input {
   calories_kcal: Float
   canteen: create_canteens_input
   carbohydrate_g: Float
-  date: Date
   date_created: Date
   date_updated: Date
   fat_g: Float
@@ -5106,6 +5105,7 @@ input create_foodoffers_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
+  date: Date
   markings: [create_foodoffers_markings_input]
 }
 
@@ -5779,8 +5779,6 @@ input foodoffers_filter {
   calories_kcal: number_filter_operators
   canteen: canteens_filter
   carbohydrate_g: number_filter_operators
-  date: date_filter_operators
-  date_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -5803,6 +5801,8 @@ input foodoffers_filter {
   co2_g: number_filter_operators
   co2_saving_percentage: number_filter_operators
   co2_rating: string_filter_operators
+  date: date_filter_operators
+  date_func: date_function_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
   _and: [foodoffers_filter]
@@ -6611,7 +6611,6 @@ input update_foodoffers_input {
   calories_kcal: Float
   canteen: update_canteens_input
   carbohydrate_g: Float
-  date: Date
   date_created: Date
   date_updated: Date
   fat_g: Float
@@ -6632,6 +6631,7 @@ input update_foodoffers_input {
   co2_g: Float
   co2_saving_percentage: Float
   co2_rating: String
+  date: Date
   markings: [update_foodoffers_markings_input]
 }
 

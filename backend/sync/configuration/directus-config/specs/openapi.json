@@ -29612,11 +29612,6 @@
             "type": "number",
             "format": "float"
           },
-          "date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
           "date_created": {
             "nullable": true,
             "type": "string",
@@ -29733,6 +29728,11 @@
           "co2_rating": {
             "nullable": true,
             "type": "string"
+          },
+          "date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date"
           },
           "markings": {
             "nullable": true,
