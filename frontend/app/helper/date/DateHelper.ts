@@ -274,29 +274,19 @@ export class DateHelper {
 		return diff/(1000*60*60*24);
 	}
 
-	static getDatesOfAmountNextDaysIncludingToday(startDate: Date, amount: number): [Date, Date][] {
-		const dates: [Date, Date][] = [];
+	/**
+	 * Returns the amount of days from the first day of the month to the given date.
+	 * @param startDate
+	 * @param amountAdditionalDays
+	 */
+	static getDatesOfAmountNextDaysIncludingToday(startDate: Date, amountAdditionalDays: number): [Date, Date] {
 		let startOfTheDay = new Date(startDate); // copy the date
 		let endOfTheDay = new Date(startDate); // copy the date
-		startOfTheDay.setHours(0,0,0,0); // so set the start at the beginning of the day
-		endOfTheDay.setHours(23,59,59,999); //set to end of day
 
-		const futureDates = amount>0;
-		const step = futureDates ? 1 : -1;
-		const absAmount = Math.abs(amount);
+		endOfTheDay.setDate(endOfTheDay.getDate()+amountAdditionalDays);
 
-		for (let i=0; i<absAmount; i++) {
-			startOfTheDay = new Date(startOfTheDay.toISOString());
-			endOfTheDay = new Date(endOfTheDay.toISOString());
-
-			const dayRange: [Date, Date] = [new Date(startOfTheDay.toISOString()), new Date(endOfTheDay.toISOString())]
-			dates.push(dayRange); // push into list
-
-			startOfTheDay.setDate(startOfTheDay.getDate()+step); //add one day
-			endOfTheDay.setDate(endOfTheDay.getDate()+step); //add one day
-		}
-
-		if (!futureDates) {
+		const dates: [Date, Date] = [startOfTheDay, endOfTheDay];
+		if(startOfTheDay.getTime() > endOfTheDay.getTime()) {
 			dates.reverse();
 		}
 
@@ -340,9 +330,26 @@ export class DateHelper {
 	}
 
 	static formatToOfferDate(date: Date) {
-		const iso = date.toISOString();
-		const trimmed = iso.slice(0, 'YYYY-MM-DD'.length);
-		return trimmed;
+		//const iso = date.toISOString();
+		//const trimmed = iso.slice(0, 'YYYY-MM-DD'.length);
+		//return trimmed;
+
+		// As switched backend foodoffers from dateAndTime to dateOnly, we need to adjust the date format
+		return DateHelper.foodofferDateTypeToString(date);
+	}
+
+	static foodofferDateTypeToString(dateObj: Date){
+		const date = {
+			year: dateObj.getFullYear(),
+			month: dateObj.getMonth() + 1,
+			day: dateObj.getDate()
+		};
+
+		// 2024-08-14
+		const year = date.year
+		const month = String(date.month).padStart(2, '0');
+		const day = String(date.day).padStart(2, '0');
+		return `${year}-${month}-${day}`;
 	}
 
 	static isSameDay(date1: Date, date2: Date) {

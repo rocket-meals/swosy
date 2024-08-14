@@ -7,7 +7,7 @@ import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
-	const [selectedDate, setSelectedDate] = useSyncState<Date>(NonPersistentStore.foodOfferSelectedDate);
+	const [selectedDate, setSelectedDate] = useSyncState<Date, Date>(NonPersistentStore.foodOfferSelectedDate);
 
 	const defaultDate = new Date();
 	setDateForFoodSelection(defaultDate); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
@@ -93,41 +93,46 @@ export async function getFoodOffersForSelectedDate(isDemo: boolean, date: Date, 
 	}
 
 	// if not in cache, but has internet connection ==> loadFoodOffersFromServer, then save it in cache
-	return loadFoodOffersFromServer(canteen, copyDate, 1);
+	return loadFoodOffersFromServer(canteen, copyDate, 0);
 }
 
 /**
  * Please use getFoodOffersForSelectedDate instead
  * @param canteen
  * @param date
- * @param amountDays
+ * @param amountAdditionalDays
  */
-async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDays?: number): Promise<Foodoffers[]> {
+async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountAdditionalDays?: number): Promise<Foodoffers[]> {
 	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
-	if (amountDays===undefined) {
-		amountDays = 1;
+	if (amountAdditionalDays===undefined) {
+		amountAdditionalDays = 0;
 	}
 
 	const andFilters = [];
 
 	const paramDate = DateHelper.formatToOfferDate(date);
 	const formatedDate = new Date(paramDate);
-	const dateRanges = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountDays);
-
-	const startRange = dateRanges[0];
-	const start = new Date(startRange[0]);
-
-	const endRange = dateRanges[dateRanges.length-1];
-	const end = new Date(endRange[1]);
+	const [startdate, endDate] = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountAdditionalDays);
+	const paramDateStart = DateHelper.formatToOfferDate(startdate);
+	const paramDateEnd = DateHelper.formatToOfferDate(endDate);
 
 	andFilters.push(
 		{
 			_or: [
 				{
-					date: {
-						_between: [start.toISOString(), end.toISOString()]
-					}
+					_and: [
+						{
+							date: {
+								_gte: paramDateStart
+							}
+						},
+						{
+							date: {
+								_lte: paramDateEnd
+							}
+						}
+					]
 				},
 				{
 					date: {
@@ -161,18 +166,20 @@ async function loadFoodOffersFromServer(canteen: Canteens, date: Date, amountDay
 }
 
 export async function loadFoodCategoriesForNext7Days(isDemo: boolean): Promise<string[]> {
-	const foodOffers = await loadAllFoodOffersFromServer(isDemo, new Date(), 7);
+	const foodOffers = await loadAllFoodOffersFromServer(isDemo, new Date(), 6);
 	const categories: {[key: string]: string} = {};
 	for (const foodOffer of foodOffers) {
 		const food = foodOffer.food;
-		if (food && food.category) {
-			categories[food.category] = food.category;
+		if (food && typeof food !== 'string') {
+			if(food.category && food.category.length > 0){
+				categories[food.category] = food.category;
+			}
 		}
 	}
 	return Object.keys(categories);
 }
 
-async function loadAllFoodOffersFromServer(isDemo: boolean, date:Date, amountDays: number): Promise<Foodoffers[]> {
+async function loadAllFoodOffersFromServer(isDemo: boolean, date:Date, additionalDays: number): Promise<Foodoffers[]> {
 	const copyDate = new Date(date);
 
 	if (isDemo) {
@@ -180,29 +187,34 @@ async function loadAllFoodOffersFromServer(isDemo: boolean, date:Date, amountDay
 	}
 	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);
 
-	if (amountDays===undefined) {
-		amountDays = 1;
+	if (additionalDays===undefined) {
+		additionalDays = 0;
 	}
 
 	const andFilters = [];
 
 	const paramDate = DateHelper.formatToOfferDate(date);
 	const formatedDate = new Date(paramDate);
-	const dateRanges = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, amountDays);
-
-	const startRange = dateRanges[0];
-	const start = new Date(startRange[0]);
-
-	const endRange = dateRanges[dateRanges.length-1];
-	const end = new Date(endRange[1]);
+	const [startdate, endDate] = DateHelper.getDatesOfAmountNextDaysIncludingToday(formatedDate, additionalDays);
+	const paramDateStart = DateHelper.formatToOfferDate(startdate);
+	const paramDateEnd = DateHelper.formatToOfferDate(endDate);
 
 	andFilters.push(
 		{
 			_or: [
 				{
-					date: {
-						_between: [start.toISOString(), end.toISOString()]
-					}
+					_and: [
+						{
+							date: {
+								_gte: paramDateStart
+							}
+						},
+						{
+							date: {
+								_lte: paramDateEnd
+							}
+						}
+					]
 				},
 				{
 					date: {
@@ -273,7 +285,11 @@ function getDemoFoodOffersForDate(date: Date | undefined): Foodoffers[]
 			date_updated: new Date().toISOString(),
 			price_employee: 3.5,
 			price_guest: 4.5,
-			price_student: 2.5
+			price_student: 2.5,
+			// placeholders for the expandable fields in directus
+			environmental_impact: "",
+			nutrition: "",
+			prices: ""
 		});
 	}
 
