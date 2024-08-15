@@ -270,6 +270,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'data-access/index',
 				label: translation_data_access,
 				title: translation_data_access,
+				showBackButton: true,
 				icon: IconNames.data_access_icon,
 				visibleInDrawer: false
 			})}
