@@ -2,23 +2,19 @@ import {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {Platform} from "react-native";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
+import CardReader from "@/helper/nfcCardReaderHelper/CardReader";
 
 const isExpoGo = isInExpoGo();
 
 let NfcManager: any
 let NfcTech: any
-let CardReader: any
+let cardReader: CardReader | undefined;
 
 if (!isExpoGo) {
 	// Expo Go does not have this module boundled by default, therefore we need to lazy load it to prevent errors
 	import("react-native-nfc-manager").then(nfcManager => {
 		NfcManager = nfcManager.default;
 		NfcTech = nfcManager.NfcTech;
-	});
-
-	// Expo Go does not have this module boundled by default, therefore we need to lazy load it to prevent errors
-	import("react-native-nfc-manager-sw-os").then(nfcManagerSwOs => {
-		CardReader = nfcManagerSwOs.CardReader;
 	});
 }
 
@@ -34,7 +30,7 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 	}
 
 	async readCard(callBack: (balance: number | undefined | null) => Promise<void>, accountBalance: number | undefined | null, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
-		if (isExpoGo || !NfcManager || !CardReader) {
+		if (isExpoGo || !NfcManager || !cardReader) {
 			console.error("NFC operations are not supported in this environment.");
 			return;
 		}

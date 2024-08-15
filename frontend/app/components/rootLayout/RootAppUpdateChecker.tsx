@@ -138,14 +138,18 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
 
     // useEffect everytime the app is resumed into the foreground
 
-    // when the user launches or foregrounds the app
+    // when the user launches or foregrounds the app and the initial check is finished, check for updates
     useEffect(() => {
         if (currentAppState === 'active' && initialCheckFinished) {
             checkForUpdates();
         }
     }, [currentAppState]);
 
-    if(!initialCheckFinished) {
+    if(initialCheckFinished) {
+        return (
+            props.children
+        )
+    } else {
         let text = translation_check_for_app_updates
         if(updateIsAvailable) {
             text = translation_download_new_app_update
@@ -164,10 +168,6 @@ export const RootAppUpdateCheckerSmartPhone = (props: ServerStatusFlowLoaderProp
                 <Text>{text}</Text>
             </LoadingScreenTextInformationWrapper>
         </LoadingScreen>
-    } else {
-        return (
-            props.children
-        )
     }
 }
 
