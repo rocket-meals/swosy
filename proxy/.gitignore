@@ -1,4 +1,5 @@
 /acme/
+!/acme/.keep
 /letsencrypt/acme.json
 !/letsencrypt/.keep
 /extraVolumes/
