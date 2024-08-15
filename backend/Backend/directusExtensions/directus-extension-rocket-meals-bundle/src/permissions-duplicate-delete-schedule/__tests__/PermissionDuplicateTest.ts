@@ -69,18 +69,6 @@ function getValidPermissions(){
                 ]
             },
             {
-                "id": 3,
-                "role": null,
-                "collection": "app_translations",
-                "action": "read",
-                "permissions": {},
-                "validation": {},
-                "presets": null,
-                "fields": [
-                    "*"
-                ]
-            },
-            {
                 "id": 4,
                 "role": null,
                 "collection": "buildings_translations",
@@ -420,18 +408,6 @@ function getValidPermissions(){
                 "id": 32,
                 "role": null,
                 "collection": "wikis",
-                "action": "read",
-                "permissions": {},
-                "validation": {},
-                "presets": null,
-                "fields": [
-                    "*"
-                ]
-            },
-            {
-                "id": 34,
-                "role": null,
-                "collection": "app_translations_translations",
                 "action": "read",
                 "permissions": {},
                 "validation": {},

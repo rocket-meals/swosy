@@ -127,27 +127,6 @@ export type AppSettingsHousingTranslations = {
   translation_settings: string;
 };
 
-export type AppTranslations = {
-  date_created?: string | null;
-  date_updated?: string | null;
-  id: string;
-  sort?: number | null;
-  status: string;
-  translations: any[] | AppTranslationsTranslations[];
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type AppTranslationsTranslations = {
-  app_translations_id?: string | AppTranslations | null;
-  be_source_for_translations?: boolean | null;
-  id: number;
-  languages_code?: string | Languages | null;
-  let_be_translated?: boolean | null;
-  text?: string | null;
-  translation_settings: string;
-};
-
 export type AutoTranslationSettings = {
   active?: boolean | null;
   auth_key?: string | null;
@@ -1119,8 +1098,6 @@ export type CustomDirectusTypes = {
   app_feedbacks: AppFeedbacks[];
   app_settings: AppSettings;
   app_settings_housing_translations: AppSettingsHousingTranslations[];
-  app_translations: AppTranslations[];
-  app_translations_translations: AppTranslationsTranslations[];
   auto_translation_settings: AutoTranslationSettings;
   buildings: Buildings[];
   buildings_businesshours: BuildingsBusinesshours[];

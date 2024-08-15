@@ -30,13 +30,13 @@ export class DatabaseInitializedCheck{
         }
     }
 
-    static async checkTablesExist(scheduleName: string, getSchema: any, tables: string[]): Promise<boolean> {
+    static async checkTablesExist(scheduleName: string, getSchema: any, tablesRequiredForPlugin: string[]): Promise<boolean> {
         let missingTables = [];
 
-        let tableNames = await DatabaseInitializedCheck.getTableNames(getSchema);
-        for (let table of tables) {
-            if (!tableNames.includes(table)) {
-                missingTables.push(table);
+        let existingTablesNamesOnServer = await DatabaseInitializedCheck.getTableNames(getSchema);
+        for (let tableRequiredForPlugin of tablesRequiredForPlugin) {
+            if (!existingTablesNamesOnServer.includes(tableRequiredForPlugin)) {
+                missingTables.push(tableRequiredForPlugin);
             }
         }
 
