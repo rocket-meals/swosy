@@ -1,3 +1,5 @@
 /acme/
+/letsencrypt/acme.json
+!/letsencrypt/.keep
 /extraVolumes/
 .env
