@@ -199,7 +199,7 @@ export default function AccountbalanceScreen() {
 									{"usedNfcSupported: "+usedNfcSupported}
 								</Text>
 								<Text>
-									{"error: "+err}
+									{"error: "+error}
 								</Text>
 							</View>
 							)}
