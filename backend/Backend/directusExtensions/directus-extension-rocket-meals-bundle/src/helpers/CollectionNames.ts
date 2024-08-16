@@ -36,6 +36,9 @@ export class CollectionNames{
 
     static FOODS = "foods"
     static FOODS_FEEDBACKS= "foods_feedbacks"
+
+    // FoodsFeedbacksLabelsEntries
+    static FOODS_FEEDBACKS_LABELS_ENTRIES = "foods_feedbacks_labels_entries"
     static FOODS_MARKINGS = "foods_markings"
     static MARKINGS = "markings"
     static FOODOFFER_MARKINGS = "foodoffers_markings"

@@ -1,13 +1,44 @@
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {Canteens, Foodoffers, FoodsFeedbacks, FoodsFeedbacksLabels, Foods} from "../databaseTypes/types";
+import {
+    Canteens,
+    Foodoffers,
+    FoodsFeedbacks,
+    FoodsFeedbacksLabels,
+    Foods,
+    FoodsFeedbacksLabelsEntries
+} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
+import {ApiContext} from "../helpers/ApiContext";
+
+export type ReportFoodEntryLabelType = {
+    id: string,
+    alias: string,
+    count: number
+}
+
+export type ReportFoodEntryType = {
+    id: string,
+    alias: string | null | undefined,
+    image_url: string | null | undefined,
+    rating_average: number | null | undefined,
+    rating_amount: number | null | undefined,
+    comments: string[],
+    labels: ReportFoodEntryLabelType[]
+}
+
+export type ReportType = {
+    canteen_name: string,
+    dateHumanReadable: string,
+    report_feedback_period_days: number,
+    foods: ReportFoodEntryType[],
+}
 
 export class ReportGenerator {
-    private itemServiceCreator: ItemsServiceCreator;
+    private apiContext: ApiContext;
 
-    constructor(itemServiceCreator: ItemsServiceCreator) {
-        this.itemServiceCreator = itemServiceCreator;
+    constructor(apiContext: ApiContext) {
+        this.apiContext = apiContext;
     }
 
     /**
@@ -40,36 +71,30 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens){
-        //console.log("generateReportJSON");
-
+    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens): Promise<ReportType>{
         let date = generateReportForDate;
         let dateHumanReadable = date.getDate()+"."+date.getMonth();
 
-        let report = {
-            canteen: canteenEntry?.alias || canteenEntry.id,
+        let report: ReportType = {
+            canteen_name: canteenEntry?.alias || canteenEntry.id,
             report_feedback_period_days: report_feedback_period_days,
             dateHumanReadable: dateHumanReadable,
-            foods: {}
+            foods: []
         }
 
-        let foodFeedbackLabelsService = await this.itemServiceCreator.getItemsService<FoodsFeedbacksLabels>(CollectionNames.FOODS_FEEDBACK_LABELS)
-        let foods_feedbacks_labels = await foodFeedbackLabelsService.readByQuery({fields: ['*'], limit: -1});
-        //console.log("Found amount of foods_feedbacks_labels: "+foods_feedbacks_labels.length)
-        let foods_feedbacks_labels_dict = this.convertFeedbacksLabelsToDict(foods_feedbacks_labels);
-
-        let foods = [];
+        let foods: ReportFoodEntryType[] = [];
         let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(generateReportForDate, canteenEntry?.id);
         for(let foodOfferWithFood of foodOffersWithFood){
             let food = foodOfferWithFood?.food;
             //console.log("Get summary for food_id: "+food?.id);
 
             if(!!food && typeof food !== "string"){
-                let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food?.id, report_feedback_period_days);
+                const food_id = food?.id;
+
+                let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days);
                 //console.log("Found amount of feedbacks: "+feedbacksWithLabels.length)
-                //let labels_counted_as_list = this.countLabelsAsList(feedbacksWithLabels, foods_feedbacks_labels_dict);
+                let feedbackLabels = await this.getReportFeedbackLabelsList(food_id);
                 // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
-                let labels_counted_as_list = [];
 
                 let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
                 //console.log("Found amount of comments: "+comments.length)
@@ -86,14 +111,14 @@ export class ReportGenerator {
                     image_url = food?.image_remote_url;
                 }
 
-                let foodSummary = {
+                let foodSummary: ReportFoodEntryType = {
                     id: food.id,
                     alias: food.alias,
                     image_url: image_url,
                     rating_average: food?.rating_average,
                     rating_amount: food?.rating_amount,
                     comments: comments,
-                    labels: labels_counted_as_list
+                    labels: feedbackLabels
                 };
 
                 foods.push(foodSummary)
@@ -117,7 +142,14 @@ export class ReportGenerator {
         return comments;
     }
 
-
+    async getTranslationOfFeedbackLabel(feedback_label_id: string): Promise<string>{
+        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
+        let foodFeedbackLabelsService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabels>(CollectionNames.FOODS_FEEDBACK_LABELS)
+        let feedback_label = await foodFeedbackLabelsService.readOne(feedback_label_id);
+        // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
+        // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
+        return feedback_label?.alias || feedback_label_id;
+    }
 
     convertFeedbacksLabelsToDict(foods_feedbacks_labels: FoodsFeedbacksLabels[]){
         let labels_dict: {[key: string]: FoodsFeedbacksLabels} = {};
@@ -127,15 +159,22 @@ export class ReportGenerator {
         return labels_dict;
     }
 
-    countLabelsAsList(feedbacks: FoodsFeedbacks[], foods_feedbacks_labels_dict: { [p: string]: FoodsFeedbacksLabels }){
-        let labels_counted_dict: {[key: string]: {id: string, alias: string, count: number}} = {};
-        for(let feedback of feedbacks){
-            let labels_relations = feedback?.labels;
-            for(let label_relation of labels_relations){
-                let label_id = label_relation?.foods_feedbacks_labels_id;
-                let foods_feedbacks_labels_obj = foods_feedbacks_labels_dict[label_id];
-                let alias = foods_feedbacks_labels_obj?.alias;
-                let labels_counted_obj = labels_counted_dict[label_id];
+    async getReportFeedbackLabelsList(food_id: string): Promise<ReportFoodEntryLabelType[]> {
+        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
+        const foodFeedbackLabelEntriesService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabelsEntries>(CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
+        const labelFeedbacks = await foodFeedbackLabelEntriesService.readByQuery({filter: {
+                food: {
+                    _eq: food_id
+                }
+            },
+        });
+
+        let labels_counted_dict: {[key: string]: ReportFoodEntryLabelType} = {};
+        for(let labelFeedback of labelFeedbacks){
+            let label_id = labelFeedback?.label;
+            if(!!label_id && typeof label_id === "string"){
+                let alias = await this.getTranslationOfFeedbackLabel(label_id);
+                let labels_counted_obj: ReportFoodEntryLabelType | undefined = labels_counted_dict[label_id];
                 if(!labels_counted_obj){
                     labels_counted_obj = {
                         id: label_id,
@@ -143,22 +182,28 @@ export class ReportGenerator {
                         count: 0
                     }
                 }
-                labels_counted_obj.count++;
-                labels_counted_dict[label_id] = labels_counted_obj;
+                if(!!labels_counted_obj){
+                    labels_counted_obj.count++;
+                    labels_counted_dict[label_id] = labels_counted_obj;
+                }
             }
         }
 
-        let labels_counted_as_list = [];
+        let labels_counted_as_list: ReportFoodEntryLabelType[] = [];
         for(let label_id in labels_counted_dict){
             let label_counted_obj = labels_counted_dict[label_id];
-            labels_counted_as_list.push(label_counted_obj);
+            if(!!label_counted_obj){
+                labels_counted_as_list.push(label_counted_obj);
+            }
         }
 
         return labels_counted_as_list;
     }
 
     async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number){
-        let itemService = await this.itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
+        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
+
+        let itemService = await itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
         let end = new Date();
         let start = new Date(end);
         // subtract report_feedback_period_days amount days from start
@@ -185,11 +230,13 @@ export class ReportGenerator {
     }
 
     async getFoodOffersWithFoodAtDateInCanteen(date: Date, canteen_id: string){
+        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
+
         let startOfTheDay = new Date(date); // copy the date
         const foodofferDate = DateHelper.getFoodofferDateTypeFromDate(startOfTheDay);
         const foodofferDateString = DateHelper.foodofferDateTypeToString(foodofferDate);
 
-        let itemService = await this.itemServiceCreator.getItemsService<Foodoffers>(CollectionNames.FOODOFFERS)
+        let itemService = await itemServiceCreator.getItemsService<Foodoffers>(CollectionNames.FOODOFFERS)
 
         let foodOffers = await itemService.readByQuery({filter: {
                     _and: [

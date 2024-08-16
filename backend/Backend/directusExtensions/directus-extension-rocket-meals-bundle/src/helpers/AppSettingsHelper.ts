@@ -99,6 +99,15 @@ export class AppSettingsHelper {
         return false;
     }
 
+    async isCanteenReportEnabled(): Promise<boolean> {
+        // canteen_reports_enabled
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.canteen_reports_enabled) {
+            return appSettings.canteen_reports_enabled;
+        }
+        return false;
+    }
+
     async getFoodParsingStatus(): Promise<FlowStatus | undefined> {
         const appSettings = await this.getAppSettings();
         if (appSettings?.foods_parsing_status) {
