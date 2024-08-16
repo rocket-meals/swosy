@@ -113,7 +113,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "19"
+      "buildNumber": "100"
     },
     "android": {
       "adaptiveIcon": {
