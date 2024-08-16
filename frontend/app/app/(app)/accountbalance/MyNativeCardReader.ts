@@ -8,7 +8,6 @@ const isExpoGo = isInExpoGo();
 
 let NfcManager: any
 let NfcTech: any
-let cardReader: CardReader | undefined;
 
 if (!isExpoGo) {
 	// Expo Go does not have this module boundled by default, therefore we need to lazy load it to prevent errors
@@ -30,7 +29,7 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 	}
 
 	async readCard(callBack: (balance: number | undefined | null) => Promise<void>, accountBalance: number | undefined | null, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
-		if (isExpoGo || !NfcManager || !cardReader) {
+		if (isExpoGo || !NfcManager) {
 			console.error("NFC operations are not supported in this environment.");
 			return;
 		}

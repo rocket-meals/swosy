@@ -18,6 +18,7 @@ import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
 import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
 import {AccountBalanceAnimation} from "@/app/(app)/accountbalance/BalanceStateBounds";
+import {useIsDebug} from "@/states/Debug";
 
 export function useMyFocusHandler(onFocus: any, deps: any) {
 
@@ -45,6 +46,7 @@ export function useMyFocusHandler(onFocus: any, deps: any) {
 export default function AccountbalanceScreen() {
 	const demo = useIsDemo()
 	const isExpoGo = isInExpoGo()
+	const isDebug = useIsDebug()
 
 	const translationReadNfc = useTranslation(TranslationKeys.nfcReadCard)
 	const translation_nfcNotSupported = useTranslation(TranslationKeys.nfcNotSupported)
@@ -64,6 +66,8 @@ export default function AccountbalanceScreen() {
 	const onReadNfcPress = async () => {
 		await myCardReader.readCard(callBack, accountBalance, showInstruction, hideInstruction, translation_nfcInstructionRead);
 	}
+
+	const [error, setError] = useState<string | undefined>(undefined);
 
 	const [nfcSupported, setNfcSupported] = useState<boolean | undefined>(undefined);
 	const [nfcEnabled, setNfcEnabled] = useState<boolean | undefined>(undefined);
@@ -174,18 +178,31 @@ export default function AccountbalanceScreen() {
 									async () => {
 										try {
 											await onReadNfcPress();
-										} catch (e) {
+										} catch (e: any) {
 											/**
 											 toast.show({
 											 description: JSON.stringify(e)
 											 });
 											 */
+											setError(e.toString())
 										}
 									}
 								}
 								accessibilityLabel={(demo ? "Demo: " : "") + translationReadNfc}
 							/>
 						)}
+						{isDebug && (
+							<View style={{
+								width: "100%",
+							}}>
+								<Text>
+									{"usedNfcSupported: "+usedNfcSupported}
+								</Text>
+								<Text>
+									{"error: "+err}
+								</Text>
+							</View>
+							)}
 					</View>
 					<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
 						translation_accountBalance
