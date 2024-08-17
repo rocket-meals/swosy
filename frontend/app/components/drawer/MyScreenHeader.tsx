@@ -247,23 +247,38 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 				flexDirection: 'row',
 			}}
 			>
-				<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-					<View style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-					}}
-					>
-						{headerLeft}
-					</View>
-					<View style={{
-						flexShrink: 1,
-						alignItems: 'center',
-						flexDirection: 'row',
-					}}
-					>
-						{headerRight}
-					</View>
-				</View>
+				<View style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+}}>
+    <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+    }}>
+        {headerLeft}
+    </View>
+    <View style={{
+        flex: 1, // This allows the title to take up remaining space
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: isFlipped ? 'flex-start' : 'flex-end',
+    }}>
+        <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[headerStyle, { textAlign: 'center', flex: 1 }]} // Centered and flexible title
+        >
+            {usedTitle}
+        </Text>
+    </View>
+    <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+    }}>
+        {headerRight}
+    </View>
+</View>
 			</View>
 			{renderedDivider}
 		</>
