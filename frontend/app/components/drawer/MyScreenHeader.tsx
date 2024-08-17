@@ -139,16 +139,16 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 	 * @param {HeaderTitleProps} props - Properties for the header title component.
 	 * @returns A React element representing the header title.
 	 */
-const renderHeaderTitle = (props?: HeaderTitleProps) => {
+const renderHeaderTitle = () => {
 	const readOnlyStyle: any = headerStyle;
 	const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0;
 	return (
-		<View style={{ flex: 1, paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft }}>
+		<View style={{ flex: 1, paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft, justifyContent: 'center' }}>
 			<Text
 				numberOfLines={1}
 				ellipsizeMode="tail"
 				accessibilityRole={MyAccessibilityRoles.Header}
-				style={[readOnlyStyle, { textAlign: 'center', flex: 1 }]}
+				style={[readOnlyStyle, { textAlign: 'center' }]}
 			>
 				{title}
 			</Text>
@@ -205,80 +205,65 @@ const renderHeaderTitle = (props?: HeaderTitleProps) => {
 
 
 	const isFlipped = drawerPosition === DrawerConfigPosition.Right;
-	let primaryHeaderContent = (
+
+let primaryHeaderContent = (
+	<>
+		{renderDrawerIcon()}
+		{renderHeaderTitle()}
+	</>
+);
+
+if (isFlipped) {
+	primaryHeaderContent = (
 		<>
-			{renderDrawerIcon()}
 			{renderHeaderTitle()}
+			{renderDrawerIcon()}
 		</>
-	)
-	if (isFlipped) {
-		primaryHeaderContent = (
-			<>
-				{renderHeaderTitle()}
-				{renderDrawerIcon()}
-			</>
-		)
+	);
+}
+
+// Swap header icons if the drawer is positioned on the right.
+const headerLeft = isFlipped ? secondaryHeaderContent : primaryHeaderContent;
+const headerRight = isFlipped ? primaryHeaderContent : secondaryHeaderContent;
+
+// Create the divider if it's not hidden
+const renderedDivider = hideDivider ? null : <Divider />;
+
+const insets = useSafeAreaInsets();
+
+const isParentHeaderShown = React.useContext(HeaderShownContext);
+
+// On models with Dynamic Island the status bar height is smaller than the safe area top inset.
+const hasDynamicIsland = Platform.OS === 'ios' && insets.top > 50;
+const statusBarHeight = hasDynamicIsland ? insets.top - 5 : insets.top;
+const headerStatusBarHeight = isParentHeaderShown ? 0 : statusBarHeight;
+
+// create a focusEffect to set the title of the window on web
+useFocusEffect(() => {
+	if (PlatformHelper.isWeb()) {
+		document.title = title; // Assuming `title` is used directly now instead of `usedTitle`
 	}
+});
 
-	// Swap header icons if the drawer is positioned on the right.
-
-
-	const headerLeft = isFlipped? secondaryHeaderContent : primaryHeaderContent;
-	const headerRight = isFlipped? primaryHeaderContent : secondaryHeaderContent;
-
-	// TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
-	// Consideration for future improvement to allow more flexible title positioning.
-
-	// make the header render order from left to right: headerLeft, headerTitle, headerRight
-
-	const renderedDivider = hideDivider? null : <Divider />;
-
-	const insets = useSafeAreaInsets();
-
-	const isParentHeaderShown = React.useContext(HeaderShownContext);
-
-	// On models with Dynamic Island the status bar height is smaller than the safe area top inset.
-	const hasDynamicIsland = Platform.OS === 'ios' && insets.top > 50;
-	const statusBarHeight = hasDynamicIsland ? insets.top - 5 : insets.top;
-	const headerStatusBarHeight = isParentHeaderShown ? 0 : statusBarHeight
-
-	// create a focusEffect to set the title of the window on web
-	useFocusEffect(() => {
-		if (PlatformHelper.isWeb()) {
-			document.title = usedTitle
-		}
-	})
-
-	return (
-		<>
-			<View style={{
-				marginLeft: insets.left,
-				marginRight: insets.right,
-				marginTop: headerStatusBarHeight,
-				flexDirection: 'row',
-			}}
-			>
-<View style={{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1
-}}>
-    <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-    }}>
-        {headerLeft}
-    </View>
-    <View style={{
-        flexShrink: 1,
-        alignItems: 'center',
-        flexDirection: 'row',
-    }}>
-        {headerRight}
-    </View>
-</View>
+return (
+	<>
+		<View style={{
+			marginLeft: insets.left,
+			marginRight: insets.right,
+			marginTop: headerStatusBarHeight,
+			flexDirection: 'row',
+			alignItems: 'center',
+		}}>
+			<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
+				<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+					{headerLeft}
+				</View>
+				<View style={{ flexShrink: 1, alignItems: 'center', flexDirection: 'row' }}>
+					{headerRight}
+				</View>
 			</View>
-			{renderedDivider}
-		</>
-	)
+		</View>
+		{renderedDivider}
+	</>
+);
 }
