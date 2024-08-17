@@ -139,11 +139,22 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 	 * @param {HeaderTitleProps} props - Properties for the header title component.
 	 * @returns A React element representing the header title.
 	 */
-	const renderHeaderTitle = (props?: HeaderTitleProps) => {
-		const readOnlyStyle: any = headerStyle;
-		const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0
-		return <View style={{paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft}}><Heading accessibilityRole={MyAccessibilityRoles.Header} style={readOnlyStyle}>{usedTitle}</Heading></View>
-	}
+const renderHeaderTitle = (props?: HeaderTitleProps) => {
+	const readOnlyStyle: any = headerStyle;
+	const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0;
+	return (
+		<View style={{ flex: 1, paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft }}>
+			<Text
+				numberOfLines={1}
+				ellipsizeMode="tail"
+				accessibilityRole={MyAccessibilityRoles.Header}
+				style={[readOnlyStyle, { textAlign: 'center', flex: 1 }]}
+			>
+				{title}
+			</Text>
+		</View>
+	);
+};
 
 	/**
 	 * Optionally renders a drawer toggle icon.
@@ -247,10 +258,10 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 				flexDirection: 'row',
 			}}
 			>
-				<View style={{
+<View style={{
     flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
+    justifyContent: 'space-between',
+    flex: 1
 }}>
     <View style={{
         flexDirection: 'row',
@@ -259,22 +270,9 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
         {headerLeft}
     </View>
     <View style={{
-        flex: 1, // This allows the title to take up remaining space
+        flexShrink: 1,
         alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: isFlipped ? 'flex-start' : 'flex-end',
-    }}>
-        <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[headerStyle, { textAlign: 'center', flex: 1 }]} // Centered and flexible title
-        >
-            {usedTitle}
-        </Text>
-    </View>
-    <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
     }}>
         {headerRight}
     </View>
