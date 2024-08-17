@@ -143,15 +143,15 @@ const renderHeaderTitle = (props?: HeaderTitleProps) => {
 	const readOnlyStyle: any = headerStyle;
 	const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0;
 	return (
-		<View style={{ flex: 1, paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft }}>
-			<Text
+		<View style={{backgroundColor: "red", paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft }}>
+			<Heading
 				numberOfLines={1}
 				ellipsizeMode="tail"
 				accessibilityRole={MyAccessibilityRoles.Header}
-				style={[readOnlyStyle, { textAlign: 'center', flex: 1 }]}
+				style={[readOnlyStyle, { backgroundColor: "green", textAlign: 'center', flex: 1 }]}
 			>
 				{title}
-			</Text>
+			</Heading>
 		</View>
 	);
 };
