@@ -134,6 +134,7 @@ export enum TranslationKeys {
 	average_rating = "average_rating",
 	amount_ratings = "amount_ratings",
 	accountbalance = "accountbalance",
+	editYourRememberedAccountBalance = "editYourRememberedAccountBalance",
 	search = "search",
 	sort = "sort",
 	sort_option_none = "sort_option_none",
@@ -250,6 +251,7 @@ export enum TranslationKeys {
 	tomorrow = "tomorrow",
 	yesterday = "yesterday",
 	nutrition = "nutrition",
+	environmental_impact = "environmental_impact",
 	food_information_disclaimer = "food_information_disclaimer",
 	nutrition_calories = "nutrition_calories",
 	nutrition_protein = "nutrition_protein",
@@ -259,6 +261,9 @@ export enum TranslationKeys {
 	nutrition_sugar = "nutrition_sugar",
 	nutrition_sodium = "nutrition_sodium",
 	nutrition_saturated_fat = "nutrition_saturated_fat",
+	environmental_impact_co2 = "environmental_impact_co2",
+	environmental_impact_co2_saving_percentage = "environmental_impact_co2_saving_percentage",
+	environmental_impact_co2_rating = "environmental_impact_co2_rating",
 	about_us = "about_us",
 	license = "license",
 	accessibility = "accessibility",
@@ -637,6 +642,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Баланс счета',
 		[LanguageKeys.tr_TR]: 'Hesap bakiyesi',
 		[LanguageKeys.zh_CN]: '账户余额'
+	},
+	editYourRememberedAccountBalance: {
+		[LanguageKeys.de_DE]: 'Dein gemerktes Guthaben bearbeiten',
+		[LanguageKeys.en_US]: 'Edit your remembered account balance',
+		[LanguageKeys.ar_SA]: 'تحرير رصيد حسابك المذكور',
+		[LanguageKeys.es_ES]: 'Editar tu saldo de cuenta recordado',
+		[LanguageKeys.fr_FR]: 'Modifier votre solde de compte mémorisé',
+		[LanguageKeys.ru_RU]: 'Изменить ваш запомненный баланс счета',
+		[LanguageKeys.tr_TR]: 'Hatırlanan hesap bakiyenizi düzenleyin',
+		[LanguageKeys.zh_CN]: '编辑您记住的账户余额'
 	},
 	sort: {
 		[LanguageKeys.de_DE]: 'Sortieren',
@@ -1226,14 +1241,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '通知'
 	},
 	notification_index_introduction: {
-		[LanguageKeys.de_DE]: `Hier kannst du einstellen, welche Benachrichtigungen du erhalten möchtest. Wir informieren dich über wichtige Ereignisse und Änderungen.`,
-		[LanguageKeys.en_US]: `Here you can set which notifications you want to receive. We will inform you about important events and changes.`,
-		[LanguageKeys.ar_SA]: `هنا يمكنك تعيين الإخطارات التي تريد تلقيها. سنقوم بإعلامك عن الأحداث الهامة والتغييرات.`,
-		[LanguageKeys.es_ES]: `Aquí puedes configurar qué notificaciones deseas recibir. Te informaremos sobre eventos importantes y cambios.`,
-		[LanguageKeys.fr_FR]: `Ici, vous pouvez définir les notifications que vous souhaitez recevoir. Nous vous informerons des événements importants et des changements.`,
-		[LanguageKeys.ru_RU]: `Здесь вы можете настроить, какие уведомления вы хотите получать. Мы будем информировать вас о важных событиях и изменениях.`,
-		[LanguageKeys.tr_TR]: `Burada hangi bildirimleri almak istediğinizi ayarlayabilirsiniz. Sizi önemli etkinlikler ve değişiklikler hakkında bilgilendireceğiz.`,
-		[LanguageKeys.zh_CN]: `在这里，您可以设置要接收哪些通知。我们会通知您有关重要事件和更改的信息。`
+		[LanguageKeys.de_DE]: `Deine eingestellten Benachrichtigungen kannst du hier einsehen und anpassen.`,
+		[LanguageKeys.en_US]: `You can view and adjust your set notifications here.`,
+		[LanguageKeys.ar_SA]: `يمكنك عرض وضبط الإشعارات التي قمت بتعيينها هنا.`,
+		[LanguageKeys.es_ES]: `Puedes ver y ajustar tus notificaciones establecidas aquí.`,
+		[LanguageKeys.fr_FR]: `Vous pouvez consulter et ajuster vos notifications définies ici.`,
+		[LanguageKeys.ru_RU]: `Вы можете просматривать и настраивать установленные уведомления здесь.`,
+		[LanguageKeys.tr_TR]: `Burada ayarladığınız bildirimleri görebilir ve ayarlayabilirsiniz.`,
+		[LanguageKeys.zh_CN]: `您可以在此处查看和调整设置的通知。`
 	},
 	notification_please_enable_notifications_in_order_to_use_this_feature: {
 		[LanguageKeys.de_DE]: 'Bitte aktiviere Benachrichtigungen, um diese Funktion zu nutzen.',
@@ -1756,13 +1771,13 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '上一个'
 	},
 	businesshours: {
-		[LanguageKeys.de_DE]: 'Geschäftszeiten',
-		[LanguageKeys.en_US]: 'Business Hours',
+		[LanguageKeys.de_DE]: 'Öffnungszeiten',
+		[LanguageKeys.en_US]: 'Opening Hours',
 		[LanguageKeys.ar_SA]: 'ساعات العمل',
-		[LanguageKeys.es_ES]: 'Horario comercial',
+		[LanguageKeys.es_ES]: 'Horario de apertura',
 		[LanguageKeys.fr_FR]: 'Heures d\'ouverture',
 		[LanguageKeys.ru_RU]: 'Часы работы',
-		[LanguageKeys.tr_TR]: 'Çalışma Saatleri',
+		[LanguageKeys.tr_TR]: 'Açılış Saatleri',
 		[LanguageKeys.zh_CN]: '营业时间'
 	},
 	foodservicehours: {
@@ -1834,6 +1849,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Питание',
 		[LanguageKeys.tr_TR]: 'Beslenme',
 		[LanguageKeys.zh_CN]: '营养'
+	},
+	environmental_impact: {
+		[LanguageKeys.de_DE]: 'Umweltauswirkungen',
+		[LanguageKeys.en_US]: 'Environmental Impact',
+		[LanguageKeys.ar_SA]: 'التأثير البيئي',
+		[LanguageKeys.es_ES]: 'Impacto ambiental',
+		[LanguageKeys.fr_FR]: 'Impact environnemental',
+		[LanguageKeys.ru_RU]: 'Экологическое воздействие',
+		[LanguageKeys.tr_TR]: 'Çevresel Etki',
+		[LanguageKeys.zh_CN]: '环境影响'
 	},
 	food_information_disclaimer: {
 		[LanguageKeys.de_DE]: 'Die Angaben zu den Daten basieren auf den Informationen, die uns zur Verfügung stehen und können von den tatsächlichen Werten abweichen. Änderungen vorbehalten. Weitere Informationen zu den Daten können hier entnommen werden:',
@@ -1924,6 +1949,36 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Насыщенные жиры',
 		[LanguageKeys.tr_TR]: 'Doymuş Yağ',
 		[LanguageKeys.zh_CN]: '饱和脂肪'
+	},
+	environmental_impact_co2: {
+		[LanguageKeys.de_DE]: 'CO₂-Ausstoß',
+		[LanguageKeys.en_US]: 'CO₂ Emissions',
+		[LanguageKeys.ar_SA]: 'انبعاثات ثاني أكسيد الكربون',
+		[LanguageKeys.es_ES]: 'Emisiones de CO₂',
+		[LanguageKeys.fr_FR]: 'Émissions de CO₂',
+		[LanguageKeys.ru_RU]: 'Выбросы CO₂',
+		[LanguageKeys.tr_TR]: 'CO₂ Emisyonları',
+		[LanguageKeys.zh_CN]: 'CO₂ 排放'
+	},
+	environmental_impact_co2_saving_percentage: {
+		[LanguageKeys.de_DE]: 'CO₂-Einsparung',
+		[LanguageKeys.en_US]: 'CO₂ Saving',
+		[LanguageKeys.ar_SA]: 'توفير ثاني أكسيد الكربون',
+		[LanguageKeys.es_ES]: 'Ahorro de CO₂',
+		[LanguageKeys.fr_FR]: 'Économie de CO₂',
+		[LanguageKeys.ru_RU]: 'Сбережение CO₂',
+		[LanguageKeys.tr_TR]: 'CO₂ Tasarrufu',
+		[LanguageKeys.zh_CN]: 'CO₂ 节约'
+	},
+	environmental_impact_co2_rating: {
+		[LanguageKeys.de_DE]: 'CO₂-Bewertung',
+		[LanguageKeys.en_US]: 'CO₂ Rating',
+		[LanguageKeys.ar_SA]: 'تقييم ثاني أكسيد الكربون',
+		[LanguageKeys.es_ES]: 'Calificación de CO₂',
+		[LanguageKeys.fr_FR]: 'Évaluation du CO₂',
+		[LanguageKeys.ru_RU]: 'Рейтинг CO₂',
+		[LanguageKeys.tr_TR]: 'CO₂ Derecelendirme',
+		[LanguageKeys.zh_CN]: 'CO₂ 评级'
 	},
 	about_us: {
 		[LanguageKeys.de_DE]: 'Über uns',

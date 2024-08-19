@@ -4,7 +4,7 @@ export class PersistentStore {
 
 	static debug = 'PersistentStore.debug'
 	static demo = 'PersistentStore.demo'
-	static performance = 'PersistentStore.performance'
+	static animations_auto_play_disabled = 'PersistentStore.performance'
 	static develop = 'PersistentStore.develop'
 
 	static debugAutoLogin = 'PersistentStore.debugAutoLogin'

@@ -4,19 +4,22 @@ import {TranslationKeys, useTranslation, useTranslations} from '@/helper/transla
 import {IconNames} from '@/constants/IconNames';
 import {AppConfiguration} from "@/constants/AppConfiguration";
 
+export type NutritionDataProps = {
+	protein_g?: number | null | undefined ,
+	fat_g?: number | null | undefined ,
+	carbohydrate_g?: number | null | undefined ,
+	fiber_g?: number | null | undefined ,
+	sugar_g?: number | null | undefined ,
+	sodium_g?: number | null | undefined ,
+	calories_kcal?: number | null | undefined ,
+	saturated_fat_g?: number | null | undefined
+}
 export type NutritionListProps = {
 	columnAmount?: number;
-  calories_kcal?: number | null;
-  carbohydrate_g?: number | null;
-  fat_g?: number | null;
-  fiber_g?: number | null;
-  protein_g?: number | null;
-  saturated_fat_g?: number | null;
-  sodium_g?: number | null;
-  sugar_g?: number | null;
+  	data: NutritionDataProps;
 }
 
-export function NutritionListElement(props: {renderedIcon: any, label: string, value?: number | null}) {
+export function NutritionListElement(props: {renderedIcon: any, label: string, value?: number | null, unit?: string | null}) {
 	const translation_no_value = useTranslation(TranslationKeys.no_value);
 
 	let usedIcon = props.renderedIcon;
@@ -31,7 +34,7 @@ export function NutritionListElement(props: {renderedIcon: any, label: string, v
 			</View>
 			<View style={{ marginLeft: 4, flex: 1}}>
 				<Text>
-					{props.value ? props.value + 'g' : translation_no_value}
+					{props.value ? ""+props.value + props.unit : translation_no_value}
 				</Text>
 				<View style={{
 					flex: 1
@@ -68,16 +71,16 @@ export default function NutritionList(props: NutritionListProps) {
 
 	const data: {
     key: string;
-    data: {icon: string, label: string, value?: number | null}
+    data: {icon: string, label: string, value?: number | null, unit?: string}
   }[] = [
-  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.calories_kcal} },
-  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.carbohydrate_g} },
-  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.fiber_g} },
-  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.protein_g} },
-  	{ key: 'sodium', data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.sodium_g} },
-  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.fat_g} },
-  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.sugar_g} },
-  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.saturated_fat_g} },
+  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.data.calories_kcal, unit: "kcal"} },
+  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: "g"} },
+  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: "g"} },
+  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: "g"} },
+  	{ key: 'sodium', data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.data.sodium_g, unit: "g"} },
+  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: "g"} },
+  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: "g"} },
+  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: "g"} },
   ]
 
 	const amountColumns = props.columnAmount || 2;

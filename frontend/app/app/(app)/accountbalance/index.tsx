@@ -19,6 +19,7 @@ import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance
 import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
 import {AccountBalanceAnimation} from "@/app/(app)/accountbalance/BalanceStateBounds";
 import {useIsDebug} from "@/states/Debug";
+import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 
 export function useMyFocusHandler(onFocus: any, deps: any) {
 
@@ -53,6 +54,8 @@ export default function AccountbalanceScreen() {
 	const translation_nfcNotEnabled = useTranslation(TranslationKeys.nfcNotEnabled)
 	const translation_accountBalance = useTranslation(TranslationKeys.accountbalance)
 	const translation_nfcInstructionRead = useTranslation(TranslationKeys.nfcInstructionRead)
+
+	const translation_editYourRememberedAccountBalance = useTranslation(TranslationKeys.editYourRememberedAccountBalance)
 
 	let callBack = async (nextBalance: number | null | undefined) => {
 		setAccountBalance(nextBalance);
@@ -166,7 +169,7 @@ export default function AccountbalanceScreen() {
 						justifyContent: "center",
 						alignItems: "center",
 						width: "100%",
-						padding: 10,
+						padding: SETTINGS_ROW_DEFAULT_PADDING,
 						marginTop: 10
 					}}>
 						{canReadNfc && (
@@ -203,6 +206,14 @@ export default function AccountbalanceScreen() {
 								</Text>
 							</View>
 							)}
+					</View>
+					<View style={{
+						width: "100%",
+						padding: SETTINGS_ROW_DEFAULT_PADDING,
+						justifyContent: "center",
+						alignItems: "center"
+					}}>
+						<Text>{translation_editYourRememberedAccountBalance}</Text>
 					</View>
 					<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
 						translation_accountBalance

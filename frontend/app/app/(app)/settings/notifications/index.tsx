@@ -79,11 +79,12 @@ export default function EatingHabitsScreen() {
 		data.push({key: food_id, data: food_id})
 	}
 
-	return (
-		<MySafeAreaView>
-			<SettingsRowGroup>
-			{preItem}
-			</SettingsRowGroup>
+	const renderFoodNotifications = () => {
+		if(data.length === 0) {
+			return null;
+		}
+
+		return(
 			<SettingsRowGroup>
 				<View style={{
 					width: '100%',
@@ -95,6 +96,15 @@ export default function EatingHabitsScreen() {
 					data={data} renderItem={renderResource} amountColumns={1}
 				/>
 			</SettingsRowGroup>
+		)
+	}
+
+	return (
+		<MySafeAreaView>
+			<SettingsRowGroup>
+			{preItem}
+			</SettingsRowGroup>
+			{renderFoodNotifications()}
 		</MySafeAreaView>
 	)
 }

@@ -1,7 +1,7 @@
 import {IconFamily, IconParseDelimeter} from "@/components/Themed";
 
 /**
- * All icon names are from MaterialCommunityIcons
+ * Default icon family is MaterialCommunityIcons
  */
 export class IconNames {
     static delete_icon = 'delete'
@@ -99,6 +99,11 @@ export class IconNames {
     static nutrition_saturated_fat_icon = 'water-circle'
     static nutirtion_sodium_icon = 'grain'
     static nutrition_sugar_icon = 'cupcake'
+
+    static environmental_impact_icon = 'earth'
+    static environmental_impact_co2_icon = IconFamily.MaterialIcons+IconParseDelimeter+'co2'
+    static environmental_impact_co2_saving_percentage_icon = IconFamily.MaterialIcons+IconParseDelimeter+'percent'
+    static environmental_impact_co2_rating_icon = IconFamily.MaterialIcons+IconParseDelimeter+'star-rate'
 
     static price_group_icon = 'currency-eur'
     static price_group_student = 'school'

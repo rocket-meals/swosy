@@ -12,7 +12,7 @@ import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {Dimensions} from 'react-native';
-import NutritionList from '@/components/food/NutritionList';
+import NutritionList, {NutritionDataProps} from '@/components/food/NutritionList';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MarkingListSelective} from '@/components/food/MarkingList';
@@ -42,6 +42,7 @@ import {
 	useSynchedOwnFoodFeedbackLabelEntries
 } from "@/states/SynchedFoodFeedbacksLabelsEntries";
 import {AppConfiguration} from "@/constants/AppConfiguration";
+import EnvironmentalImpactList, {EnvironmentalImpactDataProps} from "@/components/food/EnvironmentalImpactList";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -522,13 +523,37 @@ const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	)
 }
 
-
-const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
+const FoodEnvironmentalImpactDetails = ({foodOfferOrFood}: {foodOfferOrFood: EnvironmentalImpactDataProps}) => {
 	const nutritionColumns = useBreakPointValue<number>({
 		sm: 2,
 		md: 2,
-		lg: 3,
+		lg: 2,
 		xl: 3,
+		xxl: 3
+	})
+
+	return(
+		<>
+			<View style={{ justifyContent: 'space-between' }}>
+				<View>
+					<EnvironmentalImpactList
+						columnAmount={nutritionColumns}
+						data={foodOfferOrFood}
+					/>
+				</View>
+			</View>
+			<FoodInformationDisclaimer />
+		</>
+	)
+}
+
+const FoodNutritionDetails = ({foodOfferOrFood}: {foodOfferOrFood: NutritionDataProps}) => {
+	const nutritionColumns = useBreakPointValue<number>({
+		sm: 2,
+		md: 2,
+		lg: 2,
+		xl: 3,
+		xxl: 3
 	})
 
 	return(
@@ -537,14 +562,7 @@ const FoodNutritionDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 				<View>
 					<NutritionList
 						columnAmount={nutritionColumns}
-						protein_g={foodOfferData.protein_g}
-						fat_g={foodOfferData.fat_g}
-						carbohydrate_g={foodOfferData.carbohydrate_g}
-						fiber_g={foodOfferData.fiber_g}
-						sugar_g={foodOfferData.sugar_g}
-						sodium_g={foodOfferData.sodium_g}
-						calories_kcal={foodOfferData.calories_kcal}
-						saturated_fat_g={foodOfferData.saturated_fat_g}
+						data={foodOfferOrFood}
 					/>
 				</View>
 			</View>
@@ -573,6 +591,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 
 function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
+	const translation_environmental_impact = useTranslation(TranslationKeys.environmental_impact);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
@@ -610,9 +629,22 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 			content: <View style={{
 				width: "100%",
 				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-			}}><FoodNutritionDetails foodOfferData={foodOfferData}/></View>
+			}}><FoodNutritionDetails foodOfferOrFood={foodOfferData}/></View>
 		};
 		tabs.push(nutritionTab)
+	}
+	if(AppConfiguration.DEFAULT_ENVIRONMENTAL_IMPACT_SHOW){
+		let environmentalImpactTab = {
+			iconName: IconNames.environmental_impact_icon,
+			color: foodsAreaColor,
+			accessibilityLabel: translation_environmental_impact,
+			text: translation_environmental_impact,
+			content: <View style={{
+				width: "100%",
+				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
+			}}><FoodEnvironmentalImpactDetails foodOfferOrFood={foodOfferData}/></View>
+		};
+		tabs.push(environmentalImpactTab)
 	}
 
 	tabs.push( {

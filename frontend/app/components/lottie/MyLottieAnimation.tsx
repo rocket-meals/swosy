@@ -4,7 +4,7 @@ import { ViewStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import { Text, View } from '@/components/Themed';
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { useIsPerformanceMode } from '@/states/SynchedPerformanceMode';
+import { useIsAnimationAutoPlayDisabled } from '@/states/SynchedPerformanceMode';
 
 /**
  * Type definition for the component's props.
@@ -45,7 +45,7 @@ export const MyLottieAnimation = ({
 }: MyLottieAnimationProps) => {
 	// State to manage performance mode.
 	const animationsDisabled = false;
-	const isPerformanceMode = useIsPerformanceMode();
+	const isPerformanceMode = useIsAnimationAutoPlayDisabled();
 
 	// Ref to control the Lottie animation programmatically.
 	const animation = useRef(null);
