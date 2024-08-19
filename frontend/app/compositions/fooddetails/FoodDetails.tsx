@@ -12,7 +12,6 @@ import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
 import {Dimensions} from 'react-native';
-import NutritionList, {NutritionDataProps} from '@/components/food/NutritionList';
 import {useBreakPointValue} from '@/helper/device/DeviceHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MarkingListSelective} from '@/components/food/MarkingList';
@@ -42,7 +41,7 @@ import {
 	useSynchedOwnFoodFeedbackLabelEntries
 } from "@/states/SynchedFoodFeedbacksLabelsEntries";
 import {AppConfiguration} from "@/constants/AppConfiguration";
-import EnvironmentalImpactList, {EnvironmentalImpactDataProps} from "@/components/food/EnvironmentalImpactList";
+import {CommonFieldsOfFoodAndFoodoffers, FoodDataList} from "@/components/food/FoodDataList";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -523,7 +522,7 @@ const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 	)
 }
 
-const FoodEnvironmentalImpactDetails = ({foodOfferOrFood}: {foodOfferOrFood: EnvironmentalImpactDataProps}) => {
+const FoodDataListDetails = ({foodOfferOrFood}: {foodOfferOrFood: CommonFieldsOfFoodAndFoodoffers}) => {
 	const nutritionColumns = useBreakPointValue<number>({
 		sm: 2,
 		md: 2,
@@ -536,31 +535,7 @@ const FoodEnvironmentalImpactDetails = ({foodOfferOrFood}: {foodOfferOrFood: Env
 		<>
 			<View style={{ justifyContent: 'space-between' }}>
 				<View>
-					<EnvironmentalImpactList
-						columnAmount={nutritionColumns}
-						data={foodOfferOrFood}
-					/>
-				</View>
-			</View>
-			<FoodInformationDisclaimer />
-		</>
-	)
-}
-
-const FoodNutritionDetails = ({foodOfferOrFood}: {foodOfferOrFood: NutritionDataProps}) => {
-	const nutritionColumns = useBreakPointValue<number>({
-		sm: 2,
-		md: 2,
-		lg: 2,
-		xl: 3,
-		xxl: 3
-	})
-
-	return(
-		<>
-			<View style={{ justifyContent: 'space-between' }}>
-				<View>
-					<NutritionList
+					<FoodDataList
 						columnAmount={nutritionColumns}
 						data={foodOfferOrFood}
 					/>
@@ -590,8 +565,7 @@ export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 }
 
 function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferData: Foodoffers, food: Foods }) {
-	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
-	const translation_environmental_impact = useTranslation(TranslationKeys.environmental_impact);
+	const translations_food_data = useTranslation(TranslationKeys.food_data);
 	const translations_markings = useTranslation(TranslationKeys.markings);
 	const translations_food_feedbacks = useTranslation(TranslationKeys.food_feedbacks);
 
@@ -620,29 +594,28 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 
 		]
 
-	if(AppConfiguration.DEFAULT_FOOD_NUTRITION_SHOW){
-		let nutritionTab = {
-			iconName: IconNames.nutrition_icon,
+	tabs.push(
+		{
+			iconName: IconNames.comment_icon,
 			color: foodsAreaColor,
-			accessibilityLabel: translations_nutrition,
-			text: translations_nutrition,
+			accessibilityLabel: translations_food_feedbacks,
+			text: translations_food_feedbacks,
 			content: <View style={{
 				width: "100%",
 				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-			}}><FoodNutritionDetails foodOfferOrFood={foodOfferData}/></View>
-		};
-		tabs.push(nutritionTab)
-	}
-	if(AppConfiguration.DEFAULT_ENVIRONMENTAL_IMPACT_SHOW){
+			}}><FoodFeedbackDetails food={food} /></View>
+		})
+
+	if(AppConfiguration.DEFAULT_FOOD_NUTRITION_SHOW || AppConfiguration.DEFAULT_ENVIRONMENTAL_IMPACT_SHOW){
 		let environmentalImpactTab = {
-			iconName: IconNames.environmental_impact_icon,
+			iconName: IconNames.food_data_list_icon,
 			color: foodsAreaColor,
-			accessibilityLabel: translation_environmental_impact,
-			text: translation_environmental_impact,
+			accessibilityLabel: translations_food_data,
+			text: translations_food_data,
 			content: <View style={{
 				width: "100%",
 				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-			}}><FoodEnvironmentalImpactDetails foodOfferOrFood={foodOfferData}/></View>
+			}}><FoodDataListDetails foodOfferOrFood={foodOfferData}/></View>
 		};
 		tabs.push(environmentalImpactTab)
 	}
@@ -658,17 +631,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 			}}><FoodMarkingDetails foodOfferData={foodOfferData}/></View>
 		})
 
-	tabs.push(
-		{
-			iconName: IconNames.comment_icon,
-			color: foodsAreaColor,
-			accessibilityLabel: translations_food_feedbacks,
-			text: translations_food_feedbacks,
-			content: <View style={{
-				width: "100%",
-				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-			}}><FoodFeedbackDetails food={food} /></View>
-		})
+
 
 
 	return(

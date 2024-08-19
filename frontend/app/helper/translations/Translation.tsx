@@ -168,6 +168,7 @@ export enum TranslationKeys {
 	error = "error",
 	description = "description",
 	information = "information",
+	food_data = "food_data",
 	no_data_currently_calculating = "no_data_currently_calculating",
 	food_feedbacks = "food_feedbacks",
 	to_the_forum = "to_the_forum",
@@ -1039,6 +1040,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Нет данных, в настоящее время рассчитывается',
 		[LanguageKeys.tr_TR]: 'Veri yok, şu anda hesaplanıyor',
 		[LanguageKeys.zh_CN]: '无数据，正在计算'
+	},
+	food_data: {
+		[LanguageKeys.de_DE]: 'Speisendaten',
+		[LanguageKeys.en_US]: 'Food Data',
+		[LanguageKeys.ar_SA]: 'بيانات الطعام',
+		[LanguageKeys.es_ES]: 'Datos de alimentos',
+		[LanguageKeys.fr_FR]: 'Données alimentaires',
+		[LanguageKeys.ru_RU]: 'Данные о еде',
+		[LanguageKeys.tr_TR]: 'Yemek Verileri',
+		[LanguageKeys.zh_CN]: '食品数据'
 	},
 	food_feedbacks: {
 		[LanguageKeys.de_DE]: 'Essensbewertungen',

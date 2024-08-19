@@ -90,6 +90,7 @@ export class IconNames {
     static comment_icon = 'chat'
     static comment_send_icon = 'send'
 
+    static food_data_list_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'nutrition'
     static nutrition_icon = 'food-apple'
     static nutrition_calories_icon = 'fire'
     static nutrition_carbohydrate_icon = IconFamily.FontAwesome6+IconParseDelimeter+'wheat-awn'
