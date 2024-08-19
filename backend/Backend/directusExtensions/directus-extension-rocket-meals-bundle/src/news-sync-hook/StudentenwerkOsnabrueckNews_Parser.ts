@@ -4,10 +4,10 @@ import {TranslationHelper} from "../helpers/TranslationHelper";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 
 
-const baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
-const newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
-
 export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
+
+    static baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
+    static newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
 
     constructor() {
 
@@ -22,19 +22,19 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
     async getRealNewsItems(): Promise<NewsTypeForParser[]> {
         try {
             //console.log("getRealNewsItems");
-            let response = await axios.get(newsUrl);
+            let response = await axios.get(StudentenwerkOsnabrueckNews_Parser.newsUrl);
             //console.log("Fetched url");
             let soup = new JSSoup(response.data);
             let articles = soup.findAll('div', 'article');
 
             let news: NewsTypeForParser[] = [];
 
-            articles.map((article, index) => {
+            articles.map((article: any, index: any) => {
                 let imageElement = article.find('img'); // Changed this line
-                let imageUrl = imageElement ? baseUrl + imageElement.attrs.src : ''; // Changed this line
+                let imageUrl = imageElement ? StudentenwerkOsnabrueckNews_Parser.baseUrl + imageElement.attrs.src : ''; // Changed this line
 
                 let linkElement = article.find('a');
-                let articleUrl = linkElement ? baseUrl + linkElement.attrs.href : '';
+                let articleUrl = linkElement ? StudentenwerkOsnabrueckNews_Parser.baseUrl + linkElement.attrs.href : '';
 
                 let headerElement = article.find('span');
                 let header = headerElement ? headerElement.text.trim() : '';

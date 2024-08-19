@@ -1,122 +1,122 @@
 import axios from "axios";
-import cheerio from 'cheerio';
-import {TranslationHelper} from "../helpers/TranslationHelper";
-import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
+import cheerio, {CheerioAPI, Element as CheerioElement} from 'cheerio';
+import { TranslationHelper } from "../helpers/TranslationHelper";
+import { NewsParserInterface, NewsTypeForParser } from "./NewsParserInterface";
 
-const baseUrl = 'https://www.studentenwerk-hannover.de';
-const newsUrl = `${baseUrl}/unternehmen/news`;
-const newsDetailArticleUrlStart = "/unternehmen/news";
+export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
-export class StudentenwerkHannoverNews_Parser implements NewsParserInterface{
+    static baseUrl = 'https://www.studentenwerk-hannover.de';
+    static newsUrl = `${StudentenwerkHannoverNews_Parser.baseUrl}/unternehmen/news`;
+    static newsDetailArticleUrlStart = "/unternehmen/news";
 
-    constructor() {
+    constructor() { }
 
-    }
-
-    async getNewsItems(): Promise<NewsTypeForParser[]> {
-        //let demoNewsItem = await this.getDemoNewsItem();
-        let realNewsItems = await this.getRealNewsItems();
+    async getNewsItems(limitAmountNews?: number): Promise<NewsTypeForParser[]> {
+        let realNewsItems = await this.getRealNewsItems(limitAmountNews);
         return [...realNewsItems];
     }
 
-    async getRealNewsItems(limitAmountNews?: number | undefined): Promise<NewsTypeForParser[]> {
+    async getRealNewsItems(limitAmountNews?: number): Promise<NewsTypeForParser[]> {
         try {
-            //console.log("getRealNewsItems from: " + newsUrl);
-            let response = await axios.get(newsUrl);
-            //console.log("Fetched url");
-            const $newsIndexArticle = cheerio.load(response.data);
-
-            let data: NewsTypeForParser[] = [];
-            let articleItems = $newsIndexArticle('div.article');
-            //console.log("Found news items: " + articleItems.length);
-            let limit = limitAmountNews ? Math.min(limitAmountNews, articleItems.length) : articleItems.length;
-            for(let index = 0; index < articleItems.length && index < limit; index++) {
-                let element = articleItems[index];
-                //console.log("Parsing news item index: " + index);
-                // Extract image URL from the inline style
-                let imageStyle = $newsIndexArticle(element).find('div.news-slider-image').attr('style');
-                let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
-                let imageUrl = imageUrlMatch ? baseUrl + imageUrlMatch[1] : '';
-
-                // Extract article title
-                let header = $newsIndexArticle(element).find('h3').text().trim();
-                //console.log("Header: " + header)
-
-                // Extract article content
-                let content = $newsIndexArticle(element).find('div.news_slider-content_teaser').text();
-                // trim content and remote tabs at the beginning and end
-                if(!!content) {
-                    content = content.trim();
-                }
-
-
-                // Extract link URL
-                let date: string | null | undefined = null;
-                let articleUrl = $newsIndexArticle(element).find('a.articleLink').attr('href');
-                if(!!articleUrl){
-                    if(articleUrl.startsWith(newsDetailArticleUrlStart)) {
-                        articleUrl = baseUrl + articleUrl;
-                    }
-
-
-                    // visit article page to get the date
-                    try{
-                        let articleResponse = await axios.get(articleUrl);
-                        const $articleDetails = cheerio.load(articleResponse.data);
-                        // search for itemprop="datePublished"
-                        let datePublished = $articleDetails("div.news-list-date")
-                        let datePublishedText = datePublished.text().trim();
-                        //console.log("Fetching article page: " + articleUrl);
-                        //console.log("Date published: " + datePublishedText);
-                        // has format: 24.05.2024
-                        let dateParts = datePublishedText.split('.');
-                        let dateAsDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-                        // set date time to 12:00
-                        dateAsDate.setHours(12, 0, 0, 0);
-                        date = dateAsDate.toISOString();
-                    } catch (error) {
-                        console.log("Error fetching article page: " + articleUrl);
-                    }
-                }
-
-
-
-                // Extract categories
-                let categories: {[key: string]: string} = {};
-                $newsIndexArticle(element).find('div.news_slider-content_categorie').each((index, el) => {
-                    let categoryName = $newsIndexArticle(el).text()
-                    if(!!categoryName) {
-                        categoryName = categoryName.trim();
-                        categories[categoryName] = categoryName;
-                    }
-                });
-
-                data.push({
-                    external_identifier: "news_" + header.replace(/\W+/g, '_'),
-                    image_remote_url: imageUrl,
-                    alias: header,
-                    date: date,
-                    url: articleUrl,
-                    translations: {
-                        [TranslationHelper.LANGUAGE_CODE_DE]: {
-                            title: header,
-                            content: content,
-                            be_source_for_translations: true,
-                            let_be_translated: false,
-                        },
-                    },
-                    categories: categories
-                });
-            };
-
-            data.reverse(); // latest news are on top
-
-            //console.log("Found news items: " + data.length);
-            return data;
+            let response = await this.fetchNewsPage();
+            return StudentenwerkHannoverNews_Parser.parseNewsItems(response.data, limitAmountNews);
         } catch (error) {
             console.log(error);
+            return [];
         }
-        return [];
     }
 
+    async fetchNewsPage() {
+        return axios.get(StudentenwerkHannoverNews_Parser.newsUrl);
+    }
+
+    static async fetchArticlePage(articleUrl: string) {
+        return axios.get(articleUrl);
+    }
+
+    static async parseNewsItems(html: string, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
+        const $newsIndexArticle = cheerio.load(html);
+
+        let data: NewsTypeForParser[] = [];
+        let articleItems = $newsIndexArticle('div.article');
+        let limit = limitAmountNews ? Math.min(limitAmountNews, articleItems.length) : articleItems.length;
+
+        for (let index = 0; index < articleItems.length && index < limit; index++) {
+            let element: CheerioElement | undefined = articleItems[index];
+
+            let imageUrl = StudentenwerkHannoverNews_Parser.extractImageUrl($newsIndexArticle, element);
+            let header = $newsIndexArticle(element).find('h3').text().trim();
+            let content = $newsIndexArticle(element).find('div.news_slider-content_teaser').text().trim();
+            let articleUrl = StudentenwerkHannoverNews_Parser.extractArticleUrl($newsIndexArticle, element);
+
+            let date = await StudentenwerkHannoverNews_Parser.fetchArticleDate(articleUrl);
+
+            let categories = StudentenwerkHannoverNews_Parser.extractCategories($newsIndexArticle, element);
+
+            data.push({
+                external_identifier: "news_" + header.replace(/\W+/g, '_'),
+                image_remote_url: imageUrl,
+                alias: header,
+                date: date,
+                url: articleUrl,
+                translations: {
+                    [TranslationHelper.LANGUAGE_CODE_DE]: {
+                        title: header,
+                        content: content,
+                        be_source_for_translations: true,
+                        let_be_translated: false,
+                    },
+                },
+                categories: categories
+            });
+        }
+
+        data.reverse(); // latest news are on top
+        return data;
+    }
+
+    static extractImageUrl($: CheerioAPI, element: CheerioElement | undefined): string {
+        let imageStyle = $(element).find('div.news-slider-image').attr('style');
+        let imageUrlMatch = imageStyle ? imageStyle.match(/url\(['"]?(.*?)['"]?\)/) : null;
+        return imageUrlMatch ? StudentenwerkHannoverNews_Parser.baseUrl + imageUrlMatch[1] : '';
+    }
+
+    static extractArticleUrl($: CheerioAPI, element: CheerioElement | undefined): string | undefined {
+        let articleUrl = $(element).find('a.articleLink').attr('href');
+        if (articleUrl && articleUrl.startsWith(StudentenwerkHannoverNews_Parser.newsDetailArticleUrlStart)) {
+            return StudentenwerkHannoverNews_Parser.baseUrl + articleUrl;
+        }
+        return undefined;
+    }
+
+    static async fetchArticleDate(articleUrl?: string): Promise<string | null> {
+        if (!articleUrl) return null;
+        try {
+            let articleResponse = await this.fetchArticlePage(articleUrl);
+            const $articleDetails = cheerio.load(articleResponse.data);
+
+            // .news-list-date > time:nth-child(2)
+            let datePublishedText = $articleDetails(".news-list-date").text().trim();
+
+            let dateParts = datePublishedText.split('.');
+            // @ts-ignore if dateParts is not valid, the Date constructor will throw an error
+            let dateAsDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
+            dateAsDate.setHours(12, 0, 0, 0);
+            return dateAsDate.toISOString();
+        } catch (error) {
+            console.log("Error fetching article page: " + articleUrl);
+            return null;
+        }
+    }
+
+    static extractCategories($: CheerioAPI, element: CheerioElement | undefined): { [key: string]: string } {
+        let categories: { [key: string]: string } = {};
+        $(element).find('div.news_slider-content_categorie').each((index, el) => {
+            let categoryName = $(el).text().trim();
+            if (categoryName) {
+                categories[categoryName] = categoryName;
+            }
+        });
+        return categories;
+    }
 }

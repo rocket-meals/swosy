@@ -11,24 +11,7 @@ export default defineHook(async ({schedule}, apiContext) => {
 		return;
 	}
 
-	const {
-		services,
-		database,
-		getSchema,
-		logger
-	} = apiContext;
-
 	const parseSchedule = new ReportSchedule(apiContext);
-
-	try {
-		console.log("Canteen Food Feedback Report Schedule init");
-		await parseSchedule.init(getSchema, services, database, logger);
-		console.log("Canteen Food Feedback Report Schedule init finished");
-	} catch (err) {
-		let errMsg = err.toString();
-		console.log("Canteen Food Feedback Report Schedule init error: ");
-		console.log(errMsg);
-	}
 
 	console.log("Canteen Food Feedback Report Schedule schedule register");
 	schedule('*/20 * * * * *', async () => {
