@@ -4,7 +4,7 @@ import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 
 // Remove all fields with relation to other tables
 export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings">;
-export type FoodNutritionType = Omit<FoodWithBasicData, "id">
+export type FoodWithBasicDataWithoutIdType = Omit<FoodWithBasicData, "id">
 
 export type FoodsInformationTypeForParser = {
     basicFoodData: FoodWithBasicData,

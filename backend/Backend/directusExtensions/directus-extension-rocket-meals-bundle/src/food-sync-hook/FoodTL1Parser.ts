@@ -3,7 +3,7 @@ import {CSVExportParser} from "./CSVExportParser"
 
 import {
     CanteensTypeForParser,
-    FoodNutritionType, FoodofferDateType,
+    FoodWithBasicDataWithoutIdType, FoodofferDateType,
     FoodoffersTypeForParser, FoodofferTypeWithBasicData,
     FoodParserInterface,
     FoodsInformationTypeForParser,
@@ -47,6 +47,10 @@ export class FoodTL1Parser implements FoodParserInterface {
 
     static DEFAULT_MARKING_LABELS_FIELD = "ZSNUMMERN";
     static DEFAULT_MARKING_NAMES_FIELD = "ZSNAMEN";
+
+    static DEFAULT_CO2_GRAMM_FIELD = "EXTINFO_CO2_WERT";
+    static DEFAULT_CO2_SAVING_PERCENTAGE_FIELD = "EXTINFO_CO2_EINSPARUNG";
+    static DEFAULT_CO2_RATING_FIELD = "EXTINFO_CO2_BEWERTUNG";
 
     private rawFoodoffersJSONList: RawFoodofferInformationListType = [];
     private rawFoodofferReader: FoodTL1Parser_GetRawReportInterface;
@@ -107,11 +111,13 @@ export class FoodTL1Parser implements FoodParserInterface {
             let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
 
             const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
+            const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
             const basicFoodofferData: FoodofferTypeWithBasicData = {
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
                 price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
                 price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
                 ...foodNutritions,
+                ...foodEnvironmentImpact,
             }
 
             const foodofferForParser: FoodoffersTypeForParser = {
@@ -271,11 +277,13 @@ export class FoodTL1Parser implements FoodParserInterface {
         };
 
         const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
+        const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
             alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
             category: parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
-            ...foodNutritions
+            ...foodNutritions,
+            ...foodEnvironmentImpact
         }
 
         return {
@@ -394,17 +402,35 @@ export class FoodTL1Parser implements FoodParserInterface {
 
     }
 
+    static getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodWithBasicDataWithoutIdType {
+        let environmentImpactJSON: FoodWithBasicDataWithoutIdType = {};
+        let co2_g = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_GRAMM_FIELD];
+        if(!!co2_g){
+            environmentImpactJSON.co2_g = parseFloat(co2_g);
+        }
+
+        let co2_saving_percentage = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_SAVING_PERCENTAGE_FIELD];
+        if(!!co2_saving_percentage){
+            environmentImpactJSON.co2_saving_percentage = parseFloat(co2_saving_percentage);
+        }
+
+        let co2_rating = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_RATING_FIELD];
+        if(!!co2_rating){
+            environmentImpactJSON.co2_rating = co2_rating;
+        }
+
+        return environmentImpactJSON;
+    }
 
     /**
      * Nutritions
      */
-
-    static getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodNutritionType {
+    static getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodWithBasicDataWithoutIdType {
         /**
          * e. G.
          * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
          */
-        let nutritionValuesJSON: FoodNutritionType = {};
+        let nutritionValuesJSON: FoodWithBasicDataWithoutIdType = {};
         let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
         if(!!nutritionValuesString){
             let kcalEndString = " kcal)";
