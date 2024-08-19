@@ -5,6 +5,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
 import {CanteenFoodFeedbackReportRecipients, Canteens, DirectusUsers} from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {DateHelper} from "../helpers/DateHelper";
 
 const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS
 
@@ -124,8 +125,7 @@ export class ReportSchedule {
 
         let canteen_alias = canteenEntry?.alias;
 
-        let date = generateReportForDate
-        let dateHumanReadable = date.getDate()+"."+date.getMonth();
+        let dateHumanReadable = DateHelper.getHumanReadableDate(generateReportForDate);
 
         let subject = "Mensa Report - für: "+dateHumanReadable+" "+canteen_alias;
 

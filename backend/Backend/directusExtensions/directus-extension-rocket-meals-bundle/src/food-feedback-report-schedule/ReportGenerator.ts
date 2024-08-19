@@ -75,7 +75,7 @@ export class ReportGenerator {
      */
     async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens): Promise<ReportType>{
         let date = generateReportForDate;
-        let dateHumanReadable = date.getDate()+"."+date.getMonth();
+        let dateHumanReadable = DateHelper.getHumanReadableDate(date);
         console.log("Generate report for date: "+dateHumanReadable);
 
         let report: ReportType = {

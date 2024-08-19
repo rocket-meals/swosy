@@ -2,13 +2,18 @@ import {FoodofferDateType} from "../food-sync-hook/FoodParserInterface";
 
 export class DateHelper {
 
-    static formatIsoStringDatesToIso8601WithoutTimezone(ISOStringDatesList: string[]) {
-        let listOfDateOnlyDates = [];
-        for (let isoDateString of ISOStringDatesList) {
-            let date = new Date(isoDateString);
-            listOfDateOnlyDates.push(DateHelper.formatDateToIso8601WithoutTimezone(date));
+    static getHumanReadableDate(date: Date, includeWeekdayName: boolean): string {
+        const numericString = date.toLocaleDateString('de-DE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+        const weekdayName = date.toLocaleDateString('de-DE', {weekday: 'long'});
+        let finalString = numericString;
+        if (includeWeekdayName) {
+            finalString += ` (${weekdayName})`;
         }
-        return listOfDateOnlyDates;
+        return finalString;
     }
 
     static getFoodofferDateTypeFromDate(date: Date): FoodofferDateType {
