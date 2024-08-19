@@ -14,7 +14,9 @@ import {ApiContext} from "../helpers/ApiContext";
 export type ReportFoodEntryLabelType = {
     id: string,
     alias: string,
-    count: number
+    amount_positive: number,
+    amount_negative: number,
+    amount_total: number
 }
 
 export type ReportFoodEntryType = {
@@ -22,7 +24,7 @@ export type ReportFoodEntryType = {
     alias: string | null | undefined,
     image_url: string | null | undefined,
     rating_average: number | null | undefined,
-    rating_amount: number | null | undefined,
+    rating_amount: number | string | null | undefined,
     comments: string[],
     labels: ReportFoodEntryLabelType[]
 }
@@ -118,12 +120,18 @@ export class ReportGenerator {
                     image_url = food?.image_remote_url;
                 }
 
+                let usedRatingAverage = "N/A";
+                if(food?.rating_average){
+                    // to fixed 2 decimal places
+                    usedRatingAverage = food?.rating_average.toFixed(2);
+                }
+
                 let foodSummary: ReportFoodEntryType = {
                     id: food.id,
                     alias: food.alias,
                     image_url: image_url,
-                    rating_average: food?.rating_average,
-                    rating_amount: food?.rating_amount,
+                    rating_average: food?.rating_average || 0,
+                    rating_amount: usedRatingAverage,
                     comments: comments,
                     labels: feedbackLabelEntryListForReport
                 };
@@ -158,14 +166,6 @@ export class ReportGenerator {
         return feedback_label?.alias || feedback_label_id;
     }
 
-    convertFeedbacksLabelsToDict(foods_feedbacks_labels: FoodsFeedbacksLabels[]){
-        let labels_dict: {[key: string]: FoodsFeedbacksLabels} = {};
-        for(let label of foods_feedbacks_labels){
-            labels_dict[label?.id] = label;
-        }
-        return labels_dict;
-    }
-
     async getReportFeedbackLabelsList(food_id: string): Promise<ReportFoodEntryLabelType[]> {
         const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
         const foodFeedbackLabelEntriesService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabelsEntries>(CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
@@ -186,11 +186,18 @@ export class ReportGenerator {
                     labels_counted_obj = {
                         id: label_id,
                         alias: alias,
-                        count: 0
+                        amount_negative: 0,
+                        amount_positive: 0,
+                        amount_total: 0
                     }
                 }
                 if(!!labels_counted_obj){
-                    labels_counted_obj.count++;
+                    if(labelFeedback?.dislike){
+                        labels_counted_obj.amount_negative += 1;
+                    } else {
+                        labels_counted_obj.amount_positive += 1;
+                    }
+                    labels_counted_obj.amount_total += 1;
                     labels_counted_dict[label_id] = labels_counted_obj;
                 }
             }
