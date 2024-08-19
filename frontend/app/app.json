@@ -28,16 +28,16 @@
       },
       "privacyManifests": {
         "NSPrivacyCollectedDataTypes": [
-            {
-                "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePreciseLocation",
-                "NSPrivacyCollectedDataTypeLinked": false,
-                "NSPrivacyCollectedDataTypeTracking": false,
-                "NSPrivacyCollectedDataTypePurposes": [
-                  "NSPrivacyCollectedDataTypePurposeProductPersonalization",
-                  "NSPrivacyCollectedDataTypePurposeAppFunctionality",
-                  "NSPrivacyCollectedDataTypePurposeOther"
-                ]
-            },
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePreciseLocation",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+            "NSPrivacyCollectedDataTypePurposes": [
+              "NSPrivacyCollectedDataTypePurposeProductPersonalization",
+              "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+              "NSPrivacyCollectedDataTypePurposeOther"
+            ]
+          },
           {
             "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeEmailsOrTextMessages",
             "NSPrivacyCollectedDataTypeLinked": true,
@@ -113,7 +113,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "100"
+      "buildNumber": "101"
     },
     "android": {
       "adaptiveIcon": {
