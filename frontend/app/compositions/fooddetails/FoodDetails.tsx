@@ -396,7 +396,10 @@ export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
 
 	let renderedAverageRating: any = null;
 	if (foods_ratings_average_display) {
-		let usedRatingAverage = ratingAverage ? ratingAverage : translation_no_value
+		let usedRatingAverage = translation_no_value
+		if(ratingAverage !== null && ratingAverage !== undefined){
+			usedRatingAverage = ratingAverage.toFixed(2)
+		}
 		renderedAverageRating = <SettingsRow labelLeft={translation_average_rating} accessibilityLabel={translation_average_rating} labelRight={usedRatingAverage+""} leftIcon={IconNames.average_icon} />
 	}
 
