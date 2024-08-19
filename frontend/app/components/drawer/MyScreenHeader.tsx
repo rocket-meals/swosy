@@ -19,6 +19,8 @@ import {useSafeAreaFrame, useSafeAreaInsets} from 'react-native-safe-area-contex
 import HeaderShownContext from '@react-navigation/elements/src/Header/HeaderShownContext';
 import {router, useFocusEffect, useNavigation} from 'expo-router';
 import {PlatformHelper} from '@/helper/PlatformHelper';
+import {BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
+import {MyButton} from "@/components/buttons/MyButton";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -128,9 +130,9 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 	const usedTitle = title
 
 	// Adjust padding based on the drawer's position to align the icon appropriately.
-	const paddingLeft: any = 10;
-	const paddingRight = 10;
-	const paddingVertical = 10;
+	const paddingLeft: any = BUTTON_DEFAULT_Padding
+	const paddingRight = BUTTON_DEFAULT_Padding
+	const paddingVertical = BUTTON_DEFAULT_Padding
 
 		/**
 		 * Renders the header title element.
@@ -144,12 +146,12 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 		const textAlignment = isDrawerPositionRight ? 'right' : 'left';
 
 		return (
-			<View style={{flexShrink: 1, paddingVertical: paddingVertical, paddingHorizontal: headerPaddingHorizontal }}>
+			<View style={{flex: 1, flexShrink: 1, paddingVertical: paddingVertical, paddingHorizontal: headerPaddingHorizontal }}>
 				<Heading
-					numberOfLines={1}
+					numberOfLines={2}
 					ellipsizeMode="tail"
 					accessibilityRole={MyAccessibilityRoles.Header}
-					style={[readOnlyStyle, {textAlign: textAlignment, flex: 1 }]}
+					style={[readOnlyStyle, {textAlign: textAlignment }]}
 				>
 					{title}
 				</Heading>
@@ -179,16 +181,14 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 
 			// Returns a touchable component with an icon for toggling the drawer.
 			return (
-				<MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_navigate_back} onPress={() => {
+				<MyButton useOnlyNecessarySpace={true} tooltip={translation_open_drawer} accessibilityLabel={translation_open_drawer} useTransparentBorderColor={true} leftIcon={icon} {...props} onPress={() => {
 					if(navigation.canGoBack()){
 						router.back();
 					} else {
 						// if we can't go back, we navigate to the home screen
 						router.push('/(app)/home');
 					}
-				}}>
-					<Icon name={icon} />
-				</MyTouchableOpacity>
+				}} />
 			)
 		}
 
@@ -198,9 +198,7 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 
 		// Returns a touchable component with an icon for toggling the drawer.
 		return (
-			<MyTouchableOpacity style={{paddingLeft: paddingLeft, paddingRight: paddingRight, paddingVertical: paddingVertical}} accessibilityLabel={translation_open_drawer} onPress={() => navigation.dispatch(DrawerActions.openDrawer)}>
-				<Icon name={IconNames.drawer_menu_icon} />
-			</MyTouchableOpacity>
+			<MyButton useOnlyNecessarySpace={true} tooltip={translation_open_drawer} accessibilityLabel={translation_open_drawer} useTransparentBorderColor={true} leftIcon={IconNames.drawer_menu_icon} {...props} onPress={() => navigation.dispatch(DrawerActions.openDrawer)} />
 		)
 	}
 
@@ -210,13 +208,6 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 			{renderHeaderTitle(isDrawerPositionRight)}
 		</>
 	)
-	if (isDrawerPositionRight) {
-		primaryHeaderContent = (
-			<>
-				{renderHeaderTitle(isDrawerPositionRight)}
-			</>
-		)
-	}
 
 	// TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
 	// Consideration for future improvement to allow more flexible title positioning.
@@ -258,7 +249,7 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 					<View style={{
 						flexDirection: 'row',
 						justifyContent: 'flex-start',
-						alignItems: 'center',
+						alignItems: 'flex-start',
 					}}>
 						{renderDrawerIcon()}
 					</View>
@@ -266,7 +257,7 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 						flex: 1,
 						flexDirection: isDrawerPositionRight? 'row-reverse' : 'row',
 						justifyContent: 'center',
-						alignItems: 'center',
+						alignItems: 'flex-start',
 					}}>
 						<View style={{
 							flex: 1,
