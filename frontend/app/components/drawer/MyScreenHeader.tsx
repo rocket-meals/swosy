@@ -181,7 +181,7 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 
 			// Returns a touchable component with an icon for toggling the drawer.
 			return (
-				<MyButton useOnlyNecessarySpace={true} tooltip={translation_open_drawer} accessibilityLabel={translation_open_drawer} useTransparentBorderColor={true} leftIcon={icon} {...props} onPress={() => {
+				<MyButton useOnlyNecessarySpace={true} tooltip={translation_navigate_back} accessibilityLabel={translation_navigate_back} useTransparentBorderColor={true} leftIcon={icon} {...props} onPress={() => {
 					if(navigation.canGoBack()){
 						router.back();
 					} else {
