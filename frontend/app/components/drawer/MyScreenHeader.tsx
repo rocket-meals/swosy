@@ -132,29 +132,30 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 	const paddingRight = 10;
 	const paddingVertical = 10;
 
-	/**
-	 * Renders the header title element.
-	 * Applies header style from navigation options to the title.
-	 *
-	 * @param {HeaderTitleProps} props - Properties for the header title component.
-	 * @returns A React element representing the header title.
-	 */
-const renderHeaderTitle = (props?: HeaderTitleProps) => {
-	const readOnlyStyle: any = headerStyle;
-	const headerPaddingLeft = isDrawerPermanentVisible ? paddingLeft : 0;
-	return (
-		<View style={{backgroundColor: "red", paddingVertical: paddingVertical, paddingLeft: headerPaddingLeft }}>
-			<Heading
-				numberOfLines={1}
-				ellipsizeMode="tail"
-				accessibilityRole={MyAccessibilityRoles.Header}
-				style={[readOnlyStyle, { backgroundColor: "green", textAlign: 'center', flex: 1 }]}
-			>
-				{title}
-			</Heading>
-		</View>
-	);
-};
+		/**
+		 * Renders the header title element.
+		 * Applies header style from navigation options to the title.
+		 *
+		 * @returns A React element representing the header title.
+		 */
+	const renderHeaderTitle = (isDrawerPositionRight: boolean) => {
+		const readOnlyStyle: any = headerStyle;
+		const headerPaddingHorizontal = isDrawerPermanentVisible ? paddingLeft : 0;
+		const textAlignment = isDrawerPositionRight ? 'right' : 'left';
+
+		return (
+			<View style={{flexShrink: 1, paddingVertical: paddingVertical, paddingHorizontal: headerPaddingHorizontal }}>
+				<Heading
+					numberOfLines={1}
+					ellipsizeMode="tail"
+					accessibilityRole={MyAccessibilityRoles.Header}
+					style={[readOnlyStyle, {textAlign: textAlignment, flex: 1 }]}
+				>
+					{title}
+				</Heading>
+			</View>
+		);
+	};
 
 	/**
 	 * Optionally renders a drawer toggle icon.
@@ -203,27 +204,19 @@ const renderHeaderTitle = (props?: HeaderTitleProps) => {
 		)
 	}
 
-const isFlipped = drawerPosition === DrawerConfigPosition.Right;
+	const isDrawerPositionRight = drawerPosition === DrawerConfigPosition.Right;
 	let primaryHeaderContent = (
 		<>
-			{renderDrawerIcon()}
-			{renderHeaderTitle()}
+			{renderHeaderTitle(isDrawerPositionRight)}
 		</>
 	)
-	if (isFlipped) {
+	if (isDrawerPositionRight) {
 		primaryHeaderContent = (
 			<>
-				{renderHeaderTitle()}
-				{renderDrawerIcon()}
+				{renderHeaderTitle(isDrawerPositionRight)}
 			</>
 		)
 	}
-
-	// Swap header icons if the drawer is positioned on the right.
-
-
-	const headerLeft = isFlipped? secondaryHeaderContent : primaryHeaderContent;
-	const headerRight = isFlipped? primaryHeaderContent : secondaryHeaderContent;
 
 	// TODO: Refactor Header Title to also support align "right" instead of currently only "left" and "center"
 	// Consideration for future improvement to allow more flexible title positioning.
@@ -257,25 +250,33 @@ const isFlipped = drawerPosition === DrawerConfigPosition.Right;
 				flexDirection: 'row',
 			}}
 			>
-<View style={{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1
-}}>
-    <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-    }}>
-        {headerLeft}
-    </View>
-    <View style={{
-        flexShrink: 1,
-        alignItems: 'center',
-        flexDirection: 'row',
-    }}>
-        {headerRight}
-    </View>
-</View>
+				<View style={{
+					flexDirection: isDrawerPositionRight? 'row-reverse' : 'row',
+					justifyContent: 'space-between',
+					flex: 1,
+				}}>
+					<View style={{
+						flexDirection: 'row',
+						justifyContent: 'flex-start',
+						alignItems: 'center',
+					}}>
+						{renderDrawerIcon()}
+					</View>
+					<View style={{
+						flex: 1,
+						flexDirection: isDrawerPositionRight? 'row-reverse' : 'row',
+						justifyContent: 'center',
+						alignItems: 'center',
+					}}>
+						<View style={{
+							flex: 1,
+							flexDirection: 'row',
+						}}>
+							{primaryHeaderContent}
+						</View>
+						{secondaryHeaderContent}
+					</View>
+				</View>
 			</View>
 			{renderedDivider}
 		</>
