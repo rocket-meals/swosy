@@ -3,17 +3,24 @@ import {Foods} from "@/helper/database/databaseTypes/types";
 import {useFoodTranslation} from "@/helper/food/FoodTranslation";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 import {MyButtonNotify} from "@/components/buttons/MyButtonNotify";
-import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
+import {useIsNotificationActiveForFood, useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {MyNotificationRemoteButton} from "@/compositions/notification/MyNotificationRemoteButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 
 export type FoodNotifyButtonProps = {
 	food: Foods;
+	showOnlyWhenNotificationIsActive?: boolean
 }
 
 export const FoodNotifyButton : FunctionComponent<FoodNotifyButtonProps> = (props) => {
 	const translation_notify = useTranslation(TranslationKeys.notification);
+
+	const isNotificationForFoodActive = useIsNotificationActiveForFood(props.food.id);
+
+	if(props.showOnlyWhenNotificationIsActive && !isNotificationForFoodActive){
+		return null;
+	}
 
 	return <AccountRequiredTouchableOpacity translationOfDesiredAction={translation_notify}>
 		<FoodNotifyButtonWithPermission food={props.food} />
@@ -23,12 +30,8 @@ export const FoodNotifyButton : FunctionComponent<FoodNotifyButtonProps> = (prop
 const FoodNotifyButtonWithPermission : FunctionComponent<FoodNotifyButtonProps> = (props) => {
 	const food = props.food;
 	const food_id = food.id;
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 
 	const food_name = useFoodTranslation(food) || food_id
-
-	const notify = foodFeedback?.notify;
-	const active = !!notify;
 
 	return(
 		<FoodNotifyButtonWithPermissionWithName food_id={food_id} food_name={food_name} />

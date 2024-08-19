@@ -5,6 +5,7 @@ import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useCurrentUser} from '@/states/User';
 import {useIsDemo} from "@/states/SynchedDemo";
 import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {useFoodTranslation} from "@/helper/food/FoodTranslation";
 
 export const TABLE_NAME_FOODS_FEEDBACKS = 'foods_feedbacks';
 const cacheHelperDeepFields_food_feedbacks: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -135,6 +136,12 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, Foods
 	}
 
 	return [usedResources, setResourcesOnly, cacheHelperObj]
+}
+
+export function useIsNotificationActiveForFood(food_id: string){
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food_id);
+	const notify = foodFeedback?.notify;
+	return !!notify;
 }
 
 export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>] {
