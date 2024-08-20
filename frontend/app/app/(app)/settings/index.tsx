@@ -44,15 +44,17 @@ const ProjectVersionInformation = () => {
 
 	const tooltip = title+": "+translation_state_current+": "+state_current_translated+". "+translation_state_next+": "+state_next_translated;
 
-	return <View style={{width: "100%", paddingLeft: SETTINGS_ROW_DEFAULT_PADDING}}>
-		<MyTouchableOpacity accessibilityLabel={tooltip} tooltip={tooltip} onPress={() => {
-			setDevelop((currentValue) => {
-				return !currentValue
-			})
-		}} >
-			<ProjectBanner/>
-		</MyTouchableOpacity>
-	</View>
+	return <>
+		<View style={{width: "100%", paddingLeft: SETTINGS_ROW_DEFAULT_PADDING}}>
+			<MyTouchableOpacity accessibilityLabel={tooltip} tooltip={tooltip} onPress={() => {
+				setDevelop((currentValue) => {
+					return !currentValue
+				})
+			}} >
+				<ProjectBanner/>
+			</MyTouchableOpacity>
+		</View>
+	</>
 }
 
 export default function SettingsScreen() {

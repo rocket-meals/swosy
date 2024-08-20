@@ -5,8 +5,9 @@ import {
 	Text,
 	TEXT_SIZE_3_EXTRA_LARGE,
 	TEXT_SIZE_5_EXTRA_LARGE,
-	TEXT_SIZE_DEFAULT,
-	TEXT_SIZE_EXTRA_LARGE, useTextContrastColor, useViewBackgroundColor,
+	TEXT_SIZE_EXTRA_LARGE,
+	useTextContrastColor,
+	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
@@ -22,7 +23,6 @@ import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/Synche
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {PriceGroups, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
-import {Image} from "expo-image";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
@@ -32,6 +32,7 @@ import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {getMarkingName} from "@/components/food/MarkingListItem";
+import {CompanyLogo} from "@/components/project/CompanyLogo";
 
 const companyLogo = require("@/assets/images/company.png");
 
@@ -305,10 +306,10 @@ export default function FoodBigScreenScreen() {
 						justifyContent: 'center',
 						alignItems: 'center'
 					}}>
-						<Image contentFit={"contain"} source={companyLogo} style={{
+						<CompanyLogo style={{
+							height: '100%',
 							width: '100%',
-							height: '100%'
-						}}/>
+						}} />
 					</View>
 					<View style={{flex: 1}} />
 				</View>

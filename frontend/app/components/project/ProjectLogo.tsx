@@ -3,8 +3,10 @@ import {useProjectLogoAssetId} from '@/states/ProjectInfo';
 import DirectusImage from '@/components/project/DirectusImage';
 import {ViewProps} from 'react-native';
 import {ProjectLogoDefault} from '@/components/project/ProjectLogoDefault';
-import {View, Text} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {ViewWithProjectColor} from '@/components/project/ViewWithProjectColor';
+
+export const ProjectLogoDefaultHeightAndWidth = 64;
 
 interface AppState {
     rounded?: boolean
@@ -13,9 +15,9 @@ interface AppState {
 	style?: ViewProps['style']
 }
 export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...props}) => {
-	const defaultHeightAndWidth = 64;
-	const usedHeight = style?.height || defaultHeightAndWidth
-	const usedWidth = style?.width || defaultHeightAndWidth
+	const defaultHeightAndWidth = ProjectLogoDefaultHeightAndWidth;
+	const usedHeight: string | number = style?.height || defaultHeightAndWidth
+	const usedWidth: string | number = style?.width || defaultHeightAndWidth
 	const defaultStyle = {width: usedWidth, height: "100%"}
 
 	const projectLogoAssetId = useProjectLogoAssetId()
@@ -27,7 +29,13 @@ export const ProjectLogo: FunctionComponent<AppState & ViewProps> = ({style, ...
 	)
 	//let fallbackElement = undefined
 
-	let borderRadius = usedHeight/6
+	let borderRadius = ProjectLogoDefaultHeightAndWidth/6
+	if(props.rounded===false){
+		borderRadius = 0
+	}
+	if(typeof usedHeight === "number"){
+		borderRadius = usedHeight/6
+	}
 
 	return (
 		<View key={projectLogoAssetId} style={{height: usedHeight, width: usedWidth, borderRadius: borderRadius, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'}}>
