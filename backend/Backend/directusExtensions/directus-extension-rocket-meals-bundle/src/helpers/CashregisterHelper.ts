@@ -52,7 +52,7 @@ export class CashregisterHelper {
         }
 
         console.log("searchQuery");
-        console.log(searchQuery);
+        console.log(JSON.stringify(searchQuery, null, 2));
 
         let objs = await cashregisters_transactions_service.readByQuery(searchQuery)
         let obj = objs[0]
@@ -62,8 +62,40 @@ export class CashregisterHelper {
             obj_json = this.setStatusPublished(obj_json);
             console.log("obj_json");
             console.log(obj_json);
-            await cashregisters_transactions_service.createOne(obj_json);
-            console.log("created transaction hopefully");
+            let transaction_id = await cashregisters_transactions_service.createOne({});
+            console.log("transaction_id after createOne");
+            console.log(transaction_id);
+            console.log("update the transaction with the data");
+
+            console.log("update external_identifier");
+            console.log("obj_json.external_identifier");
+            console.log(obj_json.external_identifier);
+            await cashregisters_transactions_service.updateOne(transaction_id, {
+                external_identifier: obj_json.external_identifier,
+            });
+
+            console.log("update name");
+            console.log("obj_json.name");
+            console.log(obj_json.name);
+            await cashregisters_transactions_service.updateOne(transaction_id, {
+                name: obj_json.name,
+            });
+
+            console.log("update quantity");
+            console.log("obj_json.quantity");
+            console.log(obj_json.quantity);
+            await cashregisters_transactions_service.updateOne(transaction_id, {
+                quantity: obj_json.quantity,
+            });
+
+            console.log("update related cashregister");
+            console.log("cashregister_id");
+            console.log(cashregister_id);
+            await cashregisters_transactions_service.updateOne(transaction_id, {
+                cashregister: cashregister_id,
+            });
+
+            console.log("created and updated transaction hopefully");
             console.log("search again for the transaction");
             objs = await cashregisters_transactions_service.readByQuery(searchQuery)
             obj = objs[0]
