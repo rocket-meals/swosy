@@ -14,6 +14,20 @@
     "_syncId": "017ffe97-5499-43ce-87fc-f755815d2b62"
   },
   {
+    "name": "Cashregister-Sync-Cron-5min",
+    "icon": "bolt",
+    "color": null,
+    "description": null,
+    "status": "inactive",
+    "trigger": "schedule",
+    "accountability": "all",
+    "options": {
+      "cron": "*/5 * * * *"
+    },
+    "operation": "998bc28d-0989-4004-81db-030acb7e9ced",
+    "_syncId": "16feb8c5-d138-454a-8fd6-e60394661f91"
+  },
+  {
     "name": "Food-Sync-Cron-5min",
     "icon": "bolt",
     "color": null,
@@ -32,7 +46,7 @@
     "icon": "bolt",
     "color": null,
     "description": null,
-    "status": "inactive",
+    "status": "active",
     "trigger": "schedule",
     "accountability": "all",
     "options": {

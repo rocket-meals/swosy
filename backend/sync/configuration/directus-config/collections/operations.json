@@ -87,6 +87,30 @@
         }
       },
       "payload": {
+        "cashregisters_parsing_status": "start"
+      }
+    },
+    "resolve": null,
+    "reject": null,
+    "flow": "16feb8c5-d138-454a-8fd6-e60394661f91",
+    "_syncId": "998bc28d-0989-4004-81db-030acb7e9ced"
+  },
+  {
+    "name": "Daten aktualisieren",
+    "key": "item_update_jrrlc",
+    "type": "item-update",
+    "position_x": 19,
+    "position_y": 1,
+    "options": {
+      "collection": "app_settings",
+      "permissions": "$full",
+      "emitEvents": true,
+      "query": {
+        "filter": {
+          "_and": []
+        }
+      },
+      "payload": {
         "housing_parsing_status": "start"
       }
     },
