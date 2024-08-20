@@ -134,63 +134,7 @@ export class ParseSchedule {
     }
 
     async findOrCreateCashregisterTransaction(transaction: CashregistersTransactionsForParser, cashregister_id: string) {
-
-        let transaction_id = transaction.baseData.id
-
-        if(!transaction_id){
-            return null;
-        }
-
-        let obj_json: CashregistersTransactions = {
-            status: "published",
-            date: transaction.baseData.date,
-            name: transaction.baseData.name,
-            quantity: transaction.baseData.quantity,
-            cashregister: cashregister_id,
-            id: transaction_id,
-        };
-
-        let cashregisters_transactions_service = await this.getCashregisterTransactionService();
-
-        let obj = undefined;
-        let objs = await cashregisters_transactions_service.readByQuery({
-            filter: {id: {
-                    _eq: transaction_id
-                }
-            }
-        })
-        obj = objs[0]
-        /**
-         * Using readOne get this error:
-         * https://github.com/directus/directus/issues/20990
-         Error [DirectusError]: You don't have permission to access this.
-             at ItemsService.readOne (file:///directus/node_modules/.pnpm/file+api_@unhead+vue@1.8.9_pinia@2.1.7_typescript@5.3.3_vue@3.3.13/node_modules/@directus/api/dist/services/items.js:367:19)
-             at async ParseSchedule.parse (file:///directus/extensions/hooks/cashregisterSchedule/ParseSchedule.js:165:25)
-             at async EventEmitter.<anonymous> (file:///directus/extensions/hooks/cashregisterSchedule/index.js?t=1704650646922:73:17)
-             at async Promise.all (index 0) {
-           extensions: undefined,
-           code: 'FORBIDDEN',
-           status: 403
-         }
-         */
-
-
-        if (!obj) {
-            try{
-                await cashregisters_transactions_service.createOne(obj_json);
-            } catch (err){
-                // this error should not happen. Only happend one, where we used readMany instead of readOne
-                // TODO: Check if this error still occurs
-                //console.log("Error at: await this.cashregisters_transactions_service.createOne(obj_json);");
-                //console.log("obj_json?.id: "+obj_json?.id)
-            }
-
-            objs = await cashregisters_transactions_service.readMany([obj_json.id]);
-            obj = objs[0]
-        } else {
-            //console.log("Transaction already found")
-        }
-        return obj;
+        return await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregisterTransaction(transaction, cashregister_id);
     }
 
 }

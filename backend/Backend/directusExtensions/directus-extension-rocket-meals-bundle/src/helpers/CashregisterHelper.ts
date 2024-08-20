@@ -2,6 +2,11 @@ import {ApiContext} from "./ApiContext";
 import {ItemsServiceCreator} from "./ItemsServiceCreator";
 import {CollectionNames} from "./CollectionNames";
 import {Cashregisters, CashregistersTransactions} from "../databaseTypes/types";
+import {
+    CashregistersTransactionsForParser,
+    CashregistersTransactionsOmmitedFields
+} from "../cashregister-hook/CashregisterTransactionParserInterface";
+import {Query} from "@directus/types";
 
 export class CashregisterHelper {
 
@@ -24,6 +29,34 @@ export class CashregisterHelper {
     setStatusPublished(json: any) {
         json["status"] = "published";
         return json;
+    }
+
+    async findOrCreateCashregisterTransaction(cashregistersTransactionsForParser: CashregistersTransactionsForParser, cashregister_id: string) {
+        const cashregisters_transactions_service = await this.getCashregisterTransactionsService();
+        let obj_json: Partial<CashregistersTransactions> = cashregistersTransactionsForParser.baseData
+        obj_json.cashregister = cashregister_id;
+        obj_json.external_identifier = cashregistersTransactionsForParser.baseData.external_identifier; // just to be sure that the external_identifier is set
+
+
+        const searchQuery = {
+            filter: {_and: [
+                    {external_identifier: {
+                            _eq: obj_json.external_identifier
+                        }},
+                ]}
+        }
+
+        let objs = await cashregisters_transactions_service.readByQuery(searchQuery)
+        let obj = objs[0]
+
+        if (!obj) {
+            obj_json = this.setStatusPublished(obj_json);
+            await cashregisters_transactions_service.createOne(obj_json);
+            objs = await cashregisters_transactions_service.readByQuery(searchQuery)
+            obj = objs[0]
+        }
+
+        return obj;
     }
 
     async findOrCreateCashregister(external_identifier: string) {

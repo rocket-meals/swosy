@@ -1,6 +1,8 @@
 import {CashregistersTransactions} from "../databaseTypes/types";
 
-export type CashregistersTransactionsOmmitedFields = Omit<CashregistersTransactions, "cashregister" | "created_on" | "updated_on" | "created_by" | "updated_by" | "status">
+export type CashregistersTransactionsOmmitedFields = Omit<CashregistersTransactions, "id" | "cashregister" | "created_on" | "updated_on" | "created_by" | "updated_by" | "status"> & {
+    external_identifier: string
+}
 
 export type CashregistersTransactionsForParser = {
     baseData: CashregistersTransactionsOmmitedFields;

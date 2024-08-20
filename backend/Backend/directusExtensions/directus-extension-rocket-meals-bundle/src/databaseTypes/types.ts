@@ -265,6 +265,7 @@ export type CashregistersTransactions = {
   date?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  external_identifier?: string | null;
   id: string;
   name?: string | null;
   quantity?: number | null;
