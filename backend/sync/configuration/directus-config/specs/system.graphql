@@ -241,7 +241,6 @@ type Subscription {
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
-  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
@@ -263,6 +262,7 @@ type Subscription {
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
+  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
@@ -732,6 +732,7 @@ type cashregisters_transactions {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  external_identifier: String
 }
 
 type cashregisters_transactions_mutated {
@@ -2859,6 +2860,7 @@ input cashregisters_transactions_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  external_identifier: string_filter_operators
   _and: [cashregisters_transactions_filter]
   _or: [cashregisters_transactions_filter]
 }
