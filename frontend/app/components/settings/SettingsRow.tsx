@@ -103,6 +103,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const contentWithShrinkingSpaceOnlyRight = (
 		<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
 			<View style={{
+				flex: 1
 			}}
 			>
 				<Text style={{ color: usedTextColor }}>{item.label}</Text>

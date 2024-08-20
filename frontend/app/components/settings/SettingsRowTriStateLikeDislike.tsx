@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useState} from 'react';
-import {SettingsRow, SettingsRowProps} from './SettingsRow';
+import {SETTINGS_ROW_DEFAULT_PADDING, SettingsRow, SettingsRowProps} from './SettingsRow';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {View} from '@/components/Themed';
 import {MyButton} from '@/components/buttons/MyButton';
@@ -73,6 +73,7 @@ export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & Settin
 
 	let rightButtons: any = <View style={{
 		paddingRight: 0,
+		paddingLeft: SETTINGS_ROW_DEFAULT_PADDING/2,
 		justifyContent: 'center',
 		alignItems: 'center',
 		flexDirection: 'row'
