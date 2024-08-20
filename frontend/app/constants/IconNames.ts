@@ -10,7 +10,7 @@ export class IconNames {
     static drawer_menu_icon = 'menu'
     static drawer_menu_go_back_icon = 'arrow-left'
     static drawer_menu_go_back_rtl_icon = 'arrow-right'
-    static canteen_icon = 'warehouse'
+    static canteen_icon = 'silverware-variant'
     static developer_icon = 'code-braces'
     static software_icon = 'rocket'
     static fullscreen_icon = 'fullscreen'
