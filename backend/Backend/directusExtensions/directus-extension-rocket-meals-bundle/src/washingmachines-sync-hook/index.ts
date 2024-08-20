@@ -2,77 +2,49 @@ import {WashingmachineParseSchedule} from "./WashingmachineParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {TestWashingmachineParser} from "./testParser/TestWashingmachineParser";
+import {DemoWashingmachineParser} from "./testParser/DemoWashingmachineParser";
 import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
-import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
-
-
-let parseInterface: WashingmachineParserInterface | undefined = undefined;
-if(EnvVariableHelper.isDevelopmentServerOrLocal()){
-    console.log("Development Server: Using TestWashingmachineParser");
-    parseInterface = new TestWashingmachineParser();
-}
-
-const parseSchedule = new WashingmachineParseSchedule(parseInterface);
+import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
+import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
 
 export const SCHEDULE_NAME_WASHING_MACHINE = "washingmachine_parse";
 export default defineHook(async ({action}, apiContext) => {
-    logger.info(SCHEDULE_NAME_WASHING_MACHINE+" hook: init");
-
     const SCHEDULE_NAME = SCHEDULE_NAME_WASHING_MACHINE;
+    const collection = CollectionNames.APP_SETTINGS;
 
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        env,
-        logger
-    } = apiContext;
-
-    try {
-        await parseSchedule.init(getSchema, services, database, logger);
-    } catch (err) {
-        let errMsg = err.toString();
-        if (errMsg.includes("no such table: directus_collections")) {
-            console.log("+++++++++ Meal Parse Schedule +++++++++");
-            console.log("++++ Database not initialized yet +++++");
-            console.log("+++ Restart Server again after init +++");
-            console.log("+++++++++++++++++++++++++++++++++++++++");
-        } else {
-            console.log("News Parse Schedule init error: ");
-            console.log(err);
-        }
+    let usedParser: WashingmachineParserInterface | null = null;
+    switch (EnvVariableHelper.getSyncForCustomer()) {
+        case SyncForCustomerEnum.TEST:
+            usedParser = new DemoWashingmachineParser()
+            break;
+        case SyncForCustomerEnum.HANNOVER:
+            usedParser = null
+            break;
+        case SyncForCustomerEnum.OSNABRUECK:
+            usedParser = new StudentenwerkOsnabrueckWashingmachineParser()
+            break;
     }
 
-    let collection = CollectionNames.APP_SETTINGS
+    if(!usedParser){
+        console.log("No Parser set for Washingmachine Sync");
+        return;
+    }
 
-    /**
-    console.log("DEBUG SCHEDULE")
-    let manualParser = new StudentenwerkHannoverApartments_Parser();
-    let items = await manualParser.getJSONList();
-    console.log("items")
-    console.log(JSON.stringify(items, null, 2))
-        */
+    const parseSchedule = new WashingmachineParseSchedule(apiContext, usedParser);
 
     action(
         collection + ".items.update",
         async () => {
-            console.log(SCHEDULE_NAME_WASHING_MACHINE+" hook: update")
             try {
-                if(!parseSchedule.parser){
-                    // If no parser is set, ignore the update
-                } else {
-                    await parseSchedule.parse();
-                }
+                await parseSchedule.parse();
             } catch (err) {
                 console.log(err);
             }
-            //TODO set field "parse_foods" to false
         }
     );
 });

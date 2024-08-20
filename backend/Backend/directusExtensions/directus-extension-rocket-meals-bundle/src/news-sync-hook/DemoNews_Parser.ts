@@ -1,7 +1,7 @@
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 
-export class TestNews_Parser implements NewsParserInterface{
+export class DemoNews_Parser implements NewsParserInterface{
 
     constructor() {
 
@@ -13,9 +13,11 @@ export class TestNews_Parser implements NewsParserInterface{
 
     getDemoNewsItem(external_identifier: string): NewsTypeForParser {
         return {
-            external_identifier: external_identifier,
-            image_remote_url: "https://images.pexels.com/photos/1462630/pexels-photo-1462630.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-            url: "https://www.pexels.com/de-de/foto/frau-die-im-flur-steht-wahrend-buch-halt-1462630/",
+            basicNews: {
+                external_identifier: external_identifier,
+                image_remote_url: "https://images.pexels.com/photos/1462630/pexels-photo-1462630.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                url: "https://www.pexels.com/de-de/foto/frau-die-im-flur-steht-wahrend-buch-halt-1462630/",
+            },
             translations: {
                 [TranslationHelper.LANGUAGE_CODE_DE]: {
                     title: "Test News "+external_identifier,

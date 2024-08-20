@@ -1,17 +1,19 @@
-import {WashingmachineParserInterface} from "./../WashingmachineParserInterface";
-import {Washingmachines} from "../../databaseTypes/types";
+import {
+    WashingmachineParserInterface,
+    WashingmachinesTypeForParser,
+    WashingmachinesTypeForParserOmmited
+} from "../WashingmachineParserInterface";
 import {DateHelper} from "../../helpers/DateHelper";
 
-
-export class TestWashingmachineParser implements WashingmachineParserInterface {
+export class DemoWashingmachineParser implements WashingmachineParserInterface {
 
     constructor() {
 
     }
 
-    async getWashingmachines(): Promise<Partial<Washingmachines>[]> {
+    async getWashingmachines(): Promise<WashingmachinesTypeForParser[]> {
 
-        let washingmachines: Partial<Washingmachines>[] = []
+        let washingmachines: WashingmachinesTypeForParser[] = []
 
         // create 2 washingmachines, one is free, one is occupied
         // switch between free and occupied every 5 minutes
@@ -28,18 +30,22 @@ export class TestWashingmachineParser implements WashingmachineParserInterface {
         let occupiedWashingmachineExternalIdentifier = isWashingMachine1Occupied ? external_identifier_1 : external_identifier_2;
         let freeWashingmachineExternalIdentifier = isWashingMachine1Occupied ? external_identifier_2 : external_identifier_1;
 
-        let occupiedWashingmachine: Partial<Washingmachines> = {
+        let occupiedWashingmachine: WashingmachinesTypeForParserOmmited = {
             external_identifier: occupiedWashingmachineExternalIdentifier,
             date_finished: DateHelper.formatDateToIso8601WithoutTimezone(occupiedWashingmachineDateFinished)
         }
 
-        let freeWashingmachine: Partial<Washingmachines> = {
+        let freeWashingmachine: WashingmachinesTypeForParserOmmited = {
             external_identifier: freeWashingmachineExternalIdentifier,
             date_finished: null
         }
 
-        washingmachines.push(occupiedWashingmachine);
-        washingmachines.push(freeWashingmachine);
+        washingmachines.push({
+            basicData: occupiedWashingmachine
+        });
+        washingmachines.push({
+            basicData: freeWashingmachine
+        });
 
         return washingmachines;
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+// @ts-ignore // no types available
 import JSSoup from 'jssoup';
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
@@ -52,11 +53,14 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
                 // Categories processing can be added here if available
 
                 news.push({
-                    external_identifier: "news_" + header.replace(/\W+/g, '_'),
-                    image_remote_url: imageUrl,
-                    alias: header,
-                    date: new Date().toISOString(),
-                    url: articleUrl,
+                    basicNews: {
+                        external_identifier: "news_" + header.replace(/\W+/g, '_'),
+                        image_remote_url: imageUrl,
+                        alias: header,
+                        date: new Date().toISOString(),
+                        url: articleUrl,
+                        categories: {} // Assuming no category data; fill in as needed
+                    },
                     translations: {
                         [TranslationHelper.LANGUAGE_CODE_DE]: {
                             title: header,
@@ -65,7 +69,6 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
                             let_be_translated: false,
                         },
                     },
-                    categories: {} // Assuming no category data; fill in as needed
                 });
             });
 

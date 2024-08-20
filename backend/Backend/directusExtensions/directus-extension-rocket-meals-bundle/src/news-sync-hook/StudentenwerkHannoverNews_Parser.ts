@@ -54,11 +54,14 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
             let categories = StudentenwerkHannoverNews_Parser.extractCategories($newsIndexArticle, element);
 
             data.push({
-                external_identifier: "news_" + header.replace(/\W+/g, '_'),
-                image_remote_url: imageUrl,
-                alias: header,
-                date: date,
-                url: articleUrl,
+                basicNews: {
+                    external_identifier: "news_" + header.replace(/\W+/g, '_'),
+                    image_remote_url: imageUrl,
+                    alias: header,
+                    date: date,
+                    url: articleUrl,
+                    categories: categories
+                },
                 translations: {
                     [TranslationHelper.LANGUAGE_CODE_DE]: {
                         title: header,
@@ -67,7 +70,6 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
                         let_be_translated: false,
                     },
                 },
-                categories: categories
             });
         }
 

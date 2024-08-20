@@ -1,11 +1,12 @@
 import axios from "axios";
 import xml2js from "xml2js";
 
-import {WashingmachineParserInterface} from "./../WashingmachineParserInterface";
-import {Washingmachines} from "../../databaseTypes/types";
+import {
+    WashingmachineParserInterface,
+    WashingmachinesTypeForParser,
+    WashingmachinesTypeForParserOmmited
+} from "./../WashingmachineParserInterface";
 import {DateHelper} from "../../helpers/DateHelper";
-
-const url = "http://131.173.252.37:8080/smartWASH-WebService/JaxWsWashService/";
 
 type IntercardWasher = {
     terminalNr: number,
@@ -14,36 +15,44 @@ type IntercardWasher = {
     expectedFreeTimeInMinutes: number
 }
 
-
 export class StudentenwerkOsnabrueckWashingmachineParser implements WashingmachineParserInterface {
+
+    static url = "http://131.173.252.37:8080/smartWASH-WebService/JaxWsWashService/";
+    static getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + "getAllTerminals";
 
     constructor() {
 
     }
 
-    async getWashingmachines(): Promise<Partial<Washingmachines>[]> {
-        let answer: Partial<Washingmachines>[] = [];
+    static getWasherExternalIdentifier(terminalNr: number, automateNr: number): string {
+        return "osnabrueck_" + terminalNr + "_" + automateNr;
+    }
+
+    async getWashingmachines(): Promise<WashingmachinesTypeForParser[]> {
+        let answer: WashingmachinesTypeForParser[] = [];
         let intercardWashers = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalFromIntercard();
         for (let i = 0; i < intercardWashers.length; i++) {
             let washer = intercardWashers[i];
             if(!!washer) {
-                let external_identifier = "osnabrueck_" + washer.terminalNr + "_" + washer.automateNr;
+                let external_identifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(washer.terminalNr, washer.automateNr);
                 let date_finished: string | null = null
                 if(washer.intercardStatus === "true") {
                     let date = new Date();
+                    //console.log("Date now: " + DateHelper.formatDateToIso8601WithoutTimezone(date));
                     date.setMinutes(date.getMinutes() + washer.expectedFreeTimeInMinutes);
                     date_finished = DateHelper.formatDateToIso8601WithoutTimezone(date);
+                    //console.log("Date finished: " + date_finished);
                 } else {
                     date_finished = null
                 }
 
-                let washingmachine: Partial<Washingmachines> = {
+                let washingmachine: WashingmachinesTypeForParserOmmited = {
                     external_identifier: external_identifier,
                     alias: "Washingmachine " + washer.terminalNr + " " + washer.automateNr,
                     date_updated: DateHelper.formatDateToIso8601WithoutTimezone(new Date()),
                     date_finished: date_finished
                 };
-                answer.push(washingmachine);
+                answer.push({basicData: washingmachine});
             }
         }
         return answer;
@@ -56,11 +65,14 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      */
     static async getAllTerminalFromIntercard(): Promise<IntercardWasher[]> {
         let html = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsRawFromIntercard();
-        console.log("HTML from Intercard");
-        console.log(html);
+        //console.log("HTML from Intercard");
+        //console.log(html);
+        if(!html) {
+            return [];
+        }
         let washerJSON = await StudentenwerkOsnabrueckWashingmachineParser.parseTerminalsRawFromIntercardToJSON(html);
-        console.log("JSON from Intercard");
-        console.log(washerJSON);
+        //console.log("JSON from Intercard");
+        //console.log(washerJSON);
         return washerJSON;
     }
 
@@ -69,16 +81,15 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      * @returns {Promise<null|*>}
      */
     static async getAllTerminalsRawFromIntercard(): Promise<string | null> {
-        let getAllTerminalsFunction = "getAllTerminals"; //the function to call
-        let urlForRequest = url + getAllTerminalsFunction; //the full url
+        let urlForRequest = StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsUrl
         try {
             let response = await axios.get(urlForRequest); //get the html
              //get the data
-            console.log("Response from Intercard");
-            console.log(response.data);
+            //console.log("Response from Intercard");
+            //console.log(response.data);
             let data = response.data;
-            console.log("Data from Intercard");
-            console.log(data);
+            //console.log("Data from Intercard");
+            //console.log(data);
             if(!!data && typeof data === "string") {
                 return response.data;
             }
@@ -92,7 +103,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      * @param html the raw informations
      * @returns {Promise<Array>} the parsed JSON
      */
-    static async parseTerminalsRawFromIntercardToJSON(html: string | null): Promise<IntercardWasher[]> {
+    static async parseTerminalsRawFromIntercardToJSON(html: string): Promise<IntercardWasher[]> {
         let answer: IntercardWasher[] = []; //prepare an empty answer we will fill
         try {
             let json = await xml2js.parseStringPromise(html); //parse the html into json with too much informations for us

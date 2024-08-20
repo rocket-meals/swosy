@@ -3,8 +3,9 @@ import {Cashregisters_SWOSY} from "./Cashregisters_SWOSY"
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
+import {CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
 
-const parser = new Cashregisters_SWOSY("https://share.sw-os.de/swosy-kassendaten-2h", `Nils:qYoTHeyPyRljfEGRWW52`);
 
 export default defineHook(async ({action}, apiContext) => {
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
@@ -12,32 +13,27 @@ export default defineHook(async ({action}, apiContext) => {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        logger
-    } = apiContext;
-
     let collection = CollectionNames.APP_SETTINGS;
-    const parseSchedule = new ParseSchedule(parser, apiContext);
 
-
-    try {
-        await parseSchedule.init(getSchema, services, database, logger);
-    } catch (err) {
-        let errMsg = err.toString();
-        if (errMsg.includes("no such table: directus_collections")) {
-            console.log("+++++++++ Cashregister Parse Schedule +++++++++");
-            console.log("++++ Database not initialized yet +++++");
-            console.log("+++ Restart Server again after init +++");
-            console.log("+++++++++++++++++++++++++++++++++++++++");
-            return;
-        } else {
-            console.log("Cashregister Parse Schedule init error: ");
-            console.log(err);
-        }
+    let usedParser: CashregisterTransactionParserInterface | null = null;
+    switch (EnvVariableHelper.getSyncForCustomer()) {
+        case SyncForCustomerEnum.TEST:
+            usedParser = null;
+            break;
+        case SyncForCustomerEnum.HANNOVER:
+            usedParser = null;
+            break;
+        case SyncForCustomerEnum.OSNABRUECK:
+            usedParser = new Cashregisters_SWOSY("https://share.sw-os.de/swosy-kassendaten-2h", `Nils:qYoTHeyPyRljfEGRWW52`);
+            break;
     }
+
+    if (!usedParser) {
+        console.log("No Parser set for Cashregister Sync");
+        return;
+    }
+
+    const parseSchedule = new ParseSchedule(usedParser, apiContext);
 
     action(
         collection + ".items.update",

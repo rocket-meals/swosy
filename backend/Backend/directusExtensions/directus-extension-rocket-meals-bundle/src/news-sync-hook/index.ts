@@ -2,9 +2,11 @@ import {NewsParseSchedule} from "./NewsParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {TestNews_Parser} from "./TestNews_Parser";
-
-let usedParser = new TestNews_Parser()
+import {DemoNews_Parser} from "./DemoNews_Parser";
+import {NewsParserInterface} from "./NewsParserInterface";
+import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
+import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser";
+import {StudentenwerkOsnabrueckNews_Parser} from "./StudentenwerkOsnabrueckNews_Parser";
 
 const SCHEDULE_NAME = "news_parse";
 /**
@@ -25,30 +27,25 @@ export default defineHook(async ({action}, apiContext) => {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        env,
-        logger
-    } = apiContext;
+    let usedParser: NewsParserInterface | null = null;
+    switch (EnvVariableHelper.getSyncForCustomer()) {
+        case SyncForCustomerEnum.TEST:
+            usedParser = new DemoNews_Parser();
+            break;
+        case SyncForCustomerEnum.HANNOVER:
+            usedParser = new StudentenwerkHannoverNews_Parser()
+            break;
+        case SyncForCustomerEnum.OSNABRUECK:
+            usedParser = new StudentenwerkOsnabrueckNews_Parser()
+            break;
+    }
+
+    if(!usedParser){
+        console.log("No Parser set for News Sync");
+        return;
+    }
 
     const parseSchedule = new NewsParseSchedule(apiContext, usedParser);
-
-       try {
-            await parseSchedule.init(getSchema, services, database, logger);
-        } catch (err: any) {
-            let errMsg = err.toString();
-            if (errMsg.includes("no such table: directus_collections")) {
-                console.log("+++++++++ Meal Parse Schedule +++++++++");
-                console.log("++++ Database not initialized yet +++++");
-                console.log("+++ Restart Server again after init +++");
-                console.log("+++++++++++++++++++++++++++++++++++++++");
-            } else {
-                console.log("News Parse Schedule init error: ");
-                console.log(err);
-            }
-        }
 
         let collection = CollectionNames.APP_SETTINGS;
 

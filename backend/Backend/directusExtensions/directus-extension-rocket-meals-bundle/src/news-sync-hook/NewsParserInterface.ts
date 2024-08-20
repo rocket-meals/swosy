@@ -1,9 +1,13 @@
 import {News} from "../databaseTypes/types";
+import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 
-type NewsTranslationType = {     [x: string]: {         title: string;         content: string;         be_source_for_translations: true;         let_be_translated: false;     }; }
-
-type NewsTypeForParserOmmited = Omit<News, 'id' | 'user_created' | 'user_updated' | 'image' | "translations" |"status">
-export type NewsTypeForParser = NewsTypeForParserOmmited & {translations: NewsTranslationType}
+type NewsTypeForParserOmmited = Omit<News, 'id' | 'user_created' | 'user_updated' | 'image' | "translations" |"status" | "external_identifier"> & {
+    external_identifier: string
+}
+export type NewsTypeForParser = {
+    basicNews: NewsTypeForParserOmmited,
+    translations: TranslationsFromParsingType
+}
 
 export interface NewsParserInterface {
 

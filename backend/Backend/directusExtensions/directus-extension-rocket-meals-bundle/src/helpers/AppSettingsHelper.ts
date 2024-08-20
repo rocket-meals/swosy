@@ -76,6 +76,29 @@ export class AppSettingsHelper {
         });
     }
 
+    async isNewsParsingEnabled(): Promise<boolean> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.news_parsing_enabled) {
+            return appSettings.news_parsing_enabled;
+        }
+        return false;
+    }
+
+    async setNewsParsingStatus(status: FlowStatus) {
+        let database = this.getDatabase();
+        await database(CollectionNames.APP_SETTINGS).update({
+            news_parsing_status: status
+        });
+    }
+
+    async getNewsParsingStatus(): Promise<FlowStatus | undefined> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.news_parsing_status) {
+            return appSettings.news_parsing_status as FlowStatus;
+        }
+        return undefined
+    }
+
     async getCashregisterParsingStatus(): Promise<FlowStatus | undefined> {
         const appSettings = await this.getAppSettings();
         if (appSettings?.cashregisters_parsing_status) {

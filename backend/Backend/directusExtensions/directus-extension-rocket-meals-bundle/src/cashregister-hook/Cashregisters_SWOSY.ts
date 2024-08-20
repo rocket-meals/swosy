@@ -1,5 +1,6 @@
 import axios from "axios";
-import { CashregistersTransactionsForParser, ParseScheduleInterface } from "./ParseScheduleInterface";
+import {CashregistersTransactionsForParser, CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
+import {DateHelper} from "../helpers/DateHelper";
 
 const BUCHUNGSNUMMER = "BUCHUNGSNUMMER";
 const Datum = "Datum";
@@ -10,15 +11,15 @@ const Kasse_ID = "Kasse_ID";
 
 interface Transaction {
     [key: string]: any;
-    BUCHUNGSNUMMER?: string;
-    Datum?: Date;
+    BUCHUNGSNUMMER: string;
+    Datum: Date;
     Name?: string;
-    Menge?: string;
+    Menge?: number;
     Verbrauchergruppe_ID?: string;
-    Kasse_ID?: string;
+    Kasse_ID: string;
 }
 
-export class Cashregisters_SWOSY implements ParseScheduleInterface {
+export class Cashregisters_SWOSY implements CashregisterTransactionParserInterface {
     password: string = "";
     api_url: string = "";
 
@@ -34,33 +35,23 @@ export class Cashregisters_SWOSY implements ParseScheduleInterface {
             const transactionIds = Object.keys(data);
             for (let i = 0; i < transactionIds.length; i++) {
                 const transactionId = transactionIds[i];
-                const transaction = data[transactionId];
-                if (transaction) {
-                    transactions.push(transaction);
+                if(transactionId){
+                    const transaction = data[transactionId];
+                    if (transaction) {
+                        transactions.push({
+                            baseData: {
+                                quantity: transaction.Menge,
+                                name: transaction.Name,
+                                id: transaction.BUCHUNGSNUMMER,
+                                date: DateHelper.formatDateToIso8601WithoutTimezone(transaction.Datum, false),
+                            },
+                            cashregister_external_idenfifier: transaction.Kasse_ID,
+                        });
+                    }
                 }
             }
         }
         return transactions;
-    }
-
-    getIdFromTransaction(transaction: Transaction): string | undefined {
-        return transaction[BUCHUNGSNUMMER];
-    }
-
-    getDateFromTransaction(transaction: Transaction): Date | undefined {
-        return transaction[Datum];
-    }
-
-    getNameFromTransaction(transaction: Transaction): string | undefined {
-        return transaction[Name];
-    }
-
-    getQuantityFromTransaction(transaction: Transaction): string | undefined {
-        return transaction[Menge];
-    }
-
-    getCashregisterExternalIdentifierFromTransaction(transaction: Transaction): string | undefined {
-        return transaction[Kasse_ID];
     }
 
     async loadFromRemote(url: string, password: string): Promise<string> {
@@ -80,12 +71,20 @@ export class Cashregisters_SWOSY implements ParseScheduleInterface {
     async getAsJSON(url: string, password: string): Promise<Record<string, Transaction>> {
         const text = await this.loadFromRemote(url, password);
         const fileLines = text.split("\r");
+        if(!fileLines) {
+            return {};
+        }
 
         const bezeichnungen: string[] = [];
         const data: Record<string, Transaction> = {};
 
         for (let lineNumber = 0; lineNumber < fileLines.length; lineNumber++) {
-            const line = fileLines[lineNumber].trim();
+            let rawLine = fileLines[lineNumber];
+            if(rawLine===undefined) {
+                continue; // skip empty lines
+            }
+
+            const line = rawLine.trim();
 
             if (lineNumber === 0) {
                 const bez = line.split("\t");
@@ -97,25 +96,49 @@ export class Cashregisters_SWOSY implements ParseScheduleInterface {
                     continue;
                 }
 
-                const parsedPart: Transaction = {};
+                const parsedPart: Partial<Transaction> = {};
                 const parsedParts = line.split("\t");
 
-                let identifier: string | undefined = undefined;
                 for (let index = 0; index < bezeichnungen.length; index++) {
-                    let content = parsedParts[index];
+                    let value = parsedParts[index] || "";
                     const bez = bezeichnungen[index];
-                    if (bez === BUCHUNGSNUMMER) {
-                        content = this.transformBuchungsnummer(content);
-                        identifier = content;
+                    switch (bez) {
+                        case BUCHUNGSNUMMER:
+                            parsedPart.BUCHUNGSNUMMER = this.transformBuchungsnummer(value);
+                            break;
+                        case Datum:
+                            let transformedDate = this.transformDate(value);
+                            if (transformedDate) {
+                                parsedPart.Datum = new Date();
+                            }
+                            break;
+                        case Name:
+                            parsedPart.Name = value;
+                            break;
+                        case Menge:
+                            parsedPart.Menge = parseFloat(value);
+                            break;
+                        case Verbrauchergruppe_ID:
+                            parsedPart.Verbrauchergruppe_ID = value;
+                            break;
+                        case Kasse_ID:
+                            parsedPart.Kasse_ID = value;
+                            break;
+                        default: // if the field is not known, we don't need it
+                            break;
                     }
-                    if (bez === Datum) {
-                        content = new Date(this.transformDate(content));
-                    }
-                    parsedPart[bez] = parsedParts.length > index ? content : "";
                 }
 
-                if (identifier) {
-                    data[identifier] = parsedPart;
+                // check if parsedPart has all required fields of Transaction
+                if (parsedPart.Datum && parsedPart.Kasse_ID && parsedPart.Menge && parsedPart.Name && parsedPart.Verbrauchergruppe_ID && parsedPart.BUCHUNGSNUMMER) {
+                    data[parsedPart.BUCHUNGSNUMMER] = {
+                        BUCHUNGSNUMMER: parsedPart.BUCHUNGSNUMMER,
+                        Datum: parsedPart.Datum,
+                        Kasse_ID: parsedPart.Kasse_ID,
+                        Menge: parsedPart.Menge,
+                        Name: parsedPart.Name,
+                        Verbrauchergruppe_ID: parsedPart.Verbrauchergruppe_ID,
+                    }
                 }
             }
         }
@@ -123,11 +146,22 @@ export class Cashregisters_SWOSY implements ParseScheduleInterface {
         return data;
     }
 
-    transformDate(dateWithTime: string): string {
+    transformDate(dateWithTime: string): string | null {
         const [date, time] = dateWithTime.split(" ");
 
+        if(date===undefined || time===undefined) {
+            return null;
+        }
+
         const [day, month, year] = date.split(".").map(num => parseInt(num));
+        if(day===undefined || month===undefined || year===undefined) {
+            return null;
+        }
+
         const [hour, minute, seconds] = time.split(":").map(num => parseInt(num));
+        if(hour===undefined || minute===undefined || seconds===undefined) {
+            return null;
+        }
 
         function getLastSunday(year: number, month: number): Date {
             const lastDay = new Date(year, month + 1, 0);
@@ -147,6 +181,7 @@ export class Cashregisters_SWOSY implements ParseScheduleInterface {
     }
 
     transformBuchungsnummer(buchungsnummer: string): string | undefined {
+        // buchungsnummer could be something like: "123456 789012       345678" -> "123456-789012-345678"
         if (buchungsnummer) {
             let id = "";
             let isFirstWhitespace = false;

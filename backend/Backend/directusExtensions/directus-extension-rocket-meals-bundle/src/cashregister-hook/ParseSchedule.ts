@@ -4,6 +4,11 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {
+    CashregistersTransactionsForParser,
+    CashregisterTransactionParserInterface
+} from "./CashregisterTransactionParserInterface";
+import {Cashregisters, CashregistersTransactions} from "../databaseTypes/types";
 
 const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS
@@ -17,33 +22,22 @@ export class ParseSchedule {
 
     private apiContext: ApiContext;
     private myDatabaseHelper: MyDatabaseHelper
+    private parser: CashregisterTransactionParserInterface;
 
-    private parser: any;
-    private finished: boolean;
-    private schema: any;
-    private database: any;
-    private logger: any;
-    private services: any;
-    private itemsServiceCreator: ItemsServiceCreator;
-    private cashregisters_service: any;
-    private cashregisters_transactions_service: any;
-
-    constructor(parser, apiContext: ApiContext) {
+    constructor(parser: CashregisterTransactionParserInterface, apiContext: ApiContext) {
         this.apiContext = apiContext
         this.myDatabaseHelper = new MyDatabaseHelper(apiContext)
         this.parser = parser;
-        this.finished = true;
     }
 
-    async init(getSchema, services, database, logger) {
-        this.schema = await getSchema();
-        this.database = database;
-        this.logger = logger;
-        this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+    async getCashregisterService(){
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        return await itemsServiceCreator.getItemsService<Cashregisters>(TABLENAME_CASHREGISTERS);
+    }
 
-        this.cashregisters_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS);
-        this.cashregisters_transactions_service = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
+    async getCashregisterTransactionService(){
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        return await itemsServiceCreator.getItemsService<CashregistersTransactions>(TABLENAME_CASHREGISTERS_TRANSACTIONS);
     }
 
     async setStatus(status: FlowStatus) {
@@ -62,9 +56,8 @@ export class ParseSchedule {
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
 
-        if (enabled && status === FlowStatus.START && this.finished) {
+        if (enabled && status === FlowStatus.START) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            this.finished = false;
             await this.setStatus(FlowStatus.RUNNING);
 
             try {
@@ -74,7 +67,7 @@ export class ParseSchedule {
                 let totalTransactionsToCheck = transactions.length;
                 let myTimer = new TimerHelper(SCHEDULE_NAME+" parsing", totalTransactionsToCheck, 100);
 
-                let external_cashregister_id_to_internal_cashregister_id = {
+                let external_cashregister_id_to_internal_cashregister_id: {[key: string]: string} = {
 
                 }
 
@@ -93,31 +86,34 @@ export class ParseSchedule {
                 for (let i = 0; i < totalTransactionsToCheck; i++) {
                     //console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
                     let transaction = transactions[i];
+                    if(!transaction){
+                        continue;
+                    }
 
                     // Timing getCashregisterExternalIdentifierFromTransaction
                     //console.time("getCashregisterExternalIdentifierFromTransaction");
-                    let cashregister_external_id = await this.parser.getCashregisterExternalIdentifierFromTransaction(transaction);
+                    let cashregister_external_id = transaction?.cashregister_external_idenfifier;
                     //console.timeEnd("getCashregisterExternalIdentifierFromTransaction");
 
                     // Timing findOrCreateCashregister
                     //console.time("findOrCreateCashregister");
-                    let cached_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
-                    let cashregister_internal_id = undefined;
-                    if(!cached_id){ // TODO: change to check for undefined and null instead
+                    let cached_cashregister_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
+                    let cashregister_id = undefined;
+                    if(!cached_cashregister_id){ // TODO: change to check for undefined and null instead
                         let cashRegister = await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
                         if(!!cashRegister){
-                            cached_id = cashRegister?.id;
-                            external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_id;
-                            cashregister_internal_id = cached_id
+                            cached_cashregister_id = cashRegister?.id;
+                            external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
+                            cashregister_id = cached_cashregister_id
                         }
                     } else {
-                        cashregister_internal_id = cached_id
+                        cashregister_id = cached_cashregister_id
                     }
                     //console.timeEnd("findOrCreateCashregister");
 
-                    if(!!cashregister_internal_id){
+                    if(!!cashregister_id){
                         //console.time("findOrCreateCashregisterTransaction");
-                        await this.findOrCreateCashregisterTransaction(transaction, cashregister_internal_id);
+                        await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
                         //console.timeEnd("findOrCreateCashregisterTransaction");
                     } else {
                         console.log("Houston we got a problem? Seems like somebody deleted a cashregister mid transaction");
@@ -128,40 +124,42 @@ export class ParseSchedule {
 
 
                 console.log("[CashregisterParseSchedule] Finished");
-                this.finished = true;
                 await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("[CashregisterParseSchedule] Failed");
                 console.log(err);
-                this.finished = true;
                 await this.setStatus(FlowStatus.FAILED);
             }
-
-        } else if (!this.finished && status !== FlowStatus.RUNNING) {
-            await this.setStatus(FlowStatus.RUNNING);
         }
     }
 
-    async findOrCreateCashregisterTransaction(transaction, intern_cash_register_id) {
+    async findOrCreateCashregisterTransaction(transaction: CashregistersTransactionsForParser, cashregister_id: string) {
 
-        let transaction_id = this.parser.getIdFromTransaction(transaction);
+        let transaction_id = transaction.baseData.id
 
         if(!transaction_id){
             return null;
         }
 
 
-        let obj_json = {
-            date: new Date(this.parser.getDateFromTransaction(transaction)),
-            name:this.parser.getNameFromTransaction(transaction),
-            quantity:this.parser.getQuantityFromTransaction(transaction),
-            cashregister: intern_cash_register_id,
+        let obj_json: CashregistersTransactions = {
+            status: "published",
+            date: transaction.baseData.date,
+            name: transaction.baseData.name,
+            quantity: transaction.baseData.quantity,
+            cashregister: cashregister_id,
             id: transaction_id,
         };
 
+        let cashregisters_transactions_service = await this.getCashregisterTransactionService();
 
         let obj = undefined;
-        let objs = this.cashregisters_transactions_service.readOne(obj_json?.id);
+        let objs = await cashregisters_transactions_service.readByQuery({
+            filter: {id: {
+                    _eq: transaction_id
+                }
+            }
+        })
         obj = objs[0]
         /**
          * Using readOne get this error:
@@ -179,10 +177,8 @@ export class ParseSchedule {
 
 
         if (!obj) {
-            obj_json = this.setStatusPublished(obj_json);
-
             try{
-                await this.cashregisters_transactions_service.createOne(obj_json);
+                await cashregisters_transactions_service.createOne(obj_json);
             } catch (err){
                 // this error should not happen. Only happend one, where we used readMany instead of readOne
                 // TODO: Check if this error still occurs
@@ -190,40 +186,12 @@ export class ParseSchedule {
                 //console.log("obj_json?.id: "+obj_json?.id)
             }
 
-            objs = this.cashregisters_transactions_service.readMany([obj_json.id]);
+            objs = await cashregisters_transactions_service.readMany([obj_json.id]);
             obj = objs[0]
         } else {
             //console.log("Transaction already found")
         }
-
-
         return obj;
-    }
-
-    async findOrCreateCashregister(external_identifier) {
-        let obj_json = {
-            external_identifier: external_identifier,
-        };
-
-        let objs = await this.cashregisters_service.readByQuery({
-            filter: {external_identifier: obj_json.external_identifier}
-        })
-        let obj = objs[0]
-
-        if (!obj) {
-            obj_json = this.setStatusPublished(obj_json);
-            await this.cashregisters_service.createOne(obj_json);
-            objs = await this.cashregisters_service.readByQuery({
-                filter: {external_identifier: obj_json.external_identifier}
-            })
-            obj = objs[0]
-        }
-        return obj;
-    }
-
-    setStatusPublished(json) {
-        json["status"] = "published";
-        return json;
     }
 
 }
