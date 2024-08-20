@@ -47,7 +47,10 @@ export function FoodInformationListElement(props: {renderedIcon: any, label: str
 		if(typeof value === "number") {
 			valueWithUnit = NumberHelper.formatNumber(value, unit, false, ",", ".", 1);
 		} else {
-			valueWithUnit = ""+value.toString()+StringHelper.NONBREAKING_SPACE+unit;
+			valueWithUnit = ""+value.toString()
+			if(unit !== null && unit !== undefined){
+				valueWithUnit += StringHelper.NONBREAKING_SPACE+unit;
+			}
 		}
 	}
 
