@@ -40,11 +40,11 @@ jobs:
         run: cd ./frontend/app && eas build --platform all --non-interactive
 
       - name: 📤 Submit iOS build
-        run: cd ./frontend/app && eas submit --platform ios --non-interactive
+        run: cd ./frontend/app && eas submit --platform ios --non-interactive --latest
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📤 Submit Android build
-        run: cd ./frontend/app && eas submit --platform android --non-interactive
+        run: cd ./frontend/app && eas submit --platform android --non-interactive --latest
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

@@ -9,15 +9,24 @@
   - EXPO_TOKEN: https://docs.expo.dev/distribution/security/
 - Create new Expo project:
   - https://expo.dev/accounts/baumgartner-software/projects
-  - Update app.json
-    - name
-    - slug
-    - projectId
+  - Update `app.json`
+    - `name`
+    - `slug`
+    - `projectId`
 - Update the server url
   - You need to have the backend setup
   - in /app/constants/ServerConfiguration.ts
+- Update `eas.json` for production
+    - Source of information:
+      - Submit to apple store: https://github.com/expo/fyi/blob/main/asc-app-id.md 
+      - Configuration: https://docs.expo.dev/submit/eas-json/#ios-specific-options
+    - iOS: at `submit.production.ios`:
+      - Fields to update:
+        - `appleId`
+        - `ascAppId`
+        - `appleTeamId`
 - Enable Github Pages
-  - Set the homepage in package.json: "homepage": "/rocket-meals" to specify the sub-path
+  - Set the homepage in `package.json`: `"homepage"`: `"/rocket-meals"` to specify the sub-path
   - After the first deployment, set the to be hosted by branch gh-pages
 
 
