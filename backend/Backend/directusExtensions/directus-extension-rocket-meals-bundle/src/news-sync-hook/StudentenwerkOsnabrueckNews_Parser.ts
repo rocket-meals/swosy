@@ -1,56 +1,46 @@
 import axios from "axios";
-// @ts-ignore // no types available
-import JSSoup from 'jssoup';
-import {TranslationHelper} from "../helpers/TranslationHelper";
-import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
+import { load as cheerioLoad } from 'cheerio';
+import { TranslationHelper } from "../helpers/TranslationHelper";
+import { NewsParserInterface, NewsTypeForParser } from "./NewsParserInterface";
 
-
-export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
+export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
     static baseUrl = 'https://www.studentenwerk-osnabrueck.de/';
     static newsUrl = `https://www.studentenwerk-osnabrueck.de/de/nachrichten.html`;
 
-    constructor() {
-
-    }
+    constructor() {}
 
     async getNewsItems(): Promise<NewsTypeForParser[]> {
-        //let demoNewsItem = await this.getDemoNewsItem();
         let realNewsItems = await this.getRealNewsItems();
         return [...realNewsItems];
     }
 
     async getRealNewsItems(): Promise<NewsTypeForParser[]> {
         try {
-            //console.log("getRealNewsItems");
             let response = await axios.get(StudentenwerkOsnabrueckNews_Parser.newsUrl);
-            //console.log("Fetched url");
-            let soup = new JSSoup(response.data);
-            let articles = soup.findAll('div', 'article');
+            let $ = cheerioLoad(response.data); // Load the HTML into cheerio
+            let articles = $('div.article');
 
             let news: NewsTypeForParser[] = [];
 
-            articles.map((article: any, index: any) => {
-                let imageElement = article.find('img'); // Changed this line
-                let imageUrl = imageElement ? StudentenwerkOsnabrueckNews_Parser.baseUrl + imageElement.attrs.src : ''; // Changed this line
+            articles.each((index, article) => { // Use `each` for iterating over elements
+                let imageElement = $(article).find('img');
+                let imageUrl = imageElement.length ? StudentenwerkOsnabrueckNews_Parser.baseUrl + imageElement.attr('src') : '';
 
-                let linkElement = article.find('a');
-                let articleUrl = linkElement ? StudentenwerkOsnabrueckNews_Parser.baseUrl + linkElement.attrs.href : '';
+                let linkElement = $(article).find('a');
+                let articleUrl = linkElement.length ? StudentenwerkOsnabrueckNews_Parser.baseUrl + linkElement.attr('href') : '';
 
-                let headerElement = article.find('span');
-                let header = headerElement ? headerElement.text.trim() : '';
+                let headerElement = $(article).find('span');
+                let header = headerElement.length ? headerElement.text().trim() : '';
 
-                let contentElement = article.find('div', 'teaser-text').find('div'); // Changed this line
-                let content = contentElement ? contentElement.text.trim() : ''; // Changed this line to remove redundant spaces
-                // replace in the content at the end : Weiterlesen
+                let contentElement = $(article).find('div.teaser-text').find('div');
+                let content = contentElement.length ? contentElement.text().trim() : '';
+
+                // Process the content
                 content = content.replace(/Weiterlesen$/, '').trim();
-                // replace at the end every \n and \t
                 content = content.replace(/\n$/, '').trim();
                 content = content.replace(/\t$/, '').trim();
-                // replace every &nbsp;
                 content = content.replace(/&nbsp;/g, ' ').trim();
-
-                // Categories processing can be added here if available
 
                 news.push({
                     basicNews: {
@@ -75,10 +65,10 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface{
             news.reverse(); // latest news are on top
 
             return news;
-        } catch(error) {
+        } catch (error) {
             console.log(error);
-        };
+        }
+
         return [];
     }
-
 }

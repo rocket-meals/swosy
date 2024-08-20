@@ -1,5 +1,5 @@
 import axios from "axios";
-import cheerio, {CheerioAPI, Element as CheerioElement} from 'cheerio';
+import {load as cheerioLoad, CheerioAPI, Element as CheerioElement} from 'cheerio';
 import { TranslationHelper } from "../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./NewsParserInterface";
 
@@ -35,7 +35,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
     }
 
     static async parseNewsItems(html: string, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
-        const $newsIndexArticle = cheerio.load(html);
+        const $newsIndexArticle = cheerioLoad(html);
 
         let data: NewsTypeForParser[] = [];
         let articleItems = $newsIndexArticle('div.article');
@@ -95,7 +95,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
         if (!articleUrl) return null;
         try {
             let articleResponse = await this.fetchArticlePage(articleUrl);
-            const $articleDetails = cheerio.load(articleResponse.data);
+            const $articleDetails = cheerioLoad(articleResponse.data);
 
             // .news-list-date > time:nth-child(2)
             let datePublishedText = $articleDetails(".news-list-date").text().trim();
