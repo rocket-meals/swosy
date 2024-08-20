@@ -113,7 +113,7 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "101"
+      "buildNumber": "102"
     },
     "android": {
       "adaptiveIcon": {
@@ -121,7 +121,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.baumgartnersoftware.rocketmealsdev",
-      "versionCode": 100
+      "versionCode": 102
     },
     "web": {
       "bundler": "metro",
