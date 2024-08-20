@@ -32,19 +32,9 @@ export class CashregisterHelper {
     }
 
     async findOrCreateCashregisterTransaction(cashregistersTransactionsForParser: CashregistersTransactionsForParser, cashregister_id: string) {
-        console.log("findOrCreateCashregisterTransaction in CashregisterHelper");
-        console.log("cashregistersTransactionsForParser");
-        console.log(cashregistersTransactionsForParser);
-        console.log("cashregister_id");
-        console.log(cashregister_id);
         const cashregisters_transactions_service = await this.getCashregisterTransactionsService();
         let obj_json: Partial<CashregistersTransactions> = cashregistersTransactionsForParser.baseData
         obj_json.id = cashregistersTransactionsForParser.baseData.id; // just to be sure that the external_identifier is set
-
-
-        console.log("readOne");
-        console.log("cashregistersTransactionsForParser.baseData.id");
-        console.log(cashregistersTransactionsForParser.baseData.id);
 
         //let obj = await cashregisters_transactions_service.readOne(cashregistersTransactionsForParser.baseData.id) // Error [DirectusError]: You don't have permission to access this.
         // workaround use query instead of readOne
@@ -61,44 +51,13 @@ export class CashregisterHelper {
         if (!obj) {
             console.log("transaction not found - create it");
             obj_json = this.setStatusPublished(obj_json);
-            console.log("create one with id");
-            console.log(obj_json.id);
-            let transaction_id = await cashregisters_transactions_service.createOne({
-                id: obj_json.id,
-            });
-
-            console.log("update name");
-            console.log("obj_json.name");
-            console.log(obj_json.name);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                name: obj_json.name,
-            });
-
-            console.log("update quantity");
-            console.log("obj_json.quantity");
-            console.log(obj_json.quantity);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                quantity: obj_json.quantity,
-            });
-
-            console.log("update date");
-            console.log("obj_json.date");
-            console.log(obj_json.date);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                date: obj_json.date,
-            });
-
-            console.log("update related cashregister");
-            console.log("cashregister_id");
-            console.log(cashregister_id);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
+            console.log("create one with obj_json and cashregister_id");
+            console.log(obj_json);
+            await cashregisters_transactions_service.createOne({
+                ...obj_json,
                 cashregister: cashregister_id,
             });
 
-            console.log("created and updated transaction hopefully");
-            console.log("search again for the transaction");
-            console.log("transaction_id");
-            console.log(transaction_id);
             objs = await cashregisters_transactions_service.readByQuery(searchQuery)
             obj = objs[0]
             return obj;
