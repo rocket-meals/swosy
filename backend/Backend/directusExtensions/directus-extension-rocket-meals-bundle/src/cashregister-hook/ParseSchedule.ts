@@ -84,24 +84,23 @@ export class ParseSchedule {
 
 
                 for (let i = 0; i < totalTransactionsToCheck; i++) {
-                    //console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
+                    console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
                     let transaction = transactions[i];
                     if(!transaction){
                         continue;
                     }
 
-                    // Timing getCashregisterExternalIdentifierFromTransaction
-                    //console.time("getCashregisterExternalIdentifierFromTransaction");
                     let cashregister_external_id = transaction?.cashregister_external_idenfifier;
-                    //console.timeEnd("getCashregisterExternalIdentifierFromTransaction");
+                    console.log("cashregister_external_id: "+cashregister_external_id);
 
-                    // Timing findOrCreateCashregister
-                    //console.time("findOrCreateCashregister");
                     let cached_cashregister_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
                     let cashregister_id = undefined;
-                    if(!cached_cashregister_id){ // TODO: change to check for undefined and null instead
+                    console.log("cached_cashregister_id: "+cached_cashregister_id);
+                    if(cached_cashregister_id === undefined){
+                        console.log("findOrCreateCashregister");
                         let cashRegister = await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
                         if(!!cashRegister){
+                            console.log("cashRegister found: "+cashRegister.id);
                             cached_cashregister_id = cashRegister?.id;
                             external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
                             cashregister_id = cached_cashregister_id
@@ -111,10 +110,10 @@ export class ParseSchedule {
                     }
                     //console.timeEnd("findOrCreateCashregister");
 
-                    if(!!cashregister_id){
-                        //console.time("findOrCreateCashregisterTransaction");
+                    if(cashregister_id !== undefined){
+                        console.log("cashregister_id found: "+cashregister_id);
+                        console.log("findOrCreateCashregisterTransaction");
                         await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
-                        //console.timeEnd("findOrCreateCashregisterTransaction");
                     } else {
                         console.log("Houston we got a problem? Seems like somebody deleted a cashregister mid transaction");
                     }

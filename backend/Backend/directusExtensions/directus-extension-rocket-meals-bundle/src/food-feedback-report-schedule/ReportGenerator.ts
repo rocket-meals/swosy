@@ -76,7 +76,7 @@ export class ReportGenerator {
     async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens): Promise<ReportType>{
         let date = generateReportForDate;
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
-        console.log("Generate report for date: "+dateHumanReadable);
+        //console.log("Generate report for date: "+dateHumanReadable);
 
         let report: ReportType = {
             canteen_name: canteenEntry?.alias || canteenEntry.id,
@@ -92,21 +92,21 @@ export class ReportGenerator {
 
             if(!!food && typeof food !== "string"){
                 const food_id = food?.id;
-                console.log("Get summary for food_id: "+food?.id);
-                console.log("food")
-                console.log(food)
+                //console.log("Get summary for food_id: "+food?.id);
+                //console.log("food")
+                //console.log(food)
 
                 let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days);
-                console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
+                //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
                 let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id);
-                console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
-                console.log("feedbackLabelEntryListForReport")
-                console.log(feedbackLabelEntryListForReport)
+                //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
+                //console.log("feedbackLabelEntryListForReport")
+                //console.log(feedbackLabelEntryListForReport)
 
                 // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
 
                 let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
-                console.log("Found amount of comments: "+comments.length)
+                //console.log("Found amount of comments: "+comments.length)
 
                 let image_url = null;
                 if(food?.image){

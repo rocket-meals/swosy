@@ -32,6 +32,11 @@ export class CashregisterHelper {
     }
 
     async findOrCreateCashregisterTransaction(cashregistersTransactionsForParser: CashregistersTransactionsForParser, cashregister_id: string) {
+        console.log("findOrCreateCashregisterTransaction in CashregisterHelper");
+        console.log("cashregistersTransactionsForParser");
+        console.log(cashregistersTransactionsForParser);
+        console.log("cashregister_id");
+        console.log(cashregister_id);
         const cashregisters_transactions_service = await this.getCashregisterTransactionsService();
         let obj_json: Partial<CashregistersTransactions> = cashregistersTransactionsForParser.baseData
         obj_json.cashregister = cashregister_id;
@@ -46,12 +51,20 @@ export class CashregisterHelper {
                 ]}
         }
 
+        console.log("searchQuery");
+        console.log(searchQuery);
+
         let objs = await cashregisters_transactions_service.readByQuery(searchQuery)
         let obj = objs[0]
 
         if (!obj) {
+            console.log("transaction not found - create it");
             obj_json = this.setStatusPublished(obj_json);
+            console.log("obj_json");
+            console.log(obj_json);
             await cashregisters_transactions_service.createOne(obj_json);
+            console.log("created transaction hopefully");
+            console.log("search again for the transaction");
             objs = await cashregisters_transactions_service.readByQuery(searchQuery)
             obj = objs[0]
         }

@@ -39,10 +39,11 @@ export class ReportSchedule {
                 // 2. check for every recipient if a report is needed to be sent
                 for (let recipientEntry of recipientEntries) {
 
-                    console.log("recipientEntry.id: "+recipientEntry.id)
+                    //console.log("recipientEntry.id: "+recipientEntry.id)
                     let generateReportForDate = await this.getDateForWhichTheReportShouldBeSend(recipientEntry);
-                    console.log("generateReportForDate: "+generateReportForDate)
+                    //console.log("generateReportForDate: "+generateReportForDate)
                     if (generateReportForDate) {
+                        console.log(SCHEDULE_NAME+" - Report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
 
                         let recipientEmailList = await this.getRecipientEntryEmailList(recipientEntry);
 
@@ -125,7 +126,7 @@ export class ReportSchedule {
 
         let canteen_alias = canteenEntry?.alias;
 
-        let dateHumanReadable = DateHelper.getHumanReadableDate(generateReportForDate);
+        let dateHumanReadable = DateHelper.getHumanReadableDate(generateReportForDate, true);
 
         let subject = "Mensa Report - für: "+dateHumanReadable+" "+canteen_alias;
 
