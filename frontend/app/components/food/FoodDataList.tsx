@@ -7,6 +7,7 @@ import {StringHelper} from "@/helper/string/StringHelper";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
+import {NumberHelper} from "@/helper/number/NumberHelper";
 
 // Utility type to make properties optional if they are optional in either T or U
 type MergeTypes<T1, T2> = T1 | T2;
@@ -31,6 +32,8 @@ export type FoodInformationListProps = {
   	data: CommonFieldsOfFoodAndFoodoffers,
 }
 
+
+
 export function FoodInformationListElement(props: {renderedIcon: any, label: string, value?: number | string | null, unit?: string | null}) {
 	const translation_no_value = useTranslation(TranslationKeys.no_value);
 
@@ -41,10 +44,11 @@ export function FoodInformationListElement(props: {renderedIcon: any, label: str
 	let valueWithUnit = "";
 	const valueDataFound = value !== null && value !== undefined && value !== "";
 	if (valueDataFound) {
-		valueWithUnit = ""+value.toString();
-	}
-	if(unit) {
-		valueWithUnit += unit;
+		if(typeof value === "number") {
+			valueWithUnit = NumberHelper.formatNumber(value, unit, false, ",", ".", 1);
+		} else {
+			valueWithUnit = ""+value.toString()+StringHelper.NONBREAKING_SPACE+unit;
+		}
 	}
 
 	return (
@@ -101,28 +105,26 @@ export function FoodDataList(props: FoodInformationListProps) {
 	])
 	const translation_environmental_impact = useTranslation(TranslationKeys.environmental_impact);
 
-	const nonBreakableSpace = StringHelper.NONBREAKING_SPACE;
-
 	const data_nutrition: {
     key: string;
     data: {icon: string, label: string, value?: number | null, unit?: string}
   }[] = [
-  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.data.calories_kcal, unit: nonBreakableSpace+"kcal"} },
-  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'sodium', data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.data.sodium_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: nonBreakableSpace+"g"} },
-  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: nonBreakableSpace+"g"} },
+  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.data.calories_kcal, unit: "kcal"} },
+  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: "g"} },
+  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: "g"} },
+  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: "g"} },
+  	{ key: 'sodium', data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.data.sodium_g, unit: "g"} },
+  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: "g"} },
+  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: "g"} },
+  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: "g"} },
   ]
 
 	const data_environmental_impact: {
 		key: string;
 		data: {icon: string, label: string, value?: number | string | null, unit?: string}
 	}[] = [
-		{ key: 'environmental_impact_co2', data: {icon: IconNames.environmental_impact_co2_icon, label: translation_environmental_impact_co2, value: props.data.co2_g, unit: nonBreakableSpace+"g"} },
-		{ key: 'environmental_impact_co2_saving_percentage', data: {icon: IconNames.environmental_impact_co2_saving_percentage_icon, label: translation_environmental_impact_co2_saving_percentage, value: props.data.co2_saving_percentage, unit: nonBreakableSpace+"%"} },
+		{ key: 'environmental_impact_co2', data: {icon: IconNames.environmental_impact_co2_icon, label: translation_environmental_impact_co2, value: props.data.co2_g, unit: "g"} },
+		{ key: 'environmental_impact_co2_saving_percentage', data: {icon: IconNames.environmental_impact_co2_saving_percentage_icon, label: translation_environmental_impact_co2_saving_percentage, value: props.data.co2_saving_percentage, unit: "%"} },
 		{ key: 'environmental_impact_co2_rating', data: {icon: IconNames.environmental_impact_co2_rating_icon, label: translation_environmental_impact_co2_rating, value: props.data.co2_rating} },
 	]
 
