@@ -18,7 +18,7 @@
     "icon": "bolt",
     "color": null,
     "description": null,
-    "status": "inactive",
+    "status": "active",
     "trigger": "schedule",
     "accountability": "all",
     "options": {
