@@ -127,10 +127,6 @@ type Query {
   canteen_food_feedback_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_recipients
   canteen_food_feedback_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_recipients_aggregated!]!
   canteen_food_feedback_report_recipients_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_recipients
-  cashregisters_transactions(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cashregisters_transactions!]!
-  cashregisters_transactions_by_id(id: ID!, version: String): cashregisters_transactions
-  cashregisters_transactions_aggregated(groupBy: [String], filter: cashregisters_transactions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cashregisters_transactions_aggregated!]!
-  cashregisters_transactions_by_version(version: String!, id: ID!): version_cashregisters_transactions
   profiles_buildings_favorites(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_favorites!]!
   profiles_buildings_favorites_by_id(id: ID!, version: String): profiles_buildings_favorites
   profiles_buildings_favorites_aggregated(groupBy: [String], filter: profiles_buildings_favorites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [profiles_buildings_favorites_aggregated!]!
@@ -179,6 +175,10 @@ type Query {
   wikis_by_id(id: ID!, version: String): wikis
   wikis_aggregated(groupBy: [String], filter: wikis_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [wikis_aggregated!]!
   wikis_by_version(version: String!, id: ID!): version_wikis
+  cashregisters_transactions(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cashregisters_transactions!]!
+  cashregisters_transactions_by_id(id: ID!, version: String): cashregisters_transactions
+  cashregisters_transactions_aggregated(groupBy: [String], filter: cashregisters_transactions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cashregisters_transactions_aggregated!]!
+  cashregisters_transactions_by_version(version: String!, id: ID!): version_cashregisters_transactions
 }
 
 type Mutation {
@@ -244,8 +244,6 @@ type Mutation {
   create_foodoffers_item(data: create_foodoffers_input!): foodoffers
   create_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
   create_canteen_food_feedback_report_recipients_item(data: create_canteen_food_feedback_report_recipients_input!): canteen_food_feedback_report_recipients
-  create_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_cashregisters_transactions_input!]): [cashregisters_transactions!]!
-  create_cashregisters_transactions_item(data: create_cashregisters_transactions_input!): cashregisters_transactions
   create_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
   create_profiles_buildings_favorites_item(data: create_profiles_buildings_favorites_input!): profiles_buildings_favorites
   create_profiles_buildings_last_opened_items(filter: profiles_buildings_last_opened_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_last_opened_input!]): [profiles_buildings_last_opened!]!
@@ -270,6 +268,8 @@ type Mutation {
   create_profiles_markings_item(data: create_profiles_markings_input!): profiles_markings
   create_wikis_items(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_wikis_input!]): [wikis!]!
   create_wikis_item(data: create_wikis_input!): wikis
+  create_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_cashregisters_transactions_input!]): [cashregisters_transactions!]!
+  create_cashregisters_transactions_item(data: create_cashregisters_transactions_input!): cashregisters_transactions
   update_auto_translation_settings(data: update_auto_translation_settings_input!): auto_translation_settings
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
@@ -365,9 +365,6 @@ type Mutation {
   update_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_recipients_input!): [canteen_food_feedback_report_recipients!]!
   update_canteen_food_feedback_report_recipients_batch(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
   update_canteen_food_feedback_report_recipients_item(id: ID!, data: update_canteen_food_feedback_report_recipients_input!): canteen_food_feedback_report_recipients
-  update_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_cashregisters_transactions_input!): [cashregisters_transactions!]!
-  update_cashregisters_transactions_batch(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_cashregisters_transactions_input!]): [cashregisters_transactions!]!
-  update_cashregisters_transactions_item(id: ID!, data: update_cashregisters_transactions_input!): cashregisters_transactions
   update_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_buildings_favorites_input!): [profiles_buildings_favorites!]!
   update_profiles_buildings_favorites_batch(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
   update_profiles_buildings_favorites_item(id: ID!, data: update_profiles_buildings_favorites_input!): profiles_buildings_favorites
@@ -404,6 +401,9 @@ type Mutation {
   update_wikis_items(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_wikis_input!): [wikis!]!
   update_wikis_batch(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_wikis_input!]): [wikis!]!
   update_wikis_item(id: ID!, data: update_wikis_input!): wikis
+  update_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_cashregisters_transactions_input!): [cashregisters_transactions!]!
+  update_cashregisters_transactions_batch(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_cashregisters_transactions_input!]): [cashregisters_transactions!]!
+  update_cashregisters_transactions_item(id: ID!, data: update_cashregisters_transactions_input!): cashregisters_transactions
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
   delete_buildings_items(ids: [ID]!): delete_many
@@ -466,8 +466,6 @@ type Mutation {
   delete_foodoffers_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_recipients_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_recipients_item(id: ID!): delete_one
-  delete_cashregisters_transactions_items(ids: [ID]!): delete_many
-  delete_cashregisters_transactions_item(id: ID!): delete_one
   delete_profiles_buildings_favorites_items(ids: [ID]!): delete_many
   delete_profiles_buildings_favorites_item(id: ID!): delete_one
   delete_profiles_buildings_last_opened_items(ids: [ID]!): delete_many
@@ -492,6 +490,8 @@ type Mutation {
   delete_profiles_markings_item(id: ID!): delete_one
   delete_wikis_items(ids: [ID]!): delete_many
   delete_wikis_item(id: ID!): delete_one
+  delete_cashregisters_transactions_items(ids: [ID]!): delete_many
+  delete_cashregisters_transactions_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -546,7 +546,6 @@ type Subscription {
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
   canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
-  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
@@ -559,6 +558,7 @@ type Subscription {
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
+  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -1353,21 +1353,20 @@ type cashregisters_mutated {
 }
 
 type cashregisters_transactions {
-  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
-  date: Date
-  date_func: datetime_functions
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
+  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
   name: String
   quantity: Float
-  sort: Int
-  status: String
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  external_identifier: String
+  date: Date
+  date_func: datetime_functions
 }
 
 type cashregisters_transactions_aggregated {
@@ -1384,23 +1383,22 @@ type cashregisters_transactions_aggregated {
 }
 
 type cashregisters_transactions_aggregated_count {
-  cashregister: Int
-  date: Int
-  date_created: Int
-  date_updated: Int
   id: Int
+  status: Int
+  sort: Int
+  user_created: Int
+  date_created: Int
+  user_updated: Int
+  date_updated: Int
+  cashregister: Int
   name: Int
   quantity: Int
-  sort: Int
-  status: Int
-  user_created: Int
-  user_updated: Int
-  external_identifier: Int
+  date: Int
 }
 
 type cashregisters_transactions_aggregated_fields {
-  quantity: Float
   sort: Float
+  quantity: Float
 }
 
 type cashregisters_transactions_mutated {
@@ -3668,18 +3666,17 @@ type version_cashregisters {
 
 """"""
 type version_cashregisters_transactions {
-  cashregister: JSON
-  date: Date
-  date_created: Date
-  date_updated: Date
   id: ID
+  status: String
+  sort: Int
+  user_created: JSON
+  date_created: Date
+  user_updated: JSON
+  date_updated: Date
+  cashregister: JSON
   name: String
   quantity: Float
-  sort: Int
-  status: String
-  user_created: JSON
-  user_updated: JSON
-  external_identifier: String
+  date: Date
 }
 
 """"""
@@ -4683,21 +4680,20 @@ input cashregisters_filter {
 }
 
 input cashregisters_transactions_filter {
-  cashregister: cashregisters_filter
-  date: date_filter_operators
-  date_func: datetime_function_filter_operators
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: string_filter_operators
+  cashregister: cashregisters_filter
   name: string_filter_operators
   quantity: number_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
-  external_identifier: string_filter_operators
+  date: date_filter_operators
+  date_func: datetime_function_filter_operators
   _and: [cashregisters_transactions_filter]
   _or: [cashregisters_transactions_filter]
 }
@@ -4952,18 +4948,17 @@ input create_cashregisters_input {
 }
 
 input create_cashregisters_transactions_input {
-  cashregister: create_cashregisters_input
-  date: Date
+  id: ID!
+  status: String
+  sort: Int
+  user_created: create_directus_users_input
   date_created: Date
+  user_updated: create_directus_users_input
   date_updated: Date
-  id: ID
+  cashregister: create_cashregisters_input
   name: String
   quantity: Float
-  sort: Int
-  status: String
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
-  external_identifier: String
+  date: Date
 }
 
 input create_collections_dates_last_update_input {
@@ -6479,18 +6474,17 @@ input update_cashregisters_input {
 }
 
 input update_cashregisters_transactions_input {
-  cashregister: update_cashregisters_input
-  date: Date
-  date_created: Date
-  date_updated: Date
   id: ID
+  status: String
+  sort: Int
+  user_created: update_directus_users_input
+  date_created: Date
+  user_updated: update_directus_users_input
+  date_updated: Date
+  cashregister: update_cashregisters_input
   name: String
   quantity: Float
-  sort: Int
-  status: String
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
-  external_identifier: String
+  date: Date
 }
 
 input update_collections_dates_last_update_input {

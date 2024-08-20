@@ -1,7 +1,7 @@
 {
   "collection": "cashregisters_transactions",
   "field": "id",
-  "type": "uuid",
+  "type": "string",
   "meta": {
     "collection": "cashregisters_transactions",
     "conditions": null,
@@ -9,16 +9,14 @@
     "display_options": null,
     "field": "id",
     "group": null,
-    "hidden": true,
+    "hidden": false,
     "interface": "input",
     "note": null,
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
     "sort": 1,
-    "special": [
-      "uuid"
-    ],
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
@@ -27,9 +25,9 @@
   "schema": {
     "name": "id",
     "table": "cashregisters_transactions",
-    "data_type": "uuid",
+    "data_type": "character varying",
     "default_value": null,
-    "max_length": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": false,

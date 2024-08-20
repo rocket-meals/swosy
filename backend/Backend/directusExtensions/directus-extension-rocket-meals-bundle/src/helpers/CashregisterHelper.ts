@@ -39,54 +39,21 @@ export class CashregisterHelper {
         console.log(cashregister_id);
         const cashregisters_transactions_service = await this.getCashregisterTransactionsService();
         let obj_json: Partial<CashregistersTransactions> = cashregistersTransactionsForParser.baseData
-        obj_json.cashregister = cashregister_id;
-        obj_json.external_identifier = cashregistersTransactionsForParser.baseData.external_identifier; // just to be sure that the external_identifier is set
+        obj_json.id = cashregistersTransactionsForParser.baseData.id; // just to be sure that the external_identifier is set
 
 
-        const searchQuery = {
-            filter: {_and: [
-                    {external_identifier: {
-                            _eq: obj_json.external_identifier
-                        }},
-                ]}
-        }
+        console.log("readOne");
+        console.log("cashregistersTransactionsForParser.baseData.id");
+        console.log(cashregistersTransactionsForParser.baseData.id);
 
-        console.log("searchQuery");
-        console.log(JSON.stringify(searchQuery, null, 2));
-
-        let objs = await cashregisters_transactions_service.readByQuery(searchQuery)
-        let obj = objs[0]
+        let obj = await cashregisters_transactions_service.readOne(cashregistersTransactionsForParser.baseData.id)
 
         if (!obj) {
             console.log("transaction not found - create it");
             obj_json = this.setStatusPublished(obj_json);
             console.log("obj_json");
             console.log(obj_json);
-            let transaction_id = await cashregisters_transactions_service.createOne({});
-            console.log("transaction_id after createOne");
-            console.log(transaction_id);
-            console.log("update the transaction with the data");
-
-            console.log("update external_identifier");
-            console.log("obj_json.external_identifier");
-            console.log(obj_json.external_identifier);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                external_identifier: obj_json.external_identifier,
-            });
-
-            console.log("update name");
-            console.log("obj_json.name");
-            console.log(obj_json.name);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                name: obj_json.name,
-            });
-
-            console.log("update quantity");
-            console.log("obj_json.quantity");
-            console.log(obj_json.quantity);
-            await cashregisters_transactions_service.updateOne(transaction_id, {
-                quantity: obj_json.quantity,
-            });
+            let transaction_id = await cashregisters_transactions_service.createOne(obj_json);
 
             console.log("update related cashregister");
             console.log("cashregister_id");
@@ -97,11 +64,12 @@ export class CashregisterHelper {
 
             console.log("created and updated transaction hopefully");
             console.log("search again for the transaction");
-            objs = await cashregisters_transactions_service.readByQuery(searchQuery)
-            obj = objs[0]
+            obj = await cashregisters_transactions_service.readOne(transaction_id)
+            return obj;
+        } else {
+            console.log("transaction found");
+            return obj;
         }
-
-        return obj;
     }
 
     async findOrCreateCashregister(external_identifier: string) {
