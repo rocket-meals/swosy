@@ -141,7 +141,6 @@ export class ParseSchedule {
             return null;
         }
 
-
         let obj_json: CashregistersTransactions = {
             status: "published",
             date: transaction.baseData.date,

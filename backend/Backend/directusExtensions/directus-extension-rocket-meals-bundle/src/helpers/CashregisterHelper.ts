@@ -8,21 +8,15 @@ export class CashregisterHelper {
     private apiContext: ApiContext;
 
     constructor(apiContext: ApiContext) {
-        this.apiContext = apiExtensionContext;
+        this.apiContext = apiContext;
     }
 
     async getCashregisterTransactionsService() {
-        const services = this.apiContext.services;
-        const database = this.apiContext.database;
-        const schema = await this.apiContext.getSchema();
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         return itemsServiceCreator.getItemsService<CashregistersTransactions>(CollectionNames.CASHREGISTERS_TRANSACTIONS);
     }
 
     async getCashregisterService() {
-        const services = this.apiContext.services;
-        const database = this.apiContext.database;
-        const schema = await this.apiContext.getSchema();
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         return itemsServiceCreator.getItemsService<Cashregisters>(CollectionNames.CASHREGISTERS);
     }
