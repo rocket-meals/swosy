@@ -22,9 +22,6 @@ export class NewsParseSchedule {
         this.apiContext = apiContext;
         this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
         this.parser = parser;
-        if(!!parser){
-            console.log(SCHEDULE_NAME+" Parser not set");
-        }
     }
 
     async setStatus(status: FlowStatus) {
