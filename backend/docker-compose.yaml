@@ -75,6 +75,8 @@ services:
 
       EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
 
+      SYNC_FOR_CUSTOMER: "${SYNC_FOR_CUSTOMER}" # For which customer the sync is for
+
       FOOD_SYNC_MODE: "${FOOD_SYNC_MODE}"
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
