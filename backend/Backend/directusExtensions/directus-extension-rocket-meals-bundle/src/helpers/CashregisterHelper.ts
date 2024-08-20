@@ -49,10 +49,10 @@ export class CashregisterHelper {
         let obj = objs[0]
 
         if (!obj) {
-            console.log("transaction not found - create it");
+            //console.log("transaction not found - create it");
             obj_json = this.setStatusPublished(obj_json);
-            console.log("create one with obj_json and cashregister_id");
-            console.log(obj_json);
+            //console.log("create one with obj_json and cashregister_id");
+            //console.log(obj_json);
             await cashregisters_transactions_service.createOne({
                 ...obj_json,
                 cashregister: cashregister_id,

@@ -57,11 +57,10 @@ export class ParseSchedule {
         let status = await this.getStatus()
 
         if (enabled && status === FlowStatus.START) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
+            //console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             await this.setStatus(FlowStatus.RUNNING);
 
             try {
-                console.log("Create Needed Data");
                 let transactions = await this.parser.getTransactionsList();
 
                 let totalTransactionsToCheck = transactions.length;
@@ -84,7 +83,7 @@ export class ParseSchedule {
 
 
                 for (let i = 0; i < totalTransactionsToCheck; i++) {
-                    console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
+                    //console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
                     let transaction = transactions[i];
                     if(!transaction){
                         continue;
@@ -122,7 +121,7 @@ export class ParseSchedule {
                 }
 
 
-                console.log("[CashregisterParseSchedule] Finished");
+                //console.log("[CashregisterParseSchedule] Finished");
                 await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("[CashregisterParseSchedule] Failed");

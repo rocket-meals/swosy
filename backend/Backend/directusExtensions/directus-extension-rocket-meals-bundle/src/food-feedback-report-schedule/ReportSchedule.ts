@@ -25,10 +25,10 @@ export class ReportSchedule {
     }
 
     async run() {
-        console.log("[Run] " + SCHEDULE_NAME)
+        //console.log("[Run] " + SCHEDULE_NAME)
         let enabled = await this.isEnabled();
         if (enabled) {
-            console.log("[Start] " + SCHEDULE_NAME);
+            //console.log("[Start] " + SCHEDULE_NAME);
 
             let reportGenerator = new ReportGenerator(this.apiContext);
 
@@ -76,7 +76,7 @@ export class ReportSchedule {
                     }
                 }
 
-                console.log("Finished " + SCHEDULE_NAME);
+                //console.log("Finished " + SCHEDULE_NAME);
             } catch (err) {
                 console.log("Error in " + SCHEDULE_NAME);
                 console.log(err);
