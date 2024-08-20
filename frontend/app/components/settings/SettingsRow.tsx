@@ -101,21 +101,40 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	}
 
 	const contentWithShrinkingSpaceOnlyRight = (
-		<View style={{ flexDirection: 'row', justifyContent: 'space-between', flex: 1 }}>
-			<View style={{
-				flex: 1
+		<View
+			style={{
+				flexDirection: 'row',
+				justifyContent: 'space-between',
+				flex: 1,
+				//backgroundColor: 'red',
 			}}
+		>
+			<View
+				style={{
+					//backgroundColor: 'green',
+					flex: 1, // This ensures the left view takes up at least half of the space
+				}}
 			>
-				<Text style={{ color: usedTextColor }}>{item.label}</Text>
+				<Text style={{ color: usedTextColor }}>
+					{item.label}
+				</Text>
 			</View>
-			<View style={{
-				flexShrink: 1,
-			}}
-			>
-				<Text style={{ color: usedTextColor, textAlign: 'right' }}>{props.labelRight}</Text>
-			</View>
+			{props.labelRight && (
+				<View
+					style={{
+						//backgroundColor: 'blue',
+						flexShrink: 1, // Allow the right side to shrink if necessary
+						maxWidth: '50%', // Maximum width is half of the container
+					}}
+				>
+					<Text style={{ color: usedTextColor, textAlign: 'right' }}>
+						{props.labelRight}
+					</Text>
+				</View>
+			)}
 		</View>
-	)
+	);
+
 
 	const content = contentWithShrinkingSpaceOnlyRight;
 
