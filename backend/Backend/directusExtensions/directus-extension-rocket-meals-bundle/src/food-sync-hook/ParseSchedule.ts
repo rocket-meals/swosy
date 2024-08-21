@@ -102,26 +102,26 @@ export class ParseSchedule {
                     console.log("["+SCHEDULE_NAME+"]"+" - Create Needed Data for FoodParser");
                     await this.foodParser.createNeededData()
 
-                    console.log("["+SCHEDULE_NAME+"]"+" - Update Canteens")
                     let canteensJSONList = await this.foodParser.getCanteensList();
-                    // TODO also check if previous values changed or not using hash
-                    await this.updateCanteens(canteensJSONList);
-
-                    console.log("["+SCHEDULE_NAME+"]"+" - Update Foods")
                     let foodsJSONList = await this.foodParser.getFoodsListForParser();
-                    // TODO also check if previous values changed or not using hash
-                    await this.updateFoods(foodsJSONList);
-
                     let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
-
-                    console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
                     let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
-                    // We calculate a hash of the current meal offers to check if they changed
-                    console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
                     let previousMealOffersHash = await this.myAppSettingsHelper.getFoodParsingHash();
 
+
+                    console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
+                    console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
                     if(mealOffersChanged){
+                        console.log("["+SCHEDULE_NAME+"]"+" - Set previous meal offers hash");
+                        await this.myAppSettingsHelper.setFoodParsingHash(currentMealOffersHash);
+
+                        console.log("["+SCHEDULE_NAME+"]"+" - Update Canteens")
+                        await this.updateCanteens(canteensJSONList);
+
+                        console.log("["+SCHEDULE_NAME+"]"+" - Update Foods")
+                        await this.updateFoods(foodsJSONList);
+
                         console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
                         let foodoffersToDelete = this.getFoodofferDatesFromRawFoodofferJSONList(foodofferListForParser);
                         //await this.deleteAllFoodOffersWithDates(foodoffersToDelete);
@@ -129,9 +129,6 @@ export class ParseSchedule {
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
                         await this.createFoodOffers(foodofferListForParser);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Set previous meal offers hash");
-                        await this.myAppSettingsHelper.setFoodParsingHash(currentMealOffersHash);
                     }
                 }
 
