@@ -99,6 +99,54 @@ export class AppSettingsHelper {
         return undefined
     }
 
+    async getApartmentParsingStatus(): Promise<FlowStatus | undefined> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.housing_parsing_status) {
+            return appSettings.housing_parsing_status as FlowStatus;
+        }
+        return undefined
+    }
+
+    async isApartmentParsingEnabled(): Promise<boolean> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.housing_parsing_enabled) {
+            return appSettings.housing_parsing_enabled;
+        }
+        return false;
+    }
+
+    async setApartmentParsingStatus(status: FlowStatus, lastRun: Date | null) {
+        let database = this.getDatabase();
+        await database(CollectionNames.APP_SETTINGS).update({
+            housing_parsing_status: status,
+            housing_parsing_last_date: lastRun
+        });
+    }
+
+    async setWashingmachineParsingStatus(status: FlowStatus, lastRun: Date | null) {
+        let database = this.getDatabase();
+        await database(CollectionNames.APP_SETTINGS).update({
+            washingmachine_parsing_status: status,
+            washingmachine_parsing_last_date: lastRun
+        });
+    }
+
+    async getWashingmachineParsingStatus(): Promise<FlowStatus | undefined> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.washingmachine_parsing_status) {
+            return appSettings.washingmachine_parsing_status as FlowStatus;
+        }
+        return undefined
+    }
+
+    async isWashingmachineParsingEnabled(): Promise<boolean> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.washingmachine_parsing_enabled) {
+            return appSettings.washingmachine_parsing_enabled;
+        }
+        return false;
+    }
+
     async getCashregisterParsingStatus(): Promise<FlowStatus | undefined> {
         const appSettings = await this.getAppSettings();
         if (appSettings?.cashregisters_parsing_status) {
@@ -107,10 +155,11 @@ export class AppSettingsHelper {
         return undefined
     }
 
-    async setCashregisterParsingStatus(status: FlowStatus) {
+    async setCashregisterParsingStatus(status: FlowStatus, lastRun: Date | null) {
         let database = this.getDatabase();
         await database(CollectionNames.APP_SETTINGS).update({
-            cashregisters_parsing_status: status
+            cashregisters_parsing_status: status,
+            cashregisters_parsing_last_date: lastRun
         });
     }
 

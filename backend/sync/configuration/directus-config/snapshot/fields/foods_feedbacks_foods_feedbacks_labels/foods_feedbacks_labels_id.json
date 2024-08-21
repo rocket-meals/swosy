@@ -1,36 +1,30 @@
 {
-  "collection": "foods_feedbacks_labels_entries",
-  "field": "label",
+  "collection": "foods_feedbacks_foods_feedbacks_labels",
+  "field": "foods_feedbacks_labels_id",
   "type": "uuid",
   "meta": {
-    "collection": "foods_feedbacks_labels_entries",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
-    "display": "related-values",
-    "display_options": {
-      "template": "{{alias}}"
-    },
-    "field": "label",
+    "display": null,
+    "display_options": null,
+    "field": "foods_feedbacks_labels_id",
     "group": null,
-    "hidden": false,
-    "interface": "select-dropdown-m2o",
+    "hidden": true,
+    "interface": null,
     "note": null,
-    "options": {
-      "template": "{{alias}}"
-    },
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 12,
-    "special": [
-      "m2o"
-    ],
+    "sort": 3,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "label",
-    "table": "foods_feedbacks_labels_entries",
+    "name": "foods_feedbacks_labels_id",
+    "table": "foods_feedbacks_foods_feedbacks_labels",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,

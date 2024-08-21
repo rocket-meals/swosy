@@ -5,14 +5,18 @@
   "meta": {
     "collection": "cashregisters_transactions",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}} ({{external_identifier}})({{canteen.alias}})"
+    },
     "field": "cashregister",
     "group": null,
     "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{alias}} ({{external_identifier}}) ({{canteen.alias}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 8,

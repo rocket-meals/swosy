@@ -12,7 +12,23 @@
     "hidden": false,
     "interface": "list-m2m",
     "note": null,
-    "options": null,
+    "options": {
+      "fields": [
+        "businesshours_id.date_valid_from",
+        "businesshours_id.date_valid_till",
+        "businesshours_id.friday",
+        "businesshours_id.monday",
+        "businesshours_id.saturday",
+        "businesshours_id.sunday",
+        "businesshours_id.thursday",
+        "businesshours_id.time_end",
+        "businesshours_id.time_start",
+        "businesshours_id.tuesday",
+        "businesshours_id.wednesday"
+      ],
+      "layout": "table",
+      "tableSpacing": "compact"
+    },
     "readonly": false,
     "required": false,
     "sort": 18,

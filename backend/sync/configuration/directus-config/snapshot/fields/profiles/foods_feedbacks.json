@@ -5,14 +5,18 @@
   "meta": {
     "collection": "profiles",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{food.alias}}- rating:{{rating}}, notify:{{notify}}, comment: {{comment}}"
+    },
     "field": "foods_feedbacks",
     "group": null,
     "hidden": false,
     "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{food.alias}}- rating:{{rating}}, notify:{{notify}}, comment: {{comment}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 12,

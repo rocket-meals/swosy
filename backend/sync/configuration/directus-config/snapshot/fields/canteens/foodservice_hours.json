@@ -5,14 +5,33 @@
   "meta": {
     "collection": "canteens",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "(M:{{businesshours_id.monday}},T:{{businesshours_id.tuesday}},W:{{businesshours_id.wednesday}},T:{{businesshours_id.thursday}},F:{{businesshours_id.friday}},S:{{businesshours_id.saturday}},S:{{businesshours_id.sunday}}) - {{businesshours_id.time_start}} - {{businesshours_id.time_end}}"
+    },
     "field": "foodservice_hours",
     "group": null,
     "hidden": false,
     "interface": "list-m2m",
     "note": null,
-    "options": null,
+    "options": {
+      "fields": [
+        "businesshours_id.date_valid_from",
+        "businesshours_id.date_valid_till",
+        "businesshours_id.friday",
+        "businesshours_id.monday",
+        "businesshours_id.saturday",
+        "businesshours_id.sunday",
+        "businesshours_id.thursday",
+        "businesshours_id.time_end",
+        "businesshours_id.time_start",
+        "businesshours_id.tuesday",
+        "businesshours_id.wednesday"
+      ],
+      "layout": "table",
+      "tableSpacing": "compact",
+      "template": "(M:{{businesshours_id.monday}},T:{{businesshours_id.tuesday}},W:{{businesshours_id.wednesday}},T:{{businesshours_id.thursday}},F:{{businesshours_id.friday}},S:{{businesshours_id.saturday}},S:{{businesshours_id.sunday}}) - {{businesshours_id.time_start}} - {{businesshours_id.time_end}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 13,

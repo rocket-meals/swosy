@@ -5,14 +5,18 @@
   "meta": {
     "collection": "profiles",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}}({{platform}},{{system_version}}) - {{id}}"
+    },
     "field": "devices",
     "group": null,
     "hidden": false,
     "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{alias}}({{platform}},{{system_version}}) - {{id}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 18,

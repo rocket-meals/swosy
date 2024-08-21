@@ -30,18 +30,8 @@ export class ParseSchedule {
         this.parser = parser;
     }
 
-    async getCashregisterService(){
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        return await itemsServiceCreator.getItemsService<Cashregisters>(TABLENAME_CASHREGISTERS);
-    }
-
-    async getCashregisterTransactionService(){
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        return await itemsServiceCreator.getItemsService<CashregistersTransactions>(TABLENAME_CASHREGISTERS_TRANSACTIONS);
-    }
-
     async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setCashregisterParsingStatus(status);
+        await this.myDatabaseHelper.getAppSettingsHelper().setCashregisterParsingStatus(status, new Date());
     }
 
     async isEnabled() {
@@ -69,7 +59,6 @@ export class ParseSchedule {
                 let external_cashregister_id_to_internal_cashregister_id: {[key: string]: string} = {
 
                 }
-
 
                 // DEBUG: DELETE ALL TRANSACTIONS
                 let clearAllData = false;

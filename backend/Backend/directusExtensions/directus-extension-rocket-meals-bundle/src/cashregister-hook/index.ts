@@ -5,9 +5,12 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 
-export default defineHook(async ({action}, apiContext) => {
+export default defineHook(async ({action, init, filter}, apiContext) => {
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
@@ -32,6 +35,13 @@ export default defineHook(async ({action}, apiContext) => {
         console.log("No Parser set for Cashregister Sync");
         return;
     }
+
+    const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
+        await myDatabaseHelper.getAppSettingsHelper().setCashregisterParsingStatus(FlowStatus.FINISHED, null);
+    });
 
     const parseSchedule = new ParseSchedule(usedParser, apiContext);
 

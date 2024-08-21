@@ -1,36 +1,34 @@
 {
-  "collection": "cashregisters",
-  "field": "date_created",
-  "type": "timestamp",
+  "collection": "foods_feedbacks_foods_feedbacks_labels",
+  "field": "dislike",
+  "type": "boolean",
   "meta": {
-    "collection": "cashregisters",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
-    "display": "datetime",
-    "display_options": {
-      "relative": true
-    },
-    "field": "date_created",
+    "display": null,
+    "display_options": null,
+    "field": "dislike",
     "group": null,
-    "hidden": true,
-    "interface": "datetime",
+    "hidden": false,
+    "interface": "boolean",
     "note": null,
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 4,
     "special": [
-      "date-created"
+      "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "date_created",
-    "table": "cashregisters",
-    "data_type": "timestamp with time zone",
-    "default_value": null,
+    "name": "dislike",
+    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "data_type": "boolean",
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

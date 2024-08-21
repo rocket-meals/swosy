@@ -115,6 +115,9 @@ export type AppSettings = {
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
   utilization_settings: string;
+  washingmachine_parsing_enabled?: boolean | null;
+  washingmachine_parsing_last_date?: string | null;
+  washingmachine_parsing_status?: string | null;
 };
 
 export type AppSettingsHousingTranslations = {
@@ -249,6 +252,7 @@ export type CanteensFoodserviceHours = {
 
 export type Cashregisters = {
   alias?: string | null;
+  canteen?: string | Canteens | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
@@ -781,6 +785,13 @@ export type FoodsFeedbacks = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type FoodsFeedbacksFoodsFeedbacksLabels = {
+  dislike?: boolean | null;
+  foods_feedbacks_id?: string | FoodsFeedbacks | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  id: number;
+};
+
 export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
@@ -1139,6 +1150,7 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
+  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];

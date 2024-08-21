@@ -1,6 +1,10 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
+import {ApartmentParserInterface, ApartmentsForParser} from "./ApartmentParserInterface";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {Apartments, Buildings} from "../databaseTypes/types";
 
 const TABLENAME_APARTMENTS = CollectionNames.APARTMENTS;
 const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
@@ -9,224 +13,115 @@ const SCHEDULE_NAME = "ApartmentsParseSchedule";
 
 export class ApartmentsParseSchedule {
 
-    private parser: any;
-    private finished: boolean;
-    private schema: any;
-    private database: any;
-    private logger: any;
-    private services: any;
-    private itemsServiceCreator: ItemsServiceCreator;
-    private itemService: any;
+    private parser: ApartmentParserInterface;
     private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
-    constructor(apiContext: ApiContext, ParserClass) {
+    constructor(apiContext: ApiContext, parser: ApartmentParserInterface) {
         this.apiContext = apiContext;
-        this.parser = new ParserClass();
-        this.finished = true;
+        this.parser = parser;
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
     }
 
-    async init(getSchema, services, database, logger) {
-        this.schema = await getSchema();
-        this.database = database;
-        this.logger = logger;
-        this.services = services;
-        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-    }
-
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            housing_parsing_status: status
-        });
+    async setStatus(status: FlowStatus) {
+        await this.myDatabaseHelper.getAppSettingsHelper().setApartmentParsingStatus(status, new Date());
     }
 
     async isEnabled() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.housing_parsing_enabled;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().isApartmentParsingEnabled();
     }
 
     async getStatus() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.housing_parsing_status;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().getApartmentParsingStatus();
     }
 
     async parse() {
-        this.itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_APARTMENTS);
-
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
 
         console.log("housing-sync-hook: parse: enabled: " + enabled + " status: " + status);
 
-        if (enabled && status === statusCheck && this.finished) {
+        if (enabled && status === FlowStatus.START) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            this.finished = false;
-            await this.setStatus(statusRunning);
-
+            await this.setStatus(FlowStatus.RUNNING);
             try {
-                let apartmentsJSONList = await this.parser.getJSONList();
+                let apartmentsJSONList = await this.parser.getApartmentList();
                 await this.updateApartments(apartmentsJSONList);
 
                 console.log("Finished");
-                this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("[MealParseSchedule] Failed");
                 console.log(err);
-                this.finished = true;
-                await this.setStatus(statusFailed);
-            }
-
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
-        }
-    }
-
-    setStatusPublished(json) {
-        json["status"] = "published";
-        return json;
-    }
-
-    async findOrCreateApartment(newsJSON) {
-        console.log("Make copy of");
-        console.log(newsJSON);
-        let copyNewsJSON = JSON.parse(JSON.stringify(newsJSON))
-        let tablename = TABLENAME_APARTMENTS
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename);
-        let items = await itemService.readByQuery({
-            filter: {external_identifier: copyNewsJSON?.external_identifier}
-        });
-        let item = items[0]
-
-        if (!item) {
-            delete copyNewsJSON.translations; //remove meals translations, we need to add it later
-            let itemId = await itemService.createOne(copyNewsJSON);
-            item = await itemService.readOne(itemId, {"fields": ["*", "translations.*"]});
-        }
-        return item;
-    }
-
-    async updateApartmentTranslations(resource, resourceJSON) {
-        await this.updateItemTranslations(resource, resourceJSON, "news_id", this.itemService);
-    }
-
-    async updateItemTranslations(item, itemJSON, item_primary_key_in_translation_table, specificItemService) {
-        let itemWithTranslations = await specificItemService.readOne(item?.id, {"fields": ["*", "translations.*"]});
-        let translationsFromParsing = itemJSON?.translations || {}
-        /** translationsFromParsing is an object with the following structure:
-         translations: [
-         {
-                  id: 5166,
-                  meals_id: '6',
-                  languages_code: 'de-DE',
-                  name: 'Hallo mein Name ist'
-                },
-         {
-                  id: 5167,
-                  meals_id: '6',
-                  languages_code: 'en-US',
-                  name: 'Hi my name is'
-                }
-         ]
-         */
-        let remaining_translationsFromParsing = JSON.parse(JSON.stringify(translationsFromParsing)); //make a work copy
-        /** remaining_translationsFromParsing is an object with the following structure:
-         {
-                [TranslationHelper.]: {name ....},
-                [TranslationHelper.]: {....}
-            }
-         */
-        let createTranslations = [];
-        let updateTranslations = [];
-        let deleteTranslations = [];
-
-        if (!!itemWithTranslations) {
-            let existingTranslations = itemWithTranslations?.translations || [];
-
-
-            let existingTranslationsDifferentFromParsing = false;
-            let newTranslationsFromParsing = false;
-
-            for (let existingTranslation of existingTranslations) { //check all existing translations
-                let existingLanguageCode = existingTranslation?.languages_code;
-                let translationFromParsing = translationsFromParsing[existingLanguageCode];
-                if (!!translationFromParsing) { //we also got a translation from the parse
-                    /* Update translation */
-                    translationFromParsing = JSON.parse(JSON.stringify(translationFromParsing)); //make a copy
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
-
-                    if (existingTranslation?.name !== translationFromParsing?.name) {
-                        existingTranslationsDifferentFromParsing = true;
-                        updateTranslations.push({
-                            id: existingTranslation?.id,
-                            ...translationFromParsing,
-                            "languages_code": {"code": existingLanguageCode}
-                        });
-                        console.log("existingTranslation is different from parsing")
-                    } else {
-                        //translation is the same, do nothing
-                        console.log("translation is the same, do nothing")
-                    }
-                } else { //the parser dont provide a translation, we should delete it?
-                    //TODO check if translation was generated or manually typed
-                    delete remaining_translationsFromParsing[existingLanguageCode]; // dont create a new translation for this language
-                }
-            }
-            //check remaining translationsFromParsing, then put into createTranslations
-            let remaining_languageKeys = Object.keys(remaining_translationsFromParsing);
-            for (let i = 0; i < remaining_languageKeys?.length; i++) {
-                let remaining_languageKey = remaining_languageKeys[i];
-                let translationFromParsing = translationsFromParsing[remaining_languageKey];
-                if(!!translationFromParsing){
-                    newTranslationsFromParsing = true;
-                    createTranslations.push({
-                        [item_primary_key_in_translation_table]: item?.id,
-                        ...translationFromParsing,
-                        "languages_code": {"code": remaining_languageKey}
-                    });
-                }
-            }
-
-            let updateObject = {
-                "translations": {
-                    "create": createTranslations,
-                    "update": updateTranslations,
-                    "delete": deleteTranslations
-                }
-            };
-
-            let updateNeeded = existingTranslationsDifferentFromParsing || newTranslationsFromParsing;
-            if(updateNeeded){
-                //console.log(JSON.stringify(updateObject, null, 2));
-                await specificItemService.updateOne(item?.id, {id: item?.id, ...updateObject});
+                await this.setStatus(FlowStatus.FAILED);
             }
         }
     }
 
-    async updateApartments(resourceJSONList) {
-        for (let resourceJSON of resourceJSONList) {
-            let resource = await this.findOrCreateApartment(resourceJSON);
+    async findOrCreateApartment(apartmentForParser: ApartmentsForParser) {
+        const itemServiceCreate = new ItemsServiceCreator(this.apiContext);
+        const itemService = await itemServiceCreate.getItemsService<Apartments>(TABLENAME_APARTMENTS);
+        const external_idenfifier = apartmentForParser.basicData.external_identifier;
+
+        const searchQuery = {
+            filter: {
+                external_identifier: {
+                    _eq: external_idenfifier
+                }
+            }
+        }
+        let items = await itemService.readByQuery(searchQuery);
+        if (items?.length > 0) {
+            return items[0];
+        } else {
+            await itemService.createOne({
+                external_identifier: external_idenfifier,
+            });
+            items = await itemService.readByQuery(searchQuery);
+            return items[0];
+        }
+    }
+
+    async updateApartments(apartmentsForParser: ApartmentsForParser[]) {
+        for (let apartmentForParser of apartmentsForParser) {
+            let resource = await this.findOrCreateApartment(apartmentForParser);
             if (!!resource && resource?.id) {
-                await this.updateApartmentTranslations(resource, resourceJSON);
+                await this.updateApartment(resource.id, apartmentForParser);
+            }
+        }
+    }
+
+    async updateApartment(apartmentId: string, apartmentForParser: ApartmentsForParser) {
+        const itemServiceCreate = new ItemsServiceCreator(this.apiContext);
+        const itemService = await itemServiceCreate.getItemsService<Apartments>(TABLENAME_APARTMENTS);
+        await itemService.updateOne(apartmentId, apartmentForParser.basicData);
+
+        const building_data = apartmentForParser.buildingData;
+        const buildingExternalIdentifier = building_data.external_identifier;
+        const searchQuery = {
+            filter: {
+                external_identifier: {
+                    _eq: buildingExternalIdentifier
+                }
+            }
+        }
+        const buildingService = await itemServiceCreate.getItemsService<Buildings>(CollectionNames.BUILDINGS);
+        let buildings = await buildingService.readByQuery(searchQuery);
+        if (buildings?.length > 0) {
+            await buildingService.createOne({
+                external_identifier: buildingExternalIdentifier,
+            });
+        }
+        buildings = await buildingService.readByQuery(searchQuery);
+        if (buildings?.length > 0) {
+            const building_id = buildings[0]?.id;
+            if(building_id) {
+                await buildingService.updateOne(building_id, building_data);
+
+                // Link building to apartment
+                await itemService.updateOne(apartmentId, {
+                    building: building_id
+                });
             }
         }
     }

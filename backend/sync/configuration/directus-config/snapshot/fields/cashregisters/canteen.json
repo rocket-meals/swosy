@@ -1,15 +1,15 @@
 {
-  "collection": "foodoffers",
-  "field": "food",
-  "type": "string",
+  "collection": "cashregisters",
+  "field": "canteen",
+  "type": "uuid",
   "meta": {
-    "collection": "foodoffers",
+    "collection": "cashregisters",
     "conditions": null,
     "display": "related-values",
     "display_options": {
       "template": "{{alias}}"
     },
-    "field": "food",
+    "field": "canteen",
     "group": null,
     "hidden": false,
     "interface": "select-dropdown-m2o",
@@ -19,7 +19,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 3,
     "special": [
       "m2o"
     ],
@@ -29,11 +29,11 @@
     "width": "full"
   },
   "schema": {
-    "name": "food",
-    "table": "foodoffers",
-    "data_type": "character varying",
+    "name": "canteen",
+    "table": "cashregisters",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 255,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
@@ -42,7 +42,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods",
+    "foreign_key_table": "canteens",
     "foreign_key_column": "id"
   }
 }

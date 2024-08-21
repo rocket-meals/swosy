@@ -5,14 +5,18 @@
   "meta": {
     "collection": "buildings",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{building.alias}}"
+    },
     "field": "apartments",
     "group": null,
     "hidden": false,
     "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{building.alias}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 15,

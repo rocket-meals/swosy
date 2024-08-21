@@ -1,35 +1,33 @@
 {
-  "collection": "cashregisters",
-  "field": "date_created",
-  "type": "timestamp",
+  "collection": "app_settings",
+  "field": "washingmachine_parsing_last_date",
+  "type": "dateTime",
   "meta": {
-    "collection": "cashregisters",
+    "collection": "app_settings",
     "conditions": null,
-    "display": "datetime",
-    "display_options": {
-      "relative": true
-    },
-    "field": "date_created",
-    "group": null,
-    "hidden": true,
+    "display": null,
+    "display_options": null,
+    "field": "washingmachine_parsing_last_date",
+    "group": "housing_settings",
+    "hidden": false,
     "interface": "datetime",
     "note": null,
-    "options": null,
-    "readonly": true,
+    "options": {
+      "includeSeconds": true
+    },
+    "readonly": false,
     "required": false,
-    "sort": 7,
-    "special": [
-      "date-created"
-    ],
+    "sort": 8,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "half"
   },
   "schema": {
-    "name": "date_created",
-    "table": "cashregisters",
-    "data_type": "timestamp with time zone",
+    "name": "washingmachine_parsing_last_date",
+    "table": "app_settings",
+    "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

@@ -5,14 +5,18 @@
   "meta": {
     "collection": "utilizations_entries",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}}({{id}})"
+    },
     "field": "utilization_group",
     "group": null,
     "hidden": true,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{alias}}({{id}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 8,

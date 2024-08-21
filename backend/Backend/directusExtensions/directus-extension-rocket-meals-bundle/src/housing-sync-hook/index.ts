@@ -1,40 +1,46 @@
-import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule"; 
-import {StudentenwerkHannoverApartments_Parser} from "./StudentenwerkHannoverApartments_Parser";
+import {ApartmentsParseSchedule} from "./ApartmentsParseSchedule";
+import {StudentenwerkHannoverApartments_Parser} from "./hannover/StudentenwerkHannoverApartments_Parser";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
+import {ApartmentParserInterface} from "./ApartmentParserInterface";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const SCHEDULE_NAME = "housing_parse";
-export default defineHook(async ({action}, apiContext) => {
+export default defineHook(async ({action, init}, apiContext) => {
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        env,
-        logger
-    } = apiContext;
-
-    const parseSchedule = new ApartmentsParseSchedule(apiContext, StudentenwerkHannoverApartments_Parser);
-
-    try {
-        await parseSchedule.init(getSchema, services, database, logger);
-    } catch (err) {
-        let errMsg = err.toString();
-        if (errMsg.includes("no such table: directus_collections")) {
-            console.log("+++++++++ Meal Parse Schedule +++++++++");
-            console.log("++++ Database not initialized yet +++++");
-            console.log("+++ Restart Server again after init +++");
-            console.log("+++++++++++++++++++++++++++++++++++++++");
-        } else {
-            console.log("News Parse Schedule init error: ");
-            console.log(err);
-        }
+    let usedParser: ApartmentParserInterface | null = null;
+    switch (EnvVariableHelper.getSyncForCustomer()) {
+        case SyncForCustomerEnum.TEST:
+            usedParser = null;
+            break;
+        case SyncForCustomerEnum.HANNOVER:
+            usedParser = new StudentenwerkHannoverApartments_Parser()
+            break;
+        case SyncForCustomerEnum.OSNABRUECK:
+            usedParser = null
+            break;
     }
+
+    if(usedParser === null){
+        console.log("No ApartmentParserInterface found for SyncForCustomerEnum: "+EnvVariableHelper.getSyncForCustomer())
+        return;
+    }
+
+    const parseSchedule = new ApartmentsParseSchedule(apiContext, usedParser);
+
+    let myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
+        await myDatabaseHelper.getAppSettingsHelper().setApartmentParsingStatus(FlowStatus.FINISHED, null);
+    });
 
     let collection = CollectionNames.APP_SETTINGS
 

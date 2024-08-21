@@ -5,14 +5,18 @@
   "meta": {
     "collection": "devices",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{nickname}}({{id}})"
+    },
     "field": "profile",
     "group": null,
     "hidden": true,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{nickname}}({{id}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 8,

@@ -11,7 +11,7 @@ const xml = fs.readFileSync(path.resolve(__dirname, './getAllTerminals.xml'), 'u
 describe("Osnabrueck Washer Test", () => {
     let osnabrueckWasherParser = new StudentenwerkOsnabrueckWashingmachineParser();
 
-    it("Placeholder test", async () => {
+    it("Get Washingmachines", async () => {
 
         jest.spyOn(axios, 'get').mockImplementation((url) => {
             if (url === StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsUrl) {

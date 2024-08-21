@@ -34,6 +34,7 @@ export class CollectionNames{
     static CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions"
     static COLLECTIONS_DATES_LAST_UPDATE = "collections_dates_last_update"
 
+    static BUILDINGS = "buildings"
     static FOODS = "foods"
     static FOODS_FEEDBACKS= "foods_feedbacks"
 

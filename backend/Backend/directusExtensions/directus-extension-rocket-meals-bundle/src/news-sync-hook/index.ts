@@ -7,6 +7,9 @@ import {NewsParserInterface} from "./NewsParserInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Parser";
 import {StudentenwerkOsnabrueckNews_Parser} from "./StudentenwerkOsnabrueckNews_Parser";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "news_parse";
 /**
@@ -21,7 +24,7 @@ const SCHEDULE_NAME = "news_parse";
  └───────────────────────── second (0 - 59, OPTIONAL)
  */
 
-export default defineHook(async ({action}, apiContext) => {
+export default defineHook(async ({action, init}, apiContext) => {
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
     if (!allTablesExist) {
         return;
@@ -46,6 +49,12 @@ export default defineHook(async ({action}, apiContext) => {
     }
 
     const parseSchedule = new NewsParseSchedule(apiContext, usedParser);
+
+    let myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
+        await myDatabaseHelper.getAppSettingsHelper().setNewsParsingStatus(FlowStatus.FINISHED);
+    });
 
         let collection = CollectionNames.APP_SETTINGS;
 

@@ -5,14 +5,18 @@
   "meta": {
     "collection": "foodoffers",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{markings_id.alias}} ({{markings_id.external_identifier}})"
+    },
     "field": "markings",
     "group": null,
     "hidden": false,
     "interface": "list-m2m",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{markings_id.alias}} ({{markings_id.external_identifier}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 12,

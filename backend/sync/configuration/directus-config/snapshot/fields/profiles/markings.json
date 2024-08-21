@@ -5,14 +5,18 @@
   "meta": {
     "collection": "profiles",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{markings_id.alias}}({{markings_id.external_identifier}}) - dislike:{{dislike}}"
+    },
     "field": "markings",
     "group": null,
     "hidden": false,
     "interface": "list-m2m",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{markings_id.alias}}({{markings_id.external_identifier}}) - dislike:{{dislike}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 17,
