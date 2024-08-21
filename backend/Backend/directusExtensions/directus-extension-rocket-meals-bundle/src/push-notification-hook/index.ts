@@ -69,19 +69,19 @@ export default defineHook(async ({filter}, apiContext) => {
 
 	// Function to send Expo push notification
 	async function sendNotification(payload: PushNotifications, input: any) {
-		//console.log("Sending notification...")
-		//console.log("Payload:")
-		//console.log(payload)
+		console.log("Sending notification...")
+		console.log("Payload:")
+		console.log(payload)
 		let expo_push_tokens_raw = payload.expo_push_tokens;
 
 		let expoPushTokens = payload.expo_push_tokens as string[] | undefined;
 
 		// check if expo_push_tokens is a string or an array of strings and convert to array of strings
 		if (typeof expo_push_tokens_raw === 'string') { // this happens on update in directus admin panel
-			//console.log("expo_push_tokens is a string")
+			console.log("expo_push_tokens is a string")
 			expoPushTokens = JSON.parse(expo_push_tokens_raw);
 		} else if (typeof expo_push_tokens_raw === 'object') { // this happens on create in directus admin panel
-			//console.log("expo_push_tokens is an object")
+			console.log("expo_push_tokens is an object")
 		}
 
 		if(!expoPushTokens) {
@@ -91,8 +91,8 @@ export default defineHook(async ({filter}, apiContext) => {
 			throw new Error(`expo_push_tokens is empty`);
 		}
 
-		//console.log("expoPushTokens:")
-		//console.log(expoPushTokens)
+		console.log("expoPushTokens:")
+		console.log(expoPushTokens)
 
 		let title: string | undefined = undefined; // can't be null, otherwise it will result in an error from expo
 		if(payload.message_title) { // check if message_title is set
@@ -119,8 +119,8 @@ export default defineHook(async ({filter}, apiContext) => {
 			data: data, // Replace with the actual field name
 		}));
 
-		//console.log("Messages:")
-		//console.log(messages)
+		console.log("Messages:")
+		console.log(messages)
 
 		try {
 			await axios.post('https://exp.host/--/api/v2/push/send', messages);
