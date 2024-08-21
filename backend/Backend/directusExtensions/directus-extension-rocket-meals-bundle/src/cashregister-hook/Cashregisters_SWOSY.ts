@@ -1,5 +1,8 @@
 import axios from "axios";
-import {CashregistersTransactionsForParser, CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
+import {
+    CashregistersTransactionsForParser,
+    CashregisterTransactionParserInterface
+} from "./CashregisterTransactionParserInterface";
 import {DateHelper} from "../helpers/DateHelper";
 
 const BUCHUNGSNUMMER = "BUCHUNGSNUMMER";
@@ -12,7 +15,7 @@ const Kasse_ID = "Kasse_ID";
 interface Transaction {
     [key: string]: any;
     BUCHUNGSNUMMER: string;
-    Datum: Date;
+    Datum: string;
     Name?: string;
     Menge?: number;
     Verbrauchergruppe_ID?: string;
@@ -43,7 +46,7 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
                                 quantity: transaction.Menge,
                                 name: transaction.Name,
                                 id: transaction.BUCHUNGSNUMMER,
-                                date: DateHelper.formatDateToIso8601WithoutTimezone(transaction.Datum, false),
+                                date: transaction.Datum,
                             },
                             cashregister_external_idenfifier: transaction.Kasse_ID,
                         });
@@ -63,6 +66,7 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
             headers: { Authorization: "Basic " + encodedToken },
             responseType: "arraybuffer",
         });
+
         const response = resArBuffer.data.toString("latin1");
         const text = Buffer.from(response, "utf-8").toString();
         return text;
@@ -70,7 +74,11 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
 
     async getAsJSON(url: string, password: string): Promise<Record<string, Transaction>> {
         const text = await this.loadFromRemote(url, password);
-        const fileLines = text.split("\r");
+
+        const lineSeparator = text.includes("\r") ? "\r" : "\n";
+
+        const fileLines = text.split(lineSeparator);
+        //console.log(fileLines.length);
         if(!fileLines) {
             return {};
         }
@@ -102,14 +110,15 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
                 for (let index = 0; index < bezeichnungen.length; index++) {
                     let value = parsedParts[index] || "";
                     const bez = bezeichnungen[index];
+
                     switch (bez) {
                         case BUCHUNGSNUMMER:
-                            parsedPart.BUCHUNGSNUMMER = this.transformBuchungsnummer(value);
+                            parsedPart.BUCHUNGSNUMMER = Cashregisters_SWOSY.transformBuchungsnummer(value);
                             break;
                         case Datum:
-                            let transformedDate = this.transformDate(value);
-                            if (transformedDate) {
-                                parsedPart.Datum = new Date();
+                            let transformedDate = Cashregisters_SWOSY.transformDate(value);
+                            if(!!transformedDate) {
+                                parsedPart.Datum = transformedDate
                             }
                             break;
                         case Name:
@@ -146,7 +155,7 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
         return data;
     }
 
-    transformDate(dateWithTime: string): string | null {
+    static transformDate(dateWithTime: string): string | null {
         const [date, time] = dateWithTime.split(" ");
 
         if(date===undefined || time===undefined) {
@@ -175,12 +184,16 @@ export class Cashregisters_SWOSY implements CashregisterTransactionParserInterfa
         const inputDate = new Date(year, month - 1, day, hour, minute, seconds);
         const isSummerTime = inputDate >= dstStart && inputDate < dstEnd;
 
-        const adjustedHour = isSummerTime ? hour - 1 : hour;
+        let adjustedHour = hour ;
+        //if(isSummerTime) { // we don't need to adjust the time as the date is without timezone
+        //    adjustedHour = hour - 1;
+        //}
 
-        return `${("0" + month).slice(-2)}.${("0" + day).slice(-2)}.${year} ${("0" + adjustedHour).slice(-2)}:${("0" + minute).slice(-2)}:${("0" + seconds).slice(-2)}`;
+        // expected: 2024-08-21T14:37:5
+        return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}T${adjustedHour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
 
-    transformBuchungsnummer(buchungsnummer: string): string | undefined {
+    static transformBuchungsnummer(buchungsnummer: string): string | undefined {
         // buchungsnummer could be something like: "123456 789012       345678" -> "123456-789012-345678"
         if (buchungsnummer) {
             let id = "";
