@@ -73,6 +73,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "washingmachines-sync-hook",
+				"source": "src/washingmachines-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "news-sync-hook",
 				"source": "src/news-sync-hook/index.ts"
 			},
