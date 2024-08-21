@@ -3,6 +3,7 @@ import axios from "axios";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {PushNotifications} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "push_notification";
 
@@ -14,16 +15,8 @@ export default defineHook(async ({filter}, apiContext) => {
 		return;
 	}
 
-	const {
-		services,
-		database,
-		getSchema,
-		env,
-		logger
-	} = apiContext;
-
 	// Trigger before the item is created or updated
-	filter(collectionName+'.items.create', async (input, {collection}) => {
+	filter(collectionName+'.items.create', async (input: any, {collection}) => {
 		//console.log("items.create")
 		//console.log("input")
 		//console.log(input)
@@ -34,15 +27,10 @@ export default defineHook(async ({filter}, apiContext) => {
 		return input;
 	});
 
-	filter(collectionName+'.items.update', async (input, {keys, collection}) => {
-		//console.log("items.update")
-		//console.log("input")
-		//console.log(input)
-
-		let schema = await getSchema();
+	filter(collectionName+'.items.update', async (input: any, {keys, collection}) => {
 		const itemsServiceCreator = new ItemsServiceCreator(apiContext);
 
-		let itemService = await itemsServiceCreator.getItemsService(collection);
+		let itemService = await itemsServiceCreator.getItemsService<PushNotifications>(collection);
 
 		// Fetch the current item from the database
 		if (!keys || keys.length === 0) {
@@ -63,15 +51,16 @@ export default defineHook(async ({filter}, apiContext) => {
 			const currentItem = currentItems[0];
 
 			// Selectively merge the current item with the updated fields
-			for (const key in input) {
-				if (input[key] !== undefined) {
-					currentItem[key] = input[key];
+			if(!!currentItem){
+				for (const key in input) {
+					if (input[key] !== undefined) {
+						currentItem[key] = input[key];
+					}
 				}
-			}
-
-			if (currentItem.status === 'published') {
-				await sendNotification(currentItem, input);
-				input.status = 'published';
+				if (currentItem.status === 'published') {
+					await sendNotification(currentItem, input);
+					input.status = 'published';
+				}
 			}
 		}
 
@@ -79,13 +68,13 @@ export default defineHook(async ({filter}, apiContext) => {
 	});
 
 	// Function to send Expo push notification
-	async function sendNotification(payload, input) {
+	async function sendNotification(payload: PushNotifications, input: any) {
 		//console.log("Sending notification...")
 		//console.log("Payload:")
 		//console.log(payload)
 		let expo_push_tokens_raw = payload.expo_push_tokens;
 
-		let expoPushTokens = payload.expo_push_tokens;
+		let expoPushTokens = payload.expo_push_tokens as string[] | undefined;
 
 		// check if expo_push_tokens is a string or an array of strings and convert to array of strings
 		if (typeof expo_push_tokens_raw === 'string') { // this happens on update in directus admin panel
@@ -105,17 +94,17 @@ export default defineHook(async ({filter}, apiContext) => {
 		//console.log("expoPushTokens:")
 		//console.log(expoPushTokens)
 
-		let title = undefined; // can't be null, otherwise it will result in an error from expo
+		let title: string | undefined = undefined; // can't be null, otherwise it will result in an error from expo
 		if(payload.message_title) { // check if message_title is set
 			title = payload.message_title;
 		}
 
-		let body = undefined; // can't be null, otherwise it will result in an error from expo
+		let body: string | undefined = undefined; // can't be null, otherwise it will result in an error from expo
 		if(payload.message_body) { // check if message_body is set
 			body = payload.message_body;
 		}
 
-		let data = undefined; // can't be null, otherwise it will result in an error from expo
+		let data: any | undefined = undefined; // can't be null, otherwise it will result in an error from expo
 		if(payload.message_data) { // check if message_data is set
 			data = payload.message_data;
 		}
@@ -135,10 +124,10 @@ export default defineHook(async ({filter}, apiContext) => {
 
 		try {
 			await axios.post('https://exp.host/--/api/v2/push/send', messages);
-		} catch (e) {
+		} catch (e: any) {
 			console.log(`Failed to send notification: ${e.message}`)
 			input.status = 'failed';
-			input.status_log = e.message.toString();
+			input.status_log = e?.message.toString();
 			throw new Error(`Failed to send notification: ${e.message}`);
 		}
 	}

@@ -13,15 +13,7 @@ export default defineHook(async ({action}, apiContext) => {
 		return;
 	}
 
-	const {
-		services,
-		database,
-		getSchema,
-		logger
-	} = apiContext;
-
 	const notifySchedule = new NotifySchedule(apiContext);
-	await notifySchedule.init(getSchema, services, database, logger);
 
 	action(
 		collection + ".items.update",

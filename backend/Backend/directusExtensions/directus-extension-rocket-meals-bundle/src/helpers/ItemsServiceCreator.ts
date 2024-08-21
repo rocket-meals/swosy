@@ -146,25 +146,14 @@ export class ServerServiceCreator extends GetItemsService{
     }
 
     async getServerInfo() {
+        type ServerInfo = {
+            project: {
+                project_name: string;
+            }
+        }
+
         const serverService = await this.getServerService();
-        return await serverService.serverInfo();
+        return await serverService.serverInfo() as ServerInfo;
     }
 
-}
-
-export class PermissionsServiceCreator extends GetItemsService{
-
-    async getPermissionsService() {
-        console.log("getPermissionsService")
-        console.log("All services: ")
-        console.log(Object.keys(this.apiContext.services))
-        const {PermissionsService} = this.apiContext.services;
-        const schema = this.apiContext.getSchema()
-        const database = this.apiContext.database
-        return new PermissionsService({
-            accountability: null, //this makes us admin
-            knex: database, //TODO: i think this is not neccessary
-            schema: schema,
-        });
-    }
 }

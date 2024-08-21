@@ -419,38 +419,6 @@ export class ParseSchedule {
         }
     }
 
-    async deleteAllFoodOffersWithDates(foodofferDatesToDelete: FoodofferDateType[]) {
-        let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
-        for (let foodofferDateToDelete of foodofferDatesToDelete) {
-            // Step 1: Retrieve IDs of items to delete for the specific date
-            console.log("["+SCHEDULE_NAME+"]"+" - Deleting food offers for date in order to overwrite: " + foodofferDateToDelete);
-            const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(foodofferDateToDelete);
-
-            let itemsToDelete = await itemService.readByQuery({
-                filter: {
-                    date: {
-                        _eq: directusDateOnlyFormat
-                    }
-                },
-                fields: ['id'], // "Filtering" only for the ID field to reduce the amount of data fetched
-                limit: -1
-            });
-
-            let idsToDelete = itemsToDelete.map(item => item.id);
-
-            // Step 2: Delete the items using their IDs
-            if (idsToDelete.length > 0) {
-                await itemService.deleteMany(idsToDelete).then(() => {
-                    console.log(`Food offers deleted successfully for date: ${foodofferDateToDelete} - amount: ${idsToDelete.length}`);
-                }).catch(error => {
-                    console.error(`Error deleting items for date: ${foodofferDateToDelete}:`, error);
-                });
-            } else {
-                console.log(`No food offers found for date: ${foodofferDateToDelete} to delete.`);
-            }
-        }
-    }
-
     async findOrCreateCanteen(canteen: CanteensTypeForParser) {
         let tablename = TABLENAME_CANTEENS;
         let searchJSON = {

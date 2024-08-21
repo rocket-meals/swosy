@@ -64,6 +64,17 @@ export class TranslationHelper {
     static LANGUAGE_CODE_DE: LanguageCodesType = LanguageCodes.DE
     static LANGUAGE_CODE_EN: LanguageCodesType = LanguageCodes.EN
 
+    static DefaultLanguage = TranslationHelper.LANGUAGE_CODE_DE
+    static FallBackLanguage = TranslationHelper.LANGUAGE_CODE_EN
+
+    static getTranslation(translationsList: ExistingTranslation[], profileLanguage: string, fieldName: string) {
+        translationsList = translationsList || [];
+        let translation = translationsList.find(t => t.languages_code === profileLanguage);
+        let translationDefault = translationsList.find(t => t.languages_code === TranslationHelper.DefaultLanguage);
+        let translationFallBack = translationsList.find(t => t.languages_code === TranslationHelper.FallBackLanguage);
+        return translation?.[fieldName] || translationDefault?.[fieldName] || translationFallBack?.[fieldName]
+    }
+
     static hasSignificantTranslationChange<E extends Record<string, any>>(
         existingTranslation: E,
         translationFromParsing: Partial<E>
