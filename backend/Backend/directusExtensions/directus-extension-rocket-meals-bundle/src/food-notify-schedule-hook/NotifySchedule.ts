@@ -36,6 +36,9 @@ export class NotifySchedule {
         let enabled = true
         let status = await this.databaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
 
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        let devicesService = await itemsServiceCreator.getItemsService<Devices>(CollectionNames.DEVICES);
+
         if ((enabled && status === FlowStatus.START) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Schedule");
             console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
@@ -83,12 +86,63 @@ export class NotifySchedule {
                         }
 
                         const profileDevices = profile.devices as Devices[];
+
+                        let expoPushTokensDict = this.getExpoPushTokensToDevicesDict(profileDevices);
+
+                        let expoPushTokens = Object.keys(expoPushTokensDict);
+                        for(let expoPushToken of expoPushTokens) {
+                            let devices = expoPushTokensDict[expoPushToken] as Devices[];
+                            //console.log("Notify devices: "+devices.length+" about food: "+food_id);
+                            try{
+                                await this.notifyExpoPushTokenAboutFoodOffer(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
+                            }  catch (err: any) {
+                                //console.log("Error while creating push notification");
+                                //console.log(err);
+                                const message = err?.message;
+                                if(message.includes("Failed to send notification")){
+                                    //console.log("Failed to send notification");
+                                    //console.log("We better reset on the device the pushTokenObj to null");
+                                    // Reset the pushTokenObj to null
+                                    for(let device of devices) {
+                                        await devicesService.updateOne(device.id, {pushTokenObj: null});
+                                    }
+                                }
+                            }
+
+                            if(devices.length > 1) {
+                                console.log("Notify multiple devices with the same push token");
+                                console.log("Devices: "+devices.length);
+                                console.log(devices);
+                                // we will remove the pushTokenObj from all but the last updated device
+                                let recentDateUpdated: Date | null = null;
+                                let recentDevice: Devices | null = null;
+                                for(let device of devices) {
+                                    if(!!device.date_updated) {
+                                        let device_date_updated = new Date(device.date_updated);
+                                        if(!recentDateUpdated || device_date_updated > recentDateUpdated) {
+                                            recentDateUpdated = device_date_updated;
+                                            recentDevice = device;
+                                        }
+                                    }
+                                }
+                                // now we have the most recent device, so we will remove the pushTokenObj from all other devices
+                                for(let device of devices) {
+                                    if(device.id !== recentDevice?.id) {
+                                        console.log("Remove pushTokenObj from device as it is not the recent updated device: "+device.id);
+                                        await devicesService.updateOne(device.id, {pushTokenObj: null});
+                                    }
+                                }
+                            }
+
+                        }
+
                         for (let device of profileDevices) {
                             //console.log("Notify device: "+device.id+" about food: "+food_id);
                             // Step 4: Send the notification to the device, where pushTokenObj is not null
                             if (device.pushTokenObj !== null) {
                                 // Step 5: Send the notification to the device
-                                await this.notifyDeviceAboutFoodOffer(device, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
+                                // TODO: Es kann mehrere Devices mit dem gleichen pushToken geben. Wir sollten nur einmal senden
+
 
                             } else {
                                 //console.log("Device has no push token");
@@ -106,11 +160,28 @@ export class NotifySchedule {
         }
     }
 
-    async notifyDeviceAboutFoodOffer(device: Devices, foodOffer: Foodoffers, foodWithTranslations: Foods, language: string, aboutMealsInDays: number, date: Date) {
+    getExpoPushTokenFromDevice(device: Devices) {
+        let pushTokenObj = device.pushTokenObj as any;
+        return pushTokenObj?.pushtokenObj?.data;
+    }
+
+    getExpoPushTokensToDevicesDict(devices: Devices[]): {[key: string]: Devices[]} {
+        let expoPushTokensDict: {[key: string]: Devices[]} = {};
+        for (let device of devices) {
+            let expoPushToken = this.getExpoPushTokenFromDevice(device);
+            if(expoPushToken) {
+                let devicesWithSamePushToken = expoPushTokensDict[expoPushToken] || [];
+                devicesWithSamePushToken.push(device);
+                expoPushTokensDict[expoPushToken] = devicesWithSamePushToken;
+            }
+        }
+        return expoPushTokensDict
+    }
+
+    async notifyExpoPushTokenAboutFoodOffer(expoPushToken: string, foodOffer: Foodoffers, foodWithTranslations: Foods, language: string, aboutMealsInDays: number, date: Date) {
         // Create a new push_notification entry in the database
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let pushNotificationService = await itemsServiceCreator.getItemsService<PushNotifications>(CollectionNames.PUSH_NOTIFICATIONS);
-        let pushTokenObj = device.pushTokenObj as any;
         /**
          pushTokenObj = {
                 "permission": {
@@ -139,12 +210,6 @@ export class NotifySchedule {
                 }
             }
         */
-        let expoPushToken = pushTokenObj?.pushtokenObj?.data;
-
-        if(expoPushToken === undefined) {
-            //console.log("No push token for device: "+device.id);
-            return;
-        }
 
         let project_name = await this.getProjectName();
 
@@ -165,22 +230,7 @@ export class NotifySchedule {
             message_body: message_body,
         }
 
-        try{
-            let pushNotification = await pushNotificationService.createOne(pushNotificationObj);
-        } catch (err: any) {
-            //console.log("Error while creating push notification");
-            //console.log(err);
-            const message = err?.message;
-            if(message.includes("Failed to send notification")){
-                //console.log("Failed to send notification");
-                //console.log("We better reset on the device the pushTokenObj to null");
-                // Reset the pushTokenObj to null
-                const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-
-                let devicesService = await itemsServiceCreator.getItemsService<Devices>(CollectionNames.DEVICES);
-                await devicesService.updateOne(device.id, {pushTokenObj: null});
-            }
-        }
+        let pushNotification = await pushNotificationService.createOne(pushNotificationObj);
     }
 
     async getTranslationDate(profileLanguage: string, aboutMealsInDays: number, date: Date) {
