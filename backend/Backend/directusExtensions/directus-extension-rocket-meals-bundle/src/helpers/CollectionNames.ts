@@ -4,6 +4,9 @@
 export function getAllCollectionNames() {
     return [
         CollectionNames.APP_SETTINGS,
+        CollectionNames.BUILDINGS,
+        CollectionNames.WASHINGMACHINES,
+        CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES,
         CollectionNames.CASHREGISTERS,
         CollectionNames.CASHREGISTERS_TRANSACTIONS,
         CollectionNames.COLLECTIONS_DATES_LAST_UPDATE,

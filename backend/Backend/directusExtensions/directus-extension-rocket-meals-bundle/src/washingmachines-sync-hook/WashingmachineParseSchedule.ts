@@ -33,8 +33,11 @@ export class WashingmachineParseSchedule {
     }
 
     async parse() {
+        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule");
         let enabled = await this.isEnabled();
+        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule enabled: "+enabled);
         let status = await this.getStatus()
+        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule status: "+status);
         if (enabled && status === FlowStatus.START) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             await this.setStatus(FlowStatus.RUNNING);

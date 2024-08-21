@@ -52,7 +52,7 @@ export default defineHook(async ({action, init}, apiContext) => {
 
     let myDatabaseHelper = new MyDatabaseHelper(apiContext);
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
-        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
+        console.log(SCHEDULE_NAME + ": App started, resetting "+SCHEDULE_NAME+" parsing status and parsing hash");
         await myDatabaseHelper.getAppSettingsHelper().setNewsParsingStatus(FlowStatus.FINISHED);
     });
 

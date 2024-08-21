@@ -6,9 +6,12 @@ import {DemoWashingmachineParser} from "./testParser/DemoWashingmachineParser";
 import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
 
 export const SCHEDULE_NAME_WASHING_MACHINE = "washingmachine_parse";
-export default defineHook(async ({action}, apiContext) => {
+export default defineHook(async ({action, init}, apiContext) => {
     const SCHEDULE_NAME = SCHEDULE_NAME_WASHING_MACHINE;
     const collection = CollectionNames.APP_SETTINGS;
 
@@ -36,6 +39,12 @@ export default defineHook(async ({action}, apiContext) => {
     }
 
     const parseSchedule = new WashingmachineParseSchedule(apiContext, usedParser);
+
+    let myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting "+SCHEDULE_NAME+" parsing status and parsing hash");
+        await myDatabaseHelper.getAppSettingsHelper().setWashingmachineParsingStatus(FlowStatus.FINISHED, null);
+    });
 
     action(
         collection + ".items.update",
