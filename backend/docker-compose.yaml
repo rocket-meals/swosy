@@ -42,12 +42,10 @@ services:
       #- ./Backend/database:/directus/database
       # If you want to load extensions from the host
       - ./Backend/directusExtensions:/directus/extensions
-      # directus-auto-translation api key path
-      - ${SECRETS_FOLDER_PATH}:/directus/secrets
       # TL1 food plan
-      - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/foodPlan.csv
+      - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH:-/dev/null}:/directus/tl1/foodPlan.csv
       # TL1 markings
-      - ${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}:/directus/tl1/markings.csv
+      - ${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH:-/dev/null}:/directus/tl1/markings.csv
     environment:
       # Traefik configuration
       PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
@@ -74,6 +72,8 @@ services:
 
 
       EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
+
+      AUTO_TRANSLATE_API_KEY: "${AUTO_TRANSLATE_API_KEY}" # Required for the auto translation plugin
 
       SYNC_FOR_CUSTOMER: "${SYNC_FOR_CUSTOMER}" # For which customer the sync is for
 
@@ -167,6 +167,11 @@ services:
     restart: ${RESTART}
     volumes:
       - ./database:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U directus" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       POSTGRES_USER: "directus"
       POSTGRES_PASSWORD: "directus"
@@ -190,12 +195,33 @@ services:
       - PGHOST=rocket-meals-database
       - DELETE_OLDER_THAN=44640
     volumes:
-      - ./database_backup:/dump
+      - ./database_backups:/dump
     command: dump-cron
     depends_on:
       - rocket-meals-database
     networks:
       - directus_network
+
+  # Service for restoring the database from a backup
+  rocket-meals-database-restore:
+    build:
+      context: ./dockerDatabaseBackupRestore
+      dockerfile: Dockerfile
+    volumes:
+      - ./database_backups:/dump   # Ensure this matches the directory name
+    environment:
+      PGUSER: "directus"
+      PGPASSWORD: "directus"
+      PGDB: "directus"
+      PGHOST: "rocket-meals-database"
+      BACKUP_FILE: "dump-20240821_113701.sql.gz"  # Set this dynamically as needed
+    networks:
+      - directus_network
+    depends_on:
+      rocket-meals-database:
+        condition: service_healthy
+    profiles:
+      - restore  # Only run this service when the restore profile is set
 
 
   # The cache service for Directus
@@ -208,5 +234,5 @@ services:
 networks:
   directus_network: {}
   traefik:
-    external: true
+    driver: bridge
     name: traefik

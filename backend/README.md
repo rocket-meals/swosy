@@ -1,5 +1,9 @@
 # RocketMealsBackend
 
+Production: The backend is available at: ```https://<MYHOST>/rocket-meals/api/``` (replace MYHOST with your domain)
+
+Development: For local development you can use: https://127.0.0.1:3000/rocket-meals/api/
+
 # Configuration
 
 ## Whitelist Redirects

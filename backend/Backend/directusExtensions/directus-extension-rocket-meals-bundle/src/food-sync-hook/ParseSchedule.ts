@@ -384,12 +384,16 @@ export class ParseSchedule {
             //    await this.deleteAllFoodOffersNewerOrEqualThanDate(latestPlusOneDayIso8601StringDate);
             //}
 
+            console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
+            console.log("oldestFoodofferDate: ")
+            console.log(oldestFoodofferDate)
             await this.deleteAllFoodOffersNewerOrEqualThanDate(oldestFoodofferDate);
         }
     }
 
     async deleteAllFoodOffersNewerOrEqualThanDate(iso8601StringDate: FoodofferDateType) {
         const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
+        console.log("["+SCHEDULE_NAME+"]"+" - Delete food offers newer or equal than date: " + directusDateOnlyString);
 
         let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
         //await itemService.deleteByQuery()
@@ -404,6 +408,8 @@ export class ParseSchedule {
             fields: ['id'], // Assuming 'id' is the primary key field
             limit: -1
         });
+
+        console.log("["+SCHEDULE_NAME+"]"+" - Found " + itemsToDelete.length + " food offers to delete");
 
         let idsToDelete = itemsToDelete.map(item => item.id);
 
