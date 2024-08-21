@@ -155,9 +155,6 @@ services:
       AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true"
 
 
-      # directus-auto-translation
-      AUTO_TRANSLATE_API_KEY_SAVING_PATH: "/directus/secrets/auto-translation-api-key.txt" # Required for the auto translation plugin -  fix to the directus volume
-
   # The Directus database - postgres with data volume
   # https://docs.directus.io/self-hosted/docker-guide.html#example-docker-compose
   rocket-meals-database:
