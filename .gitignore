@@ -5,3 +5,4 @@ backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/covera
 
 !secrets/.keep
 secrets/**
+backend/database_backup/
