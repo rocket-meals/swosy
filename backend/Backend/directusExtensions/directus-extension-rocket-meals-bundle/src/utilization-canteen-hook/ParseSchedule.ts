@@ -255,7 +255,9 @@ export class ParseSchedule {
                         console.log("new all_time_high: "+value_real)
                         utilization_group.all_time_high = value_real;
                         let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
-                        await itemService.updateOne(utilization_group.id, utilization_group);
+                        await itemService.updateOne(utilization_group.id, {
+                            all_time_high: value_real
+                        });
                     }
                 }
 
