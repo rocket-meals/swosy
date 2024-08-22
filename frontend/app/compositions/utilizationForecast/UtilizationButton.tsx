@@ -17,7 +17,7 @@ export const useTranslationUtilizationForecast = () => {
 }
 
 interface AppState {
-	utilizationGroup: string | UtilizationsGroups;
+	utilizationGroup: UtilizationsGroups;
 }
 export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup, ...props}) => {
 	const isUtilizationForecastEnabled = useIsUtilizationForecastEnabled();

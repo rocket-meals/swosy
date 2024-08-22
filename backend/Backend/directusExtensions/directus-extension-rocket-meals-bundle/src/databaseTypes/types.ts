@@ -111,6 +111,7 @@ export type AppSettings = {
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  utilization_display_enabled?: boolean | null;
   utilization_forecast_calculation_enabled?: boolean | null;
   utilization_forecast_calculation_last_date?: string | null;
   utilization_forecast_calculation_status?: string | null;
@@ -1040,14 +1041,16 @@ export type UtilizationsEntries = {
 
 export type UtilizationsGroups = {
   alias?: string | null;
+  all_time_high?: number | null;
   date_created?: string | null;
   date_updated?: string | null;
   id: string;
   sort?: number | null;
   status: string;
-  threshold_high?: number | null;
-  threshold_low?: number | null;
-  threshold_medium?: number | null;
+  threshold_until_high?: number | null;
+  threshold_until_low?: number | null;
+  threshold_until_max?: number | null;
+  threshold_until_medium?: number | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   utilization_entries: any[] | UtilizationsEntries[];

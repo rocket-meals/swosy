@@ -220,8 +220,6 @@ export class ParseSchedule {
 
         let now = new Date();
 
-        let utilization_group_id = utilization_group?.id;
-
         let interval = await this.getInterval(intervalMinutes, date);
 
         for(let interval_entry of interval){
@@ -252,6 +250,13 @@ export class ParseSchedule {
                     let value_real = await this.countCashRegistersTransactionsForInterval(cashregisters, date_start, date_end);
                     //console.log("value_real: "+value_real);
                     utilizationEntryCurrent.value_real = value_real
+
+                    if(!utilization_group.all_time_high || value_real > utilization_group.all_time_high) {
+                        console.log("new all_time_high: "+value_real)
+                        utilization_group.all_time_high = value_real;
+                        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
+                        await itemService.updateOne(utilization_group.id, utilization_group);
+                    }
                 }
 
                 let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);

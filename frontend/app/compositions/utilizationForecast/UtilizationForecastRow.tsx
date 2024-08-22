@@ -1,14 +1,16 @@
 import React, {useRef} from 'react';
 import {DimensionValue, ScrollView} from 'react-native';
 import {UtilizationForecastBar} from './UtilizationForecastBar';
-import { View} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 
 const paddingLeft = 5;
 
-const maxCharacters = 1024;
-const minCharacters = 16;
-
+export type Percentage = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
+21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 |
+41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 |
+61 | 62 | 63 | 64 | 65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 79 | 80 |
+81 | 82 | 83 | 84 | 85 | 86 | 87 | 88 | 89 | 90 | 91 | 92 | 93 | 94 | 95 | 96 | 97 | 98 | 99 | 100;
 
 export type UtilizationDictData = {
     [key: string]: UtilizationData
@@ -16,12 +18,19 @@ export type UtilizationDictData = {
 export type UtilizationData = {
     start: string,
     end: string,
-    traffic: number | undefined
+    percentage: Percentage
+}
+
+export function clampNumberToPercentage(value: number): Percentage {
+	return Math.min(100, Math.max(0, value)) as Percentage;
 }
 
 export type UtilizationForecastRowProps = {
     translation_openedFrom: string,
     translation_closedAfter: string,
+	percentage_until_low?: Percentage,
+	percentage_until_medium?: Percentage,
+	percentage_until_high?: Percentage,
     // utilization is a dict with key to UtilizationData
     data: UtilizationDictData
 }
@@ -37,9 +46,9 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 
 	function getColorForTraffic(traffic: number | undefined) {
 		const maxValue = 100;
-		const lowest = (0)*maxValue;
-		const medium = (3.0/6.0)*maxValue;
-		const max = (5.0/6.0)*maxValue;
+		const lowest = props.percentage_until_low || (0)*maxValue;
+		const medium = props.percentage_until_medium ||  (3.0/6.0)*maxValue;
+		const max = props.percentage_until_high || (5.0/6.0)*maxValue;
 
 		const colors = {
 			[lowest+'']: '#93c34b',
@@ -207,7 +216,7 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		let lastTime = null;
 		for (let i = 0; i < keys.length; i++) { //for all rush minutes
 			const populartime = utilization[keys[i]];
-			const value = populartime.traffic;
+			const value = populartime.percentage;
 
 			let height = getItemWidth();
 			if (value !== undefined) {

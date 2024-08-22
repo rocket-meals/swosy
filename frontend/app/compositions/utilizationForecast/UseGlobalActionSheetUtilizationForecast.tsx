@@ -26,5 +26,5 @@ export const UtilizationContent = ({utilizationGroup, selectedDateIsoString}: {u
 		return null;
 	}
 
-	return <UtilizationForecast key={JSON.stringify(utilizationEntries)} utilizationEntires={utilizationEntries} />
+	return <UtilizationForecast key={JSON.stringify(utilizationEntries)} utilizationGroup={utilizationGroup} utilizationEntires={utilizationEntries} />
 }
