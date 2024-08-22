@@ -16,19 +16,19 @@ export async function loadUtilizationEntriesRemote(utilizationGroup: Utilization
 		date_start.setHours(0,0,0,0);
 
 		const date_end = new Date(date_start);
-		date_end.setHours(23,59,59,999);
+		date_end.setDate(date_end.getDate() + 1);
 
 		utilizationEntries = await utilizationEntriesHelper.readItems({
 			filter: {
 				_and: [
 					{
 						date_start: {
-							_gte: date_start.toISOString()
+							_gte: DateHelper.formatDateToIso8601WithoutTimezone(date_start)
 						}
 					},
 					{
 						date_end: {
-							_lte: date_end.toISOString()
+							_lte: DateHelper.formatDateToIso8601WithoutTimezone(date_end)
 						}
 					},
 					{

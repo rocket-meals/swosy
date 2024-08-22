@@ -251,7 +251,7 @@ export class ParseSchedule {
                     //console.log("value_real: "+value_real);
                     utilizationEntryCurrent.value_real = value_real
 
-                    if(!utilization_group.all_time_high || value_real > utilization_group.all_time_high) {
+                    if(!utilization_group.all_time_high || value_real > utilization_group.all_time_high && value_real !== 0){
                         console.log("new all_time_high: "+value_real)
                         utilization_group.all_time_high = value_real;
                         let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
@@ -297,27 +297,37 @@ export class ParseSchedule {
 
     async getInterval(intervalMinutes: number, date: Date) {
         let minutesPerDay = 24 * 60;
-
         let interval = [];
-
         let currentDate = new Date(date);
-        for(let i=0; i<minutesPerDay; i+=intervalMinutes){
+
+        currentDate.setHours(0, 0, 0, 0);  // Set to start of the day (midnight)
+
+        for (let i = 0; i < minutesPerDay; i += intervalMinutes) {
             let date_start = new Date(currentDate);
             date_start.setMinutes(i);
+
             let date_end = new Date(date_start);
-            date_end.setMinutes(i+intervalMinutes);
+            date_end.setMinutes(date_start.getMinutes() + intervalMinutes);
+
+            /**
+            // If the interval extends beyond midnight, correct the end time
+            if (date_end.getDate() !== date_start.getDate()) {
+                date_end = new Date(currentDate);
+                date_end.setHours(23, 59, 59, 999);  // Set to the end of the day
+            }
+                */
+
             interval.push({
                 date_start: date_start,
                 date_end: date_end
             });
         }
 
-
         return interval;
     }
 
 
-    async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsGroups){
+async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsGroups){
         //console.log("deleteAllFutureUtilizationForecastEntries")
         //console.log(utilization_group);
         //console.log("- for group: "+utilization_group?.id+" - "+utilization_group?.label);

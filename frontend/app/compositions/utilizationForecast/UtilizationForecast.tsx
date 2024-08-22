@@ -11,6 +11,7 @@ import {Text, View} from '@/components/Themed';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {AnimationThinking} from '@/compositions/animations/AnimationThinking';
 import {useIsDebug} from "@/states/Debug";
+import { ScrollView } from 'react-native';
 
 export type UtilizationForecastProps = {
 	utilizationEntires: UtilizationsEntries[] | undefined
@@ -106,12 +107,17 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 	}
 
 	function renderDebug() {
-		if(isDebug) {
-			return <View style={{
+		if(isDebug || true) {
+			return <ScrollView style={{
 				width: '100%',
+				height: 400
 			}}>
-				<Text>{JSON.stringify(utilizationEntries, null, 2)}</Text>
-			</View>
+				<View style={{
+					width: '100%',
+				}}>
+					<Text>{JSON.stringify(utilizationEntries, null, 2)}</Text>
+				</View>
+			</ScrollView>
 		}
 	}
 
