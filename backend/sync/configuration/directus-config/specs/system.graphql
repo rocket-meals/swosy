@@ -250,10 +250,10 @@ type Subscription {
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
-  utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
+  utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   foods_markings_mutated(event: EventEnum): foods_markings_mutated
   foods_translations_mutated(event: EventEnum): foods_translations_mutated
   foodsoffers_markings_mutated(event: EventEnum): foodsoffers_markings_mutated
@@ -266,7 +266,6 @@ type Subscription {
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
-  utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
@@ -276,6 +275,7 @@ type Subscription {
   foods_mutated(event: EventEnum): foods_mutated
   markings_mutated(event: EventEnum): markings_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
+  utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -473,6 +473,9 @@ type app_settings {
   washingmachine_parsing_enabled: Boolean
   washingmachine_parsing_last_date: Date
   washingmachine_parsing_last_date_func: datetime_functions
+
+  """Zeige die Auslastungsprognose in der App"""
+  utilization_display_enabled: Boolean
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
 }
@@ -2512,9 +2515,11 @@ type utilizations_groups {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  threshold_high: Int
-  threshold_medium: Int
-  threshold_low: Int
+  threshold_until_low: Int
+  threshold_until_medium: Int
+  threshold_until_max: Int
+  all_time_high: Int
+  threshold_until_high: Int
   utilization_entries(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [utilizations_entries]
   utilization_entries_func: count_functions
 }
@@ -2707,6 +2712,7 @@ input app_settings_filter {
   washingmachine_parsing_enabled: boolean_filter_operators
   washingmachine_parsing_last_date: date_filter_operators
   washingmachine_parsing_last_date_func: datetime_function_filter_operators
+  utilization_display_enabled: boolean_filter_operators
   housing_translations: app_settings_housing_translations_filter
   housing_translations_func: count_function_filter_operators
   _and: [app_settings_filter]
@@ -3484,9 +3490,11 @@ input create_utilizations_groups_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
-  threshold_high: Int
-  threshold_medium: Int
-  threshold_low: Int
+  threshold_until_low: Int
+  threshold_until_medium: Int
+  threshold_until_max: Int
+  all_time_high: Int
+  threshold_until_high: Int
   utilization_entries: [create_utilizations_entries_input]
 }
 
@@ -5002,9 +5010,11 @@ input update_utilizations_groups_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
-  threshold_high: Int
-  threshold_medium: Int
-  threshold_low: Int
+  threshold_until_low: Int
+  threshold_until_medium: Int
+  threshold_until_max: Int
+  all_time_high: Int
+  threshold_until_high: Int
   utilization_entries: [update_utilizations_entries_input]
 }
 
@@ -5054,9 +5064,11 @@ input utilizations_groups_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  threshold_high: number_filter_operators
-  threshold_medium: number_filter_operators
-  threshold_low: number_filter_operators
+  threshold_until_low: number_filter_operators
+  threshold_until_medium: number_filter_operators
+  threshold_until_max: number_filter_operators
+  all_time_high: number_filter_operators
+  threshold_until_high: number_filter_operators
   utilization_entries: utilizations_entries_filter
   utilization_entries_func: count_function_filter_operators
   _and: [utilizations_groups_filter]

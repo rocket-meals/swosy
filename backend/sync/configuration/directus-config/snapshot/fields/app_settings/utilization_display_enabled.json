@@ -1,36 +1,34 @@
 {
-  "collection": "profiles",
-  "field": "date_created",
-  "type": "timestamp",
+  "collection": "app_settings",
+  "field": "utilization_display_enabled",
+  "type": "boolean",
   "meta": {
-    "collection": "profiles",
+    "collection": "app_settings",
     "conditions": null,
-    "display": "datetime",
-    "display_options": {
-      "relative": true
-    },
-    "field": "date_created",
-    "group": null,
+    "display": null,
+    "display_options": null,
+    "field": "utilization_display_enabled",
+    "group": "utilization_settings",
     "hidden": false,
-    "interface": "datetime",
-    "note": null,
+    "interface": "boolean",
+    "note": "Zeige die Auslastungsprognose in der App",
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
-    "sort": 5,
+    "sort": 1,
     "special": [
-      "date-created"
+      "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "date_created",
-    "table": "profiles",
-    "data_type": "timestamp with time zone",
-    "default_value": null,
+    "name": "utilization_display_enabled",
+    "table": "app_settings",
+    "data_type": "boolean",
+    "default_value": false,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

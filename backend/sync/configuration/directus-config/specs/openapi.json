@@ -15411,393 +15411,6 @@
         ]
       }
     },
-    "/items/utilizations_groups": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new utilizations_groups item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "createItemsUtilizationsGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the utilizations_groups items.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "readItemsUtilizationsGroups",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple utilizations_groups items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "updateItemsUtilizationsGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing utilizations_groups items.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "deleteItemsUtilizationsGroups",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/utilizations_groups/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single utilizations_groups item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "readSingleItemsUtilizationsGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing utilizations_groups item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "updateSingleItemsUtilizationsGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing utilizations_groups item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsGroups"
-        ],
-        "operationId": "deleteSingleItemsUtilizationsGroups",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/cashregisters": {
       "post": {
         "summary": "Create an Item",
@@ -16150,6 +15763,393 @@
           "ItemsCashregisters"
         ],
         "operationId": "deleteSingleItemsCashregisters",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/items/app_settings": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new app_settings item.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "createItemsAppSettings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsAppSettings"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsAppSettings"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsAppSettings"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the app_settings items.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "readItemsAppSettings",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsAppSettings"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple app_settings items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "updateItemsAppSettings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsAppSettings"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsAppSettings"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsAppSettings"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing app_settings items.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "deleteItemsAppSettings",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/app_settings/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single app_settings item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "readSingleItemsAppSettings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsAppSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing app_settings item.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "updateSingleItemsAppSettings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsAppSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsAppSettings"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing app_settings item.",
+        "tags": [
+          "Items",
+          "ItemsAppSettings"
+        ],
+        "operationId": "deleteSingleItemsAppSettings",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -16572,15 +16572,15 @@
         ]
       }
     },
-    "/items/app_settings": {
+    "/items/utilizations_groups": {
       "post": {
         "summary": "Create an Item",
-        "description": "Create a new app_settings item.",
+        "description": "Create a new utilizations_groups item.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "createItemsAppSettings",
+        "operationId": "createItemsUtilizationsGroups",
         "parameters": [
           {
             "$ref": "#/components/parameters/Meta"
@@ -16594,11 +16594,11 @@
                   {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/ItemsAppSettings"
+                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                     }
                   },
                   {
-                    "$ref": "#/components/schemas/ItemsAppSettings"
+                    "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                   }
                 ]
               }
@@ -16615,7 +16615,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/ItemsAppSettings"
+                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                       }
                     }
                   }
@@ -16630,12 +16630,12 @@
       },
       "get": {
         "summary": "List Items",
-        "description": "List the app_settings items.",
+        "description": "List the utilizations_groups items.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "readItemsAppSettings",
+        "operationId": "readItemsUtilizationsGroups",
         "security": [
           {
             "Auth": []
@@ -16676,7 +16676,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "$ref": "#/components/schemas/ItemsAppSettings"
+                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                       }
                     },
                     "meta": {
@@ -16694,12 +16694,12 @@
       },
       "patch": {
         "summary": "Update Multiple Items",
-        "description": "Update multiple app_settings items at the same time.",
+        "description": "Update multiple utilizations_groups items at the same time.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "updateItemsAppSettings",
+        "operationId": "updateItemsUtilizationsGroups",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -16731,11 +16731,11 @@
                   {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/ItemsAppSettings"
+                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                     }
                   },
                   {
-                    "$ref": "#/components/schemas/ItemsAppSettings"
+                    "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                   }
                 ]
               }
@@ -16751,7 +16751,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/ItemsAppSettings"
+                        "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                       }
                     }
                   }
@@ -16763,12 +16763,12 @@
       },
       "delete": {
         "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing app_settings items.",
+        "description": "Delete multiple existing utilizations_groups items.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "deleteItemsAppSettings",
+        "operationId": "deleteItemsUtilizationsGroups",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -16780,15 +16780,15 @@
         "parameters": []
       }
     },
-    "/items/app_settings/{id}": {
+    "/items/utilizations_groups/{id}": {
       "get": {
         "summary": "Retrieve an Item",
-        "description": "Retrieve a single app_settings item by unique identifier.",
+        "description": "Retrieve a single utilizations_groups item by unique identifier.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "readSingleItemsAppSettings",
+        "operationId": "readSingleItemsUtilizationsGroups",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -16830,7 +16830,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/ItemsAppSettings"
+                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                     }
                   }
                 }
@@ -16847,12 +16847,12 @@
       },
       "patch": {
         "summary": "Update an Item",
-        "description": "Update an existing app_settings item.",
+        "description": "Update an existing utilizations_groups item.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "updateSingleItemsAppSettings",
+        "operationId": "updateSingleItemsUtilizationsGroups",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -16886,7 +16886,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/ItemsAppSettings"
+                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
               }
             }
           }
@@ -16901,7 +16901,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/ItemsAppSettings"
+                      "$ref": "#/components/schemas/ItemsUtilizationsGroups"
                     }
                   }
                 }
@@ -16918,12 +16918,12 @@
       },
       "delete": {
         "summary": "Delete an Item",
-        "description": "Delete an existing app_settings item.",
+        "description": "Delete an existing utilizations_groups item.",
         "tags": [
           "Items",
-          "ItemsAppSettings"
+          "ItemsUtilizationsGroups"
         ],
-        "operationId": "deleteSingleItemsAppSettings",
+        "operationId": "deleteSingleItemsUtilizationsGroups",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -21603,393 +21603,6 @@
         ]
       }
     },
-    "/items/utilizations_entries": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new utilizations_entries item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "createItemsUtilizationsEntries",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the utilizations_entries items.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "readItemsUtilizationsEntries",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple utilizations_entries items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "updateItemsUtilizationsEntries",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing utilizations_entries items.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "deleteItemsUtilizationsEntries",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/utilizations_entries/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single utilizations_entries item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "readSingleItemsUtilizationsEntries",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing utilizations_entries item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "updateSingleItemsUtilizationsEntries",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing utilizations_entries item.",
-        "tags": [
-          "Items",
-          "ItemsUtilizationsEntries"
-        ],
-        "operationId": "deleteSingleItemsUtilizationsEntries",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/washingmachines": {
       "post": {
         "summary": "Create an Item",
@@ -25472,6 +25085,393 @@
           }
         ]
       }
+    },
+    "/items/utilizations_entries": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new utilizations_entries item.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "createItemsUtilizationsEntries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the utilizations_entries items.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "readItemsUtilizationsEntries",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple utilizations_entries items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "updateItemsUtilizationsEntries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing utilizations_entries items.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "deleteItemsUtilizationsEntries",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/utilizations_entries/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single utilizations_entries item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "readSingleItemsUtilizationsEntries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing utilizations_entries item.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "updateSingleItemsUtilizationsEntries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing utilizations_entries item.",
+        "tags": [
+          "Items",
+          "ItemsUtilizationsEntries"
+        ],
+        "operationId": "deleteSingleItemsUtilizationsEntries",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
     }
   },
   "tags": [
@@ -25677,20 +25677,20 @@
       "x-collection": "foods_feedbacks_labels_translations"
     },
     {
-      "name": "ItemsUtilizationsGroups",
-      "x-collection": "utilizations_groups"
-    },
-    {
       "name": "ItemsCashregisters",
       "x-collection": "cashregisters"
+    },
+    {
+      "name": "ItemsAppSettings",
+      "x-collection": "app_settings"
     },
     {
       "name": "ItemsFoodoffers",
       "x-collection": "foodoffers"
     },
     {
-      "name": "ItemsAppSettings",
-      "x-collection": "app_settings"
+      "name": "ItemsUtilizationsGroups",
+      "x-collection": "utilizations_groups"
     },
     {
       "name": "ItemsFoodsMarkings",
@@ -25741,10 +25741,6 @@
       "x-collection": "push_notifications"
     },
     {
-      "name": "ItemsUtilizationsEntries",
-      "x-collection": "utilizations_entries"
-    },
-    {
       "name": "ItemsWashingmachines",
       "x-collection": "washingmachines"
     },
@@ -25779,6 +25775,10 @@
     {
       "name": "ItemsCashregistersTransactions",
       "x-collection": "cashregisters_transactions"
+    },
+    {
+      "name": "ItemsUtilizationsEntries",
+      "x-collection": "utilizations_entries"
     }
   ],
   "components": {
@@ -29205,90 +29205,6 @@
         },
         "x-collection": "foods_feedbacks_labels_translations"
       },
-      "ItemsUtilizationsGroups": {
-        "type": "object",
-        "properties": {
-          "alias": {
-            "nullable": true,
-            "type": "string"
-          },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "threshold_high": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "threshold_medium": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "threshold_low": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "utilization_entries": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsUtilizationsEntries"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "utilizations_groups"
-      },
       "ItemsCashregisters": {
         "type": "object",
         "properties": {
@@ -29375,174 +29291,6 @@
           }
         },
         "x-collection": "cashregisters"
-      },
-      "ItemsFoodoffers": {
-        "type": "object",
-        "properties": {
-          "alias": {
-            "nullable": true,
-            "type": "string"
-          },
-          "calories_kcal": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "canteen": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsCanteens"
-              }
-            ]
-          },
-          "carbohydrate_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date"
-          },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "fiber_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "food": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoods"
-              }
-            ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "price_employee": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "price_guest": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "price_student": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "protein_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "saturated_fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "sodium_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "sugar_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "co2_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "co2_rating": {
-            "nullable": true,
-            "type": "string"
-          },
-          "co2_saving_percentage": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "markings": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsFoodoffersMarkings"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "foodoffers"
       },
       "ItemsAppSettings": {
         "type": "object",
@@ -29815,6 +29563,11 @@
             "type": "string",
             "format": "date-time"
           },
+          "utilization_display_enabled": {
+            "nullable": true,
+            "description": "Zeige die Auslastungsprognose in der App",
+            "type": "boolean"
+          },
           "housing_translations": {
             "nullable": true,
             "type": "array",
@@ -29831,6 +29584,266 @@
           }
         },
         "x-collection": "app_settings"
+      },
+      "ItemsFoodoffers": {
+        "type": "object",
+        "properties": {
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
+          "calories_kcal": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "canteen": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsCanteens"
+              }
+            ]
+          },
+          "carbohydrate_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "fat_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "fiber_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "food": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoods"
+              }
+            ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "price_employee": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "price_guest": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "price_student": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "protein_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "saturated_fat_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "sodium_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "sugar_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "co2_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "co2_rating": {
+            "nullable": true,
+            "type": "string"
+          },
+          "co2_saving_percentage": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "markings": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsFoodoffersMarkings"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "foodoffers"
+      },
+      "ItemsUtilizationsGroups": {
+        "type": "object",
+        "properties": {
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "threshold_until_low": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "threshold_until_medium": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "threshold_until_max": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "all_time_high": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "threshold_until_high": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "utilization_entries": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsUtilizationsEntries"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "utilizations_groups"
       },
       "ItemsFoodsMarkings": {
         "type": "object",
@@ -30497,89 +30510,6 @@
           }
         },
         "x-collection": "push_notifications"
-      },
-      "ItemsUtilizationsEntries": {
-        "type": "object",
-        "properties": {
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_end": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_start": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "utilization_group": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-              }
-            ]
-          },
-          "value_forecast_current": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "value_real": {
-            "nullable": true,
-            "type": "integer"
-          }
-        },
-        "x-collection": "utilizations_entries"
       },
       "ItemsWashingmachines": {
         "type": "object",
@@ -31417,6 +31347,89 @@
           }
         },
         "x-collection": "cashregisters_transactions"
+      },
+      "ItemsUtilizationsEntries": {
+        "type": "object",
+        "properties": {
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_end": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_start": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "utilization_group": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsUtilizationsGroups"
+              }
+            ]
+          },
+          "value_forecast_current": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "value_real": {
+            "nullable": true,
+            "type": "integer"
+          }
+        },
+        "x-collection": "utilizations_entries"
       }
     },
     "parameters": {

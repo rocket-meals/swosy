@@ -1,13 +1,13 @@
 {
   "collection": "utilizations_groups",
-  "field": "threshold_low",
+  "field": "threshold_until_high",
   "type": "integer",
   "meta": {
     "collection": "utilizations_groups",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "threshold_low",
+    "field": "threshold_until_high",
     "group": null,
     "hidden": false,
     "interface": "input",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 10,
+    "sort": 13,
     "special": null,
     "translations": null,
     "validation": null,
@@ -23,7 +23,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "threshold_low",
+    "name": "threshold_until_high",
     "table": "utilizations_groups",
     "data_type": "integer",
     "default_value": null,
