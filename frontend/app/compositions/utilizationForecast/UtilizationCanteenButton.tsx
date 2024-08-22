@@ -21,8 +21,6 @@ export const UtilizationCanteenButton: FunctionComponent<AppState> = ({...props}
 		return null;
 	}
 
-	return <UtilizationButton utilizationGroup={utilizationGroup} {...props} />
-
 	const utilizationEnabled = appSettings?.utilization_display_enabled;
 	if(!utilizationEnabled){
 		return null;
