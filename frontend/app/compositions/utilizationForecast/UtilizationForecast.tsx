@@ -107,7 +107,7 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 	}
 
 	function renderDebug() {
-		if(isDebug || true) {
+		if(isDebug) {
 			return <ScrollView style={{
 				width: '100%',
 				height: 400
