@@ -1045,6 +1045,9 @@ export type UtilizationsGroups = {
   id: string;
   sort?: number | null;
   status: string;
+  threshold_high?: number | null;
+  threshold_low?: number | null;
+  threshold_medium?: number | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   utilization_entries: any[] | UtilizationsEntries[];

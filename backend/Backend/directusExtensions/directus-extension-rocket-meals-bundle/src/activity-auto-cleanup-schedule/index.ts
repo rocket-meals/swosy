@@ -10,13 +10,6 @@ export default defineHook(async ({schedule}, apiContext) => {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        logger
-    } = apiContext;
-
     const isProduction = true;
 
     const cronFrequencyEveryDayAt4AM = '0 4 * * *';
@@ -41,21 +34,20 @@ export default defineHook(async ({schedule}, apiContext) => {
     const MAX_MINUTES_TO_KEEP: number = isProduction ? MAX_MINUTES_TO_KEEP_PRODUCTION : MAX_MINUTES_TO_KEEP_DEVELOPMENT;
 
     schedule(cronFrequency, async () => {
-        logger.info(SCHEDULE_NAME+ ": start schedule run: "+new Date().toISOString());
-        let schema = await getSchema();
+        apiContext.logger.info(SCHEDULE_NAME+ ": start schedule run: "+new Date().toISOString());
         const activityServiceCreator = new ActivityServiceCreator(apiContext);
         const activityService = await activityServiceCreator.getActivityService();
 
         if(MODE_SELECTED===MODE_DELETE_OLD_LOGS){
             const FIELD_TIMESTAMP = "timestamp";
 
-            logger.info(SCHEDULE_NAME+ ": Deleting old logs");
+            apiContext.logger.info(SCHEDULE_NAME+ ": Deleting old logs");
             let now = new Date();
             let nowMinusMaxDays = new Date();
             nowMinusMaxDays.setMinutes(now.getMinutes()-MAX_MINUTES_TO_KEEP);
             // timestamp required in timestamp	"2024-05-12T10:45:52.792Z"
             let nowMinusMaxDaysISO = nowMinusMaxDays.toISOString();
-            logger.info(SCHEDULE_NAME+ ": nowMinusMaxDaysISO: "+nowMinusMaxDaysISO);
+            apiContext.logger.info(SCHEDULE_NAME+ ": nowMinusMaxDaysISO: "+nowMinusMaxDaysISO);
 
             // https://github.com/directus/directus/blob/main/api/src/services/items.ts
             const query = {

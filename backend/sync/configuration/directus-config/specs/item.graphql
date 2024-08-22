@@ -49,10 +49,6 @@ type Query {
   canteens_by_id(id: ID!, version: String): canteens
   canteens_aggregated(groupBy: [String], filter: canteens_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteens_aggregated!]!
   canteens_by_version(version: String!, id: ID!): version_canteens
-  utilizations_groups(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [utilizations_groups!]!
-  utilizations_groups_by_id(id: ID!, version: String): utilizations_groups
-  utilizations_groups_aggregated(groupBy: [String], filter: utilizations_groups_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [utilizations_groups_aggregated!]!
-  utilizations_groups_by_version(version: String!, id: ID!): version_utilizations_groups
   canteens_foodservice_hours(filter: canteens_foodservice_hours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteens_foodservice_hours!]!
   canteens_foodservice_hours_by_id(id: ID!, version: String): canteens_foodservice_hours
   canteens_foodservice_hours_aggregated(groupBy: [String], filter: canteens_foodservice_hours_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteens_foodservice_hours_aggregated!]!
@@ -85,6 +81,10 @@ type Query {
   foods_feedbacks_labels_translations_by_id(id: ID!, version: String): foods_feedbacks_labels_translations
   foods_feedbacks_labels_translations_aggregated(groupBy: [String], filter: foods_feedbacks_labels_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_feedbacks_labels_translations_aggregated!]!
   foods_feedbacks_labels_translations_by_version(version: String!, id: ID!): version_foods_feedbacks_labels_translations
+  utilizations_groups(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [utilizations_groups!]!
+  utilizations_groups_by_id(id: ID!, version: String): utilizations_groups
+  utilizations_groups_aggregated(groupBy: [String], filter: utilizations_groups_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [utilizations_groups_aggregated!]!
+  utilizations_groups_by_version(version: String!, id: ID!): version_utilizations_groups
   cashregisters(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cashregisters!]!
   cashregisters_by_id(id: ID!, version: String): cashregisters
   cashregisters_aggregated(groupBy: [String], filter: cashregisters_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cashregisters_aggregated!]!
@@ -210,8 +210,6 @@ type Mutation {
   create_buildings_translations_item(data: create_buildings_translations_input!): buildings_translations
   create_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_input!]): [canteens!]!
   create_canteens_item(data: create_canteens_input!): canteens
-  create_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_groups_input!]): [utilizations_groups!]!
-  create_utilizations_groups_item(data: create_utilizations_groups_input!): utilizations_groups
   create_canteens_foodservice_hours_items(filter: canteens_foodservice_hours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_foodservice_hours_input!]): [canteens_foodservice_hours!]!
   create_canteens_foodservice_hours_item(data: create_canteens_foodservice_hours_input!): canteens_foodservice_hours
   create_collections_dates_last_update_items(filter: collections_dates_last_update_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_collections_dates_last_update_input!]): [collections_dates_last_update!]!
@@ -228,6 +226,8 @@ type Mutation {
   create_foods_feedbacks_labels_item(data: create_foods_feedbacks_labels_input!): foods_feedbacks_labels
   create_foods_feedbacks_labels_translations_items(filter: foods_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_labels_translations_input!]): [foods_feedbacks_labels_translations!]!
   create_foods_feedbacks_labels_translations_item(data: create_foods_feedbacks_labels_translations_input!): foods_feedbacks_labels_translations
+  create_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_groups_input!]): [utilizations_groups!]!
+  create_utilizations_groups_item(data: create_utilizations_groups_input!): utilizations_groups
   create_cashregisters_items(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_cashregisters_input!]): [cashregisters!]!
   create_cashregisters_item(data: create_cashregisters_input!): cashregisters
   create_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_input!]): [foodoffers!]!
@@ -313,9 +313,6 @@ type Mutation {
   update_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteens_input!): [canteens!]!
   update_canteens_batch(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteens_input!]): [canteens!]!
   update_canteens_item(id: ID!, data: update_canteens_input!): canteens
-  update_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_utilizations_groups_input!): [utilizations_groups!]!
-  update_utilizations_groups_batch(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_utilizations_groups_input!]): [utilizations_groups!]!
-  update_utilizations_groups_item(id: ID!, data: update_utilizations_groups_input!): utilizations_groups
   update_canteens_foodservice_hours_items(filter: canteens_foodservice_hours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteens_foodservice_hours_input!): [canteens_foodservice_hours!]!
   update_canteens_foodservice_hours_batch(filter: canteens_foodservice_hours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteens_foodservice_hours_input!]): [canteens_foodservice_hours!]!
   update_canteens_foodservice_hours_item(id: ID!, data: update_canteens_foodservice_hours_input!): canteens_foodservice_hours
@@ -340,6 +337,9 @@ type Mutation {
   update_foods_feedbacks_labels_translations_items(filter: foods_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_feedbacks_labels_translations_input!): [foods_feedbacks_labels_translations!]!
   update_foods_feedbacks_labels_translations_batch(filter: foods_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_feedbacks_labels_translations_input!]): [foods_feedbacks_labels_translations!]!
   update_foods_feedbacks_labels_translations_item(id: ID!, data: update_foods_feedbacks_labels_translations_input!): foods_feedbacks_labels_translations
+  update_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_utilizations_groups_input!): [utilizations_groups!]!
+  update_utilizations_groups_batch(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_utilizations_groups_input!]): [utilizations_groups!]!
+  update_utilizations_groups_item(id: ID!, data: update_utilizations_groups_input!): utilizations_groups
   update_cashregisters_items(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_cashregisters_input!): [cashregisters!]!
   update_cashregisters_batch(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_cashregisters_input!]): [cashregisters!]!
   update_cashregisters_item(id: ID!, data: update_cashregisters_input!): cashregisters
@@ -437,8 +437,6 @@ type Mutation {
   delete_buildings_translations_item(id: ID!): delete_one
   delete_canteens_items(ids: [ID]!): delete_many
   delete_canteens_item(id: ID!): delete_one
-  delete_utilizations_groups_items(ids: [ID]!): delete_many
-  delete_utilizations_groups_item(id: ID!): delete_one
   delete_canteens_foodservice_hours_items(ids: [ID]!): delete_many
   delete_canteens_foodservice_hours_item(id: ID!): delete_one
   delete_collections_dates_last_update_items(ids: [ID]!): delete_many
@@ -455,6 +453,8 @@ type Mutation {
   delete_foods_feedbacks_labels_item(id: ID!): delete_one
   delete_foods_feedbacks_labels_translations_items(ids: [ID]!): delete_many
   delete_foods_feedbacks_labels_translations_item(id: ID!): delete_one
+  delete_utilizations_groups_items(ids: [ID]!): delete_many
+  delete_utilizations_groups_item(id: ID!): delete_one
   delete_cashregisters_items(ids: [ID]!): delete_many
   delete_cashregisters_item(id: ID!): delete_one
   delete_foodoffers_items(ids: [ID]!): delete_many
@@ -537,7 +537,6 @@ type Subscription {
   businesshours_mutated(event: EventEnum): businesshours_mutated
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
-  utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
   devices_mutated(event: EventEnum): devices_mutated
@@ -546,6 +545,7 @@ type Subscription {
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
+  utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
@@ -3416,6 +3416,9 @@ type utilizations_groups {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  threshold_high: Int
+  threshold_medium: Int
+  threshold_low: Int
   utilization_entries(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [utilizations_entries]
   utilization_entries_func: count_functions
 }
@@ -3442,11 +3445,17 @@ type utilizations_groups_aggregated_count {
   status: Int
   user_created: Int
   user_updated: Int
+  threshold_high: Int
+  threshold_medium: Int
+  threshold_low: Int
   utilization_entries: Int
 }
 
 type utilizations_groups_aggregated_fields {
   sort: Float
+  threshold_high: Float
+  threshold_medium: Float
+  threshold_low: Float
 }
 
 type utilizations_groups_mutated {
@@ -4160,6 +4169,9 @@ type version_utilizations_groups {
   status: String
   user_created: JSON
   user_updated: JSON
+  threshold_high: Int
+  threshold_medium: Int
+  threshold_low: Int
   utilization_entries: JSON
 }
 
@@ -5504,6 +5516,9 @@ input create_utilizations_groups_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  threshold_high: Int
+  threshold_medium: Int
+  threshold_low: Int
   utilization_entries: [create_utilizations_entries_input]
 }
 
@@ -7050,6 +7065,9 @@ input update_utilizations_groups_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  threshold_high: Int
+  threshold_medium: Int
+  threshold_low: Int
   utilization_entries: [update_utilizations_entries_input]
 }
 
@@ -7139,6 +7157,9 @@ input utilizations_groups_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  threshold_high: number_filter_operators
+  threshold_medium: number_filter_operators
+  threshold_low: number_filter_operators
   utilization_entries: utilizations_entries_filter
   utilization_entries_func: count_function_filter_operators
   _and: [utilizations_groups_filter]

@@ -33,11 +33,8 @@ export class WashingmachineParseSchedule {
     }
 
     async parse() {
-        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule");
         let enabled = await this.isEnabled();
-        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule enabled: "+enabled);
         let status = await this.getStatus()
-        console.log("[Check] "+SCHEDULE_NAME+" Parse Schedule status: "+status);
         if (enabled && status === FlowStatus.START) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
             await this.setStatus(FlowStatus.RUNNING);
@@ -49,7 +46,7 @@ export class WashingmachineParseSchedule {
 
                 await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
-                console.log("[MealParseSchedule] Failed");
+                console.log("["+SCHEDULE_NAME+"] Failed");
                 console.log(err);
 
                 await this.setStatus(FlowStatus.FAILED);
@@ -85,7 +82,14 @@ export class WashingmachineParseSchedule {
         foundItems = await itemsService.readByQuery(searchQuery)
         let foundItem = foundItems[0]
         if(foundItem){
-            await itemsService.updateOne(foundItem.id, washingmachine.basicData)
+            const existingAlias = foundItem.alias
+            const isExistingAlisNotEmpty = existingAlias && existingAlias.length > 0
+            let newAlias = isExistingAlisNotEmpty ? existingAlias : washingmachine.basicData.alias
+
+            await itemsService.updateOne(foundItem.id, {
+                ...washingmachine.basicData,
+                alias: newAlias // do not overwrite alias if it is already set
+            })
         }
 
     }

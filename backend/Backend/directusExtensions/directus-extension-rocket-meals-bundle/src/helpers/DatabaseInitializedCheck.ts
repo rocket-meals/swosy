@@ -9,10 +9,14 @@ const EXTENSION_NAME = "directus-extension-rocket-meals-bundle";
 export class DatabaseInitializedCheck{
 
     static async checkAllTablesExistWithApiContext(scheduleName: string, apiContext: ApiContext){
-        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, apiContext.getSchema, getAllCollectionNames());
+        return await DatabaseInitializedCheck.checkTablesExist(scheduleName, apiContext, getAllCollectionNames());
     }
 
-    static async getTableNames(getSchema: any): Promise<string[]> {
+    static async getTableNamesFromApiContext(apiContext: ApiContext): Promise<string[]> {
+        return await DatabaseInitializedCheck.getTableNames(apiContext.getSchema);
+    }
+
+    private static async getTableNames(getSchema: any): Promise<string[]> {
         try{
             let schema = await getSchema();
             let collectionKeys = Object.keys(schema.collections);
@@ -30,10 +34,10 @@ export class DatabaseInitializedCheck{
         }
     }
 
-    static async checkTablesExist(scheduleName: string, getSchema: any, tablesRequiredForPlugin: string[]): Promise<boolean> {
+    static async checkTablesExist(scheduleName: string, apiContext: ApiContext, tablesRequiredForPlugin: string[]): Promise<boolean> {
         let missingTables = [];
 
-        let existingTablesNamesOnServer = await DatabaseInitializedCheck.getTableNames(getSchema);
+        let existingTablesNamesOnServer = await DatabaseInitializedCheck.getTableNamesFromApiContext(apiContext);
         for (let tableRequiredForPlugin of tablesRequiredForPlugin) {
             if (!existingTablesNamesOnServer.includes(tableRequiredForPlugin)) {
                 missingTables.push(tableRequiredForPlugin);

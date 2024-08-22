@@ -22,7 +22,7 @@ export default defineHook(async({ filter }, apiContext) => {
 	filter(
 		EventHelper.USERS_DELETE_EVENT,
 		// @ts-ignore
-		async (payload, input, {database, schema, accountability}) => {
+		async (payload: any, input, {database, schema, accountability}) => {
 			const usersIds = payload; //get the user ids
 			for (const userId of usersIds) {
 				// for all users which get deleted

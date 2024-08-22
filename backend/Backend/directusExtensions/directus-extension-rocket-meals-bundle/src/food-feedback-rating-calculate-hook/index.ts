@@ -2,6 +2,7 @@ import {defineHook} from '@directus/extensions-sdk';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {Foods, FoodsFeedbacks} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "food_feedback_rating_calculate";
 
@@ -11,18 +12,11 @@ export default defineHook(async ({action, filter}, apiContext) => {
 		return;
 	}
 
-	const {
-		services,
-		database,
-		getSchema,
-		logger
-	} = apiContext;
-
 	const collection = CollectionNames.FOODS_FEEDBACKS
 
 	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
-	let foodsService = await itemsServiceCreator.getItemsService(CollectionNames.FOODS);
-	let foodfeedbacksService = await itemsServiceCreator.getItemsService(collection);
+	let foodsService = await itemsServiceCreator.getItemsService<Foods>(CollectionNames.FOODS);
+	let foodfeedbacksService = await itemsServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS);
 
 
 	async function getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){
@@ -31,7 +25,7 @@ export default defineHook(async ({action, filter}, apiContext) => {
 		for(let food_feedback_id of food_feedback_ids){
 			let food_feedback = await foodfeedbacksService.readOne(food_feedback_id);
 			let food_id = food_feedback?.food;
-			if(!!food_id){
+			if(!!food_id && typeof food_id === "string"){
 				food_id_dict[food_id] = true;
 			}
 		}
@@ -56,11 +50,13 @@ export default defineHook(async ({action, filter}, apiContext) => {
 			}
 		}
 
-		let food_feedbacks = [];
+		let food_feedbacks: FoodsFeedbacks[] = [];
 		try{
 			food_feedbacks = await foodfeedbacksService.readByQuery({
 				filter: {
-					food: food_id
+					food: {
+						_eq: food_id
+					}
 				},
 				limit: -1
 			})

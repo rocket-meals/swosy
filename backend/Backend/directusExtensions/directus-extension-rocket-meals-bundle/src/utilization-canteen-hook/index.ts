@@ -2,9 +2,12 @@ import {ParseSchedule} from "./ParseSchedule"
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "utilization_canteen";
-export default defineHook(async ({action}, apiContext) => {
+export default defineHook(async ({init, action}, apiContext) => {
     let collection = CollectionNames.APP_SETTINGS
 
     let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
@@ -12,32 +15,13 @@ export default defineHook(async ({action}, apiContext) => {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        env,
-        logger
-    } = apiContext;
-
     const parseSchedule = new ParseSchedule(apiContext);
 
-    try {
-        console.log("foodParseSchedule init");
-        await parseSchedule.init(getSchema, services, database, logger);
-        console.log("foodParseSchedule master init finished");
-    } catch (err) {
-        let errMsg = err.toString();
-        if (errMsg.includes("no such table: directus_collections")) {
-            console.log("+++++++++ Meal Parse Schedule +++++++++");
-            console.log("++++ Database not initialized yet +++++");
-            console.log("+++ Restart Server again after init +++");
-            console.log("+++++++++++++++++++++++++++++++++++++++");
-        } else {
-            console.log("Meal Parse Schedule init error: ");
-            console.log(err);
-        }
-    }
+    let myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
+        console.log(SCHEDULE_NAME + ": App started, resetting "+SCHEDULE_NAME);
+        await myDatabaseHelper.getAppSettingsHelper().setUtilizationForecastCalculationStatus(FlowStatus.FINISHED, null);
+    });
 
     action(
         collection + ".items.update",

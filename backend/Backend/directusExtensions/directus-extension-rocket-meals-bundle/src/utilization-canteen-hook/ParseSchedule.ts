@@ -1,116 +1,75 @@
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
-
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
-const TABLENAME_CANTEENS = CollectionNames.CANTEENS
-const TABLENAME_UTILIZATION_GROUS = CollectionNames.UTILIZATION_GROUPS
-const TABLENAME_UTILIZATION_ENTRIES = CollectionNames.UTILIZATION_ENTRIES
-
-const TABLENAME_BUSINESSHOURS = CollectionNames.BUSINESSHOURS
-const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS;
-const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS;
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {
+    Canteens,
+    Cashregisters,
+    CashregistersTransactions,
+    UtilizationsEntries,
+    UtilizationsGroups
+} from "../databaseTypes/types";
+import {DateHelper} from "../helpers/DateHelper";
 
 
 const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 
-    private finished: boolean;
-    private schema: any;
-    private database: any;
-    private logger: any;
-    private services: any;
     private itemsServiceCreator: ItemsServiceCreator;
-    private newsService: any;
     private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
 
     constructor(apiContext: ApiContext) {
         this.apiContext = apiContext;
-        this.finished = true;
-    }
-
-    async init(getSchema, services, database, logger) {
-        this.schema = await getSchema();
-        this.database = database;
-        this.logger = logger;
-        this.services = services;
         this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
+        this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
     }
 
-    async setStatus(status) {
-        await this.database(TABLENAME_FLOWHOOKS).update({
-            utilization_forecast_calculation_status: status
-        });
+    async setStatus(status: FlowStatus) {
+        await this.myDatabaseHelper.getAppSettingsHelper().setUtilizationForecastCalculationStatus(status, new Date());
     }
 
     async isEnabled() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.utilization_forecast_calculation_enabled;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().isUtilizationForecastCalculationEnabled();
     }
 
     async getStatus() {
-        try {
-            let tablename = TABLENAME_FLOWHOOKS;
-            let flows = await this.database(tablename).first();
-            if (!!flows) {
-                return flows?.utilization_forecast_calculation_status;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-        return undefined;
+        return await this.myDatabaseHelper.getAppSettingsHelper().getUtilizationForecastCalculationStatus();
     }
 
     async parse() {
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
-        let statusCheck = "start";
-        let statusFinished = "finished";
-        let statusRunning = "running";
-        let statusFailed = "failed";
 
-        if (enabled && status === statusCheck && this.finished) {
+        if (enabled && status === FlowStatus.START) {
             console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            this.finished = false;
-            await this.setStatus(statusRunning);
+            await this.setStatus(FlowStatus.RUNNING);
 
             try {
                 // Get all Canteens
                 //console.log("UtilizationSchedule: load all canteens");
                 let canteens = await this.getAllCanteens();
                 // For every canteen, get all cashregisters
-                for(let i=0; i<canteens.length; i++){
-                    let canteen = canteens[i];
+                for(let canteen of canteens){
                     await this.calcForecastForCanteen(canteen)
                 }
 
                 console.log("Finished");
-                this.finished = true;
-                await this.setStatus(statusFinished);
+                await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
                 console.log("[UtilizationSchedule] Failed");
                 console.log(err);
-                this.finished = true;
-                await this.setStatus(statusFailed);
+                await this.setStatus(FlowStatus.FAILED);
             }
 
-        } else if (!this.finished && status !== statusRunning) {
-            await this.setStatus(statusRunning);
         }
     }
 
-    async calcForecastForCanteen(canteen){
+    async calcForecastForCanteen(canteen: Canteens){
         //console.log("UtilizationSchedule: calc for canteen - label: "+canteen?.label);
         //console.log(canteen);
 
@@ -122,9 +81,7 @@ export class ParseSchedule {
             await this.deleteAllFutureUtilizationForecastEntries(utilization_group_for_canteen);
 
             // Have a list of all transactions
-            let cashregister_ids = await this.getAllCashreigsterIdsForCanteen(canteen);
-
-            let businesshoursForCanteen = await this.getBusinesshours(canteen);
+            let cashregisters = await this.getAllCashregistersForCanteen(canteen);
 
             // calculate the prediction using as input: the transactions in the last x days, the canteen business hours
             let intervalMinutes = 15;
@@ -133,26 +90,18 @@ export class ParseSchedule {
             let dates = [];
             let today = new Date();
 
-            let useTestDate = false;
-            if(useTestDate){
-                let testDate = new Date('2023-12-05'); // test date
-                today = testDate;
-                amountDaysForecast=1;
-            }
-
             today.setDate(today.getDate()-1); // start with yesterday, so happened events can be saved as such
             for(let i=0; i<amountDaysForecast; i++){
                 dates.push(new Date(today));
                 today.setDate(today.getDate()+1);
             }
 
-            for(let i=0; i<dates.length; i++) {
-                let date = dates[i];
+            for(let date of dates){
                 console.log("")
                 console.log("###########");
                 console.log("Calc for: "+date);
 
-                await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregister_ids, date, intervalMinutes, businesshoursForCanteen);
+                await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregisters, date, intervalMinutes);
             }
 
         } else {
@@ -160,18 +109,18 @@ export class ParseSchedule {
         }
     }
 
-    async createUtilizationEntry(utilization_group_id, date_start, date_end){
-        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
+    async createUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
+        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
         await itemService.createOne({
-            utilization_group: utilization_group_id,
-            date_start: date_start,
-            date_end: date_end
+            utilization_group: utilization_group?.id,
+            date_start: DateHelper.formatDateToIso8601WithoutTimezone(date_start),
+            date_end: DateHelper.formatDateToIso8601WithoutTimezone(date_end),
         });
     }
 
-    async getUtilizationEntry(utilization_group_id, date_start, date_end){
+    async getUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
         //console.log("getUtilizationEntry");
-        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
+        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
 
         let allFoundEntries = await itemService.readByQuery(
             {
@@ -179,17 +128,17 @@ export class ParseSchedule {
                     _and: [
                         {
                             utilization_group: {
-                                _eq: utilization_group_id
+                                _eq: utilization_group?.id
                             }
                         },
                         {
                             date_start: {
-                                _eq: date_start
+                                _eq: DateHelper.formatDateToIso8601WithoutTimezone(date_start)
                             }
                         },
                         {
                             date_end: {
-                                _eq: date_end
+                                _eq: DateHelper.formatDateToIso8601WithoutTimezone(date_end)
                             }
                         }
                     ]
@@ -219,26 +168,19 @@ export class ParseSchedule {
          */
     }
 
-    async countCashRegistersTransactionsForInterval(cashregister_ids, date_start, date_end){
+    async countCashRegistersTransactionsForInterval(cashregisters: Cashregisters[], date_start: Date, date_end: Date){
         let transactions = 0;
         console.log("")
         console.log("countCashRegistersTransactionsForInterval")
         console.log("cashregister_ids")
-        console.log(cashregister_ids);
         console.log("date_start: "+date_start.toString()+" date_end: "+date_end.toString());
-        let cashregisterTransactionService = await this.itemsServiceCreator.getItemsService(TABLENAME_CASHREGISTERS_TRANSACTIONS);
+        let cashregisterTransactionService = await this.itemsServiceCreator.getItemsService<CashregistersTransactions>(CollectionNames.CASHREGISTERS_TRANSACTIONS);
 
-        for(let i=0; i<cashregister_ids.length; i++){
-            let cashregister_id = cashregister_ids[i];
-            console.log("cashregister_id: "+cashregister_id);
+        const realisticAverage = 6000;
+        const assumedMaxLimit = realisticAverage*10; // normally during a single day only 6000 transactions are realistic, we set a limit of 10 times that value
 
-            let transactions_for_cashregister_all = await cashregisterTransactionService.readByQuery({
-                filter: {
-                    cashregister: cashregister_id,
-                },
-                limit: 1000000
-            });
-            console.log("-- total for cashregister: "+transactions_for_cashregister_all.length);
+        for(let cashregister of cashregisters){
+            console.log("cashregister_id: "+cashregister.id);
 
             // Instead we need to use the itemServiceCreator
             let transactions_for_cashregister = await cashregisterTransactionService.readByQuery({
@@ -246,23 +188,23 @@ export class ParseSchedule {
                         _and: [
                             {
                                 cashregister: {
-                                    _eq: cashregister_id
+                                    _eq: cashregister.id
                                 }
                             },
                             {
                                 date: {
-                                    _gte: date_start
+                                    _gte: DateHelper.formatDateToIso8601WithoutTimezone(date_start)
                                 }
                             },
                             {
                                 date: {
-                                    _lt: date_end
+                                    _lt: DateHelper.formatDateToIso8601WithoutTimezone(date_end)
                                 }
                             },
                         ]
                     },
-                    fields: ['*'], // List specific fields you want to retrieve or use '*' for all fields // we can remove this line
-                    limit: 1000000 // just a very high limit. "-1" would be technically correct but due to security
+                    fields: ['id'], // we only need the id and not the whole object, so we can count the transactions
+                    limit: assumedMaxLimit // just a very high limit. "-1" would be technically correct but due to security
                 });
 
             let amount_transactions_for_cashregister = transactions_for_cashregister.length;
@@ -274,23 +216,22 @@ export class ParseSchedule {
         return transactions;
     }
 
-    async updateUtilizationEntryForCanteenAtDate(canteen, utilization_group, cashregister_ids, date, intervalMinutes, businesshoursForCanteen){
+    async updateUtilizationEntryForCanteenAtDate(canteen: Canteens, utilization_group: UtilizationsGroups, cashregisters: Cashregisters[], date: Date, intervalMinutes: number){
 
         let now = new Date();
 
         let utilization_group_id = utilization_group?.id;
 
-        let businesshoursForDate = await this.getCurrentValidBusinesshoursForDate(date, businesshoursForCanteen);
-        let interval = await this.getInterval(intervalMinutes, businesshoursForDate, date);
+        let interval = await this.getInterval(intervalMinutes, date);
 
         for(let interval_entry of interval){
-            let date_start = interval_entry?.date_start
-            let date_end = interval_entry?.date_end;
+            let date_start = interval_entry.date_start
+            let date_end = interval_entry.date_end;
 
-            let utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group_id, date_start, date_end);
+            let utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, date_start, date_end);
             if(!utilizationEntryCurrent){ // when we update an existing entry
-                await this.createUtilizationEntry(utilization_group_id, date_start, date_end);
-                utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group_id, date_start, date_end);
+                await this.createUtilizationEntry(utilization_group, date_start, date_end);
+                utilizationEntryCurrent = await this.getUtilizationEntry(utilization_group, date_start, date_end);
             }
             //console.log("utilizationEntryCurrent");
             //console.log(utilizationEntryCurrent);
@@ -304,199 +245,72 @@ export class ParseSchedule {
                 //console.log("isEntryInPast: "+isEntryInPast);
 
                 if(!isEntryInPast){
-                    // calc forecast - kept very simple
-                    //console.log("entry is in the future")
-                    let date_start_last_week = new Date(date_start)
-                    date_start_last_week.setDate(date_start.getDate()-7);
-
-                    let date_end_last_week = new Date(date_end)
-                    date_end_last_week.setDate(date_end.getDate()-7);
-
-                    //console.log("date_start_last_week: "+date_start_last_week.toISOString())
-                    //console.log("date_end_last_week: "+date_end_last_week.toISOString())
-
-                    let utilizationEntryLastWeek = await this.getUtilizationEntry(utilization_group_id, date_start_last_week, date_end_last_week);
-                    let last_week_forecast_value = utilizationEntryLastWeek?.value_forecast_current // if we want to predict beyond 7 days we need to predict using predicted values, better than displaying 0
-                    let last_week_real_value = utilizationEntryLastWeek?.value_real || last_week_forecast_value;
-                    //console.log("last_week_real_value: "+last_week_real_value)
-                    //console.log("last_week_real_value: "+last_week_real_value)
-                    //console.log("utilizationEntryCurrent");
-                    //console.log(utilizationEntryCurrent);
-                    utilizationEntryCurrent.value_forecast_current = last_week_real_value
+                    utilizationEntryCurrent.value_forecast_current = await this.predictUtilizationForInterval(utilization_group, cashregisters, canteen, date_start, date_end);
                 }
                 if(isEntryInPast){
                     // we need just to count the cash register actions
-                    //console.log("entry is in the past");
-                    let value_real = await this.countCashRegistersTransactionsForInterval(cashregister_ids, date_start, date_end);
+                    let value_real = await this.countCashRegistersTransactionsForInterval(cashregisters, date_start, date_end);
                     //console.log("value_real: "+value_real);
                     utilizationEntryCurrent.value_real = value_real
                 }
 
-                let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
+                let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
                 await itemService.updateOne(utilizationEntryCurrent.id, utilizationEntryCurrent);
             } else {
                 console.log("Houston we got a problem")
-
             }
-
-
         }
 
     }
 
-    async getCurrentValidBusinesshoursForDate(date, businessHoursForCanteen) {
-        // Get the day of the week from the date
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        let currentDate = new Date(date);
-        const day = currentDate.getDay();
-        //let dayOfWeek = dayNames[currentDate.getDay()];
+    /**
+     * Simple prediction for the utilization of a canteen, assuming the same utilization as last week
+     * TODO: Implement a more sophisticated prediction
+     * @param utilization_group
+     * @param cashregisters
+     * @param canteen
+     * @param date_start
+     * @param date_end
+     */
+    async predictUtilizationForInterval(utilization_group: UtilizationsGroups, cashregisters: Cashregisters[], canteen: Canteens, date_start: Date, date_end: Date){
+        // calc forecast - kept very simple
+        let date_start_last_week = new Date(date_start)
+        date_start_last_week.setDate(date_start.getDate()-7);
 
-        let businessObjsForCurrentDay = [];
+        let date_end_last_week = new Date(date_end)
+        date_end_last_week.setDate(date_end.getDate()-7);
 
-        for (const businessHour of businessHoursForCanteen) {
-            // Continue only if the day of the week matches
-            //if (businessHour.dayOfTheWeek === dayOfWeek) {
-            //    businessObjsForCurrentDay.push(businessHour);
-            //}
-            if(businessHour?.monday === true && day === 1){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.tuesday === true && day === 2){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.wednesday === true && day === 3){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.thursday === true && day === 4){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.friday === true && day === 5){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.saturday === true && day === 6){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-            if(businessHour?.sunday === true && day === 0){
-                businessObjsForCurrentDay.push(businessHour);
-            }
-        }
-        let currentValidBusinessHour = null;
+        let utilizationEntryLastWeek = await this.getUtilizationEntry(utilization_group, date_start_last_week, date_end_last_week);
+        let last_week_forecast_value = utilizationEntryLastWeek?.value_forecast_current // if we want to predict beyond 7 days we need to predict using predicted values, better than displaying 0
 
-        // check for the default business hour
-        for(const businessHour of businessObjsForCurrentDay){
-            if(!businessHour.date_valid_from && ! businessHour.date_valid_till){ // if we found the default date we set that first
-                currentValidBusinessHour = businessHour;
-            }
-        }
-
-        // check for special business hours
-        for(const businessHour of businessObjsForCurrentDay){
-            // Convert date string to Date object for comparison
-            let validFromDate = businessHour.date_valid_from ? new Date(businessHour.date_valid_from) : null;
-            let validTillDate = businessHour.date_valid_till ? new Date(businessHour.date_valid_till) : null;
-
-            // Check if the current date falls within the valid date range
-            let isDateInRange = true;
-            if (validFromDate && currentDate < validFromDate) {
-                isDateInRange = false;
-            }
-            if (validTillDate && currentDate > validTillDate) {
-                isDateInRange = false;
-            }
-
-            // If the date is within the range and matches the day, add to valid list
-            if (isDateInRange) {
-                currentValidBusinessHour = businessHour
-            }
-        }
-
-        return currentValidBusinessHour;
+        let value_forecast_current = utilizationEntryLastWeek?.value_real || last_week_forecast_value
+        return value_forecast_current;
     }
 
 
-
-    async getBusinesshours(canteen){
-        let canteenService = await this.itemsServiceCreator.getItemsService(TABLENAME_CANTEENS);
-        let businessHoursService = await this.itemsServiceCreator.getItemsService(TABLENAME_BUSINESSHOURS);
-
-        let canteenWithBusinesshours = await canteenService.readOne(canteen?.id,  {"fields": ["*", "businesshours.*"]})
-        let businessHoursDetails = [];
-        for (const businessHourManyManyObj of canteenWithBusinesshours?.businesshours) {
-            let businessHourId = businessHourManyManyObj?.businesshours_id;
-            const businessHourDetails = await businessHoursService.readOne(businessHourId);
-            businessHoursDetails.push(businessHourDetails);
-        }
-        return businessHoursDetails;
-
-        /**
-         businessHoursDetails
-         [
-           {
-             date_created: '2024-01-06T13:02:23.409Z',
-             date_updated: null,
-             date_valid_from: null,
-             date_valid_till: null,
-             //dayOfTheWeek: 'Saturday',
-                 monday: false,
-                tuesday: false,
-                wednesday: false,
-                thursday: false,
-                friday: false,
-                saturday: true,
-                sunday: false,
-             id: 5,
-             sort: null,
-             status: 'draft',
-             time_end: '11:00:00',
-             time_start: '14:00:00',
-             user_created: 'e2b46b90-5813-4dd7-818b-cb28900defbd',
-             user_updated: null
-         ...
-         */
-    }
-
-    async getInterval(intervalMinutes, businesshoursForDate, date) {
-        let time_start = businesshoursForDate?.time_start; // is in HH:MM:SS format
-        let time_end = businesshoursForDate?.time_end; // is in HH:MM:SS format
+    async getInterval(intervalMinutes: number, date: Date) {
+        let minutesPerDay = 24 * 60;
 
         let interval = [];
-        if (!time_start || !time_end) {
-            return interval;
-        }
 
-        // Parse time_start and time_end
-        const [startHours, startMinutes] = time_start.split(':').map(Number);
-        const [endHours, endMinutes] = time_end.split(':').map(Number);
-
-        // Set end_date hours and minutes from time_end
-        let end_date = new Date(date);
-        end_date.setHours(endHours, endMinutes, 0, 0);
-
-        // Set current_start hours and minutes
-        let current_start = new Date(date);
-        current_start.setHours(startHours, startMinutes, 0, 0);
-
-        // Set current_end and add intervalMinutes
-        let current_end = new Date(current_start);
-        current_end.setMinutes(current_end.getMinutes() + intervalMinutes);
-
-        // While current_end <= end_date
-        while (current_end <= end_date) {
+        let currentDate = new Date(date);
+        for(let i=0; i<minutesPerDay; i+=intervalMinutes){
+            let date_start = new Date(currentDate);
+            date_start.setMinutes(i);
+            let date_end = new Date(date_start);
+            date_end.setMinutes(i+intervalMinutes);
             interval.push({
-                date_start: new Date(current_start),
-                date_end: new Date(current_end)
+                date_start: date_start,
+                date_end: date_end
             });
-
-            // Update current_start and current_end
-            current_start = new Date(current_end);
-            current_end.setMinutes(current_end.getMinutes() + intervalMinutes);
         }
+
 
         return interval;
     }
 
 
-    async deleteAllFutureUtilizationForecastEntries(utilization_group){
+    async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsGroups){
         //console.log("deleteAllFutureUtilizationForecastEntries")
         //console.log(utilization_group);
         //console.log("- for group: "+utilization_group?.id+" - "+utilization_group?.label);
@@ -507,14 +321,22 @@ export class ParseSchedule {
 
 
 
-        let itemService = await this.itemsServiceCreator.getItemsService(TABLENAME_UTILIZATION_ENTRIES);
+        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
 
         let itemsToDelete = await itemService.readByQuery({
             filter: {
-                utilization_group: utilization_group_id,
-                date_end: {
-                    _gt: currentDate
-                }
+                _and: [
+                    {
+                        utilization_group: {
+                            _eq: utilization_group_id
+                        }
+                    },
+                    {
+                        date_end: {
+                            _gte: DateHelper.formatDateToIso8601WithoutTimezone(currentDate)
+                        }
+                    }
+                ]
             },
             fields: ['*'],
             limit: -1
@@ -525,46 +347,38 @@ export class ParseSchedule {
 
     }
 
-    setStatusPublished(json) {
+    setStatusPublished(json: any) {
         json["status"] = "published";
         return json;
     }
 
     async getAllCanteens(){
-        let tablename = TABLENAME_CANTEENS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
-        let list = await itemService.readByQuery({
-            limit: -1});
-        return list;
+        let itemService = await this.itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
+        return await itemService.readByQuery({
+            limit: -1
+        });
     }
 
-    async getAllCashreigsterIdsForCanteen(canteen){
+    async getAllCashregistersForCanteen(canteen: Canteens){
         //console.log("getAllCashreigsterIdsForCanteen");
-        let tablename = TABLENAME_CASHREGISTERS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename)
+        let itemService = await this.itemsServiceCreator.getItemsService<Cashregisters>(CollectionNames.CASHREGISTERS)
 
         let list_of_cashregisters = await itemService.readByQuery({filter: {
-                canteen: canteen?.id
+                canteen: {
+                    _eq: canteen?.id
+                }
             },
             limit: -1});
-        //console.log("list_of_cashregisters");
-        //console.log(list_of_cashregisters)
-
-        let ids = [];
-        for(let i=0; i<list_of_cashregisters.length; i++){
-            ids.push(list_of_cashregisters[i]?.id)
-        }
-        return ids;
+        return list_of_cashregisters
     }
 
-    async findOrCreateOrUpdateUtilizationGroupForCanteen(canteen) {
+    async findOrCreateOrUpdateUtilizationGroupForCanteen(canteen: Canteens) {
         //console.log("findOrCreateOrUpdateUtilizationGroupForCanteen")
-
-        let utilization_group_id = canteen?.["utilization_group"];
-        let tablename = TABLENAME_UTILIZATION_GROUS;
-        let itemService = await this.itemsServiceCreator.getItemsService(tablename);
+        const canteenItemService = await this.itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS);
+        let utilization_group_id = canteen?.utilization_group;
+        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
         let foundOrCreatedGroup = null;
-        if(utilization_group_id){ // since we have an id, there must be a group
+        if(utilization_group_id && typeof utilization_group_id === "string"){ // if group present, we have to update it
             //console.log("if(utilization_group_id){")
             foundOrCreatedGroup = await itemService.readOne(utilization_group_id)
         } else { // if no group present, we have to create one
@@ -573,8 +387,11 @@ export class ParseSchedule {
             let obj_id = await itemService.createOne(obj_json);
             foundOrCreatedGroup = await itemService.readOne(obj_id);
             // and link it to our canteen
-            canteen["utilization_group"] = foundOrCreatedGroup?.id;
-            await itemService.updateOne(canteen.id, canteen); // update the canteen information
+            canteen.utilization_group = foundOrCreatedGroup?.id;
+
+            await canteenItemService.updateOne(canteen.id, {
+                utilization_group: foundOrCreatedGroup?.id
+            }); // update the canteen information
         }
 
         if(foundOrCreatedGroup){
@@ -582,7 +399,7 @@ export class ParseSchedule {
             //console.log("foundOrCreatedGroup");
             //console.log(foundOrCreatedGroup);
             await itemService.updateOne(foundOrCreatedGroup.id, {
-                label: canteen?.label
+                alias: canteen?.alias
             })
             foundOrCreatedGroup = await itemService.readOne(foundOrCreatedGroup.id);
         } else {

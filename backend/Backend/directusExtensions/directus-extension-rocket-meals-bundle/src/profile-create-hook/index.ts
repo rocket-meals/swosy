@@ -3,6 +3,7 @@ import {EventHelper} from '../helpers/EventHelper';
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {DirectusUsers, Profiles} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "profile_create";
 
@@ -12,27 +13,18 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 		return;
 	}
 
-	const {
-		services,
-		database,
-		getSchema,
-		env,
-		logger
-	} = apiContext;
-
+	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
+	let users_service = await itemsServiceCreator.getItemsService<DirectusUsers>(CollectionNames.USERS);
+	let profiles_service = await itemsServiceCreator.getItemsService<Profiles>(CollectionNames.PROFILES);
 
 	// every minute
 	schedule('0 * * * * *', async () => {
 		// search for users without profiles and create profiles for them
-		let schema = await getSchema();
-		let itemsServiceCreator = new ItemsServiceCreator(apiContext);
-		let users_service = await itemsServiceCreator.getItemsService(CollectionNames.USERS);
-		let profiles_service = await itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
 		// users without profiles
 		let users = await users_service.readByQuery({
 			filter: {
 				profile: {
-					_eq: null
+					_null: true
 				}
 			},
 			limit: -1
@@ -42,7 +34,7 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 			for (let user of users) {
 				try {
 					let profile_id = await profiles_service.createOne({}); //create a profile
-					if (profile_id) {
+					if (profile_id && typeof profile_id === "string") {
 						console.log("Created profile for user: " + user.id);
 						await users_service.updateOne(user.id, {
 							profile: profile_id
@@ -65,10 +57,6 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 		async (input, meta, actionContext) => {
 			/** filter */
 			const {database} = actionContext;
-
-			let itemsServiceCreator = new ItemsServiceCreator(apiContext);
-			let profiles_service = await itemsServiceCreator.getItemsService(CollectionNames.PROFILES);
-			let users_service = await itemsServiceCreator.getItemsService(CollectionNames.USERS);
 
 			//const currentProvider = input.provider; //get the current provider
 			//        let userId = input.user; // action
@@ -94,7 +82,7 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 					console.log("Creating profile for user: " + userId)
 					let profile_id = await profiles_service.createOne({}); //create a profile
 					console.log("Created profile for user: " + userId)
-					if (profile_id) {
+					if (profile_id && typeof profile_id === "string") {
 						console.log("New profile id: " + profile_id)
 						await users_service.updateOne(userId, {
 							profile: profile_id
@@ -110,6 +98,7 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 					return input;
 				}
 			}
+			return input;
 		}
 	);
 });

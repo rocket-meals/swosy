@@ -180,6 +180,30 @@ export class AppSettingsHelper {
         return false;
     }
 
+    async setUtilizationForecastCalculationStatus(status: FlowStatus, lastRun: Date | null) {
+        let database = this.getDatabase();
+        await database(CollectionNames.APP_SETTINGS).update({
+            utilization_forecast_calculation_status: status,
+            utilization_forecast_calculation_last_date: lastRun
+        });
+    }
+
+    async getUtilizationForecastCalculationStatus(): Promise<FlowStatus | undefined> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.utilization_forecast_calculation_status) {
+            return appSettings.utilization_forecast_calculation_status as FlowStatus;
+        }
+        return undefined
+    }
+
+    async isUtilizationForecastCalculationEnabled(): Promise<boolean> {
+        const appSettings = await this.getAppSettings();
+        if (appSettings?.utilization_forecast_calculation_enabled) {
+            return appSettings.utilization_forecast_calculation_enabled;
+        }
+        return false;
+    }
+
     async getFoodParsingStatus(): Promise<FlowStatus | undefined> {
         const appSettings = await this.getAppSettings();
         if (appSettings?.foods_parsing_status) {
