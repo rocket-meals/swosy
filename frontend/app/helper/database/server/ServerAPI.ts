@@ -264,12 +264,10 @@ export class ServerAPI {
 
 	static getUrlToProviderLogin(provider: AuthProvider) {
 		const providerName = provider.name.toLowerCase();
-		//console.log("getUrlToProvider: "+provider);
 		const redirectURL = UrlHelper.getURLToLogin();
-		//console.log("RedirectURL: "+redirectURL)
-		const redirect_with_access_token = '?redirect='+ServerAPI.getServerUrl()+'/redirect-with-token?redirect='+redirectURL+'?'+ServerAPI.getParamNameForDirectusAccessToken()+'=';
-		const totalURL = ServerAPI.getServerUrl()+'/auth/login/'+providerName+redirect_with_access_token;
-		return totalURL
+		const redirect_with_access_token = '?redirect=' + ServerAPI.getServerUrl() + '/redirect-with-token?redirect=' + redirectURL + '?' + ServerAPI.getParamNameForDirectusAccessToken() + '=';
+		const totalURL = ServerAPI.getServerUrl() + '/auth/login/' + providerName + redirect_with_access_token;
+		return totalURL;
 	}
 
 	static async getMe(): Promise<any> {

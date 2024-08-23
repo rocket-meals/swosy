@@ -16,6 +16,7 @@ import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAst
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import * as WebBrowser from 'expo-web-browser';
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
