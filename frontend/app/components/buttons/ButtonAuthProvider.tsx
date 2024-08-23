@@ -77,20 +77,6 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 							if (token) {
 								authWindow.close();
 								console.log('Token found in URL: ' + token);
-								/**
-								 setModalConfig({
-								 key: 'sort',
-								 label: 'success ' + token,
-								 title: 'success: ' + token,
-								 accessibilityLabel: 'success',
-								 renderAsContentPreItems: (key: string, hide: () => void) => (
-								 <View style={{ width: '100%', height: '100%' }}>
-								 <Text>{'result.url: ' + redirectUrl.href}</Text>
-								 <Text>{'Success: ' + token}</Text>
-								 </View>
-								 ),
-								 });
-								 */
 								clearInterval(authCheckInterval);
 								if(onSuccess) {
 									onSuccess(token);

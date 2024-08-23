@@ -7,9 +7,15 @@ on:
       - completed
 
 jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm Workflow Start
+        run: echo "Screenshots CI Action workflow started"
+
   screenshots:
     runs-on: ubuntu-latest
-    needs: gh-pages
+    needs: start  # Dependent on the dummy job
 
     steps:
       - name: Checkout Repository
