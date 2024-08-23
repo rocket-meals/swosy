@@ -289,7 +289,9 @@ export default function Login() {
 		} else {
 			return (
 				<>
-					<ServerSsoAuthProviders />
+					<ServerSsoAuthProviders onSuccess={(newToken: string) => {
+						authenticate_with_access_token(newToken);
+					}} />
 					{renderAnonymousLoginOption()}
 					<View style={{height: 16}}></View>
 					<View style={{width: '100%', height: 1, backgroundColor: backgroundContrastColor}}></View>
