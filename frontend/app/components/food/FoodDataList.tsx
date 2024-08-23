@@ -127,8 +127,6 @@ export function FoodDataList(props: FoodInformationListProps) {
 		data: {icon: string, label: string, value?: number | string | null, unit?: string}
 	}[] = [
 		{ key: 'environmental_impact_co2', data: {icon: IconNames.environmental_impact_co2_icon, label: translation_environmental_impact_co2, value: props.data.co2_g, unit: "g"} },
-		{ key: 'environmental_impact_co2_saving_percentage', data: {icon: IconNames.environmental_impact_co2_saving_percentage_icon, label: translation_environmental_impact_co2_saving_percentage, value: props.data.co2_saving_percentage, unit: "%"} },
-		{ key: 'environmental_impact_co2_rating', data: {icon: IconNames.environmental_impact_co2_rating_icon, label: translation_environmental_impact_co2_rating, value: props.data.co2_rating} },
 	]
 
 	const amountColumns = props.columnAmount || 2;

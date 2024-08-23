@@ -102,9 +102,7 @@ export class IconNames {
     static nutrition_sugar_icon = 'cupcake'
 
     static environmental_impact_icon = 'earth'
-    static environmental_impact_co2_icon = IconFamily.MaterialIcons+IconParseDelimeter+'co2'
-    static environmental_impact_co2_saving_percentage_icon = IconFamily.MaterialIcons+IconParseDelimeter+'percent'
-    static environmental_impact_co2_rating_icon = IconFamily.MaterialIcons+IconParseDelimeter+'star-rate'
+    static environmental_impact_co2_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'cloud'
 
     static price_group_icon = 'currency-eur'
     static price_group_student = 'school'
