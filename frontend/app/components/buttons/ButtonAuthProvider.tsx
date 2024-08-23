@@ -13,6 +13,7 @@ import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {View, Text} from "@/components/Themed";
 import {Platform} from "react-native";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import Regexp from "ajv-keywords/src/keywords/regexp";
 
 // Define the type for Single Sign-On (SSO) providers
 type SsoProvider = {
@@ -83,14 +84,18 @@ export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 				} catch (e) {
 					// Handle errors if needed
 				}
-			}, 500);
+			}, 50);
 		} else {
 			// Mobile-specific logic
 			const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
 
 			if (result.type === 'success' && result.url) {
 				try {
-					const directusToken = result.url.match(/directus_refresh_token=([^&]*)/)[1];
+
+					const directus_refresh_token_param_name = ServerAPI.getParamNameForDirectusAccessToken()
+					const match = result.url.match(new RegExp(directus_refresh_token_param_name + '=([^&]*)'))
+					const directusToken = match ? match[1] : null
+
 					if (directusToken) {
 						console.log('Token found in URL: ' + directusToken);
 
