@@ -17,6 +17,9 @@ export const RootOnAppFocus = (props: RootOnAppFocusProps) => {
 	async function handleAppFocused() {
 		// check and update the notification permission
 		updateDeviceInformationAndRegisterIfNotFound();
+
+		// Set the badge count to 0 when the app is focused
+		await NotificationHelper.setBadgeCountAsync(0);
 	}
 
 	// Used example of https://reactnative.dev/docs/appstate#basic-usage
