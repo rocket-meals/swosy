@@ -1,16 +1,15 @@
 name: Screenshots CI Action
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:  # Trigger on pull requests to master
-    branches:
-      - master
+  workflow_run:
+    workflows: ["GH-Pages Publish"]
+    types:
+      - completed
 
 jobs:
   screenshots:
     runs-on: ubuntu-latest
+    needs: gh-pages
 
     steps:
       - name: Checkout Repository
@@ -19,18 +18,18 @@ jobs:
       - name: Generate Screenshots
         uses: flameddd/screenshots-ci-action@master
         with:
-          url: https://{{ github.repository_owner }}.github.io/${{ github.repository.split('/').pop() }}/housing?kiosk_mode=true&deviceMock=iphone
-          devices: iPhone 6,iPhone 6 landscape,Nexus 7,Pad Pro,Galaxy S III landscape,iPad Pro landscape
+          url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/housing?kiosk_mode=true&deviceMock=iphone
+          devices: iPhone 6,iPhone 6 landscape,Nexus 7,iPad Pro,Galaxy S III landscape,iPad Pro landscape
           output_dir: screenshots
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v2
         with:
           path: screenshots
-          name: ${{ github.repository.split('/').pop() }}-screenshots
+          name: ${{ github.event.repository.name }}-screenshots
 
       - name: Prevent Triggering Another Workflow
-        if: github.event_name == 'push'
+        if: github.event_name == 'workflow_run'
         run: |
           echo "Skipping CI run for screenshot upload"
           git update-index --skip-worktree screenshots/
