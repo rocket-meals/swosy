@@ -1,5 +1,5 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Businesshours, Canteens, CanteensFoodservicehours} from '@/helper/database/databaseTypes/types';
+import {Businesshours, Canteens, CanteensFoodserviceHours} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -79,7 +79,7 @@ function getDemoCanteens(): Record<string, Canteens> {
 
 		const canteenId = 'demoCanteen'+(i)
 
-		let foodservice_hours: CanteensFoodservicehours[] = [];
+		let foodservice_hours: CanteensFoodserviceHours[] = [];
 		let buildingsBusinesshours = demoBuilding.businesshours;
 		if(!!buildingsBusinesshours){
 			for(let buildingsBusinesshour of buildingsBusinesshours){
@@ -126,10 +126,10 @@ export function useSynchedCanteensFoodServicehoursDict(): Record<string, Busines
 		 const canteen_id_as_string: string = canteenId
 		 const canteen = canteensDict[canteenId]
 		 if (canteen?.foodservice_hours) {
-			 let canteensBusinesshours: CanteensFoodservicehours[] = canteen.foodservice_hours as CanteensFoodservicehours[]
+			 let canteensBusinesshours: CanteensFoodserviceHours[] = canteen.foodservice_hours as CanteensFoodserviceHours[]
 			 let businesshours: Businesshours[] = []
 			 canteensBusinesshours.forEach((canteensBusinesshours) => {
-				 let businesshoursId = canteensBusinesshours.businesshours_id
+				 let businesshoursId = canteensBusinesshours.businesshours_id as string
 				 let businesshoursEntry = businesshoursDict?.[businesshoursId]
 				 if (businesshoursEntry) {
 					 businesshours.push(businesshoursEntry)

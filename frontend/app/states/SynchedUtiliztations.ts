@@ -1,6 +1,7 @@
 import {UtilizationsEntries, UtilizationsGroups} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {DateHelper} from '@/helper/date/DateHelper';
+import {ItemStatus} from "@/helper/database/ItemStatus";
 
 export const TABLE_NAME_UTILIZATIONS_ENTRIES = 'utilizations_entries';
 export const TABLE_NAME_UTILIZATIONS_GROUPS = 'utilizations_groups';
@@ -57,69 +58,64 @@ function getDemoUtilizationEntries(date: Date): UtilizationsEntries[] | undefine
 
 	const utilizationEntries: UtilizationsEntries[] = [];
 
-	// if saturday or sunday return empty array
-	if (date.getDay() === 0 || date.getDay() === 6) {
-		return utilizationEntries;
-	}
+	const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
-	const start = new Date(date);
-	// set start to 10:00
-	start.setHours(10)
-	start.setMinutes(0)
-	start.setSeconds(0)
-	start.setMilliseconds(0)
+	const startInMinutes = 10 * 60; // 10:00
+	const peakInMinutes = 12 * 60; // 12:00
+	const endInMinutes = 17 * 60; // 17:00
 
-	const end = new Date(date);
-	// set end to 17:00
-	end.setHours(17)
-	end.setMinutes(0)
-	end.setSeconds(0)
-	end.setMilliseconds(0)
+	const value_at_peak = 3000;
+	const value_at_start = 100;
+	const minutesPerDay = 24 * 60;
+	const step = 15;
 
-	const peak = new Date(date);
-	peak.setHours(12)
-	peak.setMinutes(0)
-	peak.setSeconds(0)
-	peak.setMilliseconds(0)
+	const minutes_to_peak_from_start = (peakInMinutes - startInMinutes);
+	const minutes_to_peak_from_end = (endInMinutes - peakInMinutes);
 
 	// create utilization entries for every 15 minutes
-	const current = new Date(start);
-	while (current < end) {
-		const date_start = current.toISOString();
-		const date_end = new Date(current);
-		date_end.setMinutes(date_end.getMinutes() + 15);
-
+	for(let i = 0; i < minutesPerDay; i += step) {
+		const current = i;
 		// let value_forecast_current start at 10 and has its peak at 12:00 and then goes down to 10 again
-		const value_at_peak = 100;
-		const value_at_start = 10;
-		const minutes_to_peak_from_start = (peak.getTime() - start.getTime()) / 1000 / 60;
-		const minutes_to_peak_from_end = (end.getTime() - peak.getTime()) / 1000 / 60;
-		let value_forecast_current = value_at_start
-		if (current < peak) {
-			// interpolate between value_at_start and value_at_peak with a s-curve which starts as value_at_start and ends as value_at_peak
-			const t = (current.getTime() - start.getTime()) / 1000 / 60;
-			const x = t / minutes_to_peak_from_start;
-			value_forecast_current = value_at_start + (value_at_peak - value_at_start) * (x * x * (3 - 2 * x));
-		} else {
-			// interpolate between value_at_peak and value_at_start with a s-curve which starts as value_at_peak and ends as value_at_start
-			const t = (current.getTime() - peak.getTime()) / 1000 / 60;
-			const x = t / minutes_to_peak_from_end;
-			value_forecast_current = value_at_peak + (value_at_start - value_at_peak) * (x * x * (3 - 2 * x));
+		let value = 0;
+
+		if(current >= startInMinutes && current <= endInMinutes && !isWeekend) {
+			if (current < peakInMinutes) {
+				// interpolate between value_at_start and value_at_peak with a s-curve which starts as value_at_start and ends as value_at_peak
+				const t = (current - startInMinutes);
+				const x = t / minutes_to_peak_from_start;
+				value = value_at_start + (value_at_peak - value_at_start) * (x * x * (3 - 2 * x));
+			} else {
+				// interpolate between value_at_peak and value_at_start with a s-curve which starts as value_at_peak and ends as value_at_start
+				const t = (current - peakInMinutes);
+				const x = t / minutes_to_peak_from_end;
+				value = value_at_peak + (value_at_start - value_at_peak) * (x * x * (3 - 2 * x));
+			}
 		}
 
 
+		const current_date = new Date(date);
+		current_date.setMinutes(i);
+		current_date.setSeconds(0);
+		current_date.setMilliseconds(0);
+
+		const current_date_end = new Date(current_date);
+		current_date_end.setMinutes(i + step);
+
+		const isCurrentEndDateInFuture = current_date_end.getTime() > now.getTime();
+		const value_forecast_current = isCurrentEndDateInFuture ? value : value
+		const value_real = isCurrentEndDateInFuture ? undefined : value
 
 		const utilizationEntry: UtilizationsEntries = {
-			date_start: current.toISOString(),
-			date_end: date_end.toISOString(),
+			date_start: DateHelper.formatDateToIso8601WithoutTimezone(current_date),
+			date_end: DateHelper.formatDateToIso8601WithoutTimezone(current_date_end),
 			date_updated: new Date().toISOString(),
 			date_created: new Date().toISOString(),
-			id: 'demo'+current.toISOString(),
+			id: 'demo'+current_date.toISOString(),
+			status: ItemStatus.PUBLISHED,
 			value_forecast_current: value_forecast_current,
-			value_real: value_forecast_current
+			value_real: value_real
 		};
 		utilizationEntries.push(utilizationEntry);
-		current.setMinutes(current.getMinutes() + 15);
 	}
 
 	return utilizationEntries;

@@ -26,8 +26,6 @@ export function clampNumberToPercentage(value: number): Percentage {
 }
 
 export type UtilizationForecastRowProps = {
-    translation_openedFrom: string,
-    translation_closedAfter: string,
 	percentage_until_low?: Percentage,
 	percentage_until_medium?: Percentage,
 	percentage_until_high?: Percentage,
@@ -36,9 +34,6 @@ export type UtilizationForecastRowProps = {
 }
 export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 	const translation_utilization = useTranslation(TranslationKeys.utilization);
-
-	const rushMinutes_openedFrom= props.translation_openedFrom
-	const rushMinutes_closedAfter = props.translation_closedAfter
 
 	const myScrollViewRef = useRef(null);
 
@@ -80,9 +75,6 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 
 	function getActiveIndex(now: Date, utilization: UtilizationDictData) {
 		let activeIndex = -1;
-
-		const nowHour = now.getHours();
-		const nowMinute = now.getMinutes();
 
 		const populartimes = utilization;
 
@@ -167,28 +159,6 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		return 6*getItemWidth();
 	}
 
-	function renderClosedBar(first: boolean, isActive: boolean, lastTime: string | null) {
-		let text = '';
-		if (first) {
-			text = rushMinutes_openedFrom
-		} else {
-			text = rushMinutes_closedAfter
-		}
-
-		const firstRenderedText = (
-			text+': '+lastTime
-		)
-
-		let textBelowPlaceholder = null;
-		textBelowPlaceholder = (
-			' '
-		);
-
-		//let borderColor = active ? this.fontStyles.normal.color : "transparent"; // TODO:
-
-		return renderBar(getItemWidth(), getClosedBarWidth(), 'transparent', textBelowPlaceholder, firstRenderedText, isActive);
-	}
-
 	function getTimeKeys() {
 		const keys = Object.keys(utilization);
 		return keys;
@@ -235,12 +205,6 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			lastTime = '' + HH_end + ':' + mm_end;
 			const timeAsString = '' + HH + ':' + mm;
 
-			if (i === 0) {
-				const openingTime = '' + HH + ':' + mm
-				const isActive = activeIndex === -1;
-				cols.push(renderClosedBar(true, isActive, openingTime));
-			}
-
 			const isFullHour = parseInt(mm) === 0;
 
 			let text = '';
@@ -260,15 +224,6 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 				renderBar(height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel)
 			);
 		}
-
-		const placeHolderRenderedText = (' ');
-		//add empty item to fill the rest of the space
-
-		const isActive = activeIndex === keys.length;
-		if (keys.length > 0) {
-			cols.push(renderClosedBar(false, isActive, lastTime));
-		}
-		//cols.push(renderBar(getItemWidth(), getItemWidth(), "transparent", placeHolderRenderedText, null, false));
 
 		const scrollViewContent = (
 			<View

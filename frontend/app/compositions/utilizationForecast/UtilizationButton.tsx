@@ -24,7 +24,6 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 	const accessibilityLabel = useTranslationUtilizationForecast();
 	const tooltip = accessibilityLabel
 	const title = accessibilityLabel
-	const [utilizationEntries, setUtilizationEntries] = useState<UtilizationsEntries[] | undefined>(undefined)
 
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
@@ -54,21 +53,8 @@ export const UtilizationButton: FunctionComponent<AppState> = ({utilizationGroup
 		return () => clearInterval(interval);
 	}, []);
 
-	async function updateUtilizationEntries() {
-		// and type of utilizationGroup is UtilizationsGroups
-		if (utilizationGroup !== null && utilizationGroup !== undefined && typeof utilizationGroup !== 'string') {
-			const utilizationEntriesRemote = await loadUtilizationEntriesRemote(utilizationGroup, selectedDateCopy.toISOString(), isDemo);
-			setUtilizationEntries(utilizationEntriesRemote)
-		}
-	}
 
-	// create a useEffect which updates the utilization entries when the dateAsDependecy changes
-	useEffect(() => {
-		updateUtilizationEntries()
-	}, [refreshDependencyKey]);
-
-
-	if (!isUtilizationForecastEnabled) {
+	if (!isUtilizationForecastEnabled && !isDemo) {
 		return null;
 	} else {
 		return (

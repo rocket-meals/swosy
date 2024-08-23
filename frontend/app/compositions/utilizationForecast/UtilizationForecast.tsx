@@ -18,8 +18,6 @@ export type UtilizationForecastProps = {
 	utilizationGroup: UtilizationsGroups
 }
 export const UtilizationForecast = (props: UtilizationForecastProps) => {
-	const translation_opens_at = useTranslation(TranslationKeys.opens_at)
-	const translation_closed_after = useTranslation(TranslationKeys.closed_after)
 	const isDebug = useIsDebug()
 
 	const utilizationGroup = props.utilizationGroup
@@ -88,7 +86,7 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 
 	const entriesUndefined = !utilizationEntries
 	const emptyListOfEntries = utilizationEntries && utilizationEntries.length === 0
-	let content = <UtilizationForecastRow data={utilization} percentage_until_low={percentage_until_low} percentage_until_medium={percentage_until_medium} percentage_until_high={percentage_until_high} translation_closedAfter={translation_closed_after} translation_openedFrom={translation_opens_at} />
+	let content = <UtilizationForecastRow data={utilization} percentage_until_low={percentage_until_low} percentage_until_medium={percentage_until_medium} percentage_until_high={percentage_until_high} />
 	if (entriesUndefined || emptyListOfEntries) { // TODO: maybe add another animation for emptyListOfEntries
 		content = (
 			<View style={{
