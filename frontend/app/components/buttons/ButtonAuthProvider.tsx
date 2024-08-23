@@ -11,6 +11,8 @@ import * as Linking from 'expo-linking';
 import {UrlHelper} from "@/helper/UrlHelper";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {View, Text} from "@/components/Themed";
+import {Platform} from "react-native";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 // Define the type for Single Sign-On (SSO) providers
 type SsoProvider = {
@@ -26,7 +28,6 @@ function isSsoLoginPossible() {
 	}
 	return true;
 }
-
 export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 	const isDebug = useIsDebug();
 	const translation_log_in_with = useTranslation(TranslationKeys.sign_in_with);
@@ -51,85 +52,85 @@ export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 	}
 
 	const onPress = async () => {
-		const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
-
-		if (result.type === 'success' && result.url) {
-			// Extrahiere den Token aus der Redirect-URL
-			try{
-				const directusToken = result.url.match(/directus_refresh_token=([^&]*)/)[1];
-				if (directusToken) {
-					console.log('Token found in URL: ' + directusToken);
-
-					setModalConfig({
-						key: "sort",
-						label: "success " + directusToken,
-						title: "success: " + directusToken,
-						accessibilityLabel: "success",
-						renderAsContentPreItems: (key: string, hide: () => void) => {
-							return <View style={{
-								width: '100%',
-								height: '100%',
-							}}>
-								<Text>
-									{"result.url: " + result.url}
-								</Text>
-								<Text>
-									{"Success: " + directusToken}
-								</Text>
-							</View>
+		if (PlatformHelper.isWeb()) {
+			// Web-specific logic
+			const authWindow = window.open(url, '_blank', 'width=500,height=600');
+			const authCheckInterval = setInterval(() => {
+				try {
+					if (authWindow.closed) {
+						clearInterval(authCheckInterval);
+					} else {
+						const redirectUrl = new URL(authWindow.location.href);
+						const token = redirectUrl.searchParams.get(ServerAPI.getParamNameForDirectusAccessToken());
+						if (token) {
+							authWindow.close();
+							console.log('Token found in URL: ' + token);
+							setModalConfig({
+								key: 'sort',
+								label: 'success ' + token,
+								title: 'success: ' + token,
+								accessibilityLabel: 'success',
+								renderAsContentPreItems: (key: string, hide: () => void) => (
+									<View style={{ width: '100%', height: '100%' }}>
+										<Text>{'result.url: ' + redirectUrl.href}</Text>
+										<Text>{'Success: ' + token}</Text>
+									</View>
+								),
+							});
+							clearInterval(authCheckInterval);
 						}
-					})
-
-				} else {
-					console.log('No token found in URL');
-
-					setModalConfig({
-						key: "sort",
-						label: "error",
-						title: "error",
-						accessibilityLabel: "error",
-						renderAsContentPreItems: (key: string, hide: () => void) => {
-							return <View style={{
-								width: '100%',
-								height: '100%',
-							}}>
-								<Text>
-									{"result.url: " + result.url}
-								</Text>
-								<Text>
-									{"Error: "}
-								</Text>
-								<Text>
-									{JSON.stringify(result, null, 2)}
-								</Text>
-							</View>
-						}
-					})
-				}
-			} catch (e) {
-				console.log('Error while parsing URL: ', e);
-
-				setModalConfig({
-					key: "sort",
-					label: "error",
-					title: "error",
-					accessibilityLabel: "error",
-					renderAsContentPreItems: (key: string, hide: () => void) => {
-						return <View style={{
-							width: '100%',
-							height: '100%',
-						}}>
-							<Text>
-								{"result.url: " + result.url}
-							</Text>
-							<Text>
-								{"Error: " + e}
-							</Text>
-						</View>
 					}
-				})
+				} catch (e) {
+					// Handle errors if needed
+				}
+			}, 500);
+		} else {
+			// Mobile-specific logic
+			const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
+
+			if (result.type === 'success' && result.url) {
+				try {
+					const directusToken = result.url.match(/directus_refresh_token=([^&]*)/)[1];
+					if (directusToken) {
+						console.log('Token found in URL: ' + directusToken);
+
+						setModalConfig({
+							key: 'sort',
+							label: 'success ' + directusToken,
+							title: 'success: ' + directusToken,
+							accessibilityLabel: 'success',
+							renderAsContentPreItems: (key: string, hide: () => void) => (
+								<View style={{ width: '100%', height: '100%' }}>
+									<Text>{'result.url: ' + result.url}</Text>
+									<Text>{'Success: ' + directusToken}</Text>
+								</View>
+							),
+						});
+					} else {
+						console.log('No token found in URL');
+						showErrorModal(result.url);
+					}
+				} catch (e) {
+					console.log('Error while parsing URL: ', e);
+					showErrorModal(result.url, e);
+				}
 			}
 		}
+	};
+
+	const showErrorModal = (url, error = '') => {
+		setModalConfig({
+			key: 'sort',
+			label: 'error',
+			title: 'error',
+			accessibilityLabel: 'error',
+			renderAsContentPreItems: (key: string, hide: () => void) => (
+				<View style={{ width: '100%', height: '100%' }}>
+					<Text>{'result.url: ' + url}</Text>
+					<Text>{'Error: ' + error}</Text>
+				</View>
+			),
+		});
 	};
 
 	return (
@@ -144,4 +145,3 @@ export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 		/>
 	);
 };
-
