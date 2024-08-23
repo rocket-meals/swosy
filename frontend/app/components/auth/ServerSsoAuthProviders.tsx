@@ -13,7 +13,13 @@ function isProviderNameEqualTo(provider: AuthProvider, name: string) {
 	return lowerCaseProviderName === lowerCaseName;
 }
 
-export const ServerSsoAuthProviders = () => {
+// Define the type for Single Sign-On (SSO) providers
+type ServerSsoAuthProvidersProps = {
+	onSuccess?: (token: string) => void,
+	onError?: (error: any) => void,
+}
+
+export const ServerSsoAuthProviders = ({ onError, onSuccess }: ServerSsoAuthProvidersProps) => {
 	const [authProviders, setAuthProviders] = useState<AuthProvider[] | null>(null);
 	const isDemo = useIsDemo()
 
@@ -70,7 +76,7 @@ export const ServerSsoAuthProviders = () => {
 	} else {
 		for (const authProvider of authProviders) {
 			renderedAuthProviders.push(
-				<ButtonAuthProvider key={authProvider.name} provider={authProvider} />
+				<ButtonAuthProvider onSuccess={onSuccess} onError={onError} key={authProvider.name} provider={authProvider} />
 			)
 		}
 	}

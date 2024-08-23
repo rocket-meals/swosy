@@ -16,6 +16,7 @@ import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAst
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import * as WebBrowser from 'expo-web-browser';
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -288,7 +289,9 @@ export default function Login() {
 		} else {
 			return (
 				<>
-					<ServerSsoAuthProviders />
+					<ServerSsoAuthProviders onSuccess={(newToken: string) => {
+						authenticate_with_access_token(newToken);
+					}} />
 					{renderAnonymousLoginOption()}
 					<View style={{height: 16}}></View>
 					<View style={{width: '100%', height: 1, backgroundColor: backgroundContrastColor}}></View>
