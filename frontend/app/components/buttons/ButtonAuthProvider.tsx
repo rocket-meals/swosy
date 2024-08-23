@@ -55,32 +55,59 @@ export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 
 		if (result.type === 'success' && result.url) {
 			// Extrahiere den Token aus der Redirect-URL
-			const directusToken = result.url.match(/directus_refresh_token=([^&]*)/)[1];
-			if (directusToken) {
-				console.log('Token found in URL: ' + directusToken);
+			try{
+				const directusToken = result.url.match(/directus_refresh_token=([^&]*)/)[1];
+				if (directusToken) {
+					console.log('Token found in URL: ' + directusToken);
 
-				setModalConfig({
-					key: "sort",
-					label: "success " + directusToken,
-					title: "success: " + directusToken,
-					accessibilityLabel: "success",
-					renderAsContentPreItems: (key: string, hide: () => void) => {
-						return <View style={{
-							width: '100%',
-							height: '100%',
-						}}>
-							<Text>
-								{"result.url: " + result.url}
-							</Text>
-							<Text>
-								{"Success: " + directusToken}
-							</Text>
-						</View>
-					}
-				})
+					setModalConfig({
+						key: "sort",
+						label: "success " + directusToken,
+						title: "success: " + directusToken,
+						accessibilityLabel: "success",
+						renderAsContentPreItems: (key: string, hide: () => void) => {
+							return <View style={{
+								width: '100%',
+								height: '100%',
+							}}>
+								<Text>
+									{"result.url: " + result.url}
+								</Text>
+								<Text>
+									{"Success: " + directusToken}
+								</Text>
+							</View>
+						}
+					})
 
-			} else {
-				console.log('No token found in URL');
+				} else {
+					console.log('No token found in URL');
+
+					setModalConfig({
+						key: "sort",
+						label: "error",
+						title: "error",
+						accessibilityLabel: "error",
+						renderAsContentPreItems: (key: string, hide: () => void) => {
+							return <View style={{
+								width: '100%',
+								height: '100%',
+							}}>
+								<Text>
+									{"result.url: " + result.url}
+								</Text>
+								<Text>
+									{"Error: "}
+								</Text>
+								<Text>
+									{JSON.stringify(result, null, 2)}
+								</Text>
+							</View>
+						}
+					})
+				}
+			} catch (e) {
+				console.log('Error while parsing URL: ', e);
 
 				setModalConfig({
 					key: "sort",
@@ -96,10 +123,7 @@ export const ButtonAuthProvider = ({ provider }: SsoProvider) => {
 								{"result.url: " + result.url}
 							</Text>
 							<Text>
-								{"Error: "}
-							</Text>
-							<Text>
-								{JSON.stringify(result, null, 2}}
+								{"Error: " + e}
 							</Text>
 						</View>
 					}
