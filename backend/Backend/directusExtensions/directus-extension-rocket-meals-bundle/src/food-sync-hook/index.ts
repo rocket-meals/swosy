@@ -73,6 +73,13 @@ function getMarkingParser(apiContext: ApiContext): MarkingParserInterface | null
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             return new MarkingTL1Parser(apiContext, DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+        case "SWOSY_API":
+            const FOOD_SYNC_SWOSY_API_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
+            if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
+                return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7);
+            } else {
+                console.log(SCHEDULE_NAME + ": no URL configured for SWOSY_API, please set the environment variable FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
+            }
     }
 
     return null;
