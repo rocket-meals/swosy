@@ -13,6 +13,8 @@ import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {FoodTL1Parser_RawReportTestReaderHannover} from "./FoodTL1Parser_RawReportTestReaderHannover";
+import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
+import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -21,7 +23,8 @@ const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defin
 
 const testFoodParser = new FoodTL1Parser(new FoodTL1Parser_RawReportTestReaderHannover());
 
-function getFoodParser(env: any): FoodParserInterface | null {
+function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
+    const env = apiContext.env;
     const FOOD_SYNC_MODE = env.FOOD_SYNC_MODE; // Options: "TL1CSV", "TL1WEB", "SWOSY"
 
     switch (FOOD_SYNC_MODE) {
@@ -46,6 +49,13 @@ function getFoodParser(env: any): FoodParserInterface | null {
             const urlReader = new FoodTL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
             return new FoodTL1Parser(urlReader);
+        case "SWOSY_API":
+            const FOOD_SYNC_SWOSY_API_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
+            if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
+                return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7);
+            } else {
+                console.log(SCHEDULE_NAME + ": no URL configured for SWOSY_API, please set the environment variable FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
+            }
     }
 
     return null;
@@ -74,21 +84,13 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         return;
     }
 
-    const {
-        services,
-        database,
-        getSchema,
-        env,
-        logger
-    } = apiContext;
-
     const debug = false;
 
     let usedFoodParser = null
     if(debug) {
         usedFoodParser = testFoodParser
     }
-    usedFoodParser = getFoodParser(env);
+    usedFoodParser = getFoodParser(apiContext);
     
 
     if(!usedFoodParser) {

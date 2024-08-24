@@ -172,7 +172,8 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
                         id: food_id,
                         alias: food?.name,
                         ...this.getMealNutritionsFromFood(food),
-                        image_remote_url: SWOSY_API_Parser.getImageRemoteUrlForMealId(this.api_url, food_id),
+                        rating_amount_legacy: food?.rating_amount,
+                        rating_average_legacy: food?.rating_average,
                     },
                     translations: {
                         [TranslationHelper.LANGUAGE_CODE_DE]: {"name": food?.name},
