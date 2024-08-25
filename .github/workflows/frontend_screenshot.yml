@@ -59,7 +59,7 @@ jobs:
           ]; // Add your screens here
 
           const urls = screens.map(screen => 
-            'https://' + process.env.GITHUB_REPOSITORY_OWNER + '.github.io/' + process.env.GITHUB_EVENT_REPOSITORY_NAME + '/' + screen + '?kiosk_mode=true&deviceMock=iphone'
+            'https://' + '${{ github.repository_owner }}' + '.github.io/' + '${{ github.event.repository.name }}' + '/' + screen + '?kiosk_mode=true&deviceMock=iphone'
           );
 
           // Now, urls is an array of all generated URLs based on the screens list
