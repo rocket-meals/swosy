@@ -74,6 +74,7 @@ jobs:
             await browser.close();
           })();
           EOF
+      
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v2
