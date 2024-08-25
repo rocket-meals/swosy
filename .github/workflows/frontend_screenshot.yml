@@ -65,7 +65,7 @@ jobs:
                 });
                 await page.goto(url);
                 await page.waitForTimeout(5000);
-                const fileName = `screenshots/${url.replace(/https?:\/\/|\/|\?/g, '_')}-${device.name}.png`;
+                const fileName = 'screenshots'+url.replace(/https?:\/\/|\/|\?/g, '_')+'_'+device.name+'.png';
                 await page.screenshot({ path: fileName });
                 console.log(`Saved screenshot: ${fileName}`);
               }
