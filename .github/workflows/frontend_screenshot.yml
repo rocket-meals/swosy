@@ -63,9 +63,10 @@ jobs:
                   height: device.height,
                   deviceScaleFactor: device.deviceScaleFactor,
                 });
-                await page.goto(url);
-                await page.waitForTimeout(5000);
-                const fileName = 'screenshots'+url.replace(/https?:\/\/|\/|\?/g, '_')+'_'+device.name+'.png';
+                await page.goto(url)
+                 await page.waitForNetworkIdle();
+                 await new Promise(resolve => setTimeout(resolve, 5000)); // Pause for 5 seconds
+                 const fileName = 'screenshots'+url.replace(/https?:\/\/|\/|\?/g, '_')+'_'+device.name+'.png';
                 await page.screenshot({ path: fileName });
                 console.log(`Saved screenshot: ${fileName}`);
               }
