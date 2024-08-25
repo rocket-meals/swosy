@@ -35,6 +35,9 @@ jobs:
       - name: Install Dependencies
         run: npm install puppeteer
 
+      - name: Create Screenshots Directory
+        run: mkdir -p screenshots
+
       - name: Generate Screenshots
         run: |
           node <<EOF
