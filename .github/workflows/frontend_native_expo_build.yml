@@ -7,6 +7,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/app
+
     steps:
       - name: Check for EXPO_TOKEN
         run: |
@@ -31,20 +36,20 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+        run: npm ci
 
       - name: 🚀 Build Android app - previewApk
-        run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
+        run: eas build --platform android --non-interactive --profile previewApk
 
       - name: 🚀 Build app - all platforms
-        run: cd ./frontend/app && eas build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 
       - name: 📤 Submit iOS build
-        run: cd ./frontend/app && eas submit --platform ios --non-interactive --latest
+        run: eas submit --platform ios --non-interactive --latest
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📤 Submit Android build
-        run: cd ./frontend/app && eas submit --platform android --non-interactive --latest
+        run: eas submit --platform android --non-interactive --latest
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

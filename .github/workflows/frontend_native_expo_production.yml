@@ -11,6 +11,10 @@ jobs:
   update:
     name: EAS Update Production
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend/app
     steps:
       - name: Check for EXPO_TOKEN
         run: |
@@ -34,7 +38,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+        run: npm ci
 
       - name: 🚀 Publish update to channel 'production'
-        run: cd ./frontend/app && eas update --auto --platform all --non-interactive --channel production
+        run: eas update --auto --platform all --non-interactive --channel production
