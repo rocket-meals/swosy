@@ -49,10 +49,10 @@ jobs:
           ];
 
           const devices = [
-            { name: 'iphone-6.7', width: 1284/3, height: 2778/3, deviceScaleFactor: 3 },
-            { name: 'iphone-5.5', width: 1242/3, height: 2208/3, deviceScaleFactor: 3 },
-            { name: 'ipad-13', width: 2064/3, height: 2752/3, deviceScaleFactor: 3 },
-            { name: 'ipad-12.9', width: 2048/3, height: 2732/3, deviceScaleFactor: 3 },
+            { name: 'iphone-6.7', width: 428, height: 926, deviceScaleFactor: 3 },
+            { name: 'iphone-5.5', width: 414, height: 736, deviceScaleFactor: 3 },
+            { name: 'ipad-13', width: 2064/2, height: 2752/2, deviceScaleFactor: 2 },
+            { name: 'ipad-12.9', width: 2048/2, height: 2732/2, deviceScaleFactor: 2 },
           ];
 
           (async () => {
