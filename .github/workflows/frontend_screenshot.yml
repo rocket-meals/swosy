@@ -27,14 +27,53 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Generate Screenshots - Housing
-        uses: flameddd/screenshots-ci-action@master
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/housing?kiosk_mode=true&deviceMock=iphone
-          devices: iPhone 13 Pro Max, iPhone 8, iPad (gen 7), iPad Pro 11
-          waitForSelector: "#app"
-          waitForTimeout: 5000
-          output_dir: screenshots
+          node-version: '16'
+
+      - name: Install Dependencies
+        run: npm install puppeteer
+
+      - name: Generate Screenshots
+        run: |
+          node <<EOF
+          const puppeteer = require('puppeteer');
+
+          const urls = [
+            'https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/housing?kiosk_mode=true&deviceMock=iphone',
+            // Add more URLs here if needed
+          ];
+
+          const devices = [
+            { name: 'iphone-6.7', width: 1290, height: 2796, deviceScaleFactor: 2 },
+            { name: 'iphone-5.5', width: 1242, height: 2208, deviceScaleFactor: 2 },
+            { name: 'ipad-13', width: 2064, height: 2752, deviceScaleFactor: 2 },
+            { name: 'ipad-12.9', width: 2048, height: 2732, deviceScaleFactor: 2 },
+          ];
+
+          (async () => {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+
+            for (const url of urls) {
+              for (const device of devices) {
+                await page.setViewport({
+                  width: device.width,
+                  height: device.height,
+                  deviceScaleFactor: device.deviceScaleFactor,
+                });
+                await page.goto(url);
+                await page.waitForTimeout(5000);
+                const fileName = `screenshots/${url.replace(/https?:\/\/|\/|\?/g, '_')}-${device.name}.png`;
+                await page.screenshot({ path: fileName });
+                console.log(`Saved screenshot: ${fileName}`);
+              }
+            }
+
+            await browser.close();
+          })();
+          EOF
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v2
