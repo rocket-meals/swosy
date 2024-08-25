@@ -49,10 +49,10 @@ jobs:
           ];
 
           const devices = [
-            { name: 'iphone-6.7', width: 1290/2, height: 2796/2, deviceScaleFactor: 2 },
-            { name: 'iphone-5.5', width: 1242/2, height: 2208/2, deviceScaleFactor: 2 },
-            { name: 'ipad-13', width: 2064/2, height: 2752/2, deviceScaleFactor: 2 },
-            { name: 'ipad-12.9', width: 2048/2, height: 2732/2, deviceScaleFactor: 2 },
+            { name: 'iphone-6.7', width: 1290, height: 2796, deviceScaleFactor: 3 },
+            { name: 'iphone-5.5', width: 1242, height: 2208, deviceScaleFactor: 3 },
+            { name: 'ipad-13', width: 2064, height: 2752, deviceScaleFactor: 3 },
+            { name: 'ipad-12.9', width: 2048, height: 2732, deviceScaleFactor: 3 },
           ];
 
           (async () => {
@@ -62,8 +62,8 @@ jobs:
             for (const url of urls) {
               for (const device of devices) {
                 await page.setViewport({
-                  width: device.width,
-                  height: device.height,
+                  width: device.width/device.deviceScaleFactor,
+                  height: device.height/device.deviceScaleFactor,
                   deviceScaleFactor: device.deviceScaleFactor,
                 });
                 await page.goto(url)
