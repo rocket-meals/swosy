@@ -37,11 +37,11 @@ jobs:
 
       - name: Install and Build
         run: npm install && npm run build
-        working-directory: scripts/screenshotGenerator
+        working-directory: tools/screenshotGenerator
 
       - name: Generate Screenshots
         run: npm run start
-        working-directory: scripts/screenshotGenerator
+        working-directory: tools/screenshotGenerator
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
           REPOSITORY_NAME: ${{ github.repository_name }}
