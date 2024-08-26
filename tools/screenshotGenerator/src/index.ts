@@ -56,7 +56,10 @@ function createDirIfNotExists(dir: string) {
     fs.mkdir(dir, { recursive: true }).catch(console.error);
 }
 
-async function createScreenshotUncompressed(url: string, device: Device, fileName: string, page: PuppeteerPage) {
+async function createScreenshotUncompressed(url: string, device: Device, fileName: string) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
     console.log(`Creating screenshot for ${url} with device ${device.name}`);
     await page.setViewport({
         width: device.width,
@@ -68,6 +71,8 @@ async function createScreenshotUncompressed(url: string, device: Device, fileNam
     await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for 1 second
     await page.screenshot({ path: fileName });
     console.log(`Saved screenshot: ${fileName}`);
+
+    await browser.close();
 }
 
 function getFileSafeNameFromUrl(url: string) {
@@ -102,17 +107,12 @@ async function compressScreenshotAndDeleteOld(fileName: string) {
 }
 
 (async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
     createDirIfNotExists(screenshotDir);
     for (const url of urls) {
         for (const device of devices) {
             const fileName = getFileName(url, device);
-            await createScreenshotUncompressed(url, device, fileName, page);
+            await createScreenshotUncompressed(url, device, fileName);
             await compressScreenshotAndDeleteOld(fileName);
         }
     }
-
-    await browser.close();
 })();
