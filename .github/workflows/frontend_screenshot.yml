@@ -32,69 +32,20 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install Dependencies
-        run: npm install puppeteer
-
       - name: Create Screenshots Directory
         run: mkdir -p screenshots
 
+      - name: Install and Build
+        run: npm install && npm run build
+        working-directory: ./scripts/screenshotGenerator
+
       - name: Generate Screenshots
-        run: |
-          node <<EOF
-          const puppeteer = require('puppeteer');
-
-          const screens = [
-            'housing', 
-            'foodoffers', 
-            'map',
-            'accountbalance',
-            'campus',
-            'news',
-            'course-timetable',
-            'settings',
-            'settings/eatinghabits',
-            'settings/pricing',
-            'data-access',
-            'login'
-          ]; // Add your screens here
-
-          const urls = screens.map(screen => 
-            'https://' + '${{ github.repository_owner }}' + '.github.io/' + '${{ github.event.repository.name }}' + '/' + screen + '?kiosk_mode=true&deviceMock=iphone'
-          );
-
-          // Now, urls is an array of all generated URLs based on the screens list
-
-          const devices = [
-            { name: 'iphone-6.7', width: 428, height: 926, deviceScaleFactor: 3 },
-            { name: 'iphone-5.5', width: 414, height: 736, deviceScaleFactor: 3 },
-            { name: 'ipad-13', width: 2064/2, height: 2752/2, deviceScaleFactor: 2 },
-            { name: 'ipad-12.9', width: 2048/2, height: 2732/2, deviceScaleFactor: 2 },
-          ];
-
-          (async () => {
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage();
-
-            for (const url of urls) {
-              for (const device of devices) {
-                await page.setViewport({
-                  width: device.width,
-                  height: device.height,
-                  deviceScaleFactor: device.deviceScaleFactor,
-                });
-                await page.goto(url)
-                 await page.waitForNetworkIdle();
-                 await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for 5 seconds
-                 const fileName = 'screenshots/'+url.replace(/https?:\/\/|\/|\?/g, '_')+'_'+device.name+'.png';
-                await page.screenshot({ path: fileName });
-                console.log(`Saved screenshot: ${fileName}`);
-              }
-            }
-
-            await browser.close();
-          })();
-          EOF
-
+        run: npm run start
+        working-directory: ./scripts/screenshotGenerator
+        env:
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          REPOSITORY_NAME: ${{ github.repository_name }}
+          SCREENSHOT_DIR: ../../screenshots
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v2
