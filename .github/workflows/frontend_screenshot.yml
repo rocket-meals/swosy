@@ -42,7 +42,7 @@ jobs:
       - name: Debug Environment Variables
         run: |
           echo "REPOSITORY_OWNER=${{ github.repository_owner }}"
-          echo "REPOSITORY_NAME=${{ github.repository_name }}"
+          echo "REPOSITORY_NAME=${{ github.event.repository.name }}"
           echo "SCREENSHOT_DIR=${{ github.workspace }}/screenshots"
 
       - name: Generate Screenshots
@@ -50,7 +50,7 @@ jobs:
         working-directory: tools/screenshotGenerator
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
-          REPOSITORY_NAME: ${{ github.repository_name }}
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
           SCREENSHOT_DIR: ${{ github.workspace }}/screenshots
 
       - name: Upload Screenshots
