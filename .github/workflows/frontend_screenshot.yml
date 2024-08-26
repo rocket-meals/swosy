@@ -24,28 +24,26 @@ jobs:
     needs: start  # Dependent on the dummy job
 
     steps:
-      - name: Checkout Repository
+      - name: 🏗 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
-
-      - name: Create Screenshots Directory
-        run: mkdir -p ${{ github.workspace }}/screenshots
+          node-version: '18.19.1'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install and Build
         run: npm install && npm run build
         working-directory: tools/screenshotGenerator
 
-      - name: Debug Environment Variables
+      - name: 📦 Debug Environment Variables
         run: |
           echo "REPOSITORY_OWNER=${{ github.repository_owner }}"
           echo "REPOSITORY_NAME=${{ github.event.repository.name }}"
           echo "SCREENSHOT_DIR=${{ github.workspace }}/screenshots"
 
-      - name: Generate Screenshots
+      - name: 🚀 Generate Screenshots
         run: npm run start
         working-directory: tools/screenshotGenerator
         env:
@@ -53,7 +51,7 @@ jobs:
           REPOSITORY_NAME: ${{ github.event.repository.name }}
           SCREENSHOT_DIR: ${{ github.workspace }}/screenshots
 
-      - name: Upload Screenshots
+      - name: ☁️ Upload Screenshots
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/screenshots
