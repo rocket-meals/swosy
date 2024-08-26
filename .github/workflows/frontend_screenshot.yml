@@ -39,6 +39,12 @@ jobs:
         run: npm install && npm run build
         working-directory: tools/screenshotGenerator
 
+      - name: Debug Environment Variables
+        run: |
+          echo "REPOSITORY_OWNER=${{ github.repository_owner }}"
+          echo "REPOSITORY_NAME=${{ github.repository_name }}"
+          echo "SCREENSHOT_DIR=${{ github.workspace }}/screenshots"
+
       - name: Generate Screenshots
         run: npm run start
         working-directory: tools/screenshotGenerator
