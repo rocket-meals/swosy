@@ -33,24 +33,24 @@ jobs:
           node-version: '16'
 
       - name: Create Screenshots Directory
-        run: mkdir -p screenshots
+        run: mkdir -p ${{ github.workspace }}/screenshots
 
       - name: Install and Build
         run: npm install && npm run build
-        working-directory: ./scripts/screenshotGenerator
+        working-directory: scripts/screenshotGenerator
 
       - name: Generate Screenshots
         run: npm run start
-        working-directory: ./scripts/screenshotGenerator
+        working-directory: scripts/screenshotGenerator
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}
           REPOSITORY_NAME: ${{ github.repository_name }}
-          SCREENSHOT_DIR: ../../screenshots
+          SCREENSHOT_DIR: ${{ github.workspace }}/screenshots
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v2
         with:
-          path: screenshots
+          path: ${{ github.workspace }}/screenshots
           name: ${{ github.event.repository.name }}-screenshots
 
       - name: Prevent Triggering Another Workflow
