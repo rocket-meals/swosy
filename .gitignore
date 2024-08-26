@@ -14,3 +14,4 @@ frontend/app/ios
 frontend/app/android
 
 tools/screenshotGenerator/dist/
+secrets/
