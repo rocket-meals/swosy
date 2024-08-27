@@ -32288,8 +32288,13 @@
             "nullable": true,
             "type": "string"
           },
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
           "recipients": {
             "nullable": true,
+            "description": "Report Empfänger",
             "type": "array",
             "items": {
               "oneOf": [
