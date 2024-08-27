@@ -108,7 +108,6 @@ export class ParseSchedule {
                     let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
                     let previousMealOffersHash = await this.myAppSettingsHelper.getFoodParsingHash();
 
-
                     console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
                     console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
                     const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
@@ -132,8 +131,6 @@ export class ParseSchedule {
                     }
                 }
 
-                await this.reimportImages();
-
                 console.log("["+SCHEDULE_NAME+"]"+" - Finished");
                 await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
@@ -144,98 +141,8 @@ export class ParseSchedule {
         }
     }
 
-    async reimportImages() {
-        // TODO: Remove this after switched to new project
-        console.log("["+SCHEDULE_NAME+"]"+" - Check for image synchronize");
-        console.log("["+SCHEDULE_NAME+"]"+" - -- TODO: Remove this after switched to new project --");
-        try{
-            await this.checkForImageSynchronize();
-        } catch (err) {
-            console.log("["+SCHEDULE_NAME+"]"+" - Error while checking for image synchronize");
-            console.log(err);
-        }
-    }
-
     async getFoodsService(): Promise<AbstractService<Foods>>{
         return await this.itemsServiceCreator.getItemsService<Foods>(TABLENAME_FOODS);
-    }
-
-    async checkForImageSynchronize(){
-        const env = this.apiContext.env
-        //console.log(SCHEDULE_NAME + ": Checking for image synchronize");
-        const FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY = env.FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY;
-        const FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
-
-        const fileServiceCreator = new FileServiceCreator(this.apiContext);
-
-        const canImportImages = FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY && FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
-        if(canImportImages){
-            console.log(SCHEDULE_NAME + ": Importing images from a extern SWOSY API: " + FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL);
-            const foodsService = await this.getFoodsService();
-            const meals = await foodsService.readByQuery({
-                limit: -1
-            });
-
-
-            let amountMeals = meals.length;
-            let amountMealsImagesImported = 0;
-            let amountMealsWithoutImage = 0;
-            let amountProcessed = 0;
-
-            console.log(SCHEDULE_NAME + ": Found " + meals.length + " meals");
-            for(const meal of meals) {
-                if (!meal.image) {
-                    amountMealsWithoutImage++;
-                }
-            }
-
-            for(const meal of meals) {
-                amountProcessed++;
-                const meal_id = meal.id;
-
-                if (meal.image) {
-                    //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " already has an image");
-                } else {
-                    //console.log(SCHEDULE_NAME + ": Meal " + meal_id + " has no image");
-                    const swosyImageUrl = SWOSY_API_Parser.getImageRemoteUrlForMealId(FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL, meal.id);
-                    if(swosyImageUrl) {
-                        //console.log(SCHEDULE_NAME + ": Trying to import image for meal " + meal_id + " from " + swosyImageUrl);
-
-                        //https://github.com/directus/directus/blob/main/api/src/services/files.ts
-                        const optionalFileParams: Partial<File> = {
-                            // @ts-ignore
-                            filename_download: meal_id + ".jpg",
-                            title: meal_id,
-                            folder: "7ca24fe5-f805-432a-a52e-623682eef9dc", // Folder ID for "Foods"
-                        }
-
-                        try{
-                            let file_id = await fileServiceCreator.importByUrl(swosyImageUrl, optionalFileParams);
-                            if(file_id) {
-                                console.log(SCHEDULE_NAME + ": Imported image for meal " + meal_id + " with file id " + file_id);
-                                await foodsService.updateOne(meal_id, {
-                                    image: file_id
-                                });
-                                amountMealsImagesImported++;
-                            } else {
-                                console.log(SCHEDULE_NAME + ": Unknown Error while importing image for meal " + meal_id);
-                            }
-                        } catch (err: any) {
-                            if(err.toString().includes("Couldn't fetch file from URL")){
-                                //console.log(SCHEDULE_NAME + ": File for " + meal_id+ " does not exist at " + swosyImageUrl);
-                            } else {
-                                console.log(err.toString());
-                                console.log(SCHEDULE_NAME + ": Error while importing image for meal " + meal_id);
-                                console.log(err);
-                            }
-                        }
-
-                    }
-                }
-
-                console.log(SCHEDULE_NAME + ": Processed: " + amountProcessed + "/" + amountMeals+" || Meals without image: " + amountMealsWithoutImage + " | Meals with imported image: " + amountMealsImagesImported);
-            }
-        }
     }
 
     getFoodofferDatesFromRawFoodofferJSONList(foodoffersForParser: FoodoffersTypeForParser[]): FoodofferDateType[] {
