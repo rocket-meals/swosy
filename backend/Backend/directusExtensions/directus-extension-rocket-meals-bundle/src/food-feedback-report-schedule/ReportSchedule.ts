@@ -95,10 +95,11 @@ export class ReportSchedule {
 
         let report_schedule_report_recipients = await report_schedule_report_recipients_service.readByQuery({
             filter: {
-                report_schedule: {
+                canteen_food_feedback_report_schedules_id: {
                     _eq: reportSchedule.id
                 }
-            }
+            },
+            limit: -1
         });
 
         let report_recipients_primary_keys: PrimaryKey[] = []
