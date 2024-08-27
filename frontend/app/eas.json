@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
-      "autoIncrement": true
+      "autoIncrement": false
     },
     "previewApk": {
       "android": {
@@ -18,10 +18,10 @@
     "preview": {
       "distribution": "internal",
       "channel": "preview",
-      "autoIncrement": true
+      "autoIncrement": false
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": false,
       "channel": "production"
     }
   },
