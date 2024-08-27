@@ -94,8 +94,9 @@ const devices: Device[] = [
 ];
 
 
-async function createDirIfNotExists(dir: string) {
-    await fs.mkdir(dir, { recursive: true }).catch(console.error);
+async function createDirIfNotExists(dirOrFilePath: string) {
+    const dirPath = dirOrFilePath.endsWith('/') ? dirOrFilePath : dirOrFilePath.substring(0, dirOrFilePath.lastIndexOf('/'));
+    await fs.mkdir(dirPath, { recursive: true }).catch(console.error);
 }
 
 async function createScreenshotUncompressed(url: string, device: Device, fileName: string, darkMode: boolean, browser: Browser) {
@@ -133,7 +134,7 @@ function getFileSafeNameFromUrl(url: string) {
 function getFileName(url: string, device: Device){
     const fileSafeUrl = getFileSafeNameFromUrl(url);
     const fileSafeDeviceName = device.name.replace('-', '_');
-    return screenshotDirWithSlash+fileSafeUrl+'_'+fileSafeDeviceName+'.png';
+    return screenshotDirWithSlash+'/'+fileSafeDeviceName+"/"+fileSafeUrl+'.png';
 }
 
 async function compressScreenshotAndDeleteOld(fileName: string) {
@@ -216,6 +217,7 @@ async function doesFileExist(fileName: string) {
             console.log(`Generating screenshot ${currentScreenshot} of ${totalAmountOfScreenshots}`);
             const fileName = getFileName(url, device);
             const darkMode = false;
+            await createDirIfNotExists(fileName);
             if(skipExisting){
                 const fileExists = await doesFileExist(fileName);
                 if(fileExists){
