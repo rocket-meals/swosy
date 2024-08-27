@@ -22,7 +22,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromGlobalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
 import {useProjectColor} from "@/states/ProjectInfo";
 import {MyScreenHeaderCustom} from "@/components/drawer/MyScreenHeader";
 import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/states/DrawerSyncConfig";
@@ -58,7 +58,7 @@ export function useDateIsoFromLocalSearchParams() {
 }
 
 export default function FoodplanScreen() {
-	let canteen_id: string | undefined = useCanteensIdFromGlobalSearchParams();
+	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
 	const param_date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
 	const canteen = useSynchedCanteenById(canteen_id);

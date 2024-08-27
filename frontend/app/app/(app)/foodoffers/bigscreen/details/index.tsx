@@ -1,5 +1,5 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromGlobalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
@@ -183,7 +183,7 @@ export default function FoodBigScreenScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const canteen_id = useCanteensIdFromGlobalSearchParams()
+	const canteen_id = useCanteensIdFromLocalSearchParams()
 	const category = useFoodCategoryFromLocalSearchParams();
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;

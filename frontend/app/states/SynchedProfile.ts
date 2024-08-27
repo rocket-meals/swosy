@@ -28,8 +28,6 @@ import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType}
 import {useLocales as useLocalesExpo} from "expo-localization";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {PlatformHelper} from "@/helper/PlatformHelper";
-import {useGlobalSearchParams} from "expo-router";
-import {SEARCH_PARAM_BUILDINGS_ID} from "@/app/(app)/campus";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
