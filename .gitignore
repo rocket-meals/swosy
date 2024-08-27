@@ -2,6 +2,7 @@
 .idea/**
 
 backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
+backend/Backend/directusExtensions/.registry/
 
 !secrets/.keep
 secrets/**

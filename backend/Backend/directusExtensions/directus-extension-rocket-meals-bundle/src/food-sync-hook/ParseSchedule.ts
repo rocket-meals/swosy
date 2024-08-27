@@ -308,6 +308,7 @@ export class ParseSchedule {
             id: food.id
         }
         const createJSON = searchJSON
+        console.log("["+SCHEDULE_NAME+"]"+" - Find or create food with id: " + food.id);
         return await ItemsServiceHelper.findOrCreateItemWithApiContext<Foods>(this.apiContext, tablename, searchJSON, createJSON);
     }
 
@@ -331,21 +332,25 @@ export class ParseSchedule {
             }
         ); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
+        const amountOfMeals = foodsInformationForParserList.length;
         for (let foodsInformationForParser of foodsInformationForParserList) {
             currentFoodIndex++;
 
             const basicFoodData = foodsInformationForParser.basicFoodData;
-            //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
+            console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
             let foundFood = await this.findOrCreateFood(basicFoodData);
             if (!!foundFood && foundFood.id && this.foodParser) {
+                console.log("["+SCHEDULE_NAME+"]"+" - Found food with id: " + foundFood.id);
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
                 let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
+                console.log("["+SCHEDULE_NAME+"]"+" - Assign markings to food");
                 await this.assignMarkingsToFood(markings, foundFood);
 
+                console.log("["+SCHEDULE_NAME+"]"+" - Update basic fields of food");
                 await this.updateFoodBasicFields(basicFoodData);
 
-                // TODO: Adapt for TypeScript
+                console.log("["+SCHEDULE_NAME+"]"+" - Update food translations");
                 await this.updateFoodTranslations(foundFood, foodsInformationForParser);
             }
         }

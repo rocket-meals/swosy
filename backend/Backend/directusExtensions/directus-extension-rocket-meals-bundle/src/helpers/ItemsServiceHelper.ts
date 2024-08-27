@@ -31,11 +31,14 @@ export class ItemsServiceHelper{
         let queryFilter: Filter = {_and: andFilter};
         const query = {filter: queryFilter};
 
+        console.log("findOrCreateItem query", query);
         let queriedItems = await itemService.readByQuery(query);
+        console.log("queriedItems", queriedItems);
         let foundItem = queriedItems[0]
 
         let copiedCreateItem = JSON.parse(JSON.stringify(create));
         if (!foundItem) {
+            console.log("create item", copiedCreateItem);
             copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
             await itemService.createOne(copiedCreateItem)
 
