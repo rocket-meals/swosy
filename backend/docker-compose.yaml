@@ -170,6 +170,8 @@ services:
       timeout: 5s
       retries: 5
     environment:
+      POSTGRES_MAX_CONNECTIONS: "500" # Optional, adjust based on your needs
+      POSTGRES_SHARED_BUFFERS: "16GB"  # Optional, adjust based on your RAM # General: 25% of the total system memory -> Default 16GB
       POSTGRES_USER: "directus"
       POSTGRES_PASSWORD: "directus"
       POSTGRES_DB: "directus"
