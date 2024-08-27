@@ -94,13 +94,19 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		} else {
 			// Mobile-specific logic
 			const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
+			console.log("ButtonAuthProvider result: ", result);
 
 			if (result.type === 'success' && result.url) {
 				try {
+					console.log("############");
+					console.log("ButtonAuthProvider result.url: ", result.url);
 
 					const directus_refresh_token_param_name = ServerAPI.getParamNameForDirectusAccessToken()
 					const match = result.url.match(new RegExp(directus_refresh_token_param_name + '=([^&]*)'))
-					const directusToken = match ? match[1] : null
+					let directusToken = match ? match[1] : null
+					if(!!directusToken && directusToken.endsWith('#')) { // remove trailing # if present
+						directusToken = directusToken.substring(0, directusToken.length - 1);
+					}
 
 					if (directusToken) {
 						console.log('Token found in URL: ' + directusToken);
@@ -119,6 +125,8 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 							),
 						});
 						*/
+
+						console.log('Success: ' + directusToken);
 
 						if(onSuccess) {
 							onSuccess(directusToken);

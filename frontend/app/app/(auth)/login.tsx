@@ -17,6 +17,7 @@ import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import * as WebBrowser from 'expo-web-browser';
+import {useIsDebug} from "@/states/Debug";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -24,6 +25,7 @@ export default function Login() {
 	const loggedIn = isUserLoggedIn();
 	const logout = useLogoutCallback()
 	const [nickname, setNickname] = useNickname()
+	const debug = useIsDebug()
 
 	let backgroundColor = useViewBackgroundColor()
 	const backgroundContrastColor = useMyContrastColor(backgroundColor)
@@ -306,6 +308,27 @@ export default function Login() {
 		return <Redirect href="/(app)/home" />
 	}
 
+	function renderDebug() {
+		if (debug) {
+			return (
+				<View style={{
+					width: '100%',
+					height: '100%',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}>
+					<Text>{'debug: ' + JSON.stringify(currentUser)}</Text>
+					<Text>{'loggingIn: ' + loggingIn}</Text>
+					<Text>{'loggingInWithToken: ' + loggingInWithToken}</Text>
+					<Text>{'loggingInWithMailAndPassword: ' + loggingInWithMailAndPassword}</Text>
+					<Text>{'directus_token: ' + directus_token}</Text>
+					<Text>{'email: ' + email}</Text>
+					<Text>{'password: ' + password}</Text>
+				</View>
+			)
+		}
+	}
+
 	return (
 		<LoginLayout>
 			<Text style={{fontSize: 24, fontWeight: 'bold'}}>{translation_sign_in}</Text>
@@ -315,6 +338,7 @@ export default function Login() {
 			{renderWhenLoggedIn()}
 			{renderLoginOptions()}
 			<View style={{height: 16}}></View>
+			{renderDebug()}
 		</LoginLayout>
 	);
 }
