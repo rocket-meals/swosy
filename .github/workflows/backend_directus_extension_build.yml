@@ -32,7 +32,7 @@ jobs:
       - name: 🔎 Check if build has changed
         id: check_changes
         run: |
-          git diff --quiet dist/api || echo "changes"
+          git diff --quiet ./dist/api || echo "changes"
         continue-on-error: true
 
       - name: 📤 Commit and push changes if build has changed
