@@ -121,6 +121,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
 				} else {
 					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
+					// Silent fail, when image too big: https://github.com/rocket-meals/rocket-meals/issues/197
 				}
 
 				if (!!result && !result.canceled) {
@@ -130,7 +131,10 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 						const asset = assets[0];
 						const uri = asset.uri;
 
+						console.log("Image selected: " + uri);
+
 						// Resize the image to ensure the maximum dimension is 6000px
+						console.log("Resizing image to ensure the maximum dimension is 6000px");
 						const manipulatedImage = await ImageManipulator.manipulateAsync(
 							uri,
 							[],
