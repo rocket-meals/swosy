@@ -3,11 +3,17 @@ import {ReportGenerator, ReportType} from "./ReportGenerator";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
-import {CanteenFoodFeedbackReportRecipients, Canteens, DirectusUsers} from "../databaseTypes/types";
+import {
+    CanteenFoodFeedbackReportSchedules,
+    CanteenFoodFeedbackReportSchedulesReportRecipients,
+    Canteens,
+    ReportRecipients
+} from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
+import {PrimaryKey} from "@directus/types";
 
-const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS
+const TABLENAME_RECIPIENTS = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES
 
 
 const SCHEDULE_NAME = "CanteenFoodFeedbackReportSchedule";
@@ -34,44 +40,42 @@ export class ReportSchedule {
 
             try {
                 // 1. get all recipients entries
-                let recipientEntries = await this.getAllRecipientsEntries();
+                let reportSchedules = await this.getAllReportSchedules();
 
                 // 2. check for every recipient if a report is needed to be sent
-                for (let recipientEntry of recipientEntries) {
+                for (let reportSchedule of reportSchedules) {
 
-                    //console.log("recipientEntry.id: "+recipientEntry.id)
-                    let generateReportForDate = await this.getDateForWhichTheReportShouldBeSend(recipientEntry);
+                    //console.log("reportSchedule.id: "+reportSchedule.id)
+                    let generateReportForDate = await this.getDateForWhichTheReportShouldBeSend(reportSchedule);
                     //console.log("generateReportForDate: "+generateReportForDate)
                     if (generateReportForDate) {
-                        console.log(SCHEDULE_NAME+" - Report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
-
-                        let recipientEmailList = await this.getRecipientEntryEmailList(recipientEntry);
+                        let recipientEmailList = await this.getRecipientEmailList(reportSchedule);
 
                         if(recipientEmailList.length>0){
-                            let canteenEntry = await this.getCanteenEntry(recipientEntry);
+                            let canteenEntry = await this.getCanteenEntry(reportSchedule);
                             if(!!canteenEntry){
                                 try {
                                     // 3. send report
-                                    let report_feedback_period_days = recipientEntry?.report_feedback_period_days || 180;
+                                    let report_feedback_period_days = reportSchedule?.report_feedback_period_days || 180;
                                     let generated_report_data: ReportType = await reportGenerator.generateReportJSON(generateReportForDate, report_feedback_period_days, canteenEntry)
                                     if(!!generated_report_data){
                                         for(let toMail of recipientEmailList){
-                                            await this.sendReport(generateReportForDate, generated_report_data, recipientEntry, canteenEntry, toMail);
+                                            await this.sendReport(generateReportForDate, generated_report_data, reportSchedule, canteenEntry, toMail);
                                         }
-                                        await this.setNextReportDate(generateReportForDate, recipientEntry);
-                                        await this.updateReportLogSuccess(generateReportForDate, recipientEntry);
+                                        await this.setNextReportDate(generateReportForDate, reportSchedule);
+                                        await this.updateReportLogSuccess(generateReportForDate, reportSchedule);
                                     } else {
-                                        await this.logReportSendError(recipientEntry, "No report could be generated. Please contact admin and tell him: await reportGenerator.generateReportForMail(generateReportForDate)");
+                                        await this.logReportSendError(reportSchedule, "No report could be generated. Please contact admin and tell him: await reportGenerator.generateReportForMail(generateReportForDate)");
                                     }
                                 } catch (err) {
                                     // 3.1 if sending the report failed, log the error
-                                    await this.logReportSendError(recipientEntry, err);
+                                    await this.logReportSendError(reportSchedule, err);
                                 }
                             } else {
-                                await this.logReportSendError(recipientEntry, "No canteen set.");
+                                await this.logReportSendError(reportSchedule, "No canteen set.");
                             }
                         } else {
-                            await this.logReportSendError(recipientEntry, "No emails given.");
+                            await this.logReportSendError(reportSchedule, "No emails given.");
                         }
                     }
                 }
@@ -84,30 +88,42 @@ export class ReportSchedule {
         }
     }
 
-    async getRecipientEntryEmailList(recipientEntry: CanteenFoodFeedbackReportRecipients){
-        let list: string[] = [];
+    async getRecipientEmailList(reportSchedule: CanteenFoodFeedbackReportSchedules): Promise<string[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
-        let to_recipient_email = recipientEntry?.to_recipient_email; // this is a string
-        if(!!to_recipient_email){
-            list.push(to_recipient_email);
+        let report_schedule_report_recipients_service = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedulesReportRecipients>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS)
+
+        let report_schedule_report_recipients = await report_schedule_report_recipients_service.readByQuery({
+            filter: {
+                report_schedule: {
+                    _eq: reportSchedule.id
+                }
+            }
+        });
+
+        let report_recipients_primary_keys: PrimaryKey[] = []
+        for(let report_schedule_report_recipient of report_schedule_report_recipients){
+            let recipient_id = report_schedule_report_recipient.report_recipients_id;
+            if(!!recipient_id && typeof recipient_id === "string"){
+                report_recipients_primary_keys.push(recipient_id as PrimaryKey);
+            }
         }
 
-        let to_recipient_user_id = recipientEntry?.to_recipient_user; // this is a DirectusUser object
-        let userService = await itemsServiceCreator.getItemsService<DirectusUsers>(CollectionNames.USERS);
-        if(!!to_recipient_user_id && typeof to_recipient_user_id === "string"){
-            let to_recipient_user = await userService.readOne(to_recipient_user_id);
-            let to_recipient_user_email = to_recipient_user?.email;
+        let report_recipients_service = await itemsServiceCreator.getItemsService<ReportRecipients>(CollectionNames.REPORT_RECIPIENTS)
+        let report_recipients = await report_recipients_service.readMany(report_recipients_primary_keys);
 
-            if(!!to_recipient_user_email){
-                list.push(to_recipient_user_email)
+        let list: string[] = [];
+        for(let report_recipient of report_recipients){
+            let email = report_recipient.mail;
+            if(!!email){
+                list.push(email);
             }
         }
 
         return list;
     }
 
-    async getCanteenEntry(recipientEntry: CanteenFoodFeedbackReportRecipients): Promise<Canteens | null>{
+    async getCanteenEntry(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Canteens | null>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let canteen_id = recipientEntry.canteen;
         if(!!canteen_id && typeof canteen_id === "string"){
@@ -118,7 +134,7 @@ export class ReportSchedule {
         return null;
     }
 
-    async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportRecipients, canteenEntry: Canteens, toMail: string){
+    async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntry: Canteens, toMail: string){
         let {MailService} = this.apiContext.services;
         const getSchema = this.apiContext.getSchema;
         const database = this.apiContext.database;
@@ -146,18 +162,18 @@ export class ReportSchedule {
         });
     }
 
-    async setNextReportDate(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportRecipients){
+    async setNextReportDate(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportSchedules){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         // update when the next report is due
         let tablename = TABLENAME_RECIPIENTS;//
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
         let generateReportForNextDate_moment = moment(generateReportForDate).add(1, 'days').toDate();
         let send_amount_days_before_offer_date = recipientEntry.send_amount_days_before_offer_date;
         let date_when_the_next_report_should_be_generated_iso = moment(generateReportForNextDate_moment).subtract(send_amount_days_before_offer_date, 'days').toISOString();
         await itemService.updateOne(recipientEntry.id, {date_next_report_is_due: date_when_the_next_report_should_be_generated_iso});
     }
 
-    async updateReportLogSuccess(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportRecipients){
+    async updateReportLogSuccess(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportSchedules){
         let logMessage = `
             Report was sent successfully for the date: ${generateReportForDate}
             Sent at: ${new Date().toISOString()}
@@ -165,18 +181,18 @@ export class ReportSchedule {
         await this.updateReportLog(recipientEntry, "Report was sent successfully for the date: " + generateReportForDate);
     }
 
-    async logReportSendError(recipientEntry: CanteenFoodFeedbackReportRecipients, err: any){
+    async logReportSendError(recipientEntry: CanteenFoodFeedbackReportSchedules, err: any){
         //console.log(SCHEDULE_NAME + " logReportSendError:")
         //console.log(err);
         await this.updateReportLog(recipientEntry, "Report sending failed: " + err.toString());
     }
 
-    async updateReportLog(recipientEntry: CanteenFoodFeedbackReportRecipients, log: string){
+    async updateReportLog(recipientEntry: CanteenFoodFeedbackReportSchedules, log: string){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
         try{
             let tablename = TABLENAME_RECIPIENTS;
-            let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
+            let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
             let updateData = {
                 report_status_log: log
             }
@@ -188,11 +204,11 @@ export class ReportSchedule {
     }
 
 
-    async getDateForWhichTheReportShouldBeSend(recipientEntry: CanteenFoodFeedbackReportRecipients){
+    async getDateForWhichTheReportShouldBeSend(recipientEntry: CanteenFoodFeedbackReportSchedules){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         //console.log("Checking if report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
         let tablename = TABLENAME_RECIPIENTS;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
 
 
         let enabled = recipientEntry.enabled;
@@ -295,10 +311,10 @@ export class ReportSchedule {
         }
     }
 
-    async getAllRecipientsEntries(){
+    async getAllReportSchedules(){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let tablename = TABLENAME_RECIPIENTS;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportRecipients>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
         let list = await itemService.readByQuery({
             limit: -1});
         return list;

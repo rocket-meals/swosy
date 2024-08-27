@@ -205,7 +205,7 @@ export type Businesshours = {
   wednesday?: boolean | null;
 };
 
-export type CanteenFoodFeedbackReportRecipients = {
+export type CanteenFoodFeedbackReportSchedules = {
   canteen?: string | Canteens | null;
   date_created?: string | null;
   date_next_report_is_due?: string | null;
@@ -214,7 +214,7 @@ export type CanteenFoodFeedbackReportRecipients = {
   id: string;
   last_saved_send_amount_days_before_offer_date?: number | null;
   last_saved_send_report_at_hh_mm?: string | null;
-  recipient_settings: string;
+  recipients: any[] | CanteenFoodFeedbackReportSchedulesReportRecipients[];
   report_feedback_period_days?: number | null;
   report_information: string;
   report_status_log?: string | null;
@@ -224,10 +224,14 @@ export type CanteenFoodFeedbackReportRecipients = {
   send_report_at_hh_mm?: string | null;
   sort?: number | null;
   status: string;
-  to_recipient_email?: string | null;
-  to_recipient_user?: string | DirectusUsers | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type CanteenFoodFeedbackReportSchedulesReportRecipients = {
+  canteen_food_feedback_report_schedules_id?: string | CanteenFoodFeedbackReportSchedules | null;
+  id: number;
+  report_recipients_id?: string | ReportRecipients | null;
 };
 
 export type Canteens = {
@@ -1024,6 +1028,18 @@ export type PushNotifications = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type ReportRecipients = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  mail?: string | null;
+  name?: string | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type UtilizationsEntries = {
   date_created?: string | null;
   date_end?: string | null;
@@ -1120,7 +1136,8 @@ export type CustomDirectusTypes = {
   buildings_businesshours: BuildingsBusinesshours[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
-  canteen_food_feedback_report_recipients: CanteenFoodFeedbackReportRecipients[];
+  canteen_food_feedback_report_schedules: CanteenFoodFeedbackReportSchedules[];
+  canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
   canteens: Canteens[];
   canteens_foodservice_hours: CanteensFoodserviceHours[];
   cashregisters: Cashregisters[];
@@ -1176,6 +1193,7 @@ export type CustomDirectusTypes = {
   profiles_buildings_last_opened: ProfilesBuildingsLastOpened[];
   profiles_markings: ProfilesMarkings[];
   push_notifications: PushNotifications[];
+  report_recipients: ReportRecipients[];
   utilizations_entries: UtilizationsEntries[];
   utilizations_groups: UtilizationsGroups[];
   washingmachines: Washingmachines[];

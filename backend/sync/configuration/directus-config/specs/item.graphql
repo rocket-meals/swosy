@@ -9,10 +9,6 @@ type Query {
   apartments_by_id(id: ID!, version: String): apartments
   apartments_aggregated(groupBy: [String], filter: apartments_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [apartments_aggregated!]!
   apartments_by_version(version: String!, id: ID!): version_apartments
-  canteen_food_feedback_report_recipients(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_recipients!]!
-  canteen_food_feedback_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_recipients
-  canteen_food_feedback_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_recipients_aggregated!]!
-  canteen_food_feedback_report_recipients_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_recipients
   buildings(filter: buildings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [buildings!]!
   buildings_by_id(id: ID!, version: String): buildings
   buildings_aggregated(groupBy: [String], filter: buildings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [buildings_aggregated!]!
@@ -183,6 +179,18 @@ type Query {
   utilizations_entries_by_id(id: ID!, version: String): utilizations_entries
   utilizations_entries_aggregated(groupBy: [String], filter: utilizations_entries_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [utilizations_entries_aggregated!]!
   utilizations_entries_by_version(version: String!, id: ID!): version_utilizations_entries
+  report_recipients(filter: report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [report_recipients!]!
+  report_recipients_by_id(id: ID!, version: String): report_recipients
+  report_recipients_aggregated(groupBy: [String], filter: report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [report_recipients_aggregated!]!
+  report_recipients_by_version(version: String!, id: ID!): version_report_recipients
+  canteen_food_feedback_report_schedules_report_recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients!]!
+  canteen_food_feedback_report_schedules_report_recipients_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules_report_recipients
+  canteen_food_feedback_report_schedules_report_recipients_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_report_recipients_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_report_recipients_aggregated!]!
+  canteen_food_feedback_report_schedules_report_recipients_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules_report_recipients
+  canteen_food_feedback_report_schedules(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules!]!
+  canteen_food_feedback_report_schedules_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules
+  canteen_food_feedback_report_schedules_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_aggregated!]!
+  canteen_food_feedback_report_schedules_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules
 }
 
 type Mutation {
@@ -190,8 +198,6 @@ type Mutation {
   create_directus_sync_id_map_item(data: create_directus_sync_id_map_input!): directus_sync_id_map
   create_apartments_items(filter: apartments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_apartments_input!]): [apartments!]!
   create_apartments_item(data: create_apartments_input!): apartments
-  create_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
-  create_canteen_food_feedback_report_recipients_item(data: create_canteen_food_feedback_report_recipients_input!): canteen_food_feedback_report_recipients
   create_buildings_items(filter: buildings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_buildings_input!]): [buildings!]!
   create_buildings_item(data: create_buildings_input!): buildings
   create_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_input!]): [profiles!]!
@@ -276,6 +282,12 @@ type Mutation {
   create_cashregisters_transactions_item(data: create_cashregisters_transactions_input!): cashregisters_transactions
   create_utilizations_entries_items(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_entries_input!]): [utilizations_entries!]!
   create_utilizations_entries_item(data: create_utilizations_entries_input!): utilizations_entries
+  create_report_recipients_items(filter: report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_report_recipients_input!]): [report_recipients!]!
+  create_report_recipients_item(data: create_report_recipients_input!): report_recipients
+  create_canteen_food_feedback_report_schedules_report_recipients_items(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_report_recipients_input!]): [canteen_food_feedback_report_schedules_report_recipients!]!
+  create_canteen_food_feedback_report_schedules_report_recipients_item(data: create_canteen_food_feedback_report_schedules_report_recipients_input!): canteen_food_feedback_report_schedules_report_recipients
+  create_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
+  create_canteen_food_feedback_report_schedules_item(data: create_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
   update_directus_sync_id_map_item(id: ID!, data: update_directus_sync_id_map_input!): directus_sync_id_map
@@ -283,9 +295,6 @@ type Mutation {
   update_apartments_items(filter: apartments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_apartments_input!): [apartments!]!
   update_apartments_batch(filter: apartments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_apartments_input!]): [apartments!]!
   update_apartments_item(id: ID!, data: update_apartments_input!): apartments
-  update_canteen_food_feedback_report_recipients_items(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_recipients_input!): [canteen_food_feedback_report_recipients!]!
-  update_canteen_food_feedback_report_recipients_batch(filter: canteen_food_feedback_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_recipients_input!]): [canteen_food_feedback_report_recipients!]!
-  update_canteen_food_feedback_report_recipients_item(id: ID!, data: update_canteen_food_feedback_report_recipients_input!): canteen_food_feedback_report_recipients
   update_buildings_items(filter: buildings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_buildings_input!): [buildings!]!
   update_buildings_batch(filter: buildings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_buildings_input!]): [buildings!]!
   update_buildings_item(id: ID!, data: update_buildings_input!): buildings
@@ -413,12 +422,19 @@ type Mutation {
   update_utilizations_entries_items(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_utilizations_entries_input!): [utilizations_entries!]!
   update_utilizations_entries_batch(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_utilizations_entries_input!]): [utilizations_entries!]!
   update_utilizations_entries_item(id: ID!, data: update_utilizations_entries_input!): utilizations_entries
+  update_report_recipients_items(filter: report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_report_recipients_input!): [report_recipients!]!
+  update_report_recipients_batch(filter: report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_report_recipients_input!]): [report_recipients!]!
+  update_report_recipients_item(id: ID!, data: update_report_recipients_input!): report_recipients
+  update_canteen_food_feedback_report_schedules_report_recipients_items(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_report_recipients_input!): [canteen_food_feedback_report_schedules_report_recipients!]!
+  update_canteen_food_feedback_report_schedules_report_recipients_batch(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_report_recipients_input!]): [canteen_food_feedback_report_schedules_report_recipients!]!
+  update_canteen_food_feedback_report_schedules_report_recipients_item(id: ID!, data: update_canteen_food_feedback_report_schedules_report_recipients_input!): canteen_food_feedback_report_schedules_report_recipients
+  update_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_input!): [canteen_food_feedback_report_schedules!]!
+  update_canteen_food_feedback_report_schedules_batch(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
+  update_canteen_food_feedback_report_schedules_item(id: ID!, data: update_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
   delete_apartments_items(ids: [ID]!): delete_many
   delete_apartments_item(id: ID!): delete_one
-  delete_canteen_food_feedback_report_recipients_items(ids: [ID]!): delete_many
-  delete_canteen_food_feedback_report_recipients_item(id: ID!): delete_one
   delete_buildings_items(ids: [ID]!): delete_many
   delete_buildings_item(id: ID!): delete_one
   delete_profiles_items(ids: [ID]!): delete_many
@@ -503,6 +519,12 @@ type Mutation {
   delete_cashregisters_transactions_item(id: ID!): delete_one
   delete_utilizations_entries_items(ids: [ID]!): delete_many
   delete_utilizations_entries_item(id: ID!): delete_one
+  delete_report_recipients_items(ids: [ID]!): delete_many
+  delete_report_recipients_item(id: ID!): delete_one
+  delete_canteen_food_feedback_report_schedules_report_recipients_items(ids: [ID]!): delete_many
+  delete_canteen_food_feedback_report_schedules_report_recipients_item(id: ID!): delete_one
+  delete_canteen_food_feedback_report_schedules_items(ids: [ID]!): delete_many
+  delete_canteen_food_feedback_report_schedules_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -527,7 +549,6 @@ type Subscription {
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
   apartments_mutated(event: EventEnum): apartments_mutated
-  canteen_food_feedback_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_recipients_mutated
   buildings_mutated(event: EventEnum): buildings_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
   app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
@@ -571,6 +592,9 @@ type Subscription {
   markings_mutated(event: EventEnum): markings_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
+  report_recipients_mutated(event: EventEnum): report_recipients_mutated
+  canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
+  canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -1146,86 +1170,114 @@ type businesshours_mutated {
   data: businesshours
 }
 
-type canteen_food_feedback_report_recipients {
-  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+type canteen_food_feedback_report_schedules {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
-  date_next_report_is_due: Date
-  date_next_report_is_due_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
   enabled: Boolean
-  id: ID!
-  last_saved_send_amount_days_before_offer_date: Int
-  last_saved_send_report_at_hh_mm: String
-  last_saved_send_report_at_hh_mm_func: time_functions
-
-  """Amount days of feedback take into account"""
+  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
   report_feedback_period_days: Int
-  report_status_log: String
+  send_report_at_hh_mm: String
+  send_report_at_hh_mm_func: time_functions
   send_amount_days_before_offer_date: Int
   send_once_now_for_date: Date
   send_once_now_for_date_func: date_functions
-  send_report_at_hh_mm: String
-  send_report_at_hh_mm_func: time_functions
-  sort: Int
-  status: String
-  to_recipient_email: String
-  to_recipient_user(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  last_saved_send_report_at_hh_mm: String
+  last_saved_send_report_at_hh_mm_func: time_functions
+  last_saved_send_amount_days_before_offer_date: Int
+  date_next_report_is_due: Date
+  date_next_report_is_due_func: datetime_functions
+  report_status_log: String
+  recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
+  recipients_func: count_functions
 }
 
-type canteen_food_feedback_report_recipients_aggregated {
+type canteen_food_feedback_report_schedules_aggregated {
   group: JSON
   countAll: Int
-  count: canteen_food_feedback_report_recipients_aggregated_count
-  countDistinct: canteen_food_feedback_report_recipients_aggregated_count
-  avg: canteen_food_feedback_report_recipients_aggregated_fields
-  sum: canteen_food_feedback_report_recipients_aggregated_fields
-  avgDistinct: canteen_food_feedback_report_recipients_aggregated_fields
-  sumDistinct: canteen_food_feedback_report_recipients_aggregated_fields
-  min: canteen_food_feedback_report_recipients_aggregated_fields
-  max: canteen_food_feedback_report_recipients_aggregated_fields
+  count: canteen_food_feedback_report_schedules_aggregated_count
+  countDistinct: canteen_food_feedback_report_schedules_aggregated_count
+  avg: canteen_food_feedback_report_schedules_aggregated_fields
+  sum: canteen_food_feedback_report_schedules_aggregated_fields
+  avgDistinct: canteen_food_feedback_report_schedules_aggregated_fields
+  sumDistinct: canteen_food_feedback_report_schedules_aggregated_fields
+  min: canteen_food_feedback_report_schedules_aggregated_fields
+  max: canteen_food_feedback_report_schedules_aggregated_fields
 }
 
-type canteen_food_feedback_report_recipients_aggregated_count {
-  canteen: Int
+type canteen_food_feedback_report_schedules_aggregated_count {
+  id: Int
+  status: Int
+  sort: Int
+  user_created: Int
   date_created: Int
-  date_next_report_is_due: Int
+  user_updated: Int
   date_updated: Int
   enabled: Int
-  id: Int
-  last_saved_send_amount_days_before_offer_date: Int
-  last_saved_send_report_at_hh_mm: Int
-
-  """Amount days of feedback take into account"""
+  canteen: Int
   report_feedback_period_days: Int
-  report_status_log: Int
+  send_report_at_hh_mm: Int
   send_amount_days_before_offer_date: Int
   send_once_now_for_date: Int
-  send_report_at_hh_mm: Int
-  sort: Int
-  status: Int
-  to_recipient_email: Int
-  to_recipient_user: Int
-  user_created: Int
-  user_updated: Int
+  last_saved_send_report_at_hh_mm: Int
+  last_saved_send_amount_days_before_offer_date: Int
+  date_next_report_is_due: Int
+  report_status_log: Int
+  recipients: Int
 }
 
-type canteen_food_feedback_report_recipients_aggregated_fields {
-  last_saved_send_amount_days_before_offer_date: Float
-
-  """Amount days of feedback take into account"""
+type canteen_food_feedback_report_schedules_aggregated_fields {
+  sort: Float
   report_feedback_period_days: Float
   send_amount_days_before_offer_date: Float
-  sort: Float
+  last_saved_send_amount_days_before_offer_date: Float
 }
 
-type canteen_food_feedback_report_recipients_mutated {
+type canteen_food_feedback_report_schedules_mutated {
   key: ID!
   event: EventEnum
-  data: canteen_food_feedback_report_recipients
+  data: canteen_food_feedback_report_schedules
+}
+
+type canteen_food_feedback_report_schedules_report_recipients {
+  id: ID!
+  canteen_food_feedback_report_schedules_id(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteen_food_feedback_report_schedules
+  report_recipients_id(filter: report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): report_recipients
+}
+
+type canteen_food_feedback_report_schedules_report_recipients_aggregated {
+  group: JSON
+  countAll: Int
+  count: canteen_food_feedback_report_schedules_report_recipients_aggregated_count
+  countDistinct: canteen_food_feedback_report_schedules_report_recipients_aggregated_count
+  avg: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+  sum: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+  avgDistinct: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+  sumDistinct: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+  min: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+  max: canteen_food_feedback_report_schedules_report_recipients_aggregated_fields
+}
+
+type canteen_food_feedback_report_schedules_report_recipients_aggregated_count {
+  id: Int
+  canteen_food_feedback_report_schedules_id: Int
+  report_recipients_id: Int
+}
+
+type canteen_food_feedback_report_schedules_report_recipients_aggregated_fields {
+  id: Float
+}
+
+type canteen_food_feedback_report_schedules_report_recipients_mutated {
+  key: ID!
+  event: EventEnum
+  data: canteen_food_feedback_report_schedules_report_recipients
 }
 
 type canteens {
@@ -3343,6 +3395,55 @@ type push_notifications_mutated {
   data: push_notifications
 }
 
+type report_recipients {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  name: String
+  mail: String
+}
+
+type report_recipients_aggregated {
+  group: JSON
+  countAll: Int
+  count: report_recipients_aggregated_count
+  countDistinct: report_recipients_aggregated_count
+  avg: report_recipients_aggregated_fields
+  sum: report_recipients_aggregated_fields
+  avgDistinct: report_recipients_aggregated_fields
+  sumDistinct: report_recipients_aggregated_fields
+  min: report_recipients_aggregated_fields
+  max: report_recipients_aggregated_fields
+}
+
+type report_recipients_aggregated_count {
+  id: Int
+  status: Int
+  sort: Int
+  user_created: Int
+  date_created: Int
+  user_updated: Int
+  date_updated: Int
+  name: Int
+  mail: Int
+}
+
+type report_recipients_aggregated_fields {
+  sort: Float
+}
+
+type report_recipients_mutated {
+  key: ID!
+  event: EventEnum
+  data: report_recipients
+}
+
 type time_functions {
   hour: Int
   minute: Int
@@ -3682,28 +3783,32 @@ type version_businesshours {
 }
 
 """"""
-type version_canteen_food_feedback_report_recipients {
-  canteen: JSON
+type version_canteen_food_feedback_report_schedules {
+  id: ID
+  status: String
+  sort: Int
+  user_created: JSON
   date_created: Date
-  date_next_report_is_due: Date
+  user_updated: JSON
   date_updated: Date
   enabled: Boolean
-  id: ID
-  last_saved_send_amount_days_before_offer_date: Int
-  last_saved_send_report_at_hh_mm: String
-
-  """Amount days of feedback take into account"""
+  canteen: JSON
   report_feedback_period_days: Int
-  report_status_log: String
+  send_report_at_hh_mm: String
   send_amount_days_before_offer_date: Int
   send_once_now_for_date: Date
-  send_report_at_hh_mm: String
-  sort: Int
-  status: String
-  to_recipient_email: String
-  to_recipient_user: JSON
-  user_created: JSON
-  user_updated: JSON
+  last_saved_send_report_at_hh_mm: String
+  last_saved_send_amount_days_before_offer_date: Int
+  date_next_report_is_due: Date
+  report_status_log: String
+  recipients: JSON
+}
+
+""""""
+type version_canteen_food_feedback_report_schedules_report_recipients {
+  id: ID
+  canteen_food_feedback_report_schedules_id: JSON
+  report_recipients_id: JSON
 }
 
 """"""
@@ -4153,6 +4258,19 @@ type version_push_notifications {
   status_log: String
   user_created: JSON
   user_updated: JSON
+}
+
+""""""
+type version_report_recipients {
+  id: ID
+  status: String
+  sort: Int
+  user_created: JSON
+  date_created: Date
+  user_updated: JSON
+  date_updated: Date
+  name: String
+  mail: String
 }
 
 """"""
@@ -4701,34 +4819,42 @@ input businesshours_filter {
   _or: [businesshours_filter]
 }
 
-input canteen_food_feedback_report_recipients_filter {
-  canteen: canteens_filter
+input canteen_food_feedback_report_schedules_filter {
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_next_report_is_due: date_filter_operators
-  date_next_report_is_due_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   enabled: boolean_filter_operators
-  id: string_filter_operators
-  last_saved_send_amount_days_before_offer_date: number_filter_operators
-  last_saved_send_report_at_hh_mm: string_filter_operators
-  last_saved_send_report_at_hh_mm_func: time_function_filter_operators
+  canteen: canteens_filter
   report_feedback_period_days: number_filter_operators
-  report_status_log: string_filter_operators
+  send_report_at_hh_mm: string_filter_operators
+  send_report_at_hh_mm_func: time_function_filter_operators
   send_amount_days_before_offer_date: number_filter_operators
   send_once_now_for_date: date_filter_operators
   send_once_now_for_date_func: date_function_filter_operators
-  send_report_at_hh_mm: string_filter_operators
-  send_report_at_hh_mm_func: time_function_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
-  to_recipient_email: string_filter_operators
-  to_recipient_user: directus_users_filter
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
-  _and: [canteen_food_feedback_report_recipients_filter]
-  _or: [canteen_food_feedback_report_recipients_filter]
+  last_saved_send_report_at_hh_mm: string_filter_operators
+  last_saved_send_report_at_hh_mm_func: time_function_filter_operators
+  last_saved_send_amount_days_before_offer_date: number_filter_operators
+  date_next_report_is_due: date_filter_operators
+  date_next_report_is_due_func: datetime_function_filter_operators
+  report_status_log: string_filter_operators
+  recipients: canteen_food_feedback_report_schedules_report_recipients_filter
+  recipients_func: count_function_filter_operators
+  _and: [canteen_food_feedback_report_schedules_filter]
+  _or: [canteen_food_feedback_report_schedules_filter]
+}
+
+input canteen_food_feedback_report_schedules_report_recipients_filter {
+  id: number_filter_operators
+  canteen_food_feedback_report_schedules_id: canteen_food_feedback_report_schedules_filter
+  report_recipients_id: report_recipients_filter
+  _and: [canteen_food_feedback_report_schedules_report_recipients_filter]
+  _or: [canteen_food_feedback_report_schedules_report_recipients_filter]
 }
 
 input canteens_filter {
@@ -4994,28 +5120,31 @@ input create_businesshours_input {
   wednesday: Boolean
 }
 
-input create_canteen_food_feedback_report_recipients_input {
-  canteen: create_canteens_input
+input create_canteen_food_feedback_report_schedules_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: create_directus_users_input
   date_created: Date
-  date_next_report_is_due: Date
+  user_updated: create_directus_users_input
   date_updated: Date
   enabled: Boolean
-  id: ID
-  last_saved_send_amount_days_before_offer_date: Int
-  last_saved_send_report_at_hh_mm: String
-
-  """Amount days of feedback take into account"""
+  canteen: create_canteens_input
   report_feedback_period_days: Int
-  report_status_log: String
+  send_report_at_hh_mm: String
   send_amount_days_before_offer_date: Int
   send_once_now_for_date: Date
-  send_report_at_hh_mm: String
-  sort: Int
-  status: String
-  to_recipient_email: String
-  to_recipient_user: create_directus_users_input
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
+  last_saved_send_report_at_hh_mm: String
+  last_saved_send_amount_days_before_offer_date: Int
+  date_next_report_is_due: Date
+  report_status_log: String
+  recipients: [create_canteen_food_feedback_report_schedules_report_recipients_input]
+}
+
+input create_canteen_food_feedback_report_schedules_report_recipients_input {
+  id: ID
+  canteen_food_feedback_report_schedules_id: create_canteen_food_feedback_report_schedules_input
+  report_recipients_id: create_report_recipients_input
 }
 
 input create_canteens_foodservice_hours_input {
@@ -5508,6 +5637,18 @@ input create_push_notifications_input {
   status_log: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+}
+
+input create_report_recipients_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: create_directus_users_input
+  date_created: Date
+  user_updated: create_directus_users_input
+  date_updated: Date
+  name: String
+  mail: String
 }
 
 input create_utilizations_entries_input {
@@ -6321,6 +6462,22 @@ input push_notifications_filter {
   _or: [push_notifications_filter]
 }
 
+input report_recipients_filter {
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  name: string_filter_operators
+  mail: string_filter_operators
+  _and: [report_recipients_filter]
+  _or: [report_recipients_filter]
+}
+
 input string_filter_operators {
   _eq: String
   _neq: String
@@ -6548,28 +6705,31 @@ input update_businesshours_input {
   wednesday: Boolean
 }
 
-input update_canteen_food_feedback_report_recipients_input {
-  canteen: update_canteens_input
+input update_canteen_food_feedback_report_schedules_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: update_directus_users_input
   date_created: Date
-  date_next_report_is_due: Date
+  user_updated: update_directus_users_input
   date_updated: Date
   enabled: Boolean
-  id: ID
-  last_saved_send_amount_days_before_offer_date: Int
-  last_saved_send_report_at_hh_mm: String
-
-  """Amount days of feedback take into account"""
+  canteen: update_canteens_input
   report_feedback_period_days: Int
-  report_status_log: String
+  send_report_at_hh_mm: String
   send_amount_days_before_offer_date: Int
   send_once_now_for_date: Date
-  send_report_at_hh_mm: String
-  sort: Int
-  status: String
-  to_recipient_email: String
-  to_recipient_user: update_directus_users_input
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
+  last_saved_send_report_at_hh_mm: String
+  last_saved_send_amount_days_before_offer_date: Int
+  date_next_report_is_due: Date
+  report_status_log: String
+  recipients: [update_canteen_food_feedback_report_schedules_report_recipients_input]
+}
+
+input update_canteen_food_feedback_report_schedules_report_recipients_input {
+  id: ID
+  canteen_food_feedback_report_schedules_id: update_canteen_food_feedback_report_schedules_input
+  report_recipients_id: update_report_recipients_input
 }
 
 input update_canteens_foodservice_hours_input {
@@ -7062,6 +7222,18 @@ input update_push_notifications_input {
   status_log: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+}
+
+input update_report_recipients_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: update_directus_users_input
+  date_created: Date
+  user_updated: update_directus_users_input
+  date_updated: Date
+  name: String
+  mail: String
 }
 
 input update_utilizations_entries_input {

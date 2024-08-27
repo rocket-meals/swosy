@@ -1,3 +1,5 @@
+import {CanteenFoodFeedbackReportSchedulesReportRecipients} from "../databaseTypes/types";
+
 /**
  * Helper for Account things
  */
@@ -22,7 +24,7 @@ export function getAllCollectionNames() {
         CollectionNames.UTILIZATION_GROUPS,
         CollectionNames.UTILIZATION_ENTRIES,
         CollectionNames.BUSINESSHOURS,
-        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS,
+        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES,
         CollectionNames.USERS,
         CollectionNames.CANTEENS,
         CollectionNames.PUSH_NOTIFICATIONS,
@@ -60,7 +62,9 @@ export class CollectionNames{
     static UTILIZATION_ENTRIES = "utilizations_entries"
     static BUSINESSHOURS = "businesshours"
 
-    static CANTEEN_FOOD_FEEDBACK_REPORT_RECIPIENTS = "canteen_food_feedback_report_recipients"
+    static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = "canteen_food_feedback_report_schedules"
+    static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS = "canteen_food_feedback_report_schedules_report_recipients"
+    static REPORT_RECIPIENTS = "report_recipients"
 
     static USERS = "directus_users"
 
