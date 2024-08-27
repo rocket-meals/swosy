@@ -121,7 +121,8 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 					result = await ImagePicker.launchCameraAsync(imageLibraryOptions);
 				} else {
 					result = await ImagePicker.launchImageLibraryAsync(imageLibraryOptions);
-					// Silent fail, when image too big: https://github.com/rocket-meals/rocket-meals/issues/197
+					// TODO: Silent fail, when image too big: https://github.com/rocket-meals/rocket-meals/issues/197
+					// Result is then: {"assets": null, "canceled": true}
 				}
 
 				if (!!result && !result.canceled) {
