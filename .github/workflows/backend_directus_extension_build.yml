@@ -29,17 +29,20 @@ jobs:
       - name: 🚀 Build the extension
         run: npm run build
 
-      - name: 🔎 Check if build has changed
+      - name: 🔍 Check if api.js has changed
         id: check_changes
         run: |
-          git diff --quiet ./dist/api || echo "changes"
-        continue-on-error: true
+          if git status --porcelain ./dist/api.js | grep -q 'M'; then
+            echo "api_js_changed=true" >> $GITHUB_ENV
+          else
+            echo "api_js_changed=false" >> $GITHUB_ENV
+          fi
 
-      - name: 📤 Commit and push changes if build has changed
-        if: steps.check_changes.outputs.result == 'changes'
+      - name: ✅ Commit and push changes if api.js changed
+        if: env.api_js_changed == 'true'
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "GitHub Actions"
-          git add dist/api
-          git commit -m "Update build artifacts [skip ci]"
-          git push origin HEAD:${{ github.ref }}
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add ./dist/api.js
+          git commit -m "Updated dist/api.js after build"
+          git push

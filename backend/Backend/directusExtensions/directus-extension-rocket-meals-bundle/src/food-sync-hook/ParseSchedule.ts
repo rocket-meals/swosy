@@ -336,7 +336,7 @@ export class ParseSchedule {
             currentFoodIndex++;
 
             const basicFoodData = foodsInformationForParser.basicFoodData;
-            console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
+            //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
             let foundFood = await this.findOrCreateFood(basicFoodData);
             if (!!foundFood && foundFood.id && this.foodParser) {
 
