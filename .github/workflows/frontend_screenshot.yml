@@ -1,12 +1,8 @@
 name: Screenshots CI Action
 
 on:
-  workflow_dispatch:
-    inputs:
-      start:
-        description: 'Write anything to start the workflow'
-        required: true
-        default: ''
+  workflow_dispatch: # Allow manual triggering
+
   workflow_run:
     workflows: ["GH-Pages Publish"]
     types:

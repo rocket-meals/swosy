@@ -1,5 +1,7 @@
 name: Expo Build
 on:
+  workflow_dispatch: # Allow manual triggering
+
   push:
     branches:
       - native_build
