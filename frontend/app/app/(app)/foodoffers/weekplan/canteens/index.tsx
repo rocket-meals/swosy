@@ -13,14 +13,14 @@ import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_
 
 export const SEARCH_PARAM_CANTEENS_ID = 'canteens_id';
 
-export function useCanteensIdFromLocalSearchParams() {
+export function useCanteensIdFromGlobalSearchParams() {
 	const params = useGlobalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
 	return params[SEARCH_PARAM_CANTEENS_ID];
 }
 
 
 export default function FoodOfferDetails() {
-	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
+	let canteen_id: string | undefined = useCanteensIdFromGlobalSearchParams();
 	const initialAmountColumns = useMyGridListDefaultColumns();
 	const translation_week = useTranslation(TranslationKeys.week)
 	const translation_current = useTranslation(TranslationKeys.current)

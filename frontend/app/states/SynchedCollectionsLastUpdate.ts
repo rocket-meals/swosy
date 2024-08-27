@@ -28,12 +28,12 @@ export function useSynchedCollectionsDatesLastUpdateDict(): [Record<string, Coll
 
 	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const resourceList = await loadCollectionsDatesLastUpdateFromServer();
-		console.log("useSynchedCollectionsDatesLastUpdateDict resourceList", resourceList);
+		//console.log("useSynchedCollectionsDatesLastUpdateDict resourceList", resourceList);
 		const resourceDict = CollectionHelper.convertListToDict(resourceList, 'id')
-		console.log("useSynchedCollectionsDatesLastUpdateDict resourceDict", resourceDict);
+		//console.log("useSynchedCollectionsDatesLastUpdateDict resourceDict", resourceDict);
 		setResourcesOnly((currentValue) => {
-			console.log("useSynchedCollectionsDatesLastUpdateDict currentValue", currentValue);
-			console.log("useSynchedCollectionsDatesLastUpdateDict save please", resourceDict);
+			//console.log("useSynchedCollectionsDatesLastUpdateDict currentValue", currentValue);
+			//console.log("useSynchedCollectionsDatesLastUpdateDict save please", resourceDict);
 			return resourceDict;
 		}, sync_cache_composed_key_local);
 	}

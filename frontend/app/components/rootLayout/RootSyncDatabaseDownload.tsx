@@ -240,7 +240,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 			if (nextResourceToDownload) {
 				const cacheHelperObj = nextResourceToDownload.cacheHelperObj;
 				const version_desired = nextResourceToDownload.version_desired;
-				console.log("Next resource to download: "+nextResourceToDownload.key)
+				//console.log("Next resource to download: "+nextResourceToDownload.key)
 				handleUpdateFromServer(cacheHelperObj, version_desired);
 			}
 
