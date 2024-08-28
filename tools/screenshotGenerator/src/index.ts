@@ -87,7 +87,7 @@ type Device = {
 };
 
 const devices: Device[] = [
-    { name: 'google-playstore-presentation', width: 1024/2, height: 500/2, deviceScaleFactor: 2, horizontal: false }, // Deine Vorstellungsgrafik muss eine PNG- oder JPEG-Datei mit einer Größe von maximal 15 MB und einer Auflösung von 1024 × 500 Pixeln sein
+    { name: 'google-playstore-presentation', width: 1024, height: 500, deviceScaleFactor: 1, horizontal: false }, // Deine Vorstellungsgrafik muss eine PNG- oder JPEG-Datei mit einer Größe von maximal 15 MB und einer Auflösung von 1024 × 500 Pixeln sein
     { name: 'google-playstore-phone', width: 1080/3, height: 1920/3, deviceScaleFactor: 3, horizontal: false }, // Screenshots für Telefon * Screenshots müssen PNG- oder JPEG-Dateien mit einem Seitenverhältnis von 16:9 oder 9:16, einer Dateigröße von maximal 8 MB und einer Breite bzw. Höhe von 320–3.840 Pixeln sein.
 //    { name: 'google-playstore-tablet-7', width: 1080/3, height: 1920/3, deviceScaleFactor: 3, horizontal: false }, // Screenshots für Telefon * Seitenverhältnis von 16:9 oder 9:16, einer Dateigröße von maximal 8 MB und einer Breite bzw. Höhe von 320–3.840 Pixeln sein.
     { name: 'google-playstore-tablet-10', width: 1080/2, height: 1920/2, deviceScaleFactor: 3, horizontal: true }, // Screenshots für 10"-Tablet * Screenshots müssen PNG- oder JPEG-Dateien mit einem Seitenverhältnis von 16:9 oder 9:16, einer Dateigröße von maximal 8 MB und einer Breite bzw. Höhe von 1080–7680 Pixeln sein.
