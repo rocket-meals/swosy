@@ -200,7 +200,9 @@ async function doesFileExist(fileName: string) {
 }
 
 (async () => {
-    let browser = await puppeteer.launch();
+    let browser = await puppeteer.launch({
+        args: ['--lang=de'],  // Set the browser language to German
+    });
 
     let totalAmountOfScreenshots = urls.length * devices.length;
     console.log(`Generating ${totalAmountOfScreenshots} screenshots - Urls: ${urls.length}, Devices: ${devices.length}`);
