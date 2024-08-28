@@ -87,6 +87,7 @@ type Device = {
 };
 
 const devices: Device[] = [
+    { name: 'google-playstore', width: 1024/2, height: 500/2, deviceScaleFactor: 2, horizontal: false },
     { name: 'iphone-6.7', width: 1290/3, height: 2796/3, deviceScaleFactor: 3, horizontal: false },
     { name: 'iphone-5.5', width: 414, height: 736, deviceScaleFactor: 3, horizontal: false },
     { name: 'ipad-13', width: 2064/2, height: 2752/2, deviceScaleFactor: 2, horizontal: true },
