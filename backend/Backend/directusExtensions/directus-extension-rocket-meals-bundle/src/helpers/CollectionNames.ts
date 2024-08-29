@@ -67,7 +67,7 @@ export class CollectionNames{
 
     static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = "canteen_food_feedback_report_schedules"
     static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS = "canteen_food_feedback_report_schedules_report_recipients"
-    static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS = "/canteen_food_feedback_report_schedules_canteens"
+    static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS = "canteen_food_feedback_report_schedules_canteens"
     static REPORT_RECIPIENTS = "report_recipients"
 
     static USERS = "directus_users"
