@@ -11,7 +11,13 @@
       "emitEvents": true,
       "query": {
         "filter": {
-          "_and": []
+          "_and": [
+            {
+              "foods_parsing_status": {
+                "_neq": "running"
+              }
+            }
+          ]
         }
       },
       "payload": {

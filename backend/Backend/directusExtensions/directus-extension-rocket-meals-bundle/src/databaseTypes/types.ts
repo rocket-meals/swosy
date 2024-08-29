@@ -206,7 +206,8 @@ export type Businesshours = {
 };
 
 export type CanteenFoodFeedbackReportSchedules = {
-  canteen?: string | Canteens | null;
+  alias?: string | null;
+  canteens: any[] | CanteenFoodFeedbackReportSchedulesCanteens[];
   date_created?: string | null;
   date_next_report_is_due?: string | null;
   date_updated?: string | null;
@@ -224,8 +225,15 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_report_at_hh_mm?: string | null;
   sort?: number | null;
   status: string;
+  use_canteen_specific_feedbacks_only?: boolean | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type CanteenFoodFeedbackReportSchedulesCanteens = {
+  canteen_food_feedback_report_schedules_id?: string | CanteenFoodFeedbackReportSchedules | null;
+  canteens_id?: string | Canteens | null;
+  id: number;
 };
 
 export type CanteenFoodFeedbackReportSchedulesReportRecipients = {
@@ -1137,6 +1145,7 @@ export type CustomDirectusTypes = {
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
   canteen_food_feedback_report_schedules: CanteenFoodFeedbackReportSchedules[];
+  canteen_food_feedback_report_schedules_canteens: CanteenFoodFeedbackReportSchedulesCanteens[];
   canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
   canteens: Canteens[];
   canteens_foodservice_hours: CanteensFoodserviceHours[];

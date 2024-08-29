@@ -292,7 +292,6 @@ const execWithOutput = async (command) => {
     await new Promise((resolve, reject) => {
         child.on('close', (code) => {
             if (code === 0) {
-                console.log(" -  Pushed schema changes");
                 resolve();
             } else {
                 reject(new Error(`Command exited with code ${code}`));

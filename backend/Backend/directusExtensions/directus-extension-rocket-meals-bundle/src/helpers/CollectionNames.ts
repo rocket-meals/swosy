@@ -30,6 +30,9 @@ export function getAllCollectionNames() {
         CollectionNames.PUSH_NOTIFICATIONS,
         CollectionNames.DEVICES,
         CollectionNames.FOODOFFERS,
+        CollectionNames.REPORT_RECIPIENTS,
+        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS,
+        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS
     ];
 }
 
@@ -64,6 +67,7 @@ export class CollectionNames{
 
     static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = "canteen_food_feedback_report_schedules"
     static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS = "canteen_food_feedback_report_schedules_report_recipients"
+    static CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS = "/canteen_food_feedback_report_schedules_canteens"
     static REPORT_RECIPIENTS = "report_recipients"
 
     static USERS = "directus_users"

@@ -19,7 +19,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 14,
     "special": [
       "m2m"
     ],

@@ -3,13 +3,14 @@ import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {
     Canteens,
     Foodoffers,
+    Foods,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
-    Foods,
     FoodsFeedbacksLabelsEntries
 } from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
+import {Filter} from "@directus/types/dist/filter";
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -32,7 +33,7 @@ export type ReportFoodEntryType = {
 export type ReportType = {
     canteen_name: string,
     dateHumanReadable: string,
-    report_feedback_period_days: number,
+    report_feedback_period_days: number | null | undefined,
     foods: ReportFoodEntryType[],
 }
 
@@ -73,71 +74,81 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number, canteenEntry: Canteens): Promise<ReportType>{
+    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number | null |undefined, canteenEntries: Canteens[]): Promise<ReportType>{
         let date = generateReportForDate;
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
         //console.log("Generate report for date: "+dateHumanReadable);
 
+        let canteenNames = canteenEntries.map(canteenEntry => canteenEntry?.alias || canteenEntry.id);
+        const combinedCanteenName = canteenNames.join(", ");
+
         let report: ReportType = {
-            canteen_name: canteenEntry?.alias || canteenEntry.id,
+            canteen_name: combinedCanteenName,
             report_feedback_period_days: report_feedback_period_days,
             dateHumanReadable: dateHumanReadable,
             foods: []
         }
 
         let foods: ReportFoodEntryType[] = [];
-        let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(generateReportForDate, canteenEntry?.id);
-        for(let foodOfferWithFood of foodOffersWithFood){
-            let food = foodOfferWithFood?.food;
 
-            if(!!food && typeof food !== "string"){
-                const food_id = food?.id;
-                //console.log("Get summary for food_id: "+food?.id);
-                //console.log("food")
-                //console.log(food)
-
-                let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days);
-                //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
-                let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id);
-                //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
-                //console.log("feedbackLabelEntryListForReport")
-                //console.log(feedbackLabelEntryListForReport)
-
-                // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
-
-                let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
-                //console.log("Found amount of comments: "+comments.length)
-
-                let image_url = null;
-                if(food?.image){
-                    let file_id = food?.image;
-                    let publicUrl = process.env.PUBLIC_URL;
-                    if(publicUrl){
-                        image_url = publicUrl+'/assets/'+file_id
-                    }
+        let foodDict: {[key: string]: Foods} = {};
+        for(let canteenEntry of canteenEntries){
+            let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(generateReportForDate, canteenEntry?.id);
+            for(let foodOfferWithFood of foodOffersWithFood){
+                let food = foodOfferWithFood?.food;
+                if(!!food && typeof food !== "string"){
+                    foodDict[food.id] = food;
                 }
-                if(food?.image_remote_url){
-                    image_url = food?.image_remote_url;
-                }
-
-                let usedRatingAverage = "N/A";
-                if(food?.rating_average){
-                    // to fixed 2 decimal places
-                    usedRatingAverage = food?.rating_average.toFixed(2);
-                }
-
-                let foodSummary: ReportFoodEntryType = {
-                    id: food.id,
-                    alias: food.alias,
-                    image_url: image_url,
-                    rating_average: food?.rating_average || 0,
-                    rating_amount: usedRatingAverage,
-                    comments: comments,
-                    labels: feedbackLabelEntryListForReport
-                };
-
-                foods.push(foodSummary)
             }
+        }
+
+        for(let food of Object.values(foodDict)){
+            const food_id = food?.id;
+            //console.log("Get summary for food_id: "+food?.id);
+            //console.log("food")
+            //console.log(food)
+
+            let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days);
+            //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
+            let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, report_feedback_period_days);
+            //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
+            //console.log("feedbackLabelEntryListForReport")
+            //console.log(feedbackLabelEntryListForReport)
+
+            // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
+
+            let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
+            //console.log("Found amount of comments: "+comments.length)
+
+            let image_url = null;
+            if(food?.image){
+                let file_id = food?.image;
+                let publicUrl = process.env.PUBLIC_URL;
+                if(publicUrl){
+                    image_url = publicUrl+'/assets/'+file_id
+                }
+            }
+            if(food?.image_remote_url){
+                image_url = food?.image_remote_url;
+            }
+
+            let usedRatingAverage = "N/A";
+            if(food?.rating_average){
+                // to fixed 2 decimal places
+                usedRatingAverage = food?.rating_average.toFixed(2);
+            }
+
+            let foodSummary: ReportFoodEntryType = {
+                id: food.id,
+                alias: food.alias,
+                image_url: image_url,
+                rating_average: food?.rating_average || 0,
+                rating_amount: usedRatingAverage,
+                comments: comments,
+                labels: feedbackLabelEntryListForReport
+            };
+
+            foods.push(foodSummary)
         }
 
         report.foods = foods;
@@ -166,14 +177,27 @@ export class ReportGenerator {
         return feedback_label?.alias || feedback_label_id;
     }
 
-    async getReportFeedbackLabelsList(food_id: string): Promise<ReportFoodEntryLabelType[]> {
+    async getReportFeedbackLabelsList(food_id: string, report_feedback_period_days: number | null | undefined): Promise<ReportFoodEntryLabelType[]> {
         const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
         const foodFeedbackLabelEntriesService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabelsEntries>(CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
-        const labelFeedbacks = await foodFeedbackLabelEntriesService.readByQuery({filter: {
+
+        const filter: Filter[] = [
+            {
                 food: {
                     _eq: food_id
                 }
             },
+        ]
+
+        let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
+        if(filterDateUpdated){
+            filter.push(filterDateUpdated);
+        }
+
+        const labelFeedbacks = await foodFeedbackLabelEntriesService.readByQuery({filter: {
+                _and: filter
+            },
+            limit: -1,
         });
 
         let labels_counted_dict: {[key: string]: ReportFoodEntryLabelType} = {};
@@ -214,33 +238,48 @@ export class ReportGenerator {
         return labels_counted_as_list;
     }
 
-    async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number){
+    private getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days: number | null | undefined){
+        let filter: Filter | undefined = undefined
+        if(report_feedback_period_days !== null && report_feedback_period_days !== undefined){
+            let end = new Date();
+            let start = new Date(end);
+            // subtract report_feedback_period_days amount days from start
+            start.setDate(start.getDate() - report_feedback_period_days);
+            filter =
+                {
+                    date_updated: {
+                        _between: [start.toISOString(), end.toISOString()]
+                    }
+                }
+        }
+        return filter;
+    }
+
+    async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number | null | undefined){
         const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
 
         let itemService = await itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
-        let end = new Date();
-        let start = new Date(end);
-        // subtract report_feedback_period_days amount days from start
-        start.setDate(start.getDate() - report_feedback_period_days);
 
-        let food_feedbacks = await itemService.readByQuery({filter: {
-                _and: [
-                    {
-                        food: {
-                            _eq: food_id
-                        }
-                    },
-                    {
-                        date_updated: {
-                            _between: [start.toISOString(), end.toISOString()]
-                        }
-                    }
-                ]
+        const filter: Filter[] = [
+            {
+                food: {
+                    _eq: food_id
+                }
+            },
+        ]
+
+        let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
+        if(filterDateUpdated){
+            filter.push(filterDateUpdated);
+        }
+
+        return await itemService.readByQuery({
+            filter: {
+                _and: filter
             },
             fields: ['*', "labels.*"],
             limit: -1
         });
-        return food_feedbacks;
     }
 
     async getFoodOffersWithFoodAtDateInCanteen(date: Date, canteen_id: string){

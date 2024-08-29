@@ -5,6 +5,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
 import {
     CanteenFoodFeedbackReportSchedules,
+    CanteenFoodFeedbackReportSchedulesCanteens,
     CanteenFoodFeedbackReportSchedulesReportRecipients,
     Canteens,
     ReportRecipients
@@ -52,15 +53,15 @@ export class ReportSchedule {
                         let recipientEmailList = await this.getRecipientEmailList(reportSchedule);
 
                         if(recipientEmailList.length>0){
-                            let canteenEntry = await this.getCanteenEntry(reportSchedule);
-                            if(!!canteenEntry){
+                            let canteenEntries = await this.getCanteenEntries(reportSchedule);
+                            if(canteenEntries.length>0){
                                 try {
                                     // 3. send report
-                                    let report_feedback_period_days = reportSchedule?.report_feedback_period_days || 180;
-                                    let generated_report_data: ReportType = await reportGenerator.generateReportJSON(generateReportForDate, report_feedback_period_days, canteenEntry)
+                                    let report_feedback_period_days = reportSchedule?.report_feedback_period_days
+                                    let generated_report_data: ReportType = await reportGenerator.generateReportJSON(generateReportForDate, report_feedback_period_days, canteenEntries)
                                     if(!!generated_report_data){
                                         for(let toMail of recipientEmailList){
-                                            await this.sendReport(generateReportForDate, generated_report_data, reportSchedule, canteenEntry, toMail);
+                                            await this.sendReport(generateReportForDate, generated_report_data, reportSchedule, canteenEntries, toMail);
                                         }
                                         await this.setNextReportDate(generateReportForDate, reportSchedule);
                                         await this.updateReportLogSuccess(generateReportForDate, reportSchedule);
@@ -124,15 +125,32 @@ export class ReportSchedule {
         return list;
     }
 
-    async getCanteenEntry(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Canteens | null>{
+    async getCanteenEntries(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Canteens[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let canteen_id = recipientEntry.canteen;
-        if(!!canteen_id && typeof canteen_id === "string"){
-            let tablename = CollectionNames.CANTEENS;
-            let itemService = await itemsServiceCreator.getItemsService<Canteens>(tablename)
-            return await itemService.readOne(canteen_id);
+        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedulesCanteens>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS)
+        let scheduleCanteens = await itemService.readByQuery({
+            filter: {
+                canteen_food_feedback_report_schedules_id: {
+                    _eq: recipientEntry.id
+                }
+            },
+            limit: -1
+        });
+
+        let canteen_primary_keys: PrimaryKey[] = []
+        for(let scheduleCanteen of scheduleCanteens){
+            let canteen_id = scheduleCanteen.canteens_id;
+            if(!!canteen_id && typeof canteen_id === "string"){
+                canteen_primary_keys.push(canteen_id as PrimaryKey);
+            }
         }
-        return null;
+
+        if(canteen_primary_keys.length === 0){
+            return [];
+        }
+
+        let canteenService = await itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
+        return await canteenService.readMany(canteen_primary_keys);
     }
 
     async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntry: Canteens, toMail: string){
