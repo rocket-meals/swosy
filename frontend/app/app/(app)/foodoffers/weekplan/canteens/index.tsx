@@ -1,7 +1,7 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
+import {router, useGlobalSearchParams} from 'expo-router';
 import React from 'react';
-import {Text, View} from "@/components/Themed";
+import {View} from "@/components/Themed";
 import {ListRenderItemInfo} from "react-native";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";

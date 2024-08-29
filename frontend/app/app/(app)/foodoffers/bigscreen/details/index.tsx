@@ -31,36 +31,41 @@ import {Animated} from "react-native";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
-
-const companyLogo = require("@/assets/images/company.png");
+import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 
 export const SEARCH_PARAM_CATEGORY = 'category';
+export const SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER = 'showOnlyMarkingExternalIdentifier';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL = 'refreshFoodOffersIntervalInSeconds';
 
-export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean): ExpoRouter.Href {
+export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean, showOnlyMarkingExternalIdentifier: boolean): ExpoRouter.Href {
 	let paramsRaw = []
-	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+canteen_id : null;
+	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
-	let paramForCategory = category ? SEARCH_PARAM_CATEGORY+"="+category : null;
+	let paramForCategory = category ? SEARCH_PARAM_CATEGORY+"="+encodeURIComponent(category) : null;
 	if(paramForCategory){
 		paramsRaw.push(paramForCategory)
 	}
-	let paramForNextFoodInterval = nextFoodIntervalInSeconds ? SEARCH_PARAM_NEXT_FOOD_INTERVAL+"="+nextFoodIntervalInSeconds : null;
+	let paramForNextFoodInterval = nextFoodIntervalInSeconds ? SEARCH_PARAM_NEXT_FOOD_INTERVAL+"="+encodeURIComponent(nextFoodIntervalInSeconds) : null;
 	if(paramForNextFoodInterval){
 		paramsRaw.push(paramForNextFoodInterval)
 	}
 
-	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+fullscreen : null;
+	let paramShowOnlyMarkingExternalIdentifier = showOnlyMarkingExternalIdentifier ? SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER+"="+encodeURIComponent(showOnlyMarkingExternalIdentifier) : null;
+	if(paramShowOnlyMarkingExternalIdentifier){
+		paramsRaw.push(paramShowOnlyMarkingExternalIdentifier)
+	}
+
+	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+encodeURIComponent(fullscreen) : null;
 	if(paramForFullScreen){
 		paramsRaw.push(paramForFullScreen)
 	}
 
-	let paramForKioskMode = SearchParams.KIOSK_MODE+"="+"true";
+	let paramForKioskMode = SearchParams.KIOSK_MODE+"="+encodeURIComponent(true);
 	paramsRaw.push(paramForKioskMode)
 
 	let params = paramsRaw.join("&")
@@ -70,6 +75,15 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 export function useFoodCategoryFromLocalSearchParams() {
 	const params = useLocalSearchParams<{ [SEARCH_PARAM_CATEGORY]?: string }>();
 	return params[SEARCH_PARAM_CATEGORY];
+}
+
+export function useShowOnlyMarkingExternalIdentifierFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER]?: string }>();
+	let showOnlyMarkingExternalIdentifier = params[SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER];
+	if(showOnlyMarkingExternalIdentifier){
+		return showOnlyMarkingExternalIdentifier === "true";
+	}
+	return false;
 }
 
 export function useNextFoodIntervalInSecondsFromLocalSearchParams() {
@@ -139,7 +153,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color, backgroundCo
 	);
 };
 
-const MarkingNamesList: React.FC<{markingIds: string[], markingsDict: Record<string, Markings>, languageCode: string}> = ({markingIds, markingsDict, languageCode}) => {
+const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boolean, markingIds: string[], markingsDict: Record<string, Markings>, languageCode: string}> = ({markingIds, markingsDict, languageCode, showOnlyMarkingExternalIdentifier}) => {
 	const textColor = useTextContrastColor()
 
 	let renderedMarkings: any[] = [];
@@ -147,16 +161,22 @@ const MarkingNamesList: React.FC<{markingIds: string[], markingsDict: Record<str
 		const marking: Markings | undefined | null = markingsDict?.[markingId];
 		if (!!marking) {
 			const translated_name = getMarkingName(marking, languageCode);
-			renderedMarkings.push(<View style={{
-					borderRadius: 3,
-					borderColor: textColor,
-					borderWidth: 1,
-					padding: 2,
-				margin: 2
-				}}>
-				<Text>{translated_name}</Text>
-			</View>
-			)
+			const external_identifier = getMarkingExternalIdentifier(marking);
+
+			const usedText = showOnlyMarkingExternalIdentifier ? external_identifier : translated_name;
+
+			if(!!usedText){
+				renderedMarkings.push(<View style={{
+						borderRadius: BUTTON_DEFAULT_BorderRadius,
+						borderColor: textColor,
+						borderWidth: 1,
+						padding: BUTTON_DEFAULT_Padding,
+						margin: 3
+					}}>
+						<Text>{usedText}</Text>
+					</View>
+				)
+			}
 		}
 	}
 	return <View style={{
@@ -185,6 +205,8 @@ export default function FoodBigScreenScreen() {
 
 	const canteen_id = useCanteensIdFromLocalSearchParams()
 	const category = useFoodCategoryFromLocalSearchParams();
+	const showOnlyMarkingExternalIdentifier = useShowOnlyMarkingExternalIdentifierFromLocalSearchParams();
+
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 	const canteen = useSynchedCanteenById(canteen_id);
@@ -214,7 +236,15 @@ export default function FoodBigScreenScreen() {
 		if(!category){
 			return foodOffers;
 		}
-		return foodOffers.filter(offer => offer?.food?.category === category);
+		let filteredFoodOffers: Foodoffers[] = [];
+		for(let offer of foodOffers){
+			const food: Foods | undefined = offer?.food as Foods | undefined;
+			if(food?.category === category){
+				filteredFoodOffers.push(offer);
+			}
+		}
+
+		return filteredFoodOffers
 	}
 
 	const foodOffersForCategory = getFoodOffersForCategory(category);
@@ -334,6 +364,12 @@ export default function FoodBigScreenScreen() {
 							<Text style={{
 								width: '100%',
 								textAlign: 'right'
+							}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{category ? category+":" : ""}
+							</Text>
+							<Text style={{
+								width: '100%',
+								textAlign: 'right'
 							}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
 								{foodName}
 							</Text>
@@ -378,7 +414,7 @@ export default function FoodBigScreenScreen() {
 							alignItems: 'flex-end',
 							//backgroundColor: "blue"
 						}}>
-							<MarkingNamesList markingIds={markingsIds} markingsDict={markingsDict} languageCode={languageCode} />
+							<MarkingInformationList markingIds={markingsIds} showOnlyMarkingExternalIdentifier={showOnlyMarkingExternalIdentifier} markingsDict={markingsDict} languageCode={languageCode} />
 						</View>
 					</View>
 				</View>

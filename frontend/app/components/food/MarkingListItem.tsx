@@ -24,8 +24,9 @@ export function getMarkingName(marking: Markings, languageCode: string): string 
 	const translations = marking.translations as TranslationEntry[]
 	let name = getDirectusTranslation(languageCode, translations, 'name') || marking.alias || marking.id;
 	let finalName = name
-	if(marking.external_identifier){
-		finalName +=  " (" + marking.external_identifier + ")";
+	const external_identifier = getMarkingExternalIdentifier(marking);
+	if(!!external_identifier){
+		finalName +=  " (" + external_identifier + ")";
 	}
 	return finalName;
 }
