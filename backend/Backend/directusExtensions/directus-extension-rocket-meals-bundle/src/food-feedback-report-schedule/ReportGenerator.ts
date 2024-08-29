@@ -11,6 +11,7 @@ import {
 import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {Filter} from "@directus/types/dist/filter";
+import {ReportSchedule} from "./ReportSchedule";
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -31,7 +32,7 @@ export type ReportFoodEntryType = {
 }
 
 export type ReportType = {
-    canteen_name: string,
+    canteen_alias: string,
     dateHumanReadable: string,
     report_feedback_period_days: number | null | undefined,
     foods: ReportFoodEntryType[],
@@ -79,11 +80,11 @@ export class ReportGenerator {
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
         //console.log("Generate report for date: "+dateHumanReadable);
 
-        let canteenNames = canteenEntries.map(canteenEntry => canteenEntry?.alias || canteenEntry.id);
-        const combinedCanteenName = canteenNames.join(", ");
+        let canteen_alias_list = ReportSchedule.getCanteenAliasList(canteenEntries);
+        const canteen_alias = canteen_alias_list.join(", ");
 
         let report: ReportType = {
-            canteen_name: combinedCanteenName,
+            canteen_alias: canteen_alias,
             report_feedback_period_days: report_feedback_period_days,
             dateHumanReadable: dateHumanReadable,
             foods: []

@@ -153,17 +153,41 @@ export class ReportSchedule {
         return await canteenService.readMany(canteen_primary_keys);
     }
 
-    async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntry: Canteens, toMail: string){
+    static getCanteenAliasList(canteenEntries: Canteens[]){
+        let canteen_alias_list = [];
+        for(let canteen of canteenEntries){
+            if(canteen.alias){
+                canteen_alias_list.push(canteen.alias);
+            }
+        }
+        return canteen_alias_list;
+    }
+
+    private getCanteenAliasForMail(canteenEntries: Canteens[]){
+        let canteen_alias_list = ReportSchedule.getCanteenAliasList(canteenEntries);
+        const previewAmount = 3;
+        let canteen_alias = "";
+        if(canteen_alias_list.length > previewAmount){
+            canteen_alias_list = canteen_alias_list.slice(0, previewAmount);
+            canteen_alias += ": " + canteen_alias_list.join(", ") + " ...";
+        } else {
+            canteen_alias += ": " + canteen_alias_list.join(", ");
+        }
+
+        return canteenEntries.length +" Mensen ("+canteen_alias+")";
+    }
+
+    async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntries: Canteens[], toMail: string){
         let {MailService} = this.apiContext.services;
         const getSchema = this.apiContext.getSchema;
         const database = this.apiContext.database;
         const schema = await getSchema();
 
-        let canteen_alias = canteenEntry?.alias;
+        let canteen_alias = this.getCanteenAliasForMail(canteenEntries);
 
         let dateHumanReadable = DateHelper.getHumanReadableDate(generateReportForDate, true);
 
-        let subject = "Mensa Report - für: "+dateHumanReadable+" "+canteen_alias;
+        let subject = "Mensa Report - für: "+dateHumanReadable+" - "+canteen_alias;
 
         let mailService = new MailService({
             accountability: null, //this makes us admin
