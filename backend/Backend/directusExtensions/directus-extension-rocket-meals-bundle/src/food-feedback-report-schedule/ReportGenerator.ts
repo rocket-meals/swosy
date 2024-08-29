@@ -12,6 +12,7 @@ import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {Filter} from "@directus/types/dist/filter";
 import {ReportSchedule} from "./ReportSchedule";
+import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -126,7 +127,8 @@ export class ReportGenerator {
                 let file_id = food?.image;
                 let publicUrl = process.env.PUBLIC_URL;
                 if(publicUrl){
-                    image_url = publicUrl+'/assets/'+file_id
+                    //image_url = publicUrl+'/assets/'+file_id
+                    image_url = AssetHelperDirectusBackend.getAssetImageURL(file_id, AssetHelperTransformOptions.SMALL_IMAGE_TRANSFORM);
                 }
             }
             if(food?.image_remote_url){
