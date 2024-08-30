@@ -15,6 +15,7 @@ import {ApiContext} from "../helpers/ApiContext";
 import {FoodTL1Parser_RawReportTestReaderHannover} from "./FoodTL1Parser_RawReportTestReaderHannover";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
+import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -36,7 +37,7 @@ function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new FoodTL1Parser(ftpFileReader);
+            return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(ftpFileReader));
         case "TL1WEB":
             /* TL1 URL */
             const FOOD_SYNC_TL1WEB_EXPORT_URL = env.FOOD_SYNC_TL1WEB_EXPORT_URL;
@@ -48,11 +49,11 @@ function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from URL: " + FOOD_SYNC_TL1WEB_EXPORT_URL);
             const urlReader = new FoodTL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new FoodTL1Parser(urlReader);
+            return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(urlReader));
         case "SWOSY_API":
             const FOOD_SYNC_SWOSY_API_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
             if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
-                return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7);
+                return new FoodParserWithCustomerAdaptions(new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7));
             } else {
                 console.log(SCHEDULE_NAME + ": no URL configured for SWOSY_API, please set the environment variable FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
             }

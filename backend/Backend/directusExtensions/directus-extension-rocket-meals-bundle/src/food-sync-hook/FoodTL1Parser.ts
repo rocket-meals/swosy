@@ -13,6 +13,7 @@ import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportI
 import {LanguageCodes, TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {PriceGroupEnum} from "./PriceGroupEnum";
 import {DictHelper} from "../helpers/DictHelper";
+import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 
 
 type FoodofferIdentifierType = string
@@ -69,6 +70,14 @@ export class FoodTL1Parser implements FoodParserInterface {
 
         let rawReport = await this.rawFoodofferReader.getRawReport();
         this.rawFoodoffersJSONList = await FoodTL1Parser.getRawFoodofferJSONListFromRawReport(rawReport);
+    }
+
+    private filterFoodForCustomer(food: FoodsInformationTypeForParser): FoodsInformationTypeForParser {
+        switch (EnvVariableHelper.getSyncForCustomer()) {
+            case SyncForCustomerEnum.TEST:
+        }
+
+        return food;
     }
 
     async getFoodsListForParser(){
