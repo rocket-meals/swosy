@@ -72,14 +72,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         this.rawFoodoffersJSONList = await FoodTL1Parser.getRawFoodofferJSONListFromRawReport(rawReport);
     }
 
-    private filterFoodForCustomer(food: FoodsInformationTypeForParser): FoodsInformationTypeForParser {
-        switch (EnvVariableHelper.getSyncForCustomer()) {
-            case SyncForCustomerEnum.TEST:
-        }
-
-        return food;
-    }
-
     async getFoodsListForParser(){
         let foodIdToRawFoodofferDict = FoodTL1Parser.getFoodIdToRawFoodofferDict(this.rawFoodoffersJSONList);
         let foodIds = Object.keys(foodIdToRawFoodofferDict);

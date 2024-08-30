@@ -52,6 +52,13 @@ export class ItemsServiceHelper{
         return itemsService.createOne(create);
     }
 
+    static async createManyItemsWithApiContext<T>(apiContext: ApiContext, tablename: string, create: Partial<T>[]){
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        create = create.map(ItemsServiceHelper.setStatusPublished);
+        return itemsService.createMany(create);
+    }
+
     static async readOneItemWithApiContext<T>(apiContext: ApiContext, tablename: string, primary_key: PrimaryKey){
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
