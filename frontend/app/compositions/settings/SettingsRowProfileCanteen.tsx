@@ -9,6 +9,7 @@ import {
 import {IconNames} from '@/constants/IconNames';
 import {useIsFoodsEnabled} from '@/states/SynchedAppSettings';
 import { Canteens } from '@/helper/database/databaseTypes/types';
+import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 
 interface AppState {
 
@@ -47,9 +48,7 @@ export const SettingsRowProfileCanteen: FunctionComponent<AppState> = ({...props
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
 	const isFoodsEnabled = useIsFoodsEnabled();
 
-	const canteenId = profileCanteen?.id;
-	const canteenIdAsString = canteenId ? canteenId+'' : undefined;
-	const labelRight: string | undefined = profileCanteen?.alias || canteenIdAsString || undefined;
+	const labelRight: string | undefined = !!profileCanteen ? getCanteenName(profileCanteen) : undefined;
 
 	const onPress = useShowMyCanteenSelectionModal();
 

@@ -1,5 +1,5 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
@@ -69,7 +69,7 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 	paramsRaw.push(paramForKioskMode)
 
 	let params = paramsRaw.join("&")
-	return `/(app)/foodoffers/bigscreen/details/?${params}` as ExpoRouter.Href;
+	return `/(app)/foodoffers/monitor/bigscreen/details/?${params}` as ExpoRouter.Href;
 }
 
 export function useFoodCategoryFromLocalSearchParams() {
@@ -111,7 +111,7 @@ const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boole
 	for(let markingId of markingIds) {
 		const marking: Markings | undefined | null = markingsDict?.[markingId];
 		if (!!marking) {
-			const translated_name = getMarkingName(marking, languageCode);
+			const translated_name = getMarkingName(marking, languageCode, false);
 			const external_identifier = getMarkingExternalIdentifier(marking);
 
 			const usedText = showOnlyMarkingExternalIdentifier ? external_identifier : translated_name;

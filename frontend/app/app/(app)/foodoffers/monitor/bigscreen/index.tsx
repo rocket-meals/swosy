@@ -11,12 +11,12 @@ import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {Text, View} from "@/components/Themed";
 import {useIsDebug} from "@/states/Debug";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
-import {getRouteToFoodBigScreen} from "@/app/(app)/foodoffers/bigscreen/details";
+import {getRouteToFoodBigScreen} from "@/app/(app)/foodoffers/monitor/bigscreen/details";
 import {ExpoRouter} from "expo-router/types/expo-router";
 import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 import {SettingsRowBooleanSwitch} from "@/components/settings/SettingsRowBooleanSwitch";
 
-export default function FoodoffersDayplanScreenSettings() {
+export default function FoodBigScreenSettings() {
 
 	const isDebug = useIsDebug()
 	const isDemo = useIsDemo()
@@ -25,7 +25,7 @@ export default function FoodoffersDayplanScreenSettings() {
 	const canteenAlias = selectedCanteen?.alias || selectedCanteen?.id || undefined
 	const canteenId = selectedCanteen?.id || undefined
 
-	const [nextPageIntervalInSeconds, setNextPageIntervalInSeconds] = React.useState<number | null | undefined>(10);
+	const [nextFoodIntervalInSeconds, setNextFoodIntervalInSeconds] = React.useState<number | null | undefined>(10);
 	const [refreshFoodOffersIntervalInSeconds, setRefreshFoodOffersIntervalInSeconds] = React.useState<number | null | undefined>(5*60);
 
 	const [fullScreen, setFullScreen] = React.useState<boolean>(true);
@@ -48,7 +48,7 @@ export default function FoodoffersDayplanScreenSettings() {
 
 	let route: null | ExpoRouter.Href = null;
 	if(canteenId){
-		route = getRouteToFoodofferDayplanScreen(canteenId, foodCategory, nextPageIntervalInSeconds, fullScreen, showOnlyMarkingExternalIdentifier);
+		route = getRouteToFoodBigScreen(canteenId, foodCategory, nextFoodIntervalInSeconds, fullScreen, showOnlyMarkingExternalIdentifier);
 	}
 
 	async function loadAllFoodOffers(){
@@ -104,7 +104,7 @@ export default function FoodoffersDayplanScreenSettings() {
 			<SettingsRowGroup>
 				<SettingsRowCanteenSelection onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
 				{renderFoodCategorySelection()}
-				<SettingsRowNumberEdit value={nextPageIntervalInSeconds} labelRight={nextPageIntervalInSeconds?.toString()} onSave={(value) => setNextPageIntervalInSeconds(value)} accessibilityLabel={"Next Food Interval"} labelLeft={"Next Food Interval"} />
+				<SettingsRowNumberEdit value={nextFoodIntervalInSeconds} labelRight={nextFoodIntervalInSeconds?.toString()} onSave={(value) => setNextFoodIntervalInSeconds(value)} accessibilityLabel={"Next Food Interval"} labelLeft={"Next Food Interval"} />
 				<SettingsRowNumberEdit value={refreshFoodOffersIntervalInSeconds} labelRight={refreshFoodOffersIntervalInSeconds?.toString()} onSave={(value) => setRefreshFoodOffersIntervalInSeconds(value)} accessibilityLabel={"Refresh Food Offers Interval"} labelLeft={"Refresh Food Offers Interval"} />
 				<SettingsRowBooleanSwitch value={showOnlyMarkingExternalIdentifier} labelLeft={"Show Only Marking External Identifier"} accessibilityLabel={"Show Only Marking External Identifier"} onPress={(nextValue: boolean) => setShowOnlyMarkingExternalIdentifier(nextValue)} />
 				<SettingsRowBooleanSwitch value={fullScreen} labelLeft={"Full Screen"} accessibilityLabel={"Full Screen"} onPress={(nextValue: boolean) => setFullScreen(nextValue)} />

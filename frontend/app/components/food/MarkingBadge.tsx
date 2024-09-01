@@ -78,7 +78,8 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 	}
 
 
-	const translated_name = getMarkingName(marking, languageCode);
+	const withoutExternalIdentifier = false;
+	const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 	const marking_translations = marking?.translations as TranslationEntry[]
 	const translated_description = getDirectusTranslation(languageCode, marking_translations, "description");
 

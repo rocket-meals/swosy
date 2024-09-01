@@ -226,7 +226,16 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
-				routeName: 'foodoffers/bigscreen/details/index',
+				routeName: 'foodoffers/monitor/bigscreen/details/index',
+				title: "",
+				label: "",
+				getHeader: null,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'foodoffers/monitor/dayplan/details/index',
 				title: "",
 				label: "",
 				getHeader: null,
