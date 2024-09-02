@@ -25,6 +25,9 @@
         - `appleId`
         - `ascAppId`
         - `appleTeamId`
+- Make sure the folder ```public``` contains a ```.nojekyll``` file (https://docs.expo.dev/distribution/publishing-websites/#github-pages Step 4)
+  - ```Because Expo uses underscores in generated files, you need to disable jekyll by creating a .nojekyll file in the public directory.```
+  - ```mkdir public && touch public/.nojekyll```
 - Enable Github Pages
   - Set the homepage in `package.json`: `"homepage"`: `"/rocket-meals"` to specify the sub-path
   - After the first deployment, set the to be hosted by branch gh-pages

@@ -1,4 +1,4 @@
-name: Expo Build Native
+name: Expo Build Android Preview
 on:
   workflow_dispatch: # Allow manual triggering
 
@@ -35,15 +35,5 @@ jobs:
       - name: 📦 Install dependencies
         run: cd ./frontend/app && npm ci
 
-      - name: 🚀 Build app - all platforms
-        run: cd ./frontend/app && eas build --platform all --non-interactive
-
-      - name: 📤 Submit iOS build
-        run: cd ./frontend/app && eas submit --platform ios --non-interactive --latest
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      - name: 📤 Submit Android build
-        run: cd ./frontend/app && eas submit --platform android --non-interactive --latest
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: 🚀 Build Android app - previewApk
+        run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
