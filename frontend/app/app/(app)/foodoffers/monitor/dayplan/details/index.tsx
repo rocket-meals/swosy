@@ -12,7 +12,7 @@ import {
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -32,7 +32,7 @@ import {MarkingList} from "@/components/food/MarkingList";
 import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {ListRenderItemInfo} from "react-native";
+import {ListRenderItemInfo, ScrollView} from "react-native";
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
@@ -103,6 +103,8 @@ export default function FoodDayPlanScreen() {
 	const canteen_id = useCanteensIdFromLocalSearchParams()
 
 	const nextPageIntervalInSeconds = useNextPageIntervalInSecondsFromLocalSearchParams() || 10;
+	const [reloadNumberForPage, setReloadNumberForPage] = useState(0);
+
 	const refreshDataIntervalInSeconds = useRefreshDataIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 	const canteen = useSynchedCanteenById(canteen_id);
 	const canteen_name = getCanteenName(canteen);
@@ -110,6 +112,69 @@ export default function FoodDayPlanScreen() {
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
 
 	const [layout, setLayout] = useState({width: 0, height: 0});
+
+	const scrollViewRef = useRef(null);
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const [visibleItems, setVisibleItems] = useState([]);
+	const [itemHeights, setItemHeights] = useState([]);
+
+
+	// Calculate visible items count
+	const calculateVisibleItemsCount = () => {
+		if (itemHeights.length === 0 || layout.height === 0) return 1;
+		const totalHeight = layout.height;
+		let sumHeight = 0;
+		let count = 0;
+
+		for (let i = 0; i < itemHeights.length; i++) {
+			sumHeight += itemHeights[i];
+			if (sumHeight > totalHeight) break;
+			count++;
+		}
+
+		return count;
+	};
+
+	const visibleCount = calculateVisibleItemsCount();
+
+
+	// Auto-Scroll functionality
+	useEffect(() => {
+		const interval = setInterval(() => {
+			const visibleCount = calculateVisibleItemsCount();
+			if (visibleCount > 0 && currentIndex < foodOffers.length) {
+				// Scroll to the next set of visible items
+				if (scrollViewRef.current) {
+					const nextIndex = currentIndex + visibleCount;
+					const nextPosition = visibleItems[nextIndex] || 0;
+					scrollViewRef.current.scrollTo({ y: nextPosition, animated: true });
+					setCurrentIndex((prev) => (nextIndex >= foodOffers.length ? 0 : nextIndex));
+				}
+			}
+			setReloadNumberForPage((prev) => prev + 1);
+		}, nextPageIntervalInSeconds * 1000);
+
+		return () => clearInterval(interval);
+	}, [visibleItems, currentIndex, nextPageIntervalInSeconds, itemHeights, layout]);
+
+	// Function to handle layout of food offers
+	const onFoodOfferLayout = useCallback(
+		(event, index) => {
+			const { y, height } = event.nativeEvent.layout;
+			setVisibleItems((prev) => {
+				const newItems = [...prev];
+				newItems[index] = y;
+				return newItems;
+			});
+			setItemHeights((prev) => {
+				const newHeights = [...prev];
+				newHeights[index] = height;
+				return newHeights;
+			});
+		},
+		[setVisibleItems, setItemHeights]
+	);
+
 
 	const isDemo = useIsDemo();
 
@@ -122,7 +187,11 @@ export default function FoodDayPlanScreen() {
 			const date = new Date();
 			setFoodOfferDateHumanReadable(DateHelper.formatOfferDateToReadable(date, true));
 			let offers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			setFoodOffers(offers);
+			let extraLongList = []
+			for(let i=0; i<10; i++){
+				extraLongList.push(...offers)
+			}
+			setFoodOffers(extraLongList);
 		}
 		setLoading(false);
 	}
@@ -258,36 +327,50 @@ export default function FoodDayPlanScreen() {
 		)
 	}
 
-	function renderFoodOffer(foodOffer: Foodoffers, index: number){
+	// Render individual food offers
+	const renderFoodOffer = (foodOffer, index) => {
 		let backgroundColor = index % 2 === 0 ? lightContrastColor : viewBackgroundColor;
-
-
-
 		return (
-			<View style={{
-				width: '100%',
-				backgroundColor: backgroundColor
-			}}>
-
+			<View
+				key={index}
+				style={{
+					width: "100%",
+					height: 100,
+					backgroundColor,
+				}}
+				onLayout={(event) => onFoodOfferLayout(event, index)}
+			>
+				{/* Render FoodOffer content here */}
+				<Text>{`Food Offer ${index + 1}`+foodOffer.alias}</Text> {/* Placeholder content */}
 			</View>
-		)
-	}
+		);
+	};
 
-	function renderPaginatedFoodoffers(){
-		let renderedFoodOffers: JSX.Element[] = [];
-		for(let i=0; i<foodOffers.length; i++){
-			renderedFoodOffers.push(renderFoodOffer(foodOffers[i], i));
-		}
-		return renderedFoodOffers;
+	function renderPaginatedFoodoffers() {
+		return (
+			<ScrollView
+				ref={scrollViewRef}
+				onLayout={(event) => {
+					const {width, height} = event.nativeEvent.layout;
+					setLayout({width, height});
+				}}
+				style={{
+					overflow: "hidden",
+					backgroundColor: "red",
+				}}
+				onContentSizeChange={(contentWidth, contentHeight) => {
+					if (contentHeight <= layout.height) {
+						// No need to scroll if content fits within the view
+						setCurrentIndex(0);
+					}
+				}}
+			>
+				{foodOffers.map((offer, index) => renderFoodOffer(offer, index))}
+			</ScrollView>
+		);
 	}
 
 	function renderContent(){
-		let {width, height} = layout;
-		if(!width || !height){
-			return <Text>Loading...</Text>
-		}
-
-
 		const renderedMarkings = [];
 		for (let i = 0; i < sortedMarkingsList.length; i++) {
 			const marking = sortedMarkingsList[i];
@@ -325,17 +408,32 @@ export default function FoodDayPlanScreen() {
 				width: '100%',
 				height: 2,
 			}}>
-				<MyProgressbar duration={nextPageIntervalInSeconds} color={foodAreaColor} />
+				<MyProgressbar key={""+reloadNumberForPage} duration={nextPageIntervalInSeconds} color={foodAreaColor} />
+			</View>
+			<View>
+				<Text>
+					{"totalHeight: "+layout.height}
+				</Text>
+				<Text>
+					{"visibleItems: "+visibleItems.length}
+				</Text>
+				<Text>
+					{"visibleCount: "+visibleCount}
+				</Text>
 			</View>
 			<View style={{
 				flex: 1,
 				width: '100%',
-				backgroundColor: "green"
+				backgroundColor: "green",
+				overflow: "hidden",
 			}}>
 				{renderPaginatedFoodoffers()}
 			</View>
 			<View style={{
 				width: '100%',
+				opacity: 0.5,
+				borderWidth: 3,
+				borderColor: "black",
 				padding: 10,
 			}}>
 				{renderMyGridList({
@@ -357,10 +455,7 @@ export default function FoodDayPlanScreen() {
 		<View style={{
 			width: '100%',
 			height: '100%',
-		}} onLayout={(event) => {
-			const {width, height} = event.nativeEvent.layout;
-			setLayout({width, height});
-		}}>
+		}} >
 			{renderContent()}
 		</View>
 	</MySafeAreaView>
