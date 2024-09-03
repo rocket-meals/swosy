@@ -32,7 +32,29 @@ export type FoodInformationListProps = {
   	data: CommonFieldsOfFoodAndFoodoffers,
 }
 
+export function foodInformationValueFound(value: string | number | null | undefined ): boolean {
+	return value !== null && value !== undefined && value !== "";
+}
 
+
+
+export function formatFoodInformationElementValue(value:  string | number | null | undefined, unit: string | null | undefined ): string {
+	let valueWithUnit = "";
+	const valueDataFound = foodInformationValueFound(value);
+	if (valueDataFound) {
+		if(typeof value === "number") {
+			valueWithUnit = NumberHelper.formatNumber(value, unit, false, ",", ".", 1);
+		} else {
+			// value is found but not a number but a string
+			// @ts-ignore
+			valueWithUnit = ""+value.toString()
+			if(unit !== null && unit !== undefined){
+				valueWithUnit += StringHelper.NONBREAKING_SPACE+unit;
+			}
+		}
+	}
+	return valueWithUnit;
+}
 
 export function FoodInformationListElement(props: {renderedIcon: any, label: string, value?: number | string | null, unit?: string | null}) {
 	const translation_no_value = useTranslation(TranslationKeys.no_value);
@@ -41,18 +63,8 @@ export function FoodInformationListElement(props: {renderedIcon: any, label: str
 
 	const value = props.value;
 	const unit = props.unit;
-	let valueWithUnit = "";
-	const valueDataFound = value !== null && value !== undefined && value !== "";
-	if (valueDataFound) {
-		if(typeof value === "number") {
-			valueWithUnit = NumberHelper.formatNumber(value, unit, false, ",", ".", 1);
-		} else {
-			valueWithUnit = ""+value.toString()
-			if(unit !== null && unit !== undefined){
-				valueWithUnit += StringHelper.NONBREAKING_SPACE+unit;
-			}
-		}
-	}
+	let valueWithUnit = formatFoodInformationElementValue(value, unit);
+	const valueDataFound = foodInformationValueFound(value);
 
 	return (
 		<View style={{ flex: 1, flexDirection: 'row', paddingBottom: 12 }}>
@@ -73,6 +85,22 @@ export function FoodInformationListElement(props: {renderedIcon: any, label: str
 			</View>
 		</View>
 	);
+}
+
+export enum FoodInformationUnit {
+	CALORIES = "kcal",
+	CARBOHYDRATES = "g",
+	FIBER = "g",
+	PROTEIN = "g",
+	SALT = "g",
+	FAT = "g",
+	SUGAR = "g",
+	SATURATED_FAT = "g",
+	CO2 = "g"
+}
+
+export function formatFoodInformationValueCalories(value: number | null | undefined): string {
+	return formatFoodInformationElementValue(value, FoodInformationUnit.CALORIES);
 }
 
 export function FoodDataList(props: FoodInformationListProps) {
@@ -112,21 +140,21 @@ export function FoodDataList(props: FoodInformationListProps) {
     key: string;
     data: {icon: string, label: string, value?: number | null, unit?: string}
   }[] = [
-  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.data.calories_kcal, unit: "kcal"} },
-  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: "g"} },
-  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: "g"} },
-  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: "g"} },
-  	{ key: 'salt', data: {icon: IconNames.nutirtion_salt_icon, label: translation_salt, value: props.data.salt_g, unit: "g"} },
-  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: "g"} },
-  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: "g"} },
-  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: "g"} },
+  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, value: props.data.calories_kcal, unit: FoodInformationUnit.CALORIES} },
+  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: FoodInformationUnit.CARBOHYDRATES} },
+  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: FoodInformationUnit.FIBER} },
+  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: FoodInformationUnit.PROTEIN} },
+  	{ key: 'salt', data: {icon: IconNames.nutirtion_salt_icon, label: translation_salt, value: props.data.salt_g, unit: FoodInformationUnit.SALT} },
+  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: FoodInformationUnit.FAT} },
+  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: FoodInformationUnit.SUGAR} },
+  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: FoodInformationUnit.SATURATED_FAT} },
   ]
 
 	const data_environmental_impact: {
 		key: string;
 		data: {icon: string, label: string, value?: number | string | null, unit?: string}
 	}[] = [
-		{ key: 'environmental_impact_co2', data: {icon: IconNames.environmental_impact_co2_icon, label: translation_environmental_impact_co2, value: props.data.co2_g, unit: "g"} },
+		{ key: 'environmental_impact_co2', data: {icon: IconNames.environmental_impact_co2_icon, label: translation_environmental_impact_co2, value: props.data.co2_g, unit: FoodInformationUnit.CO2} },
 	]
 
 	const amountColumns = props.columnAmount || 2;

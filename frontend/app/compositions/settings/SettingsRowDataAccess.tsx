@@ -1,15 +1,9 @@
 import React, {FunctionComponent} from 'react';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {IconNames} from '@/constants/IconNames';
-import {Weekday} from '@/helper/date/DateHelper';
-import {PriceGroups, useAccountBalance, useProfilePriceGroup} from '@/states/SynchedProfile';
-import {View} from '@/components/Themed';
-import {AnimationPriceGroup} from "@/compositions/animations/AnimationPriceGroup";
+import {useAccountBalance} from '@/states/SynchedProfile';
 import {SettingsRow} from "@/components/settings/SettingsRow";
-import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
-import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {useIsAccountBalanceEnabled} from "@/states/SynchedAppSettings";
-import {formatPrice} from "@/components/pricing/PricingBadge";
 import {useRouter} from "expo-router";
 
 
