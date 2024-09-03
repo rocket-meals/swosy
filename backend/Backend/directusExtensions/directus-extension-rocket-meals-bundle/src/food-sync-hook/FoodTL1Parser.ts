@@ -454,7 +454,7 @@ export class FoodTL1Parser implements FoodParserInterface {
 
             nutritionValuesJSON.protein_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Eiweiß");
 
-            nutritionValuesJSON.sodium_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Salz");
+            nutritionValuesJSON.salt_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Salz");
         }
         return nutritionValuesJSON;
     }

@@ -83,7 +83,7 @@ export function FoodDataList(props: FoodInformationListProps) {
 		translation_carbohydrate,
 		translation_fiber,
 		translation_sugar,
-		translation_sodium,
+		translation_salt,
 		translation_saturated_fat,
 	] = useTranslations([
 		TranslationKeys.nutrition_calories,
@@ -92,7 +92,7 @@ export function FoodDataList(props: FoodInformationListProps) {
 		TranslationKeys.nutrition_carbohydrate,
 		TranslationKeys.nutrition_fiber,
 		TranslationKeys.nutrition_sugar,
-		TranslationKeys.nutrition_sodium,
+		TranslationKeys.nutrition_salt,
 		TranslationKeys.nutrition_saturated_fat
 	])
 	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
@@ -116,7 +116,7 @@ export function FoodDataList(props: FoodInformationListProps) {
   	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, value: props.data.carbohydrate_g, unit: "g"} },
   	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, value: props.data.fiber_g, unit: "g"} },
   	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, value: props.data.protein_g, unit: "g"} },
-  	{ key: 'sodium', data: {icon: IconNames.nutirtion_sodium_icon, label: translation_sodium, value: props.data.sodium_g, unit: "g"} },
+  	{ key: 'salt', data: {icon: IconNames.nutirtion_salt_icon, label: translation_salt, value: props.data.salt_g, unit: "g"} },
   	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, value: props.data.fat_g, unit: "g"} },
   	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, value: props.data.sugar_g, unit: "g"} },
   	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, value: props.data.saturated_fat_g, unit: "g"} },

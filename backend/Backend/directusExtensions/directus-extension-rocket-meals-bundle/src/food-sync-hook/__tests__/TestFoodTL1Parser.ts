@@ -42,7 +42,7 @@ describe("FoodTL1Parser Test", () => {
         expect(parsedNutritionValues?.sugar_g).toBe(18.8);
         expect(parsedNutritionValues?.fiber_g).toBe(0);
         expect(parsedNutritionValues?.protein_g).toBe(12.8);
-        expect(parsedNutritionValues?.sodium_g).toBe(0.1);
+        expect(parsedNutritionValues?.salt_g).toBe(0.1);
 
     });
 

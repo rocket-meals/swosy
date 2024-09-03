@@ -230,7 +230,7 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
                 sugar_g: this.parseFloatWithOneDecimal?.(food["sugarInGrams"]),
                 fiber_g: fiber_g,
                 protein_g: protein_g,
-                sodium_g: this.parseFloatWithOneDecimal?.(food["saltInGrams"]),
+                salt_g: this.parseFloatWithOneDecimal?.(food["saltInGrams"]),
             };
     }
 

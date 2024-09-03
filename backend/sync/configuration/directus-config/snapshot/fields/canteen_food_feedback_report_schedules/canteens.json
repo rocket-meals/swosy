@@ -7,7 +7,7 @@
     "conditions": null,
     "display": "related-values",
     "display_options": {
-      "template": "{{canteens_id.alias}} ({{id}})"
+      "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
     },
     "field": "canteens",
     "group": null,
@@ -15,7 +15,7 @@
     "interface": "list-m2m",
     "note": null,
     "options": {
-      "template": "{{canteens_id.alias}} ({{id}})"
+      "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
     },
     "readonly": false,
     "required": false,

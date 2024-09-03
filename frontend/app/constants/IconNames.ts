@@ -98,7 +98,7 @@ export class IconNames {
     static nutrition_fiber_icon = 'leaf'
     static nutrition_protein_icon = 'fish'
     static nutrition_saturated_fat_icon = 'water-circle'
-    static nutirtion_sodium_icon = 'grain'
+    static nutirtion_salt_icon = 'grain'
     static nutrition_sugar_icon = 'cupcake'
 
     static environmental_impact_icon = 'earth'

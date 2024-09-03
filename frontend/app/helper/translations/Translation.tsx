@@ -199,6 +199,7 @@ export enum TranslationKeys {
 	device_ios_system = "device_ios_system",
 	device_web_system = "device_web_system",
 	support = "support",
+	price = "price",
 	price_group = "price_group",
 	price_group_student = "price_group_student",
 	price_group_employee = "price_group_employee",
@@ -261,7 +262,7 @@ export enum TranslationKeys {
 	nutrition_carbohydrate = "nutrition_carbohydrate",
 	nutrition_fiber = "nutrition_fiber",
 	nutrition_sugar = "nutrition_sugar",
-	nutrition_sodium = "nutrition_sodium",
+	nutrition_salt = "nutrition_salt",
 	nutrition_saturated_fat = "nutrition_saturated_fat",
 	environmental_impact_co2 = "environmental_impact_co2",
 	environmental_impact_co2_saving_percentage = "environmental_impact_co2_saving_percentage",
@@ -288,6 +289,8 @@ export enum TranslationKeys {
 	course_timetable = "course_timetable",
 	eating_habits = "eating_habits",
 	markings = "markings",
+	category = "category",
+	foodname = "foodname",
 	forecast = "forecast",
 	utilization = "utilization",
 	opens_at = "opens_at",
@@ -1342,6 +1345,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Destek',
 		[LanguageKeys.zh_CN]: '支持'
 	},
+	price: {
+		[LanguageKeys.de_DE]: 'Preis',
+		[LanguageKeys.en_US]: 'Price',
+		[LanguageKeys.ar_SA]: 'السعر',
+		[LanguageKeys.es_ES]: 'Precio',
+		[LanguageKeys.fr_FR]: 'Prix',
+		[LanguageKeys.ru_RU]: 'Цена',
+		[LanguageKeys.tr_TR]: 'Fiyat',
+		[LanguageKeys.zh_CN]: '价格'
+	},
 	price_group: {
 		[LanguageKeys.de_DE]: 'Preisgruppe',
 		[LanguageKeys.en_US]: 'Price Group',
@@ -1952,15 +1965,15 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Şeker',
 		[LanguageKeys.zh_CN]: '糖'
 	},
-	nutrition_sodium: {
-		[LanguageKeys.de_DE]: 'Natrium',
-		[LanguageKeys.en_US]: 'Sodium',
-		[LanguageKeys.ar_SA]: 'صوديوم',
-		[LanguageKeys.es_ES]: 'Sodio',
-		[LanguageKeys.fr_FR]: 'Sodium',
-		[LanguageKeys.ru_RU]: 'Натрий',
-		[LanguageKeys.tr_TR]: 'Sodyum',
-		[LanguageKeys.zh_CN]: '钠'
+	nutrition_salt: {
+		[LanguageKeys.de_DE]: 'Salz',
+		[LanguageKeys.en_US]: 'Salt',
+		[LanguageKeys.ar_SA]: 'ملح',
+		[LanguageKeys.es_ES]: 'Sal',
+		[LanguageKeys.fr_FR]: 'Sel',
+		[LanguageKeys.ru_RU]: 'Соль',
+		[LanguageKeys.tr_TR]: 'Tuz',
+		[LanguageKeys.zh_CN]: '盐'
 	},
 	nutrition_saturated_fat: {
 		[LanguageKeys.de_DE]: 'Gesättigte Fettsäuren',
@@ -2221,6 +2234,26 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Метки',
 		[LanguageKeys.tr_TR]: 'Etiketler',
 		[LanguageKeys.zh_CN]: '标签'
+	},
+	category: {
+		[LanguageKeys.de_DE]: 'Kategorie',
+		[LanguageKeys.en_US]: 'Category',
+		[LanguageKeys.ar_SA]: 'الفئة',
+		[LanguageKeys.es_ES]: 'Categoría',
+		[LanguageKeys.fr_FR]: 'Catégorie',
+		[LanguageKeys.ru_RU]: 'Категория',
+		[LanguageKeys.tr_TR]: 'Kategori',
+		[LanguageKeys.zh_CN]: '类别'
+	},
+	foodname: {
+		[LanguageKeys.de_DE]: 'Name',
+		[LanguageKeys.en_US]: 'Name',
+		[LanguageKeys.ar_SA]: 'اسم',
+		[LanguageKeys.es_ES]: 'Nombre',
+		[LanguageKeys.fr_FR]: 'Nom',
+		[LanguageKeys.ru_RU]: 'Имя',
+		[LanguageKeys.tr_TR]: 'Ad',
+		[LanguageKeys.zh_CN]: '名称'
 	},
 	forecast: {
 		[LanguageKeys.de_DE]: 'Vorhersage',

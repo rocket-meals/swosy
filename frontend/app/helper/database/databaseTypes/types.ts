@@ -728,8 +728,8 @@ export type Foodoffers = {
   price_student?: number | null;
   prices: string;
   protein_g?: number | null;
+  salt_g?: number | null;
   saturated_fat_g?: number | null;
-  sodium_g?: number | null;
   sort?: number | null;
   status?: string | null;
   sugar_g?: number | null;
@@ -771,8 +771,8 @@ export type Foods = {
   rating_average_legacy?: number | null;
   rating_legacy_settings: string;
   rating_settings: string;
+  salt_g?: number | null;
   saturated_fat_g?: number | null;
-  sodium_g?: number | null;
   sort?: number | null;
   status?: string | null;
   sugar_g?: number | null;

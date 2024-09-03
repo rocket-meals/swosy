@@ -1,13 +1,13 @@
 {
   "collection": "foods",
-  "field": "sodium_g",
+  "field": "salt_g",
   "type": "float",
   "meta": {
     "collection": "foods",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "sodium_g",
+    "field": "salt_g",
     "group": "nutrition",
     "hidden": false,
     "interface": "input",
@@ -23,7 +23,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "sodium_g",
+    "name": "salt_g",
     "table": "foods",
     "data_type": "real",
     "default_value": null,

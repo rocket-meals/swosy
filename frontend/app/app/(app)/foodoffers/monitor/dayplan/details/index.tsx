@@ -13,7 +13,7 @@ import {
 	View
 } from "@/components/Themed";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
@@ -28,12 +28,13 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
-import {MarkingList} from "@/components/food/MarkingList";
 import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
-import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {ListRenderItemInfo, ScrollView} from "react-native";
-import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
+import {ScrollView} from "react-native";
+import {BUTTON_DEFAULT_BorderRadius} from "@/components/buttons/MyButtonCustom";
+import {getFoodName} from "@/helper/food/FoodTranslation";
+import {formatPrice} from "@/components/pricing/PricingBadge";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -91,11 +92,26 @@ export default function FoodDayPlanScreen() {
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 
+	const translation_category = useTranslation(TranslationKeys.category)
+	const translation_foodname = useTranslation(TranslationKeys.foodname)
+	const translation_markings = useTranslation(TranslationKeys.markings)
+	const translation_kcal = useTranslation(TranslationKeys.nutrition_calories)
+	const translation_nutrition_fat = useTranslation(TranslationKeys.nutrition_fat)
+	const translation_nutrition_saturated_fat = useTranslation(TranslationKeys.nutrition_saturated_fat)
+	const translation_nutrition_nutrition_carbohydrate = useTranslation(TranslationKeys.nutrition_carbohydrate)
+	const translation_nutrition_sugar = useTranslation(TranslationKeys.nutrition_sugar)
+	const translation_nutrition_protein = useTranslation(TranslationKeys.nutrition_protein)
+	const translation_nutrition_salt = useTranslation(TranslationKeys.nutrition_salt)
+	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
+	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
+	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
+
 	const [reloadNumberForData, setReloadNumberForData] = useState(0);
 
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
-	const lightContrastColor = useLighterOrDarkerColorForSelection(viewContrastColor);
+	const viewBackgroundColorLighter = useLighterOrDarkerColorForSelection(viewBackgroundColor);
+	const viewBackgroundColorLighterContrast = useMyContrastColor(viewBackgroundColorLighter);
 
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
@@ -134,9 +150,6 @@ export default function FoodDayPlanScreen() {
 
 		return count;
 	};
-
-	const visibleCount = calculateVisibleItemsCount();
-
 
 	// Auto-Scroll functionality
 	useEffect(() => {
@@ -327,21 +340,197 @@ export default function FoodDayPlanScreen() {
 		)
 	}
 
+	function renderRowForFoodoffer({
+		textForCategoryColumn,
+		textForFoodnameColumn,
+		elementForMarkingsColumn,
+		textForKcalColumn,
+		textForFatAndSaturatedFatColumn,
+		textForCarbohydratesAndSugarColumn,
+		textForProteinColumn,
+		textForSaltColumn,
+		textForPriceColumn,
+		backgroundColor,
+		textColor,
+		textBold = false,
+		paddingVertical = 2,
+		paddingHorizontal = 2,
+								   }: {
+		textForCategoryColumn: string | null | undefined;
+		textForFoodnameColumn: string | null | undefined;
+		elementForMarkingsColumn: JSX.Element;
+		textForKcalColumn: string | null | undefined;
+		textForFatAndSaturatedFatColumn: string | null | undefined;
+		textForCarbohydratesAndSugarColumn: string | null | undefined;
+		textForProteinColumn: string | null | undefined;
+		textForSaltColumn: string | null | undefined;
+		textForPriceColumn: string | null | undefined;
+		backgroundColor: string | null | undefined;
+		textColor: string | null | undefined;
+		textBold?: boolean;
+		paddingVertical?: number;
+		paddingHorizontal?: number;
+	}) {
+		const designWidthFlex = 1792
+		const designWidthCategory = 172
+		const designWidthFoodname = 570
+		const designWidthMarkings = 450
+		const designWidthKcal = 100
+		const designWidthFatAndSaturatedFat = 100
+		const designWidthCarbohydratesAndSugar = 100
+		const designWidthProtein = 50
+		const designWidthSalt = 50
+		const designWidthPrice = 150
+
+		const textSize = TEXT_SIZE_EXTRA_SMALL;
+
+		return (
+			<View style={{
+				backgroundColor: backgroundColor,
+				width: '100%',
+				flexDirection: "row",
+				justifyContent: "flex-start",
+			}}>
+				<View style={{
+					flex: designWidthCategory,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold} style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForCategoryColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthFoodname,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForFoodnameColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthMarkings,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					{elementForMarkingsColumn}
+				</View>
+				<View style={{
+					flex: designWidthKcal,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForKcalColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthFatAndSaturatedFat,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForFatAndSaturatedFatColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthCarbohydratesAndSugar,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForCarbohydratesAndSugarColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthProtein,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForProteinColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthSalt,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForSaltColumn}
+					</Text>
+				</View>
+				<View style={{
+					flex: designWidthPrice,
+					paddingVertical: paddingVertical,
+					paddingHorizontal: paddingHorizontal,
+				}}>
+					<Text bold={textBold}  style={{
+						color: textColor,
+					}} size={textSize} >
+						{textForPriceColumn}
+					</Text>
+				</View>
+			</View>
+		)
+	}
+
 	// Render individual food offers
-	const renderFoodOffer = (foodOffer, index) => {
-		let backgroundColor = index % 2 === 0 ? lightContrastColor : viewBackgroundColor;
+	const renderFoodOffer = ({
+		foodOffer,
+		index,
+							 }: { foodOffer: Foodoffers; index: number }) => {
+
+		const isEven = index % 2 === 0;
+		let backgroundColor = isEven ? viewBackgroundColorLighter : viewBackgroundColor;
+		const textColor = isEven ? viewBackgroundColorLighterContrast : viewContrastColor;
+
+		const foodName = getFoodName(foodOffer.food, languageCode);
+		const food = foodOffer.food as Foods;
+
+		const priceText = formatPrice(foodOffer.price_student)+" / "+formatPrice(foodOffer.price_employee)+" / "+formatPrice(foodOffer.price_guest);
+
 		return (
 			<View
 				key={index}
 				style={{
 					width: "100%",
-					height: 100,
-					backgroundColor,
+					backgroundColor: backgroundColor,
 				}}
 				onLayout={(event) => onFoodOfferLayout(event, index)}
 			>
-				{/* Render FoodOffer content here */}
-				<Text>{`Food Offer ${index + 1}`+foodOffer.alias}</Text> {/* Placeholder content */}
+				{
+					renderRowForFoodoffer({
+						textForCategoryColumn: food.category,
+						textForFoodnameColumn: foodName,
+						elementForMarkingsColumn: <></>,
+						textForKcalColumn: foodOffer.calories_kcal+"",
+						textForFatAndSaturatedFatColumn: foodOffer.fat_g + "/" + foodOffer.saturated_fat_g,
+						textForCarbohydratesAndSugarColumn: foodOffer.carbohydrate_g + "/" + foodOffer.sugar_g,
+						textForProteinColumn: foodOffer.protein_g+"",
+						textForSaltColumn: foodOffer.salt_g+"",
+						textForPriceColumn: priceText,
+						backgroundColor: backgroundColor,
+						textColor: textColor,
+						paddingHorizontal: 7,
+						paddingVertical: 2
+					})
+				}
 			</View>
 		);
 	};
@@ -365,7 +554,10 @@ export default function FoodDayPlanScreen() {
 					}
 				}}
 			>
-				{foodOffers.map((offer, index) => renderFoodOffer(offer, index))}
+				{foodOffers.map((offer, index) => renderFoodOffer({
+					foodOffer: offer,
+					index: index
+				}))}
 			</ScrollView>
 		);
 	}
@@ -395,11 +587,13 @@ export default function FoodDayPlanScreen() {
 				</View>
 				<View style={{
 					flex: 1,
+					paddingHorizontal: 10,
+					paddingVertical: 10,
 				}}>
-					<Text size={TEXT_SIZE_3_EXTRA_LARGE}>
+					<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
 						{canteen_name}
 					</Text>
-					<Text>
+					<Text bold={true}>
 						{foodOfferDateHumanReadable}
 					</Text>
 				</View>
@@ -410,16 +604,28 @@ export default function FoodDayPlanScreen() {
 			}}>
 				<MyProgressbar key={""+reloadNumberForPage} duration={nextPageIntervalInSeconds} color={foodAreaColor} />
 			</View>
-			<View>
-				<Text>
-					{"totalHeight: "+layout.height}
-				</Text>
-				<Text>
-					{"visibleItems: "+visibleItems.length}
-				</Text>
-				<Text>
-					{"visibleCount: "+visibleCount}
-				</Text>
+			<View style={{
+				width: '100%',
+				backgroundColor: "blue",
+			}}>
+				{renderRowForFoodoffer({
+					textForCategoryColumn: translation_category,
+					textForFoodnameColumn: translation_foodname,
+					elementForMarkingsColumn: <Text bold={true} size={TEXT_SIZE_EXTRA_SMALL} style={{
+						color: foodAreaContrastColor,
+					}}>{translation_markings}</Text>,
+					textForKcalColumn: translation_kcal,
+					textForFatAndSaturatedFatColumn: translation_nutrition_fat + "/" + translation_nutrition_saturated_fat,
+					textForCarbohydratesAndSugarColumn: translation_nutrition_nutrition_carbohydrate + "/" + translation_nutrition_sugar,
+					textForProteinColumn: translation_nutrition_protein,
+					textForSaltColumn: translation_nutrition_salt,
+					textForPriceColumn: translation_price_group_student + " / " + translation_price_group_employee + " / " + translation_price_group_guest,
+					backgroundColor: foodAreaColor,
+					textColor: foodAreaContrastColor,
+					textBold: true,
+					paddingVertical: 7,
+					paddingHorizontal: 7,
+				})}
 			</View>
 			<View style={{
 				flex: 1,
@@ -431,9 +637,6 @@ export default function FoodDayPlanScreen() {
 			</View>
 			<View style={{
 				width: '100%',
-				opacity: 0.5,
-				borderWidth: 3,
-				borderColor: "black",
 				padding: 10,
 			}}>
 				{renderMyGridList({
