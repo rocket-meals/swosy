@@ -110,9 +110,11 @@ export function Icon({name, size, family, ...props}: IconProps) {
 	return <Text>{content}</Text>
 }
 
-export const TEXT_SIZE_DEFAULT = 'md';
-export const TEXT_SIZE_SMALL = "sm";
+
+export const TEXT_SIZE_2_EXTRA_SMALL = "2xs";
 export const TEXT_SIZE_EXTRA_SMALL = "xs";
+export const TEXT_SIZE_SMALL = "sm";
+export const TEXT_SIZE_DEFAULT = 'md';
 export const TEXT_SIZE_LARGE = "lg";
 export const TEXT_SIZE_EXTRA_LARGE = "xl";
 export const TEXT_SIZE_2_EXTRA_LARGE = "2xl";

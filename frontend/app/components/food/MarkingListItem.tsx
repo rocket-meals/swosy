@@ -1,12 +1,11 @@
-import {View, Text, Icon} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
-import {useProfileLanguageCode, useSynchedProfileMarking, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
-import React, {useEffect, useMemo} from 'react';
+import {useProfileLanguageCode, useSynchedProfileMarking} from '@/states/SynchedProfile';
+import React, {useMemo} from 'react';
 import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowTriStateLikeDislike';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import DirectusImage from "@/components/project/DirectusImage";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 
@@ -20,12 +19,12 @@ export default function MarkingListItem({ markingId }: { markingId: string }) {
 	return memoizedComponent;
 }
 
-export function getMarkingName(marking: Markings, languageCode: string): string {
+export function getMarkingName(marking: Markings, languageCode: string, withoutExternalIdentifier: boolean): string {
 	const translations = marking.translations as TranslationEntry[]
-	let name = getDirectusTranslation(languageCode, translations, 'name') || marking.alias || marking.id;
-	let finalName = name
+	const fallbackName = marking.alias || marking.id
+	let finalName = getDirectusTranslation(languageCode, translations, 'name', false, fallbackName)
 	const external_identifier = getMarkingExternalIdentifier(marking);
-	if(!!external_identifier){
+	if(!!external_identifier && !withoutExternalIdentifier){
 		finalName +=  " (" + external_identifier + ")";
 	}
 	return finalName;
@@ -33,6 +32,10 @@ export function getMarkingName(marking: Markings, languageCode: string): string 
 
 export function getMarkingExternalIdentifier(marking: Markings): string | null | undefined {
 	return marking.external_identifier;
+}
+
+export function getMarkingAlias(marking: Markings): string | null | undefined {
+	return marking.alias;
 }
 
 function MarkingListItemReal({ markingId }: { markingId: string}) {
@@ -54,8 +57,8 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			return null;
 		}
 
-		const translated_name = getMarkingName(marking, languageCode);
-		const text = translated_name || marking.alias || marking.id;
+		const withoutExternalIdentifier = false;
+		const text = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const accessibilityLabel = translation_marking+": "+text;
 
 		let iconLeftCustom = <DirectusImageOrIconComponent resource={marking} />

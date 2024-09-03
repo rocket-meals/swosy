@@ -11,7 +11,7 @@ import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
 import {Text, View} from "@/components/Themed";
 import {useIsDebug} from "@/states/Debug";
 import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
-import {getRouteToFoodBigScreen} from "@/app/(app)/foodoffers/bigscreen/details";
+import {getRouteToFoodBigScreen} from "@/app/(app)/foodoffers/monitor/bigscreen/details";
 import {ExpoRouter} from "expo-router/types/expo-router";
 import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 import {SettingsRowBooleanSwitch} from "@/components/settings/SettingsRowBooleanSwitch";

@@ -146,6 +146,7 @@ export enum TranslationKeys {
 	free_rooms = "free_rooms",
 	foodweekplan = "foodweekplan",
 	foodBigScreen = "foodBigScreen",
+	monitorDayPlan = "monitorDayPlan",
 	data_access_introduction = "data_access_introduction",
 	your_data_which_we_know_if_you_have_a_profile = "your_data_which_we_know_if_you_have_a_profile",
 	translation_all_on_device_saved_data = "translation_all_on_device_saved_data",
@@ -743,6 +744,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'План питания на неделю',
 		[LanguageKeys.tr_TR]: 'Yemek Haftası Planı',
 		[LanguageKeys.zh_CN]: '食品周计划'
+	},
+	monitorDayPlan: {
+		[LanguageKeys.de_DE]: 'Tages Speise Monitor',
+		[LanguageKeys.en_US]: 'Day Food Monitor',
+		[LanguageKeys.ar_SA]: 'شاشة طعام اليوم',
+		[LanguageKeys.es_ES]: 'Monitor de alimentos diarios',
+		[LanguageKeys.fr_FR]: 'Moniteur alimentaire quotidien',
+		[LanguageKeys.ru_RU]: 'Мониторинг питания на день',
+		[LanguageKeys.tr_TR]: 'Gün Yemek Monitörü',
+		[LanguageKeys.zh_CN]: '每日食品监视器'
 	},
 	foodBigScreen: {
 		[LanguageKeys.de_DE]: 'Speise Großbildschirm',

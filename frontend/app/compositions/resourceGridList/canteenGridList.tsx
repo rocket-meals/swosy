@@ -12,6 +12,15 @@ import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 interface AppState {
     onPress?: (canteen: Canteens) => void;
 }
+
+
+export const getCanteenName = (canteen: Canteens | null | undefined) => {
+	if (!canteen) {
+		return undefined
+	}
+	return canteen.alias || canteen.id+''
+}
+
 export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}) => {
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
@@ -38,7 +47,6 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     const renderCanteen = (info: ListRenderItemInfo<DataItem>) => {
     	const {item, index} = info;
     	const canteen = item.data;
-    	const canteen_key = canteen.id
 
     	let building = undefined;
     	let imageAssetId = undefined
@@ -51,7 +59,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     		image_url = building?.image_remote_url
     	}
 
-    	const canteen_label: string = canteen.alias || canteen_key+''
+    	const canteen_label: string = getCanteenName(canteen)
     	const text = canteen_label
 		const accessibilityLabel = translation_select + ': ' + canteen_label
 

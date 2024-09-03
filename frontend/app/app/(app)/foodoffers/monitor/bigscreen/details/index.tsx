@@ -1,5 +1,5 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/weekplan/canteens";
+import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
@@ -11,7 +11,7 @@ import {
 	View
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -27,13 +27,13 @@ import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {Animated} from "react-native";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
+import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 
 export const SEARCH_PARAM_CATEGORY = 'category';
 export const SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER = 'showOnlyMarkingExternalIdentifier';
@@ -69,7 +69,7 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 	paramsRaw.push(paramForKioskMode)
 
 	let params = paramsRaw.join("&")
-	return `/(app)/foodoffers/bigscreen/details/?${params}` as ExpoRouter.Href;
+	return `/(app)/foodoffers/monitor/bigscreen/details/?${params}` as ExpoRouter.Href;
 }
 
 export function useFoodCategoryFromLocalSearchParams() {
@@ -104,55 +104,6 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 	return undefined;
 }
 
-type ProgressBarProps = {
-	duration: number,
-	color: string,
-	backgroundColor?: string
-}
-const ProgressBar: React.FC<ProgressBarProps> = ({ duration, color, backgroundColor }) => {
-	const progress = useRef(new Animated.Value(0)).current;
-
-
-	if(duration <= 0){
-		return null;
-	}
-
-	useEffect(() => {
-		// Start the animation when the component mounts
-		Animated.timing(progress, {
-			toValue: 100, // Animate the progress to 100%
-			duration: duration * 1000, // Convert duration to milliseconds
-			useNativeDriver: false, // useNativeDriver is false because we're animating layout properties
-		}).start();
-	}, [duration, progress]);
-
-	// Interpolate the animated value to convert it to width percentage
-	const widthInterpolation = progress.interpolate({
-		inputRange: [0, 100],
-		outputRange: ['0%', '100%'],
-	});
-
-	return (
-		<View style={{
-			height: "100%",
-			width: "100%",
-			overflow: "hidden",
-			backgroundColor: backgroundColor
-		}}>
-			<Animated.View
-				style={[
-					{
-						height: "100%",
-						borderBottomRightRadius: 5,
-						borderTopRightRadius: 5,
-					},
-					{ backgroundColor: color, width: widthInterpolation },
-				]}
-			/>
-		</View>
-	);
-};
-
 const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boolean, markingIds: string[], markingsDict: Record<string, Markings>, languageCode: string}> = ({markingIds, markingsDict, languageCode, showOnlyMarkingExternalIdentifier}) => {
 	const textColor = useTextContrastColor()
 
@@ -160,10 +111,11 @@ const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boole
 	for(let markingId of markingIds) {
 		const marking: Markings | undefined | null = markingsDict?.[markingId];
 		if (!!marking) {
-			const translated_name = getMarkingName(marking, languageCode);
+			const translated_name = getMarkingName(marking, languageCode, false);
 			const external_identifier = getMarkingExternalIdentifier(marking);
+			const alias = getMarkingAlias(marking);
 
-			const usedText = showOnlyMarkingExternalIdentifier ? external_identifier : translated_name;
+			const usedText = showOnlyMarkingExternalIdentifier ? alias : translated_name;
 
 			if(!!usedText){
 				renderedMarkings.push(<View style={{
@@ -194,7 +146,7 @@ export default function FoodBigScreenScreen() {
 	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
-	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
@@ -250,12 +202,13 @@ export default function FoodBigScreenScreen() {
 	const foodOffersForCategory = getFoodOffersForCategory(category);
 	const currentFoodOfferForCategory = foodOffersForCategory[food_index];
 
-	// Load foodOffers every 5 minutes
+	// Load foodOffers and markings every 5 minutes
 	const INTERVAL = refreshFoodOffersIntervalInSeconds * 1000;
 	useEffect(() => {
 		loadFoodOffers();
-		const interval = setInterval(() => {
-			loadFoodOffers();
+		const interval = setInterval(async () => {
+			await cacheHelperObjMarkings.updateFromServer();
+			await loadFoodOffers();
 		}, INTERVAL);
 		return () => clearInterval(interval);
 	}, [canteen, category, nextFoodIntervalInSeconds, refreshFoodOffersIntervalInSeconds]);
@@ -422,7 +375,7 @@ export default function FoodBigScreenScreen() {
 					height: 2,
 					width: '100%',
 				}}>
-					<ProgressBar duration={nextFoodIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={food_index+""}/>
+					<MyProgressbar duration={nextFoodIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={food_index+""}/>
 				</View>
 			</View>
 			<View style={{
