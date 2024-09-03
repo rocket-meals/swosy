@@ -34,6 +34,10 @@ export function getMarkingExternalIdentifier(marking: Markings): string | null |
 	return marking.external_identifier;
 }
 
+export function getMarkingAlias(marking: Markings): string | null | undefined {
+	return marking.alias;
+}
+
 function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const marking: Markings | undefined | null = markingsDict?.[markingId];

@@ -4,7 +4,14 @@ import {
 	useCanteensIdFromLocalSearchParams
 } from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
-import {Text, TEXT_SIZE_3_EXTRA_LARGE, TEXT_SIZE_EXTRA_SMALL, useViewBackgroundColor, View} from "@/components/Themed";
+import {
+	Text,
+	TEXT_SIZE_2_EXTRA_SMALL,
+	TEXT_SIZE_3_EXTRA_LARGE,
+	TEXT_SIZE_EXTRA_SMALL,
+	useViewBackgroundColor,
+	View
+} from "@/components/Themed";
 import React, {useEffect, useState} from "react";
 import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
@@ -22,10 +29,11 @@ import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {MarkingList} from "@/components/food/MarkingList";
-import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {ListRenderItemInfo} from "react-native";
+import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -141,12 +149,55 @@ export default function FoodDayPlanScreen() {
 		}
 	}
 
-	const renderMarking = (info: ListRenderItemInfo<DataItemMarking>) => {
-		const {item, index} = info;
-		const marking = item.data;
+	function renderMyGridList({ children, amountColumns, paddingColumns }) {
+		const columns = [];
+
+		// Distribute children among columns
+		for (let i = 0; i < amountColumns; i++) {
+			columns.push([]);
+		}
+
+		for (let i = 0; i < children.length; i++) {
+			const column = i % amountColumns;
+			columns[column].push(children[i]);
+		}
+
+		// Render each column with appropriate styling
+		const renderedColumns = columns.map((column, index) => (
+			<View
+				key={index}
+				style={{
+					flexDirection: 'column',
+					justifyContent: 'flex-start',
+					alignItems: 'flex-start',
+					paddingHorizontal: paddingColumns,
+					marginBottom: 10, // Add space between rows if needed
+				}}
+			>
+				{column}
+			</View>
+		));
+
+		return (
+			<View
+				style={{
+					flexDirection: 'row',
+					flexWrap: 'wrap',
+					justifyContent: 'flex-start',
+					alignItems: 'flex-start',
+					width: '100%',
+				}}
+			>
+				{renderedColumns}
+			</View>
+		);
+	}
+
+	const renderMarking = (marking: Markings) => {
 		const withoutExternalIdentifier = true;
 		const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const external_identifier = getMarkingExternalIdentifier(marking);
+		const alias = getMarkingAlias(marking);
 
 		return (
 			<View style={{
@@ -154,21 +205,30 @@ export default function FoodDayPlanScreen() {
 				alignItems: "flex-start",
 				justifyContent: "flex-start",
 				flex: 1,
+				marginVertical: 1,
 			}}>
 				<View>
 					<DirectusImageOrIconComponent resource={marking} />
 				</View>
-				<View>
-					<Text size={TEXT_SIZE_EXTRA_SMALL}>
-						{external_identifier}
+				<View style={{
+					backgroundColor: viewBackgroundColor,
+					borderColor: viewContrastColor,
+					borderWidth: 1,
+					borderRadius: BUTTON_DEFAULT_BorderRadius/2,
+					marginHorizontal: 2,
+					paddingHorizontal: 1,
+				}}>
+					<Text size={TEXT_SIZE_2_EXTRA_SMALL}>
+						{alias}
 					</Text>
 				</View>
 				<View style={{
+					paddingVertical: 1,
 					flex: 1,
 					justifyContent: "flex-start",
 					alignItems: "flex-start",
 				}}>
-					<Text size={TEXT_SIZE_EXTRA_SMALL}>
+					<Text size={TEXT_SIZE_2_EXTRA_SMALL}>
 						{translated_name}
 					</Text>
 				</View>
@@ -182,6 +242,13 @@ export default function FoodDayPlanScreen() {
 			return <Text>Loading...</Text>
 		}
 
+		const renderedMarkings = [];
+		for (let i=0; i<dataMarking.length; i++) {
+			const item = dataMarking[i];
+			const marking = item.data;
+			renderedMarkings.push(renderMarking(marking));
+		}
+
 		return <View style={{
 			width: '100%',
 			height: '100%',
@@ -189,7 +256,6 @@ export default function FoodDayPlanScreen() {
 			<View style={{
 				width: '100%',
 				flexDirection: "row",
-				backgroundColor: "orange",
 			}}>
 				<View style={{
 					width: 200,
@@ -201,7 +267,6 @@ export default function FoodDayPlanScreen() {
 				</View>
 				<View style={{
 					flex: 1,
-					backgroundColor: "red"
 				}}>
 					<Text size={TEXT_SIZE_3_EXTRA_LARGE}>
 						{canteen_name}
@@ -226,9 +291,13 @@ export default function FoodDayPlanScreen() {
 			</View>
 			<View style={{
 				width: '100%',
-				backgroundColor: "blue"
+				padding: 10,
 			}}>
-				<MyGridFlatList data={dataMarking} renderItem={renderMarking} amountColumns={9} />
+				{renderMyGridList({
+					children: renderedMarkings,
+					amountColumns: 8,
+					paddingColumns: 1,
+				})}
 			</View>
 		</View>
 	}

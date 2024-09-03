@@ -30,7 +30,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
@@ -113,8 +113,9 @@ const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boole
 		if (!!marking) {
 			const translated_name = getMarkingName(marking, languageCode, false);
 			const external_identifier = getMarkingExternalIdentifier(marking);
+			const alias = getMarkingAlias(marking);
 
-			const usedText = showOnlyMarkingExternalIdentifier ? external_identifier : translated_name;
+			const usedText = showOnlyMarkingExternalIdentifier ? alias : translated_name;
 
 			if(!!usedText){
 				renderedMarkings.push(<View style={{

@@ -420,8 +420,9 @@ export class ParseSchedule {
                 let marking_id = await itemService.createOne(markingJSONCopy);
                 marking = await itemService.readOne(marking_id);
             } else {
-                // If marking exists, update it
-                await itemService.updateOne(marking.id, markingJSONCopy);
+                // If marking exists, don't update it, as it could be changed by the user
+                // We already set all fields in the createOne method
+                //await itemService.updateOne(marking.id, markingJSONCopy);
             }
 
             if (marking && marking.id) {

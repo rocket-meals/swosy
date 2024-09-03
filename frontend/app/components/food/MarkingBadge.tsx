@@ -12,7 +12,7 @@ import {
 } from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
@@ -110,7 +110,8 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 
 	let usedIcon = marking.icon
 	let markingExternalIdentifier = getMarkingExternalIdentifier(marking);
-	if(markingExternalIdentifier){
+	const alias = getMarkingAlias(marking);
+	if(alias){
 		const defaultPadding = getButtonDefaultPadding();
 		let outerPadding = defaultPadding/2;
 		let innerPadding = defaultPadding - outerPadding; // maybe by dividing 1/2 the outer padding is 0, so we need to subtract it
@@ -127,7 +128,7 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 				overflow: "hidden",
 			}}>
 				<Text numberOfLines={1}>
-					{markingExternalIdentifier}
+					{alias}
 				</Text>
 			</View>
 		</View>
