@@ -91,6 +91,8 @@ export default function FoodDayPlanScreen() {
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 
+	const [reloadNumberForData, setReloadNumberForData] = useState(0);
+
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
 	const lightContrastColor = useLighterOrDarkerColorForSelection(viewContrastColor);
@@ -130,26 +132,37 @@ export default function FoodDayPlanScreen() {
 	useEffect(() => {
 		loadFoodOffers();
 		const interval = setInterval(async () => {
+			console.log("Reload foodoffers and markings")
 			await cacheHelperObjMarkings.updateFromServer();
 			await loadFoodOffers();
+			setReloadNumberForData((prev) => prev + 1);
 		}, INTERVAL);
 		return () => clearInterval(interval);
 	}, [canteen, nextPageIntervalInSeconds, refreshDataIntervalInSeconds]);
 
-	type DataItemMarking = { key: string; data: Markings }
-	const dataMarking: DataItemMarking[] = []
-	if (markingsDict) {
-		const marking_keys = Object.keys(markingsDict);
-		for (let i=0; i<marking_keys.length; i++) {
-			const marking_key = marking_keys[i];
-			const marking = markingsDict[marking_key]
-			if(!!marking) {
-				dataMarking.push({key: marking_key, data: marking})
+	let markingsList: Markings[] = [];
+	if(markingsDict){
+		let markingKeys = Object.keys(markingsDict);
+		for(let i=0; i<markingKeys.length; i++){
+			let key = markingKeys[i];
+			let marking = markingsDict[key];
+			if(marking){
+				markingsList.push(marking);
 			}
 		}
 	}
 
-	function renderMyGridList({ children, amountColumns, paddingColumns }) {
+
+	const sortMarkingsByNameLength = (a: Markings, b: Markings) => {
+		const withoutExternalIdentifier = false;
+		const a_name = getMarkingName(a, languageCode, withoutExternalIdentifier);
+		const b_name = getMarkingName(b, languageCode, withoutExternalIdentifier);
+		return a_name.length - b_name.length;
+	}
+	let sortedMarkingsList = markingsList.sort(sortMarkingsByNameLength);
+
+
+	function renderMyGridList({ children, amountColumns, paddingColumns }: { children: JSX.Element[]; amountColumns: number; paddingColumns: number }) {
 		const columns = [];
 
 		// Distribute children among columns
@@ -157,9 +170,17 @@ export default function FoodDayPlanScreen() {
 			columns.push([]);
 		}
 
-		for (let i = 0; i < children.length; i++) {
-			const column = i % amountColumns;
-			columns[column].push(children[i]);
+		let amountChildren = children.length;
+		// children are sorted by name length, so we want to evenly distribute them
+		const amountChildrenPerColumn = Math.ceil(amountChildren / amountColumns);
+		// fill children in first column until it is full and then continue with the next column
+		let currentColumnIndex = 0;
+		for (let i = 0; i < amountChildren; i++) {
+			const child = children[i];
+			columns[currentColumnIndex].push(child);
+			if (columns[currentColumnIndex].length >= amountChildrenPerColumn) {
+				currentColumnIndex++;
+			}
 		}
 
 		// Render each column with appropriate styling
@@ -192,6 +213,7 @@ export default function FoodDayPlanScreen() {
 			</View>
 		);
 	}
+
 
 	const renderMarking = (marking: Markings) => {
 		const withoutExternalIdentifier = true;
@@ -236,16 +258,39 @@ export default function FoodDayPlanScreen() {
 		)
 	}
 
+	function renderFoodOffer(foodOffer: Foodoffers, index: number){
+		let backgroundColor = index % 2 === 0 ? lightContrastColor : viewBackgroundColor;
+
+
+
+		return (
+			<View style={{
+				width: '100%',
+				backgroundColor: backgroundColor
+			}}>
+
+			</View>
+		)
+	}
+
+	function renderPaginatedFoodoffers(){
+		let renderedFoodOffers: JSX.Element[] = [];
+		for(let i=0; i<foodOffers.length; i++){
+			renderedFoodOffers.push(renderFoodOffer(foodOffers[i], i));
+		}
+		return renderedFoodOffers;
+	}
+
 	function renderContent(){
 		let {width, height} = layout;
 		if(!width || !height){
 			return <Text>Loading...</Text>
 		}
 
+
 		const renderedMarkings = [];
-		for (let i=0; i<dataMarking.length; i++) {
-			const item = dataMarking[i];
-			const marking = item.data;
+		for (let i = 0; i < sortedMarkingsList.length; i++) {
+			const marking = sortedMarkingsList[i];
 			renderedMarkings.push(renderMarking(marking));
 		}
 
@@ -287,7 +332,7 @@ export default function FoodDayPlanScreen() {
 				width: '100%',
 				backgroundColor: "green"
 			}}>
-
+				{renderPaginatedFoodoffers()}
 			</View>
 			<View style={{
 				width: '100%',
@@ -298,6 +343,12 @@ export default function FoodDayPlanScreen() {
 					amountColumns: 8,
 					paddingColumns: 1,
 				})}
+			</View>
+			<View style={{
+				width: '100%',
+				height: 2,
+			}}>
+				<MyProgressbar key={""+reloadNumberForData} duration={refreshDataIntervalInSeconds} color={foodAreaColor} />
 			</View>
 		</View>
 	}
