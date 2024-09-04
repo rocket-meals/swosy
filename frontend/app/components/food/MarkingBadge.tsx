@@ -4,8 +4,16 @@ import {Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
-import {Icon, Text, useTextContrastColor, useViewBackgroundColor, View} from "@/components/Themed";
 import {
+	Icon,
+	Text,
+	TEXT_SIZE_2_EXTRA_SMALL, TextSizeType,
+	useTextContrastColor,
+	useViewBackgroundColor,
+	View
+} from "@/components/Themed";
+import {
+	BUTTON_DEFAULT_BorderRadius,
 	BUTTON_DEFAULT_Padding,
 	getButtonDefaultPadding,
 	MyButtonCustomContentPadder
@@ -24,6 +32,7 @@ import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {Image} from "expo-image";
 import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color: string}) => {
 	const markingsIds = MarkingHelper.getFoodOfferMarkingIds(foodoffer);
@@ -47,6 +56,70 @@ export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color:
 	}
 
 }
+
+
+export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
+	const viewBackgroundColor = useViewBackgroundColor()
+	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
+
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const marking: Markings | undefined | null = markingsDict?.[markingId];
+	if(!marking){
+		return null;
+	}
+	const alias = getMarkingAlias(marking);
+
+	const hasImageOrIcon = hasResourceImageOrRemoteImage(marking);
+
+	if(hasImageOrIcon){
+		return (
+
+			<View style={{
+				flexDirection: "row",
+				alignItems: "flex-start",
+				justifyContent: "flex-start",
+				flexShrink: 1,
+				marginVertical: 1,
+				overflow: "hidden",
+			}}>
+			<View style={{
+				overflow: "hidden",
+				borderRadius: BUTTON_DEFAULT_BorderRadius/2,
+				borderColor: viewContrastColor,
+				borderWidth: 1,
+				marginHorizontal: 2,
+				flexShrink: 1
+			}}>
+				<DirectusImageOrIconComponent resource={marking} />
+			</View>
+			</View>
+		)
+	}
+
+	return (
+		<View style={{
+			flexDirection: "row",
+			alignItems: "flex-start",
+			justifyContent: "flex-start",
+			flexShrink: 1,
+			marginVertical: 1,
+		}}>
+			<View style={{
+				borderColor: viewContrastColor,
+				borderWidth: 1,
+				borderRadius: BUTTON_DEFAULT_BorderRadius/2,
+				marginHorizontal: 2,
+				paddingHorizontal: 1,
+				flexShrink: 1,
+			}}>
+				<Text size={textSize}>
+					{alias}
+				</Text>
+			</View>
+		</View>
+	)
+}
+
 
 export type MarkingBadgeProps = {
 	markingId: string

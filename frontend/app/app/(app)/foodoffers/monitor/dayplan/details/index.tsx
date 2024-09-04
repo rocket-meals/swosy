@@ -36,6 +36,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {CommonFieldsOfFoodAndFoodoffers, FoodInformationValueFormatter} from "@/components/food/FoodDataList";
+import {MarkingIconOrAlias} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -203,11 +204,12 @@ export default function FoodDayPlanScreen() {
 			const date = new Date();
 			setFoodOfferDateHumanReadable(DateHelper.formatOfferDateToReadable(date, true));
 			let offers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			let extraLongList = []
-			for(let i=0; i<10; i++){
-				extraLongList.push(...offers)
-			}
-			setFoodOffers(extraLongList);
+			//let extraLongList = []
+			//for(let i=0; i<10; i++){
+			//	extraLongList.push(...offers)
+			//}
+			//offers = extraLongList
+			setFoodOffers(offers);
 		}
 		setLoading(false);
 	}
@@ -298,12 +300,53 @@ export default function FoodDayPlanScreen() {
 		);
 	}
 
+	function renderMarkingsForFoodRow(foodOffer: Foodoffers){
+		let renderedMarkings: any[] = [];
+		let foodoffersmarkingJoinElements = foodOffer.markings;
+		let markingsForFoodOffer: Markings[] = [];
+		if(!!markingsDict){
+			for(let i=0; i<foodoffersmarkingJoinElements.length; i++){
+				let joinElement = foodoffersmarkingJoinElements[i];
+				let markingId = joinElement?.markings_id;
+				let marking = markingsDict?.[markingId];
+				if(!!marking){
+					markingsForFoodOffer.push(marking)
+				}
+			}
+		}
+		let sortedMarkingsForFoodOffer = markingsForFoodOffer.sort(sortMarkingsByNameLength);
+		for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
+			const marking = sortedMarkingsForFoodOffer[i];
+			renderedMarkings.push(<MarkingIconOrAlias markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
+		}
+		return <View style={{
+			flex: 1,
+			flexWrap: "wrap",
+			flexDirection: "row",
+		}}>
+			{renderedMarkings}
+		</View>;
+	}
 
-	const renderMarking = (marking: Markings) => {
+	const renderMarking = (marking: Markings, withTranslation: boolean = true) => {
 		const withoutExternalIdentifier = true;
 		const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const external_identifier = getMarkingExternalIdentifier(marking);
 		const alias = getMarkingAlias(marking);
+
+		let renderedTranslation = null
+		if(withTranslation){
+			renderedTranslation = <View style={{
+				paddingVertical: 1,
+				flex: 1,
+				justifyContent: "flex-start",
+				alignItems: "flex-start",
+			}}>
+				<Text size={TEXT_SIZE_2_EXTRA_SMALL}>
+					{translated_name}
+				</Text>
+			</View>
+		}
 
 		return (
 			<View style={{
@@ -313,31 +356,8 @@ export default function FoodDayPlanScreen() {
 				flex: 1,
 				marginVertical: 1,
 			}}>
-				<View>
-					<DirectusImageOrIconComponent resource={marking} />
-				</View>
-				<View style={{
-					backgroundColor: viewBackgroundColor,
-					borderColor: viewContrastColor,
-					borderWidth: 1,
-					borderRadius: BUTTON_DEFAULT_BorderRadius/2,
-					marginHorizontal: 2,
-					paddingHorizontal: 1,
-				}}>
-					<Text size={TEXT_SIZE_2_EXTRA_SMALL}>
-						{alias}
-					</Text>
-				</View>
-				<View style={{
-					paddingVertical: 1,
-					flex: 1,
-					justifyContent: "flex-start",
-					alignItems: "flex-start",
-				}}>
-					<Text size={TEXT_SIZE_2_EXTRA_SMALL}>
-						{translated_name}
-					</Text>
-				</View>
+				<MarkingIconOrAlias markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				{renderedTranslation}
 			</View>
 		)
 	}
@@ -360,7 +380,7 @@ export default function FoodDayPlanScreen() {
 								   }: {
 		textForCategoryColumn: string | null | undefined;
 		textForFoodnameColumn: string | null | undefined;
-		elementForMarkingsColumn: JSX.Element;
+		elementForMarkingsColumn: any;
 		textForKcalColumn: string | null | undefined;
 		textForFatAndSaturatedFatColumn: string | null | undefined;
 		textForCarbohydratesAndSugarColumn: string | null | undefined;
@@ -522,7 +542,7 @@ export default function FoodDayPlanScreen() {
 					renderRowForFoodoffer({
 						textForCategoryColumn: category,
 						textForFoodnameColumn: foodName,
-						elementForMarkingsColumn: <></>,
+						elementForMarkingsColumn: renderMarkingsForFoodRow(foodOffer),
 						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer, translation_no_value),
 						textForFatAndSaturatedFatColumn: FoodInformationValueFormatter.formatFoodInformationValueFat(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(foodOffer, translation_no_value),
 						textForCarbohydratesAndSugarColumn: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSugar(foodOffer, translation_no_value),
@@ -549,7 +569,6 @@ export default function FoodDayPlanScreen() {
 				}}
 				style={{
 					overflow: "hidden",
-					backgroundColor: "red",
 				}}
 				onContentSizeChange={(contentWidth, contentHeight) => {
 					if (contentHeight <= layout.height) {
@@ -570,7 +589,7 @@ export default function FoodDayPlanScreen() {
 		const renderedMarkings = [];
 		for (let i = 0; i < sortedMarkingsList.length; i++) {
 			const marking = sortedMarkingsList[i];
-			renderedMarkings.push(renderMarking(marking));
+			renderedMarkings.push(renderMarking(marking, true));
 		}
 
 		return <View style={{
@@ -634,10 +653,15 @@ export default function FoodDayPlanScreen() {
 			<View style={{
 				flex: 1,
 				width: '100%',
-				backgroundColor: "green",
 				overflow: "hidden",
 			}}>
 				{renderPaginatedFoodoffers()}
+			</View>
+			<View style={{
+				width: '100%',
+				height: 2,
+				backgroundColor: foodAreaColor
+			}}>
 			</View>
 			<View style={{
 				width: '100%',

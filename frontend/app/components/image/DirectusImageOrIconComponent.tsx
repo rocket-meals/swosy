@@ -9,15 +9,16 @@ export function hasResourceImageOrRemoteImage(resource: any){
 
 export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number }) {
 	let iconLeft = resource.icon
+	const alias = resource.alias
 	let iconLeftCustom = undefined
 	if(iconLeft){
 		if(!iconFamily){ // a directus Icon
 			let {
 				family, icon
 			} = IconParseDirectusStringToIconAndFamily(iconLeft)
-			iconLeftCustom = <Icon name={icon} family={family} />
+			iconLeftCustom = <Icon accessibilityLabel={alias} name={icon} family={family} />
 		} else {
-			iconLeftCustom = <Icon name={iconLeft} />
+			iconLeftCustom = <Icon accessibilityLabel={alias}  name={iconLeft} />
 		}
 	}
 	if(hasResourceImageOrRemoteImage(resource)){
@@ -27,7 +28,7 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, wid
 		iconLeftCustom = <View style={{
 			width: width, height: height, justifyContent: 'center', alignItems: 'center', borderRadius: 3
 		}}>
-			<DirectusImage image_url={resource.image_remote_url} assetId={resource.image} thumbHash={resource.image_thumb_hash} style={{width: "100%", height: "100%"}} />
+			<DirectusImage alt={alias} image_url={resource.image_remote_url} assetId={resource.image} thumbHash={resource.image_thumb_hash} style={{width: "100%", height: "100%"}} />
 		</View>
 	}
 	return iconLeftCustom
