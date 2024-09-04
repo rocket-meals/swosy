@@ -35,6 +35,7 @@ import {BUTTON_DEFAULT_BorderRadius} from "@/components/buttons/MyButtonCustom";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {CommonFieldsOfFoodAndFoodoffers, FoodInformationValueFormatter} from "@/components/food/FoodDataList";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -105,6 +106,8 @@ export default function FoodDayPlanScreen() {
 	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
 	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
 	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
+
+	const translation_no_value = useTranslation(TranslationKeys.no_value);
 
 	const [reloadNumberForData, setReloadNumberForData] = useState(0);
 
@@ -233,7 +236,6 @@ export default function FoodDayPlanScreen() {
 			}
 		}
 	}
-
 
 	const sortMarkingsByNameLength = (a: Markings, b: Markings) => {
 		const withoutExternalIdentifier = false;
@@ -376,7 +378,7 @@ export default function FoodDayPlanScreen() {
 		const designWidthFoodname = 570
 		const designWidthMarkings = 450
 		const designWidthKcal = 100
-		const designWidthFatAndSaturatedFat = 100
+		const designWidthFatAndSaturatedFat = 150
 		const designWidthCarbohydratesAndSugar = 100
 		const designWidthProtein = 50
 		const designWidthSalt = 50
@@ -499,11 +501,13 @@ export default function FoodDayPlanScreen() {
 		const isEven = index % 2 === 0;
 		let backgroundColor = isEven ? viewBackgroundColorLighter : viewBackgroundColor;
 		const textColor = isEven ? viewBackgroundColorLighterContrast : viewContrastColor;
-
-		const foodName = getFoodName(foodOffer.food, languageCode);
-		const food = foodOffer.food as Foods;
-
+		const food = foodOffer.food;
+		let category: string | null | undefined = null;
+		if(!!food && typeof food !== "string"){
+			category = food.category;
+		}
 		const priceText = formatPrice(foodOffer.price_student)+" / "+formatPrice(foodOffer.price_employee)+" / "+formatPrice(foodOffer.price_guest);
+		const foodName = getFoodName(food, languageCode);
 
 		return (
 			<View
@@ -516,14 +520,14 @@ export default function FoodDayPlanScreen() {
 			>
 				{
 					renderRowForFoodoffer({
-						textForCategoryColumn: food.category,
+						textForCategoryColumn: category,
 						textForFoodnameColumn: foodName,
 						elementForMarkingsColumn: <></>,
-						textForKcalColumn: foodOffer.calories_kcal+"",
-						textForFatAndSaturatedFatColumn: foodOffer.fat_g + "/" + foodOffer.saturated_fat_g,
-						textForCarbohydratesAndSugarColumn: foodOffer.carbohydrate_g + "/" + foodOffer.sugar_g,
-						textForProteinColumn: foodOffer.protein_g+"",
-						textForSaltColumn: foodOffer.salt_g+"",
+						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer, translation_no_value),
+						textForFatAndSaturatedFatColumn: FoodInformationValueFormatter.formatFoodInformationValueFat(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(foodOffer, translation_no_value),
+						textForCarbohydratesAndSugarColumn: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSugar(foodOffer, translation_no_value),
+						textForProteinColumn: FoodInformationValueFormatter.formatFoodInformationValueProtein(foodOffer, translation_no_value),
+						textForSaltColumn: FoodInformationValueFormatter.formatFoodInformationValueSalt(foodOffer, translation_no_value),
 						textForPriceColumn: priceText,
 						backgroundColor: backgroundColor,
 						textColor: textColor,
@@ -615,8 +619,8 @@ export default function FoodDayPlanScreen() {
 						color: foodAreaContrastColor,
 					}}>{translation_markings}</Text>,
 					textForKcalColumn: translation_kcal,
-					textForFatAndSaturatedFatColumn: translation_nutrition_fat + "/" + translation_nutrition_saturated_fat,
-					textForCarbohydratesAndSugarColumn: translation_nutrition_nutrition_carbohydrate + "/" + translation_nutrition_sugar,
+					textForFatAndSaturatedFatColumn: translation_nutrition_fat + " / " + translation_nutrition_saturated_fat,
+					textForCarbohydratesAndSugarColumn: translation_nutrition_nutrition_carbohydrate + " / " + translation_nutrition_sugar,
 					textForProteinColumn: translation_nutrition_protein,
 					textForSaltColumn: translation_nutrition_salt,
 					textForPriceColumn: translation_price_group_student + " / " + translation_price_group_employee + " / " + translation_price_group_guest,
