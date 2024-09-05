@@ -124,6 +124,11 @@ export const TEXT_SIZE_5_EXTRA_LARGE = "5xl";
 export const TEXT_SIZE_6_EXTRA_LARGE = "6xl";
 
 export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
+
+/**
+ * WARNING ! You might want to use: getLineHeightInPixelBySize instead? FontSize is only the text size without the padding which is normally added
+ * @param size
+ */
 export function getFontSizeInPixelBySize(size: TextSizeType | undefined): number | undefined {
 	const tokens = config.tokens;
 	const fontSize = tokens.fontSizes

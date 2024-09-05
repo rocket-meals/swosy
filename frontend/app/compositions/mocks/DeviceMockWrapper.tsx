@@ -1,5 +1,12 @@
 import {FunctionComponent} from "react";
-import {getFontSizeInPixelBySize, Icon, Text, TEXT_SIZE_SMALL, View} from "@/components/Themed";
+import {
+	getFontSizeInPixelBySize,
+	getLineHeightInPixelBySize,
+	Icon,
+	Text,
+	TEXT_SIZE_SMALL,
+	View
+} from "@/components/Themed";
 import {DeviceMockType, useDeviceMockTypeState} from "@/states/DeviceMockState";
 import {IconNames} from "@/constants/IconNames";
 import {getIsLandScape} from "@/helper/device/DeviceHelper";
@@ -57,19 +64,19 @@ export const DeviceMockWrapperStatusBar: FunctionComponent<DeviceMockWrapperStat
 				alignItems: "center",
 			}}>
 				<Icon name={IconNames.phone_mock_iphone_signal_icon}
-					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  size={getLineHeightInPixelBySize(TEXT_SIZE_SMALL)}
 					  style={{
 						  margin: iconMargin,
 					  }}
 				/>
 				<Icon name={IconNames.phone_mock_iphone_wifi_icon}
-					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  size={getLineHeightInPixelBySize(TEXT_SIZE_SMALL)}
 					  style={{
 						  margin: iconMargin,
 					  }}
 				/>
 				<Icon name={IconNames.phone_mock_iphone_battery_full_icon}
-					  size={getFontSizeInPixelBySize(TEXT_SIZE_SMALL)}
+					  size={getLineHeightInPixelBySize(TEXT_SIZE_SMALL)}
 					  style={{
 						  margin: iconMargin,
 					  }}

@@ -5,7 +5,7 @@ import {
 	Text,
 	TEXT_SIZE_3_EXTRA_LARGE,
 	TEXT_SIZE_5_EXTRA_LARGE,
-	TEXT_SIZE_EXTRA_LARGE,
+	TEXT_SIZE_EXTRA_LARGE, TextSizeType,
 	useTextContrastColor,
 	useViewBackgroundColor,
 	View
@@ -34,13 +34,13 @@ import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/c
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
+import {MarkingIconOrAlias} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_CATEGORY = 'category';
-export const SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER = 'showOnlyMarkingExternalIdentifier';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL = 'refreshFoodOffersIntervalInSeconds';
 
-export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean, showOnlyMarkingExternalIdentifier: boolean): ExpoRouter.Href {
+export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean): ExpoRouter.Href {
 	let paramsRaw = []
 	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
@@ -53,11 +53,6 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 	let paramForNextFoodInterval = nextFoodIntervalInSeconds ? SEARCH_PARAM_NEXT_FOOD_INTERVAL+"="+encodeURIComponent(nextFoodIntervalInSeconds) : null;
 	if(paramForNextFoodInterval){
 		paramsRaw.push(paramForNextFoodInterval)
-	}
-
-	let paramShowOnlyMarkingExternalIdentifier = showOnlyMarkingExternalIdentifier ? SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER+"="+encodeURIComponent(showOnlyMarkingExternalIdentifier) : null;
-	if(paramShowOnlyMarkingExternalIdentifier){
-		paramsRaw.push(paramShowOnlyMarkingExternalIdentifier)
 	}
 
 	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+encodeURIComponent(fullscreen) : null;
@@ -75,15 +70,6 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 export function useFoodCategoryFromLocalSearchParams() {
 	const params = useLocalSearchParams<{ [SEARCH_PARAM_CATEGORY]?: string }>();
 	return params[SEARCH_PARAM_CATEGORY];
-}
-
-export function useShowOnlyMarkingExternalIdentifierFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER]?: string }>();
-	let showOnlyMarkingExternalIdentifier = params[SHOW_ONLY_MARKING_EXTERNAL_IDENTIFIER];
-	if(showOnlyMarkingExternalIdentifier){
-		return showOnlyMarkingExternalIdentifier === "true";
-	}
-	return false;
 }
 
 export function useNextFoodIntervalInSecondsFromLocalSearchParams() {
@@ -104,32 +90,13 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 	return undefined;
 }
 
-const MarkingInformationList: React.FC<{showOnlyMarkingExternalIdentifier: boolean, markingIds: string[], markingsDict: Record<string, Markings>, languageCode: string}> = ({markingIds, markingsDict, languageCode, showOnlyMarkingExternalIdentifier}) => {
-	const textColor = useTextContrastColor()
+const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSizeType | undefined}> = ({markingIds, textSize}) => {
 
 	let renderedMarkings: any[] = [];
 	for(let markingId of markingIds) {
-		const marking: Markings | undefined | null = markingsDict?.[markingId];
-		if (!!marking) {
-			const translated_name = getMarkingName(marking, languageCode, false);
-			const external_identifier = getMarkingExternalIdentifier(marking);
-			const alias = getMarkingAlias(marking);
-
-			const usedText = showOnlyMarkingExternalIdentifier ? alias : translated_name;
-
-			if(!!usedText){
-				renderedMarkings.push(<View style={{
-						borderRadius: BUTTON_DEFAULT_BorderRadius,
-						borderColor: textColor,
-						borderWidth: 1,
-						padding: BUTTON_DEFAULT_Padding,
-						margin: 3
-					}}>
-						<Text>{usedText}</Text>
-					</View>
-				)
-			}
-		}
+		renderedMarkings.push(
+			<MarkingIconOrAlias markingId={markingId} textSize={textSize} />
+		)
 	}
 	return <View style={{
 		flexDirection: 'row',
@@ -157,7 +124,6 @@ export default function FoodBigScreenScreen() {
 
 	const canteen_id = useCanteensIdFromLocalSearchParams()
 	const category = useFoodCategoryFromLocalSearchParams();
-	const showOnlyMarkingExternalIdentifier = useShowOnlyMarkingExternalIdentifierFromLocalSearchParams();
 
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;
@@ -367,7 +333,7 @@ export default function FoodBigScreenScreen() {
 							alignItems: 'flex-end',
 							//backgroundColor: "blue"
 						}}>
-							<MarkingInformationList markingIds={markingsIds} showOnlyMarkingExternalIdentifier={showOnlyMarkingExternalIdentifier} markingsDict={markingsDict} languageCode={languageCode} />
+							<MarkingInformationList markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
 						</View>
 					</View>
 				</View>

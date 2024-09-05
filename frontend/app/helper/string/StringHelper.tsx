@@ -3,6 +3,7 @@ import {Text, View} from '@/components/Themed';
 export class StringHelper {
 	static EMPTY_SPACE = '\u200b'
 	static NONBREAKING_SPACE = '\u00a0'
+	static NONBREAKING_HALF_SPACE = '\u202f'; // Half space non-breaking
 
 	static renderZeroSpaceHeight(amount?: number) {
 		if (amount===undefined) {

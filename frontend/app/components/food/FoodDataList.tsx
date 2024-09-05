@@ -49,7 +49,7 @@ export function formatFoodInformationElementValue(value:  string | number | null
 			// @ts-ignore
 			valueWithUnit = ""+value.toString()
 			if(unit !== null && unit !== undefined){
-				valueWithUnit += StringHelper.NONBREAKING_SPACE+unit;
+				valueWithUnit += StringHelper.NONBREAKING_HALF_SPACE+unit;
 			}
 		}
 		return valueWithUnit;

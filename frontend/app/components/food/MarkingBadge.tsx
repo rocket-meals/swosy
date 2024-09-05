@@ -5,9 +5,10 @@ import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {
+	getFontSizeInPixelBySize, getLineHeightInPixelBySize,
 	Icon,
 	Text,
-	TEXT_SIZE_2_EXTRA_SMALL, TextSizeType,
+	TEXT_SIZE_2_EXTRA_SMALL, TEXT_SIZE_3_EXTRA_LARGE, TEXT_SIZE_DEFAULT, TEXT_SIZE_EXTRA_LARGE, TextSizeType,
 	useTextContrastColor,
 	useViewBackgroundColor,
 	View
@@ -61,6 +62,7 @@ export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color:
 export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
+	const lineHeight = getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
 
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const marking: Markings | undefined | null = markingsDict?.[markingId];
@@ -68,31 +70,22 @@ export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, te
 		return null;
 	}
 	const alias = getMarkingAlias(marking);
-
+	
 	const hasImageOrIcon = hasResourceImageOrRemoteImage(marking);
 
-	if(hasImageOrIcon){
-		return (
+	let content = <View style={{
+		flexDirection: "row",
+		marginHorizontal: 2,
+	}}>
+		<Text size={textSize}>
+			{alias}
+		</Text>
+	</View>
 
-			<View style={{
-				flexDirection: "row",
-				alignItems: "flex-start",
-				justifyContent: "flex-start",
-				flexShrink: 1,
-				marginVertical: 1,
-				overflow: "hidden",
-			}}>
-			<View style={{
-				overflow: "hidden",
-				borderRadius: BUTTON_DEFAULT_BorderRadius/2,
-				borderColor: viewContrastColor,
-				borderWidth: 1,
-				marginHorizontal: 2,
-				flexShrink: 1
-			}}>
-				<DirectusImageOrIconComponent resource={marking} />
-			</View>
-			</View>
+	if(hasImageOrIcon){
+		const imageWidthAndHeight = lineHeight
+		content = (
+			<DirectusImageOrIconComponent heightImage={imageWidthAndHeight} widthImage={imageWidthAndHeight} resource={marking} />
 		)
 	}
 
@@ -102,19 +95,16 @@ export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, te
 			alignItems: "flex-start",
 			justifyContent: "flex-start",
 			flexShrink: 1,
-			marginVertical: 1,
+			paddingHorizontal: 2,
+			paddingVertical: 2,
 		}}>
 			<View style={{
 				borderColor: viewContrastColor,
 				borderWidth: 1,
 				borderRadius: BUTTON_DEFAULT_BorderRadius/2,
-				marginHorizontal: 2,
-				paddingHorizontal: 1,
 				flexShrink: 1,
 			}}>
-				<Text size={textSize}>
-					{alias}
-				</Text>
+				{content}
 			</View>
 		</View>
 	)
