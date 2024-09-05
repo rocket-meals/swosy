@@ -63,6 +63,11 @@ export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, te
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
 	const lineHeight = getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
+	const defaultLineHeightNormal = getLineHeightInPixelBySize(TEXT_SIZE_DEFAULT) || 10
+	const defaultBorderRadius = BUTTON_DEFAULT_BorderRadius/2;
+	const percentageBorderRadiusToHeight = defaultBorderRadius / defaultLineHeightNormal;
+	const adaptedBorderRadius = parseInt((percentageBorderRadiusToHeight * lineHeight)+"");
+
 
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const marking: Markings | undefined | null = markingsDict?.[markingId];
@@ -101,11 +106,16 @@ export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, te
 			<View style={{
 				borderColor: viewContrastColor,
 				borderWidth: 1,
-				borderRadius: BUTTON_DEFAULT_BorderRadius/2,
+				borderRadius: adaptedBorderRadius,
+				overflow: "hidden",
 				flexShrink: 1,
 			}}>
 				{content}
 			</View>
+			<View style={{
+				height: lineHeight,
+				width: 3
+			}} />
 		</View>
 	)
 }
