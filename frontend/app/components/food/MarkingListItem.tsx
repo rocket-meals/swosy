@@ -1,4 +1,10 @@
-import {View} from '@/components/Themed';
+import {
+	TEXT_SIZE_5_EXTRA_LARGE,
+	TEXT_SIZE_6_EXTRA_LARGE,
+	TEXT_SIZE_7_EXTRA_LARGE,
+	TEXT_SIZE_EXTRA_LARGE,
+	View
+} from '@/components/Themed';
 import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
 import {useProfileLanguageCode, useSynchedProfileMarking} from '@/states/SynchedProfile';
 import React, {useMemo} from 'react';
@@ -8,6 +14,7 @@ import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
+import {MarkingIconOrAlias} from "@/components/food/MarkingBadge";
 
 export default function MarkingListItem({ markingId }: { markingId: string }) {
 	// Memoize the MarkingListItemReal component
@@ -57,11 +64,11 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			return null;
 		}
 
-		const withoutExternalIdentifier = false;
+		const withoutExternalIdentifier = true;
 		const text = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const accessibilityLabel = translation_marking+": "+text;
 
-		let iconLeftCustom = <DirectusImageOrIconComponent resource={marking} />
+		let iconLeftCustom = <MarkingIconOrAlias markingId={markingId} textSize={undefined} />
 
 		const onPress = (like: boolean | undefined) => {
 			const removeMarking = like === undefined;

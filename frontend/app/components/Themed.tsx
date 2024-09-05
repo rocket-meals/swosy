@@ -123,7 +123,25 @@ export const TEXT_SIZE_4_EXTRA_LARGE = "4xl";
 export const TEXT_SIZE_5_EXTRA_LARGE = "5xl";
 export const TEXT_SIZE_6_EXTRA_LARGE = "6xl";
 
-export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
+
+export type TextSizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl'
+
+// Array to map indices back to TextSizeType
+const TEXT_SIZE_ORDER: TextSizeType[] = [
+	'2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'
+];
+
+// Function to create a mapping from TextSizeType to indices
+function createTextSizeMap(order: TextSizeType[]): Record<TextSizeType, number> {
+	return order.reduce((acc, size, index) => {
+		acc[size] = index;
+		return acc;
+	}, {} as Record<TextSizeType, number>);
+}
+
+// Mapping TextSizeType to integer indices using the array
+const TEXT_SIZE_MAP = createTextSizeMap(TEXT_SIZE_ORDER);
+
 
 /**
  * WARNING ! You might want to use: getLineHeightInPixelBySize instead? FontSize is only the text size without the padding which is normally added
@@ -136,10 +154,22 @@ export function getFontSizeInPixelBySize(size: TextSizeType | undefined): number
 	return fontSize[usedSize]
 }
 
+function getCorrectedLineHeightInPixelBySize(size: TextSizeType){
+	const usedSize = size || TEXT_SIZE_DEFAULT;
+	const currentIndex = TEXT_SIZE_MAP[usedSize];
+	const nextIndex = currentIndex + 1;
+
+	// Return the next size if available, otherwise size
+	return TEXT_SIZE_ORDER[nextIndex] || size;
+}
+
 export function getLineHeightInPixelBySize(size: TextSizeType | undefined) {
 	const tokens = config.tokens;
 	const lineHeight = tokens.lineHeights
-	const usedSize = size || TEXT_SIZE_DEFAULT;
+	const usedSize = getCorrectedLineHeightInPixelBySize(size || TEXT_SIZE_DEFAULT);
+	console.log("getLineHeightInPixelBySize")
+	console.log("size: "+size)
+	console.log("usedSize: "+usedSize)
 	return lineHeight[usedSize];
 }
 
