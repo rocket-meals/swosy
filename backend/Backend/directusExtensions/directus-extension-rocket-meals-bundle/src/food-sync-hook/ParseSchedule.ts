@@ -1,5 +1,5 @@
 import hash from 'object-hash';
-import {AbstractService, FileServiceCreator, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
+import {AbstractService, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {
     CanteensTypeForParser, FoodofferDateType,

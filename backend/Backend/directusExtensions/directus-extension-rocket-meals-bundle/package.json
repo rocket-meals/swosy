@@ -48,6 +48,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "directus-file-owner-update-on-user-delete-hook",
+				"source": "src/directus-file-owner-update-on-user-delete-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "food-feedback-rating-calculate-hook",
 				"source": "src/food-feedback-rating-calculate-hook/index.ts"
 			},
