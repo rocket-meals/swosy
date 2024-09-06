@@ -108,6 +108,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "users-sso-hide-identity-hook",
+				"source": "src/users-sso-hide-identity-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "utilization-canteen-hook",
 				"source": "src/utilization-canteen-hook/index.ts"
 			}
