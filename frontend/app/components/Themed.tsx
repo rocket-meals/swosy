@@ -117,6 +117,7 @@ export const TEXT_SIZE_SMALL = "sm";
 export const TEXT_SIZE_DEFAULT = 'md';
 export const TEXT_SIZE_LARGE = "lg";
 export const TEXT_SIZE_EXTRA_LARGE = "xl";
+export const HEADING_SIZE = TEXT_SIZE_EXTRA_LARGE;
 export const TEXT_SIZE_2_EXTRA_LARGE = "2xl";
 export const TEXT_SIZE_3_EXTRA_LARGE = "3xl";
 export const TEXT_SIZE_4_EXTRA_LARGE = "4xl";

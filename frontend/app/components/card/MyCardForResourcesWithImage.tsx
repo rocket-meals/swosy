@@ -35,6 +35,7 @@ export type MyCardForResourcesWithImageProps = {
     topLeftComponent?: ReactNode,
     innerPadding?: number,
 	imageUploaderConfig?: ImageUploaderComponentProps
+	componentRightToImage?: ReactNode,
 } & MyCardWithTextProps
 
 export type ImageUploaderComponentProps = {
@@ -401,7 +402,10 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 		{imageUploader}
 	</>
 
-	const topContent = (
+	const imageComponent = <View style={{
+		height: imageHeight,
+		width: imageHeight
+	}}>
 		<Rectangle>
 			<ImageWithComponents image={{
 				fallbackAssetId: placeholderAssetId,
@@ -413,9 +417,18 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 								 bottomRightComponent={props.bottomRightComponent}
 								 bottomLeftComponent={bottomLeftComponent}
 								 topLeftComponent={props.topLeftComponent}
-				onPress={onPress}
+								 onPress={onPress}
 			/>
 		</Rectangle>
+	</View>
+
+	const topContent = (
+		<View style={{
+			flexDirection: "row",
+		}}>
+			{imageComponent}
+			{props.componentRightToImage}
+		</View>
 	)
 
 	return (

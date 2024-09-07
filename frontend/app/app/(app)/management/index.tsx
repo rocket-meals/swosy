@@ -10,7 +10,10 @@ export default function ManagementScreen() {
 	return (
 		<MySafeAreaView>
 			<MyScrollView>
-				<SettingsRowGroup>
+				<SettingsRowGroup label={"Statistiken"}>
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/statistics"} />
+				</SettingsRowGroup>
+				<SettingsRowGroup label={"Monitore"}>
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/foodoffers/monitor/weekplan"} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodBigScreen} leftIcon={IconNames.gallery_icon} route={"/(app)/foodoffers/monitor/bigscreen"} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.monitorDayPlan} leftIcon={IconNames.foodoffers_icon} route={"/(app)/foodoffers/monitor/dayplan"} />

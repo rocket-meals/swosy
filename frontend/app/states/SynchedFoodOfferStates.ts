@@ -43,9 +43,46 @@ async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers
 	return await collectionHelper.readItem(foodoffer_id, query);
 }
 
+export class FoodHelper {
+
+	static async loadMostLikedOrDislikedFoods(limit: number, offset: number, minRatingAmount: number | undefined, bestFirst: boolean){
+		const collectionHelper = new CollectionHelper<Foods>(TABLE_NAME_FOODS);
+		if(!minRatingAmount){
+			minRatingAmount = 1;
+		}
+
+		// Initialize the filters array
+		const andFilters = [];
+
+		// Filter for rating_amount if minRatingAmount is specified
+		if (minRatingAmount !== undefined) {
+			andFilters.push({
+				rating_amount: {
+					_gte: minRatingAmount
+				}
+			});
+		}
+
+		const sort = bestFirst ? '-rating_average' : 'rating_average'
+
+		// Construct the query object
+		const query = {
+			limit: limit,
+			offset: offset,
+			filter: {
+				_and: andFilters
+			},
+			sort: [sort],  // Sort by rating_average in descending order
+			fields: QUERY_FIELDS_FOOD
+		};
+
+		return await collectionHelper.readItems(query);
+	}
+}
+
+
 async function loadFoodFromServer(food_id: string): Promise<Foods> {
 	const collectionHelper = new CollectionHelper<Foods>(TABLE_NAME_FOODS);
-
 
 	const query = {
 		fields: QUERY_FIELDS_FOOD
