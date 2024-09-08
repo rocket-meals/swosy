@@ -148,6 +148,18 @@ export default defineEndpoint({
 				return;
 			}
 
+			const referer = req.headers.referer+""
+			console.log("REFERER: "+referer);
+			const validReferers = ["https://accounts.google.com/", "https://appleid.apple.com/"];
+
+			if(validReferers.includes(referer)){
+				console.log("redirect comes from valid referer");
+			} else {
+				res.status(400).send("Invalid referer URL (" + referer + "). Please contact the administrator: info@rocket-meals.de");
+				return;
+			}
+			// REFERER: https://accounts.google.com/
+
 			const {
 				services,
 				database,
