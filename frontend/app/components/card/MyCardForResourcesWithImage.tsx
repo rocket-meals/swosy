@@ -424,10 +424,23 @@ export const MyCardForResourcesWithImage = ({heading, accessibilityLabel, assetI
 
 	const topContent = (
 		<View style={{
-			flexDirection: "row",
+			height: imageHeight,
+			width: imageHeight
 		}}>
-			{imageComponent}
-			{props.componentRightToImage}
+			<Rectangle>
+				<ImageWithComponents image={{
+					fallbackAssetId: placeholderAssetId,
+					image_url: image_url,
+					assetId: assetId,
+					thumbHash: thumbHash,
+				}} accesibilityLabel={accessibilityLabel}
+									 topRightComponent={props.topRightComponent}
+									 bottomRightComponent={props.bottomRightComponent}
+									 bottomLeftComponent={bottomLeftComponent}
+									 topLeftComponent={props.topLeftComponent}
+									 onPress={onPress}
+				/>
+			</Rectangle>
 		</View>
 	)
 
