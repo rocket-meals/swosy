@@ -14,6 +14,7 @@ import {View, Text} from "@/components/Themed";
 import {Platform} from "react-native";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import Regexp from "ajv-keywords/src/keywords/regexp";
+import {authentication, createDirectus, graphql, readMe, rest} from "@directus/sdk";
 
 // Define the type for Single Sign-On (SSO) providers
 type ButtonAuthProviderProps = {
@@ -42,12 +43,15 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
+	// https://docs.directus.io/self-hosted/sso.html
+
 	let providerName = provider.name;
 	providerName = providerName.charAt(0).toUpperCase() + providerName.slice(1);
 
 	const accessibilityLabel = translation_log_in_with + ': ' + providerName;
 	let text = translation_log_in_with + ': ' + providerName;
 
+	const desiredRedirectURL = UrlHelper.getURLToLogin();
 	const url = ServerAPI.getUrlToProviderLogin(provider);
 	//const disabled = !isSsoLoginPossible();
 	const disabled = false; // New flow supports SSO login with Expo Go
@@ -58,6 +62,22 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	if (isDebug) {
 		text += '\nDebug: URL: ' + url;
+	}
+
+	async function getToken(){
+		console.log("Get TOKEN");
+		const client = createDirectus('https://test.rocket-meals.de/rocket-meals/api/')
+			.with(authentication('session', { credentials: 'include' }))
+			.with(rest({ credentials: 'include' }))  // Include credentials in REST requests
+			.with(graphql({ credentials: 'include' })); // Include credentials in GraphQL requests
+
+		console.log("Call refresh");
+		const data = await client.refresh(); //
+
+		await client.request(readMe());
+
+		const token = await client.getToken();
+		console.log("token: "+token);
 	}
 
 	const onPress = async () => {
@@ -72,15 +92,13 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 						if (authWindow.closed) {
 							clearInterval(authCheckInterval);
 						} else {
-							const redirectUrl = new URL(authWindow.location.href);
-							const token = redirectUrl.searchParams.get(ServerAPI.getParamNameForDirectusAccessToken());
-							if (token) {
+							const currentLocationNewWindow = new URL(authWindow.location.href);
+							console.log("check current location: "+currentLocationNewWindow);
+							if(currentLocationNewWindow+""===desiredRedirectURL+""){
+								console.log("yes, arrived at the desired redirect url")
 								authWindow.close();
-								console.log('Token found in URL: ' + token);
 								clearInterval(authCheckInterval);
-								if(onSuccess) {
-									onSuccess(token);
-								}
+								getToken();
 							}
 						}
 					} catch (e: any) {
@@ -93,58 +111,14 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			}, WEB_CHECK_INTERVAL);
 		} else {
 			// Mobile-specific logic
+			const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
+
 			const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
 			console.log("ButtonAuthProvider result: ", result);
 
 			if (result.type === 'success' && result.url) {
-				try {
-					console.log("############");
-					console.log("ButtonAuthProvider result.url: ", result.url);
-
-					const directus_refresh_token_param_name = ServerAPI.getParamNameForDirectusAccessToken()
-					const match = result.url.match(new RegExp(directus_refresh_token_param_name + '=([^&]*)'))
-					let directusToken = match ? match[1] : null
-					if(!!directusToken && directusToken.endsWith('#')) { // remove trailing # if present
-						directusToken = directusToken.substring(0, directusToken.length - 1);
-					}
-
-					if (directusToken) {
-						console.log('Token found in URL: ' + directusToken);
-
-						/**
-						setModalConfig({
-							key: 'sort',
-							label: 'success ' + directusToken,
-							title: 'success: ' + directusToken,
-							accessibilityLabel: 'success',
-							renderAsContentPreItems: (key: string, hide: () => void) => (
-								<View style={{ width: '100%', height: '100%' }}>
-									<Text>{'result.url: ' + result.url}</Text>
-									<Text>{'Success: ' + directusToken}</Text>
-								</View>
-							),
-						});
-						*/
-
-						console.log('Success: ' + directusToken);
-
-						if(onSuccess) {
-							onSuccess(directusToken);
-						}
-					} else {
-						console.log('No token found in URL');
-						//showErrorModal(result.url);
-						if(onError) {
-							onError('No token found in URL');
-						}
-					}
-				} catch (e: any) {
-					console.log('Error while parsing URL: ', e);
-					//showErrorModal(result.url, e);
-					if(onError) {
-						onError(e);
-					}
-				}
+				console.log(result);
+				getToken();
 			}
 		}
 	};
