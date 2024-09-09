@@ -259,6 +259,8 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		} catch (err: any){
 			console.log("Err: ")
 			console.log(err);
+			debugObj.err = err
+			renderDebugItem(debugObj)
 		}
 	};
 
