@@ -133,12 +133,19 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	// Generate a random code verifier
 	const generateCodeVerifier = async () => {
-		const array = await Crypto.getRandomBytesAsync(32); // Generates 32 random bytes
-		return Array.from(array, byte => String.fromCharCode(33 + (byte % 94))).join('');
+		const bytesMinAmount = 32;
+		const bytesMaxAmount = 96;
+		const bytesAmount = bytesMinAmount;
+		const printableAsciiStart = 33; // ASCII value of '!'
+		const printableAsciiEnd = 126;  // ASCII value of '~'
+		const printableAsciiRange = printableAsciiEnd - printableAsciiStart + 1; // Calculate the range
+
+		const array = await Crypto.getRandomBytesAsync(bytesAmount); // Generates 32 random bytes
+		return Array.from(array, byte => String.fromCharCode(printableAsciiStart + (byte % printableAsciiRange))).join('');
 	};
 
 	// Generate a code challenge using the S256 method
-	const generateCodeChallenge = async (codeVerifier) => {
+	const generateCodeChallenge = async (codeVerifier: string) => {
 		const digest = await Crypto.digestStringAsync(
 			Crypto.CryptoDigestAlgorithm.SHA256,
 			codeVerifier,
