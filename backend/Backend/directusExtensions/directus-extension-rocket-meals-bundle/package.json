@@ -102,6 +102,11 @@
 				"source": "src/redirect-with-token-endpoint/index.ts"
 			},
 			{
+				"type": "endpoint",
+				"name": "proof-key-code-exchange-endpoint",
+				"source": "src/proof-key-code-exchange-endpoint/index.ts"
+			},
+			{
 				"type": "hook",
 				"name": "users-avatar-delete-hook",
 				"source": "src/users-avatar-delete-hook/index.ts"
@@ -144,5 +149,9 @@
 		"moment": "^2.30.1",
 		"object-hash": "^3.0.0",
 		"xml2js": "^0.6.2"
+	},
+	"peerDependencies": {
+		"ioredis": "^5.4.1",
+		"@directus/memory": "2.0.1"
 	}
 }
