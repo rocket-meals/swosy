@@ -153,18 +153,9 @@ export class ReportSchedule {
         return await canteenService.readMany(canteen_primary_keys);
     }
 
-    static getCanteenAliasList(canteenEntries: Canteens[]){
-        let canteen_alias_list = [];
-        for(let canteen of canteenEntries){
-            if(canteen.alias){
-                canteen_alias_list.push(canteen.alias);
-            }
-        }
-        return canteen_alias_list;
-    }
 
     private getCanteenAliasForMail(canteenEntries: Canteens[]){
-        let canteen_alias_list = ReportSchedule.getCanteenAliasList(canteenEntries);
+        let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
         const previewAmount = 3;
         let canteen_alias = "";
         if(canteen_alias_list.length > previewAmount){

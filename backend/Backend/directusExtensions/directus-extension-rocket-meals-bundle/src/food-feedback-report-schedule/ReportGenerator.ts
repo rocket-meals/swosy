@@ -11,7 +11,6 @@ import {
 import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {Filter} from "@directus/types/dist/filter";
-import {ReportSchedule} from "./ReportSchedule";
 import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
 
 export type ReportFoodEntryLabelType = {
@@ -46,11 +45,21 @@ export class ReportGenerator {
         this.apiContext = apiContext;
     }
 
+    static getCanteenAliasList(canteenEntries: Canteens[]){
+        let canteen_alias_list = [];
+        for(let canteen of canteenEntries){
+            if(canteen.alias){
+                canteen_alias_list.push(canteen.alias);
+            }
+        }
+        return canteen_alias_list;
+    }
+
     /**
      *
      * @param generateReportForDate
      * @param report_feedback_period_days
-     * @param canteenEntry
+     * @param canteenEntries
      * @return {Promise<{report_feedback_period_days: *, foods: {}}>}
       {
         "report_feedback_period_days": 180,
@@ -81,7 +90,7 @@ export class ReportGenerator {
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
         //console.log("Generate report for date: "+dateHumanReadable);
 
-        let canteen_alias_list = ReportSchedule.getCanteenAliasList(canteenEntries);
+        let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
         const canteen_alias = canteen_alias_list.join(", ");
 
         let report: ReportType = {
