@@ -217,10 +217,13 @@ export default defineEndpoint({
 			let allowed_redirect_urls: string[] = allowed_redirect_urls_raw?.split(",") || [];
 			//console.log("allowed_redirect_urls")
 			//console.log(allowed_redirect_urls)
-			if(!allowed_redirect_urls.includes(redirect_url)){
-				return res.status(400).json({ error: `Redirect url ${redirect_url} not configured for provider ${provider}. Please add them to AUTH_${providerCaps}_REDIRECT_ALLOW_LIST`});
+			if(typeof redirect_url==="string"){
+				if(!redirect_url.startsWith(PUBLIC_URL)){
+					if(!allowed_redirect_urls.includes(redirect_url)){
+						return res.status(400).json({ error: `Redirect url ${redirect_url} not configured for provider ${provider}. Please add them to AUTH_${providerCaps}_REDIRECT_ALLOW_LIST`});
+					}
+				}
 			}
-
 
 			// Store the code_challenge_app with the state as key in Redis
 			// When the server issues the authorization code in the authorization
