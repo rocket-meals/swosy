@@ -117,11 +117,8 @@ function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string 
 
 			// if all checks passed, then the redirect URL is allowed
 			return true;
-
 		}
 	}
-
-
 }
 
 function getValidUrl(url: string): URL | null {

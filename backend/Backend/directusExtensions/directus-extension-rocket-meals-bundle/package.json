@@ -135,6 +135,7 @@
 	"devDependencies": {
 		"@directus/extensions-sdk": "11.0.3",
 		"@types/jest": "^29.5.12",
+		"@types/ms": "^0.7.34",
 		"@types/node": "^20.12.13",
 		"@types/xml2js": "^0.4.14",
 		"jest": "^29.7.0",
@@ -151,7 +152,8 @@
 		"xml2js": "^0.6.2"
 	},
 	"peerDependencies": {
+		"@directus/memory": "2.0.1",
 		"ioredis": "^5.4.1",
-		"@directus/memory": "2.0.1"
+		"ms": "^2.1.3"
 	}
 }
