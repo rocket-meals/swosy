@@ -87,8 +87,8 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	const accessibilityLabel = translation_log_in_with + ': ' + providerName;
 	let text = translation_log_in_with + ': ' + providerName;
 
-	//const desiredRedirectURL = UrlHelper.getURLToLogin();
-	const desiredRedirectURL = ServerAPI.getServerUrl()+"/admin/login";
+	const desiredRedirectURL = UrlHelper.getURLToLogin();
+	//const desiredRedirectURL = ServerAPI.getServerUrl()+"/admin/login";
 
 	//const disabled = !isSsoLoginPossible();
 	const disabled = false; // New flow supports SSO login with Expo Go
