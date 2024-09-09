@@ -16,6 +16,7 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import Regexp from "ajv-keywords/src/keywords/regexp";
 import * as Crypto from 'expo-crypto';
 import {authentication, createDirectus, graphql, readMe, rest} from "@directus/sdk";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 // Define the type for Single Sign-On (SSO) providers
 type ButtonAuthProviderProps = {
@@ -43,6 +44,39 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	const translation_log_in_with = useTranslation(TranslationKeys.sign_in_with);
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
+
+	function renderDebugItem(debugItem: Record<any, any>){
+		let renderedItems: any[] = [];
+		let keys = Object.keys(debugItem);
+		for(let key of keys){
+			renderedItems.push(<View>
+				<Text>
+					{key+":"}
+				</Text>
+				<Text>{
+					JSON.stringify(debugItem[key], null, 2)
+				}</Text>
+				<Text>
+					{"--------"}
+				</Text>
+			</View>)
+		}
+
+		setModalConfig({
+			title: "DEBUG",
+			accessibilityLabel: accessibilityLabel,
+			label: "DEBUG",
+			key: 'DEBUG',
+			renderAsContentInsteadItems: (key: string, hide: () => void) => {
+				return(
+					<MyScrollView>
+						{renderedItems}
+					</MyScrollView>
+				)
+			}
+		})
+
+	}
 
 	// https://docs.directus.io/self-hosted/sso.html
 
@@ -116,15 +150,22 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	const onPress = async () => {
 		console.log("START PKCE");
+		let debugObj: Record<any, any> = {}
 		const authorize_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/authorize'
+		debugObj.authorize_url = authorize_url
+		renderDebugItem(debugObj)
 		const provider = providerNameInDirectusAuthProviderList;
 		const redirect_url = UrlHelper.getURLToLogin();
 		const code_challenge_method = "S256";
 		console.log("code_verifier")
 		const code_verifier = await generateCodeVerifier();
+		debugObj.code_verifier = code_verifier
+		renderDebugItem(debugObj)
 		console.log(code_verifier)
 		console.log("code_challenge")
 		const code_challenge = await generateCodeChallenge(code_verifier);
+		debugObj.code_challenge = code_challenge
+		renderDebugItem(debugObj)
 		console.log(code_challenge)
 
 		const requestBody = {
@@ -152,6 +193,9 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			const urlToProviderLogin = json.urlToProviderLogin;
 			const url = urlToProviderLogin;
 
+			debugObj.urlToProviderLogin = urlToProviderLogin
+			renderDebugItem(debugObj)
+
 			if (PlatformHelper.isWeb()) {
 				const WEB_CHECK_INTERVAL = 25; // ms , set to 25ms to get a fast response
 
@@ -173,6 +217,9 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 									const code = code_splits[1];
 									console.log(code);
 
+									debugObj.code = code
+									renderDebugItem(debugObj)
+
 									clearInterval(authCheckInterval);
 									getToken(code_verifier, code);
 								}
@@ -193,12 +240,19 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
 				console.log("ButtonAuthProvider result: ", result);
 
+				debugObj.result = result
+				renderDebugItem(debugObj)
+
 				if (result.type === 'success' && result.url) {
 					console.log("Redirected?")
 					const currentLocation = result.url;
 					const code_splits = (currentLocation+"").split("code=");
 					const code = code_splits[1];
 					console.log(code);
+
+					debugObj.code = code
+					renderDebugItem(debugObj)
+
 					getToken(code_verifier, code);
 				}
 			}

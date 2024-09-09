@@ -20,9 +20,9 @@ const redis_prefix_code_challenge = "pkce_code_challenge_";
 const redis_prefix_save_session = "pkce_save_session_"
 
 async function setRedisKvWithDefaultTtl(key: string, value: string){
-	//console.log("setRedisKvWithDefaultTtl: key: "+key)
-	//console.log("value: "+value)
-	//console.log("-----")
+	mylog("setRedisKvWithDefaultTtl: key: "+key)
+	mylog("value: "+value)
+	mylog("-----")
 	const duration = 300; // max Time To Live (TTL) to 300s = 5min
 	await redis.set(key, value, 'EX', duration);
 }
@@ -31,26 +31,30 @@ async function getRedisKv(key: string){
 	return await redis.get(key);
 }
 
+function mylog(message: any){
+	console.log(message);
+}
+
 type AuthorizationCodeAndRedirectType = {
 	authorization_code: string,
 	redirect_url: string
 }
 
 async function setStateInformation(state: string, authCodeAndRedirect: AuthorizationCodeAndRedirectType){
-	//console.log("setStateInformation: state: "+state);
-	//console.log(JSON.stringify(authCodeAndRedirect, null, 2))
-	//console.log("-----")
+	mylog("setStateInformation: state: "+state);
+	mylog(JSON.stringify(authCodeAndRedirect, null, 2))
+	mylog("-----")
 	await setRedisKvWithDefaultTtl(redis_prefix_save_session+state, JSON.stringify(authCodeAndRedirect))
 }
 
 async function getStateInformation(state: string): Promise<AuthorizationCodeAndRedirectType | null> {
 	let savedKey = await redis.get(redis_prefix_save_session+state);
-	//console.log("getStateInformation: state: "+state);
-	//console.log(savedKey)
+	mylog("getStateInformation: state: "+state);
+	mylog(savedKey)
 	if(!!savedKey){
 		let obj = JSON.parse(savedKey) as AuthorizationCodeAndRedirectType
-		//console.log(JSON.stringify(obj, null, 2))
-		//console.log("-----")
+		mylog(JSON.stringify(obj, null, 2))
+		mylog("-----")
 		return obj;
 	}
 	return null;
@@ -69,8 +73,8 @@ type CodeChallengeRedisEntryType = {
 
 async function generateRefreshToken(directus_session_token: string, accountability: any, userId: string, database: Knex<any, any[]>){
 	// we need to obtain the directus_refresh_token from the directus_session_token
-	//console.log("Redirect with token endpoint: directus_session_token: " + directus_session_token)
-	//console.log("Redirect with token endpoint: userId: " + userId)
+	mylog("Redirect with token endpoint: directus_session_token: " + directus_session_token)
+	mylog("Redirect with token endpoint: userId: " + userId)
 	if(!userId){
 		throw new Error("No user Id given")
 	}
@@ -101,19 +105,19 @@ async function generateRefreshToken(directus_session_token: string, accountabili
 }
 
 async function associateCodeChallengeWithCode(authorization_code: string, code_challenge: CodeChallengeRedisEntryType){
-	//console.log("associateCodeChallengeWithCode: state: "+authorization_code);
-	//console.log(JSON.stringify(code_challenge, null, 2))
-	//console.log("-----")
+	mylog("associateCodeChallengeWithCode: state: "+authorization_code);
+	mylog(JSON.stringify(code_challenge, null, 2))
+	mylog("-----")
 	await setRedisKvWithDefaultTtl(redis_prefix_code_challenge+authorization_code, JSON.stringify(code_challenge))
 }
 
 async function getAssociatedCodeChallengeFromCode(authorization_code: string): Promise<CodeChallengeRedisEntryType | null> {
 	let savedKey = await redis.get(redis_prefix_code_challenge+authorization_code);
-	//console.log("getAssociatedCodeChallengeFromCode: authorization_code: "+authorization_code);
-	//console.log(savedKey)
+	mylog("getAssociatedCodeChallengeFromCode: authorization_code: "+authorization_code);
+	mylog(savedKey)
 	if(!!savedKey){
 		let obj = JSON.parse(savedKey) as CodeChallengeRedisEntryType
-		//console.log(JSON.stringify(obj, null, 2))
+		mylog(JSON.stringify(obj, null, 2))
 		return obj;
 	}
 	return null;
@@ -144,9 +148,9 @@ export default defineEndpoint({
 
 		// 4.3.  Client Sends the Code Challenge with the Authorization Request - Directus Extension
 		router.post('/authorize', async (req, res) => {
-			//console.log("Authorize Called")
+			mylog("Authorize Called")
 			const { provider, code_challenge, redirect_url, code_challenge_method } = req.body;
-			//console.log(req.body);
+			mylog(req.body);
 
 			//   The client sends the code challenge as part of the OAuth 2.0
 			//    Authorization Request (Section 4.1.1 of [RFC6749]) using the
@@ -186,17 +190,17 @@ export default defineEndpoint({
 				return res.status(400).json({ error: 'Missing required parameter provider. Has to be an auth provider configured in directus.'});
 			}
 			const configured_auth_providers_raw = env?.["AUTH_PROVIDERS"]
-			//console.log("configured_auth_providers_raw:")
-			//console.log(configured_auth_providers_raw)
-			//console.log("type of: "+typeof configured_auth_providers_raw);
+			mylog("configured_auth_providers_raw:")
+			mylog(configured_auth_providers_raw)
+			mylog("type of: "+typeof configured_auth_providers_raw);
 			let configured_auth_providers: string[] = [];
 			if(Array.isArray(configured_auth_providers_raw)){
 				configured_auth_providers = configured_auth_providers_raw;
 			} else {
 				configured_auth_providers = configured_auth_providers_raw?.split(",");
 			}
-			//console.log("configured_auth_providers")
-			//console.log(configured_auth_providers);
+			mylog("configured_auth_providers")
+			mylog(configured_auth_providers);
 
 
 			if(!configured_auth_providers.includes(provider)){
@@ -211,9 +215,9 @@ export default defineEndpoint({
 			// allowed redirects (urls) are in env variables: AUTH_<PROVIDER>_REDIRECT_ALLOW_LIST - https://docs.directus.io/self-hosted/sso.html#seamless-sso
 			const providerCaps = provider.toUpperCase()
 			let allowed_redirect_urls_raw = env?.[`AUTH_${providerCaps}_REDIRECT_ALLOW_LIST`]
-			//console.log("allowed_redirect_urls_raw")
-			//console.log(allowed_redirect_urls_raw)
-			//console.log("type of: "+typeof allowed_redirect_urls_raw);
+			mylog("allowed_redirect_urls_raw")
+			mylog(allowed_redirect_urls_raw)
+			mylog("type of: "+typeof allowed_redirect_urls_raw);
 			let allowed_redirect_urls: string[] = []
 			if(!!allowed_redirect_urls_raw){
 				if(typeof allowed_redirect_urls_raw==="string"){
@@ -222,8 +226,8 @@ export default defineEndpoint({
 					allowed_redirect_urls = allowed_redirect_urls_raw;
 				}
 			}
-			//console.log("allowed_redirect_urls")
-			//console.log(allowed_redirect_urls)
+			mylog("allowed_redirect_urls")
+			mylog(allowed_redirect_urls)
 			if(typeof redirect_url==="string"){
 				if(!redirect_url.startsWith(PUBLIC_URL)){
 					if(!allowed_redirect_urls.includes(redirect_url)){
@@ -269,8 +273,8 @@ export default defineEndpoint({
 
 		// Route to save the session using state after successful OAuth2 redirect
 		router.get('/save-session', async (req, res) => {
-			//console.log("SAVE SESSION")
-			//console.log(req.cookies);
+			mylog("SAVE SESSION")
+			mylog(req.cookies);
 			const directus_session_token = req.cookies.directus_session_token;
 
 			const { state } = req.query;
