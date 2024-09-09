@@ -14,6 +14,7 @@ import {View, Text} from "@/components/Themed";
 import {Platform} from "react-native";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import Regexp from "ajv-keywords/src/keywords/regexp";
+import * as Crypto from 'expo-crypto';
 import {authentication, createDirectus, graphql, readMe, rest} from "@directus/sdk";
 
 // Define the type for Single Sign-On (SSO) providers
@@ -46,13 +47,15 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	// https://docs.directus.io/self-hosted/sso.html
 
 	let providerName = provider.name;
+	const providerNameInDirectusAuthProviderList = provider.name;
 	providerName = providerName.charAt(0).toUpperCase() + providerName.slice(1);
 
 	const accessibilityLabel = translation_log_in_with + ': ' + providerName;
 	let text = translation_log_in_with + ': ' + providerName;
 
-	const desiredRedirectURL = UrlHelper.getURLToLogin();
-	const url = ServerAPI.getUrlToProviderLogin(provider);
+	//const desiredRedirectURL = UrlHelper.getURLToLogin();
+	const desiredRedirectURL = ServerAPI.getServerUrl()+"/admin/login";
+
 	//const disabled = !isSsoLoginPossible();
 	const disabled = false; // New flow supports SSO login with Expo Go
 
@@ -60,27 +63,92 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		text += '\nDoes not work on local ExpoGo';
 	}
 
-	if (isDebug) {
-		text += '\nDebug: URL: ' + url;
-	}
-
-	async function getToken(){
+	async function getToken(code_verifier: string, code: string){
 		console.log("Get TOKEN");
-		const client = createDirectus('https://test.rocket-meals.de/rocket-meals/api/')
-			.with(authentication('session', { credentials: 'include' }))
-			.with(rest({ credentials: 'include' }))  // Include credentials in REST requests
-			.with(graphql({ credentials: 'include' })); // Include credentials in GraphQL requests
+		try{
+			// Fetching refresh token explicitly if not set by session cookie
+			const token_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/token'
 
-		console.log("Call refresh");
-		const data = await client.refresh(); //
+			const requestBody = {
+				code_verifier: code_verifier,
+				code: code
+			};
 
-		await client.request(readMe());
+			const response = await fetch(token_url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestBody),
+			});
 
-		const token = await client.getToken();
-		console.log("token: "+token);
+			console.log(response);
+			const json = await response.json();
+			// const directus_session_token = json.directus_session_token; // not send anymore
+			const directus_refresh_token = json.directus_refresh_token;
+			if(!!directus_refresh_token){
+				onSuccess(directus_refresh_token);
+			}
+
+		} catch (err: any){
+			console.log("error: ")
+			console.log(err);
+			console.log(err.toString())
+		}
 	}
+
+	// Generate a random code verifier
+	const generateCodeVerifier = async () => {
+		const array = await Crypto.getRandomBytesAsync(32); // Generates 32 random bytes
+		return Array.from(array, byte => String.fromCharCode(33 + (byte % 94))).join('');
+	};
+
+	// Generate a code challenge using the S256 method
+	const generateCodeChallenge = async (codeVerifier) => {
+		const digest = await Crypto.digestStringAsync(
+			Crypto.CryptoDigestAlgorithm.SHA256,
+			codeVerifier,
+			{ encoding: Crypto.CryptoEncoding.BASE64 }
+		);
+		// Adjust the base64url encoding
+		return digest.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+	};
 
 	const onPress = async () => {
+		console.log("START PKCE");
+		const authorize_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/authorize'
+		const provider = providerNameInDirectusAuthProviderList;
+		const redirect_url = UrlHelper.getURLToLogin();
+		const code_challenge_method = "S256";
+		console.log("code_verifier")
+		const code_verifier = await generateCodeVerifier();
+		console.log(code_verifier)
+		console.log("code_challenge")
+		const code_challenge = await generateCodeChallenge(code_verifier);
+		console.log(code_challenge)
+
+		const requestBody = {
+			provider: provider, // e.g., 'google'
+			code_challenge: code_challenge,
+			redirect_url: redirect_url, // e.g., 'myapp://redirect'
+			code_challenge_method: code_challenge_method, // or 'plain' if not using S256
+		};
+
+		const response = await fetch(authorize_url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestBody),
+		});
+
+		console.log("Response:")
+		console.log(response)
+		let json = await response.json()
+		console.log(json)
+		const urlToProviderLogin = json.urlToProviderLogin;
+		const url = urlToProviderLogin;
+
 		if (PlatformHelper.isWeb()) {
 			const WEB_CHECK_INTERVAL = 25; // ms , set to 25ms to get a fast response
 
@@ -94,11 +162,16 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 						} else {
 							const currentLocationNewWindow = new URL(authWindow.location.href);
 							console.log("check current location: "+currentLocationNewWindow);
-							if(currentLocationNewWindow+""===desiredRedirectURL+""){
+
+							if((currentLocationNewWindow+"").startsWith(desiredRedirectURL+"")){
 								console.log("yes, arrived at the desired redirect url")
 								authWindow.close();
+								const code_splits = (currentLocationNewWindow+"").split("code=");
+								const code = code_splits[1];
+								console.log(code);
+
 								clearInterval(authCheckInterval);
-								getToken();
+								getToken(code_verifier, code);
 							}
 						}
 					} catch (e: any) {
@@ -110,15 +183,20 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				}
 			}, WEB_CHECK_INTERVAL);
 		} else {
-			// Mobile-specific logic
-			const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
-
-			const result = await WebBrowser.openAuthSessionAsync(url, UrlHelper.getURLToLogin());
+			const options:  WebBrowser.AuthSessionOpenOptions = {
+				preferEphemeralSession: false // iOS browser doesn’t share cookies or other browsing data between the authentication session
+			}
+			console.log("desiredRedirectURL: "+desiredRedirectURL)
+			let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
 			console.log("ButtonAuthProvider result: ", result);
 
 			if (result.type === 'success' && result.url) {
-				console.log(result);
-				getToken();
+				console.log("Redirected?")
+				const currentLocation = result.url;
+				const code_splits = (currentLocation+"").split("code=");
+				const code = code_splits[1];
+				console.log(code);
+				getToken(code_verifier, code);
 			}
 		}
 	};

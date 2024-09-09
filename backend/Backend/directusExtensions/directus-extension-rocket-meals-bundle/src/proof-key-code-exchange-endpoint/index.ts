@@ -1,6 +1,8 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
 import Redis from 'ioredis';
-import crypto from 'crypto'; // Use Node.js crypto module for secure comparisons
+import ms from 'ms';
+import crypto from 'crypto';
+import {Knex} from "knex"; // Use Node.js crypto module for secure comparisons
 
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL || ''; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
@@ -18,6 +20,9 @@ const redis_prefix_code_challenge = "pkce_code_challenge_";
 const redis_prefix_save_session = "pkce_save_session_"
 
 async function setRedisKvWithDefaultTtl(key: string, value: string){
+	//console.log("setRedisKvWithDefaultTtl: key: "+key)
+	//console.log("value: "+value)
+	//console.log("-----")
 	const duration = 300; // max Time To Live (TTL) to 300s = 5min
 	await redis.set(key, value, 'EX', duration);
 }
@@ -32,13 +37,21 @@ type AuthorizationCodeAndRedirectType = {
 }
 
 async function setStateInformation(state: string, authCodeAndRedirect: AuthorizationCodeAndRedirectType){
+	//console.log("setStateInformation: state: "+state);
+	//console.log(JSON.stringify(authCodeAndRedirect, null, 2))
+	//console.log("-----")
 	await setRedisKvWithDefaultTtl(redis_prefix_save_session+state, JSON.stringify(authCodeAndRedirect))
 }
 
 async function getStateInformation(state: string): Promise<AuthorizationCodeAndRedirectType | null> {
 	let savedKey = await redis.get(redis_prefix_save_session+state);
+	//console.log("getStateInformation: state: "+state);
+	//console.log(savedKey)
 	if(!!savedKey){
-		return JSON.parse(savedKey) as AuthorizationCodeAndRedirectType
+		let obj = JSON.parse(savedKey) as AuthorizationCodeAndRedirectType
+		//console.log(JSON.stringify(obj, null, 2))
+		//console.log("-----")
+		return obj;
 	}
 	return null;
 }
@@ -51,16 +64,57 @@ type CodeChallengeRedisEntryType = {
 	code_challenge: string,
 	code_challenge_method: string,
 	directus_refresh_token: string | null
+	directus_session_token: string | null
+}
+
+async function generateRefreshToken(directus_session_token: string, accountability: any, userId: string, database: Knex<any, any[]>){
+	// we need to obtain the directus_refresh_token from the directus_session_token
+	//console.log("Redirect with token endpoint: directus_session_token: " + directus_session_token)
+	//console.log("Redirect with token endpoint: userId: " + userId)
+	if(!userId){
+		throw new Error("No user Id given")
+	}
+
+	const knex = database;
+
+	/**
+	 * Start of copy: https://github.com/directus/directus/blob/main/api/src/services/authentication.ts Login
+	 */
+
+	const { nanoid } = await import('nanoid');
+
+	const refreshToken = nanoid(64);
+	const msRefreshTokenTTL: number = ms(String(env['REFRESH_TOKEN_TTL'])) || 0;
+	const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
+
+	await knex('directus_sessions').insert({
+		token: refreshToken,
+		user: userId,
+		expires: refreshTokenExpiration,
+		ip: accountability?.ip,
+		user_agent: accountability?.userAgent,
+		origin: accountability?.origin,
+	});
+
+	await knex('directus_sessions').delete().where('expires', '<', new Date());
+	return refreshToken;
 }
 
 async function associateCodeChallengeWithCode(authorization_code: string, code_challenge: CodeChallengeRedisEntryType){
+	//console.log("associateCodeChallengeWithCode: state: "+authorization_code);
+	//console.log(JSON.stringify(code_challenge, null, 2))
+	//console.log("-----")
 	await setRedisKvWithDefaultTtl(redis_prefix_code_challenge+authorization_code, JSON.stringify(code_challenge))
 }
 
 async function getAssociatedCodeChallengeFromCode(authorization_code: string): Promise<CodeChallengeRedisEntryType | null> {
 	let savedKey = await redis.get(redis_prefix_code_challenge+authorization_code);
+	//console.log("getAssociatedCodeChallengeFromCode: authorization_code: "+authorization_code);
+	//console.log(savedKey)
 	if(!!savedKey){
-		return JSON.parse(savedKey) as CodeChallengeRedisEntryType
+		let obj = JSON.parse(savedKey) as CodeChallengeRedisEntryType
+		//console.log(JSON.stringify(obj, null, 2))
+		return obj;
 	}
 	return null;
 }
@@ -77,13 +131,22 @@ export default defineEndpoint({
 	id: EndpointTopName,
 	handler: (router, apiContext) => {
 
+		const {
+			services,
+			database,
+			getSchema,
+			env,
+			logger
+		} = apiContext;
 
 		// 4.1.  Client Creates a Code Verifier - Mobile App
 		// 4.2.  Client Creates the Code Challenge - Mobile App
 
 		// 4.3.  Client Sends the Code Challenge with the Authorization Request - Directus Extension
 		router.post('/authorize', async (req, res) => {
+			//console.log("Authorize Called")
 			const { provider, code_challenge, redirect_url, code_challenge_method } = req.body;
+			//console.log(req.body);
 
 			//   The client sends the code challenge as part of the OAuth 2.0
 			//    Authorization Request (Section 4.1.1 of [RFC6749]) using the
@@ -123,7 +186,19 @@ export default defineEndpoint({
 				return res.status(400).json({ error: 'Missing required parameter provider. Has to be an auth provider configured in directus.'});
 			}
 			const configured_auth_providers_raw = env?.["AUTH_PROVIDERS"]
-			const configured_auth_providers: string[] = configured_auth_providers_raw?.split(",") || [];
+			//console.log("configured_auth_providers_raw:")
+			//console.log(configured_auth_providers_raw)
+			//console.log("type of: "+typeof configured_auth_providers_raw);
+			let configured_auth_providers: string[] = [];
+			if(Array.isArray(configured_auth_providers_raw)){
+				configured_auth_providers = configured_auth_providers_raw;
+			} else {
+				configured_auth_providers = configured_auth_providers_raw?.split(",");
+			}
+			//console.log("configured_auth_providers")
+			//console.log(configured_auth_providers);
+
+
 			if(!configured_auth_providers.includes(provider)){
 				return res.status(400).json({ error: `Provider ${provider} not listed in AUTH_PROVIDERS`});
 			}
@@ -134,10 +209,16 @@ export default defineEndpoint({
 			}
 			// Redirect url required
 			// allowed redirects (urls) are in env variables: AUTH_<PROVIDER>_REDIRECT_ALLOW_LIST - https://docs.directus.io/self-hosted/sso.html#seamless-sso
-			let allowed_redirect_urls_raw = env?.[`AUTH_${provider}_REDIRECT_ALLOW_LIST`]
+			const providerCaps = provider.toUpperCase()
+			let allowed_redirect_urls_raw = env?.[`AUTH_${providerCaps}_REDIRECT_ALLOW_LIST`]
+			//console.log("allowed_redirect_urls_raw")
+			//console.log(allowed_redirect_urls_raw)
+			//console.log("type of: "+typeof allowed_redirect_urls_raw);
 			let allowed_redirect_urls: string[] = allowed_redirect_urls_raw?.split(",") || [];
+			//console.log("allowed_redirect_urls")
+			//console.log(allowed_redirect_urls)
 			if(!allowed_redirect_urls.includes(redirect_url)){
-				return res.status(400).json({ error: `Redirect url ${redirect_url} not configured for provider ${provider}. Please add them to AUTH_${provider}_REDIRECT_ALLOW_LIST`});
+				return res.status(400).json({ error: `Redirect url ${redirect_url} not configured for provider ${provider}. Please add them to AUTH_${providerCaps}_REDIRECT_ALLOW_LIST`});
 			}
 
 
@@ -155,6 +236,7 @@ export default defineEndpoint({
 			await associateCodeChallengeWithCode(authorization_code, {
 				code_challenge: code_challenge_app,
 				code_challenge_method: code_challenge_method_app,
+				directus_session_token: null,
 				directus_refresh_token: null, // currently we have not saved the directus_refresh_token. After the OAuth2 Flow we will add it there
 			});
 
@@ -170,17 +252,25 @@ export default defineEndpoint({
 			const redirectUrlToSaveSession = `${PUBLIC_URL}/${EndpointTopName}/save-session?state=${state}`;
 
 			const urlToProviderLogin = getUrlToProviderLogin(provider, redirectUrlToSaveSession);
-			res.redirect(urlToProviderLogin);
+			res.json({
+				urlToProviderLogin: urlToProviderLogin
+			})
 		});
 
 		// Route to save the session using state after successful OAuth2 redirect
 		router.get('/save-session', async (req, res) => {
-			const directus_refresh_token = req.cookies.directus_refresh_token;
+			//console.log("SAVE SESSION")
+			//console.log(req.cookies);
+			const directus_session_token = req.cookies.directus_session_token;
 
 			const { state } = req.query;
 
 			if (!state) {
 				return res.status(400).json({ error: 'Missing required parameter state.' });
+			}
+
+			if(!directus_session_token){
+				return res.status(400).json({ error: 'Missing directus_session_token in cookies.' });
 			}
 
 			let saved_authorization_code_and_redirect = await getStateInformation(state.toString());
@@ -203,11 +293,22 @@ export default defineEndpoint({
 				return res.status(400).json({ error: 'No information found for saved authorization code. Might be too long' });
 			}
 
+			const accountability = req?.accountability;
+			const userId = req?.accountability?.user;
+
+			if(!accountability || !userId){
+				return res.status(400).json({ error: 'No accountability or userId found.' });
+			}
+
+			let directus_refresh_token = await generateRefreshToken(directus_session_token, accountability, userId, database);
+
+
 			// Save the directus refresh token in the code challenge
 			await associateCodeChallengeWithCode(saved_authorization_code_and_redirect.authorization_code, {
 				code_challenge: storedCodeChallenge?.code_challenge,
 				code_challenge_method: storedCodeChallenge?.code_challenge_method,
-				directus_refresh_token: directus_refresh_token, // currently we have not saved the directus_refresh_token. After the OAuth2 Flow we will add it there
+				directus_refresh_token: directus_refresh_token,
+				directus_session_token: directus_session_token, // currently we have not saved the directus_refresh_token. After the OAuth2 Flow we will add it there
 			});
 
 			// now redirect the user to the previously verified redirect url
@@ -257,19 +358,25 @@ export default defineEndpoint({
 					return res.status(400).json({ error: 'Invalid code verifier.' });
 				}
 
-				const directus_refresh_token = storedCodeChallenge.directus_refresh_token;
-				if (!directus_refresh_token) {
-					return res.status(400).json({ error: 'Session not found or expired.' });
+				const directus_session_token = storedCodeChallenge.directus_session_token;
+				if (!directus_session_token) {
+					return res.status(400).json({ error: 'Session not found or expired. No directus_refresh_token found' });
 				}
+
+				const directus_refresh_token = storedCodeChallenge.directus_refresh_token;
 
 				// If valid, clear the stored state and session
 				await clearAssociatedCodeChallengeFromCode(authorization_code);
 
 				// Return the session or token associated with the validated request
-				res.json({ message: 'Validation successful', directus_refresh_token: directus_refresh_token });
-			} catch (error) {
-				console.error('Error during validation:', error);
-				res.status(500).json({ error: 'Internal server error.' });
+				res.json({
+					message: 'Validation successful',
+					directus_refresh_token: directus_refresh_token,
+					//directus_session_token: directus_session_token // https://github.com/directus/directus/issues/21757#issuecomment-1992539944  https://github.com/directus/directus/issues/21757
+				});
+			} catch (error: any) {
+				//console.error('Error during validation:', error);
+				res.status(500).json({ error: 'Internal server error.', message: error.toString() });
 			}
 		});
 	},
