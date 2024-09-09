@@ -134,70 +134,77 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			code_challenge_method: code_challenge_method, // or 'plain' if not using S256
 		};
 
-		const response = await fetch(authorize_url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(requestBody),
-		});
+		console.log("Fetch authorize url: "+authorize_url);
 
-		console.log("Response:")
-		console.log(response)
-		let json = await response.json()
-		console.log(json)
-		const urlToProviderLogin = json.urlToProviderLogin;
-		const url = urlToProviderLogin;
+		try{
+			const response = await fetch(authorize_url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestBody),
+			});
 
-		if (PlatformHelper.isWeb()) {
-			const WEB_CHECK_INTERVAL = 25; // ms , set to 25ms to get a fast response
+			console.log("Response:")
+			console.log(response)
+			let json = await response.json()
+			console.log(json)
+			const urlToProviderLogin = json.urlToProviderLogin;
+			const url = urlToProviderLogin;
 
-			// Web-specific logic
-			const authWindow = window.open(url, '_blank', 'width=500,height=600');
-			const authCheckInterval = setInterval(() => {
-				if(!!authWindow){
-					try {
-						if (authWindow.closed) {
-							clearInterval(authCheckInterval);
-						} else {
-							const currentLocationNewWindow = new URL(authWindow.location.href);
-							console.log("check current location: "+currentLocationNewWindow);
+			if (PlatformHelper.isWeb()) {
+				const WEB_CHECK_INTERVAL = 25; // ms , set to 25ms to get a fast response
 
-							if((currentLocationNewWindow+"").startsWith(desiredRedirectURL+"")){
-								console.log("yes, arrived at the desired redirect url")
-								authWindow.close();
-								const code_splits = (currentLocationNewWindow+"").split("code=");
-								const code = code_splits[1];
-								console.log(code);
-
+				// Web-specific logic
+				const authWindow = window.open(url, '_blank', 'width=500,height=600');
+				const authCheckInterval = setInterval(() => {
+					if(!!authWindow){
+						try {
+							if (authWindow.closed) {
 								clearInterval(authCheckInterval);
-								getToken(code_verifier, code);
+							} else {
+								const currentLocationNewWindow = new URL(authWindow.location.href);
+								console.log("check current location: "+currentLocationNewWindow);
+
+								if((currentLocationNewWindow+"").startsWith(desiredRedirectURL+"")){
+									console.log("yes, arrived at the desired redirect url")
+									authWindow.close();
+									const code_splits = (currentLocationNewWindow+"").split("code=");
+									const code = code_splits[1];
+									console.log(code);
+
+									clearInterval(authCheckInterval);
+									getToken(code_verifier, code);
+								}
+							}
+						} catch (e: any) {
+							// Handle errors if needed
+							if(onError) {
+								onError(e);
 							}
 						}
-					} catch (e: any) {
-						// Handle errors if needed
-						if(onError) {
-							onError(e);
-						}
 					}
+				}, WEB_CHECK_INTERVAL);
+			} else {
+				const options:  WebBrowser.AuthSessionOpenOptions = {
+					preferEphemeralSession: false // iOS browser doesn’t share cookies or other browsing data between the authentication session
 				}
-			}, WEB_CHECK_INTERVAL);
-		} else {
-			const options:  WebBrowser.AuthSessionOpenOptions = {
-				preferEphemeralSession: false // iOS browser doesn’t share cookies or other browsing data between the authentication session
-			}
-			console.log("desiredRedirectURL: "+desiredRedirectURL)
-			let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
-			console.log("ButtonAuthProvider result: ", result);
+				console.log("desiredRedirectURL: "+desiredRedirectURL)
+				let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
+				console.log("ButtonAuthProvider result: ", result);
 
-			if (result.type === 'success' && result.url) {
-				console.log("Redirected?")
-				const currentLocation = result.url;
-				const code_splits = (currentLocation+"").split("code=");
-				const code = code_splits[1];
-				console.log(code);
-				getToken(code_verifier, code);
+				if (result.type === 'success' && result.url) {
+					console.log("Redirected?")
+					const currentLocation = result.url;
+					const code_splits = (currentLocation+"").split("code=");
+					const code = code_splits[1];
+					console.log(code);
+					getToken(code_verifier, code);
+				}
 			}
+		} catch (err: any){
+			console.log("Err: ")
+			console.log(err);
 		}
 	};
 
