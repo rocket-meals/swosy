@@ -155,7 +155,7 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		debugObj.authorize_url = authorize_url
 		renderDebugItem(debugObj)
 		const provider = providerNameInDirectusAuthProviderList;
-		const redirect_url = UrlHelper.getURLToLogin();
+		const redirect_url = desiredRedirectURL;
 		const code_challenge_method = "S256";
 		console.log("code_verifier")
 		const code_verifier = await generateCodeVerifier();
