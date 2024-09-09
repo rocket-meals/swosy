@@ -265,7 +265,7 @@ export class ServerAPI {
 	static getUrlToProviderLogin(provider: AuthProvider) {
 		const providerName = provider.name.toLowerCase();
 		const redirectURL = UrlHelper.getURLToLogin();
-		const redirect_with_access_token = '?redirect=' + ServerAPI.getServerUrl() + '/redirect-with-token?redirect=' + redirectURL + '?' + ServerAPI.getParamNameForDirectusAccessToken() + '=';
+		const redirect_with_access_token = '?redirect=' + redirectURL;
 		const totalURL = ServerAPI.getServerUrl() + '/auth/login/' + providerName + redirect_with_access_token;
 		return totalURL;
 	}
