@@ -214,7 +214,14 @@ export default defineEndpoint({
 			//console.log("allowed_redirect_urls_raw")
 			//console.log(allowed_redirect_urls_raw)
 			//console.log("type of: "+typeof allowed_redirect_urls_raw);
-			let allowed_redirect_urls: string[] = allowed_redirect_urls_raw?.split(",") || [];
+			let allowed_redirect_urls: string[] = []
+			if(!!allowed_redirect_urls_raw){
+				if(typeof allowed_redirect_urls_raw==="string"){
+					allowed_redirect_urls = allowed_redirect_urls_raw?.split(",");
+				} else {
+					allowed_redirect_urls = allowed_redirect_urls_raw;
+				}
+			}
 			//console.log("allowed_redirect_urls")
 			//console.log(allowed_redirect_urls)
 			if(typeof redirect_url==="string"){
