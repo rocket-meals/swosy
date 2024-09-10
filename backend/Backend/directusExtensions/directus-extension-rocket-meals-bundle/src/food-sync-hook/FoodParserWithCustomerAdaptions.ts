@@ -26,13 +26,16 @@ export class FoodParserWithCustomerAdaptions implements FoodParserInterface {
         let foodOffers = await this.foodParserInterface.getFoodoffersForParser();
         switch (EnvVariableHelper.getSyncForCustomer()) {
             case SyncForCustomerEnum.HANNOVER:
-                foodOffers = this.adaptFoodOffersForCustomerHannover(foodOffers);
+                foodOffers = this.adaptFoodOffersRemoveFiber(foodOffers);
+                break;
+            case SyncForCustomerEnum.OSNABRUECK:
+                foodOffers = this.adaptFoodOffersRemoveFiber(foodOffers);
                 break;
         }
         return foodOffers;
     }
 
-    private adaptFoodOffersForCustomerHannover(foodOffers: FoodoffersTypeForParser[]): FoodoffersTypeForParser[] {
+    private adaptFoodOffersRemoveFiber(foodOffers: FoodoffersTypeForParser[]): FoodoffersTypeForParser[] {
         // Some customer specific adaptions
         for (let foodOffer of foodOffers) {
             let basicFoodofferData = foodOffer.basicFoodofferData;
@@ -47,13 +50,16 @@ export class FoodParserWithCustomerAdaptions implements FoodParserInterface {
         let foodList = await this.foodParserInterface.getFoodsListForParser();
         switch (EnvVariableHelper.getSyncForCustomer()) {
             case SyncForCustomerEnum.HANNOVER:
-                foodList = this.adaptFoodsListForCustomerHannover(foodList);
+                foodList = this.adaptFoodsListRemoveFiber(foodList);
+                break;
+            case SyncForCustomerEnum.OSNABRUECK:
+                foodList = this.adaptFoodsListRemoveFiber(foodList);
                 break;
         }
         return foodList;
     }
 
-    private adaptFoodsListForCustomerHannover(foodList: FoodsInformationTypeForParser[]): FoodsInformationTypeForParser[] {
+    private adaptFoodsListRemoveFiber(foodList: FoodsInformationTypeForParser[]): FoodsInformationTypeForParser[] {
         // Some customer specific adaptions
         for (let food of foodList) {
             let basicFoodData = food.basicFoodData;
