@@ -15024,393 +15024,6 @@
         ]
       }
     },
-    "/items/markings_translations": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new markings_translations item.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "createItemsMarkingsTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the markings_translations items.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "readItemsMarkingsTranslations",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple markings_translations items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "updateItemsMarkingsTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing markings_translations items.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "deleteItemsMarkingsTranslations",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/markings_translations/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single markings_translations item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "readSingleItemsMarkingsTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing markings_translations item.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "updateSingleItemsMarkingsTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing markings_translations item.",
-        "tags": [
-          "Items",
-          "ItemsMarkingsTranslations"
-        ],
-        "operationId": "deleteSingleItemsMarkingsTranslations",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/news": {
       "post": {
         "summary": "Create an Item",
@@ -18894,6 +18507,393 @@
         ]
       }
     },
+    "/items/markings_translations": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new markings_translations item.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "createItemsMarkingsTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the markings_translations items.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "readItemsMarkingsTranslations",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple markings_translations items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "updateItemsMarkingsTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing markings_translations items.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "deleteItemsMarkingsTranslations",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/markings_translations/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single markings_translations item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "readSingleItemsMarkingsTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing markings_translations item.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "updateSingleItemsMarkingsTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsMarkingsTranslations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing markings_translations item.",
+        "tags": [
+          "Items",
+          "ItemsMarkingsTranslations"
+        ],
+        "operationId": "deleteSingleItemsMarkingsTranslations",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "/items/cashregisters": {
       "post": {
         "summary": "Create an Item",
@@ -21955,6 +21955,393 @@
           "ItemsWikisDirectusRoles"
         ],
         "operationId": "deleteSingleItemsWikisDirectusRoles",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/items/canteen_food_feedback_report_schedules": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new canteen_food_feedback_report_schedules item.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "createItemsCanteenFoodFeedbackReportSchedules",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the canteen_food_feedback_report_schedules items.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "readItemsCanteenFoodFeedbackReportSchedules",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple canteen_food_feedback_report_schedules items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "updateItemsCanteenFoodFeedbackReportSchedules",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing canteen_food_feedback_report_schedules items.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "deleteItemsCanteenFoodFeedbackReportSchedules",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/canteen_food_feedback_report_schedules/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single canteen_food_feedback_report_schedules item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "readSingleItemsCanteenFoodFeedbackReportSchedules",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing canteen_food_feedback_report_schedules item.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "updateSingleItemsCanteenFoodFeedbackReportSchedules",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing canteen_food_feedback_report_schedules item.",
+        "tags": [
+          "Items",
+          "ItemsCanteenFoodFeedbackReportSchedules"
+        ],
+        "operationId": "deleteSingleItemsCanteenFoodFeedbackReportSchedules",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -25860,393 +26247,6 @@
         ]
       }
     },
-    "/items/canteen_food_feedback_report_schedules": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new canteen_food_feedback_report_schedules item.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "createItemsCanteenFoodFeedbackReportSchedules",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the canteen_food_feedback_report_schedules items.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "readItemsCanteenFoodFeedbackReportSchedules",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple canteen_food_feedback_report_schedules items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "updateItemsCanteenFoodFeedbackReportSchedules",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing canteen_food_feedback_report_schedules items.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "deleteItemsCanteenFoodFeedbackReportSchedules",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/canteen_food_feedback_report_schedules/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single canteen_food_feedback_report_schedules item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "readSingleItemsCanteenFoodFeedbackReportSchedules",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing canteen_food_feedback_report_schedules item.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "updateSingleItemsCanteenFoodFeedbackReportSchedules",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing canteen_food_feedback_report_schedules item.",
-        "tags": [
-          "Items",
-          "ItemsCanteenFoodFeedbackReportSchedules"
-        ],
-        "operationId": "deleteSingleItemsCanteenFoodFeedbackReportSchedules",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/canteen_food_feedback_report_schedules_canteens": {
       "post": {
         "summary": "Create an Item",
@@ -26834,10 +26834,6 @@
       "x-collection": "foodsoffers_markings"
     },
     {
-      "name": "ItemsMarkingsTranslations",
-      "x-collection": "markings_translations"
-    },
-    {
       "name": "ItemsNews",
       "x-collection": "news"
     },
@@ -26874,6 +26870,10 @@
       "x-collection": "foodoffers"
     },
     {
+      "name": "ItemsMarkingsTranslations",
+      "x-collection": "markings_translations"
+    },
+    {
       "name": "ItemsCashregisters",
       "x-collection": "cashregisters"
     },
@@ -26904,6 +26904,10 @@
     {
       "name": "ItemsWikisDirectusRoles",
       "x-collection": "wikis_directus_roles"
+    },
+    {
+      "name": "ItemsCanteenFoodFeedbackReportSchedules",
+      "x-collection": "canteen_food_feedback_report_schedules"
     },
     {
       "name": "ItemsFoodsFeedbacksLabelsEntries",
@@ -26944,10 +26948,6 @@
     {
       "name": "ItemsReportRecipients",
       "x-collection": "report_recipients"
-    },
-    {
-      "name": "ItemsCanteenFoodFeedbackReportSchedules",
-      "x-collection": "canteen_food_feedback_report_schedules"
     },
     {
       "name": "ItemsCanteenFoodFeedbackReportSchedulesCanteens",
@@ -30092,51 +30092,6 @@
         },
         "x-collection": "foodsoffers_markings"
       },
-      "ItemsMarkingsTranslations": {
-        "type": "object",
-        "properties": {
-          "be_source_for_translations": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "id": {
-            "nullable": false,
-            "type": "integer"
-          },
-          "languages_code": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsLanguages"
-              }
-            ]
-          },
-          "let_be_translated": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "markings_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsMarkings"
-              }
-            ]
-          },
-          "name": {
-            "nullable": true,
-            "type": "string"
-          }
-        },
-        "x-collection": "markings_translations"
-      },
       "ItemsNews": {
         "type": "object",
         "properties": {
@@ -31259,6 +31214,55 @@
         },
         "x-collection": "foodoffers"
       },
+      "ItemsMarkingsTranslations": {
+        "type": "object",
+        "properties": {
+          "be_source_for_translations": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "id": {
+            "nullable": false,
+            "type": "integer"
+          },
+          "languages_code": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsLanguages"
+              }
+            ]
+          },
+          "let_be_translated": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "markings_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsMarkings"
+              }
+            ]
+          },
+          "name": {
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "x-collection": "markings_translations"
+      },
       "ItemsCashregisters": {
         "type": "object",
         "properties": {
@@ -31796,6 +31800,142 @@
           }
         },
         "x-collection": "wikis_directus_roles"
+      },
+      "ItemsCanteenFoodFeedbackReportSchedules": {
+        "type": "object",
+        "properties": {
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_next_report_is_due": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "last_saved_send_amount_days_before_offer_date": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "last_saved_send_report_at_hh_mm": {
+            "nullable": true,
+            "type": "string",
+            "format": "time"
+          },
+          "report_feedback_period_days": {
+            "nullable": true,
+            "description": "Leer: Keine zeitliche Filterung. Nummer: Anzahl Tage, wie alt Rückmeldungen sein dürfen, um beachtet zu werden.",
+            "type": "integer"
+          },
+          "report_status_log": {
+            "nullable": true,
+            "type": "string"
+          },
+          "send_amount_days_before_offer_date": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "send_once_now_for_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date"
+          },
+          "send_report_at_hh_mm": {
+            "nullable": true,
+            "type": "string",
+            "format": "time"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
+          "use_canteen_specific_feedbacks_only": {
+            "nullable": true,
+            "description": "Soll der Report nur Rückmeldungen enthalten, welche spezifisch für die Ausgewählten Mensen sind? Andernfalls werden alle Rückmeldungen der Speisen genutzt.",
+            "type": "boolean"
+          },
+          "show_images": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "recipients": {
+            "nullable": true,
+            "description": "Report Empfänger",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedulesReportRecipients"
+                }
+              ]
+            }
+          },
+          "canteens": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedulesCanteens"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "canteen_food_feedback_report_schedules"
       },
       "ItemsFoodsFeedbacksLabelsEntries": {
         "type": "object",
@@ -32576,138 +32716,6 @@
           }
         },
         "x-collection": "report_recipients"
-      },
-      "ItemsCanteenFoodFeedbackReportSchedules": {
-        "type": "object",
-        "properties": {
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_next_report_is_due": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "last_saved_send_amount_days_before_offer_date": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "last_saved_send_report_at_hh_mm": {
-            "nullable": true,
-            "type": "string",
-            "format": "time"
-          },
-          "report_feedback_period_days": {
-            "nullable": true,
-            "description": "Leer: Keine zeitliche Filterung. Nummer: Anzahl Tage, wie alt Rückmeldungen sein dürfen, um beachtet zu werden.",
-            "type": "integer"
-          },
-          "report_status_log": {
-            "nullable": true,
-            "type": "string"
-          },
-          "send_amount_days_before_offer_date": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "send_once_now_for_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date"
-          },
-          "send_report_at_hh_mm": {
-            "nullable": true,
-            "type": "string",
-            "format": "time"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "alias": {
-            "nullable": true,
-            "type": "string"
-          },
-          "use_canteen_specific_feedbacks_only": {
-            "nullable": true,
-            "description": "Soll der Report nur Rückmeldungen enthalten, welche spezifisch für die Ausgewählten Mensen sind? Andernfalls werden alle Rückmeldungen der Speisen genutzt.",
-            "type": "boolean"
-          },
-          "recipients": {
-            "nullable": true,
-            "description": "Report Empfänger",
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedulesReportRecipients"
-                }
-              ]
-            }
-          },
-          "canteens": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedulesCanteens"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "canteen_food_feedback_report_schedules"
       },
       "ItemsCanteenFoodFeedbackReportSchedulesCanteens": {
         "type": "object",

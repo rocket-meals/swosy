@@ -36,7 +36,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {CommonFieldsOfFoodAndFoodoffers, FoodInformationValueFormatter} from "@/components/food/FoodDataList";
-import {MarkingIconOrAlias} from "@/components/food/MarkingBadge";
+import {MarkingIconOrAliasWithTextSize} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -317,7 +317,7 @@ export default function FoodDayPlanScreen() {
 		let sortedMarkingsForFoodOffer = markingsForFoodOffer.sort(sortMarkingsByNameLength);
 		for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
 			const marking = sortedMarkingsForFoodOffer[i];
-			renderedMarkings.push(<MarkingIconOrAlias markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
+			renderedMarkings.push(<MarkingIconOrAliasWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
 		}
 		return <View style={{
 			flex: 1,
@@ -356,7 +356,7 @@ export default function FoodDayPlanScreen() {
 				flex: 1,
 				marginVertical: 1,
 			}}>
-				<MarkingIconOrAlias markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				<MarkingIconOrAliasWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
 				{renderedTranslation}
 			</View>
 		)

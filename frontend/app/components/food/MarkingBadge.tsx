@@ -5,20 +5,15 @@ import {IconNames} from "@/constants/IconNames";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
 import {
-	getFontSizeInPixelBySize, getLineHeightInPixelBySize,
-	Icon,
+	getLineHeightInPixelBySize,
 	Text,
-	TEXT_SIZE_2_EXTRA_SMALL, TEXT_SIZE_3_EXTRA_LARGE, TEXT_SIZE_DEFAULT, TEXT_SIZE_EXTRA_LARGE, TextSizeType,
+	TEXT_SIZE_DEFAULT,
+	TextSizeType,
 	useTextContrastColor,
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
-import {
-	BUTTON_DEFAULT_BorderRadius,
-	BUTTON_DEFAULT_Padding,
-	getButtonDefaultPadding,
-	MyButtonCustomContentPadder
-} from "@/components/buttons/MyButtonCustom";
+import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
@@ -30,8 +25,7 @@ import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
-import {Image} from "expo-image";
-import {useIconWithInPixel} from "@/components/shapes/Rectangle";
+import {useCharacterWithInPixel, useIconWithInPixel} from "@/components/shapes/Rectangle";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
@@ -59,7 +53,7 @@ export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color:
 }
 
 
-export const MarkingIconOrAlias = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
+export const MarkingIconOrAliasWithTextSize = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
 	const lineHeight = getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
@@ -132,13 +126,15 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 	const viewBackgroundColor = useViewBackgroundColor();
 	const textColor = useTextContrastColor();
 
+	const widthByCharacters = useCharacterWithInPixel(7);
+
+	const translation_show_more_information = useTranslation(TranslationKeys.show_more_information)
+
 	const foodsAreaColor = useFoodsAreaColor()
 
 	const iconWidth = useIconWithInPixel();
 
 	const borderRadius = props.borderRadius || MyCardDefaultBorderRadius;
-
-	const imageWidth = (BUTTON_DEFAULT_Padding);
 
 	const marking: Markings | undefined | null = markingsDict?.[markingId];
 
@@ -158,7 +154,7 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 
 	const translation_title = translated_name;
 
-	const accessibilityLabel = translated_name
+	const accessibilityLabel = translation_show_more_information+": "+translated_name
 
 	const onPress = () => {
 		setModalConfig({
@@ -169,7 +165,7 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return <View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
 					<View style={{width: "100%", alignItems: "center"}}>
-						<DirectusImageOrIconComponent resource={marking} widthImage={imageWidth} heightImage={imageWidth} />
+						<DirectusImageOrIconComponent resource={marking} widthImage={widthByCharacters} heightImage={widthByCharacters} />
 					</View>
 					<ThemedMarkdown markdown={translated_description} />
 				</View>
@@ -182,10 +178,10 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 	let customIcon = null;
 
 	let usedIcon = marking.icon
-	let markingExternalIdentifier = getMarkingExternalIdentifier(marking);
+
+	const defaultPadding = BUTTON_DEFAULT_Padding
 	const alias = getMarkingAlias(marking);
 	if(alias){
-		const defaultPadding = getButtonDefaultPadding();
 		let outerPadding = defaultPadding/2;
 		let innerPadding = defaultPadding - outerPadding; // maybe by dividing 1/2 the outer padding is 0, so we need to subtract it
 
@@ -207,8 +203,9 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 		</View>
 	}
 
+	const imageWidthAndHeight = iconWidth+2*defaultPadding
 	if(hasImage){
-		customIcon = <MyButtonCustomContentPadder><DirectusImageOrIconComponent resource={marking} widthImage={iconWidth} heightImage={iconWidth} /></MyButtonCustomContentPadder>
+		customIcon = <DirectusImageOrIconComponent resource={marking} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} />
 	}
 
 	if(!usedIcon && !customIcon){

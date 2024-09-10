@@ -249,7 +249,6 @@ type Subscription {
   foods_markings_mutated(event: EventEnum): foods_markings_mutated
   foods_translations_mutated(event: EventEnum): foods_translations_mutated
   foodsoffers_markings_mutated(event: EventEnum): foodsoffers_markings_mutated
-  markings_translations_mutated(event: EventEnum): markings_translations_mutated
   news_mutated(event: EventEnum): news_mutated
   news_translations_mutated(event: EventEnum): news_translations_mutated
   popup_events_mutated(event: EventEnum): popup_events_mutated
@@ -259,6 +258,7 @@ type Subscription {
   app_settings_mutated(event: EventEnum): app_settings_mutated
   foods_mutated(event: EventEnum): foods_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
+  markings_translations_mutated(event: EventEnum): markings_translations_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
@@ -267,6 +267,7 @@ type Subscription {
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
+  canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
   foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
   businesshours_mutated(event: EventEnum): businesshours_mutated
   app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
@@ -277,7 +278,6 @@ type Subscription {
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
-  canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
 }
 
@@ -667,6 +667,7 @@ type canteen_food_feedback_report_schedules {
   Soll der Report nur Rückmeldungen enthalten, welche spezifisch für die Ausgewählten Mensen sind? Andernfalls werden alle Rückmeldungen der Speisen genutzt.
   """
   use_canteen_specific_feedbacks_only: Boolean
+  show_images: Boolean
   recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
   recipients_func: count_functions
   canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
@@ -2253,6 +2254,7 @@ type markings_translations {
   let_be_translated: Boolean
   markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   name: String
+  description: String
 }
 
 type markings_translations_mutated {
@@ -2919,6 +2921,7 @@ input canteen_food_feedback_report_schedules_filter {
   user_updated: directus_users_filter
   alias: string_filter_operators
   use_canteen_specific_feedbacks_only: boolean_filter_operators
+  show_images: boolean_filter_operators
   recipients: canteen_food_feedback_report_schedules_report_recipients_filter
   recipients_func: count_function_filter_operators
   canteens: canteen_food_feedback_report_schedules_canteens_filter
@@ -3526,6 +3529,7 @@ input create_markings_translations_input {
   let_be_translated: Boolean
   markings_id: create_markings_input
   name: String
+  description: String
 }
 
 input create_profiles_buildings_favorites_input {
@@ -4292,6 +4296,7 @@ input markings_translations_filter {
   let_be_translated: boolean_filter_operators
   markings_id: markings_filter
   name: string_filter_operators
+  description: string_filter_operators
   _and: [markings_translations_filter]
   _or: [markings_translations_filter]
 }
@@ -5062,6 +5067,7 @@ input update_markings_translations_input {
   let_be_translated: Boolean
   markings_id: update_markings_input
   name: String
+  description: String
 }
 
 input update_profiles_buildings_favorites_input {

@@ -286,6 +286,7 @@ export enum TranslationKeys {
 	map = "map",
 	news = "news",
 	read_more = "read_more",
+	show_more_information = "show_more_information",
 	course_timetable = "course_timetable",
 	eating_habits = "eating_habits",
 	markings = "markings",
@@ -1876,14 +1877,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '昨天'
 	},
 	nutrition: {
-		[LanguageKeys.de_DE]: 'Nährwerte',
-		[LanguageKeys.en_US]: 'Nutrition',
-		[LanguageKeys.ar_SA]: 'التغذية',
-		[LanguageKeys.es_ES]: 'Nutrición',
-		[LanguageKeys.fr_FR]: 'Nutrition',
-		[LanguageKeys.ru_RU]: 'Питание',
-		[LanguageKeys.tr_TR]: 'Beslenme',
-		[LanguageKeys.zh_CN]: '营养'
+		[LanguageKeys.de_DE]: 'Durchschnittliche Nährwerte pro Portion',
+		[LanguageKeys.en_US]: 'Average Nutritional Values per Portion',
+		[LanguageKeys.ar_SA]: 'القيم الغذائية المتوسطة لكل وجبة',
+		[LanguageKeys.es_ES]: 'Valores nutricionales promedio por porción',
+		[LanguageKeys.fr_FR]: 'Valeurs nutritionnelles moyennes par portion',
+		[LanguageKeys.ru_RU]: 'Средние пищевые ценности на порцию',
+		[LanguageKeys.tr_TR]: 'Porsiyon başına ortalama besin değerleri',
+		[LanguageKeys.zh_CN]: '每份的平均营养价值'
 	},
 	environmental_impact: {
 		[LanguageKeys.de_DE]: 'Umweltauswirkungen',
@@ -1906,14 +1907,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '数据基于我们掌握的信息，可能与实际值有所不同。如有更改。有关数据的更多信息，请参见此处：'
 	},
 	nutrition_calories: {
-		[LanguageKeys.de_DE]: 'Kalorien',
-		[LanguageKeys.en_US]: 'Calories',
-		[LanguageKeys.ar_SA]: 'سعرات حراريه',
-		[LanguageKeys.es_ES]: 'Calorías',
-		[LanguageKeys.fr_FR]: 'Calories',
-		[LanguageKeys.ru_RU]: 'Калории',
-		[LanguageKeys.tr_TR]: 'Kalori',
-		[LanguageKeys.zh_CN]: '卡路里'
+		[LanguageKeys.de_DE]: 'Energie',
+		[LanguageKeys.en_US]: 'Energy',
+		[LanguageKeys.ar_SA]: 'طاقة',
+		[LanguageKeys.es_ES]: 'Energía',
+		[LanguageKeys.fr_FR]: 'Énergie',
+		[LanguageKeys.ru_RU]: 'Энергия',
+		[LanguageKeys.tr_TR]: 'Enerji',
+		[LanguageKeys.zh_CN]: '能量'
 	},
 	nutrition_protein: {
 		[LanguageKeys.de_DE]: 'Protein',
@@ -2204,6 +2205,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Читать далее',
 		[LanguageKeys.tr_TR]: 'Daha fazla oku',
 		[LanguageKeys.zh_CN]: '阅读更多'
+	},
+	show_more_information: {
+		[LanguageKeys.de_DE]: 'Mehr Informationen anzeigen',
+		[LanguageKeys.en_US]: 'Show more information',
+		[LanguageKeys.ar_SA]: 'عرض المزيد من المعلومات',
+		[LanguageKeys.es_ES]: 'Mostrar más información',
+		[LanguageKeys.fr_FR]: 'Afficher plus d\'informations',
+		[LanguageKeys.ru_RU]: 'Показать больше информации',
+		[LanguageKeys.tr_TR]: 'Daha fazla bilgi göster',
+		[LanguageKeys.zh_CN]: '显示更多信息'
 	},
 	course_timetable: {
 		[LanguageKeys.de_DE]: 'Stundenplan',

@@ -1,19 +1,19 @@
-import moment from "moment";
 import {CSVExportParser} from "./CSVExportParser"
 
 import {
     CanteensTypeForParser,
-    FoodWithBasicDataWithoutIdType, FoodofferDateType,
-    FoodoffersTypeForParser, FoodofferTypeWithBasicData,
+    FoodofferDateType,
+    FoodoffersTypeForParser,
+    FoodofferTypeWithBasicData,
     FoodParserInterface,
     FoodsInformationTypeForParser,
-    FoodWithBasicData
+    FoodWithBasicData,
+    FoodWithBasicDataWithoutIdType
 } from "./FoodParserInterface";
 import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
 import {LanguageCodes, TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {PriceGroupEnum} from "./PriceGroupEnum";
 import {DictHelper} from "../helpers/DictHelper";
-import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 
 
 type FoodofferIdentifierType = string

@@ -9,13 +9,11 @@ import {useIsDebug} from '@/states/Debug';
 import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper';
 import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
+import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 
 export const BUTTON_DEFAULT_Padding = 12;
 export const BUTTON_DEFAULT_BorderRadius = BUTTON_DEFAULT_Padding/2
-
-export function getButtonDefaultPadding(): number {
-	return BUTTON_DEFAULT_Padding
-}
+export const BUTTON_DEFAULT_BorderWidth = 1
 
 export const MyButtonCustomContentPadder = ({children}: ViewProps) => {
 	return(
@@ -47,6 +45,7 @@ export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderB
 	const [isPressed, setIsPressed] = useState<boolean>(false)
 
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
+	const iconWidth = useIconWithInPixel();
 
 	const isDebug = useIsDebug()
 
@@ -157,7 +156,14 @@ export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderB
 	if (icon) {
 		renderedText = (
 			<MyButtonCustomContentPadder>
-				<Icon name={icon} color={usedTextColor} />
+				<View style={{
+					height: iconWidth,
+					width: iconWidth,
+					justifyContent: "center",
+					alignItems: "center",
+				}}>
+					<Icon name={icon} color={usedTextColor} />
+				</View>
 			</MyButtonCustomContentPadder>
 		)
 	}
@@ -236,7 +242,7 @@ export const MyButtonCustom = ({centerItems, customIcon, icon, isActive, borderB
 				style={
 					[disabledStyle, pressedStyle, {
 						borderColor: usedBorderColor,
-						borderWidth: 1,
+						borderWidth: BUTTON_DEFAULT_BorderWidth,
 						backgroundColor: usedViewBackgroundColor,
 						justifyContent: 'flex-start',
 						alignSelf: useOnlyNecessarySpace ? 'flex-start' : undefined,
