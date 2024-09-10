@@ -1,4 +1,4 @@
-import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportInterface";
+import {FoodTL1Parser_GetRawReportInterface} from "./../../FoodTL1Parser_GetRawReportInterface";
 
 export class FoodTL1Parser_RawReportTestReaderHannover implements FoodTL1Parser_GetRawReportInterface {
 

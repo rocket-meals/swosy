@@ -1,0 +1,64 @@
+// small jest test
+import {describe, expect, it} from '@jest/globals';
+import {FoodTL1Parser} from "../../FoodTL1Parser";
+import {FoodTL1Parser_GetRawReportInterface} from "../../FoodTL1Parser_GetRawReportInterface";
+import {
+    FoodTL1Parser_RawReportTestReaderOsnabrueck
+} from "../../exampleData/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck";
+
+describe("FoodTL1ParserOsnabrueck Test", () => {
+    let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck();
+    let foodParser: FoodTL1Parser = new FoodTL1Parser(testFileGetter);
+
+    // should find atleast one food
+    it("Find more than one food", async () => {
+        await foodParser.createNeededData();
+        let foodsJson = await foodParser.getFoodsListForParser();
+        expect(foodsJson.length).toBeGreaterThan(0);
+    });
+
+    // should find atleast one canteen
+    it("Find more than one canteen", async () => {
+        await foodParser.createNeededData();
+        let canteensJson = await foodParser.getCanteensList();
+        expect(canteensJson.length).toBeGreaterThan(0);
+    });
+
+    // should find atleast one meal offer
+    it("Find more than one meal offer", async () => {
+        await foodParser.createNeededData();
+        let mealOffersJson = await foodParser.getFoodoffersForParser();
+        if(!!mealOffersJson){
+            expect(mealOffersJson.length).toBeGreaterThan(0);
+        } else {
+            expect(false).toBe(true);
+        }
+    });
+
+    it("Find menu line in markings list for meal offer", async () => {
+        await foodParser.createNeededData();
+        let mealOffersJson = await foodParser.getFoodoffersForParser();
+        if(!!mealOffersJson){
+            let mealOffer = mealOffersJson[0];
+            if(!!mealOffer){
+                let marking_external_identifiers = mealOffer.marking_external_identifiers;
+
+                const SEARCH_MENU_LINE_MARKING_EXTERNAL_IDENTIFIER = FoodTL1Parser.MARKING_EXTERNAL_IDENTIFIER_PREFIX_FOR_MENU_LINE+"g";
+
+                let foundMenuLine = false;
+                for(let marking_external_identifier of marking_external_identifiers){
+                    if(marking_external_identifier === SEARCH_MENU_LINE_MARKING_EXTERNAL_IDENTIFIER){
+                        foundMenuLine = true;
+                        break;
+                    }
+                }
+                expect(foundMenuLine).toBe(true);
+            } else {
+                expect(false).toBe(true);
+            }
+        } else {
+            expect(false).toBe(true);
+        }
+    });
+
+});

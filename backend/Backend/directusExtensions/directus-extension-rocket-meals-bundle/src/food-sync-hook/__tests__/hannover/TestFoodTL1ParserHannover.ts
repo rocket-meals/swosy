@@ -1,11 +1,12 @@
 // small jest test
 import { describe, it, expect } from '@jest/globals';
-import {FoodTL1Parser} from "../FoodTL1Parser";
-import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
-import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawReportTestReaderHannover";
-import {FoodoffersTypeForParser} from "../FoodParserInterface";
+import {FoodTL1Parser} from "../../FoodTL1Parser";
+import {FoodTL1Parser_GetRawReportInterface} from "../../FoodTL1Parser_GetRawReportInterface";
+import {FoodTL1Parser_RawReportTestReaderHannover} from "../../exampleData/hannover/FoodTL1Parser_RawReportTestReaderHannover";
+import {FoodoffersTypeForParser} from "../../FoodParserInterface";
 
 describe("FoodTL1ParserHannover Test", () => {
+
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
     let foodParser: FoodTL1Parser = new FoodTL1Parser(testFileGetter);
 
@@ -42,7 +43,7 @@ describe("FoodTL1ParserHannover Test", () => {
         let uncheckedDuplicateOffers: {[key: string]: FoodoffersTypeForParser[]} = {};
         if(!!foodoffersTypeForParserList){
             for(let foodofferTypeForParser of foodoffersTypeForParserList){
-                let isoDateStringOfMealOffer = foodofferTypeForParser.basicFoodofferData.date;
+                let isoDateStringOfMealOffer = foodofferTypeForParser.date
                 let food_id = foodofferTypeForParser.food_id
                 let canteenLabel = foodofferTypeForParser.canteen_external_identifier
                 let compositeKey = isoDateStringOfMealOffer + "_" + food_id + "_" + canteenLabel;

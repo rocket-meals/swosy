@@ -49,6 +49,8 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_MARKING_LABELS_FIELD = "ZSNUMMERN";
     static DEFAULT_MARKING_NAMES_FIELD = "ZSNAMEN";
 
+    static DEFAULT_MENU_LINE_FIELD = "FREI1";
+
     static DEFAULT_CO2_GRAMM_FIELD = "EXTINFO_CO2_WERT";
     static DEFAULT_CO2_SAVING_PERCENTAGE_FIELD = "EXTINFO_CO2_EINSPARUNG";
     static DEFAULT_CO2_RATING_FIELD = "EXTINFO_CO2_BEWERTUNG";
@@ -124,7 +126,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodofferForParser: FoodoffersTypeForParser = {
                 date: rawFoodoffer.date,
                 basicFoodofferData: basicFoodofferData,
-                marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromrawFoodoffer(rawFoodoffer),
+                marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
                 canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
                 food_id: rawFoodoffer.food_id
             }
@@ -132,11 +134,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
 
         return result;
-    }
-
-    static getMarkingsExternalIdentifiersFromrawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
-        // For us the external identifier is the marking label itself
-        return FoodTL1Parser.getFoodofferMarkingLabelsFromRawFoodofferInformation(rawFoodoffer);
     }
 
     static async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
@@ -290,7 +287,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return {
             basicFoodData: basicFoodData,
             translations: translations,
-            marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromrawFoodoffer(rawFoodoffer)
+            marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer)
         };
     }
 
@@ -488,11 +485,34 @@ export class FoodTL1Parser implements FoodParserInterface {
      *
      */
 
-    static getFoodofferMarkingLabelsFromRawFoodofferInformation(rawFoodoffer: RawFoodofferInformationType){
+    static getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
         let rawName = FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
         let markingsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(rawName);
-        return Object.keys(markingsDict);
+        let marking_external_identifier_list_from_food_name = Object.keys(markingsDict);
+        let menu_line_external_identifiers = FoodTL1Parser.getMarkingExternalIdentifiersForMenuLinesFromParsedReportItem(parsedReportItem);
+        let total_marking_external_identifier_list = marking_external_identifier_list_from_food_name.concat(menu_line_external_identifiers);
+        return total_marking_external_identifier_list;
+    }
+
+    static MARKING_EXTERNAL_IDENTIFIER_PREFIX_FOR_MENU_LINE = "menu_line_";
+    static getMarkingExternalIdentifiersForMenuLinesFromParsedReportItem(parsedReportItem: RawTL1FoodofferType): string[]{
+        let menu_line_text = parsedReportItem[FoodTL1Parser.DEFAULT_MENU_LINE_FIELD];
+        return FoodTL1Parser.getMarkingExternalIdentifierForMenuLineText(menu_line_text);
+    }
+
+    static getMarkingExternalIdentifierForMenuLineText(menu_line_text: string | undefined): string[]{
+        let menu_lines_with_prefix = [];
+        if(!!menu_line_text && menu_line_text.length > 0){
+            const menu_lines = menu_line_text.split(","); // "a,b,c" --> ["a", "b", "c"]
+            for(let menu_line of menu_lines){
+                let menu_line_trimmed = menu_line.trim();
+                if(!!menu_line_trimmed && menu_line_trimmed.length > 0){
+                    menu_lines_with_prefix.push(FoodTL1Parser.MARKING_EXTERNAL_IDENTIFIER_PREFIX_FOR_MENU_LINE+menu_line_trimmed);
+                }
+            }
+        }
+        return menu_lines_with_prefix
     }
 
     static getMarkingLabelsDictFromFoodName(name: string){

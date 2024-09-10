@@ -45,6 +45,7 @@ type SWOSY_MEALS_TYPE = {
     text5Eng: string;
     text6: string;
     text6Eng: string;
+    foodtag: string;
     updatedAt: string;
 };
 
@@ -194,9 +195,16 @@ export class SWOSY_API_Parser implements FoodParserInterface, MarkingParserInter
         name += food?.text4;
         name += food?.text5;
         name += food?.text6;
-
         let markingsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(name)
-        return Object.keys(markingsDict)
+        let marking_external_identifier_from_name_list = Object.keys(markingsDict)
+        let total_marking_external_identifier_list: string[] = [];
+        total_marking_external_identifier_list = total_marking_external_identifier_list.concat(marking_external_identifier_from_name_list);
+
+        let menu_line_text = food.foodtag;
+        let marking_external_identifier_from_menu_line = FoodTL1Parser.getMarkingExternalIdentifierForMenuLineText(menu_line_text);
+        total_marking_external_identifier_list = total_marking_external_identifier_list.concat(marking_external_identifier_from_menu_line);
+
+        return total_marking_external_identifier_list;
     }
 
     private parseFloatWithOneDecimal(str: string | number | undefined | any): number | null {

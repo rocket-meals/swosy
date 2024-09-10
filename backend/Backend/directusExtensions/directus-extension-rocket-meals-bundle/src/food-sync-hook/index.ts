@@ -12,8 +12,6 @@ import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelpe
 import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ApiContext} from "../helpers/ApiContext";
-import {FoodTL1Parser_RawReportTestReaderHannover} from "./FoodTL1Parser_RawReportTestReaderHannover";
-import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
 
@@ -21,8 +19,6 @@ const SCHEDULE_NAME = "food_parse";
 
 const DIRECTUS_TL1_FOOD_PATH = "/directus/tl1/foodPlan.csv"; // This is defined in docker-compose.yaml statically
 const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defined in docker-compose.yaml statically
-
-const testFoodParser = new FoodTL1Parser(new FoodTL1Parser_RawReportTestReaderHannover());
 
 function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
     const env = apiContext.env;
@@ -92,13 +88,7 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         return;
     }
 
-    const debug = false;
-
-    let usedFoodParser = null
-    if(debug) {
-        usedFoodParser = testFoodParser
-    }
-    usedFoodParser = getFoodParser(apiContext);
+    let usedFoodParser = getFoodParser(apiContext);
     
 
     if(!usedFoodParser) {
