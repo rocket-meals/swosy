@@ -62,20 +62,21 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			</View>)
 		}
 
-		setModalConfig({
-			title: "DEBUG",
-			accessibilityLabel: accessibilityLabel,
-			label: "DEBUG",
-			key: 'DEBUG',
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return(
-					<MyScrollView>
-						{renderedItems}
-					</MyScrollView>
-				)
-			}
-		})
-
+		if(isDebug){
+			setModalConfig({
+				title: "DEBUG",
+				accessibilityLabel: accessibilityLabel,
+				label: "DEBUG",
+				key: 'DEBUG',
+				renderAsContentInsteadItems: (key: string, hide: () => void) => {
+					return(
+						<MyScrollView>
+							{renderedItems}
+						</MyScrollView>
+					)
+				}
+			})
+		}
 	}
 
 	// https://docs.directus.io/self-hosted/sso.html
@@ -87,18 +88,16 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	const accessibilityLabel = translation_log_in_with + ': ' + providerName;
 	let text = translation_log_in_with + ': ' + providerName;
 
-	const desiredRedirectURL = UrlHelper.getURLToLogin();
+	const desiredRedirectURL = UrlHelper.getURLToLogin(); // same domain as frontend is running
+
+	// This is not possible, as we can only catch the browser url from the same origin
+	// So we need to have our own domain / myapp scheme
 	//const desiredRedirectURL = ServerAPI.getServerUrl()+"/admin/login";
 
 	//const disabled = !isSsoLoginPossible();
-	const disabled = false; // New flow supports SSO login with Expo Go
-
-	if (disabled) {
-		text += '\nDoes not work on local ExpoGo';
-	}
 
 	async function getToken(code_verifier: string, code: string){
-		console.log("Get TOKEN");
+		//console.log("Get TOKEN");
 		try{
 			// Fetching refresh token explicitly if not set by session cookie
 			const token_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/token'
@@ -116,7 +115,7 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				body: JSON.stringify(requestBody),
 			});
 
-			console.log(response);
+			//console.log(response);
 			const json = await response.json();
 			// const directus_session_token = json.directus_session_token; // not send anymore
 			const directus_refresh_token = json.directus_refresh_token;
@@ -156,7 +155,7 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	};
 
 	const onPress = async () => {
-		console.log("START PKCE");
+		//console.log("START PKCE");
 		let debugObj: Record<any, any> = {}
 		const authorize_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/authorize'
 		debugObj.authorize_url = authorize_url
@@ -164,16 +163,16 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		const provider = providerNameInDirectusAuthProviderList;
 		const redirect_url = desiredRedirectURL;
 		const code_challenge_method = "S256";
-		console.log("code_verifier")
+		//console.log("code_verifier")
 		const code_verifier = await generateCodeVerifier();
 		debugObj.code_verifier = code_verifier
 		renderDebugItem(debugObj)
-		console.log(code_verifier)
-		console.log("code_challenge")
+		//console.log(code_verifier)
+		//console.log("code_challenge")
 		const code_challenge = await generateCodeChallenge(code_verifier);
 		debugObj.code_challenge = code_challenge
 		renderDebugItem(debugObj)
-		console.log(code_challenge)
+		//console.log(code_challenge)
 
 		const requestBody = {
 			provider: provider, // e.g., 'google'
@@ -182,7 +181,7 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			code_challenge_method: code_challenge_method, // or 'plain' if not using S256
 		};
 
-		console.log("Fetch authorize url: "+authorize_url);
+		//console.log("Fetch authorize url: "+authorize_url);
 
 		try{
 			const response = await fetch(authorize_url, {
@@ -193,10 +192,10 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				body: JSON.stringify(requestBody),
 			});
 
-			console.log("Response:")
-			console.log(response)
+			//console.log("Response:")
+			//console.log(response)
 			let json = await response.json()
-			console.log(json)
+			//console.log(json)
 			const urlToProviderLogin = json.urlToProviderLogin;
 			const url = urlToProviderLogin;
 
@@ -215,10 +214,10 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 								clearInterval(authCheckInterval);
 							} else {
 								const currentLocationNewWindow = new URL(authWindow.location.href);
-								console.log("check current location: "+currentLocationNewWindow);
+								//console.log("check current location: "+currentLocationNewWindow);
 
 								if((currentLocationNewWindow+"").startsWith(desiredRedirectURL+"")){
-									console.log("yes, arrived at the desired redirect url")
+									//console.log("yes, arrived at the desired redirect url")
 									authWindow.close();
 									const code_splits = (currentLocationNewWindow+"").split("code=");
 									const code = code_splits[1];
@@ -243,19 +242,19 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				const options:  WebBrowser.AuthSessionOpenOptions = {
 					preferEphemeralSession: false // iOS browser doesn’t share cookies or other browsing data between the authentication session
 				}
-				console.log("desiredRedirectURL: "+desiredRedirectURL)
+				//console.log("desiredRedirectURL: "+desiredRedirectURL)
 				let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
-				console.log("ButtonAuthProvider result: ", result);
+				//console.log("ButtonAuthProvider result: ", result);
 
 				debugObj.result = result
 				renderDebugItem(debugObj)
 
 				if (result.type === 'success' && result.url) {
-					console.log("Redirected?")
+					//console.log("Redirected?")
 					const currentLocation = result.url;
 					const code_splits = (currentLocation+"").split("code=");
 					const code = code_splits[1];
-					console.log(code);
+					//console.log(code);
 
 					debugObj.code = code
 					renderDebugItem(debugObj)
