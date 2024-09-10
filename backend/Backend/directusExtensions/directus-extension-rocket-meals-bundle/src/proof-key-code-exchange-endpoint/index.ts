@@ -18,7 +18,7 @@ function getUrlToProviderLogin(providerName: string, redirectURL: string) {
 
 
 function mylog(message: any){
-	console.log(message);
+	console.log(EndpointTopName+": "+message);
 }
 
 type AuthorizationCodeAndRedirectType = {
@@ -327,6 +327,7 @@ export default defineEndpoint({
 				//    error response with the "error" value set to "invalid_request".  The
 				//    "error_description" or the response of "error_uri" SHOULD explain the
 				//    nature of error, e.g., code challenge required.
+				mylog("Missing required parameters code_challenge.");
 				return res.status(400).json({ error: 'Missing required parameters code_challenge.' });
 			}
 
@@ -341,27 +342,33 @@ export default defineEndpoint({
 				//    permitted to use "plain" only if they cannot support "S256" for some
 				//    technical reason and know via out-of-band configuration that the
 				//    server supports "plain".
+				mylog("Code challenge method provided "+code_challenge_method_app+" method has to be either "+CodeChallengeMethods.METHOD_S256+" or "+CodeChallengeMethods.METHOD_plain);
 				return res.status(400).json({ error: `Code challenge method provided ${code_challenge_method_app} method has to be either "${CodeChallengeMethods.METHOD_S256}" or "${CodeChallengeMethods.METHOD_plain}"`});
 			}
 
 			if (!provider) {
+				mylog("Missing required parameter provider");
 				return res.status(400).json({ error: 'Missing required parameter provider. Has to be an auth provider configured in directus.'});
 			}
 			const providerIsRegistered = checkIfProviderRegistered(provider);
 			if(!providerIsRegistered){
+				mylog(`Provider ${provider} not listed in AUTH_PROVIDERS`)
 				return res.status(400).json({ error: `Provider ${provider} not listed in AUTH_PROVIDERS`});
 			}
 
 
 			if (!redirect_url) {
+				mylog("Missing required parameter redirect_url");
 				return res.status(400).json({ error: 'Missing required parameter redirect_url'});
 			}
 			let redirect_url_well_formed = RedirectWhitelistHelper.getUrlFromString(redirect_url);
 			if(!redirect_url_well_formed){
+				mylog(`Parameter redirect_url is not a well formed url: ${redirect_url}`)
 				return res.status(400).json({ error: `Parameter redirect_url is not a well formed url: ${redirect_url}`});
 			}
 			let redirect_url_is_allowed = isRedirectUrlWhitelisted(redirect_url_well_formed, provider, apiContext);
 			if(!redirect_url_is_allowed){
+				mylog(`Redirect url ${redirect_url} is not included in the redirect allow list for the provider ${provider}`)
 				return res.status(400).json({ error: `Redirect url ${redirect_url} is not included in the redirect allow list for the provider ${provider}`});
 			}
 
@@ -407,22 +414,26 @@ export default defineEndpoint({
 
 			const { state } = req.query;
 			if (!state) {
+				mylog("Missing required parameter state.");
 				return res.status(400).json({ error: 'Missing required parameter state.' });
 			}
 			const stateAsString = state.toString();
 
 			const directus_session_token = req.cookies.directus_session_token;
 			if(!directus_session_token){
+				mylog("Missing directus_session_token in cookies.");
 				return res.status(400).json({ error: 'Missing directus_session_token in cookies.' });
 			}
 
 			let saved_authorization_code_and_redirect = await myStorage.getStateInformation(stateAsString);
 			if(!saved_authorization_code_and_redirect){
+				mylog("No information found for state. Might be too long");
 				return res.status(400).json({ error: 'No information found for state. Might be too long' });
 			}
 			const redirect_url = saved_authorization_code_and_redirect.redirect_url
 			const authorization_code = saved_authorization_code_and_redirect.authorization_code
 			if(!authorization_code || !redirect_url){
+				mylog("No information found for state. Might be too long / outdated");
 				return res.status(400).json({ error: 'No information found for state. Might be too long / outdated' });
 			}
 
@@ -430,6 +441,7 @@ export default defineEndpoint({
 
 			const storedCodeChallenge = await myStorage.getCodeChallenge(authorization_code);
 			if(!storedCodeChallenge || !storedCodeChallenge.code_challenge_method || !storedCodeChallenge.code_challenge){
+				mylog("No information found for saved authorization code. Might be too long");
 				return res.status(400).json({ error: 'No information found for saved authorization code. Might be too long' });
 			}
 
@@ -438,6 +450,7 @@ export default defineEndpoint({
 			// @ts-ignore
 			const userId = req?.accountability?.user;
 			if(!accountability || !userId){
+				mylog("No accountability or userId found.");
 				return res.status(400).json({ error: 'No accountability or userId found.' });
 			}
 			let directus_refresh_token = await generateRefreshToken(directus_session_token, accountability, userId, database);
@@ -452,23 +465,28 @@ export default defineEndpoint({
 
 			// now redirect the user to the previously verified redirect url
 			const redirect_url_with_authorization_code = redirect_url+"?code="+authorization_code;
+			mylog("Redirecting to: "+redirect_url_with_authorization_code);
 			return res.redirect(redirect_url_with_authorization_code) // The user in the native app (using Auth WebBrowser) or SPA, will get the authorization code
 		});
 
 		// 4.5.  Client Sends the Authorization Code and the Code Verifier to the Token Endpoint
 		router.post('/token', async (req, res) => {
+			console.log(EndpointTopName+" Token Called")
 			const { code, code_verifier } = req.body;
+			console.log(req.body);
 
 			//    code_verifier
 			//       REQUIRED.  Code verifier
 			const code_verifier_app = code_verifier;
 			if (!code_verifier_app) {
+				mylog("Missing required parameter code_verifier.");
 				return res.status(400).json({ error: 'Missing required parameter: code_verifier.' });
 			}
 
 			const authorization_code = code;
 			const storedCodeChallenge = await myStorage.getCodeChallenge(authorization_code);
 			if (!storedCodeChallenge) {
+				mylog("Invalid or expired state.");
 				return res.status(400).json({ error: 'Invalid or expired state.' });
 			}
 
@@ -480,6 +498,7 @@ export default defineEndpoint({
 					.digest('base64url');
 
 				if(storedCodeChallenge.code_challenge_method===CodeChallengeMethods.METHOD_plain){
+					mylog("Code Challenge Method is plain");
 					// 4.6
 					// If the "code_challenge_method" from Section 4.3 was "plain", they are
 					//    compared directly, i.e.:
@@ -488,8 +507,11 @@ export default defineEndpoint({
 					generatedChallenge = code_verifier_app;
 				}
 
+
+				mylog("Token Called: generatedChallenge: "+generatedChallenge);
 				// Secure comparison of the code challenge
 				if (!crypto.timingSafeEqual(Buffer.from(generatedChallenge), Buffer.from(storedCodeChallenge.code_challenge))) {
+					mylog("Token Called: Invalid code verifier.");
 					return res.status(400).json({ error: 'Invalid code verifier.' });
 				}
 
@@ -498,11 +520,14 @@ export default defineEndpoint({
 				//	return res.status(400).json({ error: 'Session not found or expired. No directus_refresh_token found' });
 				//}
 
+				mylog("Token Called: Valid code verifier.");
+
 				const directus_refresh_token = storedCodeChallenge.directus_refresh_token;
 
 				// If valid, clear the stored state and session
 				await myStorage.clearAssociatedCodeChallengeFromCode(authorization_code);
 
+				mylog("Token Called: Returning directus_refresh_token: "+directus_refresh_token);
 				// Return the session or token associated with the validated request
 				return res.json({
 					message: 'Validation successful',
@@ -510,7 +535,7 @@ export default defineEndpoint({
 					//directus_session_token: directus_session_token // https://github.com/directus/directus/issues/21757#issuecomment-1992539944  https://github.com/directus/directus/issues/21757
 				});
 			} catch (error: any) {
-				//console.error('Error during validation:', error);
+				mylog('Error during validation:', error);
 				return res.status(500).json({ error: 'Internal server error.', message: error.toString() });
 			}
 		});
