@@ -45,8 +45,6 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
-	const disabled = false;
-
 	function renderDebugItem(debugItem: Record<any, any>){
 		let renderedItems: any[] = [];
 		let keys = Object.keys(debugItem);
@@ -96,8 +94,6 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	// So we need to have our own domain / myapp scheme
 	//const desiredRedirectURL = ServerAPI.getServerUrl()+"/admin/login";
 
-	//const disabled = !isSsoLoginPossible();
-
 	async function getToken(code_verifier: string, code: string){
 		//console.log("Get TOKEN");
 		try{
@@ -122,7 +118,9 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 			// const directus_session_token = json.directus_session_token; // not send anymore
 			const directus_refresh_token = json.directus_refresh_token;
 			if(!!directus_refresh_token){
-				onSuccess(directus_refresh_token);
+				if(onSuccess){
+					onSuccess(directus_refresh_token);
+				}
 			}
 
 		} catch (err: any){
@@ -277,7 +275,6 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 		// @ts-ignore
 		<ButtonAuthProviderCustom
 			key={'ssoButton' + provider.name}
-			disabled={disabled}
 			accessibilityLabel={accessibilityLabel}
 			onPress={onPress}
 			icon_name={provider.name}
