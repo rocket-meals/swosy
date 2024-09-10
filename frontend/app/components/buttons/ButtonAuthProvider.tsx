@@ -252,15 +252,15 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				if (result.type === 'success' && result.url) {
 					//console.log("Redirected?")
 					const currentLocation = result.url;
-					debugObj.currentLocation = currentLocation
-					renderDebugItem(debugObj)
+					const fragmentIndex = currentLocation.indexOf('#'); // why does expo add a # to the url? // well lets get rid of it
+					const hasFragment = fragmentIndex !== -1;
 
-					const code_splits = (currentLocation+"").split("code=");
-					const code = code_splits[1];
-					//console.log(code);
+					const urlWithoutFragment = hasFragment ? currentLocation.substring(0, fragmentIndex) : currentLocation;
+					const code_splits = urlWithoutFragment.split("code=");
+					const code = code_splits[1]?.split('&')[0]; // Handle cases where other parameters may follow
 
-					debugObj.code = code
-					renderDebugItem(debugObj)
+					debugObj.code = code;
+					renderDebugItem(debugObj);
 
 					getToken(code_verifier, code);
 				}
