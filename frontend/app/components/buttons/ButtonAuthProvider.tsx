@@ -252,6 +252,9 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 				if (result.type === 'success' && result.url) {
 					//console.log("Redirected?")
 					const currentLocation = result.url;
+					debugObj.currentLocation = currentLocation
+					renderDebugItem(debugObj)
+
 					const code_splits = (currentLocation+"").split("code=");
 					const code = code_splits[1];
 					//console.log(code);

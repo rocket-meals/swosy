@@ -1,5 +1,5 @@
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {DimensionValue, KeyboardAvoidingView, Platform} from 'react-native';
+import {DimensionValue, KeyboardAvoidingView, Platform, TouchableOpacity} from 'react-native';
 import {useIsLargeDevice} from '@/helper/device/DeviceHelper';
 import {Text, useViewBackgroundColor, View} from '@/components/Themed';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import {ProjectBackgroundImage} from '@/components/project/ProjectBackgroundImag
 import {MySafeAreaViewForScreensWithoutHeader} from '@/components/MySafeAreaViewForScreensWithoutHeader';
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import React from "react";
+import {useDebug} from "@/states/Debug";
 
 export type LoginLayoutProps = {
 	children: React.ReactNode | React.ReactNode[]
@@ -68,6 +69,10 @@ export const LoginLayout = (props: any) => {
 		const viewBackgroundColor = useViewBackgroundColor()
 		const contrastBackgroundColor = useMyContrastColor(viewBackgroundColor)
 
+		const [clickedBannerAmount, setClickedBannerAmount] = React.useState(0);
+		const [debug, setDebug] = useDebug();
+
+
 		const leftSizeContent = (
 			<View style={{width: width, height: '100%'}}>
 				<MySafeAreaViewForScreensWithoutHeader>
@@ -102,7 +107,16 @@ export const LoginLayout = (props: any) => {
 											justifyContent: 'space-between',
 										}}
 									>
-										<ProjectBanner />
+										<TouchableOpacity onPress={() => {
+											if(clickedBannerAmount < 5) {
+												setClickedBannerAmount(clickedBannerAmount + 1)
+											} else {
+												setClickedBannerAmount(0)
+												setDebug(!debug)
+											}
+										}}>
+											<ProjectBanner />
+										</TouchableOpacity>
 									</View>
 									{renderSpaceBetweenLogoAndSignIn()}
 									{props.children}
