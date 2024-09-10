@@ -21,7 +21,7 @@ export default function RootTextAndIconDimensions() {
 //				width: 0, // has to be outcommented to get the width on iOS
 //				height: 0, // has to be outcommented to get the height on iOS
                 // hide the view
-                opacity: 0,
+                //opacity: 0,
             }}
             accessible={false} accessibilityElementsHidden={true}
         >
@@ -39,29 +39,33 @@ export default function RootTextAndIconDimensions() {
                     })
                 }}>{"M"}</Text>
             </View>
-            <Text>{textDimensions?.width?.toString()}</Text>
+            <Text>{"textDimensions?.width: "+textDimensions?.width?.toString()}</Text>
             <View style={{
-                backgroundColor: "blue",
+                //backgroundColor: "blue",
                 width: textDimensions?.width,
                 height: 10,
             }}/>
             <View style={{
-                backgroundColor: "red",
+                //backgroundColor: "red",
                 flexDirection: "row"
             }}>
-                <Icon name={IconNames.star_active_icon} onLayout={(event) => {
+                <View style={{
+                    //backgroundColor: "green",
+                }} onLayout={(event) => {
                     const {width, height} = event.nativeEvent.layout;
                     setIconDimensions((currentDimensions) => {
-                        console.log("SetIconDimensions: " + width);
+                        console.log("######################## SetIconDimensions: " + width);
                         return {
                             width: width,
                             height: height
                         }
                     })
-                }}/>
+                }}>
+                    <Icon name={IconNames.star_active_icon} />
+                </View>
             </View>
-            <Text>{iconDimensions?.width?.toString()}</Text>
-            <Text>{imageWidth}</Text>
+            <Text>{"iconDimensions?.width: "+iconDimensions?.width?.toString()}</Text>
+            <Text>{"imageWidth: "+imageWidth}</Text>
             <View style={{
                 backgroundColor: "blue",
                 width: iconDimensions?.width,

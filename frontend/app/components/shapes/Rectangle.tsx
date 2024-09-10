@@ -26,7 +26,7 @@ export const useCharacterWithInPixel = (amount: number) => {
 
 export const useIconWithInPixel = (amount?: number) => {
 	const [iconDimensions, setIconDimensions] = useSyncState(NonPersistentStore.iconDimensions);
-	console.log("useIconWithInPixel textDimensions: ",iconDimensions);
+	//console.log("useIconWithInPixel textDimensions: ",iconDimensions);
 	const width = iconDimensions?.width || 0;
 	if(amount === undefined){
 		amount = 1;
