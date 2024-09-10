@@ -45,6 +45,8 @@ interface AppState {
 }
 export const BusinesshoursTable: FunctionComponent<AppState> = ({businesshours, ...props}) => {
 
+	const translation_no_data_found = useTranslation(TranslationKeys.no_data_found);
+
 	const locale = useProfileLocaleForJsDate();
 	const isDebug = useIsDebug();
 
@@ -190,6 +192,7 @@ export const BusinesshoursTable: FunctionComponent<AppState> = ({businesshours, 
 		renderedEntries.push(renderedBusinesshours)
 	})
 
+
 	function renderDebug() {
 		if(isDebug){
 			return <View>
@@ -201,12 +204,19 @@ export const BusinesshoursTable: FunctionComponent<AppState> = ({businesshours, 
 		}
 	}
 
+
+	let renderedNoValue: any = null;
+	if(!businesshours || businesshours.length === 0) {
+		renderedNoValue = <SettingsRow accessibilityLabel={translation_no_data_found} labelLeft={translation_no_data_found} />
+	}
+
 	return (
 		<View style={{
 			width: '100%',
 		}}>
 			{renderedEntries}
-
+			{renderedNoValue}
+			{renderDebug()}
 		</View>
 	)
 }

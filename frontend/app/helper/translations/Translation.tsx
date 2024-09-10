@@ -217,6 +217,7 @@ export enum TranslationKeys {
 	washingmachine_estimate_finished_at = "washingmachine_estimate_finished_at",
 	washingmachine_state_unknown = "washingmachine_state_unknown",
 	no_value = "no_value",
+	no_data_found = "no_data_found",
 	current = "current",
 	active = "active",
 	inactive = "inactive",
@@ -638,6 +639,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'N/A',
 		[LanguageKeys.tr_TR]: 'N/A',
 		[LanguageKeys.zh_CN]: 'N/A'
+	},
+	no_data_found: {
+		[LanguageKeys.de_DE]: 'Keine Daten gefunden',
+		[LanguageKeys.en_US]: 'No Data Found',
+		[LanguageKeys.ar_SA]: 'لم يتم العثور على بيانات',
+		[LanguageKeys.es_ES]: 'No se encontraron datos',
+		[LanguageKeys.fr_FR]: 'Aucune donnée trouvée',
+		[LanguageKeys.ru_RU]: 'Данные не найдены',
+		[LanguageKeys.tr_TR]: 'Veri bulunamadı',
+		[LanguageKeys.zh_CN]: '未找到数据'
 	},
 	accountbalance: {
 		[LanguageKeys.de_DE]: 'Guthaben',
