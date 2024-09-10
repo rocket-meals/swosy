@@ -1,6 +1,7 @@
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {
+    CanteenFoodFeedbackReportSchedules,
     Canteens,
     Foodoffers,
     Foods,
@@ -35,6 +36,7 @@ export type ReportType = {
     canteen_alias: string,
     dateHumanReadable: string,
     report_feedback_period_days: number | null | undefined,
+    show_images: boolean,
     foods: ReportFoodEntryType[],
 }
 
@@ -85,7 +87,7 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(generateReportForDate: Date, report_feedback_period_days: number | null |undefined, canteenEntries: Canteens[]): Promise<ReportType>{
+    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, generateReportForDate: Date, report_feedback_period_days: number | null |undefined, canteenEntries: Canteens[]): Promise<ReportType>{
         let date = generateReportForDate;
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
         //console.log("Generate report for date: "+dateHumanReadable);
@@ -93,10 +95,16 @@ export class ReportGenerator {
         let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
         const canteen_alias = canteen_alias_list.join(", ");
 
+        let show_images = reportSchedule.show_images;
+        if(show_images === null || show_images === undefined){
+            show_images = true;
+        }
+
         let report: ReportType = {
             canteen_alias: canteen_alias,
             report_feedback_period_days: report_feedback_period_days,
             dateHumanReadable: dateHumanReadable,
+            show_images: show_images,
             foods: []
         }
 

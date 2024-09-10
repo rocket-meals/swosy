@@ -15,9 +15,11 @@
     {% for food in foods %}
         <div>
             <h3>{{ food.alias }}</h3>
-            <div>
-                <img src="{{ food.image_url }}" alt="{{ food.alias }}" style="width: 100px; height: 100px;">
-            </div>
+             {% if show_images %}
+                <div>
+                    <img src="{{ food.image_url }}" alt="{{ food.alias }}" style="width: 100px; height: 100px;">
+                </div>
+             {% endif %}
             <div>
                 <div style="display: flex; align-items: center;">
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAeUlEQVR4nO2W3QqAMAhGPdVF7/+0QY2vq0JGP1QTVvRdOd08oChDkkWqCc3+A+oCAAKGMECUwgHd1QeAn8wk6TDHh0sE+JgkpaIAMxudnU7u7ur9PahvDvYETO44SeqLAsys3XJ+sAfZgN32r/HlV5Etsadal2B4iWYLah5G2Q6o6gAAAABJRU5ErkJggg==" alt="chart-bar" style="width:24px; height:24px; margin-right:8px;">

@@ -58,7 +58,7 @@ export class ReportSchedule {
                                 try {
                                     // 3. send report
                                     let report_feedback_period_days = reportSchedule?.report_feedback_period_days
-                                    let generated_report_data: ReportType = await reportGenerator.generateReportJSON(generateReportForDate, report_feedback_period_days, canteenEntries)
+                                    let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportSchedule, generateReportForDate, report_feedback_period_days, canteenEntries)
                                     if(!!generated_report_data){
                                         for(let toMail of recipientEmailList){
                                             await this.sendReport(generateReportForDate, generated_report_data, reportSchedule, canteenEntries, toMail);
