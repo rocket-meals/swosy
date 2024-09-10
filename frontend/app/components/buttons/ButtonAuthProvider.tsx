@@ -45,6 +45,8 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
+	const disabled = false;
+
 	function renderDebugItem(debugItem: Record<any, any>){
 		let renderedItems: any[] = [];
 		let keys = Object.keys(debugItem);
