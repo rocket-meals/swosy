@@ -223,6 +223,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_amount_days_before_offer_date?: number | null;
   send_once_now_for_date?: string | null;
   send_report_at_hh_mm?: string | null;
+  show_images?: boolean | null;
   sort?: number | null;
   status: string;
   use_canteen_specific_feedbacks_only?: boolean | null;
@@ -895,6 +896,7 @@ export type Markings = {
 
 export type MarkingsTranslations = {
   be_source_for_translations?: boolean | null;
+  description?: string | null;
   id: number;
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
