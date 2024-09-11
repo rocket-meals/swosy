@@ -15,7 +15,7 @@ import {
 	readProviders,
 	readRoles,
 	rest,
-	serverHealth, serverInfo, readPermissions
+	serverHealth, serverInfo, readPermissions, serverPing
 } from '@directus/sdk';
 import {
 	CustomDirectusTypes,
@@ -243,8 +243,12 @@ export class ServerAPI {
 			console.log('remote_info', JSON.stringify(remote_info, null, 2));
 
 			// ping the server to check if it is online
-			const remote_server_health = await directus.request(serverHealth());
-			console.log('remote_server_health', remote_server_health);
+			// Server health will fail if email service is not configured - so we don't use it
+			//const remote_server_health = await directus.request(serverHealth());
+			//console.log('remote_server_health', remote_server_health);
+			// Instead we could use the ping to check if the server is online
+			//const remote_server_ping = await directus.request(serverPing());
+			//console.log('remote_server_ping', remote_server_ping);
 
 
 			result.status = 'online';
