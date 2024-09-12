@@ -22,23 +22,6 @@ export class RedirectWhitelistHelper {
         return false;
     }
 
-    private static startsWithUntilWildcardReplacement(inputStr: string, whitelistStrWithWildcardReplacement: string): boolean {
-        // redirectUrl could be "/rocket-meals/login/.../"
-        // redirect_whitelist_entry_with_possible_wildcard_replacement could be "/rocket-meals/WILDCARD_REPLACEMENT/.../"
-        // we need to check if the redirectUrl starts with the redirect_whitelist_entry_with_possible_wildcard_replacement
-        let split = whitelistStrWithWildcardReplacement.split(WILDCARD_REPLACEMENT);
-        let first_part: string = split.length > 1 ? split[0] as string : whitelistStrWithWildcardReplacement;
-        // so /rocket-meals/ is the first part and the rest is the second part
-        // remove the last char if it is a slash
-        if(first_part.endsWith("/")){
-            first_part = first_part.slice(0, -1);
-        }
-        // check if the redirectUrl starts with the first part
-        return inputStr.startsWith(first_part);
-    }
-
-
-
     // function to check if a url is allowed/matches a whitelist entry
     private static isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string | undefined, redirectUrl: URL): boolean {
         if(!redirect_whitelist_entry){
@@ -132,6 +115,21 @@ export class RedirectWhitelistHelper {
                 return true;
             }
         }
+    }
+
+    private static startsWithUntilWildcardReplacement(inputStr: string, whitelistStrWithWildcardReplacement: string): boolean {
+        // redirectUrl could be "/rocket-meals/login/.../"
+        // redirect_whitelist_entry_with_possible_wildcard_replacement could be "/rocket-meals/WILDCARD_REPLACEMENT/.../"
+        // we need to check if the redirectUrl starts with the redirect_whitelist_entry_with_possible_wildcard_replacement
+        let split = whitelistStrWithWildcardReplacement.split(WILDCARD_REPLACEMENT);
+        let first_part: string = split.length > 1 ? split[0] as string : whitelistStrWithWildcardReplacement;
+        // so /rocket-meals/ is the first part and the rest is the second part
+        // remove the last char if it is a slash
+        if(first_part.endsWith("/")){
+            first_part = first_part.slice(0, -1);
+        }
+        // check if the redirectUrl starts with the first part
+        return inputStr.startsWith(first_part);
     }
 
     static getUrlFromString(url: string): URL | null {
