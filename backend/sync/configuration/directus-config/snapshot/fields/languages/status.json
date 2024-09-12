@@ -1,9 +1,9 @@
 {
-  "collection": "foods_feedbacks_labels",
+  "collection": "languages",
   "field": "status",
   "type": "string",
   "meta": {
-    "collection": "foods_feedbacks_labels",
+    "collection": "languages",
     "conditions": null,
     "display": "labels",
     "display_options": {
@@ -21,13 +21,6 @@
           "color": "var(--theme--foreground)",
           "foreground": "var(--theme--foreground)",
           "background": "var(--theme--background-normal)"
-        },
-        {
-          "text": "$t:archived",
-          "value": "archived",
-          "color": "var(--theme--warning)",
-          "foreground": "var(--theme--warning)",
-          "background": "var(--theme--warning-background)"
         }
       ],
       "showAsDot": true
@@ -58,7 +51,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 2,
+    "sort": 4,
     "special": null,
     "translations": null,
     "validation": null,
@@ -67,9 +60,9 @@
   },
   "schema": {
     "name": "status",
-    "table": "foods_feedbacks_labels",
+    "table": "languages",
     "data_type": "character varying",
-    "default_value": "published",
+    "default_value": null,
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

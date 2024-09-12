@@ -2,41 +2,49 @@
     {
         "code": "ar-SA",
         "direction": "rtl",
-        "name": "Arabic"
+        "name": "Arabic",
+        "status": null
     },
     {
         "code": "de-DE",
         "direction": "ltr",
-        "name": "German"
+        "name": "German",
+        "status": null
     },
     {
         "code": "en-US",
         "direction": "ltr",
-        "name": "English"
+        "name": "English",
+        "status": null
     },
     {
         "code": "es-ES",
         "direction": "ltr",
-        "name": "Spanish"
+        "name": "Spanish",
+        "status": null
     },
     {
         "code": "fr-FR",
         "direction": "ltr",
-        "name": "French"
+        "name": "French",
+        "status": null
     },
     {
         "code": "ru-RU",
         "direction": "ltr",
-        "name": "Russian"
+        "name": "Russian",
+        "status": null
     },
     {
         "code": "tr-TR",
         "direction": "ltr",
-        "name": "Turkish"
+        "name": "Turkish",
+        "status": null
     },
     {
         "code": "zh-CN",
         "direction": "ltr",
-        "name": "Chinese"
+        "name": "Chinese",
+        "status": null
     }
 ]

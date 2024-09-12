@@ -951,18 +951,6 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "foodsoffers_markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "d55ab47e-78c6-41cf-b22b-72df9280df81"
-  },
-  {
-    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "languages",
     "action": "read",
     "permissions": {},
@@ -1848,18 +1836,6 @@
       "*"
     ],
     "_syncId": "fb660a00-f8ac-4cce-91f1-36ad1e26480a"
-  },
-  {
-    "role": null,
-    "collection": "foodsoffers_markings",
-    "action": "read",
-    "permissions": {},
-    "validation": {},
-    "presets": null,
-    "fields": [
-      "*"
-    ],
-    "_syncId": "04e71a89-658d-4c6c-a5fb-85753b2fb407"
   },
   {
     "role": null,
