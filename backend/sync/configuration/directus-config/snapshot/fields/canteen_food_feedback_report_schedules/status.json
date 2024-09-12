@@ -34,7 +34,7 @@
     },
     "field": "status",
     "group": null,
-    "hidden": true,
+    "hidden": false,
     "interface": "select-dropdown",
     "note": null,
     "options": {

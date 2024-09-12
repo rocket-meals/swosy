@@ -3,48 +3,48 @@
         "code": "ar-SA",
         "direction": "rtl",
         "name": "Arabic",
-        "status": null
+        "status": "published"
     },
     {
         "code": "de-DE",
         "direction": "ltr",
         "name": "German",
-        "status": null
+        "status": "published"
     },
     {
         "code": "en-US",
         "direction": "ltr",
         "name": "English",
-        "status": null
+        "status": "published"
     },
     {
         "code": "es-ES",
         "direction": "ltr",
         "name": "Spanish",
-        "status": null
+        "status": "published"
     },
     {
         "code": "fr-FR",
         "direction": "ltr",
         "name": "French",
-        "status": null
+        "status": "published"
     },
     {
         "code": "ru-RU",
         "direction": "ltr",
         "name": "Russian",
-        "status": null
+        "status": "published"
     },
     {
         "code": "tr-TR",
         "direction": "ltr",
         "name": "Turkish",
-        "status": null
+        "status": "published"
     },
     {
         "code": "zh-CN",
         "direction": "ltr",
         "name": "Chinese",
-        "status": null
+        "status": "published"
     }
 ]
