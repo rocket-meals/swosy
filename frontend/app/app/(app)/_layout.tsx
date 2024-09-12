@@ -1,7 +1,7 @@
 import {Redirect, useGlobalSearchParams, useLocalSearchParams, usePathname, useRootNavigationState} from 'expo-router';
 import React, {useState} from 'react';
 import {Text} from '@/components/Themed'
-import {isUserLoggedIn} from '@/states/User';
+import {isUserLoggedIn, useLogoutCallback} from '@/states/User';
 import {MyDrawerAuthenticated} from '@/components/drawer/MyDrawerAuthenticated';
 import {useSearchParamKioskMode} from "@/helper/searchParams/SearchParams";
 import {useTermsAndPrivacyConsentAcceptedDate} from "@/states/ConsentStatus";
@@ -14,6 +14,7 @@ export const unstable_settings = {
 export default function AppLayout() {
 	const [termsAndPrivacyConsentAcceptedDate, setTermsAndPrivacyConsentAcceptedDate] = useTermsAndPrivacyConsentAcceptedDate()
 	const consentAcceptedTermsAndPrivacy = termsAndPrivacyConsentAcceptedDate !== null
+	const logout = useLogoutCallback()
 	
 	const params = useLocalSearchParams()
 	console.log('AppLayout: params: ', params)
@@ -45,11 +46,15 @@ export default function AppLayout() {
 	// Only require authentication within the (app) group's layout as users
 	// need to be able to access the (auth) group and sign in again.
 	if(!isInKioskMode){
-		if ((!loggedIn || !consentAcceptedTermsAndPrivacy)) {
+		if ((!loggedIn)) {
 			// On web, static rendering will stop here as the user is not authenticated
 			// in the headless Node process that the pages are rendered in.
 			// @ts-ignore
 			return <Redirect href="/(auth)/login" />;
+		}
+		if(!consentAcceptedTermsAndPrivacy){
+			logout()
+			return null;
 		}
 	}
 
