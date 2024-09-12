@@ -1,7 +1,6 @@
-import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {DimensionValue, KeyboardAvoidingView, Platform, TouchableOpacity} from 'react-native';
 import {useIsLargeDevice} from '@/helper/device/DeviceHelper';
-import {Text, useViewBackgroundColor, View} from '@/components/Themed';
+import {useViewBackgroundColor, View} from '@/components/Themed';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 import {ProjectBanner} from '@/components/project/ProjectBanner';
@@ -26,8 +25,6 @@ export const LoginLayout = (props: any) => {
      };
      */
 
-	const translation_by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = useTranslation(TranslationKeys.by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy);
-
 	const insets = useSafeAreaInsets();
 	// StatusBar.currentHeight does not exist
 	const paddingTop = insets.top;
@@ -40,27 +37,6 @@ export const LoginLayout = (props: any) => {
 		)
 	}
 
-	function renderConsentTermsOfUseAndPrivacyPolicy() {
-		return (
-			<View style={{
-				width: '100%',
-				flexDirection: 'row',
-				flexWrap: 'wrap',
-				justifyContent: 'center',
-				alignItems: 'center'
-			}}
-			>
-				<Text style={{
-					fontSize: 12,
-					textAlign: 'center',
-					width: '100%' // Add this line to ensure full width
-				}}
-				>
-					{translation_by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy}
-				</Text>
-			</View>
-		)
-	}
 
 	function renderLeftSide() {
 		const padding = isSmallDevice ? 20: 80;
@@ -125,7 +101,6 @@ export const LoginLayout = (props: any) => {
 						</ScrollViewWithGradient>
 					</KeyboardAvoidingView>
 					<View style={{paddingHorizontal: padding, width: '100%', backgroundColor: viewBackgroundColor}}>
-						{renderConsentTermsOfUseAndPrivacyPolicy()}
 						<View
 							style={{
 								flexDirection: 'row',

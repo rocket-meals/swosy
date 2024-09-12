@@ -4,6 +4,8 @@ import {ButtonAuthProviderCustom} from '@/components/buttons/ButtonAuthProviderC
 
 export type ButtonAuthAnonymProps = {
     onPress: () => void,
+	privacyPolicyAccepted?: boolean
+	onPressWhenPrivacyPolicyIsNotAccepted?: (() => void | Promise<void>) | undefined,
 }
 // The component to handle SSO login links
 export const ButtonAuthAnonym = (props: ButtonAuthAnonymProps) => {
@@ -12,6 +14,6 @@ export const ButtonAuthAnonym = (props: ButtonAuthAnonymProps) => {
 	const onPress = props.onPress
 
 	return (
-		<ButtonAuthProviderCustom key={'authAnonym'} accessibilityLabel={continueAnonym} onPress={onPress} icon_name={'incognito'} text={continueAnonym} />
+		<ButtonAuthProviderCustom onPressWhenPrivacyPolicyIsNotAccepted={props.onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={props.privacyPolicyAccepted} key={'authAnonym'} accessibilityLabel={continueAnonym} onPress={onPress} icon_name={'incognito'} text={continueAnonym} />
 	);
 };

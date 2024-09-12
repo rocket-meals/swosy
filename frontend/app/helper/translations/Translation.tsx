@@ -338,7 +338,9 @@ export enum TranslationKeys {
 	color_scheme_light = "color_scheme_light",
 	color_scheme_dark = "color_scheme_dark",
 	color_scheme_system = "color_scheme_system",
-	by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy = "by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy",
+	i_accept_privacy_policy_and_terms_of_service = "i_accept_privacy_policy_and_terms_of_service",
+	to_proceed_you_have_to_accept_privacy_policy_and_terms_of_service = "to_proceed_you_have_to_accept_privacy_policy_and_terms_of_service",
+	terms_and_conditions_accepted_and_privacy_policy_read_at_date = "terms_and_conditions_accepted_and_privacy_policy_read_at_date",
 	cookies = "cookies",
 	feedback = "feedback",
 	feedback_support_faq = "feedback_support_faq",
@@ -2727,15 +2729,35 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Sistem',
 		[LanguageKeys.zh_CN]: '系统'
 	},
-	by_continuing_you_agree_to_terms_and_conditions_and_privacy_policy: {
-		[LanguageKeys.de_DE]: 'Durch die Fortsetzung stimmst du den Allgemeinen Geschäftsbedingungen und der Datenschutzerklärung zu.',
-		[LanguageKeys.en_US]: 'By continuing, you agree to the terms and conditions and privacy policy.',
-		[LanguageKeys.ar_SA]: 'بالمتابعة، فإنك توافق على الشروط والأحكام وسياسة الخصوصية.',
-		[LanguageKeys.es_ES]: 'Al continuar, aceptas los términos y condiciones y la política de privacidad.',
-		[LanguageKeys.fr_FR]: 'En continuant, vous acceptez les termes et conditions et la politique de confidentialité.',
-		[LanguageKeys.ru_RU]: 'Продолжая, вы соглашаетесь с условиями и политикой конфиденциальности.',
-		[LanguageKeys.tr_TR]: 'Devam ederek, şartlar ve koşullar ile gizlilik politikasını kabul etmiş olursunuz.',
-		[LanguageKeys.zh_CN]: '继续，即表示您同意条款和条件以及隐私政策。'
+	i_accept_privacy_policy_and_terms_of_service: {
+		[LanguageKeys.de_DE]: 'Ich stimme den Allgemeinen Geschäftsbedingungen zu und erkläre, die Datenschutzerklärung zur Kenntnis genommen zu haben.',
+		[LanguageKeys.en_US]: 'I agree to the General Terms and Conditions and declare that I have taken note of the Privacy Policy.',
+		[LanguageKeys.ar_SA]: 'أوافق على الشروط والأحكام العامة وأعلن أنني لاحظت سياسة الخصوصية.',
+		[LanguageKeys.es_ES]: 'Acepto los Términos y Condiciones Generales y declaro que he tomado nota de la Política de Privacidad.',
+		[LanguageKeys.fr_FR]: 'J\'accepte les Conditions Générales et déclare avoir pris connaissance de la Politique de Confidentialité.',
+		[LanguageKeys.ru_RU]: 'Я соглашаюсь с Общими условиями и заявляю, что ознакомился с Политикой конфиденциальности.',
+		[LanguageKeys.tr_TR]: 'Genel Şartlar ve Koşulları kabul ediyorum ve Gizlilik Politikasını okuduğumu beyan ediyorum.',
+		[LanguageKeys.zh_CN]: '我同意一般条款和条件，并声明我已注意到隐私政策。'
+	},
+	to_proceed_you_have_to_accept_privacy_policy_and_terms_of_service: {
+		[LanguageKeys.de_DE]: 'Um fortzufahren, müssen Sie den Allgemeinen Geschäftsbedingungen zustimmen und erklären, die Datenschutzerklärung zur Kenntnis genommen zu haben.',
+		[LanguageKeys.en_US]: 'To proceed, you have to agree to the General Terms and Conditions and declare that you have taken note of the Privacy Policy.',
+		[LanguageKeys.ar_SA]: 'للمتابعة، يجب عليك الموافقة على الشروط والأحكام العامة والإعلان بأنك لاحظت سياسة الخصوصية.',
+		[LanguageKeys.es_ES]: 'Para continuar, debe aceptar los Términos y Condiciones Generales y declarar que ha tomado nota de la Política de Privacidad.',
+		[LanguageKeys.fr_FR]: 'Pour continuer, vous devez accepter les Conditions Générales et déclarer avoir pris connaissance de la Politique de Confidentialité.',
+		[LanguageKeys.ru_RU]: 'Для продолжения вы должны согласиться с Общими условиями и заявить, что вы ознакомились с Политикой конфиденциальности.',
+		[LanguageKeys.tr_TR]: 'Devam etmek için Genel Şartlar ve Koşulları kabul etmeniz ve Gizlilik Politikasını okuduğunuzu beyan etmeniz gerekmektedir.',
+		[LanguageKeys.zh_CN]: '要继续，您必须同意一般条款和条件，并声明您已注意到隐私政策。'
+	},
+	terms_and_conditions_accepted_and_privacy_policy_read_at_date: {
+		[LanguageKeys.de_DE]: 'AGB akzeptiert und Datenschutzerklärung gelesen am',
+		[LanguageKeys.en_US]: 'Terms and Conditions accepted and Privacy Policy read at date',
+		[LanguageKeys.ar_SA]: 'تم قبول الشروط والأحكام وقراءة سياسة الخصوصية في التاريخ',
+		[LanguageKeys.es_ES]: 'Términos y Condiciones aceptados y Política de Privacidad leída en la fecha',
+		[LanguageKeys.fr_FR]: 'Conditions Générales acceptées et Politique de Confidentialité lue à la date',
+		[LanguageKeys.ru_RU]: 'Условия и положения приняты, а Политика конфиденциальности прочитана на дату',
+		[LanguageKeys.tr_TR]: 'Şartlar ve Koşullar kabul edildi ve Gizlilik Politikası tarihte okundu',
+		[LanguageKeys.zh_CN]: '条款和条件已接受，隐私政策已于日期阅读'
 	},
 	cookies: {
 		[LanguageKeys.de_DE]: 'Cookies',

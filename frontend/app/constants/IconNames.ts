@@ -61,6 +61,7 @@ export class IconNames {
     static support_icon = IconFamily.MaterialIcons+IconParseDelimeter+"support-agent"
 
     static data_access_icon = 'database-eye'
+    static privacy_policy_icon = 'shield-account'
     static brand_apple_icon = 'apple'
     static brand_google_play_icon = 'google-play'
     static select_option_active_icon = 'check-circle'

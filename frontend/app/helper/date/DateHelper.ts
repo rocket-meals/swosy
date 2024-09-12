@@ -406,7 +406,7 @@ export class DateHelper {
 		return DateHelper.formatOfferDateToReadable(dateCopy, false, false);
 	}
 
-	static formatOfferDateToReadable(offerDate: Date, withYear?: boolean, withTime?: boolean) {
+	static formatOfferDateToReadable(offerDate: Date, withYear?: boolean, withTime?: boolean, withSeconds?: boolean) {
 		let date = offerDate;
 		if (!offerDate) {
 			date = new Date();
@@ -435,6 +435,12 @@ export class DateHelper {
 			const minutesWithPad = minutes < 10 ? '0'+minutes : minutes;
 			firstPart = firstPart+" "+hoursWithPad+':'+minutesWithPad;
 		}
+		const seconds = date.getSeconds();
+		if (withSeconds) {
+			const secondsWithPad = seconds < 10 ? '0'+seconds : seconds;
+			firstPart = firstPart+':'+secondsWithPad;
+		}
+
 		return firstPart;
 	}
 

@@ -6,6 +6,7 @@ export class PersistentStore {
 	static demo = 'PersistentStore.demo'
 	static animations_auto_play_disabled = 'PersistentStore.performance'
 	static develop = 'PersistentStore.develop'
+	static consentStatusTermsAndPrivacy = 'PersistentStore.consentStatusTermsAndPrivacy'
 
 	static debugAutoLogin = 'PersistentStore.debugAutoLogin'
 

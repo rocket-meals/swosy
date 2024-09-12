@@ -550,6 +550,7 @@ export function getEmptyProfile(): Partial<Profiles> {
 	const undefinedMarkings = undefined as any as string & ProfilesMarkings[];
 
 	return {
+		date_privacy_policy_accepted: undefined,
 		buildings_favorites: undefinedBuildingsFavorites,
 		buildings_last_visited: undefinedBuildingsLastVisited,
 		devices: undefinedDevices,

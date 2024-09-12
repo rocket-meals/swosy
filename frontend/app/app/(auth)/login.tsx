@@ -1,7 +1,7 @@
-import {Redirect, router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
+import {Redirect, router, useGlobalSearchParams} from 'expo-router';
 import React, {useEffect, useState} from 'react';
 import {ServerAPI} from '@/helper/database/server/ServerAPI';
-import {MySpinner, Text, TEXT_SIZE_SMALL, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
+import {Checkbox, MySpinner, Text, TEXT_SIZE_SMALL, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
 import {AuthenticationData} from '@directus/sdk';
 import {ButtonAuthAnonym} from '@/components/buttons/ButtonAuthAnonym';
 import {getAnonymousUser, isUserLoggedIn, useCurrentUser, useLogoutCallback} from '@/states/User';
@@ -9,15 +9,17 @@ import {ServerSsoAuthProviders} from '@/components/auth/ServerSsoAuthProviders';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {LoginLayout} from '@/components/auth/LoginLayout';
 import {MyButton} from '@/components/buttons/MyButton';
-import {useNickname} from '@/states/SynchedProfile';
+import {useNickname, useSynchedProfile} from '@/states/SynchedProfile';
 import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowProfileLanguage';
 import {IconNames} from '@/constants/IconNames';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
-import * as WebBrowser from 'expo-web-browser';
 import {useIsDebug} from "@/states/Debug";
+import {MyDivider} from "@/components/divider/MyDivider";
+import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
+import {useTermsAndPrivacyConsentAcceptedDate} from "@/states/ConsentStatus";
 
 const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
 
@@ -26,6 +28,27 @@ export default function Login() {
 	const logout = useLogoutCallback()
 	const [nickname, setNickname] = useNickname()
 	const debug = useIsDebug()
+
+	const [profile, setProfile] = useSynchedProfile();
+	const [isCheckboxTicketToConsentTermsAndPrivacy, setIsCheckboxTicketToConsentTermsAndPrivacy] = useState(false)
+
+
+	const [isPrivacyPolicyCheckboxHighlighted, setIsPrivacyPolicyCheckboxHighlighted] = useState(false)
+
+	const translation_t_accept_privacy_policy_and_terms_of_service = useTranslation(TranslationKeys.i_accept_privacy_policy_and_terms_of_service);
+
+	const highlightPrivacyPolicyCheckbox = () => {
+		setIsPrivacyPolicyCheckboxHighlighted(true)
+	}
+
+	const onPressWhenPrivacyPolicyIsNotAccepted = () => {
+		highlightPrivacyPolicyCheckbox()
+	}
+
+	const onChangeTermsAndPrivacyConsent = (isChecked: boolean) => {
+		setIsPrivacyPolicyCheckboxHighlighted(false)
+		setIsCheckboxTicketToConsentTermsAndPrivacy(isChecked)
+	}
 
 	let backgroundColor = useViewBackgroundColor()
 	const backgroundContrastColor = useMyContrastColor(backgroundColor)
@@ -251,11 +274,13 @@ export default function Login() {
 
 		return (
 			<>
-				<MyButton
+				<ButtonAuthProviderCustom
 					leftIconColoredBox={false}
-					leftIcon={IconNames.sign_in_with_mail_icon}
+					icon_name={IconNames.sign_in_with_mail_icon}
+					privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy}
 					text={translation_show_login_internal_management_with_username_and_password}
 					accessibilityLabel={translation_show_login_internal_management_with_username_and_password}
+					onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted}
 					onPress={() => {
 						setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
 					}}
@@ -267,8 +292,36 @@ export default function Login() {
 	function renderAnonymousLoginOption() {
 		return(
 			<>
-				<ButtonAuthAnonym onPress={proceed_to_authenticate_as_anonymous} />
+				<ButtonAuthAnonym onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy} onPress={proceed_to_authenticate_as_anonymous} />
 			</>
+		)
+	}
+
+
+	function renderConsentTermsOfUseAndPrivacyPolicy() {
+
+		return (
+			<Checkbox isInvalid={isPrivacyPolicyCheckboxHighlighted} isChecked={isCheckboxTicketToConsentTermsAndPrivacy} onChange={(isChecked) => {
+				onChangeTermsAndPrivacyConsent(isChecked)
+			}} accessibilityLabel={translation_t_accept_privacy_policy_and_terms_of_service} label={translation_t_accept_privacy_policy_and_terms_of_service} >
+				<View style={{
+					width: '100%',
+					flexDirection: 'row',
+					flexWrap: 'wrap',
+					justifyContent: 'center',
+					alignItems: 'center'
+				}}
+				>
+					<Text style={{
+						fontSize: 12,
+						textAlign: 'left',
+						width: '100%' // Add this line to ensure full width
+					}}
+					>
+						{translation_t_accept_privacy_policy_and_terms_of_service}
+					</Text>
+				</View>
+			</Checkbox>
 		)
 	}
 
@@ -291,13 +344,11 @@ export default function Login() {
 		} else {
 			return (
 				<>
-					<ServerSsoAuthProviders onSuccess={(newToken: string) => {
+					<ServerSsoAuthProviders onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy} onSuccess={(newToken: string) => {
 						authenticate_with_access_token(newToken);
 					}} />
 					{renderAnonymousLoginOption()}
-					<View style={{height: 16}}></View>
-					<View style={{width: '100%', height: 1, backgroundColor: backgroundContrastColor}}></View>
-					<View style={{height: 16}}></View>
+					<MyDivider />
 					{renderInternalLogin()}
 				</>
 			)
@@ -308,37 +359,16 @@ export default function Login() {
 		return <Redirect href="/(app)/home" />
 	}
 
-	function renderDebug() {
-		if (debug) {
-			return (
-				<View style={{
-					width: '100%',
-					height: '100%',
-					flexDirection: 'column',
-					alignItems: 'center',
-				}}>
-					<Text>{'debug: ' + JSON.stringify(currentUser)}</Text>
-					<Text>{'loggingIn: ' + loggingIn}</Text>
-					<Text>{'loggingInWithToken: ' + loggingInWithToken}</Text>
-					<Text>{'loggingInWithMailAndPassword: ' + loggingInWithMailAndPassword}</Text>
-					<Text>{'directus_token: ' + directus_token}</Text>
-					<Text>{'email: ' + email}</Text>
-					<Text>{'password: ' + password}</Text>
-				</View>
-			)
-		}
-	}
-
 	return (
 		<LoginLayout>
 			<Text style={{fontSize: 24, fontWeight: 'bold'}}>{translation_sign_in}</Text>
 			<View style={{height: 16}}></View>
 			<SettingsRowProfileLanguage />
 			<View style={{height: 16}}></View>
+			{renderConsentTermsOfUseAndPrivacyPolicy()}
+			<View style={{height: 16}}></View>
 			{renderWhenLoggedIn()}
 			{renderLoginOptions()}
-			<View style={{height: 16}}></View>
-			{renderDebug()}
 		</LoginLayout>
 	);
 }

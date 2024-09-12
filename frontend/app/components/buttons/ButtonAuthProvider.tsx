@@ -3,24 +3,20 @@ import {AuthProvider, ServerAPI} from '@/helper/database/server/ServerAPI';
 import {useIsDebug} from '@/states/Debug';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {ButtonAuthProviderCustom} from '@/components/buttons/ButtonAuthProviderCustom';
-import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper';
-import {isInExpoGoDev} from '@/helper/device/DeviceRuntimeHelper';
 // The component to handle SSO login links
 import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
 import {UrlHelper} from "@/helper/UrlHelper";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
-import {View, Text} from "@/components/Themed";
-import {Platform} from "react-native";
+import {Text, View} from "@/components/Themed";
 import {PlatformHelper} from "@/helper/PlatformHelper";
-import Regexp from "ajv-keywords/src/keywords/regexp";
 import * as Crypto from 'expo-crypto';
-import {authentication, createDirectus, graphql, readMe, rest} from "@directus/sdk";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 // Define the type for Single Sign-On (SSO) providers
 type ButtonAuthProviderProps = {
     provider: AuthProvider,
+	privacyPolicyAccepted?: boolean,
+	onPressWhenPrivacyPolicyIsNotAccepted?: (() => void | Promise<void>) | undefined,
 	onSuccess?: (token: string) => void,
 	onError?: (error: any) => void,
 }
@@ -39,7 +35,7 @@ function isSsoLoginPossible() {
 	*/
 
 
-export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthProviderProps) => {
+export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, privacyPolicyAccepted, provider, onError, onSuccess }: ButtonAuthProviderProps) => {
 	const isDebug = useIsDebug();
 	const translation_log_in_with = useTranslation(TranslationKeys.sign_in_with);
 
@@ -277,6 +273,8 @@ export const ButtonAuthProvider = ({ provider, onError, onSuccess }: ButtonAuthP
 	return (
 		// @ts-ignore
 		<ButtonAuthProviderCustom
+			privacyPolicyAccepted={privacyPolicyAccepted}
+			onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted}
 			key={'ssoButton' + provider.name}
 			accessibilityLabel={accessibilityLabel}
 			onPress={onPress}

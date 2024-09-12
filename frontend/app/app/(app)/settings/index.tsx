@@ -29,6 +29,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 import {SettingsRowResetPopupEventsRead} from "@/compositions/settings/SettingsResetPopupEventsRead";
+import {SettingsRowConsentDateTermsAndPrivacy} from "@/compositions/settings/SettingsRowConsentDateTermsAndPrivacy";
 
 const ProjectVersionInformation = () => {
 	const [develop, setDevelop] = useDeveloperModeRaw();
@@ -102,6 +103,7 @@ export default function SettingsScreen() {
 				<SettingsRowGroup>
 					<SettingsRowUserDelete />
 					<SettingsRowDataAccess />
+					<SettingsRowConsentDateTermsAndPrivacy />
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.feedback_support_faq} leftIcon={IconNames.support_icon} route={"/(app)/support"} />

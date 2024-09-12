@@ -4,6 +4,7 @@ import {Text} from '@/components/Themed'
 import {isUserLoggedIn} from '@/states/User';
 import {MyDrawerAuthenticated} from '@/components/drawer/MyDrawerAuthenticated';
 import {useSearchParamKioskMode} from "@/helper/searchParams/SearchParams";
+import {useTermsAndPrivacyConsentAcceptedDate} from "@/states/ConsentStatus";
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
@@ -11,14 +12,17 @@ export const unstable_settings = {
 };
 
 export default function AppLayout() {
+	const [termsAndPrivacyConsentAcceptedDate, setTermsAndPrivacyConsentAcceptedDate] = useTermsAndPrivacyConsentAcceptedDate()
+	const consentAcceptedTermsAndPrivacy = termsAndPrivacyConsentAcceptedDate !== null
+	
 	const params = useLocalSearchParams()
 	console.log('AppLayout: params: ', params)
 	const globalSearchParams = useGlobalSearchParams()
 	console.log('AppLayout: globalSearchParams: ', globalSearchParams)
 	const kioskMode = useSearchParamKioskMode()
-	const [skipLoggedInCheck, setSkipLoggedInCheck] = useState(kioskMode) // we use a state to prevent loss of the initial value when redirecting as expo redirects us to the initial route
+	const [isInKioskMode, setIsInKioskMode] = useState(kioskMode) // we use a state to prevent loss of the initial value when redirecting as expo redirects us to the initial route
 	console.log('AppLayout: noAccount: ', kioskMode)
-	console.log('AppLayout: skipLoggedInCheck: ', skipLoggedInCheck)
+	console.log('AppLayout: skipLoggedInCheck: ', isInKioskMode)
 
 	let loggedIn = isUserLoggedIn();
 	console.log('AppLayout: loggedIn: ', loggedIn)
@@ -40,11 +44,13 @@ export default function AppLayout() {
 
 	// Only require authentication within the (app) group's layout as users
 	// need to be able to access the (auth) group and sign in again.
-	if (!loggedIn && !skipLoggedInCheck) {
-		// On web, static rendering will stop here as the user is not authenticated
-		// in the headless Node process that the pages are rendered in.
-		// @ts-ignore
-		return <Redirect href="/(auth)/login" />;
+	if(!isInKioskMode){
+		if ((!loggedIn || !consentAcceptedTermsAndPrivacy)) {
+			// On web, static rendering will stop here as the user is not authenticated
+			// in the headless Node process that the pages are rendered in.
+			// @ts-ignore
+			return <Redirect href="/(auth)/login" />;
+		}
 	}
 
 	// This layout can be deferred because it's not the root layout.

@@ -17,9 +17,11 @@ function isProviderNameEqualTo(provider: AuthProvider, name: string) {
 type ServerSsoAuthProvidersProps = {
 	onSuccess?: (token: string) => void,
 	onError?: (error: any) => void,
+	privacyPolicyAccepted?: boolean,
+	onPressWhenPrivacyPolicyIsNotAccepted?: (() => void | Promise<void>) | undefined,
 }
 
-export const ServerSsoAuthProviders = ({ onError, onSuccess }: ServerSsoAuthProvidersProps) => {
+export const ServerSsoAuthProviders = ({ onPressWhenPrivacyPolicyIsNotAccepted, privacyPolicyAccepted, onError, onSuccess }: ServerSsoAuthProvidersProps) => {
 	const [authProviders, setAuthProviders] = useState<AuthProvider[] | null>(null);
 	const isDemo = useIsDemo()
 
@@ -76,7 +78,7 @@ export const ServerSsoAuthProviders = ({ onError, onSuccess }: ServerSsoAuthProv
 	} else {
 		for (const authProvider of authProviders) {
 			renderedAuthProviders.push(
-				<ButtonAuthProvider onSuccess={onSuccess} onError={onError} key={authProvider.name} provider={authProvider} />
+				<ButtonAuthProvider onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={privacyPolicyAccepted} onSuccess={onSuccess} onError={onError} key={authProvider.name} provider={authProvider} />
 			)
 		}
 	}

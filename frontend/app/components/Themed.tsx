@@ -12,7 +12,8 @@ import {
 	TextareaInput as DefaultTextareaInput,
 	InputField as DefaultInputField,
 	Text as DefaultText,
-	View as DefaultView
+	View as DefaultView,
+	Checkbox as DefaultCheckbox, CheckboxIndicator, CheckboxIcon, CheckboxLabel, CheckIcon,
 } from '@gluestack-ui/themed';
 import {ComponentProps, MutableRefObject} from 'react';
 import {IconProps as DefaultIconProps} from '@expo/vector-icons/build/createIconSet';
@@ -28,6 +29,7 @@ import {MyAccessibilityRoles} from '@/helper/accessibility/MyAccessibilityRoles'
 import { Spinner as DefaultSpinner } from '@gluestack-ui/themed';
 import {Entypo, FontAwesome5, FontAwesome6, Ionicons, MaterialIcons} from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 
 type ThemeProps = {
   lightColor?: string;
@@ -369,6 +371,51 @@ export function Text({style, size,...props}: MyTextProps) {
 	}
 
 	return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
+}
+
+export type CheckboxProps = {
+	isChecked?: boolean;
+	isDisabled?: boolean;
+	isInvalid?: boolean;
+	accessibilityLabel?: string;
+	onChange?: (isChecked: boolean) => void;
+	label?: string;
+	size?: 'sm' | 'md' | 'lg';
+	children?: any;
+}
+
+export function Checkbox({size, label, accessibilityLabel, ...props}: CheckboxProps) {
+	const iconSizeInPixel = useIconWithInPixel();
+
+	const viewBackgroundColor = useViewBackgroundColor();
+	const textColor = useTextContrastColor();
+
+	//const colorCheck = "#005DB4"
+	const colorCheck = textColor
+
+	const isCheckboxChecked = props.isChecked || false;
+
+	const checkboxBackgroundColor = isCheckboxChecked ? colorCheck : viewBackgroundColor;
+	const iconContractColor = useMyContrastColor(checkboxBackgroundColor);
+
+	const renderedIcon = isCheckboxChecked ? <Icon name={"check"} color={iconContractColor} /> : null;
+
+	return <DefaultCheckbox accessibilityLabel={accessibilityLabel} isInvalid={props.isInvalid} isDisabled={props.isDisabled} isChecked={isCheckboxChecked} onChange={props.onChange} value={""+isCheckboxChecked}>
+		<CheckboxIndicator style={{
+			backgroundColor: checkboxBackgroundColor,
+			borderColor: textColor,
+			height: iconSizeInPixel+5,
+			width: iconSizeInPixel+5
+		}}>
+			{renderedIcon}
+		</CheckboxIndicator>
+		<View style={{
+			marginLeft: 8,
+			flex: 1,
+		}}>
+			{props.children}
+		</View>
+	</DefaultCheckbox>
 }
 
 export function View({style, ...props}: ViewProps) {
