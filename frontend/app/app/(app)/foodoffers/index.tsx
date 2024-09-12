@@ -1,6 +1,10 @@
 import {ListRenderItemInfo} from 'react-native';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {getFoodOffersForSelectedDate, useFoodOfferSelectedDate} from '@/states/SynchedFoodOfferStates';
+import {
+	getFoodOffersForSelectedDate,
+	TABLE_NAME_FOODS,
+	useFoodOfferSelectedDate
+} from '@/states/SynchedFoodOfferStates';
 import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {
 	DirectusFiles,
@@ -368,7 +372,7 @@ export default function FoodOfferScreen() {
 				}
 				imageUploaderConfig={{
 					resourceId: food.id,
-					resourceCollectionName: 'foods',
+					resourceCollectionName: TABLE_NAME_FOODS,
 					onImageUpdated: () => {
 						loadFoodOffers();
 					}
