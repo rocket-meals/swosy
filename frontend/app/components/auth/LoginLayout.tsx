@@ -96,6 +96,7 @@ export const LoginLayout = (props: any) => {
 									</View>
 									{renderSpaceBetweenLogoAndSignIn()}
 									{props.children}
+									<View style={{height: 16}}></View>
 								</View>
 							</View>
 						</ScrollViewWithGradient>
