@@ -1,9 +1,9 @@
 import { defineHook } from '@directus/extensions-sdk';
 import {EventHelper} from '../helpers/EventHelper';
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {DirectusUsers, Profiles} from "../databaseTypes/types";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {CollectionNames} from "../helpers/CollectionNames";
 
 const SCHEDULE_NAME = "profile_create";
 
@@ -13,9 +13,10 @@ export default defineHook(async ({ filter, schedule}, apiContext) => {
 		return;
 	}
 
-	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
-	let users_service = await itemsServiceCreator.getItemsService<DirectusUsers>(CollectionNames.USERS);
-	let profiles_service = await itemsServiceCreator.getItemsService<Profiles>(CollectionNames.PROFILES);
+	const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+
+	let users_service = myDatabaseHelper.getUsersHelper();
+	let profiles_service = myDatabaseHelper.getProfilesHelper();
 
 	// every minute
 	schedule('0 * * * * *', async () => {

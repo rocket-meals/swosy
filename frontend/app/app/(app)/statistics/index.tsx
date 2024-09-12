@@ -17,7 +17,7 @@ import {DirectusFiles, Foods} from "@/helper/database/databaseTypes/types";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
-import {FoodHelper} from "@/states/SynchedFoodOfferStates";
+import {FoodHelper, TABLE_NAME_FOODS} from "@/states/SynchedFoodOfferStates";
 import {MyCardForResourcesWithImage} from "@/components/card/MyCardForResourcesWithImage";
 import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {router} from "expo-router";
@@ -123,7 +123,7 @@ export default function StatisticsScreen() {
 					innerPadding={0}
 					imageUploaderConfig={{
 						resourceId: food.id,
-						resourceCollectionName: 'foods',
+						resourceCollectionName: TABLE_NAME_FOODS,
 						onImageUpdated: () => {
 							loadFoods();
 						}

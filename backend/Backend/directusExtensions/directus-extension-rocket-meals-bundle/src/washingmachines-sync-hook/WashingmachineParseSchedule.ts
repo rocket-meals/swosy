@@ -1,10 +1,7 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {WashingmachineParserInterface, WashingmachinesTypeForParser} from "./WashingmachineParserInterface";
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
-import {Washingmachines} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "WashingmachineParseSchedule";
 
@@ -61,26 +58,15 @@ export class WashingmachineParseSchedule {
     }
 
     async updateWashingmachine(washingmachine: WashingmachinesTypeForParser) {
-        let itemsServiceCreator = new ItemsServiceCreator(this.apiContext)
-        let itemsService = await itemsServiceCreator.getItemsService<Washingmachines>(CollectionNames.WASHINGMACHINES)
+        let itemsService = this.myDatabaseHelper.getWashingmachinesHelper();
 
         const external_identifier = washingmachine.basicData.external_identifier;
-        const searchQuery = {
-            filter: {
-                external_identifier: {
-                    _eq: external_identifier
-                }
-            }
+        const searchObject = {
+            external_identifier: external_identifier
         }
+        const createObject = searchObject;
 
-        let foundItems = await itemsService.readByQuery(searchQuery)
-        if (foundItems.length === 0) {
-            await itemsService.createOne({
-                external_identifier: washingmachine.basicData.external_identifier
-            })
-        }
-        foundItems = await itemsService.readByQuery(searchQuery)
-        let foundItem = foundItems[0]
+        let foundItem = await itemsService.findOrCreateItem(searchObject, createObject);
         if(foundItem){
             const existingAlias = foundItem.alias
             const isExistingAlisNotEmpty = existingAlias && existingAlias.length > 0

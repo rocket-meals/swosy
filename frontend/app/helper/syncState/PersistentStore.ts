@@ -21,9 +21,12 @@ export class PersistentStore {
 
 	static collections_dates_last_update = 'PersistentStore.collections_dates_last_update'
 	static canteens = 'PersistentStore.canteens'
+
+	static foodoffers_cache = 'PersistentStore.foodoffers_cache'
+	static foods_cache = 'PersistentStore.foods_cache'
+
 	static businesshours = 'PersistentStore.businesshours'
 	static languages = 'PersistentStore.languages'
-	static imageOverlays = 'PersistentStore.image_overlays'
 	static wikis = 'PersistentStore.wikis'
 	static news = 'PersistentStore.news'
 	static buildings = 'PersistentStore.buildings'
@@ -35,10 +38,9 @@ export class PersistentStore {
 	static popup_events_read = 'PersistentStore.popup_events_read'
 	static roles = 'PersistentStore.roles'
 	static permissions = 'PersistentStore.permissions'
-	static foods = 'PersistentStore.foods'
+
 	static ownFoodFeedbacks = 'PersistentStore.ownFoodFeedbacks'
 	static ownFoodFeedbacksLabelsEntries = 'PersistentStore.ownFoodFeedbacksLabelsEntries'
-	static foodOffers = 'PersistentStore.foodOffers'
 
 	static sortConfigFoodoffers = 'PersistentStore.sortConfigFoodoffers'
 	static sortConfigBuildings = 'PersistentStore.sortConfigBuildings'

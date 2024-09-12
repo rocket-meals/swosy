@@ -21,14 +21,15 @@ const SCHEDULE_NAME = "CanteenFoodFeedbackReportSchedule";
 
 export class ReportSchedule {
     private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
     constructor(apiContext: ApiContext) {
         this.apiContext = apiContext
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
     }
 
     async isEnabled() {
-        const databaseHelper = new MyDatabaseHelper(this.apiContext);
-        return await databaseHelper.getAppSettingsHelper().isCanteenReportEnabled();
+        return await this.myDatabaseHelper.getAppSettingsHelper().isCanteenReportEnabled();
     }
 
     async run() {

@@ -1,28 +1,8 @@
-import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {
-	Foods,
-	FoodsFeedbacks,
-	FoodsFeedbacksLabels,
-	FoodsFeedbacksLabelsEntries,
-	FoodsMarkings
-} from '@/helper/database/databaseTypes/types';
-import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
-import {useIsDemo} from '@/states/SynchedDemo';
+import {Foods, FoodsFeedbacks, FoodsMarkings} from '@/helper/database/databaseTypes/types';
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {getDemoMarkings} from "@/states/SynchedMarkings";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
-import {getDemoFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 
-export function useSynchedFoods(): [(Record<string, Foods> | undefined), ((newValue: Record<string, Foods>, timestamp?: number) => void), (number | undefined)] {
-	const [resourcesOnly, setResourcesOnly, resourcesRaw, setResourcesRaw] = useSynchedResourcesDictRaw<Foods>(PersistentStore.foods);
-	const demo = useIsDemo()
-	const lastUpdate = resourcesRaw?.sync_cache_composed_key_local;
-	let usedResources = resourcesOnly;
-	if (demo) {
-		usedResources = getDemoFoods()
-	}
-	return [usedResources, setResourcesOnly, lastUpdate]
-}
 
 export function getDemoFoods(): Record<string, Foods> {
 	const demoNames = ['Fries', 'Burger', 'Lasagne', 'Pizza', 'Pasta', 'Salad', 'Soup', 'Sushi', 'Steak', 'Chicken', 'Fish', 'Rice', 'Noodles', 'Dumplings', 'Curry', 'Tacos', 'Burritos', 'Sandwich', 'Hotdog', 'Kebab', 'Doner', 'Falafel', 'Shawarma']
