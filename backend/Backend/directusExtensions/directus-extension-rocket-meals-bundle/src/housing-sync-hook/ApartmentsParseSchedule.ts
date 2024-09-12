@@ -1,13 +1,7 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
 import {ApartmentParserInterface, ApartmentsForParser} from "./ApartmentParserInterface";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
-import {Apartments, Buildings} from "../databaseTypes/types";
-
-const TABLENAME_APARTMENTS = CollectionNames.APARTMENTS;
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS;
 
 const SCHEDULE_NAME = "ApartmentsParseSchedule";
 
@@ -59,27 +53,14 @@ export class ApartmentsParseSchedule {
     }
 
     async findOrCreateApartment(apartmentForParser: ApartmentsForParser) {
-        const itemServiceCreate = new ItemsServiceCreator(this.apiContext);
-        const itemService = await itemServiceCreate.getItemsService<Apartments>(TABLENAME_APARTMENTS);
+        const itemService = this.myDatabaseHelper.getApartmentsHelper();
         const external_idenfifier = apartmentForParser.basicData.external_identifier;
 
-        const searchQuery = {
-            filter: {
-                external_identifier: {
-                    _eq: external_idenfifier
-                }
-            }
+        const searchObject = {
+            external_identifier: external_idenfifier,
         }
-        let items = await itemService.readByQuery(searchQuery);
-        if (items?.length > 0) {
-            return items[0];
-        } else {
-            await itemService.createOne({
-                external_identifier: external_idenfifier,
-            });
-            items = await itemService.readByQuery(searchQuery);
-            return items[0];
-        }
+        const createObject = searchObject;
+        return await itemService.findOrCreateItem(searchObject, createObject);
     }
 
     async updateApartments(apartmentsForParser: ApartmentsForParser[]) {
@@ -92,32 +73,19 @@ export class ApartmentsParseSchedule {
     }
 
     async updateApartment(apartmentId: string, apartmentForParser: ApartmentsForParser) {
-        const itemServiceCreate = new ItemsServiceCreator(this.apiContext);
-        const itemService = await itemServiceCreate.getItemsService<Apartments>(TABLENAME_APARTMENTS);
+        const itemService = this.myDatabaseHelper.getApartmentsHelper();
         await itemService.updateOne(apartmentId, apartmentForParser.basicData);
 
         const building_data = apartmentForParser.buildingData;
         const buildingExternalIdentifier = building_data.external_identifier;
-        const searchQuery = {
-            filter: {
-                external_identifier: {
-                    _eq: buildingExternalIdentifier
-                }
-            }
+        const searchObject = {
+            external_identifier: buildingExternalIdentifier,
         }
-        const buildingService = await itemServiceCreate.getItemsService<Buildings>(CollectionNames.BUILDINGS);
-        let buildings = await buildingService.readByQuery(searchQuery);
-        if (buildings?.length > 0) {
-            await buildingService.createOne({
-                external_identifier: buildingExternalIdentifier,
-            });
-        }
-        buildings = await buildingService.readByQuery(searchQuery);
-        if (buildings?.length > 0) {
-            const building_id = buildings[0]?.id;
+        const buildingService = this.myDatabaseHelper.getBuildingsHelper();
+        const building = await buildingService.findOrCreateItem(searchObject, building_data);
+        if (building) {
+            const building_id = building.id;
             if(building_id) {
-                await buildingService.updateOne(building_id, building_data);
-
                 // Link building to apartment
                 await itemService.updateOne(apartmentId, {
                     building: building_id

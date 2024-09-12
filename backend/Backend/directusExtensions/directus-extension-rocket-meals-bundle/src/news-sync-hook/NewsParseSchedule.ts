@@ -1,13 +1,10 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 import {ApiContext} from "../helpers/ApiContext";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
 import {News} from "../databaseTypes/types";
-
-const TABLENAME_NEWS = CollectionNames.NEWS;
+import {CollectionNames} from "../helpers/CollectionNames";
 
 const SCHEDULE_NAME = "NewsParseSchedule";
 
@@ -36,11 +33,6 @@ export class NewsParseSchedule {
         return await this.myDatabaseHelper.getAppSettingsHelper().getNewsParsingStatus();
     }
 
-    async getNewsService() {
-        let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        return await itemsServiceCreator.getItemsService<News>(TABLENAME_NEWS);
-    }
-
     async parse() {
         let enabled = await this.isEnabled();
         let status = await this.getStatus()
@@ -64,7 +56,7 @@ export class NewsParseSchedule {
     }
 
     async findOrCreateSingleNews(newsJSON: NewsTypeForParser) {
-        let itemService = await this.getNewsService();
+        let itemService = await this.myDatabaseHelper.getNewsHelper();
 
         let items = await itemService.readByQuery({
             filter: {external_identifier: {
@@ -86,7 +78,7 @@ export class NewsParseSchedule {
     }
 
     async updateOtherFields(item: News, newsJSON: NewsTypeForParser) {
-        let itemService = await this.getNewsService();
+        let itemService = this.myDatabaseHelper.getNewsHelper();
         await itemService.updateOne(item?.id, newsJSON.basicNews);
     }
 

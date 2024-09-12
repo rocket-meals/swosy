@@ -1,7 +1,7 @@
 import {defineHook} from '@directus/extensions-sdk';
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const SCHEDULE_NAME = "collections_dates_last_update";
 
@@ -11,12 +11,14 @@ export default defineHook(async ({action, init}, apiContext) => {
 		return;
 	}
 
+	const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+
 	const excludeCollections = [CollectionNames.COLLECTIONS_DATES_LAST_UPDATE];
 	// create a function which will be called after any update, create or delete of a collection, except the collection "collections_dates_last_update"
 	// this function will update the collection "collections_dates_last_update" with the current date for the collection which was updated, created or deleted
 
-	let itemsServiceCreator = new ItemsServiceCreator(apiContext);
-	let collectionsDatesLastUpdateService = await itemsServiceCreator.getItemsService(CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
+
+	let collectionsDatesLastUpdateService = myDatabaseHelper.getCollectionDatesLastUpdateHelper();
 
 	//console.log("collection-last-update-hook: register hook")
 
@@ -30,9 +32,8 @@ export default defineHook(async ({action, init}, apiContext) => {
 		let allTableNamesInDatabase = await DatabaseInitializedCheck.getTableNamesFromApiContext(apiContext);
 		let allTableNamesWithoutExcludeCollections = allTableNamesInDatabase.filter((tableName: string) => !excludeCollections.includes(tableName));
 
-		let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readByQuery({
-			limit: -1
-		});
+		let allItemsInLastUpdatesTables = await collectionsDatesLastUpdateService.readAllItems();
+
 		let tableNamesInLastUpdatesTable = allItemsInLastUpdatesTables.map((item: any) => item.id);
 
 		let missingTableNames = allTableNamesWithoutExcludeCollections.filter((tableName: string) => !tableNamesInLastUpdatesTable.includes(tableName));

@@ -1,22 +1,20 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {Foods, FoodsFeedbacks} from "../databaseTypes/types";
 import {ApiContext} from "../helpers/ApiContext";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 export class FoodRatingCalculator{
 
 	static MAX_RATING_VALUE = 5;
 	static MIN_RATING_VALUE = 1;
 
-	private apiContext: ApiContext;
+	private myDatabaseHelper: MyDatabaseHelper;
 
 	constructor(apiContext: ApiContext){
-		this.apiContext = apiContext;
+		this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
 	}
 
 	public async getFoodIdsFromFoodFeedbackIds(food_feedback_ids: string[]){
-		let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-		let foodfeedbacksService = await itemsServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS);
+		let foodfeedbacksService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
 		let food_id_dict: {[key: string]: boolean} = {}
 
@@ -41,8 +39,7 @@ export class FoodRatingCalculator{
 	}
 
 	private async getFoodFromId(food_id: string){
-		let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-		let foodsService = await itemsServiceCreator.getItemsService<Foods>(CollectionNames.FOODS);
+		let foodsService = this.myDatabaseHelper.getFoodsHelper();
 		return await foodsService.readOne(food_id);
 	}
 
@@ -95,8 +92,7 @@ export class FoodRatingCalculator{
 	}
 
 	async getFoodFeedbacksForFood(food_id: string){
-		let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-		let foodfeedbacksService = await itemsServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS);
+		let foodfeedbacksService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
 		let food_feedbacks: FoodsFeedbacks[] = [];
 		try{
@@ -138,8 +134,7 @@ export class FoodRatingCalculator{
 	}
 
 	private async updateFoodRating(food: Foods, rating_average: number | null, rating_amount: number){
-		let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-		let foodsService = await itemsServiceCreator.getItemsService<Foods>(CollectionNames.FOODS);
+		let foodsService = this.myDatabaseHelper.getFoodsHelper();
 
 		await foodsService.updateOne(food.id, {
 			rating_average,

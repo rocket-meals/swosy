@@ -1,18 +1,9 @@
-import {CollectionNames} from "../helpers/CollectionNames";
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {
-    CanteenFoodFeedbackReportSchedules,
-    Canteens,
-    Foodoffers,
-    Foods,
-    FoodsFeedbacks,
-    FoodsFeedbacksLabels,
-    FoodsFeedbacksLabelsEntries
-} from "../databaseTypes/types";
+import {CanteenFoodFeedbackReportSchedules, Canteens, Foods, FoodsFeedbacks} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {Filter} from "@directus/types/dist/filter";
 import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -42,9 +33,11 @@ export type ReportType = {
 
 export class ReportGenerator {
     private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
     constructor(apiContext: ApiContext) {
         this.apiContext = apiContext;
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
     }
 
     static getCanteenAliasList(canteenEntries: Canteens[]){
@@ -189,8 +182,7 @@ export class ReportGenerator {
     }
 
     async getTranslationOfFeedbackLabel(feedback_label_id: string): Promise<string>{
-        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let foodFeedbackLabelsService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabels>(CollectionNames.FOODS_FEEDBACK_LABELS)
+        let foodFeedbackLabelsService = this.myDatabaseHelper.getFoodFeedbackLabelsHelper();
         let feedback_label = await foodFeedbackLabelsService.readOne(feedback_label_id);
         // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
         // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
@@ -198,8 +190,7 @@ export class ReportGenerator {
     }
 
     async getReportFeedbackLabelsList(food_id: string, report_feedback_period_days: number | null | undefined): Promise<ReportFoodEntryLabelType[]> {
-        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
-        const foodFeedbackLabelEntriesService = await itemServiceCreator.getItemsService<FoodsFeedbacksLabelsEntries>(CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
+        const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
         const filter: Filter[] = [
             {
@@ -276,9 +267,7 @@ export class ReportGenerator {
     }
 
     async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number | null | undefined){
-        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
-
-        let itemService = await itemServiceCreator.getItemsService<FoodsFeedbacks>(CollectionNames.FOODS_FEEDBACKS)
+        let itemService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
         const filter: Filter[] = [
             {
@@ -303,32 +292,31 @@ export class ReportGenerator {
     }
 
     async getFoodOffersWithFoodAtDateInCanteen(date: Date, canteen_id: string){
-        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
 
         let startOfTheDay = new Date(date); // copy the date
         const foodofferDate = DateHelper.getFoodofferDateTypeFromDate(startOfTheDay);
         const foodofferDateString = DateHelper.foodofferDateTypeToString(foodofferDate);
 
-        let itemService = await itemServiceCreator.getItemsService<Foodoffers>(CollectionNames.FOODOFFERS)
+        let itemService = this.myDatabaseHelper.getFoodOffersHelper();
 
-        let foodOffers = await itemService.readByQuery({filter: {
-                    _and: [
-                        {
-                            date: {
-                                _eq: foodofferDateString
-                            }
-                        },
-                        {
-                            canteen: {
-                                _eq: canteen_id
-                            }
+        return await itemService.readByQuery({
+            filter: {
+                _and: [
+                    {
+                        date: {
+                            _eq: foodofferDateString
                         }
-                    ]
+                    },
+                    {
+                        canteen: {
+                            _eq: canteen_id
+                        }
+                    }
+                ]
             },
             fields: ['*', "food.*"],
             limit: -1
         });
-        return foodOffers;
     }
 
 }

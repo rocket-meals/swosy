@@ -1,15 +1,7 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
-import {
-    Canteens,
-    Cashregisters,
-    CashregistersTransactions,
-    UtilizationsEntries,
-    UtilizationsGroups
-} from "../databaseTypes/types";
+import {Canteens, Cashregisters, UtilizationsGroups} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 
 
@@ -17,7 +9,6 @@ const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 
-    private itemsServiceCreator: ItemsServiceCreator;
     private apiContext: ApiContext;
     private myDatabaseHelper: MyDatabaseHelper;
 
@@ -25,7 +16,6 @@ export class ParseSchedule {
 
     constructor(apiContext: ApiContext) {
         this.apiContext = apiContext;
-        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
     }
 
@@ -110,7 +100,7 @@ export class ParseSchedule {
     }
 
     async createUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
-        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
+        let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
         await itemService.createOne({
             utilization_group: utilization_group?.id,
             date_start: DateHelper.formatDateToIso8601WithoutTimezone(date_start),
@@ -120,7 +110,7 @@ export class ParseSchedule {
 
     async getUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
         //console.log("getUtilizationEntry");
-        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
+        let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
 
         let allFoundEntries = await itemService.readByQuery(
             {
@@ -174,7 +164,7 @@ export class ParseSchedule {
         console.log("countCashRegistersTransactionsForInterval")
         console.log("cashregister_ids")
         console.log("date_start: "+date_start.toString()+" date_end: "+date_end.toString());
-        let cashregisterTransactionService = await this.itemsServiceCreator.getItemsService<CashregistersTransactions>(CollectionNames.CASHREGISTERS_TRANSACTIONS);
+        let cashregisterHelper = this.myDatabaseHelper.getCashregisterHelper();
 
         const realisticAverage = 6000;
         const assumedMaxLimit = realisticAverage*10; // normally during a single day only 6000 transactions are realistic, we set a limit of 10 times that value
@@ -183,31 +173,9 @@ export class ParseSchedule {
             console.log("cashregister_id: "+cashregister.id);
 
             // Instead we need to use the itemServiceCreator
-            let transactions_for_cashregister = await cashregisterTransactionService.readByQuery({
-                    filter: {
-                        _and: [
-                            {
-                                cashregister: {
-                                    _eq: cashregister.id
-                                }
-                            },
-                            {
-                                date: {
-                                    _gte: DateHelper.formatDateToIso8601WithoutTimezone(date_start)
-                                }
-                            },
-                            {
-                                date: {
-                                    _lt: DateHelper.formatDateToIso8601WithoutTimezone(date_end)
-                                }
-                            },
-                        ]
-                    },
-                    fields: ['id'], // we only need the id and not the whole object, so we can count the transactions
-                    limit: assumedMaxLimit // just a very high limit. "-1" would be technically correct but due to security
-                });
+            let transactions_ids_for_cashregister = await cashregisterHelper.getTransactionIdsForCashregister(cashregister.id, date_start, date_end, assumedMaxLimit);
 
-            let amount_transactions_for_cashregister = transactions_for_cashregister.length;
+            let amount_transactions_for_cashregister = transactions_ids_for_cashregister.length;
             console.log("-- in timeslot: "+amount_transactions_for_cashregister)
             transactions += amount_transactions_for_cashregister;
         }
@@ -254,14 +222,14 @@ export class ParseSchedule {
                     if(!utilization_group.all_time_high || value_real > utilization_group.all_time_high && value_real !== 0){
                         console.log("new all_time_high: "+value_real)
                         utilization_group.all_time_high = value_real;
-                        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
+                        let itemService = this.myDatabaseHelper.getUtilizationGroupsHelper();
                         await itemService.updateOne(utilization_group.id, {
                             all_time_high: value_real
                         });
                     }
                 }
 
-                let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
+                let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
                 await itemService.updateOne(utilizationEntryCurrent.id, utilizationEntryCurrent);
             } else {
                 console.log("Houston we got a problem")
@@ -338,7 +306,7 @@ async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsG
 
 
 
-        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsEntries>(CollectionNames.UTILIZATION_ENTRIES);
+        let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
 
         let itemsToDelete = await itemService.readByQuery({
             filter: {
@@ -364,43 +332,29 @@ async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsG
 
     }
 
-    setStatusPublished(json: any) {
-        json["status"] = "published";
-        return json;
-    }
-
     async getAllCanteens(){
-        let itemService = await this.itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
+        let itemService = this.myDatabaseHelper.getCanteensHelper();
         return await itemService.readByQuery({
             limit: -1
         });
     }
 
     async getAllCashregistersForCanteen(canteen: Canteens){
-        //console.log("getAllCashreigsterIdsForCanteen");
-        let itemService = await this.itemsServiceCreator.getItemsService<Cashregisters>(CollectionNames.CASHREGISTERS)
-
-        let list_of_cashregisters = await itemService.readByQuery({filter: {
-                canteen: {
-                    _eq: canteen?.id
-                }
-            },
-            limit: -1});
-        return list_of_cashregisters
+        return await this.myDatabaseHelper.getCashregisterHelper().getCashregistersForCanteen(canteen.id);
     }
 
     async findOrCreateOrUpdateUtilizationGroupForCanteen(canteen: Canteens) {
         //console.log("findOrCreateOrUpdateUtilizationGroupForCanteen")
-        const canteenItemService = await this.itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS);
+        const canteenItemService = this.myDatabaseHelper.getCanteensHelper();
         let utilization_group_id = canteen?.utilization_group;
-        let itemService = await this.itemsServiceCreator.getItemsService<UtilizationsGroups>(CollectionNames.UTILIZATION_GROUPS);
+        let itemService = this.myDatabaseHelper.getUtilizationGroupsHelper();
         let foundOrCreatedGroup = null;
         if(utilization_group_id && typeof utilization_group_id === "string"){ // if group present, we have to update it
             //console.log("if(utilization_group_id){")
             foundOrCreatedGroup = await itemService.readOne(utilization_group_id)
         } else { // if no group present, we have to create one
             //console.log("} else {")
-            let obj_json = this.setStatusPublished({});
+            let obj_json = {}
             let obj_id = await itemService.createOne(obj_json);
             foundOrCreatedGroup = await itemService.readOne(obj_id);
             // and link it to our canteen

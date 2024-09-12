@@ -1,23 +1,40 @@
-import {AbstractService, ItemsServiceCreator} from "./ItemsServiceCreator";
+import {AbstractService, ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
 import type {Filter} from "@directus/types/dist/filter";
 import {ApiContext} from "./ApiContext";
-import {PrimaryKey} from "@directus/types";
+import {PrimaryKey, Query} from "@directus/types";
 
-export class ItemsServiceHelper{
+export class ItemsServiceHelper<T>{
+
+    private apiContext: ApiContext;
+    private tablename: string;
+
+    private static FIELD_STATUS = 'status';
+    private static FIELD_STATUS_PUBLISHED = 'published';
+
+    constructor(apiContext: ApiContext, tablename: string) {
+        this.apiContext = apiContext;
+        this.tablename = tablename;
+    }
+
+    async updateOne(primary_key: PrimaryKey, update: Partial<T>): Promise<PrimaryKey>{
+        return await ItemsServiceHelper.updateItemWithApiContext<T>(this.apiContext, this.tablename, primary_key, update);
+    }
 
     static async updateItemWithApiContext<T>(apiContext: ApiContext, tablename: string, primary_key: PrimaryKey, update: Partial<T>): Promise<PrimaryKey>{
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        // DO not update status. It should be only set on creation
         return await itemsService.updateOne(primary_key, update);
+    }
+
+    async findOrCreateItem(search: Partial<T>, create: Partial<T>): Promise<T | undefined>{
+        return await ItemsServiceHelper.findOrCreateItemWithApiContext<T>(this.apiContext, this.tablename, search, create);
     }
 
     static async findOrCreateItemWithApiContext<T>(apiContext: ApiContext, tablename: string, search: Partial<T>, create: Partial<T>){
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
-        return this.findOrCreateItem<T>(itemsService, search, create);
-    }
 
-    static async findOrCreateItem<T>(itemService: AbstractService<T>, search: Partial<T>, create: Partial<T>){
         let andFilter: any[] = [];
         let fieldsOfItem = Object.keys(search);
         for(let field of fieldsOfItem){
@@ -31,18 +48,22 @@ export class ItemsServiceHelper{
         let queryFilter: Filter = {_and: andFilter};
         const query = {filter: queryFilter};
 
-        let queriedItems = await itemService.readByQuery(query);
+        let queriedItems = await itemsService.readByQuery(query);
         let foundItem = queriedItems[0]
 
         let copiedCreateItem = JSON.parse(JSON.stringify(create));
         if (!foundItem) {
             copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
-            await itemService.createOne(copiedCreateItem)
+            await itemsService.createOne(copiedCreateItem)
 
         }
-        queriedItems = await itemService.readByQuery(query);
+        queriedItems = await itemsService.readByQuery(query);
         foundItem = queriedItems[0]
         return foundItem;
+    }
+
+    async createOne(create: Partial<T>): Promise<PrimaryKey>{
+        return await ItemsServiceHelper.createItemWithApiContext<T>(this.apiContext, this.tablename, create);
     }
 
     static async createItemWithApiContext<T>(apiContext: ApiContext, tablename: string, create: Partial<T>){
@@ -52,6 +73,10 @@ export class ItemsServiceHelper{
         return itemsService.createOne(create);
     }
 
+    async createManyItems(create: Partial<T>[]): Promise<PrimaryKey[]>{
+        return await ItemsServiceHelper.createManyItemsWithApiContext<T>(this.apiContext, this.tablename, create);
+    }
+
     static async createManyItemsWithApiContext<T>(apiContext: ApiContext, tablename: string, create: Partial<T>[]){
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
@@ -59,14 +84,64 @@ export class ItemsServiceHelper{
         return itemsService.createMany(create);
     }
 
-    static async readOneItemWithApiContext<T>(apiContext: ApiContext, tablename: string, primary_key: PrimaryKey){
+    async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T>{
+        return await ItemsServiceHelper.readOneItemWithApiContext<T>(this.apiContext, this.tablename, primary_key, query, opts);
+    }
+
+    static async readOneItemWithApiContext<T>(apiContext: ApiContext, tablename: string, primary_key: PrimaryKey, query?: Query, opts?: QueryOptions){
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
-        return itemsService.readOne(primary_key);
+        return itemsService.readOne(primary_key, query, opts);
+    }
+
+    async readAllItems(): Promise<T[]>{
+        return await ItemsServiceHelper.readAllItemsWithApiContext<T>(this.apiContext, this.tablename);
+    }
+
+    static async readAllItemsWithApiContext<T>(apiContext: ApiContext, tablename: string){
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        return itemsService.readByQuery({
+            limit: -1
+        });
+    }
+
+    async deleteOne(primary_key: PrimaryKey): Promise<PrimaryKey>{
+        return await ItemsServiceHelper.deleteOneItemWithApiContext<T>(this.apiContext, this.tablename, primary_key);
+    }
+
+    static async deleteOneItemWithApiContext<T>(apiContext: ApiContext, tablename: string, primary_key: PrimaryKey){
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        return itemsService.deleteOne(primary_key);
+    }
+
+    async deleteMany(primary_keys: PrimaryKey[]): Promise<PrimaryKey[]>{
+        return await ItemsServiceHelper.deleteMany<T>(this.apiContext, this.tablename, primary_keys);
+    }
+
+    static async deleteMany<T>(apiContext: ApiContext, tablename: string, primary_keys: PrimaryKey[]){
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        return itemsService.deleteMany(primary_keys);
     }
 
     static setStatusPublished(json: any) {
-        json["status"] = "published";
+        json[ItemsServiceHelper.FIELD_STATUS] = ItemsServiceHelper.FIELD_STATUS_PUBLISHED;
         return json;
+    }
+
+    static isStatusPublished(json: any) {
+        return json[ItemsServiceHelper.FIELD_STATUS] === ItemsServiceHelper.FIELD_STATUS_PUBLISHED;
+    }
+
+    async readByQuery(query: Query, opts?: QueryOptions): Promise<T[]>{
+        return await ItemsServiceHelper.readByQuery<T>(this.apiContext, this.tablename, query, opts);
+    }
+
+    static async readByQuery<T>(apiContext: ApiContext, tablename: string, query: Query, opts?: QueryOptions){
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        return itemsService.readByQuery(query, opts);
     }
 }

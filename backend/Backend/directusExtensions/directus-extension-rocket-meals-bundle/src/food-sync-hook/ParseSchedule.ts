@@ -1,8 +1,7 @@
 import hash from 'object-hash';
-import {AbstractService, ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {
-    CanteensTypeForParser, FoodofferDateType,
+    CanteensTypeForParser,
+    FoodofferDateType,
     FoodoffersTypeForParser,
     FoodofferTypeForCreation,
     FoodParserInterface,
@@ -11,13 +10,11 @@ import {
 } from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
-import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {ApiContext} from "../helpers/ApiContext";
 import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {ListHelper} from "../helpers/ListHelper";
 import {
-    Canteens,
     Foodoffers,
     Foods,
     FoodsMarkings,
@@ -25,14 +22,10 @@ import {
     Markings,
     MarkingsTranslations
 } from "../databaseTypes/types";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
+import {CollectionNames} from "../helpers/CollectionNames";
 
-const TABLENAME_FOODS = CollectionNames.FOODS;
-const TABLENAME_MEAL_MARKINGS = CollectionNames.FOODS_MARKINGS;
-const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS;
-const TABLENAME_CANTEENS = CollectionNames.CANTEENS;
-const TABLENAME_MARKINGS = CollectionNames.MARKINGS;
-const TABLENAME_MEALFOFFERS_MARKINGS = CollectionNames.FOODOFFER_MARKINGS
 
 const SCHEDULE_NAME = "FoodParseSchedule";
 
@@ -43,15 +36,15 @@ export class ParseSchedule {
     //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
     //private finished: boolean; // in multi instance environment this should be a field in the database
     private apiContext: ApiContext;
-    private itemsServiceCreator: ItemsServiceCreator;
+    private myDatabaseHelper: MyDatabaseHelper;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
     private myAppSettingsHelper: AppSettingsHelper;
 
     constructor(apiContext: ApiContext, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
         this.apiContext = apiContext;
-        this.itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        this.myAppSettingsHelper = new AppSettingsHelper(apiContext);
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
+        this.myAppSettingsHelper = this.myDatabaseHelper.getAppSettingsHelper();
         this.foodParser = foodParser;
         this.markingParser = markingParser;
     }
@@ -141,8 +134,8 @@ export class ParseSchedule {
         }
     }
 
-    async getFoodsService(): Promise<AbstractService<Foods>>{
-        return await this.itemsServiceCreator.getItemsService<Foods>(TABLENAME_FOODS);
+    async getFoodsService() {
+        return await this.myDatabaseHelper.getFoodsHelper();
     }
 
     getFoodofferDatesFromRawFoodofferJSONList(foodoffersForParser: FoodoffersTypeForParser[]): FoodofferDateType[] {
@@ -156,7 +149,6 @@ export class ParseSchedule {
     }
 
     async findOrCreateMarkingByExternalIdentifier(marking_external_identifier: string) {
-        let tablename = TABLENAME_MARKINGS;
         let searchJSON = {
             external_identifier: marking_external_identifier
         };
@@ -164,7 +156,7 @@ export class ParseSchedule {
             alias: marking_external_identifier,
             external_identifier: marking_external_identifier,
         };
-        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Markings>(this.apiContext, tablename, searchJSON, createJSON);
+        return this.myDatabaseHelper.getMarkingsHelper().findOrCreateItem(searchJSON, createJSON);
     }
 
     async findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers: string[]): Promise<Markings[]> {
@@ -186,13 +178,14 @@ export class ParseSchedule {
             console.log("["+SCHEDULE_NAME+"]"+" - Update Canteen " + currentCanteen + " / " + amountOfCanteens);
             let canteenFoundOrCreated = await this.findOrCreateCanteen(canteen);
             if (!!canteenFoundOrCreated) {
-                await ItemsServiceHelper.updateItemWithApiContext<Canteens>(this.apiContext, TABLENAME_CANTEENS, canteenFoundOrCreated.id, canteen);
+                let canteensHelper = this.myDatabaseHelper.getCanteensHelper();
+                await canteensHelper.updateOne(canteenFoundOrCreated.id, canteen);
             }
         }
     }
 
     async assignMarkingsToFood(markings: Markings[], food: Foods) {
-        let tablename = TABLENAME_MEAL_MARKINGS;
+        let tablename = CollectionNames.FOODS_MARKINGS;
         for (let marking of markings) {
             let food_marking_json = {foods_id: food.id, markings_id: marking.id};
             const searchJSON = food_marking_json;
@@ -202,29 +195,19 @@ export class ParseSchedule {
     }
 
     async assignMarkingsToMealOffer(markings: Markings[], foodoffer: Foodoffers) {
-        let tablename = TABLENAME_MEALFOFFERS_MARKINGS;
+        let tablename = CollectionNames.FOODOFFER_MARKINGS
         for (let marking of markings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
             await ItemsServiceHelper.createItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, foodoffer_marking_json);
         }
     }
 
-    async findOrCreateFood(food: FoodWithBasicData): Promise<Foods | undefined> {
-        let tablename = TABLENAME_FOODS;
-        const searchJSON = {
-            id: food.id
-        }
-        const createJSON = searchJSON
-        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Foods>(this.apiContext, tablename, searchJSON, createJSON);
-    }
-
     async updateFoodBasicFields(food: FoodWithBasicData){
-        let tablename = TABLENAME_FOODS;
-        return ItemsServiceHelper.updateItemWithApiContext(this.apiContext, tablename, food.id, food);
+        return this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, food);
     }
 
     async updateFoodTranslations(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", TABLENAME_FOODS, this.apiContext);
+        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext);
     }
 
     async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[]) {
@@ -244,7 +227,7 @@ export class ParseSchedule {
 
             const basicFoodData = foodsInformationForParser.basicFoodData;
             //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
-            let foundFood = await this.findOrCreateFood(basicFoodData);
+            let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(basicFoodData, basicFoodData);
             if (!!foundFood && foundFood.id && this.foodParser) {
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
@@ -299,7 +282,7 @@ export class ParseSchedule {
         const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
         console.log("["+SCHEDULE_NAME+"]"+" - Delete food offers newer or equal than date: " + directusDateOnlyString);
 
-        let itemService = await this.itemsServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS)
+        let itemService = await this.myDatabaseHelper.getFoodOffersHelper();
         //await itemService.deleteByQuery()
         // TODO: Überprüfen ob deleteByQuery funktioniert und ob es dadurch schneller geht bzw. es zu einem Blockieren der Datenbank kommt
 
@@ -330,12 +313,11 @@ export class ParseSchedule {
     }
 
     async findOrCreateCanteen(canteen: CanteensTypeForParser) {
-        let tablename = TABLENAME_CANTEENS;
         let searchJSON = {
             external_identifier: canteen.external_identifier
         }
         let createJSON = canteen
-        return await ItemsServiceHelper.findOrCreateItemWithApiContext<Canteens>(this.apiContext, tablename, searchJSON, createJSON);
+        return await this.myDatabaseHelper.getCanteensHelper().findOrCreateItem(searchJSON, createJSON);
     }
 
     async findOrCreateCanteenByExternalIdentifier(external_identifier: string) {
@@ -347,7 +329,8 @@ export class ParseSchedule {
 
 
     async createFoodOffer(foodofferForParser: FoodoffersTypeForParser) {
-        let tablename = TABLENAME_FOODOFFERS;
+        const foodoffersHelper = this.myDatabaseHelper.getFoodOffersHelper();
+
         let canteen_external_identifier = foodofferForParser.canteen_external_identifier
         let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteen_external_identifier);
         if (!!canteen) {
@@ -369,8 +352,8 @@ export class ParseSchedule {
                     date_updated: new Date().toISOString()
                 }
 
-                let foodoffer_id = await ItemsServiceHelper.createItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodOfferToCreate);
-                let foodoffer = await ItemsServiceHelper.readOneItemWithApiContext<Foodoffers>(this.apiContext, tablename, foodoffer_id);
+                let foodoffer_id = await foodoffersHelper.createOne(foodOfferToCreate);
+                let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
 
                 if (!!foodoffer) {
                     let markings_external_identifiers = foodofferForParser.marking_external_identifiers
@@ -393,8 +376,7 @@ export class ParseSchedule {
     }
 
     async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
-        let tablename = TABLENAME_MARKINGS;
-        let itemService = await this.itemsServiceCreator.getItemsService<Markings>(tablename);
+        let itemService = await this.myDatabaseHelper.getMarkingsHelper();
 
         markingsJSONList = ListHelper.removeDuplicatesFromJsonList(markingsJSONList, "external_identifier");// Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
@@ -433,7 +415,7 @@ export class ParseSchedule {
 
 
     async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", TABLENAME_MARKINGS, this.apiContext);
+        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.apiContext);
     }
 
 }

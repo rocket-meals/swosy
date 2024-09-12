@@ -1,4 +1,3 @@
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
 import {TimerHelper} from "../helpers/TimerHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
@@ -8,7 +7,6 @@ import {
     CashregistersTransactionsForParser,
     CashregisterTransactionParserInterface
 } from "./CashregisterTransactionParserInterface";
-import {Cashregisters, CashregistersTransactions} from "../databaseTypes/types";
 
 const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
 const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS

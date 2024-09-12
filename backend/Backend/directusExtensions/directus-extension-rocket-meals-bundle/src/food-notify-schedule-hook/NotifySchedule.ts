@@ -1,49 +1,39 @@
-import {ItemsServiceCreator, ServerServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {FlowStatus} from "../helpers/AppSettingsHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
-import {Devices, Foodoffers, Foods, FoodsFeedbacks, Profiles, PushNotifications} from "../databaseTypes/types";
-
-
-const TABLENAME_FOODS = CollectionNames.FOODS
-const TABLENAME_FOODS_FEEDBACKS = CollectionNames.FOODS_FEEDBACKS
-const TABLENAME_FOODOFFERS = CollectionNames.FOODOFFERS
+import {Devices, Foodoffers, Foods} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
 export class NotifySchedule {
 
-    private databaseHelper: MyDatabaseHelper;
-    private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
     constructor(
         apiExtensionContext: ApiContext
     ) {
-        this.apiContext = apiExtensionContext;
-        this.databaseHelper = new MyDatabaseHelper(apiExtensionContext);
+        this.myDatabaseHelper = new MyDatabaseHelper(apiExtensionContext);
     }
     
     // Todo create/generate documentation
 
     async setStatus(status: FlowStatus) {
-        await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(status)
+        await this.myDatabaseHelper.getAppSettingsHelper().setFoodNotificationStatus(status)
     }
 
     async notify(aboutMealsInDays = 1, force = false) {
         let enabled = true
-        let status = await this.databaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
+        let status = await this.myDatabaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
 
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let devicesService = await itemsServiceCreator.getItemsService<Devices>(CollectionNames.DEVICES);
+        let devicesService = this.myDatabaseHelper.getDevicesHelper();
 
         if ((enabled && status === FlowStatus.START) || force) {
             console.log("[Start] "+SCHEDULE_NAME+" Schedule");
             console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
             //console.log("Set status to running");
-            await this.databaseHelper.getAppSettingsHelper().setFoodNotificationStatus(FlowStatus.RUNNING);
+            await this.myDatabaseHelper.getAppSettingsHelper().setFoodNotificationStatus(FlowStatus.RUNNING);
 
             try {
                 // We need to notify all devices, which want to get notified about new food offers which they are interested in
@@ -180,8 +170,7 @@ export class NotifySchedule {
 
     async notifyExpoPushTokenAboutFoodOffer(expoPushToken: string, foodOffer: Foodoffers, foodWithTranslations: Foods, language: string, aboutMealsInDays: number, date: Date) {
         // Create a new push_notification entry in the database
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let pushNotificationService = await itemsServiceCreator.getItemsService<PushNotifications>(CollectionNames.PUSH_NOTIFICATIONS);
+        let pushNotificationService = this.myDatabaseHelper.getPushNotificationsHelper();
         /**
          pushTokenObj = {
                 "permission": {
@@ -224,7 +213,6 @@ export class NotifySchedule {
 
         let expo_push_tokens = [expoPushToken];
         let pushNotificationObj = {
-            status: "published",
             expo_push_tokens: expo_push_tokens,
             message_title: project_name,
             message_body: message_body,
@@ -248,29 +236,24 @@ export class NotifySchedule {
     }
 
     async getProjectName() {
-        const serverServiceCreator = new ServerServiceCreator(this.apiContext);
-        let serverInfo = await serverServiceCreator.getServerInfo()
+        let serverInfo = await this.myDatabaseHelper.getServerInfo();
         let project = serverInfo?.project;
         let project_name = project?.project_name;
         return project_name || "Rocket Meals";
     }
 
     async getFoodWithTranslations(food_id: string) {
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        const foodsService = await itemsServiceCreator.getItemsService<Foods>(TABLENAME_FOODS);
-        let food = await foodsService.readOne(food_id, {fields: ["*", "translations.*"]});
-        return food;
+        const foodsService = this.myDatabaseHelper.getFoodsHelper();
+        return await foodsService.readOne(food_id, {fields: ["*", "translations.*"]});
     }
 
     async getProfileAndDevicesForProfile(profile_id: string) {
-        let itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let profileService = await itemsServiceCreator.getItemsService<Profiles>(CollectionNames.PROFILES);
+        let profileService = this.myDatabaseHelper.getProfilesHelper();
         return await profileService.readOne(profile_id, {fields: ["*", "devices.*"]});
     }
 
     async getFoodFeedbacksForFood(food_id: string) {
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        const itemsService = await itemsServiceCreator.getItemsService<FoodsFeedbacks>(TABLENAME_FOODS_FEEDBACKS);
+        const itemsService = this.myDatabaseHelper.getFoodFeedbacksHelper();
         let foodFeedbacks = await itemsService.readByQuery({filter: { // filter where food_id is food AND notify is true
                 _and: [
                     {food: {
@@ -288,8 +271,7 @@ export class NotifySchedule {
 
     async getFoodOffersForDate(date: Date) {
         const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(DateHelper.getFoodofferDateTypeFromDate(date));
-        const itemServiceCreator = new ItemsServiceCreator(this.apiContext);
-        const itemService = await itemServiceCreator.getItemsService<Foodoffers>(TABLENAME_FOODOFFERS);
+        const itemService = this.myDatabaseHelper.getFoodOffersHelper();
         let foodOffers = await itemService.readByQuery({filter: {
             date: {
                 _eq: directusDateOnlyFormat

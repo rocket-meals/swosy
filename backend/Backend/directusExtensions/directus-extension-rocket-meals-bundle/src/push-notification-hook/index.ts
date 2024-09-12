@@ -1,9 +1,10 @@
 import { defineHook } from '@directus/extensions-sdk';
 import axios from "axios";
-import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {PushNotifications} from "../databaseTypes/types";
+import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
+import {CollectionNames} from "../helpers/CollectionNames";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const SCHEDULE_NAME = "push_notification";
 
@@ -14,6 +15,8 @@ export default defineHook(async ({filter}, apiContext) => {
 	if (!allTablesExist) {
 		return;
 	}
+
+	const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
 	// Trigger before the item is created or updated
 	filter(collectionName+'.items.create', async (input: any, {collection}) => {
@@ -28,9 +31,7 @@ export default defineHook(async ({filter}, apiContext) => {
 	});
 
 	filter(collectionName+'.items.update', async (input: any, {keys, collection}) => {
-		const itemsServiceCreator = new ItemsServiceCreator(apiContext);
-
-		let itemService = await itemsServiceCreator.getItemsService<PushNotifications>(collection);
+		let itemService = myDatabaseHelper.getPushNotificationsHelper();
 
 		// Fetch the current item from the database
 		if (!keys || keys.length === 0) {
@@ -57,9 +58,9 @@ export default defineHook(async ({filter}, apiContext) => {
 						currentItem[key] = input[key];
 					}
 				}
-				if (currentItem.status === 'published') {
+				if (ItemsServiceHelper.isStatusPublished(currentItem)) {
 					await sendNotification(currentItem, input);
-					input.status = 'published';
+					input = ItemsServiceHelper.setStatusPublished(input);
 				}
 			}
 		}
