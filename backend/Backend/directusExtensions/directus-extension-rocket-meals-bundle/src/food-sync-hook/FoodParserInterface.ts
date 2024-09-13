@@ -32,7 +32,7 @@ export type FoodoffersTypeForParser = {
 
 
 export type FoodofferTypeForCreation = FoodofferTypeWithBasicData & {
-    date: string, // in the format "YYYY-MM-DD" e.g. "2021-01-01" where month 01 is January
+    date: string | null, // in the format "YYYY-MM-DD" e.g. "2021-01-01" where month 01 is January
     canteen: string, // we require the primary key of the canteen
     food: string // we require the primary key of the food
 };
