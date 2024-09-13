@@ -399,7 +399,12 @@ export class ParseSchedule {
 
             if (!marking) {
                 // If marking does not exist, create a new one
-                let marking_id = await itemService.createOne(markingJSONCopy);
+                let adaptedMarkingJSON: Partial<Markings> = {
+                    ...markingJSONCopy,
+                    short_code: markingJSONCopy.external_identifier // Set short_code to external_identifier
+                }
+
+                let marking_id = await itemService.createOne(adaptedMarkingJSON);
                 marking = await itemService.readOne(marking_id);
             } else {
                 // If marking exists, don't update it, as it could be changed by the user
