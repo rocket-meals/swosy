@@ -30,11 +30,11 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
-import {MarkingIconOrAliasWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_CATEGORY = 'category';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
@@ -95,7 +95,7 @@ const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSize
 	let renderedMarkings: any[] = [];
 	for(let markingId of markingIds) {
 		renderedMarkings.push(
-			<MarkingIconOrAliasWithTextSize markingId={markingId} textSize={textSize} />
+			<MarkingIconOrShortCodeWithTextSize markingId={markingId} textSize={textSize} />
 		)
 	}
 	return <View style={{

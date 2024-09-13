@@ -14,7 +14,7 @@ import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
-import {MarkingIconOrAliasWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 
 export default function MarkingListItem({ markingId }: { markingId: string }) {
 	// Memoize the MarkingListItemReal component
@@ -41,8 +41,8 @@ export function getMarkingExternalIdentifier(marking: Markings): string | null |
 	return marking.external_identifier;
 }
 
-export function getMarkingAlias(marking: Markings): string | null | undefined {
-	return marking.alias;
+export function getMarkingShortCode(marking: Markings): string | null | undefined {
+	return marking.short_code
 }
 
 function MarkingListItemReal({ markingId }: { markingId: string}) {
@@ -68,7 +68,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 		const text = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const accessibilityLabel = translation_marking+": "+text;
 
-		let iconLeftCustom = <MarkingIconOrAliasWithTextSize markingId={markingId} textSize={undefined} />
+		let iconLeftCustom = <MarkingIconOrShortCodeWithTextSize markingId={markingId} textSize={undefined} />
 
 		const onPress = (like: boolean | undefined) => {
 			const removeMarking = like === undefined;

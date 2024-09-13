@@ -24,6 +24,7 @@ export type MyNewButtonProps = {
     tooltip?: string,
     useTransparentBorderColor?: boolean,
     backgroundColor?: string,
+	inactiveBackgroundColor?: string,
     borderRadius?: number,
     borderLeftRadius?: number,
     borderRightRadius?: number,
@@ -39,19 +40,19 @@ export const MyButton = (props: MyNewButtonProps) => {
 	const projectColor = useProjectColor()
 
 	// When active
-	const activeBackgroundColor = props?.backgroundColor || projectColor
+	let activeBackgroundColor = props?.backgroundColor || projectColor
 	const activeTextColor = useMyContrastColor(activeBackgroundColor)
 
 	// When active and hovered
-	const activeHoveredBackgroundColor = useLighterOrDarkerColorForSelection(activeBackgroundColor)
+	let activeHoveredBackgroundColor = useLighterOrDarkerColorForSelection(activeBackgroundColor)
 	const activeHoveredTextColor = useMyContrastColor(activeHoveredBackgroundColor)
 
 	// When not active and not hovered
-	const inactiveBackgroundColor = viewBackgroundColor || 'transparent'
+	let inactiveBackgroundColor = props.inactiveBackgroundColor || viewBackgroundColor || 'transparent'
 	const inactiveTextColor = textColor
 
 	// When not active and hovered
-	const inactiveHoveredBackgroundColor = useLighterOrDarkerColorForSelection(inactiveBackgroundColor)
+	let inactiveHoveredBackgroundColor = useLighterOrDarkerColorForSelection(inactiveBackgroundColor)
 	const inactiveHoveredTextColor = useMyContrastColor(inactiveHoveredBackgroundColor)
 
 	let activeBorderColor = activeBackgroundColor

@@ -28,13 +28,13 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
-import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {ScrollView} from "react-native";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {FoodInformationValueFormatter} from "@/components/food/FoodDataList";
-import {MarkingIconOrAliasWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -315,7 +315,7 @@ export default function FoodDayPlanScreen() {
 		let sortedMarkingsForFoodOffer = markingsForFoodOffer.sort(sortMarkingsByNameLength);
 		for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
 			const marking = sortedMarkingsForFoodOffer[i];
-			renderedMarkings.push(<MarkingIconOrAliasWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
+			renderedMarkings.push(<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
 		}
 		return <View style={{
 			flex: 1,
@@ -329,8 +329,6 @@ export default function FoodDayPlanScreen() {
 	const renderMarking = (marking: Markings, withTranslation: boolean = true) => {
 		const withoutExternalIdentifier = true;
 		const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
-		const external_identifier = getMarkingExternalIdentifier(marking);
-		const alias = getMarkingAlias(marking);
 
 		let renderedTranslation = null
 		if(withTranslation){
@@ -354,7 +352,7 @@ export default function FoodDayPlanScreen() {
 				flex: 1,
 				marginVertical: 1,
 			}}>
-				<MarkingIconOrAliasWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
 				{renderedTranslation}
 			</View>
 		)

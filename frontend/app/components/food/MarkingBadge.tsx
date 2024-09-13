@@ -16,7 +16,7 @@ import {
 import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
@@ -54,9 +54,11 @@ export const MarkingBadges = ({foodoffer}: {foodoffer: Foodoffers}) => {
 }
 
 
-export const MarkingIconOrAliasWithTextSize = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
+export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
+	const textColor = useTextContrastColor();
+	const textContrastColor = useMyContrastColor(textColor);
 	const lineHeight = getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
 	const defaultLineHeightNormal = getLineHeightInPixelBySize(TEXT_SIZE_DEFAULT) || 10
 	const defaultBorderRadius = BUTTON_DEFAULT_BorderRadius/2;
@@ -69,16 +71,27 @@ export const MarkingIconOrAliasWithTextSize = ({markingId, textSize}: {markingId
 	if(!marking){
 		return null;
 	}
-	const alias = getMarkingAlias(marking);
+	const alias = getMarkingShortCode(marking);
+	const short_code = getMarkingShortCode(marking);
+	const hide_border = !!marking?.hide_border;
+	const marking_invert_background_color = !!marking.invert_background_color
+	const short_code_text_color = marking_invert_background_color ? textContrastColor : textColor;
 	
 	const hasImageOrIcon = hasResourceImageOrRemoteImage(marking);
+
+
+	if(!short_code && !hasImageOrIcon){
+		return null;
+	}
 
 	let content = <View style={{
 		flexDirection: "row",
 		marginHorizontal: 2,
 	}}>
-		<Text size={textSize}>
-			{alias}
+		<Text style={{
+			color: short_code_text_color
+		}} size={textSize}>
+			{short_code}
 		</Text>
 	</View>
 
@@ -88,6 +101,9 @@ export const MarkingIconOrAliasWithTextSize = ({markingId, textSize}: {markingId
 			<DirectusImageOrIconComponent heightImage={imageWidthAndHeight} widthImage={imageWidthAndHeight} resource={marking} />
 		)
 	}
+
+	const backgroundColor = marking_invert_background_color ? viewContrastColor : undefined;
+	const borderColor = viewContrastColor;
 
 	return (
 		<View style={{
@@ -99,7 +115,8 @@ export const MarkingIconOrAliasWithTextSize = ({markingId, textSize}: {markingId
 			paddingVertical: 2,
 		}}>
 			<View style={{
-				borderColor: viewContrastColor,
+				backgroundColor: "red",
+				borderColor: borderColor,
 				borderWidth: 1,
 				borderRadius: adaptedBorderRadius,
 				overflow: "hidden",
@@ -147,6 +164,8 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 		return null;
 	}
 
+	const hide_border = !!marking?.hide_border;
+
 
 	const withoutExternalIdentifier = false;
 	const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
@@ -183,7 +202,7 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 	let usedIcon = marking.icon
 
 	const defaultPadding = BUTTON_DEFAULT_Padding
-	const alias = getMarkingAlias(marking);
+	const alias = getMarkingShortCode(marking);
 	if(alias){
 		let outerPadding = defaultPadding/2;
 		let innerPadding = defaultPadding - outerPadding; // maybe by dividing 1/2 the outer padding is 0, so we need to subtract it
@@ -220,9 +239,10 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 
 	return 	<>
 		<MyButton
+			useTransparentBorderColor={hide_border}
+			inactiveBackgroundColor={"transparent"}
 			useOnlyNecessarySpace={true}
 			borderRadius={borderRadius}
-			backgroundColor={foodsAreaColor}
 			onPress={onPress}
 			accessibilityLabel={accessibilityLabel}
 			tooltip={accessibilityLabel}
