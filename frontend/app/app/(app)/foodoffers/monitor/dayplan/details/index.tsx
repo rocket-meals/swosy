@@ -13,7 +13,7 @@ import {
 	View
 } from "@/components/Themed";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
@@ -29,13 +29,11 @@ import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {getMarkingAlias, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
-import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {ScrollView} from "react-native";
-import {BUTTON_DEFAULT_BorderRadius} from "@/components/buttons/MyButtonCustom";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {CommonFieldsOfFoodAndFoodoffers, FoodInformationValueFormatter} from "@/components/food/FoodDataList";
+import {FoodInformationValueFormatter} from "@/components/food/FoodDataList";
 import {MarkingIconOrAliasWithTextSize} from "@/components/food/MarkingBadge";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';

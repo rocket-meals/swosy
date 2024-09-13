@@ -92,7 +92,6 @@ export class IconNames {
     static comment_send_icon = 'send'
 
     static food_data_list_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'nutrition'
-    static nutrition_icon = 'food-apple'
     static nutrition_calories_icon = 'fire'
     static nutrition_carbohydrate_icon = IconFamily.FontAwesome6+IconParseDelimeter+'wheat-awn'
     static nutrition_fat_icon = 'water'
@@ -102,7 +101,6 @@ export class IconNames {
     static nutirtion_salt_icon = 'grain'
     static nutrition_sugar_icon = 'cupcake'
 
-    static environmental_impact_icon = 'earth'
     static environmental_impact_co2_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'cloud'
 
     static price_group_icon = 'currency-eur'
