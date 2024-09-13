@@ -396,6 +396,8 @@ export function Checkbox({size, label, accessibilityLabel, ...props}: CheckboxPr
 	const isCheckboxChecked = props.isChecked || false;
 
 	const checkboxBackgroundColor = isCheckboxChecked ? colorCheck : viewBackgroundColor;
+	const checkboxBorderColor = props.isInvalid ? undefined : textColor;
+
 	const iconContractColor = useMyContrastColor(checkboxBackgroundColor);
 
 	const renderedIcon = isCheckboxChecked ? <Icon name={"check"} color={iconContractColor} /> : null;
@@ -403,7 +405,7 @@ export function Checkbox({size, label, accessibilityLabel, ...props}: CheckboxPr
 	return <DefaultCheckbox accessibilityLabel={accessibilityLabel} isInvalid={props.isInvalid} isDisabled={props.isDisabled} isChecked={isCheckboxChecked} onChange={props.onChange} value={""+isCheckboxChecked}>
 		<CheckboxIndicator style={{
 			backgroundColor: checkboxBackgroundColor,
-			borderColor: textColor,
+			borderColor: checkboxBorderColor,
 			height: iconSizeInPixel+5,
 			width: iconSizeInPixel+5
 		}}>
