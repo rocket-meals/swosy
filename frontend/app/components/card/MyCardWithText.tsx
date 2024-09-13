@@ -89,9 +89,9 @@ export const MyCardWithTextBottom = ({heading, text, ...props}: MyCardWithTextPr
 	let renderedHeading = null;
 	if (heading) {
 		renderedHeading = (
-			<Heading style={{color: textContrastColor}}>
+			<Text bold={true} style={{color: textContrastColor}}>
 				{heading}
-			</Heading>
+			</Text>
 		)
 	}
 
