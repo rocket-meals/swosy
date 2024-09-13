@@ -278,7 +278,7 @@ type Subscription {
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
-  markings_exlusions_mutated(event: EventEnum): markings_exlusions_mutated
+  markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2249,20 +2249,20 @@ type markings {
   hide_border: Boolean
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
-  exlusion_rule(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exlusions]
-  exlusion_rule_func: count_functions
+  excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
+  excluded_by_markings_func: count_functions
 }
 
-type markings_exlusions {
+type markings_exclusions {
   id: ID!
   restricted_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   restricted_by_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
 }
 
-type markings_exlusions_mutated {
+type markings_exclusions_mutated {
   key: ID!
   event: EventEnum
-  data: markings_exlusions
+  data: markings_exclusions
 }
 
 type markings_mutated {
@@ -3539,7 +3539,7 @@ input create_languages_input {
   status: String
 }
 
-input create_markings_exlusions_input {
+input create_markings_exclusions_input {
   id: ID
   restricted_markings_id: create_markings_input
   restricted_by_markings_id: create_markings_input
@@ -3573,7 +3573,7 @@ input create_markings_input {
   """Keinen Rand verwenden"""
   hide_border: Boolean
   translations: [create_markings_translations_input]
-  exlusion_rule: [create_markings_exlusions_input]
+  excluded_by_markings: [create_markings_exclusions_input]
 }
 
 input create_markings_translations_input {
@@ -4321,12 +4321,12 @@ input languages_filter {
   _or: [languages_filter]
 }
 
-input markings_exlusions_filter {
+input markings_exclusions_filter {
   id: number_filter_operators
   restricted_markings_id: markings_filter
   restricted_by_markings_id: markings_filter
-  _and: [markings_exlusions_filter]
-  _or: [markings_exlusions_filter]
+  _and: [markings_exclusions_filter]
+  _or: [markings_exclusions_filter]
 }
 
 input markings_filter {
@@ -4351,8 +4351,8 @@ input markings_filter {
   hide_border: boolean_filter_operators
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
-  exlusion_rule: markings_exlusions_filter
-  exlusion_rule_func: count_function_filter_operators
+  excluded_by_markings: markings_exclusions_filter
+  excluded_by_markings_func: count_function_filter_operators
   _and: [markings_filter]
   _or: [markings_filter]
 }
@@ -5119,7 +5119,7 @@ input update_languages_input {
   status: String
 }
 
-input update_markings_exlusions_input {
+input update_markings_exclusions_input {
   id: ID
   restricted_markings_id: update_markings_input
   restricted_by_markings_id: update_markings_input
@@ -5153,7 +5153,7 @@ input update_markings_input {
   """Keinen Rand verwenden"""
   hide_border: Boolean
   translations: [update_markings_translations_input]
-  exlusion_rule: [update_markings_exlusions_input]
+  excluded_by_markings: [update_markings_exclusions_input]
 }
 
 input update_markings_translations_input {

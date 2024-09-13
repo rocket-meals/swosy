@@ -16,6 +16,7 @@ export function getAllCollectionNames() {
         CollectionNames.FOODS_FEEDBACKS,
         CollectionNames.FOODS_MARKINGS,
         CollectionNames.MARKINGS,
+        CollectionNames.MARKINGS_EXCLUSIONS,
         CollectionNames.FOODOFFER_MARKINGS,
         CollectionNames.FOODS_FEEDBACK_LABELS,
         CollectionNames.APARTMENTS,
@@ -50,6 +51,7 @@ export class CollectionNames{
     static FOODS_FEEDBACKS_LABELS_ENTRIES = "foods_feedbacks_labels_entries"
     static FOODS_MARKINGS = "foods_markings"
     static MARKINGS = "markings"
+    static MARKINGS_EXCLUSIONS = "markings_exclusions"
     static FOODOFFER_MARKINGS = "foodoffers_markings"
     static FOODS_FEEDBACK_LABELS = "foods_feedbacks_labels"
 

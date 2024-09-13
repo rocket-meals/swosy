@@ -1,9 +1,9 @@
 {
-  "collection": "markings_exlusions",
+  "collection": "markings_exclusions",
   "field": "restricted_by_markings_id",
   "type": "uuid",
   "meta": {
-    "collection": "markings_exlusions",
+    "collection": "markings_exclusions",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -24,7 +24,7 @@
   },
   "schema": {
     "name": "restricted_by_markings_id",
-    "table": "markings_exlusions",
+    "table": "markings_exclusions",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,

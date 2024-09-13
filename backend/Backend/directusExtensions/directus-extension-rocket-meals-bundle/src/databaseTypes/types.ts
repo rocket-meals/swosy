@@ -878,7 +878,7 @@ export type Markings = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
-  exlusion_rule: any[] | MarkingsExlusions[];
+  excluded_by_markings: any[] | MarkingsExclusions[];
   external_identifier?: string | null;
   hide_border?: boolean | null;
   icon?: string | null;
@@ -896,7 +896,7 @@ export type Markings = {
   user_updated?: string | DirectusUsers | null;
 };
 
-export type MarkingsExlusions = {
+export type MarkingsExclusions = {
   id: number;
   restricted_by_markings_id?: string | Markings | null;
   restricted_markings_id?: string | Markings | null;
@@ -1200,7 +1200,7 @@ export type CustomDirectusTypes = {
   foods_translations: FoodsTranslations[];
   languages: Languages[];
   markings: Markings[];
-  markings_exlusions: MarkingsExlusions[];
+  markings_exclusions: MarkingsExclusions[];
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];

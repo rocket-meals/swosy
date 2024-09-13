@@ -12,7 +12,7 @@ import {
     Foods,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
-    FoodsFeedbacksLabelsEntries, Markings, News, Profiles,
+    FoodsFeedbacksLabelsEntries, Markings, MarkingsExclusions, News, Profiles,
     PushNotifications, UtilizationsEntries, UtilizationsGroups, Washingmachines
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
@@ -76,6 +76,10 @@ export class MyDatabaseHelper {
 
     getMarkingsHelper() {
         return new ItemsServiceHelper<Markings>(this.apiContext, CollectionNames.MARKINGS);
+    }
+
+    getMarkingsExclusionsHelper() {
+        return new ItemsServiceHelper<MarkingsExclusions>(this.apiContext, CollectionNames.MARKINGS_EXCLUSIONS);
     }
 
     getCanteensHelper() {

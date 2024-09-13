@@ -1,12 +1,12 @@
 {
-  "collection": "markings_exlusions",
+  "collection": "markings_exclusions",
   "meta": {
     "accountability": "all",
     "archive_app_filter": true,
     "archive_field": null,
     "archive_value": null,
     "collapse": "open",
-    "collection": "markings_exlusions",
+    "collection": "markings_exclusions",
     "color": null,
     "display_template": null,
     "group": "markings",
@@ -23,6 +23,6 @@
     "versioning": false
   },
   "schema": {
-    "name": "markings_exlusions"
+    "name": "markings_exclusions"
   }
 }

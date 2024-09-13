@@ -26247,15 +26247,15 @@
         ]
       }
     },
-    "/items/markings_exlusions": {
+    "/items/markings_exclusions": {
       "post": {
         "summary": "Create an Item",
-        "description": "Create a new markings_exlusions item.",
+        "description": "Create a new markings_exclusions item.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "createItemsMarkingsExlusions",
+        "operationId": "createItemsMarkingsExclusions",
         "parameters": [
           {
             "$ref": "#/components/parameters/Meta"
@@ -26269,11 +26269,11 @@
                   {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                      "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                     }
                   },
                   {
-                    "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                    "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                   }
                 ]
               }
@@ -26290,7 +26290,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                        "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                       }
                     }
                   }
@@ -26305,12 +26305,12 @@
       },
       "get": {
         "summary": "List Items",
-        "description": "List the markings_exlusions items.",
+        "description": "List the markings_exclusions items.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "readItemsMarkingsExlusions",
+        "operationId": "readItemsMarkingsExclusions",
         "security": [
           {
             "Auth": []
@@ -26351,7 +26351,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                        "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                       }
                     },
                     "meta": {
@@ -26369,12 +26369,12 @@
       },
       "patch": {
         "summary": "Update Multiple Items",
-        "description": "Update multiple markings_exlusions items at the same time.",
+        "description": "Update multiple markings_exclusions items at the same time.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "updateItemsMarkingsExlusions",
+        "operationId": "updateItemsMarkingsExclusions",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -26406,11 +26406,11 @@
                   {
                     "type": "array",
                     "items": {
-                      "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                      "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                     }
                   },
                   {
-                    "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                    "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                   }
                 ]
               }
@@ -26426,7 +26426,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                        "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                       }
                     }
                   }
@@ -26438,12 +26438,12 @@
       },
       "delete": {
         "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing markings_exlusions items.",
+        "description": "Delete multiple existing markings_exclusions items.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "deleteItemsMarkingsExlusions",
+        "operationId": "deleteItemsMarkingsExclusions",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -26455,15 +26455,15 @@
         "parameters": []
       }
     },
-    "/items/markings_exlusions/{id}": {
+    "/items/markings_exclusions/{id}": {
       "get": {
         "summary": "Retrieve an Item",
-        "description": "Retrieve a single markings_exlusions item by unique identifier.",
+        "description": "Retrieve a single markings_exclusions item by unique identifier.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "readSingleItemsMarkingsExlusions",
+        "operationId": "readSingleItemsMarkingsExclusions",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -26505,7 +26505,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                      "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                     }
                   }
                 }
@@ -26522,12 +26522,12 @@
       },
       "patch": {
         "summary": "Update an Item",
-        "description": "Update an existing markings_exlusions item.",
+        "description": "Update an existing markings_exclusions item.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "updateSingleItemsMarkingsExlusions",
+        "operationId": "updateSingleItemsMarkingsExclusions",
         "parameters": [
           {
             "$ref": "#/components/parameters/Fields"
@@ -26561,7 +26561,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                "$ref": "#/components/schemas/ItemsMarkingsExclusions"
               }
             }
           }
@@ -26576,7 +26576,7 @@
                   "properties": {
                     "data": {
                       "type": "object",
-                      "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                      "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                     }
                   }
                 }
@@ -26593,12 +26593,12 @@
       },
       "delete": {
         "summary": "Delete an Item",
-        "description": "Delete an existing markings_exlusions item.",
+        "description": "Delete an existing markings_exclusions item.",
         "tags": [
           "Items",
-          "ItemsMarkingsExlusions"
+          "ItemsMarkingsExclusions"
         ],
-        "operationId": "deleteSingleItemsMarkingsExlusions",
+        "operationId": "deleteSingleItemsMarkingsExclusions",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -26950,8 +26950,8 @@
       "x-collection": "canteen_food_feedback_report_schedules_canteens"
     },
     {
-      "name": "ItemsMarkingsExlusions",
-      "x-collection": "markings_exlusions"
+      "name": "ItemsMarkingsExclusions",
+      "x-collection": "markings_exclusions"
     }
   ],
   "components": {
@@ -30830,9 +30830,9 @@
               ]
             }
           },
-          "exlusion_rule": {
+          "excluded_by_markings": {
             "nullable": true,
-            "description": "Diese Kennzeichnung wird nicht gesetzt, wenn eines der folgenden Kennzeichnungen vorhanden sind.",
+            "description": "Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein",
             "type": "array",
             "items": {
               "oneOf": [
@@ -30840,7 +30840,7 @@
                   "type": "integer"
                 },
                 {
-                  "$ref": "#/components/schemas/ItemsMarkingsExlusions"
+                  "$ref": "#/components/schemas/ItemsMarkingsExclusions"
                 }
               ]
             }
@@ -32774,7 +32774,7 @@
         },
         "x-collection": "canteen_food_feedback_report_schedules_canteens"
       },
-      "ItemsMarkingsExlusions": {
+      "ItemsMarkingsExclusions": {
         "type": "object",
         "properties": {
           "id": {
@@ -32806,7 +32806,7 @@
             ]
           }
         },
-        "x-collection": "markings_exlusions"
+        "x-collection": "markings_exclusions"
       }
     },
     "parameters": {

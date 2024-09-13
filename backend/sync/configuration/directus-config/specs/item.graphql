@@ -191,10 +191,10 @@ type Query {
   canteen_food_feedback_report_schedules_canteens_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules_canteens
   canteen_food_feedback_report_schedules_canteens_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_canteens_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_canteens_aggregated!]!
   canteen_food_feedback_report_schedules_canteens_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules_canteens
-  markings_exlusions(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exlusions!]!
-  markings_exlusions_by_id(id: ID!, version: String): markings_exlusions
-  markings_exlusions_aggregated(groupBy: [String], filter: markings_exlusions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_exlusions_aggregated!]!
-  markings_exlusions_by_version(version: String!, id: ID!): version_markings_exlusions
+  markings_exclusions(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions!]!
+  markings_exclusions_by_id(id: ID!, version: String): markings_exclusions
+  markings_exclusions_aggregated(groupBy: [String], filter: markings_exclusions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_exclusions_aggregated!]!
+  markings_exclusions_by_version(version: String!, id: ID!): version_markings_exclusions
 }
 
 type Mutation {
@@ -292,8 +292,8 @@ type Mutation {
   create_report_recipients_item(data: create_report_recipients_input!): report_recipients
   create_canteen_food_feedback_report_schedules_canteens_items(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_canteens_input!]): [canteen_food_feedback_report_schedules_canteens!]!
   create_canteen_food_feedback_report_schedules_canteens_item(data: create_canteen_food_feedback_report_schedules_canteens_input!): canteen_food_feedback_report_schedules_canteens
-  create_markings_exlusions_items(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_exlusions_input!]): [markings_exlusions!]!
-  create_markings_exlusions_item(data: create_markings_exlusions_input!): markings_exlusions
+  create_markings_exclusions_items(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_exclusions_input!]): [markings_exclusions!]!
+  create_markings_exclusions_item(data: create_markings_exclusions_input!): markings_exclusions
   update_auto_translation_settings(data: update_auto_translation_settings_input!): auto_translation_settings
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
@@ -437,9 +437,9 @@ type Mutation {
   update_canteen_food_feedback_report_schedules_canteens_items(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_canteens_input!): [canteen_food_feedback_report_schedules_canteens!]!
   update_canteen_food_feedback_report_schedules_canteens_batch(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_canteens_input!]): [canteen_food_feedback_report_schedules_canteens!]!
   update_canteen_food_feedback_report_schedules_canteens_item(id: ID!, data: update_canteen_food_feedback_report_schedules_canteens_input!): canteen_food_feedback_report_schedules_canteens
-  update_markings_exlusions_items(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_exlusions_input!): [markings_exlusions!]!
-  update_markings_exlusions_batch(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_exlusions_input!]): [markings_exlusions!]!
-  update_markings_exlusions_item(id: ID!, data: update_markings_exlusions_input!): markings_exlusions
+  update_markings_exclusions_items(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_exclusions_input!): [markings_exclusions!]!
+  update_markings_exclusions_batch(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_exclusions_input!]): [markings_exclusions!]!
+  update_markings_exclusions_item(id: ID!, data: update_markings_exclusions_input!): markings_exclusions
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
   delete_buildings_items(ids: [ID]!): delete_many
@@ -534,8 +534,8 @@ type Mutation {
   delete_report_recipients_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_canteens_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_schedules_canteens_item(id: ID!): delete_one
-  delete_markings_exlusions_items(ids: [ID]!): delete_many
-  delete_markings_exlusions_item(id: ID!): delete_one
+  delete_markings_exclusions_items(ids: [ID]!): delete_many
+  delete_markings_exclusions_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -606,7 +606,7 @@ type Subscription {
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
-  markings_exlusions_mutated(event: EventEnum): markings_exlusions_mutated
+  markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2863,8 +2863,8 @@ type markings {
   hide_border: Boolean
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
-  exlusion_rule(filter: markings_exlusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exlusions]
-  exlusion_rule_func: count_functions
+  excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
+  excluded_by_markings_func: count_functions
 }
 
 type markings_aggregated {
@@ -2910,48 +2910,48 @@ type markings_aggregated_count {
   translations: Int
 
   """
-  Diese Kennzeichnung wird nicht gesetzt, wenn eines der folgenden Kennzeichnungen vorhanden sind.
+  Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein
   """
-  exlusion_rule: Int
+  excluded_by_markings: Int
 }
 
 type markings_aggregated_fields {
   sort: Float
 }
 
-type markings_exlusions {
+type markings_exclusions {
   id: ID!
   restricted_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   restricted_by_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
 }
 
-type markings_exlusions_aggregated {
+type markings_exclusions_aggregated {
   group: JSON
   countAll: Int
-  count: markings_exlusions_aggregated_count
-  countDistinct: markings_exlusions_aggregated_count
-  avg: markings_exlusions_aggregated_fields
-  sum: markings_exlusions_aggregated_fields
-  avgDistinct: markings_exlusions_aggregated_fields
-  sumDistinct: markings_exlusions_aggregated_fields
-  min: markings_exlusions_aggregated_fields
-  max: markings_exlusions_aggregated_fields
+  count: markings_exclusions_aggregated_count
+  countDistinct: markings_exclusions_aggregated_count
+  avg: markings_exclusions_aggregated_fields
+  sum: markings_exclusions_aggregated_fields
+  avgDistinct: markings_exclusions_aggregated_fields
+  sumDistinct: markings_exclusions_aggregated_fields
+  min: markings_exclusions_aggregated_fields
+  max: markings_exclusions_aggregated_fields
 }
 
-type markings_exlusions_aggregated_count {
+type markings_exclusions_aggregated_count {
   id: Int
   restricted_markings_id: Int
   restricted_by_markings_id: Int
 }
 
-type markings_exlusions_aggregated_fields {
+type markings_exclusions_aggregated_fields {
   id: Float
 }
 
-type markings_exlusions_mutated {
+type markings_exclusions_mutated {
   key: ID!
   event: EventEnum
-  data: markings_exlusions
+  data: markings_exclusions
 }
 
 type markings_mutated {
@@ -4268,11 +4268,11 @@ type version_markings {
   """Keinen Rand verwenden"""
   hide_border: Boolean
   translations: JSON
-  exlusion_rule: JSON
+  excluded_by_markings: JSON
 }
 
 """"""
-type version_markings_exlusions {
+type version_markings_exclusions {
   id: ID
   restricted_markings_id: JSON
   restricted_by_markings_id: JSON
@@ -5686,7 +5686,7 @@ input create_languages_input {
   status: String
 }
 
-input create_markings_exlusions_input {
+input create_markings_exclusions_input {
   id: ID
   restricted_markings_id: create_markings_input
   restricted_by_markings_id: create_markings_input
@@ -5720,7 +5720,7 @@ input create_markings_input {
   """Keinen Rand verwenden"""
   hide_border: Boolean
   translations: [create_markings_translations_input]
-  exlusion_rule: [create_markings_exlusions_input]
+  excluded_by_markings: [create_markings_exclusions_input]
 }
 
 input create_markings_translations_input {
@@ -6461,12 +6461,12 @@ input languages_filter {
   _or: [languages_filter]
 }
 
-input markings_exlusions_filter {
+input markings_exclusions_filter {
   id: number_filter_operators
   restricted_markings_id: markings_filter
   restricted_by_markings_id: markings_filter
-  _and: [markings_exlusions_filter]
-  _or: [markings_exlusions_filter]
+  _and: [markings_exclusions_filter]
+  _or: [markings_exclusions_filter]
 }
 
 input markings_filter {
@@ -6491,8 +6491,8 @@ input markings_filter {
   hide_border: boolean_filter_operators
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
-  exlusion_rule: markings_exlusions_filter
-  exlusion_rule_func: count_function_filter_operators
+  excluded_by_markings: markings_exclusions_filter
+  excluded_by_markings_func: count_function_filter_operators
   _and: [markings_filter]
   _or: [markings_filter]
 }
@@ -7320,7 +7320,7 @@ input update_languages_input {
   status: String
 }
 
-input update_markings_exlusions_input {
+input update_markings_exclusions_input {
   id: ID
   restricted_markings_id: update_markings_input
   restricted_by_markings_id: update_markings_input
@@ -7354,7 +7354,7 @@ input update_markings_input {
   """Keinen Rand verwenden"""
   hide_border: Boolean
   translations: [update_markings_translations_input]
-  exlusion_rule: [update_markings_exlusions_input]
+  excluded_by_markings: [update_markings_exclusions_input]
 }
 
 input update_markings_translations_input {

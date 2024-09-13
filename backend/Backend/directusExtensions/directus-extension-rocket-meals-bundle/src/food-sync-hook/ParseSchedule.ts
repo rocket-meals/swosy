@@ -20,12 +20,13 @@ import {
     Foods,
     FoodsMarkings,
     FoodsTranslations,
-    Markings,
+    Markings, MarkingsExclusions,
     MarkingsTranslations
 } from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -101,6 +102,8 @@ export class ParseSchedule {
                     let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
                     let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
                     let previousMealOffersHash = await this.myAppSettingsHelper.getFoodParsingHash();
+                    const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
+
 
                     console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
                     console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
@@ -112,14 +115,18 @@ export class ParseSchedule {
                         console.log("["+SCHEDULE_NAME+"]"+" - Update Canteens")
                         await this.updateCanteens(canteensJSONList);
 
+                        console.log("["+SCHEDULE_NAME+"]"+" - Get all markings exlusions")
+                        let markingsExclusions = await markingsExclusionsHelper.readAllItems();
+                        const dictMarkingsExclusions: DictMarkingsExclusions = MarkingFilterHelper.getDictMarkingsExclusions(markingsExclusions);
+
                         console.log("["+SCHEDULE_NAME+"]"+" - Update Foods")
-                        await this.updateFoods(foodsJSONList);
+                        await this.updateFoods(foodsJSONList, dictMarkingsExclusions);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
                         await this.deleteRequiredFoodOffersForTheirCanteens(foodofferListForParser);
 
                         console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
-                        await this.createFoodOffers(foodofferListForParser);
+                        await this.createFoodOffers(foodofferListForParser, dictMarkingsExclusions);
                     }
                 }
 
@@ -314,9 +321,11 @@ export class ParseSchedule {
         }
     }
 
-    async assignMarkingsToFood(markings: Markings[], food: Foods) {
+    async assignMarkingsToFood(markings: Markings[], food: Foods, dictMarkingsExclusions: DictMarkingsExclusions) {
         let tablename = CollectionNames.FOODS_MARKINGS;
-        for (let marking of markings) {
+
+        const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, dictMarkingsExclusions);
+        for (let marking of filteredMarkings) {
             let food_marking_json = {foods_id: food.id, markings_id: marking.id};
             const searchJSON = food_marking_json;
             const createJSON = food_marking_json;
@@ -324,9 +333,12 @@ export class ParseSchedule {
         }
     }
 
-    async assignMarkingsToMealOffer(markings: Markings[], foodoffer: Foodoffers) {
+    async assignMarkingsToFoodoffer(markings: Markings[], foodoffer: Foodoffers, dictMarkingsExclusions: DictMarkingsExclusions) {
         let tablename = CollectionNames.FOODOFFER_MARKINGS
-        for (let marking of markings) {
+
+        const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, dictMarkingsExclusions);
+
+        for (let marking of filteredMarkings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
             await ItemsServiceHelper.createItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, foodoffer_marking_json);
         }
@@ -340,7 +352,7 @@ export class ParseSchedule {
         await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext);
     }
 
-    async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[]) {
+    async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
         //let amountOfMeals = foodsInformationForParserList.length;
         let currentFoodIndex = 0;
 
@@ -362,7 +374,7 @@ export class ParseSchedule {
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
                 let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
-                await this.assignMarkingsToFood(markings, foundFood);
+                await this.assignMarkingsToFood(markings, foundFood, dictMarkingsExclusions);
 
                 await this.updateFoodBasicFields(basicFoodData);
 
@@ -388,7 +400,7 @@ export class ParseSchedule {
     }
 
 
-    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser) {
+    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser, dictMarkingsExclusions: DictMarkingsExclusions) {
         const foodoffersHelper = this.myDatabaseHelper.getFoodOffersHelper();
 
         let canteen_external_identifier = foodofferForParser.canteen_external_identifier
@@ -421,20 +433,20 @@ export class ParseSchedule {
                 if (!!foodoffer) {
                     let markings_external_identifiers = foodofferForParser.marking_external_identifiers
                     let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
-                    await this.assignMarkingsToMealOffer(markings, foodoffer);
+                    await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
                 }
             }
         }
     }
 
-    async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[]) {
+    async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
         let amountOfRawMealOffers = foodofferListForParser.length;
         let currentRawMealOffer = 0;
         console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers")
         for (let foodofferForParser of foodofferListForParser) {
             currentRawMealOffer++;
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
-            await this.createFoodOffer(foodofferForParser);
+            await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions);
         }
     }
 
