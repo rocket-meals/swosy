@@ -11,7 +11,7 @@
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "Interne Bezeichnung - Nicht sichtbar für Nutzer",
     "options": null,
     "readonly": false,
     "required": false,

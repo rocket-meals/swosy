@@ -9,7 +9,7 @@ export type Apartments = {
   id: string;
   singleflat?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   washingmachines: any[] | Washingmachines[];
@@ -36,7 +36,7 @@ export type AppFeedbacks = {
   response?: string | null;
   response_read_by_user?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   title?: string | null;
   user_created?: string | null;
   user_updated?: string | DirectusUsers | null;
@@ -159,7 +159,7 @@ export type Buildings = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | BuildingsTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
@@ -192,7 +192,7 @@ export type Businesshours = {
   monday?: boolean | null;
   saturday?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   sunday?: boolean | null;
   thursday?: boolean | null;
   time_end?: string | null;
@@ -225,7 +225,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_report_at_hh_mm?: string | null;
   show_images?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   use_canteen_specific_feedbacks_only?: boolean | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -249,6 +249,8 @@ export type Canteens = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
+  foodoffers_import_delete_all_without_dates?: boolean | null;
+  foodoffers_import_without_date?: boolean | null;
   foodservice_hours: any[] | CanteensFoodserviceHours[];
   id: string;
   sort?: number | null;
@@ -272,7 +274,7 @@ export type Cashregisters = {
   external_identifier?: string | null;
   id: string;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   transactions: any[] | CashregistersTransactions[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -287,7 +289,7 @@ export type CashregistersTransactions = {
   name?: string | null;
   quantity?: number | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -297,7 +299,7 @@ export type CollectionsDatesLastUpdate = {
   date_updated?: string | null;
   id: string;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -324,7 +326,7 @@ export type Devices = {
   profile?: string | Profiles | null;
   pushTokenObj?: unknown | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   system_group: string;
   system_version?: string | null;
   user_created?: string | DirectusUsers | null;
@@ -794,7 +796,7 @@ export type FoodsFeedbacks = {
   profile?: string | Profiles | null;
   rating?: number | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -816,7 +818,7 @@ export type FoodsFeedbacksLabels = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | FoodsFeedbacksLabelsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -834,7 +836,7 @@ export type FoodsFeedbacksLabelsEntries = {
   label?: string | FoodsFeedbacksLabels | null;
   profile?: string | Profiles | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -865,33 +867,39 @@ export type FoodsTranslations = {
   translation_settings: string;
 };
 
-export type FoodsoffersMarkings = {
-  id: number;
-  markings_id?: string | Markings | null;
-};
-
 export type Languages = {
   code: string;
   direction?: string | null;
   name?: string | null;
+  status?: string | null;
 };
 
 export type Markings = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  exlusion_rule: any[] | MarkingsExlusions[];
   external_identifier?: string | null;
+  hide_border?: boolean | null;
   icon?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  invert_background_color?: boolean | null;
+  short_code?: string | null;
   show_on_card?: boolean | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | MarkingsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type MarkingsExlusions = {
+  id: number;
+  restricted_by_markings_id?: string | Markings | null;
+  restricted_markings_id?: string | Markings | null;
 };
 
 export type MarkingsTranslations = {
@@ -917,7 +925,7 @@ export type News = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | NewsTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
@@ -948,7 +956,7 @@ export type PopupEvents = {
   image_thumb_hash?: string | null;
   send_notification?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | PopupEventsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -990,7 +998,7 @@ export type Profiles = {
   notifiy_on_free_apartments?: boolean | null;
   price_group?: string | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1032,7 +1040,7 @@ export type PushNotifications = {
   message_title?: string | null;
   message_ttl?: number | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   status_log?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -1045,7 +1053,7 @@ export type ReportRecipients = {
   mail?: string | null;
   name?: string | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1057,7 +1065,7 @@ export type UtilizationsEntries = {
   date_updated?: string | null;
   id: string;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   utilization_group?: string | UtilizationsGroups | null;
@@ -1072,7 +1080,7 @@ export type UtilizationsGroups = {
   date_updated?: string | null;
   id: string;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   threshold_until_high?: number | null;
   threshold_until_low?: number | null;
   threshold_until_max?: number | null;
@@ -1091,7 +1099,7 @@ export type Washingmachines = {
   external_identifier?: string | null;
   id: string;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1111,7 +1119,7 @@ export type Wikis = {
   show_in_drawer?: boolean | null;
   show_in_drawer_as_bottom_item?: boolean | null;
   sort?: number | null;
-  status: string;
+  status?: string | null;
   translations: any[] | WikisTranslations[];
   url?: string | null;
   user_created?: string | DirectusUsers | null;
@@ -1190,9 +1198,9 @@ export type CustomDirectusTypes = {
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];
-  foodsoffers_markings: FoodsoffersMarkings[];
   languages: Languages[];
   markings: Markings[];
+  markings_exlusions: MarkingsExlusions[];
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];

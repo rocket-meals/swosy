@@ -1,26 +1,23 @@
 {
   "collection": "markings",
-  "field": "translations",
+  "field": "exlusion_rule",
   "type": "alias",
   "meta": {
     "collection": "markings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "translations",
+    "field": "exlusion_rule",
     "group": null,
     "hidden": false,
-    "interface": "translations",
-    "note": null,
-    "options": {
-      "defaultOpenSplitView": true,
-      "userLanguage": true
-    },
+    "interface": "list-m2m",
+    "note": "Diese Kennzeichnung wird nicht gesetzt, wenn eines der folgenden Kennzeichnungen vorhanden sind.",
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 15,
+    "sort": 19,
     "special": [
-      "translations"
+      "m2m"
     ],
     "translations": null,
     "validation": null,
