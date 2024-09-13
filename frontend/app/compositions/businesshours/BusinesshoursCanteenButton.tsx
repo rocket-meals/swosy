@@ -28,6 +28,9 @@ export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...prop
 	let buildingBusinesshours: Businesshours[] | undefined = buildingsBusinesshours[building_id];
 	let canteenFoodServicehours: Businesshours[] | undefined = canteensBusinesshours[canteen_id];
 
+	const noBuildingBusinesshours = buildingBusinesshours === undefined || buildingBusinesshours.length === 0;
+	const noCanteenFoodServicehours = canteenFoodServicehours === undefined || canteenFoodServicehours.length === 0;
+
 	//console.log("BusinesshoursCanteenButton: profileCanteen", profileCanteen);
 	//console.log("BusinesshoursCanteenButton: canteensBusinesshours", canteensBusinesshours);
 	//console.log("BusinesshoursCanteenButton: buildingBusinesshours", buildingBusinesshours)

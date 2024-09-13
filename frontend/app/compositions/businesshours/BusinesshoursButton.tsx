@@ -23,7 +23,7 @@ export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours,
 	const title = translation_businesshours;
 
 	let businesshoursInformation: any = undefined
-	if(businesshours){
+	if(businesshours && businesshours.length > 0){
 		businesshoursInformation = <>
 			<View style={{width: '100%', paddingLeft: 20, paddingRight: 20}}>
 				<Heading>{translation_businesshours}</Heading>
@@ -33,7 +33,7 @@ export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours,
 	}
 
 	let foodservicehoursInformation: any = undefined
-	if(businesshours){
+	if(foodservicehours && foodservicehours.length > 0){
 		foodservicehoursInformation = <>
 			<View style={{width: '100%', paddingLeft: 20, paddingRight: 20}}>
 				<Heading>{translation_foodservicehours}</Heading>
