@@ -28,8 +28,9 @@ import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {useCharacterWithInPixel, useIconWithInPixel} from "@/components/shapes/Rectangle";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
-export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color: string}) => {
+export const MarkingBadges = ({foodoffer}: {foodoffer: Foodoffers}) => {
 	const markingsIds = MarkingHelper.getFoodOfferMarkingIds(foodoffer);
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 
@@ -39,7 +40,7 @@ export const MarkingBadges = ({foodoffer, color}: {foodoffer: Foodoffers, color:
 		if(!!marking){
 			let markingVisible = marking?.show_on_card
 			if(markingVisible){
-				badges.push(<MarkingBadge markingId={markingId} color={color} />)
+				badges.push(<MarkingBadge markingId={markingId} />)
 			}
 		}
 	}
@@ -163,12 +164,14 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 			key: "foodGroupBadge",
 			label: translation_eating_habit,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return <View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
-					<View style={{width: "100%", alignItems: "center"}}>
-						<DirectusImageOrIconComponent resource={marking} widthImage={widthByCharacters} heightImage={widthByCharacters} />
+				return <MyScrollView>
+					<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
+						<View style={{width: "100%", alignItems: "center"}}>
+							<DirectusImageOrIconComponent resource={marking} widthImage={widthByCharacters} heightImage={widthByCharacters} />
+						</View>
+						<ThemedMarkdown markdown={translated_description} />
 					</View>
-					<ThemedMarkdown markdown={translated_description} />
-				</View>
+				</MyScrollView>
 			}
 		})
 	}
