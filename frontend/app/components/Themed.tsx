@@ -396,7 +396,7 @@ export function Checkbox({size, label, accessibilityLabel, ...props}: CheckboxPr
 	const isCheckboxChecked = props.isChecked || false;
 
 	const checkboxBackgroundColor = isCheckboxChecked ? colorCheck : viewBackgroundColor;
-	const checkboxBorderColor = props.isInvalid ? undefined : textColor;
+	const checkboxBorderColor = props.isInvalid ? "#FF0F0F" : textColor;
 
 	const iconContractColor = useMyContrastColor(checkboxBackgroundColor);
 
