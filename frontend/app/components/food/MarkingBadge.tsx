@@ -115,7 +115,6 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 			paddingVertical: 2,
 		}}>
 			<View style={{
-				backgroundColor: "red",
 				borderColor: borderColor,
 				borderWidth: 1,
 				borderRadius: adaptedBorderRadius,
