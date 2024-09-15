@@ -4,25 +4,27 @@ import {DateHelper} from '@/helper/date/DateHelper';
 import {Canteens, Foodoffers, Foods} from '@/helper/database/databaseTypes/types';
 import {getDemoFoods} from '@/states/SynchedFoods';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
+import {useSearchParamSelectedFoodoffersDate} from "@/helper/searchParams/SearchParams";
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
 	const [selectedDate, setSelectedDate] = useSyncState<Date, Date>(NonPersistentStore.foodOfferSelectedDate);
+	const [selectedDateFromParams, setSelectedDateFromParams] = useSearchParamSelectedFoodoffersDate();
 
 	const defaultDate = new Date();
-	setDateForFoodSelection(defaultDate); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
-	let usedSelectedDate = selectedDate || defaultDate;
-	usedSelectedDate = new Date(usedSelectedDate);
+	let usedSelectedDate = selectedDate || selectedDateFromParams || defaultDate;
+	let usedSelectedDateAsDate = new Date(usedSelectedDate);
+	formatDateForFoodSelection(usedSelectedDateAsDate); // set to noon to avoid timezone issues and to have a consistent date to not retrigger useEffects on every render when the milliseconds change
 
 	function changeAmountDays(days: number) {
-		const nextDate = DateHelper.addDaysAndReturnNewDate(usedSelectedDate, days);
+		const nextDate = DateHelper.addDaysAndReturnNewDate(usedSelectedDateAsDate, days);
 		setSelectedDate(nextDate);
 	}
 
-	return [usedSelectedDate, setSelectedDate, changeAmountDays]
+	return [usedSelectedDateAsDate, setSelectedDate, changeAmountDays]
 }
 
-export function setDateForFoodSelection(date: Date): Date{
+export function formatDateForFoodSelection(date: Date): Date{
 	date.setHours(12,0,0,0);
 	return date;
 }
