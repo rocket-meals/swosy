@@ -8,7 +8,7 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefaultColumns";
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {setDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
+import {formatDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
 import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 
@@ -22,7 +22,7 @@ export default function FoodOfferDetails() {
 	// get the first monday in the year
 	let tempDate = DateHelper.getFirstMondayOfYear();
 	let today = new Date();
-	setDateForFoodSelection(tempDate);
+	formatDateForFoodSelection(tempDate);
 
 	type DataItem = { key: string; date_start_week_iso: string, week_number: number }
 
