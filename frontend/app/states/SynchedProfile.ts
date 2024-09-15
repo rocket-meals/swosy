@@ -28,6 +28,7 @@ import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType}
 import {useLocales as useLocalesExpo} from "expo-localization";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import {useSearchParamLanguage} from "@/helper/searchParams/SearchParams";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -265,6 +266,7 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 	const [setProfile] = useSynchedProfileSetter();
 	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
 	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
+	const languageCodeFromParams = useSearchParamLanguage();
 
 	const profileLanguageSaved = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
 		return storedProfileRaw?.data?.language
@@ -283,6 +285,10 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 	);
 
 	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguageSaved, deviceLocaleCodesWithoutRegionCode, languageDict);
+	if(languageCodeFromParams){
+		usedLanguage = languageCodeFromParams;
+	}
+
 	return [usedLanguage, setLanguage, profileLanguageSaved];
 }
 

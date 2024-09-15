@@ -7,5 +7,11 @@ export function useSearchParamKioskMode() {
 }
 
 export enum SearchParams {
-    KIOSK_MODE = 'kiosk_mode'
+    KIOSK_MODE = 'kiosk_mode',
+    LANGUAGE = 'language',
+}
+
+export function useSearchParamLanguage() {
+    const params = useGlobalSearchParams<{ [SearchParams.LANGUAGE]?: string }>();
+    return params[SearchParams.LANGUAGE];
 }
