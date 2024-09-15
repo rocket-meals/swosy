@@ -10,10 +10,10 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {setDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
 import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
-import {useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
+import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 
 export default function FoodOfferDetails() {
-	let canteen_id: string | undefined = useSearchParamSelectedCanteensId();
+	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const initialAmountColumns = useMyGridListDefaultColumns();
 	const translation_week = useTranslation(TranslationKeys.week)
 	const translation_current = useTranslation(TranslationKeys.current)
@@ -42,7 +42,7 @@ export default function FoodOfferDetails() {
 	function renderLinkToWeekPlan(label: string, isActive: boolean, date_start_week_iso_or_current: string | undefined){
 		return(
 			<MyButton accessibilityLabel={label} text={label} isActive={isActive} onPress={() => {
-				let route = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id, date_start_week_iso_or_current);
+				let route = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id, date_start_week_iso_or_current);
 				router.push(route);
 			}} />
 		)

@@ -14,15 +14,14 @@ import React, {useEffect, useState} from "react";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
-import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import ImageWithComponents from "@/components/project/ImageWithComponents";
 import {Rectangle} from "@/components/shapes/Rectangle";
 import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {getFoodName} from "@/helper/food/FoodTranslation";
-import {PriceGroups, useProfileLanguageCode} from "@/states/SynchedProfile";
+import {PriceGroups, useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
-import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
+import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -119,12 +118,11 @@ export default function FoodBigScreenScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const canteen_id = useSearchParamSelectedCanteensId();
+	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const category = useFoodCategoryFromLocalSearchParams();
 
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;
-	const canteen = useSynchedCanteenById(canteen_id);
 	const [layout, setLayout] = useState({width: 0, height: 0});
 	const [food_index, setFoodIndex] = useState(0);
 

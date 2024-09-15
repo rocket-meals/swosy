@@ -12,11 +12,10 @@ import {router, useGlobalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
-import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useProfileLanguageCode, useProfileLocaleForJsDate} from "@/states/SynchedProfile";
+import {useProfileLanguageCode, useProfileLocaleForJsDate, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
@@ -30,7 +29,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
-import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
+import {SearchParams} from "@/helper/searchParams/SearchParams";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -57,10 +56,9 @@ export function useDateIsoFromLocalSearchParams() {
 }
 
 export default function FoodplanScreen() {
-	let canteen_id: string | undefined = useSearchParamSelectedCanteensId();
+	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const param_date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
-	const canteen = useSynchedCanteenById(canteen_id);
 	const AMOUNT_DAYS = 7;
 	const viewBackgroundColor = useViewBackgroundColor();
 	const projectColor = useProjectColor();

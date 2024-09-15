@@ -12,11 +12,10 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
-import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
-import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
+import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
+import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
@@ -114,13 +113,12 @@ export default function FoodDayPlanScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const canteen_id = useSearchParamSelectedCanteensId();
+	const [canteen, setCanteen] = useSynchedProfileCanteen();
 
 	const nextPageIntervalInSeconds = useNextPageIntervalInSecondsFromLocalSearchParams() || 10;
 	const [reloadNumberForPage, setReloadNumberForPage] = useState(0);
 
 	const refreshDataIntervalInSeconds = useRefreshDataIntervalInSecondsFromLocalSearchParams() || 5 * 60;
-	const canteen = useSynchedCanteenById(canteen_id);
 	const canteen_name = getCanteenName(canteen);
 
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);

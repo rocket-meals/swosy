@@ -28,7 +28,7 @@ import {MyCacheHelperDeepFields, MyCacheHelperDependencyEnum, MyCacheHelperType}
 import {useLocales as useLocalesExpo} from "expo-localization";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {PlatformHelper} from "@/helper/PlatformHelper";
-import {useSearchParamLanguage} from "@/helper/searchParams/SearchParams";
+import {useSearchParamLanguage, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -419,12 +419,15 @@ export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newV
 		return storedProfileRaw?.data?.canteen
 	});
 
+	const canteen_id_from_search_param = useSearchParamSelectedCanteensId();
+	const usedCanteenId = canteen_id_from_search_param || canteen_id; // prefer the search param over the stored value in the profile
+
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 
 	//const canteen_id = profile?.canteen as string;
 	let canteen = undefined
-	if (canteenDict && canteen_id) {
-		canteen = canteenDict[canteen_id];
+	if (canteenDict && usedCanteenId) {
+		canteen = canteenDict[usedCanteenId];
 	}
 
 	const setCanteen = useCallback((newValue: Canteens | null) => {
