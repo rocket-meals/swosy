@@ -3,7 +3,7 @@
 set -e
 
 COMMAND=${1:-dump}
-CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *}
+CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *} # Run defined by environment variable or default to 1am every day
 PREFIX=${PREFIX:-dump}
 PGUSER=${PGUSER:-postgres}
 PGDB=${PGDB:-postgres}
