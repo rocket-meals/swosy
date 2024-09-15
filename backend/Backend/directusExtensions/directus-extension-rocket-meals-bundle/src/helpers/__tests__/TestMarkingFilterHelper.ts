@@ -13,26 +13,26 @@ const marking_id_sugar = "pork_sugar_id";
 
 let marking_exclusion_current_id = 1;
 
-const marking_exclusion_rule_meat_is_restricted_by_vegan: MarkingsExclusions = {
+const marking_exclusion_rule_vegan_is_restricted_by_chicken: MarkingsExclusions = {
     id: marking_exclusion_current_id++,
-    restricted_markings_id: marking_id_meat,
-    restricted_by_markings_id: marking_id_vegan
+    restricted_markings_id: marking_id_vegan,
+    restricted_by_markings_id: marking_id_chicken
 };
-const marking_exclusion_rule_chicken_is_restricted_by_vegan: MarkingsExclusions = {
+const marking_exclusion_rule_vegan_is_restricted_by_meat: MarkingsExclusions = {
     id: marking_exclusion_current_id++,
-    restricted_markings_id: marking_id_chicken,
-    restricted_by_markings_id: marking_id_vegan
+    restricted_markings_id: marking_id_vegan,
+    restricted_by_markings_id: marking_id_meat
 };
 
-const dictMarkingsExclusions = MarkingFilterHelper.getDictMarkingsExclusions([marking_exclusion_rule_meat_is_restricted_by_vegan, marking_exclusion_rule_chicken_is_restricted_by_vegan]);
+const dictMarkingsExclusions = MarkingFilterHelper.getDictMarkingsExclusions([marking_exclusion_rule_vegan_is_restricted_by_chicken, marking_exclusion_rule_vegan_is_restricted_by_meat]);
 
 const marking_meat: MarkingWithIdAndExclusionRulesOnly = {
     id: marking_id_meat,
-    excluded_by_markings: [marking_exclusion_rule_meat_is_restricted_by_vegan.id]
+    excluded_by_markings: []
 };
 const marking_vegan: MarkingWithIdAndExclusionRulesOnly = {
     id: marking_id_vegan,
-    excluded_by_markings: []
+    excluded_by_markings: [marking_exclusion_rule_vegan_is_restricted_by_chicken, marking_exclusion_rule_vegan_is_restricted_by_meat]
 };
 const marking_gluten: MarkingWithIdAndExclusionRulesOnly = {
     id: marking_id_gluten,
@@ -40,7 +40,7 @@ const marking_gluten: MarkingWithIdAndExclusionRulesOnly = {
 };
 const marking_chicken: MarkingWithIdAndExclusionRulesOnly = {
     id: marking_id_chicken,
-    excluded_by_markings: [marking_exclusion_rule_chicken_is_restricted_by_vegan.id]
+    excluded_by_markings: []
 };
 const marking_sugar: MarkingWithIdAndExclusionRulesOnly = {
     id: marking_id_sugar,
@@ -49,7 +49,7 @@ const marking_sugar: MarkingWithIdAndExclusionRulesOnly = {
 
 const markings_where_nothing_will_be_filtered_because_no_restrictions = [marking_vegan, marking_gluten, marking_sugar];
 const markings_where_nothing_will_be_filtered_because_no_other_marking_which_restricts = [marking_meat, marking_chicken];
-const markings_where_something_will_be_filtered = [marking_meat, marking_vegan, marking_gluten, marking_chicken, marking_sugar];
+const markings_where_vegan_will_be_filtered = [marking_meat, marking_vegan, marking_gluten, marking_chicken, marking_sugar];
 
 describe("MarkingFilterHelper Test", () => {
 
@@ -64,9 +64,9 @@ describe("MarkingFilterHelper Test", () => {
         expect(filteredMarkings).toEqual(markings_where_nothing_will_be_filtered_because_no_other_marking_which_restricts);
     });
 
-    it("Test filterMarkingByRestrictionRules where something will be filtered", () => {
-        const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings_where_something_will_be_filtered, dictMarkingsExclusions);
-        expect(filteredMarkings).toEqual([marking_vegan, marking_gluten, marking_sugar]);
+    it("Test filterMarkingByRestrictionRules where vegan will be filtered", () => {
+        const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings_where_vegan_will_be_filtered, dictMarkingsExclusions);
+        expect(filteredMarkings).toEqual([marking_meat, marking_gluten, marking_chicken, marking_sugar]);
     });
 
 
