@@ -86,8 +86,12 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 
 	const entriesUndefined = !utilizationEntries
 	const emptyListOfEntries = utilizationEntries && utilizationEntries.length === 0
+	const listOfEntriesAllValuesZero = utilizationEntries && utilizationEntries.every(entry => {
+		return entry.value_forecast_current === 0 || entry.value_forecast_current === null || entry.value_forecast_current === undefined
+	})
+
 	let content = <UtilizationForecastRow data={utilization} percentage_until_low={percentage_until_low} percentage_until_medium={percentage_until_medium} percentage_until_high={percentage_until_high} />
-	if (entriesUndefined || emptyListOfEntries) { // TODO: maybe add another animation for emptyListOfEntries
+	if (entriesUndefined || emptyListOfEntries || listOfEntriesAllValuesZero) { // TODO: maybe add another animation for emptyListOfEntries
 		content = (
 			<View style={{
 				width: '100%',
@@ -95,10 +99,7 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 				justifyContent: 'center'
 			}}
 			>
-				<Text>{
-					translation_no_data_currently_calculating
-				}
-				</Text>
+				<Text>{translation_no_data_currently_calculating}</Text>
 				<AnimationThinking />
 			</View>
 		)
@@ -106,23 +107,25 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 
 	function renderDebug() {
 		if(isDebug) {
-			return <ScrollView style={{
-				width: '100%',
-				height: 400
-			}}>
+			return (
 				<View style={{
 					width: '100%',
 				}}>
+					<Text>{"listOfEntriesAllValuesZero: "+listOfEntriesAllValuesZero}</Text>
 					<Text>{JSON.stringify(utilizationEntries, null, 2)}</Text>
 				</View>
-			</ScrollView>
+			)
 		}
 	}
 
 	return (
+		<ScrollView style={{
+			width: '100%',
+		}}>
 		<View style={{width: '100%'}}>
 			{content}
 			{renderDebug()}
 		</View>
+		</ScrollView>
 	)
 }

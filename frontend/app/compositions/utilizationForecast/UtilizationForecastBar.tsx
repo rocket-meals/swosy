@@ -12,6 +12,7 @@ const paddingLeft = 5;
 export type UtilizationForecastBarProps = {
     width: DimensionValue,
     height: DimensionValue,
+	maxHeight: DimensionValue,
     bgColor: string,
     textInside: string | null,
     textBelow: string | null,
@@ -22,6 +23,7 @@ export type UtilizationForecastBarProps = {
 export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
 	const width = props?.width;
 	const height = props?.height
+	const maxHeight = props?.maxHeight
 	const bgColor = props?.bgColor;
 	const textInside = props?.textInside;
 	const textBelow = props?.textBelow;
@@ -43,28 +45,40 @@ export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
 						{...triggerProps}
 						style={{alignItems: 'center', paddingRight: 0, paddingLeft: paddingLeft}}
 					>
+
 						<View
 							accessibilityLabel={props?.accessibilityLabel}
 							style={{
 								width: width,
-								height: height,
-								borderRadius: 10,
-								borderWidth: 2,
-								borderColor: borderColor,
-								backgroundColor: bgColor,
-								justifyContent: 'center',
+								height: maxHeight,
+								borderColor: bgContrast,
+								justifyContent: 'flex-end',
 								alignItems: 'center',
 							}}
 						>
-							<View style={{
-
-								width: '100%',
-								justifyContent: 'center',
-								alignItems: 'center',
-								flex: 1
-							}}
+							<View
+								accessibilityLabel={props?.accessibilityLabel}
+								style={{
+									width: width,
+									height: height,
+									borderRadius: 10,
+									borderWidth: 2,
+									borderColor: borderColor,
+									backgroundColor: bgColor,
+									justifyContent: 'center',
+									alignItems: 'center',
+								}}
 							>
-								<Text>{textInside}</Text>
+								<View style={{
+
+									width: '100%',
+									justifyContent: 'center',
+									alignItems: 'center',
+									flex: 1
+								}}
+								>
+									<Text>{textInside}</Text>
+								</View>
 							</View>
 						</View>
 						<Text >{textBelow}</Text>

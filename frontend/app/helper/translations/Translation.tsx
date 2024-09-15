@@ -295,6 +295,7 @@ export enum TranslationKeys {
 	foodname = "foodname",
 	forecast = "forecast",
 	utilization = "utilization",
+	time_of_day = "time_of_day",
 	opens_at = "opens_at",
 	closed_after = "closed_after",
 	food_details = "food_details",
@@ -1060,14 +1061,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '信息'
 	},
 	no_data_currently_calculating: {
-		[LanguageKeys.de_DE]: 'Keine Daten, werden gerade berechnet',
-		[LanguageKeys.en_US]: 'No data, currently calculating',
-		[LanguageKeys.ar_SA]: 'لا توجد بيانات ، يتم حسابها حاليًا',
-		[LanguageKeys.es_ES]: 'Sin datos, calculando actualmente',
-		[LanguageKeys.fr_FR]: 'Pas de données, calcul en cours',
-		[LanguageKeys.ru_RU]: 'Нет данных, в настоящее время рассчитывается',
-		[LanguageKeys.tr_TR]: 'Veri yok, şu anda hesaplanıyor',
-		[LanguageKeys.zh_CN]: '无数据，正在计算'
+		[LanguageKeys.de_DE]: 'Keine Daten gefunden oder werden gerade berechnet.',
+		[LanguageKeys.en_US]: 'No data found or currently calculating.',
+		[LanguageKeys.ar_SA]: 'لم يتم العثور على بيانات أو يتم حسابها حاليًا.',
+		[LanguageKeys.es_ES]: 'No se encontraron datos o se están calculando actualmente.',
+		[LanguageKeys.fr_FR]: 'Aucune donnée trouvée ou en cours de calcul.',
+		[LanguageKeys.ru_RU]: 'Данные не найдены или в настоящее время вычисляются.',
+		[LanguageKeys.tr_TR]: 'Veri bulunamadı veya şu anda hesaplanıyor.',
+		[LanguageKeys.zh_CN]: '未找到数据或当前正在计算。'
 	},
 	food_data: {
 		[LanguageKeys.de_DE]: 'Speisendaten',
@@ -2298,6 +2299,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Заполнение',
 		[LanguageKeys.tr_TR]: 'Doluluk',
 		[LanguageKeys.zh_CN]: '占用'
+	},
+	time_of_day: {
+		[LanguageKeys.de_DE]: 'Uhrzeit',
+		[LanguageKeys.en_US]: 'Time of Day',
+		[LanguageKeys.ar_SA]: 'وقت اليوم',
+		[LanguageKeys.es_ES]: 'Hora del día',
+		[LanguageKeys.fr_FR]: 'Heure de la journée',
+		[LanguageKeys.ru_RU]: 'Время дня',
+		[LanguageKeys.tr_TR]: 'Günün saati',
+		[LanguageKeys.zh_CN]: '一天中的时间'
 	},
 	opens_at: {
 		[LanguageKeys.de_DE]: 'Öffnet um',

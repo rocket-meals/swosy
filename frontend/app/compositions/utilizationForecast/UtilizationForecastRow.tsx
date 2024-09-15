@@ -1,8 +1,9 @@
 import React, {useRef} from 'react';
 import {DimensionValue, ScrollView} from 'react-native';
 import {UtilizationForecastBar} from './UtilizationForecastBar';
-import {View} from '@/components/Themed';
+import {useViewBackgroundColor, View, Text} from '@/components/Themed';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
 
 const paddingLeft = 5;
 
@@ -34,6 +35,10 @@ export type UtilizationForecastRowProps = {
 }
 export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 	const translation_utilization = useTranslation(TranslationKeys.utilization);
+	const translation_time_of_day = useTranslation(TranslationKeys.time_of_day);
+
+	const viewBackgroundColor = useViewBackgroundColor();
+	const lightOrDarkerBackgroundColor = useLighterOrDarkerColorForSelection(viewBackgroundColor);
 
 	const myScrollViewRef = useRef(null);
 
@@ -73,8 +78,10 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		return lastColor;
 	}
 
-	function getActiveIndex(now: Date, utilization: UtilizationDictData) {
+	function getBestIndexToScrollTo(now: Date, utilization: UtilizationDictData) {
 		let activeIndex = -1;
+		let firstIndexPercentageNotZero = -1;
+		let lastIndexPercentageNotZero = -1;
 
 		const populartimes = utilization;
 
@@ -87,6 +94,14 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			const populartime = populartimes[keys[i]];
 
 			const time = populartime.start || '';
+			const percentage = populartime.percentage;
+			if(percentage !== 0 && firstIndexPercentageNotZero === -1){
+				firstIndexPercentageNotZero = i;
+			}
+			if(percentage !== 0){
+				lastIndexPercentageNotZero = i;
+			}
+
 			const timeParts = time.split(':');
 			const HH = timeParts[0];
 			const mm = timeParts[1];
@@ -110,33 +125,39 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			}
 		}
 
-		return activeIndex;
+		let bestIndex = activeIndex;
+		//if our current time is before the first time with a percentage not 0
+		if(firstIndexPercentageNotZero !== -1 && activeIndex < firstIndexPercentageNotZero){
+			bestIndex = firstIndexPercentageNotZero; // we want to show the first time with a percentage not 0
+		}
+		//if our current time is after the last time with a percentage not 0
+		if(lastIndexPercentageNotZero !== -1 && activeIndex > lastIndexPercentageNotZero){
+			bestIndex = lastIndexPercentageNotZero; // we want to show the last time with a percentage not 0
+		}
+
+		return bestIndex;
 	}
 
 	function scrollToElement(indexOf: number) {
-		const amountInfront = 3;
-
 		const totalItemWidth = getItemWidth()+paddingLeft;
-		const offset = 0.5*totalItemWidth;
+		const offset = 1*totalItemWidth;
 		let x = 0;
 
 		const keys = getTimeKeys();
 
-		if (indexOf===-1) {
+		if (indexOf===-1) { //if we have no active index
 			indexOf = -1;
-		} else {
-			if (indexOf>=keys.length) {
-				indexOf = keys.length;
-			} else {
-				if (indexOf > (amountInfront-1)) {
-					indexOf-=(amountInfront-1);
-				} else {
-					indexOf = 0;
-				}
+		} else { //if we have an active index
+			if (indexOf>=keys.length) { //if we are at the end
+				indexOf = keys.length; //we want to show the last item
+			} else if (indexOf<0) { //if we are at the beginning
+				indexOf = 0; //we want to show the first item
 			}
-			const preItems = getClosedBarWidth()+paddingLeft;
-			const itemXPosition = preItems+(indexOf*totalItemWidth);
+			const itemXPosition = indexOf*totalItemWidth;
 			x = x+itemXPosition-offset; // we want to show half of the previous item
+			if(x < 0){ //if we are at the beginning
+				x = 0; //we want to show the first item
+			}
 		}
 
 		if (!isNaN(x) && !!myScrollViewRef && !!myScrollViewRef?.current) {
@@ -175,7 +196,7 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 
 		const now = getNow();
 
-		const activeIndex = getActiveIndex(now, utilization);
+		const bestIndexToScrollTo = getBestIndexToScrollTo(now, utilization);
 
 		const keys = getTimeKeys();
 
@@ -188,7 +209,8 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			const populartime = utilization[keys[i]];
 			const value = populartime.percentage;
 
-			let height = getItemWidth();
+			let maxHeight = 100
+			let height = maxHeight
 			if (value !== undefined) {
 				height = (height * 5) * (value / 100);
 			}
@@ -219,9 +241,9 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			const tooltip = translation_utilization+': '+ timeAsString+' - '+ value + '%';
 			const accessibilityLabel = tooltip
 
-			const isActive = i === activeIndex;
+			const isActive = i === bestIndexToScrollTo;
 			cols.push(
-				renderBar(height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel)
+				renderBar(maxHeight, height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel)
 			);
 		}
 
@@ -234,33 +256,39 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			</View>
 		)
 
+		const bestIndex = getBestIndexToScrollTo(now, utilization);
 
 		return (
-			<View style={{flexGrow: 1, flexDirection: 'row'}}>
-				<ScrollView
-					ref={myScrollViewRef}
-					onLayout={(event) => {
-						if (myScrollViewRef) {
-							setTimeout(() => {
-								const now = getNow();
-								const activeIndex = getActiveIndex(now, utilization);
-								scrollToElement(activeIndex);
-							}, 500);
-						}
-					}}
-					contentContainerStyle={{alignItems: 'flex-end' /* No use of flex: 1 or width: "100%" not working on android*/}}
-					horizontal={true}
-					style={{flex: 1}}
-				>
-					{scrollViewContent}
-				</ScrollView>
+			<View style={{
+				width: '100%',
+				flexDirection: 'column',
+			}}>
+				<View style={{flexGrow: 1, flexDirection: 'row'}}>
+					<ScrollView
+						ref={myScrollViewRef}
+						onLayout={(event) => {
+							if (myScrollViewRef) {
+								setTimeout(() => {
+									const now = getNow();
+									const bestIndex = getBestIndexToScrollTo(now, utilization);
+									scrollToElement(bestIndex);
+								}, 500);
+							}
+						}}
+						contentContainerStyle={{alignItems: 'flex-end' /* No use of flex: 1 or width: "100%" not working on android*/}}
+						horizontal={true}
+						style={{flex: 1}}
+					>
+						{scrollViewContent}
+					</ScrollView>
+				</View>
 			</View>
 		);
 	}
 
-	function renderBar(height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean, tooltip?: string, accessibilityLabel?: string
+	function renderBar(maxHeight: DimensionValue, height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean, tooltip?: string, accessibilityLabel?: string
 	) {
-		return <UtilizationForecastBar height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} tooltip={tooltip} accessibilityLabel={accessibilityLabel} />
+		return <UtilizationForecastBar maxHeight={maxHeight} height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} tooltip={tooltip} accessibilityLabel={accessibilityLabel} />
 	}
 
 	const paddingTop = 5;
@@ -270,6 +298,17 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			<View style={{flexDirection: 'row'}}>
 				<View style={{flex: 1, paddingTop: paddingTop}}>
 					{renderPopularTimeCols()}
+					<View style={{
+						width: "100%",
+						justifyContent: 'center',
+						paddingTop: 10,
+					}}>
+						<Text style={{
+							textAlign: 'center',
+						}}>
+							{translation_time_of_day}
+						</Text>
+					</View>
 				</View>
 			</View>
 		</View>
