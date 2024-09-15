@@ -1,8 +1,4 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {
-	SEARCH_PARAM_CANTEENS_ID,
-	useCanteensIdFromLocalSearchParams
-} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
@@ -20,7 +16,7 @@ import {useSynchedCanteenById} from "@/states/SynchedCanteens";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {SearchParams} from "@/helper/searchParams/SearchParams";
+import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
@@ -28,7 +24,7 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
-import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingName} from "@/components/food/MarkingListItem";
 import {ScrollView} from "react-native";
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
@@ -41,7 +37,7 @@ export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds'
 
 export function getRouteToFoodofferDayplanScreen(canteen_id: string, nextPageIntervalInSeconds: number | null | undefined, refreshDataIntervalInSeconds: number | null |undefined): ExpoRouter.Href {
 	let paramsRaw = []
-	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
+	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
@@ -118,7 +114,7 @@ export default function FoodDayPlanScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const canteen_id = useCanteensIdFromLocalSearchParams()
+	const canteen_id = useSearchParamSelectedCanteensId();
 
 	const nextPageIntervalInSeconds = useNextPageIntervalInSecondsFromLocalSearchParams() || 10;
 	const [reloadNumberForPage, setReloadNumberForPage] = useState(0);

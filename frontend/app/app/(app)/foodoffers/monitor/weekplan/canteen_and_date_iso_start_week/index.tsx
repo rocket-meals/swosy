@@ -1,4 +1,3 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
 import React, {useEffect, useState} from 'react';
 import {
 	getLineHeightInPixelBySize,
@@ -9,7 +8,7 @@ import {
 	useViewBackgroundColor,
 	View
 } from '@/components/Themed';
-import {router, useGlobalSearchParams, useLocalSearchParams} from 'expo-router';
+import {router, useGlobalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
@@ -22,7 +21,6 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useProjectColor} from "@/states/ProjectInfo";
 import {MyScreenHeaderCustom} from "@/components/drawer/MyScreenHeader";
 import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/states/DrawerSyncConfig";
@@ -32,6 +30,7 @@ import {MyButton} from "@/components/buttons/MyButton";
 import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
+import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -39,7 +38,7 @@ export const SEARCH_PARAM_DATE_ISO = 'date_iso';
 
 export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string, date_start_week_iso_or_undefined: string | undefined): ExpoRouter.Href {
 	let paramsRaw = []
-	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+canteen_id : null;
+	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+canteen_id : null;
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
@@ -58,7 +57,7 @@ export function useDateIsoFromLocalSearchParams() {
 }
 
 export default function FoodplanScreen() {
-	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
+	let canteen_id: string | undefined = useSearchParamSelectedCanteensId();
 	const param_date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
 	const isDemo = useIsDemo();
 	const canteen = useSynchedCanteenById(canteen_id);

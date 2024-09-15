@@ -1,18 +1,17 @@
 import {ExpoRouter} from "@/.expo/types/router";
-import {SEARCH_PARAM_CANTEENS_ID, useCanteensIdFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
 	TEXT_SIZE_3_EXTRA_LARGE,
 	TEXT_SIZE_5_EXTRA_LARGE,
-	TEXT_SIZE_EXTRA_LARGE, TextSizeType,
-	useTextContrastColor,
+	TEXT_SIZE_EXTRA_LARGE,
+	TextSizeType,
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import React, {useEffect, useState} from "react";
-import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useSynchedCanteenById} from "@/states/SynchedCanteens";
@@ -23,16 +22,14 @@ import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/Synche
 import {getFoodName} from "@/helper/food/FoodTranslation";
 import {PriceGroups, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {AssetHelperTransformOptions} from "@/helper/database/assets/AssetHelperDirectus";
-import {SearchParams} from "@/helper/searchParams/SearchParams";
+import {SearchParams, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
-import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 
@@ -42,7 +39,7 @@ export const SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL = 'refreshFoodOffersInter
 
 export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean): ExpoRouter.Href {
 	let paramsRaw = []
-	let paramForCanteen = canteen_id ? SEARCH_PARAM_CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
+	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
@@ -122,7 +119,7 @@ export default function FoodBigScreenScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const canteen_id = useCanteensIdFromLocalSearchParams()
+	const canteen_id = useSearchParamSelectedCanteensId();
 	const category = useFoodCategoryFromLocalSearchParams();
 
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;

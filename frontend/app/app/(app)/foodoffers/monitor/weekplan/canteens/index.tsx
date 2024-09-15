@@ -1,5 +1,5 @@
 import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {router, useGlobalSearchParams} from 'expo-router';
+import {router} from 'expo-router';
 import React from 'react';
 import {View} from "@/components/Themed";
 import {ListRenderItemInfo} from "react-native";
@@ -10,17 +10,10 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {setDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
 import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
-
-export const SEARCH_PARAM_CANTEENS_ID = 'canteens_id';
-
-export function useCanteensIdFromLocalSearchParams() {
-	const params = useGlobalSearchParams<{ [SEARCH_PARAM_CANTEENS_ID]?: string }>();
-	return params[SEARCH_PARAM_CANTEENS_ID];
-}
-
+import {useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
 
 export default function FoodOfferDetails() {
-	let canteen_id: string | undefined = useCanteensIdFromLocalSearchParams();
+	let canteen_id: string | undefined = useSearchParamSelectedCanteensId();
 	const initialAmountColumns = useMyGridListDefaultColumns();
 	const translation_week = useTranslation(TranslationKeys.week)
 	const translation_current = useTranslation(TranslationKeys.current)

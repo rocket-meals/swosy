@@ -9,9 +9,15 @@ export function useSearchParamKioskMode() {
 export enum SearchParams {
     KIOSK_MODE = 'kiosk_mode',
     LANGUAGE = 'language',
+    CANTEENS_ID = 'canteens_id',
 }
 
 export function useSearchParamLanguage() {
     const params = useGlobalSearchParams<{ [SearchParams.LANGUAGE]?: string }>();
     return params[SearchParams.LANGUAGE];
+}
+
+export function useSearchParamSelectedCanteensId() {
+    const params = useGlobalSearchParams<{ [SearchParams.CANTEENS_ID]?: string }>();
+    return params[SearchParams.CANTEENS_ID];
 }
