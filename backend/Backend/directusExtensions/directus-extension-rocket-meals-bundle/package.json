@@ -33,6 +33,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "admin-password-setup-from-env-hook",
+				"source": "src/admin-password-setup-from-env/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "cashregister-hook",
 				"source": "src/cashregister-hook/index.ts"
 			},
