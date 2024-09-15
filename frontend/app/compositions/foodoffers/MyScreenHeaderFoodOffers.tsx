@@ -145,7 +145,7 @@ const MyScreenHeaderFoodOffers = ({ ...props }: MyScreenHeaderProps) => {
 			width: '100%',
 		}}
 		>
-			<MyScreenHeader hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
+			<MyScreenHeader numberOfLines={1} hideDivider={true} {...props} custom_title={title} custom_renderHeaderDrawerOpposite={renderSecondaryHeaderContent} />
 			{renderSubHeaderContent()}
 			<Divider />
 		</View>

@@ -39,6 +39,7 @@ export type MyScreenHeaderPropsOptional = {
     custom_title?: string
     custom_renderHeaderDrawerOpposite?: renderHeaderContentElement
     hideDivider?: boolean
+	numberOfLines?: number
 }
 
 export type MyScreenHeaderProps = MyScreenHeaderPropsRequired & MyScreenHeaderPropsOptional;
@@ -80,7 +81,7 @@ export type renderHeaderContentElement = ((props?: {
  * @param {MyScreenHeaderPropsRequired} props - The properties for configuring the drawer header.
  * @returns A React element representing the custom drawer header.
  */
-export const MyScreenHeader = ({ navigation, route, options, custom_title, custom_renderHeaderDrawerOpposite, hideDivider, ...props }: MyScreenHeaderProps) => {
+export const MyScreenHeader = ({ navigation, numberOfLines, route, options, custom_title, custom_renderHeaderDrawerOpposite, hideDivider, ...props }: MyScreenHeaderProps) => {
 	// @ts-ignore this field might be undefined
 	const showBackButton = options?.showBackButton;
 
@@ -92,7 +93,7 @@ export const MyScreenHeader = ({ navigation, route, options, custom_title, custo
 	const default_title = getHeaderTitle(options, route.name); // Retrieves the title for the header based on navigation options.
 	const usedTitle = custom_title || default_title
 
-	return <MyScreenHeaderCustom title={usedTitle} headerStyle={options.headerStyle} showBackButton={showBackButton} secondaryHeaderContent={secondaryHeaderContent} hideDivider={hideDivider} />
+	return <MyScreenHeaderCustom numberOfLines={numberOfLines} title={usedTitle} headerStyle={options.headerStyle} showBackButton={showBackButton} secondaryHeaderContent={secondaryHeaderContent} hideDivider={hideDivider} />
 }
 
 
@@ -103,13 +104,15 @@ export type MyScreenHeaderCustomProps = {
 	headerStyle?: any
 	showBackButton: boolean
 	secondaryHeaderContent?: React.ReactNode
-	hideDivider?: boolean
+	hideDivider?: boolean,
+	numberOfLines?: number
 }
 /**
  * The main component for rendering a custom drawer header.
  * This component configures the header title and optional left or right icons for toggling the drawer.
  *
  * @param title
+ * @param numberOfLines
  * @param headerStyle
  * @param showBackButton
  * @param secondaryHeaderContent
@@ -117,7 +120,7 @@ export type MyScreenHeaderCustomProps = {
  * @param {MyScreenHeaderCustomProps} props - The properties for configuring the drawer header.
  * @returns A React element representing the custom drawer header.
  */
-export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secondaryHeaderContent, hideDivider, ...props }: MyScreenHeaderCustomProps) => {
+export const MyScreenHeaderCustom = ({ title, numberOfLines, headerStyle, showBackButton, secondaryHeaderContent, hideDivider, ...props }: MyScreenHeaderCustomProps) => {
 	const isDrawerPermanentVisible = useIsDrawerPermanentVisible(); // Determine if the device is considered large.
 	const navigation = useNavigation(); // Get the navigation object for the current screen.
 
@@ -145,10 +148,12 @@ export const MyScreenHeaderCustom = ({ title, headerStyle, showBackButton, secon
 		const headerPaddingHorizontal = isDrawerPermanentVisible ? paddingLeft : 0;
 		const textAlignment = isDrawerPositionRight ? 'right' : 'left';
 
+		const usedNumberOfLines = numberOfLines || 2
+
 		return (
 			<View style={{flex: 1, flexShrink: 1, paddingVertical: paddingVertical, paddingHorizontal: headerPaddingHorizontal }}>
 				<Heading
-					numberOfLines={2}
+					numberOfLines={usedNumberOfLines}
 					ellipsizeMode="tail"
 					accessibilityRole={MyAccessibilityRoles.Header}
 					style={[readOnlyStyle, {textAlign: textAlignment }]}
