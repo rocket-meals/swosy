@@ -3,6 +3,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
+import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 
 const SCHEDULE_NAME = "activity_auto_cleanup";
 
@@ -14,7 +15,9 @@ type AppFeedbackMailTemplateVariablesType = {
         positive: boolean | undefined | null,
         title: string,
         content: string,
-        contract_email: string,
+        contract_email: string | undefined | null,
+        profile_id: string | undefined | null,
+        answer_to_feedback_url: string,
         date_created: string,
         device: {
             device_platform: string | undefined | null,
@@ -37,6 +40,8 @@ export default defineHook(async ({schedule, action}, apiContext) => {
 
     const myDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
+
+    const publicUrl = EnvVariableHelper.getPublicUrl();
 
     // TODO: Create a table for app-feedbacks-settings
     // There we can store to which emails we should send the feedbacks and at which time or on a daily basis
@@ -61,6 +66,9 @@ export default defineHook(async ({schedule, action}, apiContext) => {
         const dateCreated = new Date(app_feedback.date_created || new Date());
         const dateHumanReadable = DateHelper.getHumanReadableDateAndTime(dateCreated);
 
+        // answer to the feedback url: <PUBLIC_URL>/admin/content/app_feedbacks/f2042715-69f2-44fe-87e7-4b329b0cfab6
+        const answer_to_feedback_url = publicUrl+"/admin/content/app_feedbacks/"+app_feedback_id;
+
         const app_feedback_device = {
             device_platform: app_feedback.device_platform,
             device_brand: app_feedback.device_brand,
@@ -80,7 +88,9 @@ export default defineHook(async ({schedule, action}, apiContext) => {
                     positive: app_feedback.positive,
                     title: app_feedback.title || "Kein Titel",
                     content: app_feedback.content || "Kein Inhalt",
-                    contract_email: app_feedback.contact_email || "Keine Email",
+                    contract_email: app_feedback.contact_email,
+                    profile_id: app_feedback.profile as string | undefined | null,
+                    answer_to_feedback_url: answer_to_feedback_url,
                     date_created: dateHumanReadable,
                     device: app_feedback_device
                 }

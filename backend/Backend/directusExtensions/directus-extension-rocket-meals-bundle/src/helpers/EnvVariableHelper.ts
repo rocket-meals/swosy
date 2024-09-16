@@ -13,6 +13,10 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
+    static getPublicUrl(): string {
+        return this.getEnvVariable("PUBLIC_URL");
+    }
+
     static getAdminEmail(): string {
         return this.getEnvVariable("ADMIN_EMAIL");
     }
