@@ -164,7 +164,7 @@ Mit dieser Datenschutzerklärung informieren wir dich über unsere Verarbeitung 
 			
 			- canteen - Deine ausgewählte Mensa oder Cafeteria. Damit wir dir nur Erinnerungen von Gerichten zukommen lassen, welche auch in deiner Mensa angeboten werden.
 			
-			- course_timetable - Sofern du deinen Stundenplan erstellt hast, wird dieser auch in deinem Profil online gespeichert. Wir analysieren Profile mit Stundenplänen, um überfüllte Essensschlangen zu vermeiden - wir geben diese Daten nicht an Dritte weiter.
+			- course_timetable - Sofern du deinen Stundenplan erstellt hast, wird dieser auch in deinem Profil online gespeichert. Wir analysieren Profile mit Stundenplänen, um überfüllte Essensschlangen zu vermeiden - wir geben diese Daten ggf. nur an dein Studierendenwerk weiter.
 			
 			- notify_on_free_housing_rooms - Deine Zustimmung, ob wir dich benachrichtigen dürfen, wenn ein freies Zimmer in einem Wohnheim verfügbar ist.
 			
