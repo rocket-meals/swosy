@@ -68,7 +68,7 @@ export class ParseSchedule {
 
         if(utilization_group_for_canteen){
             // delete all future utilization forecast entries for the canteen group
-            await this.deleteAllFutureUtilizationForecastEntries(utilization_group_for_canteen);
+            //await this.deleteAllFutureUtilizationForecastEntries(utilization_group_for_canteen); Why should we delete all future entries? We should just update the existing ones
 
             // Have a list of all transactions
             let cashregisters = await this.getAllCashregistersForCanteen(canteen);
@@ -292,44 +292,6 @@ export class ParseSchedule {
         }
 
         return interval;
-    }
-
-
-async deleteAllFutureUtilizationForecastEntries(utilization_group: UtilizationsGroups){
-        //console.log("deleteAllFutureUtilizationForecastEntries")
-        //console.log(utilization_group);
-        //console.log("- for group: "+utilization_group?.id+" - "+utilization_group?.label);
-
-        let utilization_group_id = utilization_group.id;
-        let currentDate = new Date(); // Get the current date
-        //console.log("currentDate: "+currentDate.toString())
-
-
-
-        let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
-
-        let itemsToDelete = await itemService.readByQuery({
-            filter: {
-                _and: [
-                    {
-                        utilization_group: {
-                            _eq: utilization_group_id
-                        }
-                    },
-                    {
-                        date_end: {
-                            _gte: DateHelper.formatDateToIso8601WithoutTimezone(currentDate)
-                        }
-                    }
-                ]
-            },
-            fields: ['*'],
-            limit: -1
-        })
-
-        let idsToDelete = itemsToDelete.map(item => item.id);
-        await itemService.deleteMany(idsToDelete);
-
     }
 
     async getAllCanteens(){

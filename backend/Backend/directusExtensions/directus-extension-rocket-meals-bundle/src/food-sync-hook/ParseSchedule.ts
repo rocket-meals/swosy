@@ -369,7 +369,10 @@ export class ParseSchedule {
 
             const basicFoodData = foodsInformationForParser.basicFoodData;
             //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
-            let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(basicFoodData, basicFoodData);
+            let searchJSON = {
+                id: basicFoodData.id,
+            }
+            let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(searchJSON, searchJSON);
             if (!!foundFood && foundFood.id && this.foodParser) {
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
