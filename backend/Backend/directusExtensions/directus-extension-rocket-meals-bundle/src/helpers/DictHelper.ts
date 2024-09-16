@@ -10,4 +10,13 @@ export class DictHelper{
         }
         return values;
     }
+
+    static transformListToDict<T>(list: T[], keySelector: (item: T) => string): Record<string, T> {
+        let dict: { [p: string]: T } = {};
+        for(let item of list){
+            let key = keySelector(item);
+            dict[key] = item;
+        }
+        return dict
+    }
 }

@@ -1,9 +1,16 @@
-import {CanteenFoodFeedbackReportSchedules, Canteens, Foods, FoodsFeedbacks} from "../databaseTypes/types";
+import {
+    CanteenFoodFeedbackReportSchedules,
+    Canteens,
+    Foods,
+    FoodsFeedbacks,
+    FoodsFeedbacksLabels
+} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {Filter} from "@directus/types/dist/filter";
 import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {DictHelper} from "../helpers/DictHelper";
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -114,6 +121,22 @@ export class ReportGenerator {
             }
         }
 
+        let feedbackLabelsWithTranslations = await this.myDatabaseHelper.getFoodFeedbackLabelsHelper().readByQuery({
+            limit: -1,
+            filter: {
+                _and: [
+                    {
+                        visible: {
+                            _eq: true // get only visible feedback labels
+                        }
+                    }
+                ]
+            },
+            fields: ['*', 'translations.*']
+        })
+        const dictFeedbackLabelsWithTranslation = DictHelper.transformListToDict(feedbackLabelsWithTranslations, (item) => item.id);
+
+
         for(let food of Object.values(foodDict)){
             const food_id = food?.id;
             //console.log("Get summary for food_id: "+food?.id);
@@ -122,7 +145,7 @@ export class ReportGenerator {
 
             let feedbacksWithComments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, report_feedback_period_days);
             //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
-            let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, report_feedback_period_days);
+            let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, dictFeedbackLabelsWithTranslation, report_feedback_period_days);
             //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
             //console.log("feedbackLabelEntryListForReport")
             //console.log(feedbackLabelEntryListForReport)
@@ -186,15 +209,13 @@ export class ReportGenerator {
         return comments;
     }
 
-    async getTranslationOfFeedbackLabel(feedback_label_id: string): Promise<string>{
-        let foodFeedbackLabelsService = this.myDatabaseHelper.getFoodFeedbackLabelsHelper();
-        let feedback_label = await foodFeedbackLabelsService.readOne(feedback_label_id);
+    getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: FoodsFeedbacksLabels): string {
         // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
         // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
-        return feedback_label?.alias || feedback_label_id;
+        return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
     }
 
-    async getReportFeedbackLabelsList(food_id: string, report_feedback_period_days: number | null | undefined): Promise<ReportFoodEntryLabelType[]> {
+    async getReportFeedbackLabelsList(food_id: string, dictFeedbackLabelsWithTranslation: Record<string, FoodsFeedbacksLabels>, report_feedback_period_days: number | null | undefined): Promise<ReportFoodEntryLabelType[]> {
         const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
         const filter: Filter[] = [
@@ -203,11 +224,6 @@ export class ReportGenerator {
                     _eq: food_id
                 }
             },
-            {
-                visible: {
-                    _eq: true
-                }
-            }
         ]
 
         let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
@@ -225,25 +241,28 @@ export class ReportGenerator {
         for(let labelFeedback of labelFeedbacks){
             let label_id = labelFeedback?.label;
             if(!!label_id && typeof label_id === "string"){
-                let alias = await this.getTranslationOfFeedbackLabel(label_id);
-                let labels_counted_obj: ReportFoodEntryLabelType | undefined = labels_counted_dict[label_id];
-                if(!labels_counted_obj){
-                    labels_counted_obj = {
-                        id: label_id,
-                        alias: alias,
-                        amount_negative: 0,
-                        amount_positive: 0,
-                        amount_total: 0
+                let feedbackLabelWithTranslation = dictFeedbackLabelsWithTranslation[label_id];
+                if(!!feedbackLabelWithTranslation){
+                    let alias = this.getTranslationOfFeedbackLabel(feedbackLabelWithTranslation);
+                    let labels_counted_obj: ReportFoodEntryLabelType | undefined = labels_counted_dict[label_id];
+                    if(!labels_counted_obj){
+                        labels_counted_obj = {
+                            id: label_id,
+                            alias: alias,
+                            amount_negative: 0,
+                            amount_positive: 0,
+                            amount_total: 0
+                        }
                     }
-                }
-                if(!!labels_counted_obj){
-                    if(labelFeedback?.dislike){
-                        labels_counted_obj.amount_negative += 1;
-                    } else {
-                        labels_counted_obj.amount_positive += 1;
+                    if(!!labels_counted_obj){
+                        if(labelFeedback?.dislike){
+                            labels_counted_obj.amount_negative += 1;
+                        } else {
+                            labels_counted_obj.amount_positive += 1;
+                        }
+                        labels_counted_obj.amount_total += 1;
+                        labels_counted_dict[label_id] = labels_counted_obj;
                     }
-                    labels_counted_obj.amount_total += 1;
-                    labels_counted_dict[label_id] = labels_counted_obj;
                 }
             }
         }
