@@ -35,8 +35,8 @@ import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIcon
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {
-	getDictFoodFeedbackLabelsIdToAmount,
-	loadFoodsFeedbacksLabelsEntriesForFood,
+	FoodFeedbacksLabelsCountsType,
+	loadFoodsFeedbacksLabelsCountsForFood,
 	useSynchedOwnFoodFeedbackLabelEntries
 } from "@/states/SynchedFoodFeedbacksLabelsEntries";
 import {AppConfiguration} from "@/constants/AppConfiguration";
@@ -119,7 +119,8 @@ const FoodFeedbackSettingsRow = ({food_id, label, translation, amount_likes, amo
 			}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />
 }
 
-export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacksLabelsEntries, refresh}: {food: Foods, remoteFoodFeedbacksLabelsEntries: FoodsFeedbacksLabelsEntries[] | null | undefined, refresh: () => void}) => {
+
+export const FoodFeedbacksLabelsComponent = ({food, foodFeedbackLabelsCounts, refresh}: {food: Foods, foodFeedbackLabelsCounts: FoodFeedbacksLabelsCountsType, refresh: () => void}) => {
 	const foods_feedbacks_labels_type = useFeedbackLabelsType()
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food.id)
@@ -151,8 +152,6 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacksLabelsEnt
 
 	const food_id = food.id;
 
-	let dictFoodFeedbackLabelsIdToAmount = getDictFoodFeedbackLabelsIdToAmount(remoteFoodFeedbacksLabelsEntries);
-
 	type DataItem = { key: string; sort: number | undefined | null, data: FoodFeedbackSettingsRowDataProps}
 	const data: DataItem[] = []
 
@@ -163,7 +162,7 @@ export const FoodFeedbacksLabelsComponent = ({food, remoteFoodFeedbacksLabelsEnt
 			if(!!label){
 				let sort = label?.sort
 				let visible = label?.visible || isDebug
-				let amount_information = dictFoodFeedbackLabelsIdToAmount[key];
+				let amount_information = foodFeedbackLabelsCounts?.[label?.id];
 				let amount_likes = amount_information?.amount_likes ?? null;
 				let amount_dislikes = amount_information?.amount_dislikes ?? null;
 
@@ -265,7 +264,6 @@ export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 	const [appSettings] = useSynchedAppSettings();
 
 	let foods_feedbacks_comments_type = useFeedbackCommentType()
-	foods_feedbacks_comments_type = FeedbackCommentType.readAndWrite;
 
 	const foods_feedbacks_custom_url = appSettings?.foods_feedbacks_custom_url;
 
@@ -437,20 +435,28 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 
 	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 	const ownFoodFeedbackReloadKey = ownFoodFeedback?.date_updated+""
-	const [remoteFoodFeedbacksLabelsEntries, setRemoteFoodsFeedbacksLabelsEntries] = useState<FoodsFeedbacksLabelsEntries[] | null | undefined>(undefined);
+	const [foodFeedbackLabelsCounts, setFoodsFeedbacksLabelsCounts] = useState<FoodFeedbacksLabelsCountsType>({});
+
+	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
+	let visibleLabels: FoodsFeedbacksLabels[] = []
+	if(!!foodFeedbackLabelsDict){
+		const foodFeedbackLabels = Object.values(foodFeedbackLabelsDict)
+		for(let i=0; i<foodFeedbackLabels.length; i++){
+			let label = foodFeedbackLabels[i];
+			if(!!label && label.visible){
+				visibleLabels.push(label)
+			}
+		}
+	}
+	const visibleLabelIds = visibleLabels.map((label) => label.id)
 
 	const isDemo = useIsDemo();
-
-	async function loadRemoteFoodsFeedbacksLabelsEntriesForFood(foodId: string): Promise< FoodsFeedbacksLabelsEntries[]> {
-		let result = await loadFoodsFeedbacksLabelsEntriesForFood(foodId, isDemo);
-		return result;
-	}
 
 	async function loadData() {
 		console.log("loadData")
 		// load the labels from the server for the food
-		loadRemoteFoodsFeedbacksLabelsEntriesForFood(food.id)
-			.then(setRemoteFoodsFeedbacksLabelsEntries)
+		loadFoodsFeedbacksLabelsCountsForFood(food.id, visibleLabelIds)
+			.then(setFoodsFeedbacksLabelsCounts)
 			.catch(console.error);
 		loadFood(isDemo, food.id)
 			.then(setUsedFood)
@@ -478,7 +484,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 			}}>
 				<FoodFeedbackRatingDetails food={usedFood} />
 			</View>
-			<FoodFeedbacksLabelsComponent food={usedFood} remoteFoodFeedbacksLabelsEntries={remoteFoodFeedbacksLabelsEntries} refresh={refresh}/>
+			<FoodFeedbacksLabelsComponent food={usedFood} foodFeedbackLabelsCounts={foodFeedbackLabelsCounts} refresh={refresh}/>
 			<FoodFeedbackCommentDetails food={usedFood}/>
 		</View>
 	)

@@ -165,62 +165,78 @@ function getDemoFoodsFeedbacksLabelsEntries(foodId: string): FoodsFeedbacksLabel
 	return demoFoodsFeedbacksLabelsEntries
 }
 
-export async function loadFoodsFeedbacksLabelsEntriesForFood(foodId: string, isDemo?: boolean): Promise<FoodsFeedbacksLabelsEntries[]> {
-	if(isDemo) {
-		return getDemoFoodsFeedbacksLabelsEntries(foodId)
-	}
+export type FoodFeedbacksLabelsCountsType = Record<string, { amount_likes: number, amount_dislikes: number }>
+export async function loadFoodsFeedbacksLabelsCountsForFood(foodId: string, visibleLabels: string[]): Promise<FoodFeedbacksLabelsCountsType> {
+	console.log("--> loadFoodsFeedbacksLabelsCountsForFood", foodId, visibleLabels);
+	let foodCollectionHelper = new CollectionHelper<FoodsFeedbacksLabelsEntries>(TABLE_NAME_FOODS_FEEDBACKS_LABELS_ENTRIES);
 
-	let foodCollectionHelper = new CollectionHelper<FoodsFeedbacksLabelsEntries>(TABLE_NAME_FOODS_FEEDBACKS_LABELS_ENTRIES)
+	let result: Record<string, { amount_likes: number, amount_dislikes: number }> = {};
 
-	// create a query which finds all labels for the given foodId
-	let query = {
-		fields: ["*"],
-		filter: {
-			_and: [
-				{
-					food: {
-						_eq: foodId
-					}
-				}
-			]
-		},
-		limit: -1,
-	};
+	for(let visibleLabel of visibleLabels) {
+		console.log("visibleLabel", visibleLabel);
+		// Create a query that counts entries for each visible feedback label for the given foodId
+		const defaultQuery = {
+			aggregate: {
+				count: "*"
+			},
+			groupBy: ['dislike'], // Groups by the dislike field (true/false)
+			query: {
+				filter: {
+					_and: [
+						{
+							food: {
+								_eq: foodId
+							}
+						},
+						{
+							label: {
+								_eq: visibleLabel
+							}
+						},
+					]
+				},
+			}
+		};
 
-	console.log("loadFoodsFeedbacksLabelsEntriesForFood query", query)
-	let foodsFeedbacksLabelsEntries = await foodCollectionHelper.readItems(query)
-	return foodsFeedbacksLabelsEntries
-}
+		/** result example:
+		 * [
+		 *   {
+		 *     "dislike": false,
+		 *     "count": "1"
+		 *   },
+		 *   {
+		 *     "dislike": true,
+		 *     "count": "1"
+		 *   }
+		 * ]
+		 */
 
-export function getDictFoodFeedbackLabelsIdToAmount(foodFeedbackLabelsEntries: FoodsFeedbacksLabelsEntries[] | null | undefined): Record<string, {
-	amount_likes: number,
-	amount_dislikes: number,
-} | undefined> {
-	let feedbacksLabelsIdsCounted: Record<string, {
-		amount_likes: number,
-		amount_dislikes: number,
-	}> = {}
-	if(!!foodFeedbackLabelsEntries){
-		for(let foodFeedbackLabelEntry of foodFeedbackLabelsEntries){
-			let feedbacksLabelsId = foodFeedbackLabelEntry.label as string;
-			if(!!feedbacksLabelsId){
-				let dislike: boolean | undefined | null = foodFeedbackLabelEntry.dislike;
-				let counted = feedbacksLabelsIdsCounted?.[feedbacksLabelsId] || {
-					amount_likes: 0,
-					amount_dislikes: 0,
-				};
-				if(dislike === true){
-					counted.amount_dislikes++;
-				} else if(dislike === false){
-					counted.amount_likes++;
-				} else {
-					// skip if dislike is undefined or null
-				}
-				feedbacksLabelsIdsCounted[feedbacksLabelsId] = counted;
+		type resultType = {
+			dislike: boolean,
+			count: number,
+		}
+
+		let resultForLikes: resultType[] = await foodCollectionHelper.aggregateItems(defaultQuery);
+		let amount_likes = 0;
+		let amount_dislikes = 0;
+		for(let resultItem of resultForLikes) {
+			if(!resultItem.dislike) {
+				amount_likes = resultItem.count;
+			} else if(resultItem.dislike) {
+				amount_dislikes = resultItem.count;
 			}
 		}
+		result[visibleLabel] = {
+			amount_likes: amount_likes,
+			amount_dislikes: amount_dislikes,
+		}
+
+		console.log("-- resultForLikes", resultForLikes);
 	}
-	return feedbacksLabelsIdsCounted
+
+	console.log("loadFoodsFeedbacksLabelsCountsForFood result", result);
+
+	return result;
 }
 
 /**
@@ -234,8 +250,6 @@ export function useSynchedOwnFoodFeedbackLabelEntries(food_id: string): [Record<
 	const [currentUser, setUserWithCache] = useCurrentUser();
 	const usersProfileId: string = currentUser?.profile as unknown as string
 
-	console.log('useSynchedOwnFoodFeedbackLabelEntries: food_id', food_id)
-	console.log("foodFeedbacksLabelsEntriesListDict", foodFeedbacksLabelsEntriesListDict)
 	const foodFeedbackLabelEntriesList: FoodsFeedbacksLabelsEntries[] = foodFeedbacksLabelsEntriesListDict?.[food_id] || []
 
 	const resourceAsDict = CollectionHelper.convertListToDict(foodFeedbackLabelEntriesList, 'label')
