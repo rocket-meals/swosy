@@ -712,33 +712,13 @@
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "foods_feedbacks_labels_entries",
     "action": "read",
-    "permissions": {
-      "_and": [
-        {
-          "profile": {
-            "_eq": "$CURRENT_USER.profile"
-          }
-        }
-      ]
-    },
-    "validation": null,
+    "permissions": {},
+    "validation": {},
     "presets": null,
     "fields": [
-      "id",
-      "status",
-      "sort",
-      "user_updated",
-      "date_created",
-      "user_created",
-      "date_updated",
-      "profile",
-      "canteen",
-      "foodoffer",
-      "label",
-      "food",
-      "dislike"
+      "*"
     ],
-    "_syncId": "ad79922e-17f9-470c-8db1-cd141437bba4"
+    "_syncId": "df1cf691-ea26-4fef-86e3-bd4a1cd36682"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -851,34 +831,13 @@
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "foods_feedbacks",
     "action": "read",
-    "permissions": {
-      "_and": [
-        {
-          "profile": {
-            "_eq": "$CURRENT_USER.profile"
-          }
-        }
-      ]
-    },
-    "validation": null,
+    "permissions": {},
+    "validation": {},
     "presets": null,
     "fields": [
-      "id",
-      "status",
-      "sort",
-      "date_created",
-      "user_updated",
-      "user_created",
-      "date_updated",
-      "comment",
-      "notify",
-      "food",
-      "foodoffer",
-      "rating",
-      "profile",
-      "canteen"
+      "*"
     ],
-    "_syncId": "37d5f290-d881-4d81-8750-006578d707c4"
+    "_syncId": "32ba56e1-fff7-44bd-8fdd-cd1edaefa38b"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -1779,6 +1738,18 @@
   },
   {
     "role": null,
+    "collection": "foods_feedbacks_labels_entries",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "d2adae0a-da82-470f-9d7a-7b3e7dcb272e"
+  },
+  {
+    "role": null,
     "collection": "foods_feedbacks_labels_translations",
     "action": "read",
     "permissions": {},
@@ -1800,6 +1771,18 @@
       "*"
     ],
     "_syncId": "c822dcf5-74c0-43b8-bc55-9a59f8324dc3"
+  },
+  {
+    "role": null,
+    "collection": "foods_feedbacks",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "839d51d8-399d-48ac-8f87-0fc80e917566"
   },
   {
     "role": null,

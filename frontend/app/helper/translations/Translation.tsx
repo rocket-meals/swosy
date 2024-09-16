@@ -129,6 +129,7 @@ export enum TranslationKeys {
 	are_you_sure_to_delete_your_account = "are_you_sure_to_delete_your_account",
 	dataAccess = "dataAccess", // Datenauskunft in english is data access
 	your_comment = "your_comment",
+	others_comments = "others_comments",
 	comments = "comments",
 	save_comment = "save_comment",
 	average_rating = "average_rating",
@@ -592,6 +593,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Ваш комментарий',
 		[LanguageKeys.tr_TR]: 'Yorumunuz',
 		[LanguageKeys.zh_CN]: '你的评论'
+	},
+	others_comments: {
+		[LanguageKeys.de_DE]: 'Kommentare anderer',
+		[LanguageKeys.en_US]: 'Others Comments',
+		[LanguageKeys.ar_SA]: 'تعليقات الآخرين',
+		[LanguageKeys.es_ES]: 'Comentarios de otros',
+		[LanguageKeys.fr_FR]: 'Autres commentaires',
+		[LanguageKeys.ru_RU]: 'Другие комментарии',
+		[LanguageKeys.tr_TR]: 'Diğer yorumlar',
+		[LanguageKeys.zh_CN]: '其他评论'
 	},
 	comments: {
 		[LanguageKeys.de_DE]: 'Kommentare',

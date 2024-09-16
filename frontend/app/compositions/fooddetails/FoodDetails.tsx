@@ -7,7 +7,7 @@ import {
 } from '@/helper/database/databaseTypes/types';
 import {Heading, Text, TextInput, View} from '@/components/Themed';
 import React, {useEffect, useState} from 'react';
-import {loadFood, loadFoodOffer} from '@/states/SynchedFoodOfferStates';
+import {loadFood, loadFoodOffer, useFoodFeedbacks} from '@/states/SynchedFoodOfferStates';
 import {MyButton} from '@/components/buttons/MyButton';
 import {IconNames} from '@/constants/IconNames';
 import {useProfileLanguageCode} from '@/states/SynchedProfile';
@@ -25,7 +25,6 @@ import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {useSynchedFoodsFeedbacksLabelsDict} from "@/states/SynchedFoodsFeedbacksLabels";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
-import {loadFoodsFeedbacksForFood,} from "@/states/SynchedFoods";
 import {useSynchedOwnFoodFeedback} from "@/states/SynchedFoodFeedbacks";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
@@ -248,21 +247,26 @@ export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFe
 	)
 }
 
-export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: Foods, remoteFoodFeedbacks: FoodsFeedbacks[] | null | undefined;}) => {
+export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 	const usedFoodId = food.id;
 	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
-
-	const [language, setLanguage] = useProfileLanguageCode()
+	const [offset, setOffset] = useState<number>(0);
+	const [limit, setLimit] = useState<number>(10);
+	const remoteFoodFeedbacks = useFoodFeedbacks(usedFoodId, offset, limit)
 
 	const translation_to_the_forum = useTranslation(TranslationKeys.to_the_forum);
 	const translation_your_comment = useTranslation(TranslationKeys.your_comment);
+	const translation_others_comments = useTranslation(TranslationKeys.others_comments);
+	const translation_no_data_found = useTranslation(TranslationKeys.no_data_found);
 	const translation_comments = useTranslation(TranslationKeys.comments);
 	const translation_save_comment = useTranslation(TranslationKeys.save_comment);
 
 	// get app_settings
 	const [appSettings] = useSynchedAppSettings();
 
-	const foods_feedbacks_comments_type = useFeedbackCommentType()
+	let foods_feedbacks_comments_type = useFeedbackCommentType()
+	foods_feedbacks_comments_type = FeedbackCommentType.readAndWrite;
+
 	const foods_feedbacks_custom_url = appSettings?.foods_feedbacks_custom_url;
 
 	if(foods_feedbacks_comments_type === FeedbackCommentType.disabled){
@@ -287,22 +291,22 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 
 	let saved_comment = ownFoodFeedback?.comment ?? null;
 
-	let renderedComments: any[] = [];
+	let renderedOthersComments: any[] = [];
 
 	if(!!foods_feedbacks_custom_url){
 		commentContent = <MyButton openHrefInNewTab={true} href={foods_feedbacks_custom_url} accessibilityLabel={translation_to_the_forum} tooltip={translation_to_the_forum} text={translation_to_the_forum} leftIcon={IconNames.comment_icon} rightIcon={IconNames.open_link_icon} />
 	} else {
-
-
 		commentContent = (
 			<View style={{ width: "100%", paddingBottom: 20}}>
 				<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_save_comment}>
 					<TextInput placeholder={translation_your_comment} value={comment ?? ''} returnKeyType={ReturnKeyType.send} onChangeText={onChangeText} onSubmitEditing={() => {
 						onSubmit();
 					}} />
-
+					<View style={{
+						width: "100%",
+						height: 10
+					}} />
 					<MyButton disabled={saved_comment === comment} isActive={saved_comment !== comment}
-							  borderTopRadius={0}
 							  accessibilityLabel={translation_save_comment}
 							  text={translation_save_comment}
 							  leftIcon={IconNames.comment_send_icon}
@@ -315,14 +319,16 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 		)
 	}
 
+	let ownCommentRendered = []
+
 	if(saved_comment && ownFoodFeedback){
-		renderedComments.push(
+		ownCommentRendered.push(
 			<View style={{width: "100%", paddingTop: 10}}>
 				<Heading>{translation_your_comment}</Heading>
 			</View>
 		)
 
-		renderedComments.push(
+		ownCommentRendered.push(
 			<FoodFeedbackCommentSingle foodFeedback={ownFoodFeedback} />
 		)
 
@@ -334,10 +340,8 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 		if (remoteFoodFeedbacks) {
 			for (let i=0; i<remoteFoodFeedbacks.length; i++) {
 				const remoteFeedback = remoteFoodFeedbacks[i];
-				if(remoteFeedback.id !== ownFoodFeedback?.id){
-					if(remoteFeedback.comment){
-						data.push({key: remoteFeedback.id, data: remoteFeedback, date_updated: remoteFeedback.date_updated})
-					}
+				if(remoteFeedback.comment){
+					data.push({key: remoteFeedback.id, data: remoteFeedback, date_updated: remoteFeedback.date_updated})
 				}
 			}
 		}
@@ -355,20 +359,38 @@ export const FoodFeedbackCommentDetails = ({food, remoteFoodFeedbacks}: {food: F
 			}
 		});
 
-		renderedComments.push(
-			<MyGridFlatList data={data} renderItem={(item) => {
-				let feedback: FoodsFeedbacks = item.item.data;
-				return <FoodFeedbackCommentSingle foodFeedback={feedback} />
-			}} />
+		renderedOthersComments.push(
+			<View style={{width: "100%", paddingTop: 10}}>
+				<Heading>{translation_others_comments}</Heading>
+			</View>
 		)
+
+		if(data.length === 0){
+			renderedOthersComments.push(
+				<View style={{
+					width: "100%",
+					paddingTop: 10,
+				}}>
+					<Text>{translation_no_data_found}</Text>
+				</View>
+			)
+		} else {
+			renderedOthersComments.push(
+				<MyGridFlatList data={data} renderItem={(item) => {
+					let feedback: FoodsFeedbacks = item.item.data;
+					return <FoodFeedbackCommentSingle foodFeedback={feedback} />
+				}} />
+			)
+		}
 	}
 
 	return (
-		<View style={{width: "100%", paddingTop: 10}}>
+		<View style={{width: "100%", paddingTop: 10, paddingBottom: 10}}>
 			<Heading>{translation_comments}</Heading>
 			<View style={{width: "100%", height: 10}} />
 			{commentContent}
-			{renderedComments}
+			{ownCommentRendered}
+			{renderedOthersComments}
 		</View>
 	)
 
@@ -415,15 +437,9 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 
 	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
 	const ownFoodFeedbackReloadKey = ownFoodFeedback?.date_updated+""
-	const [remoteFoodFeedbacks, setRemoteFoodFeedbacks] = useState<FoodsFeedbacks[] | null | undefined>(undefined);
-	const [remoteFoodFeedbacksLabelsEntries, setRemoteFoodsFeedbacksLabelsEntries] = useState< FoodsFeedbacksLabelsEntries[] | null | undefined>(undefined);
+	const [remoteFoodFeedbacksLabelsEntries, setRemoteFoodsFeedbacksLabelsEntries] = useState<FoodsFeedbacksLabelsEntries[] | null | undefined>(undefined);
 
 	const isDemo = useIsDemo();
-
-	async function loadRemoteFoodsFeedbacksForFood(foodId: string): Promise<FoodsFeedbacks[]> {
-		let result = await loadFoodsFeedbacksForFood(foodId, isDemo);
-		return result;
-	}
 
 	async function loadRemoteFoodsFeedbacksLabelsEntriesForFood(foodId: string): Promise< FoodsFeedbacksLabelsEntries[]> {
 		let result = await loadFoodsFeedbacksLabelsEntriesForFood(foodId, isDemo);
@@ -433,9 +449,6 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 	async function loadData() {
 		console.log("loadData")
 		// load the labels from the server for the food
-		loadRemoteFoodsFeedbacksForFood(food.id)
-			.then(setRemoteFoodFeedbacks)
-			.catch(console.error);
 		loadRemoteFoodsFeedbacksLabelsEntriesForFood(food.id)
 			.then(setRemoteFoodsFeedbacksLabelsEntries)
 			.catch(console.error);
@@ -466,7 +479,7 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 				<FoodFeedbackRatingDetails food={usedFood} />
 			</View>
 			<FoodFeedbacksLabelsComponent food={usedFood} remoteFoodFeedbacksLabelsEntries={remoteFoodFeedbacksLabelsEntries} refresh={refresh}/>
-			<FoodFeedbackCommentDetails food={usedFood} remoteFoodFeedbacks={remoteFoodFeedbacks}/>
+			<FoodFeedbackCommentDetails food={usedFood}/>
 		</View>
 	)
 }

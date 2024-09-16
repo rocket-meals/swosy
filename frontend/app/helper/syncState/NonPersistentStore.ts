@@ -6,6 +6,7 @@ export class NonPersistentStore {
 
 	static textDimensions = 'NonPersistentStore.textDimensions'
 	static iconDimensions = 'NonPersistentStore.iconDimensions'
+	static foodFeedbacks = 'NonPersistentStore.foodFeedbacks'
 
 	static foodOfferSelectedDate = 'NonPersistentStore.foodOfferSelectedDate'
 

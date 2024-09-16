@@ -1,10 +1,11 @@
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {NonPersistentStore} from '@/helper/syncState/NonPersistentStore';
 import {DateHelper} from '@/helper/date/DateHelper';
-import {Canteens, Foodoffers, Foods} from '@/helper/database/databaseTypes/types';
+import {Canteens, Foodoffers, Foods, FoodsFeedbacks} from '@/helper/database/databaseTypes/types';
 import {getDemoFoods} from '@/states/SynchedFoods';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSearchParamSelectedFoodoffersDate} from "@/helper/searchParams/SearchParams";
+import {useEffect} from "react";
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
@@ -32,8 +33,49 @@ export function formatDateForFoodSelection(date: Date): Date{
 export const TABLE_NAME_FOODOFFERS = 'foodoffers';
 export const TABLE_NAME_FOODS = 'foods';
 
-const QUERY_FIELDS_FOOD_OFFER = ['*','food.*','food.translations.*', 'markings.*'];
+const QUERY_FIELDS_FOOD_OFFER = ['*','food.*', '!food.feedbacks' ,'food.translations.*', 'markings.*'];
 const QUERY_FIELDS_FOOD = ['*','translations.*', 'markings.*'];
+
+export function useFoodFeedbacks(food_id: string, offset: number, limit: number): FoodsFeedbacks[] {
+	const [dictFoodIdToFoodFeedbacks, setDictFoodIdToFoodFeedbacks] = useSyncState<Record<string, FoodsFeedbacks[]>>(NonPersistentStore.foodFeedbacks);
+
+	useEffect(() => {
+		// Load food feedbacks from server whenever the food_id changes or the offset or limit changes
+		// If the food_id is not set, then the feedbacks are not loaded
+		if (!food_id) return;
+
+		const fetchFeedbacks = async () => {
+			try {
+				const food = await loadFoodFeedbacksFromServer(food_id, offset, limit);
+				// Assuming food.feedbacks is the array of feedbacks you want to store
+				setDictFoodIdToFoodFeedbacks((prevFeedbacks) => ({
+					...prevFeedbacks,
+					[food_id]: food.feedbacks || [], // Default to an empty array if feedbacks are undefined
+				}));
+			} catch (error) {
+				console.error('Failed to load food feedbacks:', error);
+				// Handle error appropriately here, e.g., set an error state or show a notification
+			}
+		};
+
+		fetchFeedbacks();
+	}, [food_id, offset, limit, setDictFoodIdToFoodFeedbacks]);
+
+	// Return the feedbacks for the current food_id, or an empty array if not available
+	return dictFoodIdToFoodFeedbacks?.[food_id] || [];
+}
+
+export async function loadFoodFeedbacksFromServer(food_id: string, offset: number, limit: number): Promise<Foods> {
+	const collectionHelper = new CollectionHelper<Foods>(TABLE_NAME_FOODS);
+
+	const query = {
+		fields: ['feedbacks.*'],
+		limit: limit,
+		offset: offset
+	}
+
+	return await collectionHelper.readItem(food_id, query);
+}
 
 async function loadFoodOfferFromServer(foodoffer_id: string): Promise<Foodoffers> {
 	const collectionHelper = new CollectionHelper<Foodoffers>(TABLE_NAME_FOODOFFERS);

@@ -183,7 +183,8 @@ export async function loadFoodsFeedbacksLabelsEntriesForFood(foodId: string, isD
 					}
 				}
 			]
-		}
+		},
+		limit: -1,
 	};
 
 	console.log("loadFoodsFeedbacksLabelsEntriesForFood query", query)
