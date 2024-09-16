@@ -3,8 +3,9 @@ import {AppSettingsHelper} from "./AppSettingsHelper";
 import {CashregisterHelper} from "./itemServiceHelpers/CashregisterHelper";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
 import {CollectionNames} from "./CollectionNames";
+import {MailService as MailServiceType} from "@directus/api";
 import {
-    Apartments, Buildings,
+    Apartments, AppFeedbacks, Buildings,
     Canteens,
     CollectionsDatesLastUpdate,
     Devices, DirectusUsers,
@@ -16,6 +17,7 @@ import {
     PushNotifications, UtilizationsEntries, UtilizationsGroups, Washingmachines
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
+import {EmailOptions} from "@directus/api/dist/services/mail";
 
 export class MyDatabaseHelper {
 
@@ -30,8 +32,25 @@ export class MyDatabaseHelper {
         return await serverServiceCreator.getServerInfo();
     }
 
+    async sendMail(options: EmailOptions) {
+        let {MailService} = this.apiContext.services;
+        const getSchema = this.apiContext.getSchema;
+        const database = this.apiContext.database;
+        const schema = await getSchema();
+        let mailService: MailServiceType = new MailService({
+            accountability: null, //this makes us admin
+            knex: database, //TODO: i think this is not neccessary
+            schema: schema,
+        });
+        return await mailService.send(options);
+    }
+
     getAppSettingsHelper() {
         return new AppSettingsHelper(this.apiContext);
+    }
+
+    getAppFeedbacksHelper() {
+        return new ItemsServiceHelper<AppFeedbacks>(this.apiContext, CollectionNames.APP_FEEDBACKS);
     }
 
     getCashregisterHelper() {

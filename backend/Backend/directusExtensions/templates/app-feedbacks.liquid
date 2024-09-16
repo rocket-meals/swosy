@@ -1,0 +1,106 @@
+{% layout "base-german" %}
+{% block content %}
+<h1>{{ subject | escape }}</h1>
+
+{% comment %}
+    For the usage of icons, you can use the script located at /backend/Backend/scripts/getBase64IconForMail.py
+    > python3 getBase64IconForMail.py chart-areaspline
+{% endcomment %}
+
+<p>Neue App-Feedbacks wurden erstellt. Hier sind die Details:</p>
+
+<div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px;">
+    {% for feedback in feedbacks %}
+        <div style="padding: 15px; border-bottom: 1px solid #ddd;">
+            <h2 style="margin: 0; font-size: 18px;">Feedback #{{ feedback.id | escape }}</h2>
+
+            {% if feedback.positive %}
+                <div style="display: flex; align-items: center;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABAElEQVR4nNWWQUoDQRREXzlBPIYbj5B1li6ELA0qHiTH8AhqLpBTuBOPkE0S9QSCGcuFEzI0M3Z3tEE/fHr49K/q+k0XI9uUjIOi6PsSSLqWNJNURTfbzkrgCqgBA9PY/iwFki6BW3bKT2I9yQSSLoA7oD2Wx2hj4lgmwIavsbRzGO1NAD8H3jvA34DDHxEA4x5wAw9J6iME6x5wAx8NeVcugNPtI646mqueek6ubaMGaBPc/aBZw3puDP6mVSTGq+26JMH99qPEJdfAcbYXZcTc9qKkglHrLf06wdPedp0YN2GhU0Ej7znz9C/AUWA33xKMgWUi+Ao4C/1M//6v4hOPeLxiSEvz8gAAAABJRU5ErkJggg==" alt="thumb-up" style="width:24px; height:24px; margin-right:8px;">
+                    <p style="color: #3f8f29;"><strong>Bewertung: </strong>Positiv</p>
+                </div>
+            {% else %}
+                <div style="display: flex; align-items: center;">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA9UlEQVR4nN2Uvw4BQRCHP07EY3gFDa3oJKKkQqIXb0W8iVKtk4g/byDh/BRWnI07w2Ubm0w2m8l+v5nZmS1IIuQqBqX/hQCSXgxoATtABtsCbXcveuOPfHgFOBjhD9t9IzD+Ev4EGQVWwQSA5o/wTIFkF00JsVz0VSAOmcGEUDPhMjjmiD4zg4JzXHLGWXK7zymF/4skxdxLFGa5N+gAG+CcYlfS67/3/7OX4c1yJoZwmQI/A91cAkAZOKXAex/vGwTqb+AXoG/J3tJFDe8cAwNJC8sbWwRqHnwoaW6BWwXWbr8CI0kzKxwwvUEEzLiXxdR1SbsBsGjcPBnp/foAAAAASUVORK5CYII=" alt="thumb-down" style="width:24px; height:24px; margin-right:8px;">
+                    <p style="color: #de1a24;"><strong>Bewertung: </strong>Negativ</p>
+                </div>
+            {% endif %}
+
+            <p><strong>Titel:</strong> {{ feedback.title | escape }}</p>
+            <p><strong>Inhalt:</strong> {{ feedback.content | escape }}</p>
+            <p><strong>Kontakt-Email:</strong>
+                {% if feedback.contract_email %}
+                    <a href="mailto:{{ feedback.contract_email | escape }}">{{ feedback.contract_email | escape }}</a>
+                {% else %}
+                    Keine Email
+                {% endif %}
+            </p>
+            <p><strong>Erstellungsdatum:</strong> {{ feedback.date_created | escape }}</p>
+
+            <div style="margin-top: 10px;">
+                <h3 style="margin: 0 0 5px;">Geräteinformationen</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li><strong>Plattform:</strong>
+                        {% if feedback.device.device_platform %}
+                            {{ feedback.device.device_platform | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Marke:</strong>
+                        {% if feedback.device.device_brand %}
+                            {{ feedback.device.device_brand | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Systemversion:</strong>
+                        {% if feedback.device.device_system_version %}
+                            {{ feedback.device.device_system_version | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Bildschirmhöhe:</strong>
+                        {% if feedback.device.display_height %}
+                            {{ feedback.device.display_height | escape }} px
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Bildschirmbreite:</strong>
+                        {% if feedback.device.display_width %}
+                            {{ feedback.device.display_width | escape }} px
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Schriftgröße:</strong>
+                        {% if feedback.device.display_fontscale %}
+                            {{ feedback.device.display_fontscale | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Pixelverhältnis:</strong>
+                        {% if feedback.device.display_pixelratio %}
+                            {{ feedback.device.display_pixelratio | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                    <li><strong>Bildschirmskalierung:</strong>
+                        {% if feedback.device.display_scale %}
+                            {{ feedback.device.display_scale | escape }}
+                        {% else %}
+                            Keine Angabe
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<p style="padding-top: 30px">Dies ist ein automatisch generierter Bericht.</p>
+{% endblock %}

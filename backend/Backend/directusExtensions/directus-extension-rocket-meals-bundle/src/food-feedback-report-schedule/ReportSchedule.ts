@@ -170,31 +170,20 @@ export class ReportSchedule {
     }
 
     async sendReport(generateReportForDate: Date, generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntries: Canteens[], toMail: string){
-        let {MailService} = this.apiContext.services;
-        const getSchema = this.apiContext.getSchema;
-        const database = this.apiContext.database;
-        const schema = await getSchema();
-
         let canteen_alias = this.getCanteenAliasForMail(canteenEntries);
 
         let dateHumanReadable = DateHelper.getHumanReadableDate(generateReportForDate, true);
 
         let subject = "Mensa Report - für: "+dateHumanReadable+" - "+canteen_alias;
 
-        let mailService = new MailService({
-            accountability: null, //this makes us admin
-            knex: database, //TODO: i think this is not neccessary
-            schema: schema,
-        });
-
-        await mailService.send({
+        await this.myDatabaseHelper.sendMail({
             to: toMail,
             subject: subject,
             template: {
                 name: "canteen-food-feedback-report",
                 data: generated_report_data // See --> ReportGenerator.js
             },
-        });
+        })
     }
 
     async setNextReportDate(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportSchedules){

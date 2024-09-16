@@ -38,6 +38,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "app-feedbacks-hook",
+				"source": "src/app-feedbacks-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "cashregister-hook",
 				"source": "src/cashregister-hook/index.ts"
 			},
@@ -133,6 +138,8 @@
 		"add": "directus-extension add"
 	},
 	"devDependencies": {
+		"@directus/api": "11.1.0",
+		"@directus/types": "10.1.1",
 		"@directus/extensions-sdk": "11.0.3",
 		"@types/jest": "^29.5.12",
 		"@types/ms": "^0.7.34",

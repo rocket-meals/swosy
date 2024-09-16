@@ -16,6 +16,18 @@ export class DateHelper {
         return finalString;
     }
 
+    static getHumanReadableTime(date: Date): string {
+        return date.toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    static getHumanReadableDateAndTime(date: Date): string {
+        return `${DateHelper.getHumanReadableDate(date, false)} ${DateHelper.getHumanReadableTime(date)}`;
+    }
+
     static getFoodofferDateTypeFromDate(date: Date): FoodofferDateType {
         return {
             year: date.getFullYear(),

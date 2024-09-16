@@ -6,6 +6,7 @@ import {CanteenFoodFeedbackReportSchedulesReportRecipients} from "../databaseTyp
 export function getAllCollectionNames() {
     return [
         CollectionNames.APP_SETTINGS,
+        CollectionNames.APP_FEEDBACKS,
         CollectionNames.BUILDINGS,
         CollectionNames.WASHINGMACHINES,
         CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES,
@@ -39,6 +40,7 @@ export function getAllCollectionNames() {
 
 export class CollectionNames{
     static APP_SETTINGS = "app_settings"
+    static APP_FEEDBACKS = "app_feedbacks"
     static CASHREGISTERS = "cashregisters"
     static CASHREGISTERS_TRANSACTIONS = "cashregisters_transactions"
     static COLLECTIONS_DATES_LAST_UPDATE = "collections_dates_last_update"
