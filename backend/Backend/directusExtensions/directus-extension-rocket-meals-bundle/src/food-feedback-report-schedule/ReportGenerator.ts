@@ -17,8 +17,8 @@ export type ReportFoodEntryType = {
     id: string,
     alias: string | null | undefined,
     image_url: string | null | undefined,
-    rating_average: number | null | undefined,
-    rating_amount: number | string | null | undefined,
+    rating_average: string | null | undefined,
+    rating_amount: string | null | undefined,
     comments: string[],
     labels: ReportFoodEntryLabelType[]
 }
@@ -120,7 +120,7 @@ export class ReportGenerator {
             //console.log("food")
             //console.log(food)
 
-            let feedbacksWithLabels = await this.getAllFoodFeedbacksWithLabelsForFood(food_id, report_feedback_period_days);
+            let feedbacksWithComments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, report_feedback_period_days);
             //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
             let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, report_feedback_period_days);
             //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
@@ -129,7 +129,7 @@ export class ReportGenerator {
 
             // TODO: fix this as we now seperate the foodfeedback labels and the foodfeedbacks
 
-            let comments = this.getFoodFeedbackComments(feedbacksWithLabels);
+            let comments = this.getFoodFeedbackComments(feedbacksWithComments);
             //console.log("Found amount of comments: "+comments.length)
 
             let image_url = null;
@@ -151,12 +151,17 @@ export class ReportGenerator {
                 usedRatingAverage = food?.rating_average.toFixed(2);
             }
 
+            let usedRatingAmount = "0";
+            if(food?.rating_amount){
+                usedRatingAmount = food?.rating_amount+"";
+            }
+
             let foodSummary: ReportFoodEntryType = {
                 id: food.id,
                 alias: food.alias,
                 image_url: image_url,
-                rating_average: food?.rating_average || 0,
-                rating_amount: usedRatingAverage,
+                rating_average: usedRatingAverage,
+                rating_amount: usedRatingAmount,
                 comments: comments,
                 labels: feedbackLabelEntryListForReport
             };
@@ -198,6 +203,11 @@ export class ReportGenerator {
                     _eq: food_id
                 }
             },
+            {
+                visible: {
+                    _eq: true
+                }
+            }
         ]
 
         let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
@@ -266,7 +276,7 @@ export class ReportGenerator {
         return filter;
     }
 
-    async getAllFoodFeedbacksWithLabelsForFood(food_id: string, report_feedback_period_days: number | null | undefined){
+    async getAllFoodFeedbacksWithCommentsForFood(food_id: string, report_feedback_period_days: number | null | undefined){
         let itemService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
         const filter: Filter[] = [
@@ -275,6 +285,11 @@ export class ReportGenerator {
                     _eq: food_id
                 }
             },
+            {
+                comment: {
+                    _null: false
+                }
+            }
         ]
 
         let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
@@ -286,7 +301,7 @@ export class ReportGenerator {
             filter: {
                 _and: filter
             },
-            fields: ['*', "labels.*"],
+            fields: ['*'],
             limit: -1
         });
     }
