@@ -87,9 +87,9 @@ export class ParseSchedule {
             }
 
             for(let date of dates){
-                console.log("")
-                console.log("###########");
-                console.log("Calc for: "+date);
+                //console.log("")
+                //console.log("###########");
+                //console.log("Calc for: "+date);
 
                 await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregisters, date, intervalMinutes);
             }
@@ -160,10 +160,10 @@ export class ParseSchedule {
 
     async countCashRegistersTransactionsForInterval(cashregisters: Cashregisters[], date_start: Date, date_end: Date){
         let transactions = 0;
-        console.log("")
-        console.log("countCashRegistersTransactionsForInterval")
-        console.log("cashregister_ids")
-        console.log("date_start: "+date_start.toString()+" date_end: "+date_end.toString());
+        //console.log("")
+        //console.log("countCashRegistersTransactionsForInterval")
+        //console.log("cashregister_ids")
+        //console.log("date_start: "+date_start.toString()+" date_end: "+date_end.toString());
         let cashregisterHelper = this.myDatabaseHelper.getCashregisterHelper();
 
         const realisticAverage = 6000;
@@ -220,7 +220,7 @@ export class ParseSchedule {
                     utilizationEntryCurrent.value_real = value_real
 
                     if(!utilization_group.all_time_high || value_real > utilization_group.all_time_high && value_real !== 0){
-                        console.log("new all_time_high: "+value_real)
+                        //console.log("new all_time_high: "+value_real)
                         utilization_group.all_time_high = value_real;
                         let itemService = this.myDatabaseHelper.getUtilizationGroupsHelper();
                         await itemService.updateOne(utilization_group.id, {

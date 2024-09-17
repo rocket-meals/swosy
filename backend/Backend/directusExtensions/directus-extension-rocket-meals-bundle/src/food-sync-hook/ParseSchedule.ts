@@ -20,7 +20,7 @@ import {
     Foods,
     FoodsMarkings,
     FoodsTranslations,
-    Markings, MarkingsExclusions,
+    Markings,
     MarkingsTranslations
 } from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
@@ -190,7 +190,7 @@ export class ParseSchedule {
     }
 
     async deleteAllFoodoffersForCanteenWithoutDates(canteen: Canteens) {
-        let itemService = await this.myDatabaseHelper.getFoodOffersHelper();
+        let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         let itemsToDelete = await itemService.readByQuery({
             filter: {
                 canteen: {
@@ -203,7 +203,7 @@ export class ParseSchedule {
             fields: ['id'], // Assuming 'id' is the primary key field
             limit: -1
         });
-        await this.deleteFoodOffers(itemsToDelete, `Delete all food offers for canteen without dates: ${canteen.id}`);
+        await this.deleteFoodOffers(itemsToDelete, `Delete all food offers for canteen without dates: ${canteen.id} - amount: ${itemsToDelete.length}`);
     }
 
     async deleteFoodOffersNewerOrEqualThanDate(foodofferDatesToDelete: FoodofferDateType[], canteen: Canteens) {
@@ -240,7 +240,7 @@ export class ParseSchedule {
     }
 
     async deleteFoodOffers(foodoffers: Foodoffers[], notice: string) {
-        let itemService = await this.myDatabaseHelper.getFoodOffersHelper();
+        let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         let idsToDelete = foodoffers.map(item => item.id);
 
         // Step 2: Delete the items using their IDs
@@ -259,7 +259,7 @@ export class ParseSchedule {
         const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
         console.log("["+SCHEDULE_NAME+"]"+" - Delete food offers newer or equal than date: " + directusDateOnlyString);
 
-        let itemService = await this.myDatabaseHelper.getFoodOffersHelper();
+        let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         //await itemService.deleteByQuery()
         // TODO: Überprüfen ob deleteByQuery funktioniert und ob es dadurch schneller geht bzw. es zu einem Blockieren der Datenbank kommt
 
@@ -404,7 +404,7 @@ export class ParseSchedule {
 
 
     async createFoodOffer(foodofferForParser: FoodoffersTypeForParser, dictMarkingsExclusions: DictMarkingsExclusions) {
-        const foodoffersHelper = this.myDatabaseHelper.getFoodOffersHelper();
+        const foodoffersHelper = this.myDatabaseHelper.getFoodoffersHelper();
 
         let canteen_external_identifier = foodofferForParser.canteen_external_identifier
         let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteen_external_identifier);

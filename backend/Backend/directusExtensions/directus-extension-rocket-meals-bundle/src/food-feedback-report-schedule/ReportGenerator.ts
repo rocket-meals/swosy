@@ -331,7 +331,7 @@ export class ReportGenerator {
         const foodofferDate = DateHelper.getFoodofferDateTypeFromDate(startOfTheDay);
         const foodofferDateString = DateHelper.foodofferDateTypeToString(foodofferDate);
 
-        let itemService = this.myDatabaseHelper.getFoodOffersHelper();
+        let itemService = this.myDatabaseHelper.getFoodoffersHelper();
 
         return await itemService.readByQuery({
             filter: {

@@ -271,7 +271,7 @@ export class NotifySchedule {
 
     async getFoodOffersForDate(date: Date) {
         const directusDateOnlyFormat = DateHelper.foodofferDateTypeToString(DateHelper.getFoodofferDateTypeFromDate(date));
-        const itemService = this.myDatabaseHelper.getFoodOffersHelper();
+        const itemService = this.myDatabaseHelper.getFoodoffersHelper();
         let foodOffers = await itemService.readByQuery({filter: {
             date: {
                 _eq: directusDateOnlyFormat

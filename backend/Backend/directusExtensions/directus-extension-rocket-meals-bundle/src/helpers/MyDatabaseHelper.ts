@@ -83,7 +83,7 @@ export class MyDatabaseHelper {
         return new ItemsServiceHelper<FoodsFeedbacksLabelsEntries>(this.apiContext, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
     }
 
-    getFoodOffersHelper() {
+    getFoodoffersHelper() {
         return new ItemsServiceHelper<Foodoffers>(this.apiContext, CollectionNames.FOODOFFERS);
     }
 
