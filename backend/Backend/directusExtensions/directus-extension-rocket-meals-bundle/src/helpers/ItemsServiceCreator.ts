@@ -91,6 +91,20 @@ export class ItemsServiceCreator extends GetItemsService{
 
 }
 
+export class CollectionsServiceCreator extends GetItemsService{
+
+    async getCollectionsService() {
+        const {CollectionsService} = this.apiContext.services;
+        let schema = await this.apiContext.getSchema();
+        let database = this.apiContext.database;
+        return new CollectionsService({
+            accountability: null, //this makes us admin
+            knex: database, //TODO: i think this is not neccessary
+            schema: schema,
+        });
+    }
+}
+
 export class FileServiceCreator extends GetItemsService{
 
     //https://github.com/directus/directus/blob/main/api/src/services/files.ts

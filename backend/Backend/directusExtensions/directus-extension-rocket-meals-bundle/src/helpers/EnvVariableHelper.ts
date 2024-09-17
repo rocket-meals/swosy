@@ -13,6 +13,14 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
+    static getEnvFieldNameForAutoTranslateApiKey(): string {
+        return "AUTO_TRANSLATE_API_KEY";
+    }
+
+    static getAutoTranslateApiKey(): string {
+        return this.getEnvVariable(EnvVariableHelper.getEnvFieldNameForAutoTranslateApiKey());
+    }
+
     static getPublicUrl(): string {
         return this.getEnvVariable("PUBLIC_URL");
     }

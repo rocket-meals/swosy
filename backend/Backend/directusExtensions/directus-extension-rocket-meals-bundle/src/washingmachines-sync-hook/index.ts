@@ -8,7 +8,7 @@ import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelp
 import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 
 export const SCHEDULE_NAME_WASHING_MACHINE = "washingmachine_parse";
 export default defineHook(async ({action, init}, apiContext) => {

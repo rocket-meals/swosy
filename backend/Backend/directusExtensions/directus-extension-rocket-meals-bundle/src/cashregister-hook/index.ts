@@ -6,7 +6,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 

@@ -1,5 +1,5 @@
 import {ApiContext} from "./ApiContext";
-import {AppSettingsHelper} from "./AppSettingsHelper";
+
 import {CashregisterHelper} from "./itemServiceHelpers/CashregisterHelper";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
 import {CollectionNames} from "./CollectionNames";
@@ -18,6 +18,8 @@ import {
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {EmailOptions} from "@directus/api/dist/services/mail";
+import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
+import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 
 export class MyDatabaseHelper {
 
@@ -47,6 +49,10 @@ export class MyDatabaseHelper {
 
     getAppSettingsHelper() {
         return new AppSettingsHelper(this.apiContext);
+    }
+
+    getAutoTranslationSettingsHelper() {
+        return new AutoTranslationSettingsHelper(this.apiContext);
     }
 
     getAppFeedbacksHelper() {

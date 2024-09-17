@@ -9,7 +9,7 @@ import {StudentenwerkHannoverNews_Parser} from "./StudentenwerkHannoverNews_Pars
 import {StudentenwerkOsnabrueckNews_Parser} from "./StudentenwerkOsnabrueckNews_Parser";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "news_parse";
 /**

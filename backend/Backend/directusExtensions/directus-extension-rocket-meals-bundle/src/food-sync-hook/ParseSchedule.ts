@@ -11,7 +11,7 @@ import {
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
 import {ApiContext} from "../helpers/ApiContext";
-import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {ListHelper} from "../helpers/ListHelper";
 import {

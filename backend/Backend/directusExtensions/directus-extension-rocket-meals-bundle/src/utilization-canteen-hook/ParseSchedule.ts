@@ -1,6 +1,6 @@
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {Canteens, Cashregisters, UtilizationsGroups} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 

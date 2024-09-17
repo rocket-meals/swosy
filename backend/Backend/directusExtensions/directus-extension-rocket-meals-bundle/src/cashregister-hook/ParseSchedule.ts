@@ -1,7 +1,7 @@
 import {TimerHelper} from "../helpers/TimerHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {ApiContext} from "../helpers/ApiContext";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {
     CashregistersTransactionsForParser,

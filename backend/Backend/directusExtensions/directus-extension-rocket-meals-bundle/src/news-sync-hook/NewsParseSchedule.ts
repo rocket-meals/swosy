@@ -2,7 +2,7 @@ import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 import {ApiContext} from "../helpers/ApiContext";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {News} from "../databaseTypes/types";
 import {CollectionNames} from "../helpers/CollectionNames";
 

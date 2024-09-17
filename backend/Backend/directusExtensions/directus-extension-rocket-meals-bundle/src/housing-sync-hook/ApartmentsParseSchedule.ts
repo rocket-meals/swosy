@@ -1,7 +1,7 @@
 import {ApiContext} from "../helpers/ApiContext";
 import {ApartmentParserInterface, ApartmentsForParser} from "./ApartmentParserInterface";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "ApartmentsParseSchedule";
 

@@ -9,7 +9,7 @@ import {FoodTL1Parser_RawReportUrlReader} from "./FoodTL1Parser_RawReportUrlRead
 import {MarkingTL1Parser} from "./MarkingTL1Parser";
 import {MarkingParserInterface} from "./MarkingParserInterface";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {AppSettingsHelper, FlowStatus} from "../helpers/AppSettingsHelper";
+import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";

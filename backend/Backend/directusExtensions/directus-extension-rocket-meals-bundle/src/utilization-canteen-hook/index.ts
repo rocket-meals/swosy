@@ -4,7 +4,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "utilization_canteen";
 export default defineHook(async ({init, action}, apiContext) => {

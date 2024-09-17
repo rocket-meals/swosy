@@ -1,7 +1,7 @@
 import {WashingmachineParserInterface, WashingmachinesTypeForParser} from "./WashingmachineParserInterface";
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 
 const SCHEDULE_NAME = "WashingmachineParseSchedule";
 

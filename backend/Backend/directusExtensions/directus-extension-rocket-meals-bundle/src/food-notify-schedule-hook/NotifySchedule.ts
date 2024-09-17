@@ -1,5 +1,5 @@
 import {TranslationHelper} from "../helpers/TranslationHelper";
-import {FlowStatus} from "../helpers/AppSettingsHelper";
+import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
