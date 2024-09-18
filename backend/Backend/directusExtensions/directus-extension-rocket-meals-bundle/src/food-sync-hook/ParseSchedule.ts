@@ -449,54 +449,41 @@ export class ParseSchedule {
     }
 
 
-    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser, dictMarkingsExclusions: DictMarkingsExclusions, canteen: Canteens, markings: Markings[]) {
-        const foodoffersHelper = this.myDatabaseHelper.getFoodoffersHelper();
+    getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: Canteens, markings: Markings[], food: Foods) {
 
         let food_id = foodofferForParser.food_id
-        const foodsService = await this.getFoodsService();
-        let foodFound = await foodsService.readOne(food_id);
-        if (!!foodFound) { // Check if meal exists
-            const basicFoodofferData = foodofferForParser.basicFoodofferData;
+        const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
-            if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
-                basicFoodofferData.alias = foodFound.alias; // Add alias to meal offer from meal
-            }
-            const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date
-            const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
-
-            const markingsCreate: any[] = markings.map(marking => {
-                return {
-                    foodoffers_id: "+",
-                    markings_id: {
-                        id: marking.id
-                    }
-                }
-            });
-
-            let foodOfferToCreate: Foodoffers = {
-                ...foodofferForParser.basicFoodofferData,
-                canteen: canteen.id,
-                food: food_id,
-                date: date,
-                date_created: new Date().toISOString(),
-                date_updated: new Date().toISOString(),
-                markings: {
-                    // @ts-ignore
-                    "create": markingsCreate,
-                    "update": [],
-                    "delete": []
-                }
-            }
-
-            let foodoffer_id = await foodoffersHelper.createOne(foodOfferToCreate);
-
-            // replaced by directly assigning markings to foodoffer in the createOne method
-            //let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
-
-            //if (!!foodoffer) {
-            //    await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
-            //}
+        if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
+            basicFoodofferData.alias = food.alias; // Add alias to meal offer from meal
         }
+        const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date
+        const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+
+        const markingsCreate: any[] = markings.map(marking => {
+            return {
+                foodoffers_id: "+",
+                markings_id: {
+                    id: marking.id
+                }
+            }
+        });
+
+        let foodOfferToCreate: Partial<Foodoffers> = {
+            ...foodofferForParser.basicFoodofferData,
+            canteen: canteen.id,
+            food: food_id,
+            date: date,
+            date_created: new Date().toISOString(),
+            date_updated: new Date().toISOString(),
+            markings: {
+                // @ts-ignore
+                "create": markingsCreate,
+                "update": [],
+                "delete": []
+            }
+        }
+        return foodOfferToCreate;
     }
 
     async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
@@ -535,40 +522,65 @@ export class ParseSchedule {
             }
         }
 
-        // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 100 });
+        // dict foodsFound
+        const dictFoodsFound: Record<string, Foods | null> = {};
+        for(let foodofferForParser of foodofferListForParser){
+            let food_id = foodofferForParser.food_id;
+            dictFoodsFound[food_id] = null;
+        }
+        // search for foods
+        const foodsService = await this.getFoodsService();
+        const foodIds = Object.keys(dictFoodsFound);
+        for(let foodId of foodIds){
+            let food = await foodsService.readOne(foodId);
+            if(!!food){
+                dictFoodsFound[foodId] = food;
+            }
+        }
 
-        let amountCompleted = 0;
-        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Create Food Offers");
+        const foodoffersToCreate: Partial<Foodoffers>[] = [];
+        foodofferListForParser.map((foodofferForParser, index) => {
+            const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
+            const canteenFound = !!canteen;
 
-        const tasks = foodofferListForParser.map((foodofferForParser, index) => {
-            return queue.add(async () => {
-                //console.log("["+SCHEDULE_NAME+"] - Start Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+            const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
+            const markings: Markings[] = [];
 
-                const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
-                const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
-                const markings: Markings[] = [];
-
-                for (let marking_external_identifier of marking_external_identifiers) {
-                    const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
-                    if (marking) {
-                        markings.push(marking);
-                    }
+            for (let marking_external_identifier of marking_external_identifiers) {
+                const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+                if (marking) {
+                    markings.push(marking);
                 }
+            }
+            const markingsAllFound = markings.length === marking_external_identifiers.length;
 
-                if (canteen) {
-                    await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
-                    //console.log("["+SCHEDULE_NAME+"] - Finished Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
-                    amountCompleted++;
-                    //console.log("["+SCHEDULE_NAME+"]"+" - Update Foodoffers Completed " + amountCompleted + " / " + amountOfRawMealOffers);
-                }
+            const food_id = foodofferForParser.food_id;
+            const food = dictFoodsFound[food_id];
+            const foodFound = !!food;
 
-                myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, amountOfRawMealOffers);
-            });
+            if (canteenFound && markingsAllFound && foodFound) {
+                const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, dictMarkingsExclusions);
+                let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food);
+                foodoffersToCreate.push(foodOfferToCreate);
+            } else {
+                console.log("["+SCHEDULE_NAME+"]"+" - Error Foodoffer " + (index + 1) + " / " + amountOfRawMealOffers+" - canteenFound: "+canteenFound+" - markingsAllFound: "+markingsAllFound+" - foodFound: "+foodFound);
+            }
         });
 
-        // Wait for all tasks in the queue to be processed
-        await queue.onIdle();
+        const batchSize = 100;
+
+        const myFoodOffersService = await this.myDatabaseHelper.getFoodoffersHelper();
+
+        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Create Food Offers");
+
+        let batchIndex = 1;
+        const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
+        for (let i = 0; i < foodoffersToCreate.length; i += batchSize) {
+            const batch = foodoffersToCreate.slice(i, i + batchSize);
+            console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
+            await myFoodOffersService.createManyItems(batch);
+            myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches);
+        }
     }
 
     async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {

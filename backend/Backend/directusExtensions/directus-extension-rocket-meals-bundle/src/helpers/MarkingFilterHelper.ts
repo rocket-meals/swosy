@@ -18,10 +18,10 @@ export class MarkingFilterHelper{
         return dictMarkingsExclusions;
     }
 
-    static filterMarkingByRestrictionRules(markings: MarkingWithIdAndExclusionRulesOnly[], dictMarkingsExclusions: DictMarkingsExclusions): MarkingWithIdAndExclusionRulesOnly[] {
+    static filterMarkingByRestrictionRules<T extends MarkingWithIdAndExclusionRulesOnly>(markings: T[], dictMarkingsExclusions: DictMarkingsExclusions): T[] {
         // so we want to filter out all markings which have a restriction rule that is not fulfilled
-        let filteredMarkings: MarkingWithIdAndExclusionRulesOnly[] = [];
-        let markingsDictPresent: Record<string, MarkingWithIdAndExclusionRulesOnly> = {} // create a dict for faster lookup which markings are present
+        let filteredMarkings: T[] = [];
+        let markingsDictPresent: Record<string, T> = {} // create a dict for faster lookup which markings are present
         for(let marking of markings){
             markingsDictPresent[marking.id] = marking;
         }
