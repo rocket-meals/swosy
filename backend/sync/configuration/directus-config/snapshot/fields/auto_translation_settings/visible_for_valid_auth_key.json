@@ -10,15 +10,14 @@
           "_and": [
             {
               "valid_auth_key": {
-                "_eq": true
+                "_eq": false
               }
             }
           ]
         },
         "readonly": true,
-        "hidden": false,
-        "options": {},
-        "name": "Auth Key Valid"
+        "hidden": true,
+        "options": {}
       }
     ],
     "display": null,

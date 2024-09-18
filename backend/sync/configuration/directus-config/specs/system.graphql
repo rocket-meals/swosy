@@ -14,58 +14,58 @@ type Query {
   relations_by_name(collection: String!, field: String!): directus_relations
   extensions: [directus_extensions!]!
   users_me: directus_users
-  activity(filter: directus_activity_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_activity!]!
-  activity_by_id(id: ID!, version: String): directus_activity
-  activity_aggregated(groupBy: [String], filter: directus_activity_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_activity_aggregated!]!
-  folders(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_folders!]!
-  folders_by_id(id: ID!, version: String): directus_folders
-  folders_aggregated(groupBy: [String], filter: directus_folders_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_folders_aggregated!]!
-  notifications(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_notifications!]!
-  notifications_by_id(id: ID!, version: String): directus_notifications
-  notifications_aggregated(groupBy: [String], filter: directus_notifications_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_notifications_aggregated!]!
-  operations(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_operations!]!
-  operations_by_id(id: ID!, version: String): directus_operations
-  operations_aggregated(groupBy: [String], filter: directus_operations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_operations_aggregated!]!
-  panels(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_panels!]!
-  panels_by_id(id: ID!, version: String): directus_panels
-  panels_aggregated(groupBy: [String], filter: directus_panels_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_panels_aggregated!]!
-  permissions(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_permissions!]!
-  permissions_by_id(id: ID!, version: String): directus_permissions
-  permissions_aggregated(groupBy: [String], filter: directus_permissions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_permissions_aggregated!]!
-  presets(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_presets!]!
-  presets_by_id(id: ID!, version: String): directus_presets
-  presets_aggregated(groupBy: [String], filter: directus_presets_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_presets_aggregated!]!
-  files(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_files!]!
-  files_by_id(id: ID!, version: String): directus_files
-  files_aggregated(groupBy: [String], filter: directus_files_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_files_aggregated!]!
-  dashboards(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_dashboards!]!
-  dashboards_by_id(id: ID!, version: String): directus_dashboards
-  dashboards_aggregated(groupBy: [String], filter: directus_dashboards_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_dashboards_aggregated!]!
-  flows(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_flows!]!
-  flows_by_id(id: ID!, version: String): directus_flows
-  flows_aggregated(groupBy: [String], filter: directus_flows_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_flows_aggregated!]!
-  revisions(filter: directus_revisions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_revisions!]!
-  revisions_by_id(id: ID!, version: String): directus_revisions
-  revisions_aggregated(groupBy: [String], filter: directus_revisions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_revisions_aggregated!]!
-  settings(version: String): directus_settings
-  webhooks(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_webhooks!]!
-  webhooks_by_id(id: ID!, version: String): directus_webhooks
-  webhooks_aggregated(groupBy: [String], filter: directus_webhooks_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_webhooks_aggregated!]!
-  translations(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_translations!]!
-  translations_by_id(id: ID!, version: String): directus_translations
-  translations_aggregated(groupBy: [String], filter: directus_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_translations_aggregated!]!
   roles(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_roles!]!
   roles_by_id(id: ID!, version: String): directus_roles
   roles_aggregated(groupBy: [String], filter: directus_roles_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_roles_aggregated!]!
-  shares(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_shares!]!
-  shares_by_id(id: ID!, version: String): directus_shares
-  shares_aggregated(groupBy: [String], filter: directus_shares_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_shares_aggregated!]!
+  presets(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_presets!]!
+  presets_by_id(id: ID!, version: String): directus_presets
+  presets_aggregated(groupBy: [String], filter: directus_presets_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_presets_aggregated!]!
+  revisions(filter: directus_revisions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_revisions!]!
+  revisions_by_id(id: ID!, version: String): directus_revisions
+  revisions_aggregated(groupBy: [String], filter: directus_revisions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_revisions_aggregated!]!
+  folders(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_folders!]!
+  folders_by_id(id: ID!, version: String): directus_folders
+  folders_aggregated(groupBy: [String], filter: directus_folders_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_folders_aggregated!]!
+  files(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_files!]!
+  files_by_id(id: ID!, version: String): directus_files
+  files_aggregated(groupBy: [String], filter: directus_files_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_files_aggregated!]!
+  permissions(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_permissions!]!
+  permissions_by_id(id: ID!, version: String): directus_permissions
+  permissions_aggregated(groupBy: [String], filter: directus_permissions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_permissions_aggregated!]!
   users(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_users!]!
   users_by_id(id: ID!, version: String): directus_users
   users_aggregated(groupBy: [String], filter: directus_users_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_users_aggregated!]!
+  activity(filter: directus_activity_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_activity!]!
+  activity_by_id(id: ID!, version: String): directus_activity
+  activity_aggregated(groupBy: [String], filter: directus_activity_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_activity_aggregated!]!
+  webhooks(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_webhooks!]!
+  webhooks_by_id(id: ID!, version: String): directus_webhooks
+  webhooks_aggregated(groupBy: [String], filter: directus_webhooks_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_webhooks_aggregated!]!
+  panels(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_panels!]!
+  panels_by_id(id: ID!, version: String): directus_panels
+  panels_aggregated(groupBy: [String], filter: directus_panels_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_panels_aggregated!]!
+  notifications(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_notifications!]!
+  notifications_by_id(id: ID!, version: String): directus_notifications
+  notifications_aggregated(groupBy: [String], filter: directus_notifications_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_notifications_aggregated!]!
+  shares(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_shares!]!
+  shares_by_id(id: ID!, version: String): directus_shares
+  shares_aggregated(groupBy: [String], filter: directus_shares_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_shares_aggregated!]!
+  flows(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_flows!]!
+  flows_by_id(id: ID!, version: String): directus_flows
+  flows_aggregated(groupBy: [String], filter: directus_flows_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_flows_aggregated!]!
+  dashboards(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_dashboards!]!
+  dashboards_by_id(id: ID!, version: String): directus_dashboards
+  dashboards_aggregated(groupBy: [String], filter: directus_dashboards_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_dashboards_aggregated!]!
+  operations(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_operations!]!
+  operations_by_id(id: ID!, version: String): directus_operations
+  operations_aggregated(groupBy: [String], filter: directus_operations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_operations_aggregated!]!
+  translations(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_translations!]!
+  translations_by_id(id: ID!, version: String): directus_translations
+  translations_aggregated(groupBy: [String], filter: directus_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_translations_aggregated!]!
   versions(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_versions!]!
   versions_by_id(id: ID!, version: String): directus_versions
   versions_aggregated(groupBy: [String], filter: directus_versions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [directus_versions_aggregated!]!
+  settings(version: String): directus_settings
 }
 
 type Mutation {
@@ -102,183 +102,184 @@ type Mutation {
   delete_comment(id: ID!): delete_one
   import_file(url: String!, data: create_directus_files_input): directus_files
   users_invite(email: String!, role: String!, invite_url: String): Boolean
-  create_folders_items(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_folders_input!]): [directus_folders!]!
-  create_folders_item(data: create_directus_folders_input!): directus_folders
-  create_notifications_items(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_notifications_input!]): [directus_notifications!]!
-  create_notifications_item(data: create_directus_notifications_input!): directus_notifications
-  create_operations_items(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_operations_input!]): [directus_operations!]!
-  create_operations_item(data: create_directus_operations_input!): directus_operations
-  create_panels_items(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_panels_input!]): [directus_panels!]!
-  create_panels_item(data: create_directus_panels_input!): directus_panels
-  create_permissions_items(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_permissions_input!]): [directus_permissions!]!
-  create_permissions_item(data: create_directus_permissions_input!): directus_permissions
-  create_presets_items(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_presets_input!]): [directus_presets!]!
-  create_presets_item(data: create_directus_presets_input!): directus_presets
-  create_files_items(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_files_input!]): [directus_files!]!
-  create_files_item(data: create_directus_files_input!): directus_files
-  create_dashboards_items(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_dashboards_input!]): [directus_dashboards!]!
-  create_dashboards_item(data: create_directus_dashboards_input!): directus_dashboards
-  create_flows_items(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_flows_input!]): [directus_flows!]!
-  create_flows_item(data: create_directus_flows_input!): directus_flows
-  create_webhooks_items(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_webhooks_input!]): [directus_webhooks!]!
-  create_webhooks_item(data: create_directus_webhooks_input!): directus_webhooks
-  create_translations_items(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_translations_input!]): [directus_translations!]!
-  create_translations_item(data: create_directus_translations_input!): directus_translations
   create_roles_items(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_roles_input!]): [directus_roles!]!
   create_roles_item(data: create_directus_roles_input!): directus_roles
-  create_shares_items(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_shares_input!]): [directus_shares!]!
-  create_shares_item(data: create_directus_shares_input!): directus_shares
+  create_presets_items(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_presets_input!]): [directus_presets!]!
+  create_presets_item(data: create_directus_presets_input!): directus_presets
+  create_folders_items(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_folders_input!]): [directus_folders!]!
+  create_folders_item(data: create_directus_folders_input!): directus_folders
+  create_files_items(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_files_input!]): [directus_files!]!
+  create_files_item(data: create_directus_files_input!): directus_files
+  create_permissions_items(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_permissions_input!]): [directus_permissions!]!
+  create_permissions_item(data: create_directus_permissions_input!): directus_permissions
   create_users_items(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_users_input!]): [directus_users!]!
   create_users_item(data: create_directus_users_input!): directus_users
+  create_webhooks_items(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_webhooks_input!]): [directus_webhooks!]!
+  create_webhooks_item(data: create_directus_webhooks_input!): directus_webhooks
+  create_panels_items(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_panels_input!]): [directus_panels!]!
+  create_panels_item(data: create_directus_panels_input!): directus_panels
+  create_notifications_items(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_notifications_input!]): [directus_notifications!]!
+  create_notifications_item(data: create_directus_notifications_input!): directus_notifications
+  create_shares_items(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_shares_input!]): [directus_shares!]!
+  create_shares_item(data: create_directus_shares_input!): directus_shares
+  create_flows_items(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_flows_input!]): [directus_flows!]!
+  create_flows_item(data: create_directus_flows_input!): directus_flows
+  create_dashboards_items(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_dashboards_input!]): [directus_dashboards!]!
+  create_dashboards_item(data: create_directus_dashboards_input!): directus_dashboards
+  create_operations_items(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_operations_input!]): [directus_operations!]!
+  create_operations_item(data: create_directus_operations_input!): directus_operations
+  create_translations_items(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_translations_input!]): [directus_translations!]!
+  create_translations_item(data: create_directus_translations_input!): directus_translations
   create_versions_items(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_directus_versions_input!]): [directus_versions!]!
   create_versions_item(data: create_directus_versions_input!): directus_versions
-  update_folders_items(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_folders_input!): [directus_folders!]!
-  update_folders_batch(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_folders_input!]): [directus_folders!]!
-  update_folders_item(id: ID!, data: update_directus_folders_input!): directus_folders
-  update_notifications_items(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_notifications_input!): [directus_notifications!]!
-  update_notifications_batch(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_notifications_input!]): [directus_notifications!]!
-  update_notifications_item(id: ID!, data: update_directus_notifications_input!): directus_notifications
-  update_operations_items(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_operations_input!): [directus_operations!]!
-  update_operations_batch(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_operations_input!]): [directus_operations!]!
-  update_operations_item(id: ID!, data: update_directus_operations_input!): directus_operations
-  update_panels_items(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_panels_input!): [directus_panels!]!
-  update_panels_batch(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_panels_input!]): [directus_panels!]!
-  update_panels_item(id: ID!, data: update_directus_panels_input!): directus_panels
-  update_permissions_items(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_permissions_input!): [directus_permissions!]!
-  update_permissions_batch(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_permissions_input!]): [directus_permissions!]!
-  update_permissions_item(id: ID!, data: update_directus_permissions_input!): directus_permissions
-  update_presets_items(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_presets_input!): [directus_presets!]!
-  update_presets_batch(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_presets_input!]): [directus_presets!]!
-  update_presets_item(id: ID!, data: update_directus_presets_input!): directus_presets
-  update_files_items(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_files_input!): [directus_files!]!
-  update_files_batch(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_files_input!]): [directus_files!]!
-  update_files_item(id: ID!, data: update_directus_files_input!): directus_files
-  update_dashboards_items(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_dashboards_input!): [directus_dashboards!]!
-  update_dashboards_batch(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_dashboards_input!]): [directus_dashboards!]!
-  update_dashboards_item(id: ID!, data: update_directus_dashboards_input!): directus_dashboards
-  update_flows_items(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_flows_input!): [directus_flows!]!
-  update_flows_batch(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_flows_input!]): [directus_flows!]!
-  update_flows_item(id: ID!, data: update_directus_flows_input!): directus_flows
-  update_settings(data: update_directus_settings_input!): directus_settings
-  update_webhooks_items(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_webhooks_input!): [directus_webhooks!]!
-  update_webhooks_batch(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_webhooks_input!]): [directus_webhooks!]!
-  update_webhooks_item(id: ID!, data: update_directus_webhooks_input!): directus_webhooks
-  update_translations_items(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_translations_input!): [directus_translations!]!
-  update_translations_batch(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_translations_input!]): [directus_translations!]!
-  update_translations_item(id: ID!, data: update_directus_translations_input!): directus_translations
   update_roles_items(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_roles_input!): [directus_roles!]!
   update_roles_batch(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_roles_input!]): [directus_roles!]!
   update_roles_item(id: ID!, data: update_directus_roles_input!): directus_roles
-  update_shares_items(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_shares_input!): [directus_shares!]!
-  update_shares_batch(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_shares_input!]): [directus_shares!]!
-  update_shares_item(id: ID!, data: update_directus_shares_input!): directus_shares
+  update_presets_items(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_presets_input!): [directus_presets!]!
+  update_presets_batch(filter: directus_presets_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_presets_input!]): [directus_presets!]!
+  update_presets_item(id: ID!, data: update_directus_presets_input!): directus_presets
+  update_folders_items(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_folders_input!): [directus_folders!]!
+  update_folders_batch(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_folders_input!]): [directus_folders!]!
+  update_folders_item(id: ID!, data: update_directus_folders_input!): directus_folders
+  update_files_items(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_files_input!): [directus_files!]!
+  update_files_batch(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_files_input!]): [directus_files!]!
+  update_files_item(id: ID!, data: update_directus_files_input!): directus_files
+  update_permissions_items(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_permissions_input!): [directus_permissions!]!
+  update_permissions_batch(filter: directus_permissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_permissions_input!]): [directus_permissions!]!
+  update_permissions_item(id: ID!, data: update_directus_permissions_input!): directus_permissions
   update_users_items(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_users_input!): [directus_users!]!
   update_users_batch(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_users_input!]): [directus_users!]!
   update_users_item(id: ID!, data: update_directus_users_input!): directus_users
+  update_webhooks_items(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_webhooks_input!): [directus_webhooks!]!
+  update_webhooks_batch(filter: directus_webhooks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_webhooks_input!]): [directus_webhooks!]!
+  update_webhooks_item(id: ID!, data: update_directus_webhooks_input!): directus_webhooks
+  update_panels_items(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_panels_input!): [directus_panels!]!
+  update_panels_batch(filter: directus_panels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_panels_input!]): [directus_panels!]!
+  update_panels_item(id: ID!, data: update_directus_panels_input!): directus_panels
+  update_notifications_items(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_notifications_input!): [directus_notifications!]!
+  update_notifications_batch(filter: directus_notifications_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_notifications_input!]): [directus_notifications!]!
+  update_notifications_item(id: ID!, data: update_directus_notifications_input!): directus_notifications
+  update_shares_items(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_shares_input!): [directus_shares!]!
+  update_shares_batch(filter: directus_shares_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_shares_input!]): [directus_shares!]!
+  update_shares_item(id: ID!, data: update_directus_shares_input!): directus_shares
+  update_flows_items(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_flows_input!): [directus_flows!]!
+  update_flows_batch(filter: directus_flows_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_flows_input!]): [directus_flows!]!
+  update_flows_item(id: ID!, data: update_directus_flows_input!): directus_flows
+  update_dashboards_items(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_dashboards_input!): [directus_dashboards!]!
+  update_dashboards_batch(filter: directus_dashboards_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_dashboards_input!]): [directus_dashboards!]!
+  update_dashboards_item(id: ID!, data: update_directus_dashboards_input!): directus_dashboards
+  update_operations_items(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_operations_input!): [directus_operations!]!
+  update_operations_batch(filter: directus_operations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_operations_input!]): [directus_operations!]!
+  update_operations_item(id: ID!, data: update_directus_operations_input!): directus_operations
+  update_translations_items(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_translations_input!): [directus_translations!]!
+  update_translations_batch(filter: directus_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_translations_input!]): [directus_translations!]!
+  update_translations_item(id: ID!, data: update_directus_translations_input!): directus_translations
   update_versions_items(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_versions_input!): [directus_versions!]!
   update_versions_batch(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_versions_input!]): [directus_versions!]!
   update_versions_item(id: ID!, data: update_directus_versions_input!): directus_versions
-  delete_folders_items(ids: [ID]!): delete_many
-  delete_folders_item(id: ID!): delete_one
-  delete_notifications_items(ids: [ID]!): delete_many
-  delete_notifications_item(id: ID!): delete_one
-  delete_operations_items(ids: [ID]!): delete_many
-  delete_operations_item(id: ID!): delete_one
-  delete_panels_items(ids: [ID]!): delete_many
-  delete_panels_item(id: ID!): delete_one
-  delete_permissions_items(ids: [ID]!): delete_many
-  delete_permissions_item(id: ID!): delete_one
-  delete_presets_items(ids: [ID]!): delete_many
-  delete_presets_item(id: ID!): delete_one
-  delete_files_items(ids: [ID]!): delete_many
-  delete_files_item(id: ID!): delete_one
-  delete_dashboards_items(ids: [ID]!): delete_many
-  delete_dashboards_item(id: ID!): delete_one
-  delete_flows_items(ids: [ID]!): delete_many
-  delete_flows_item(id: ID!): delete_one
-  delete_webhooks_items(ids: [ID]!): delete_many
-  delete_webhooks_item(id: ID!): delete_one
-  delete_translations_items(ids: [ID]!): delete_many
-  delete_translations_item(id: ID!): delete_one
+  update_settings(data: update_directus_settings_input!): directus_settings
   delete_roles_items(ids: [ID]!): delete_many
   delete_roles_item(id: ID!): delete_one
-  delete_shares_items(ids: [ID]!): delete_many
-  delete_shares_item(id: ID!): delete_one
+  delete_presets_items(ids: [ID]!): delete_many
+  delete_presets_item(id: ID!): delete_one
+  delete_folders_items(ids: [ID]!): delete_many
+  delete_folders_item(id: ID!): delete_one
+  delete_files_items(ids: [ID]!): delete_many
+  delete_files_item(id: ID!): delete_one
+  delete_permissions_items(ids: [ID]!): delete_many
+  delete_permissions_item(id: ID!): delete_one
   delete_users_items(ids: [ID]!): delete_many
   delete_users_item(id: ID!): delete_one
+  delete_webhooks_items(ids: [ID]!): delete_many
+  delete_webhooks_item(id: ID!): delete_one
+  delete_panels_items(ids: [ID]!): delete_many
+  delete_panels_item(id: ID!): delete_one
+  delete_notifications_items(ids: [ID]!): delete_many
+  delete_notifications_item(id: ID!): delete_one
+  delete_shares_items(ids: [ID]!): delete_many
+  delete_shares_item(id: ID!): delete_one
+  delete_flows_items(ids: [ID]!): delete_many
+  delete_flows_item(id: ID!): delete_one
+  delete_dashboards_items(ids: [ID]!): delete_many
+  delete_dashboards_item(id: ID!): delete_one
+  delete_operations_items(ids: [ID]!): delete_many
+  delete_operations_item(id: ID!): delete_one
+  delete_translations_items(ids: [ID]!): delete_many
+  delete_translations_item(id: ID!): delete_one
   delete_versions_items(ids: [ID]!): delete_many
   delete_versions_item(id: ID!): delete_one
 }
 
 type Subscription {
-  app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
-  apartments_mutated(event: EventEnum): apartments_mutated
+  directus_roles_mutated(event: EventEnum): directus_roles_mutated
+  directus_presets_mutated(event: EventEnum): directus_presets_mutated
+  directus_revisions_mutated(event: EventEnum): directus_revisions_mutated
+  directus_folders_mutated(event: EventEnum): directus_folders_mutated
+  directus_files_mutated(event: EventEnum): directus_files_mutated
+  directus_permissions_mutated(event: EventEnum): directus_permissions_mutated
+  directus_users_mutated(event: EventEnum): directus_users_mutated
+  directus_activity_mutated(event: EventEnum): directus_activity_mutated
+  directus_webhooks_mutated(event: EventEnum): directus_webhooks_mutated
+  directus_panels_mutated(event: EventEnum): directus_panels_mutated
+  directus_notifications_mutated(event: EventEnum): directus_notifications_mutated
+  directus_shares_mutated(event: EventEnum): directus_shares_mutated
+  directus_flows_mutated(event: EventEnum): directus_flows_mutated
+  directus_dashboards_mutated(event: EventEnum): directus_dashboards_mutated
+  directus_operations_mutated(event: EventEnum): directus_operations_mutated
+  directus_translations_mutated(event: EventEnum): directus_translations_mutated
+  directus_versions_mutated(event: EventEnum): directus_versions_mutated
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
+  directus_settings_mutated(event: EventEnum): directus_settings_mutated
+  directus_sync_id_map_mutated(event: EventEnum): directus_sync_id_map_mutated
+  buildings_mutated(event: EventEnum): buildings_mutated
+  apartments_mutated(event: EventEnum): apartments_mutated
   app_settings_housing_translations_mutated(event: EventEnum): app_settings_housing_translations_mutated
+  buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
+  buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
+  profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
-  directus_activity_mutated(event: EventEnum): directus_activity_mutated
-  cashregisters_mutated(event: EventEnum): cashregisters_mutated
-  canteens_mutated(event: EventEnum): canteens_mutated
-  buildings_mutated(event: EventEnum): buildings_mutated
-  buildings_businesshours_mutated(event: EventEnum): buildings_businesshours_mutated
-  businesshours_mutated(event: EventEnum): businesshours_mutated
-  buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
-  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
-  directus_folders_mutated(event: EventEnum): directus_folders_mutated
-  directus_notifications_mutated(event: EventEnum): directus_notifications_mutated
-  directus_operations_mutated(event: EventEnum): directus_operations_mutated
-  directus_panels_mutated(event: EventEnum): directus_panels_mutated
-  directus_permissions_mutated(event: EventEnum): directus_permissions_mutated
-  directus_presets_mutated(event: EventEnum): directus_presets_mutated
-  directus_files_mutated(event: EventEnum): directus_files_mutated
-  directus_dashboards_mutated(event: EventEnum): directus_dashboards_mutated
-  directus_flows_mutated(event: EventEnum): directus_flows_mutated
-  directus_revisions_mutated(event: EventEnum): directus_revisions_mutated
-  directus_settings_mutated(event: EventEnum): directus_settings_mutated
-  directus_webhooks_mutated(event: EventEnum): directus_webhooks_mutated
-  directus_sync_id_map_mutated(event: EventEnum): directus_sync_id_map_mutated
-  directus_translations_mutated(event: EventEnum): directus_translations_mutated
-  directus_roles_mutated(event: EventEnum): directus_roles_mutated
-  directus_shares_mutated(event: EventEnum): directus_shares_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
-  directus_users_mutated(event: EventEnum): directus_users_mutated
-  directus_versions_mutated(event: EventEnum): directus_versions_mutated
-  foods_mutated(event: EventEnum): foods_mutated
-  foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
-  foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
-  foods_markings_mutated(event: EventEnum): foods_markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
+  foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
+  foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
+  foods_markings_mutated(event: EventEnum): foods_markings_mutated
+  foods_translations_mutated(event: EventEnum): foods_translations_mutated
   news_mutated(event: EventEnum): news_mutated
   news_translations_mutated(event: EventEnum): news_translations_mutated
+  popup_events_mutated(event: EventEnum): popup_events_mutated
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
-  foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
-  foods_translations_mutated(event: EventEnum): foods_translations_mutated
-  popup_events_mutated(event: EventEnum): popup_events_mutated
-  utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
-  profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
-  wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
-  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
-  profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
-  profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
-  push_notifications_mutated(event: EventEnum): push_notifications_mutated
-  washingmachines_mutated(event: EventEnum): washingmachines_mutated
-  wikis_mutated(event: EventEnum): wikis_mutated
-  profiles_mutated(event: EventEnum): profiles_mutated
-  languages_mutated(event: EventEnum): languages_mutated
+  canteens_mutated(event: EventEnum): canteens_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
+  markings_mutated(event: EventEnum): markings_mutated
+  foods_mutated(event: EventEnum): foods_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
+  markings_translations_mutated(event: EventEnum): markings_translations_mutated
+  cashregisters_mutated(event: EventEnum): cashregisters_mutated
+  languages_mutated(event: EventEnum): languages_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
-  canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
+  profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
+  profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
+  push_notifications_mutated(event: EventEnum): push_notifications_mutated
+  utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
+  washingmachines_mutated(event: EventEnum): washingmachines_mutated
+  wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
+  canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
+  foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
+  businesshours_mutated(event: EventEnum): businesshours_mutated
+  app_feedbacks_mutated(event: EventEnum): app_feedbacks_mutated
+  wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
+  profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
+  wikis_mutated(event: EventEnum): wikis_mutated
+  cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
+  foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
-  foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
-  canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
-  markings_mutated(event: EventEnum): markings_mutated
-  markings_translations_mutated(event: EventEnum): markings_translations_mutated
+  canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
+  app_settings_balance_translations_mutated(event: EventEnum): app_settings_balance_translations_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -407,11 +408,6 @@ type app_settings {
   app_stores_url_to_apple: String
   app_stores_url_to_google: String
   balance_enabled: Boolean
-  campus_enabled: Boolean
-  campus_parsing_enabled: Boolean
-  campus_parsing_last_date: Date
-  campus_parsing_last_date_func: datetime_functions
-  campus_parsing_status: String
   canteen_reports_enabled: Boolean
   cashregisters_parsing_enabled: Boolean
   cashregisters_parsing_last_date: Date
@@ -431,7 +427,6 @@ type app_settings {
   foods_feedbacks_custom_url: String
   foods_feedbacks_labels_type: String
   foods_parsing_enabled: Boolean
-  foods_parsing_hash: String
   foods_parsing_last_date: Date
   foods_parsing_last_date_func: datetime_functions
   foods_parsing_status: String
@@ -472,15 +467,38 @@ type app_settings {
   utilization_forecast_calculation_last_date: Date
   utilization_forecast_calculation_last_date_func: datetime_functions
   utilization_forecast_calculation_status: String
-
-  """Zeige die Auslastungsprognose in der App"""
-  utilization_display_enabled: Boolean
+  foods_parsing_hash: String
+  campus_enabled: Boolean
+  campus_parsing_enabled: Boolean
+  campus_parsing_last_date: Date
+  campus_parsing_last_date_func: datetime_functions
+  campus_parsing_status: String
   washingmachine_parsing_enabled: Boolean
   washingmachine_parsing_last_date: Date
   washingmachine_parsing_last_date_func: datetime_functions
   washingmachine_parsing_status: String
+
+  """Zeige die Auslastungsprognose in der App"""
+  utilization_display_enabled: Boolean
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
   housing_translations_func: count_functions
+  balance_translations(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_balance_translations]
+  balance_translations_func: count_functions
+}
+
+type app_settings_balance_translations {
+  id: ID!
+  app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
+  languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
+  content: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
+type app_settings_balance_translations_mutated {
+  key: ID!
+  event: EventEnum
+  data: app_settings_balance_translations
 }
 
 type app_settings_housing_translations {
@@ -512,6 +530,11 @@ type auth_tokens {
 
 type auto_translation_settings {
   active: Boolean
+
+  """
+  Authentication - You need an authentication key to access to the API. https://www.deepl.com/de/your-account/keys
+  """
+  auth_key: String
 
   """Informations about errors will be shown here."""
   extra: String
@@ -597,6 +620,11 @@ type businesshours {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 
   """Leave empty to use default; overridden by other defined ranges."""
   date_valid_from: Date
@@ -606,11 +634,8 @@ type businesshours {
   date_valid_till: Date
   date_valid_till_func: date_functions
   friday: Boolean
-  id: ID!
   monday: Boolean
   saturday: Boolean
-  sort: Int
-  status: String
   sunday: Boolean
   thursday: Boolean
   time_end: String
@@ -618,8 +643,6 @@ type businesshours {
   time_start: String
   time_start_func: time_functions
   tuesday: Boolean
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   wednesday: Boolean
 }
 
@@ -630,7 +653,6 @@ type businesshours_mutated {
 }
 
 type canteen_food_feedback_report_schedules {
-  alias: String
   date_created: Date
   date_created_func: datetime_functions
   date_next_report_is_due: Date
@@ -655,18 +677,19 @@ type canteen_food_feedback_report_schedules {
   send_report_at_hh_mm_func: time_functions
   sort: Int
   status: String
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  alias: String
 
   """
   Soll der Report nur Rückmeldungen enthalten, welche spezifisch für die Ausgewählten Mensen sind? Andernfalls werden alle Rückmeldungen der Speisen genutzt.
   """
   use_canteen_specific_feedbacks_only: Boolean
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   show_images: Boolean
-  canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
-  canteens_func: count_functions
   recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
   recipients_func: count_functions
+  canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
+  canteens_func: count_functions
 }
 
 type canteen_food_feedback_report_schedules_canteens {
@@ -715,14 +738,14 @@ type canteens {
   utilization_group(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): utilizations_groups
 
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   foodservice_hours(filter: canteens_foodservice_hours_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteens_foodservice_hours]
   foodservice_hours_func: count_functions
 }
@@ -769,20 +792,20 @@ type cashregisters_mutated {
 }
 
 type cashregisters_transactions {
-  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
-  date: Date
-  date_func: datetime_functions
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
-  id: ID!
+  cashregister(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): cashregisters
   name: String
   quantity: Float
-  sort: Int
-  status: String
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date: Date
+  date_func: datetime_functions
 }
 
 type cashregisters_transactions_mutated {
@@ -1977,11 +2000,6 @@ type foodoffers {
   calories_kcal: Float
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
   carbohydrate_g: Float
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
-  date: Date
-  date_func: date_functions
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -2000,6 +2018,11 @@ type foodoffers {
   sugar_g: Float
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
+  date: Date
+  date_func: date_functions
   salt_g: Float
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
@@ -2028,9 +2051,6 @@ type foods {
   calories_kcal: Float
   carbohydrate_g: Float
   category: String
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -2044,20 +2064,23 @@ type foods {
   image_thumb_hash: String
   protein_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   rating_average: Float
-  rating_average_legacy: Float
   saturated_fat_g: Float
   sort: Int
   status: String
   sugar_g: Float
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   salt_g: Float
-  feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
-  feedbacks_func: count_functions
   translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
   translations_func: count_functions
+  feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
+  feedbacks_func: count_functions
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
 }
@@ -2117,21 +2140,21 @@ type foods_feedbacks_labels {
 }
 
 type foods_feedbacks_labels_entries {
-  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_created: Date
   date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   date_updated: Date
   date_updated_func: datetime_functions
-  dislike: Boolean
-  food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
-  foodoffer(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foodoffers
-  id: ID!
-  label(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
-  sort: Int
-  status: String
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
+  canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  foodoffer(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foodoffers
+  label(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
+  dislike: Boolean
 }
 
 type foods_feedbacks_labels_entries_mutated {
@@ -2228,20 +2251,20 @@ type markings {
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   image_remote_url: String
   image_thumb_hash: String
-  show_on_card: Boolean
   sort: Int
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  show_on_card: Boolean
 
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
+  """Kürzel, welches Nutzern angezeigt werden soll"""
+  short_code: String
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
 
-  """Kürzel, welches Nutzern angezeigt werden soll"""
-  short_code: String
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
@@ -2250,8 +2273,8 @@ type markings {
 
 type markings_exclusions {
   id: ID!
-  restricted_by_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   restricted_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
+  restricted_by_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
 }
 
 type markings_exclusions_mutated {
@@ -2445,10 +2468,10 @@ type profiles_buildings_last_opened_mutated {
 }
 
 type profiles_markings {
-  dislike: Boolean
   id: ID!
   markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   profiles_id(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
+  dislike: Boolean
 }
 
 type profiles_markings_mutated {
@@ -2637,9 +2660,6 @@ type wikis {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-
-  """Icon from: https://icons.expo.fyi/Index"""
-  icon: String
   id: ID!
   parent(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
   position: Int
@@ -2651,6 +2671,9 @@ type wikis {
   url: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+
+  """Icon from: https://icons.expo.fyi/Index"""
+  icon: String
   children(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis]
   children_func: count_functions
   translations(filter: wikis_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [wikis_translations]
@@ -2678,13 +2701,13 @@ type wikis_mutated {
 }
 
 type wikis_translations {
-  be_source_for_translations: Boolean
-  content: String
   id: ID!
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
+  wikis_id(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
+  be_source_for_translations: Boolean
+  content: String
   let_be_translated: Boolean
   title: String
-  wikis_id(filter: wikis_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): wikis
 }
 
 type wikis_translations_mutated {
@@ -2716,15 +2739,21 @@ input apartments_filter {
   _or: [apartments_filter]
 }
 
+input app_settings_balance_translations_filter {
+  id: number_filter_operators
+  app_settings_id: app_settings_filter
+  languages_code: languages_filter
+  content: string_filter_operators
+  be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
+  _and: [app_settings_balance_translations_filter]
+  _or: [app_settings_balance_translations_filter]
+}
+
 input app_settings_filter {
   app_stores_url_to_apple: string_filter_operators
   app_stores_url_to_google: string_filter_operators
   balance_enabled: boolean_filter_operators
-  campus_enabled: boolean_filter_operators
-  campus_parsing_enabled: boolean_filter_operators
-  campus_parsing_last_date: date_filter_operators
-  campus_parsing_last_date_func: datetime_function_filter_operators
-  campus_parsing_status: string_filter_operators
   canteen_reports_enabled: boolean_filter_operators
   cashregisters_parsing_enabled: boolean_filter_operators
   cashregisters_parsing_last_date: date_filter_operators
@@ -2744,7 +2773,6 @@ input app_settings_filter {
   foods_feedbacks_custom_url: string_filter_operators
   foods_feedbacks_labels_type: string_filter_operators
   foods_parsing_enabled: boolean_filter_operators
-  foods_parsing_hash: string_filter_operators
   foods_parsing_last_date: date_filter_operators
   foods_parsing_last_date_func: datetime_function_filter_operators
   foods_parsing_status: string_filter_operators
@@ -2785,13 +2813,21 @@ input app_settings_filter {
   utilization_forecast_calculation_last_date: date_filter_operators
   utilization_forecast_calculation_last_date_func: datetime_function_filter_operators
   utilization_forecast_calculation_status: string_filter_operators
-  utilization_display_enabled: boolean_filter_operators
+  foods_parsing_hash: string_filter_operators
+  campus_enabled: boolean_filter_operators
+  campus_parsing_enabled: boolean_filter_operators
+  campus_parsing_last_date: date_filter_operators
+  campus_parsing_last_date_func: datetime_function_filter_operators
+  campus_parsing_status: string_filter_operators
   washingmachine_parsing_enabled: boolean_filter_operators
   washingmachine_parsing_last_date: date_filter_operators
   washingmachine_parsing_last_date_func: datetime_function_filter_operators
   washingmachine_parsing_status: string_filter_operators
+  utilization_display_enabled: boolean_filter_operators
   housing_translations: app_settings_housing_translations_filter
   housing_translations_func: count_function_filter_operators
+  balance_translations: app_settings_balance_translations_filter
+  balance_translations_func: count_function_filter_operators
   _and: [app_settings_filter]
   _or: [app_settings_filter]
 }
@@ -2883,16 +2919,18 @@ input businesshours_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  id: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: directus_users_filter
+  user_updated: directus_users_filter
   date_valid_from: date_filter_operators
   date_valid_from_func: date_function_filter_operators
   date_valid_till: date_filter_operators
   date_valid_till_func: date_function_filter_operators
   friday: boolean_filter_operators
-  id: string_filter_operators
   monday: boolean_filter_operators
   saturday: boolean_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
   sunday: boolean_filter_operators
   thursday: boolean_filter_operators
   time_end: string_filter_operators
@@ -2900,8 +2938,6 @@ input businesshours_filter {
   time_start: string_filter_operators
   time_start_func: time_function_filter_operators
   tuesday: boolean_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
   wednesday: boolean_filter_operators
   _and: [businesshours_filter]
   _or: [businesshours_filter]
@@ -2916,7 +2952,6 @@ input canteen_food_feedback_report_schedules_canteens_filter {
 }
 
 input canteen_food_feedback_report_schedules_filter {
-  alias: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_next_report_is_due: date_filter_operators
@@ -2937,14 +2972,15 @@ input canteen_food_feedback_report_schedules_filter {
   send_report_at_hh_mm_func: time_function_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  use_canteen_specific_feedbacks_only: boolean_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  alias: string_filter_operators
+  use_canteen_specific_feedbacks_only: boolean_filter_operators
   show_images: boolean_filter_operators
-  canteens: canteen_food_feedback_report_schedules_canteens_filter
-  canteens_func: count_function_filter_operators
   recipients: canteen_food_feedback_report_schedules_report_recipients_filter
   recipients_func: count_function_filter_operators
+  canteens: canteen_food_feedback_report_schedules_canteens_filter
+  canteens_func: count_function_filter_operators
   _and: [canteen_food_feedback_report_schedules_filter]
   _or: [canteen_food_feedback_report_schedules_filter]
 }
@@ -2971,8 +3007,8 @@ input canteens_filter {
   user_created: directus_users_filter
   user_updated: directus_users_filter
   utilization_group: utilizations_groups_filter
-  foodoffers_import_delete_all_without_dates: boolean_filter_operators
   foodoffers_import_without_date: boolean_filter_operators
+  foodoffers_import_delete_all_without_dates: boolean_filter_operators
   foodservice_hours: canteens_foodservice_hours_filter
   foodservice_hours_func: count_function_filter_operators
   _and: [canteens_filter]
@@ -3007,20 +3043,20 @@ input cashregisters_filter {
 }
 
 input cashregisters_transactions_filter {
-  cashregister: cashregisters_filter
-  date: date_filter_operators
-  date_func: datetime_function_filter_operators
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  id: string_filter_operators
+  cashregister: cashregisters_filter
   name: string_filter_operators
   quantity: number_filter_operators
-  sort: number_filter_operators
-  status: string_filter_operators
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
+  date: date_filter_operators
+  date_func: datetime_function_filter_operators
   _and: [cashregisters_transactions_filter]
   _or: [cashregisters_transactions_filter]
 }
@@ -3085,6 +3121,11 @@ input create_buildings_translations_input {
 input create_businesshours_input {
   date_created: Date
   date_updated: Date
+  id: ID
+  sort: Int
+  status: String
+  user_created: create_directus_users_input
+  user_updated: create_directus_users_input
 
   """Leave empty to use default; overridden by other defined ranges."""
   date_valid_from: Date
@@ -3092,18 +3133,13 @@ input create_businesshours_input {
   """Leave empty to use default; overridden by other defined ranges."""
   date_valid_till: Date
   friday: Boolean
-  id: ID
   monday: Boolean
   saturday: Boolean
-  sort: Int
-  status: String
   sunday: Boolean
   thursday: Boolean
   time_end: String
   time_start: String
   tuesday: Boolean
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   wednesday: Boolean
 }
 
@@ -3127,14 +3163,14 @@ input create_canteens_input {
   utilization_group: create_utilizations_groups_input
 
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   foodservice_hours: [create_canteens_foodservice_hours_input]
 }
 
@@ -3431,10 +3467,6 @@ input create_foodoffers_input {
   calories_kcal: Float
   canteen: create_canteens_input
   carbohydrate_g: Float
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
-  date: Date
   date_created: Date
   date_updated: Date
   fat_g: Float
@@ -3451,6 +3483,10 @@ input create_foodoffers_input {
   sugar_g: Float
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
+  date: Date
   salt_g: Float
   markings: [create_foodoffers_markings_input]
 }
@@ -3483,9 +3519,6 @@ input create_foods_input {
   calories_kcal: Float
   carbohydrate_g: Float
   category: String
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
   date_created: Date
   date_updated: Date
   extra: String
@@ -3497,18 +3530,21 @@ input create_foods_input {
   image_thumb_hash: String
   protein_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   rating_average: Float
-  rating_average_legacy: Float
   saturated_fat_g: Float
   sort: Int
   status: String
   sugar_g: Float
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   salt_g: Float
-  feedbacks: [create_foods_feedbacks_input]
   translations: [create_foods_translations_input]
+  feedbacks: [create_foods_feedbacks_input]
   markings: [create_foods_markings_input]
 }
 
@@ -3536,8 +3572,8 @@ input create_languages_input {
 
 input create_markings_exclusions_input {
   id: ID
-  restricted_by_markings_id: create_markings_input
   restricted_markings_id: create_markings_input
+  restricted_by_markings_id: create_markings_input
 }
 
 input create_markings_input {
@@ -3553,20 +3589,20 @@ input create_markings_input {
   image: create_directus_files_input
   image_remote_url: String
   image_thumb_hash: String
-  show_on_card: Boolean
   sort: Int
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  show_on_card: Boolean
 
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
+  """Kürzel, welches Nutzern angezeigt werden soll"""
+  short_code: String
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
 
-  """Kürzel, welches Nutzern angezeigt werden soll"""
-  short_code: String
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
   translations: [create_markings_translations_input]
   excluded_by_markings: [create_markings_exclusions_input]
 }
@@ -3618,10 +3654,10 @@ input create_profiles_input {
 }
 
 input create_profiles_markings_input {
-  dislike: Boolean
   id: ID
   markings_id: create_markings_input
   profiles_id: create_profiles_input
+  dislike: Boolean
 }
 
 input create_utilizations_entries_input {
@@ -4148,11 +4184,6 @@ input foodoffers_filter {
   calories_kcal: number_filter_operators
   canteen: canteens_filter
   carbohydrate_g: number_filter_operators
-  co2_g: number_filter_operators
-  co2_rating: string_filter_operators
-  co2_saving_percentage: number_filter_operators
-  date: date_filter_operators
-  date_func: date_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -4171,6 +4202,11 @@ input foodoffers_filter {
   sugar_g: number_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  co2_g: number_filter_operators
+  co2_saving_percentage: number_filter_operators
+  co2_rating: string_filter_operators
+  date: date_filter_operators
+  date_func: date_function_filter_operators
   salt_g: number_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
@@ -4245,9 +4281,6 @@ input foods_filter {
   calories_kcal: number_filter_operators
   carbohydrate_g: number_filter_operators
   category: string_filter_operators
-  co2_g: number_filter_operators
-  co2_rating: string_filter_operators
-  co2_saving_percentage: number_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -4261,20 +4294,23 @@ input foods_filter {
   image_thumb_hash: string_filter_operators
   protein_g: number_filter_operators
   rating_amount: number_filter_operators
-  rating_amount_legacy: number_filter_operators
   rating_average: number_filter_operators
-  rating_average_legacy: number_filter_operators
   saturated_fat_g: number_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
   sugar_g: number_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  rating_average_legacy: number_filter_operators
+  rating_amount_legacy: number_filter_operators
+  co2_g: number_filter_operators
+  co2_saving_percentage: number_filter_operators
+  co2_rating: string_filter_operators
   salt_g: number_filter_operators
-  feedbacks: foods_feedbacks_filter
-  feedbacks_func: count_function_filter_operators
   translations: foods_translations_filter
   translations_func: count_function_filter_operators
+  feedbacks: foods_feedbacks_filter
+  feedbacks_func: count_function_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
   _and: [foods_filter]
@@ -4318,8 +4354,8 @@ input languages_filter {
 
 input markings_exclusions_filter {
   id: number_filter_operators
-  restricted_by_markings_id: markings_filter
   restricted_markings_id: markings_filter
+  restricted_by_markings_id: markings_filter
   _and: [markings_exclusions_filter]
   _or: [markings_exclusions_filter]
 }
@@ -4336,14 +4372,14 @@ input markings_filter {
   image: directus_files_filter
   image_remote_url: string_filter_operators
   image_thumb_hash: string_filter_operators
-  show_on_card: boolean_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  hide_border: boolean_filter_operators
-  invert_background_color: boolean_filter_operators
+  show_on_card: boolean_filter_operators
   short_code: string_filter_operators
+  invert_background_color: boolean_filter_operators
+  hide_border: boolean_filter_operators
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
   excluded_by_markings: markings_exclusions_filter
@@ -4516,10 +4552,10 @@ input profiles_filter {
 }
 
 input profiles_markings_filter {
-  dislike: boolean_filter_operators
   id: number_filter_operators
   markings_id: markings_filter
   profiles_id: profiles_filter
+  dislike: boolean_filter_operators
   _and: [profiles_markings_filter]
   _or: [profiles_markings_filter]
 }
@@ -4624,6 +4660,11 @@ input update_buildings_translations_input {
 input update_businesshours_input {
   date_created: Date
   date_updated: Date
+  id: ID
+  sort: Int
+  status: String
+  user_created: update_directus_users_input
+  user_updated: update_directus_users_input
 
   """Leave empty to use default; overridden by other defined ranges."""
   date_valid_from: Date
@@ -4631,18 +4672,13 @@ input update_businesshours_input {
   """Leave empty to use default; overridden by other defined ranges."""
   date_valid_till: Date
   friday: Boolean
-  id: ID
   monday: Boolean
   saturday: Boolean
-  sort: Int
-  status: String
   sunday: Boolean
   thursday: Boolean
   time_end: String
   time_start: String
   tuesday: Boolean
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   wednesday: Boolean
 }
 
@@ -4666,14 +4702,14 @@ input update_canteens_input {
   utilization_group: update_utilizations_groups_input
 
   """
-  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
-  """
-  foodoffers_import_delete_all_without_dates: Boolean
-
-  """
   Beim Importieren von Speiseangeboten sind die Angebote für alle Tage gültig und haben daher kein Datum.
   """
   foodoffers_import_without_date: Boolean
+
+  """
+  Beim Importieren von Speiseangeboten werden alle statischen Speiseangebote gelöscht, also die ohne Datum.
+  """
+  foodoffers_import_delete_all_without_dates: Boolean
   foodservice_hours: [update_canteens_foodservice_hours_input]
 }
 
@@ -5011,10 +5047,6 @@ input update_foodoffers_input {
   calories_kcal: Float
   canteen: update_canteens_input
   carbohydrate_g: Float
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
-  date: Date
   date_created: Date
   date_updated: Date
   fat_g: Float
@@ -5031,6 +5063,10 @@ input update_foodoffers_input {
   sugar_g: Float
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
+  date: Date
   salt_g: Float
   markings: [update_foodoffers_markings_input]
 }
@@ -5063,9 +5099,6 @@ input update_foods_input {
   calories_kcal: Float
   carbohydrate_g: Float
   category: String
-  co2_g: Float
-  co2_rating: String
-  co2_saving_percentage: Float
   date_created: Date
   date_updated: Date
   extra: String
@@ -5077,18 +5110,21 @@ input update_foods_input {
   image_thumb_hash: String
   protein_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   rating_average: Float
-  rating_average_legacy: Float
   saturated_fat_g: Float
   sort: Int
   status: String
   sugar_g: Float
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  rating_average_legacy: Float
+  rating_amount_legacy: Int
+  co2_g: Float
+  co2_saving_percentage: Float
+  co2_rating: String
   salt_g: Float
-  feedbacks: [update_foods_feedbacks_input]
   translations: [update_foods_translations_input]
+  feedbacks: [update_foods_feedbacks_input]
   markings: [update_foods_markings_input]
 }
 
@@ -5116,8 +5152,8 @@ input update_languages_input {
 
 input update_markings_exclusions_input {
   id: ID
-  restricted_by_markings_id: update_markings_input
   restricted_markings_id: update_markings_input
+  restricted_by_markings_id: update_markings_input
 }
 
 input update_markings_input {
@@ -5133,20 +5169,20 @@ input update_markings_input {
   image: update_directus_files_input
   image_remote_url: String
   image_thumb_hash: String
-  show_on_card: Boolean
   sort: Int
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  show_on_card: Boolean
 
-  """Keinen Rand verwenden"""
-  hide_border: Boolean
+  """Kürzel, welches Nutzern angezeigt werden soll"""
+  short_code: String
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
 
-  """Kürzel, welches Nutzern angezeigt werden soll"""
-  short_code: String
+  """Keinen Rand verwenden"""
+  hide_border: Boolean
   translations: [update_markings_translations_input]
   excluded_by_markings: [update_markings_exclusions_input]
 }
@@ -5198,10 +5234,10 @@ input update_profiles_input {
 }
 
 input update_profiles_markings_input {
-  dislike: Boolean
   id: ID
   markings_id: update_markings_input
   profiles_id: update_profiles_input
+  dislike: Boolean
 }
 
 input update_utilizations_entries_input {
@@ -5327,7 +5363,6 @@ input wikis_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  icon: string_filter_operators
   id: string_filter_operators
   parent: wikis_filter
   position: number_filter_operators
@@ -5339,6 +5374,7 @@ input wikis_filter {
   url: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  icon: string_filter_operators
   children: wikis_filter
   children_func: count_function_filter_operators
   translations: wikis_translations_filter
@@ -5350,13 +5386,13 @@ input wikis_filter {
 }
 
 input wikis_translations_filter {
-  be_source_for_translations: boolean_filter_operators
-  content: string_filter_operators
   id: number_filter_operators
   languages_code: languages_filter
+  wikis_id: wikis_filter
+  be_source_for_translations: boolean_filter_operators
+  content: string_filter_operators
   let_be_translated: boolean_filter_operators
   title: string_filter_operators
-  wikis_id: wikis_filter
   _and: [wikis_translations_filter]
   _or: [wikis_translations_filter]
 }
