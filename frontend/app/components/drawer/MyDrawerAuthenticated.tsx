@@ -55,6 +55,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_price_group = useTranslation(TranslationKeys.price_group)
 	const translation_eating_habits = useTranslation(TranslationKeys.eating_habits)
 	const translation_notification = useTranslation(TranslationKeys.notification)
+	const translation_my_support_tickets = useTranslation(TranslationKeys.my_support_tickets)
 
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 
@@ -186,6 +187,14 @@ export const MyDrawerAuthenticated = (props: any) => {
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'support/app_feedbacks/index',
+				label: translation_my_support_tickets,
+				title: translation_my_support_tickets,
+				showBackButton: true,
+				icon: IconNames.support_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'support/app_feedbacks/detail/index',
 				label: translation_support_and_feedback,
 				title: translation_support_and_feedback,
 				showBackButton: true,

@@ -209,6 +209,8 @@ export enum TranslationKeys {
 	support_team = "support_team",
 	response = "response",
 	your_request = "your_request",
+	support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request = "support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request",
+	my_support_tickets = "my_support_tickets",
 	no_permission_for = "no_permission_for",
 	please_create_an_account = "please_create_an_account",
 	create_account = "create_account",
@@ -1460,6 +1462,26 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Ваш запрос',
 		[LanguageKeys.tr_TR]: 'Talebiniz',
 		[LanguageKeys.zh_CN]: '你的请求'
+	},
+	support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request: {
+		[LanguageKeys.de_DE]: 'Kein Account vorhanden oder E-Mail Adresse angegeben, daher können wir deine Anfrage nicht beantworten.',
+		[LanguageKeys.en_US]: 'No account provided or email address given, therefore we cannot answer your request.',
+		[LanguageKeys.ar_SA]: 'لم يتم توفير حساب أو تقديم عنوان بريد إلكتروني، لذا لا يمكننا الرد على طلبك.',
+		[LanguageKeys.es_ES]: 'No se proporcionó una cuenta o dirección de correo electrónico, por lo tanto no podemos responder a tu solicitud.',
+		[LanguageKeys.fr_FR]: 'Aucun compte fourni ou adresse e-mail donnée, nous ne pouvons donc pas répondre à votre demande.',
+		[LanguageKeys.ru_RU]: 'Учетная запись не предоставлена или не указан адрес электронной почты, поэтому мы не можем ответить на ваш запрос.',
+		[LanguageKeys.tr_TR]: 'Hesap sağlanmadı veya e-posta adresi verilmediği için talebinizi yanıtlayamıyoruz.',
+		[LanguageKeys.zh_CN]: '未提供帐户或提供电子邮件地址，因此我们无法回答您的请求。'
+	},
+	my_support_tickets: {
+		[LanguageKeys.de_DE]: 'Meine Support-Tickets',
+		[LanguageKeys.en_US]: 'My Support Tickets',
+		[LanguageKeys.ar_SA]: 'تذاكر الدعم الخاصة بي',
+		[LanguageKeys.es_ES]: 'Mis tickets de soporte',
+		[LanguageKeys.fr_FR]: 'Mes tickets de support',
+		[LanguageKeys.ru_RU]: 'Мои билеты поддержки',
+		[LanguageKeys.tr_TR]: 'Destek Biletlerim',
+		[LanguageKeys.zh_CN]: '我的支持票'
 	},
 	no_permission_for: {
 		[LanguageKeys.de_DE]: 'Keine Berechtigung für',

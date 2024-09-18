@@ -9,25 +9,25 @@ import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
 import {AppFeedbacks} from "@/helper/database/databaseTypes/types";
 import {useSynchedProfile} from "@/states/SynchedProfile";
 import {useCurrentRoleIsAdmin, useIsCurrentUserAnonymous} from "@/states/User";
-import {ListRenderItemInfo} from "react-native";
-import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
-import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
+import {SettingsRowNavigateSimple, SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {MyLinkCustom} from "@/components/link/MyLinkCustom";
 import {View} from "@/components/Themed";
 import {AnimationSupport} from "@/compositions/animations/AnimationSupport";
-import {SEARCH_PARAM_APPFEEDBACK_ID} from "@/app/(app)/support/app_feedbacks";
+import {fetchAppfeedbacks, getRouteToAppFeedbacks} from "@/app/(app)/support/app_feedbacks";
 import {DeveloperInformation} from "@/constants/DeveloperInformation";
 import {HrefHelper} from "@/helper/device/CommonSystemActionHelper";
-import {DateHelper} from "@/helper/date/DateHelper";
+import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
+import {getRouteForAppfeedbackDetails} from "@/app/(app)/support/app_feedbacks/detail";
 
 export const TABLE_NAME_APP_FEEDBACKS = 'app_feedbacks';
 
 export default function AppfeedbackScreen() {
-	const translation_create = useTranslation(TranslationKeys.create);
 	const translation_support_and_feedback = useTranslationSupportAndFeedback()
 	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
+
+	const translation_my_support_tickets = useTranslation(TranslationKeys.my_support_tickets)
 
 	const translation_email = useTranslation(TranslationKeys.email)
 	const translation_developer = useTranslation(TranslationKeys.developer)
@@ -36,38 +36,16 @@ export default function AppfeedbackScreen() {
 	const translation_software_name = useTranslation(TranslationKeys.software_name)
 
 	const [appSettings, setAppSettings] = useSynchedAppSettings();
-	const app_url_to_apple_store = appSettings?.app_url_to_apple_store
-	const app_url_to_google_store = appSettings?.app_url_to_google_store
+	const app_url_to_apple_store = appSettings?.app_stores_url_to_apple
+	const app_url_to_google_store = appSettings?.app_stores_url_to_google
 
 	const isAdmin = useCurrentRoleIsAdmin();
 	const isAnonymous = useIsCurrentUserAnonymous()
 	const [profile, setProfile, cacheHelperTypeProfile] = useSynchedProfile();
 	const [appfeedbacks, setAppfeedbacks] = React.useState<AppFeedbacks[]>([]);
 
-	async function fetchAppfeedbacks() {
-		if(isAnonymous) return [];
-
-		let filter_for_profile = {
-			profile_id: profile.id,
-		}
-
-		let filter_for_admin = {
-
-		}
-
-		let filter = isAdmin ? filter_for_admin : filter_for_profile;
-
-		const collectionHelper = new CollectionHelper<AppFeedbacks>(TABLE_NAME_APP_FEEDBACKS)
-		let feedbacks_remote = await collectionHelper.readItems({
-			fields: ['*'],
-			filters: filter,
-			limit: 100,
-		})
-		return feedbacks_remote;
-	}
-
 	async function loadAppfeedbacks() {
-		let feedbacks = await fetchAppfeedbacks();
+		let feedbacks = await fetchAppfeedbacks(isAnonymous, !!isAdmin, profile, 0, 0, 100);
 		setAppfeedbacks(feedbacks);
 	}
 
@@ -95,32 +73,6 @@ export default function AppfeedbackScreen() {
 		let Bdate = new Date(Bdate_created || 0);
 		return Bdate.getTime() - Adate.getTime();
 	});
-
-	const renderResource = (info: ListRenderItemInfo<DataItem>) => {
-		const {item, index} = info;
-		const resource = item.data;
-		const resource_id = resource.id
-		const title = resource.title || resource_id
-
-		let iconLeft = IconNames.message_send_icon;
-		if(resource.response){
-			iconLeft = IconNames.message_support_responded_icon
-		}
-		if(resource.response_read_by_user){
-			iconLeft = IconNames.message_response_read_by_user_icon
-		}
-		let now = new Date();
-		let labelRight = undefined
-		const usedDate = resource.date_updated || resource.date_created;
-		if(usedDate){
-			labelRight = DateHelper.formatOfferDateToReadable(new Date(usedDate), true, true);
-		}
-
-		return (
-			<SettingsRowNavigateWithText labelRight={labelRight} labelLeft={title} leftIcon={iconLeft} route={"/(app)/support/app_feedbacks?"+SEARCH_PARAM_APPFEEDBACK_ID+"="+resource_id} />
-		);
-
-	}
 
 	let accessibilityLabelDeveloperWebsite = translation_navigate_to+": "+translation_developer_homepage+" "+DeveloperInformation.companyWebsite;
 	let accessibilityLabelSoftwareWebsite = translation_navigate_to+": "+translation_software_homepage+" "+DeveloperInformation.softwareWebsite;
@@ -183,7 +135,10 @@ export default function AppfeedbackScreen() {
 			<ScrollViewWithGradient>
 				<AnimationSupport />
 				<SettingsRowGroup>
-					<SettingsRowNavigateWithText labelLeft={translation_support_and_feedback} leftIcon={IconNames.support_icon} route={"/(app)/support/app_feedbacks"} />
+					<SettingsRowNavigateWithText labelLeft={translation_support_and_feedback} leftIcon={IconNames.support_icon} route={getRouteForAppfeedbackDetails()} />
+					<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_my_support_tickets} >
+						<SettingsRowNavigateSimple translation_key={TranslationKeys.my_support_tickets} route={getRouteToAppFeedbacks()} leftIcon={IconNames.mail_icon} />
+					</AccountRequiredTouchableOpacity>
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					{renderedIosAppStoreLink}
@@ -191,11 +146,6 @@ export default function AppfeedbackScreen() {
 					{renderedDeveloperEmailLink}
 				</SettingsRowGroup>
 				<SettingsRowSpacer />
-				<SettingsRowGroup>
-					<MyGridFlatList
-						data={data} renderItem={renderResource} amountColumns={1}
-					/>
-				</SettingsRowGroup>
 				<SettingsRowGroup>
 					{renderedDeveloperInformation}
 				</SettingsRowGroup>
