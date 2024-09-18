@@ -580,6 +580,7 @@ export class ParseSchedule {
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
             await myFoodOffersService.createManyItems(batch);
             myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches);
+            batchIndex++;
         }
     }
 
