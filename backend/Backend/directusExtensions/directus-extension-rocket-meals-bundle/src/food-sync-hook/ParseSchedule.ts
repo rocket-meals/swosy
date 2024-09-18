@@ -391,7 +391,7 @@ export class ParseSchedule {
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update Food");
 
         // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 1000 });
+        const queue = new PQueue({ concurrency: 100 });
 
         let amountCompleted = 0;
 
@@ -536,7 +536,7 @@ export class ParseSchedule {
         }
 
         // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 1000 });
+        const queue = new PQueue({ concurrency: 100 });
 
         let amountCompleted = 0;
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - Create Food Offers");
