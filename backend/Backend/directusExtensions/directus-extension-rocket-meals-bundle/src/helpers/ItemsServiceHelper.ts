@@ -1,7 +1,8 @@
-import {AbstractService, ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
+import {ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
 import type {Filter} from "@directus/types/dist/filter";
 import {ApiContext} from "./ApiContext";
 import {PrimaryKey, Query} from "@directus/types";
+import {MySyncSharedKeyValueStorage} from "./MySyncSharedKeyValueStorage";
 
 export class ItemsServiceHelper<T>{
 
@@ -31,9 +32,14 @@ export class ItemsServiceHelper<T>{
         return await ItemsServiceHelper.findOrCreateItemWithApiContext<T>(this.apiContext, this.tablename, search, create);
     }
 
-    static async findOrCreateItemWithApiContext<T>(apiContext: ApiContext, tablename: string, search: Partial<T>, create: Partial<T>){
+    static async findOrCreateItemWithApiContext<T>(
+        apiContext: ApiContext,
+        tablename: string,
+        search: Partial<T>,
+        create: Partial<T>
+    ): Promise<T | undefined> {
         const itemsServiceCreator = new ItemsServiceCreator(apiContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
+        const itemsService = await itemsServiceCreator.getItemsService<T>(tablename);
 
         let andFilter: any[] = [];
         let fieldsOfItem = Object.keys(search);
@@ -48,18 +54,39 @@ export class ItemsServiceHelper<T>{
         let queryFilter: Filter = {_and: andFilter};
         const query = {filter: queryFilter};
 
-        let queriedItems = await itemsService.readByQuery(query);
-        let foundItem = queriedItems[0]
+        // Initialize key-value storage for synchronization (assuming Redis or in-memory
+        const lockTimeoutInSeconds = 2;
+        const lockTimeoutInMs = lockTimeoutInSeconds*1000
+        const retryDelayInMs = 100
+        const maxRetries = lockTimeoutInMs / retryDelayInMs
+        const syncStorage = new MySyncSharedKeyValueStorage(process.env, lockTimeoutInMs, "itemsServiceHelper_", retryDelayInMs, maxRetries);
 
-        let copiedCreateItem = JSON.parse(JSON.stringify(create));
-        if (!foundItem) {
-            copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
-            await itemsService.createOne(copiedCreateItem)
+        // Generate a unique lock key based on the search parameters (ensure it's unique to the combination of search fields)
+        const lockKey = `${tablename}:${JSON.stringify(search)}`;
 
+        // Try to acquire the lock
+        let lockAcquired = await syncStorage.set(lockKey, 'locked');
+        if (!lockAcquired) {
+            throw new Error(`Failed to acquire lock for ${lockKey}`);
         }
-        queriedItems = await itemsService.readByQuery(query);
-        foundItem = queriedItems[0]
-        return foundItem;
+
+        try {
+            let queriedItems = await itemsService.readByQuery(query);
+            let foundItem = queriedItems[0]
+
+            let copiedCreateItem = JSON.parse(JSON.stringify(create));
+            if (!foundItem) {
+                copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
+                await itemsService.createOne(copiedCreateItem)
+
+            }
+            queriedItems = await itemsService.readByQuery(query);
+            foundItem = queriedItems[0]
+            return foundItem;
+        } finally {
+            // Release the lock after the operation is done
+            await syncStorage.del(lockKey);
+        }
     }
 
     async createOne(create: Partial<T>): Promise<PrimaryKey>{

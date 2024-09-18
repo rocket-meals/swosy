@@ -27,6 +27,7 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
+import pLimit from "p-limit";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -443,14 +444,19 @@ export class ParseSchedule {
     }
 
     async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
-        let amountOfRawMealOffers = foodofferListForParser.length;
-        let currentRawMealOffer = 0;
-        console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers")
-        for (let foodofferForParser of foodofferListForParser) {
-            currentRawMealOffer++;
-            console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
-            await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions);
-        }
+        const amountOfRawMealOffers = foodofferListForParser.length;
+        console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers");
+
+        const limit = pLimit(20); // Limit concurrency to 20
+
+        const tasks = foodofferListForParser.map((foodofferForParser, index) => {
+            return limit(async () => {
+                console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions);
+            });
+        });
+
+        await Promise.all(tasks);
     }
 
     async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
