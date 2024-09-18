@@ -3,20 +3,20 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {Canteens, Cashregisters, UtilizationsGroups} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
-
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 
     private apiContext: ApiContext;
+    private eventContext?: EventContext;
     private myDatabaseHelper: MyDatabaseHelper;
 
-    //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
-
-    constructor(apiContext: ApiContext) {
+    constructor(apiContext: ApiContext, eventContext?: EventContext) {
         this.apiContext = apiContext;
-        this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
+        this.eventContext = eventContext;
+        this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext, this.eventContext);
     }
 
     async setStatus(status: FlowStatus) {
@@ -60,7 +60,7 @@ export class ParseSchedule {
     }
 
     async calcForecastForCanteen(canteen: Canteens){
-        //console.log("UtilizationSchedule: calc for canteen - label: "+canteen?.label);
+        //console.log("UtilizationSchedule: calc for canteen - label: "+canteen?.alias);
         //console.log(canteen);
 
         // for every canteen create a utilization group or find it
@@ -170,16 +170,16 @@ export class ParseSchedule {
         const assumedMaxLimit = realisticAverage*10; // normally during a single day only 6000 transactions are realistic, we set a limit of 10 times that value
 
         for(let cashregister of cashregisters){
-            console.log("cashregister_id: "+cashregister.id);
+            //console.log("cashregister_id: "+cashregister.id);
 
             // Instead we need to use the itemServiceCreator
             let transactions_ids_for_cashregister = await cashregisterHelper.getTransactionIdsForCashregister(cashregister.id, date_start, date_end, assumedMaxLimit);
 
             let amount_transactions_for_cashregister = transactions_ids_for_cashregister.length;
-            console.log("-- in timeslot: "+amount_transactions_for_cashregister)
+            //console.log("-- in timeslot: "+amount_transactions_for_cashregister)
             transactions += amount_transactions_for_cashregister;
         }
-        console.log("total: "+transactions)
+        //console.log("total: "+transactions)
 
         return transactions;
     }

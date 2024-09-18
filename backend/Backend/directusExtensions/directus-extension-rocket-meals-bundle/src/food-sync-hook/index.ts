@@ -11,24 +11,24 @@ import {MarkingParserInterface} from "./MarkingParserInterface";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
 import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {ApiContext} from "../helpers/ApiContext";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
+import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 const SCHEDULE_NAME = "food_parse";
 
 const DIRECTUS_TL1_FOOD_PATH = "/directus/tl1/foodPlan.csv"; // This is defined in docker-compose.yaml statically
 const DIRECTUS_TL1_MARKING_PATH = "/directus/tl1/markings.csv"; // This is defined in docker-compose.yaml statically
 
-function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
-    const env = apiContext.env;
-    const FOOD_SYNC_MODE = env.FOOD_SYNC_MODE; // Options: "TL1CSV", "TL1WEB", "SWOSY"
+function getFoodParser(): FoodParserInterface | null {
+    const FOOD_SYNC_MODE = EnvVariableHelper.getFoodSyncMode();
 
     switch (FOOD_SYNC_MODE) {
         case "TL1CSV":
             /* TL1 CSV FILE */
-            const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = env.FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH;
-            const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "latin1" as BufferEncoding;
+            const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = EnvVariableHelper.getFoodSyncTL1FileExportCsvFilePath();
+            const FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getFoodSyncTL1FileExportCsvFileEncoding();
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
@@ -36,7 +36,7 @@ function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
             return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(ftpFileReader));
         case "TL1WEB":
             /* TL1 URL */
-            const FOOD_SYNC_TL1WEB_EXPORT_URL = env.FOOD_SYNC_TL1WEB_EXPORT_URL;
+            const FOOD_SYNC_TL1WEB_EXPORT_URL = EnvVariableHelper.getFoodSyncTL1WebExportUrl();
             if(!FOOD_SYNC_TL1WEB_EXPORT_URL) {
                 console.log(SCHEDULE_NAME + ": no URL configured for TL1WEB");
                 return null;
@@ -47,7 +47,7 @@ function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
             return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(urlReader));
         case "SWOSY_API":
-            const FOOD_SYNC_SWOSY_API_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
+            const FOOD_SYNC_SWOSY_API_URL = EnvVariableHelper.getFoodImageSyncSwosyApiServerUrl();
             if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
                 return new FoodParserWithCustomerAdaptions(new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7));
             } else {
@@ -58,20 +58,19 @@ function getFoodParser(apiContext: ApiContext): FoodParserInterface | null {
     return null;
 }
 
-function getMarkingParser(apiContext: ApiContext): MarkingParserInterface | null {
-    const env = apiContext.env;
-    const MARKING_SYNC_MODE = env.MARKING_SYNC_MODE; // Options: "TL1CSV", "TL1WEB"
+function getMarkingParser(): MarkingParserInterface | null {
+    const MARKING_SYNC_MODE = EnvVariableHelper.getMarkingSyncMode();
 
     switch (MARKING_SYNC_MODE) {
         case "TL1CSV":
             /* TL1 CSV FILE */
-            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH;
-            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = env.MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING || "utf8" as BufferEncoding;
+            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFilePath();
+            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFileEncoding();
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
-            return new MarkingTL1Parser(apiContext, DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
+            return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
         case "SWOSY_API":
-            const FOOD_SYNC_SWOSY_API_URL = env.FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL;
+            const FOOD_SYNC_SWOSY_API_URL = EnvVariableHelper.getFoodImageSyncSwosyApiServerUrl();
             if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
                 return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7);
             } else {
@@ -88,20 +87,6 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         return;
     }
 
-    let usedFoodParser = getFoodParser(apiContext);
-    
-
-    if(!usedFoodParser) {
-        console.log(SCHEDULE_NAME + ": no food parser configured");
-    }
-
-    let usedMarkingParser = getMarkingParser(apiContext);
-    if(!usedMarkingParser) {
-        console.log(SCHEDULE_NAME + ": no marking parser configured");
-    }
-
-    const parseSchedule = new ParseSchedule(apiContext, usedFoodParser, usedMarkingParser);
-
     const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
     let collection = CollectionNames.APP_SETTINGS
@@ -113,7 +98,7 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
     });
 
     // filter all update actions where from value running to start want to change, since this is not allowed
-    filter(collection+'.items.update', async (input, {keys, collection}) => {
+    filter(collection+'.items.update', async (input: any, {keys, collection}) => {
         // Fetch the current item from the database
         if (!keys || keys.length === 0) {
             throw new Error("No keys provided for update");
@@ -131,8 +116,21 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
 
     action(
         collection + ".items.update",
-        async () => {
+        async (event, eventContext) => {
             try {
+                let usedFoodParser = getFoodParser();
+
+                if(!usedFoodParser) {
+                    console.log(SCHEDULE_NAME + ": no food parser configured");
+                }
+
+                let usedMarkingParser = getMarkingParser();
+                if(!usedMarkingParser) {
+                    console.log(SCHEDULE_NAME + ": no marking parser configured");
+                }
+
+                const parseSchedule = new ParseSchedule(apiContext, eventContext, usedFoodParser, usedMarkingParser);
+
                 await parseSchedule.parse(false);
             } catch (err) {
                 console.log(err);

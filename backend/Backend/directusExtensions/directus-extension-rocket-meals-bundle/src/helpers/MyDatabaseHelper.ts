@@ -20,13 +20,17 @@ import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {EmailOptions} from "@directus/api/dist/services/mail";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 export class MyDatabaseHelper {
 
     private apiContext: ApiContext;
+    private eventContext: EventContext | undefined;
 
-    constructor(apiContext: ApiContext) {
+    constructor(apiContext: ApiContext, eventContext?: EventContext) {
         this.apiContext = apiContext;
+        this.eventContext = eventContext; // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
+        // its better to use the eventContext, because of reusing the database connection instead of creating a new one
     }
 
     async getServerInfo() {
@@ -48,15 +52,15 @@ export class MyDatabaseHelper {
     }
 
     getAppSettingsHelper() {
-        return new AppSettingsHelper(this.apiContext);
+        return new AppSettingsHelper(this.apiContext, this.eventContext);
     }
 
     getAutoTranslationSettingsHelper() {
-        return new AutoTranslationSettingsHelper(this.apiContext);
+        return new AutoTranslationSettingsHelper(this.apiContext, this.eventContext);
     }
 
     getAppFeedbacksHelper() {
-        return new ItemsServiceHelper<AppFeedbacks>(this.apiContext, CollectionNames.APP_FEEDBACKS);
+        return new ItemsServiceHelper<AppFeedbacks>(this.apiContext, CollectionNames.APP_FEEDBACKS, this.eventContext);
     }
 
     getCashregisterHelper() {
@@ -64,78 +68,78 @@ export class MyDatabaseHelper {
     }
 
     getCollectionDatesLastUpdateHelper() {
-        return new ItemsServiceHelper<CollectionsDatesLastUpdate>(this.apiContext, CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
+        return new ItemsServiceHelper<CollectionsDatesLastUpdate>(this.apiContext, CollectionNames.COLLECTIONS_DATES_LAST_UPDATE, this.eventContext);
     }
 
     getFoodFeedbacksHelper() {
-        return new ItemsServiceHelper<FoodsFeedbacks>(this.apiContext, CollectionNames.FOODS_FEEDBACKS);
+        return new ItemsServiceHelper<FoodsFeedbacks>(this.apiContext, CollectionNames.FOODS_FEEDBACKS, this.eventContext);
     }
 
     getFoodsHelper() {
-        return new ItemsServiceHelper<Foods>(this.apiContext, CollectionNames.FOODS);
+        return new ItemsServiceHelper<Foods>(this.apiContext, CollectionNames.FOODS, this.eventContext);
     }
 
     getFoodFeedbackLabelsHelper() {
-        return new ItemsServiceHelper<FoodsFeedbacksLabels>(this.apiContext, CollectionNames.FOODS_FEEDBACK_LABELS);
+        return new ItemsServiceHelper<FoodsFeedbacksLabels>(this.apiContext, CollectionNames.FOODS_FEEDBACK_LABELS, this.eventContext);
     }
 
     getFoodFeedbackLabelEntriesHelper() {
-        return new ItemsServiceHelper<FoodsFeedbacksLabelsEntries>(this.apiContext, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
+        return new ItemsServiceHelper<FoodsFeedbacksLabelsEntries>(this.apiContext, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES, this.eventContext);
     }
 
     getFoodoffersHelper() {
-        return new ItemsServiceHelper<Foodoffers>(this.apiContext, CollectionNames.FOODOFFERS);
+        return new ItemsServiceHelper<Foodoffers>(this.apiContext, CollectionNames.FOODOFFERS, this.eventContext);
     }
 
     getDevicesHelper() {
-        return new ItemsServiceHelper<Devices>(this.apiContext, CollectionNames.DEVICES);
+        return new ItemsServiceHelper<Devices>(this.apiContext, CollectionNames.DEVICES, this.eventContext);
     }
 
     getPushNotificationsHelper() {
-        return new ItemsServiceHelper<PushNotifications>(this.apiContext, CollectionNames.PUSH_NOTIFICATIONS);
+        return new ItemsServiceHelper<PushNotifications>(this.apiContext, CollectionNames.PUSH_NOTIFICATIONS, this.eventContext);
     }
 
     getProfilesHelper() {
-        return new ItemsServiceHelper<Profiles>(this.apiContext, CollectionNames.PROFILES);
+        return new ItemsServiceHelper<Profiles>(this.apiContext, CollectionNames.PROFILES, this.eventContext);
     }
 
     getMarkingsHelper() {
-        return new ItemsServiceHelper<Markings>(this.apiContext, CollectionNames.MARKINGS);
+        return new ItemsServiceHelper<Markings>(this.apiContext, CollectionNames.MARKINGS, this.eventContext);
     }
 
     getMarkingsExclusionsHelper() {
-        return new ItemsServiceHelper<MarkingsExclusions>(this.apiContext, CollectionNames.MARKINGS_EXCLUSIONS);
+        return new ItemsServiceHelper<MarkingsExclusions>(this.apiContext, CollectionNames.MARKINGS_EXCLUSIONS, this.eventContext);
     }
 
     getCanteensHelper() {
-        return new ItemsServiceHelper<Canteens>(this.apiContext, CollectionNames.CANTEENS);
+        return new ItemsServiceHelper<Canteens>(this.apiContext, CollectionNames.CANTEENS, this.eventContext);
     }
 
     getApartmentsHelper() {
-        return new ItemsServiceHelper<Apartments>(this.apiContext, CollectionNames.APARTMENTS);
+        return new ItemsServiceHelper<Apartments>(this.apiContext, CollectionNames.APARTMENTS, this.eventContext);
     }
 
     getBuildingsHelper() {
-        return new ItemsServiceHelper<Buildings>(this.apiContext, CollectionNames.BUILDINGS);
+        return new ItemsServiceHelper<Buildings>(this.apiContext, CollectionNames.BUILDINGS, this.eventContext);
     }
 
     getNewsHelper() {
-        return new ItemsServiceHelper<News>(this.apiContext, CollectionNames.NEWS);
+        return new ItemsServiceHelper<News>(this.apiContext, CollectionNames.NEWS, this.eventContext);
     }
 
     getUsersHelper() {
-        return new ItemsServiceHelper<DirectusUsers>(this.apiContext, CollectionNames.USERS);
+        return new ItemsServiceHelper<DirectusUsers>(this.apiContext, CollectionNames.USERS, this.eventContext);
     }
 
     getUtilizationEntriesHelper() {
-        return new ItemsServiceHelper<UtilizationsEntries>(this.apiContext, CollectionNames.UTILIZATION_ENTRIES);
+        return new ItemsServiceHelper<UtilizationsEntries>(this.apiContext, CollectionNames.UTILIZATION_ENTRIES, this.eventContext);
     }
 
     getUtilizationGroupsHelper() {
-        return new ItemsServiceHelper<UtilizationsGroups>(this.apiContext, CollectionNames.UTILIZATION_GROUPS);
+        return new ItemsServiceHelper<UtilizationsGroups>(this.apiContext, CollectionNames.UTILIZATION_GROUPS, this.eventContext);
     }
 
     getWashingmachinesHelper() {
-        return new ItemsServiceHelper<Washingmachines>(this.apiContext, CollectionNames.WASHINGMACHINES);
+        return new ItemsServiceHelper<Washingmachines>(this.apiContext, CollectionNames.WASHINGMACHINES, this.eventContext);
     }
 }

@@ -13,6 +13,38 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
+    static getFoodSyncMode(): string {
+        return this.getEnvVariable("FOOD_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"
+    }
+
+    static getFoodSyncTL1FileExportCsvFilePath(): string {
+        return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
+    }
+
+    static getFoodSyncTL1FileExportCsvFileEncoding(): any {
+        return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "latin1" as BufferEncoding;
+    }
+
+    static getFoodSyncTL1WebExportUrl(): string {
+        return this.getEnvVariable("FOOD_SYNC_TL1WEB_EXPORT_URL");
+    }
+
+    static getFoodImageSyncSwosyApiServerUrl(): string {
+        return this.getEnvVariable("FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
+    }
+
+    static getMarkingSyncMode(): string {
+        return this.getEnvVariable("MARKING_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"
+    }
+
+    static getMarkingSyncTL1FileExportCsvFilePath(): string {
+        return this.getEnvVariable("MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
+    }
+
+    static getMarkingSyncTL1FileExportCsvFileEncoding(): any {
+        return this.getEnvVariable("MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "utf8" as BufferEncoding;
+    }
+
     static getEnvFieldNameForAutoTranslateApiKey(): string {
         return "AUTO_TRANSLATE_API_KEY";
     }

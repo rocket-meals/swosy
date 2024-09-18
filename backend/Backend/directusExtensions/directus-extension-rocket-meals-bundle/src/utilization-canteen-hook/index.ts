@@ -15,8 +15,6 @@ export default defineHook(async ({init, action}, apiContext) => {
         return;
     }
 
-    const parseSchedule = new ParseSchedule(apiContext);
-
     let myDatabaseHelper = new MyDatabaseHelper(apiContext);
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
         console.log(SCHEDULE_NAME + ": App started, resetting "+SCHEDULE_NAME);
@@ -25,9 +23,10 @@ export default defineHook(async ({init, action}, apiContext) => {
 
     action(
         collection + ".items.update",
-        async () => {
+        async (event, eventContext) => {
             //TODO check if field "parse_foods" is active
             try {
+                const parseSchedule = new ParseSchedule(apiContext, eventContext);
                 await parseSchedule.parse();
             } catch (err) {
                 console.log(err);

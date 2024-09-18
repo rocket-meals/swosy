@@ -2,6 +2,7 @@ import {PrimaryKey} from "@directus/types";
 import {Languages} from "../databaseTypes/types";
 import {ApiContext} from "./ApiContext";
 import {ItemsServiceCreator} from "./ItemsServiceCreator";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 const FIELD_TRANSLATION_LANGUAGE_CODE = "languages_code"; // TODO Import from directus-extension-auto-translation package the field name
 const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-translation package the field name
@@ -103,9 +104,10 @@ export class TranslationHelper {
         translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
         items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
         itemsTablename: string, // the name of the table of our item
-        apiContext: ApiContext
+        apiContext: ApiContext,
+        eventContext?: EventContext
     ) {
-        const itemsServiceCreator = new ItemsServiceCreator(apiContext);
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
         const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
 
         let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {"fields": ["*", "translations.*"]});

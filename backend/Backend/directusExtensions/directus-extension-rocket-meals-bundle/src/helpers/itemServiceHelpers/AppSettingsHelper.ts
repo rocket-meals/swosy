@@ -2,6 +2,7 @@ import {CollectionNames} from "../CollectionNames";
 import {AppSettings} from "../../databaseTypes/types";
 import {ApiContext} from "../ApiContext";
 import {ItemsServiceCreator} from "../ItemsServiceCreator";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 export class FlowStatus {
     public static readonly _statuses = {
@@ -26,17 +27,15 @@ export class AppSettingsHelper {
     static FIELD_APP_SETTINGS_FOODS_PARSING_LAST_RUN = "foods_parsing_last_date";
 
     private apiExtensionContext: ApiContext;
+    private eventContext: EventContext | undefined;
 
-    constructor(apiExtensionContext: ApiContext) {
+    constructor(apiExtensionContext: ApiContext, eventContext?: EventContext) {
         this.apiExtensionContext = apiExtensionContext;
-    }
-
-    private getDatabase() {
-        return this.apiExtensionContext.database;
+        this.eventContext = eventContext;
     }
 
     async setAppSettings(appSettings: Partial<AppSettings>) {
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext);
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext, this.eventContext);
         const itemsService = await itemsServiceCreator.getItemsService<AppSettings>(CollectionNames.APP_SETTINGS);
         await itemsService.upsertSingleton(appSettings);
         /**
@@ -47,7 +46,7 @@ export class AppSettingsHelper {
     }
 
     async getAppSettings(): Promise<Partial<AppSettings> | undefined | null> {
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext);
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext, this.eventContext);
         const itemsService = await itemsServiceCreator.getItemsService<AppSettings>(CollectionNames.APP_SETTINGS);
         return await itemsService.readSingleton({});
     }
@@ -70,9 +69,8 @@ export class AppSettingsHelper {
     }
 
     async setFoodNotificationStatus(status: FlowStatus) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            notifications_foods_status: status
+        await this.setAppSettings({
+            notifications_foods_status: status.toString()
         });
     }
 
@@ -85,9 +83,8 @@ export class AppSettingsHelper {
     }
 
     async setNewsParsingStatus(status: FlowStatus) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            news_parsing_status: status
+        await this.setAppSettings({
+            news_parsing_status: status.toString()
         });
     }
 
@@ -116,17 +113,17 @@ export class AppSettingsHelper {
     }
 
     async setApartmentParsingStatus(status: FlowStatus, lastRun: Date | null) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            housing_parsing_status: status,
+        await this.setAppSettings({
+            housing_parsing_status: status.toString(),
+            // @ts-ignore
             housing_parsing_last_date: lastRun
         });
     }
 
     async setWashingmachineParsingStatus(status: FlowStatus, lastRun: Date | null) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            washingmachine_parsing_status: status,
+        await this.setAppSettings({
+            washingmachine_parsing_status: status.toString(),
+            // @ts-ignore
             washingmachine_parsing_last_date: lastRun
         });
     }
@@ -156,9 +153,9 @@ export class AppSettingsHelper {
     }
 
     async setCashregisterParsingStatus(status: FlowStatus, lastRun: Date | null) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            cashregisters_parsing_status: status,
+        await this.setAppSettings({
+            cashregisters_parsing_status: status.toString(),
+            // @ts-ignore
             cashregisters_parsing_last_date: lastRun
         });
     }
@@ -181,9 +178,9 @@ export class AppSettingsHelper {
     }
 
     async setUtilizationForecastCalculationStatus(status: FlowStatus, lastRun: Date | null) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            utilization_forecast_calculation_status: status,
+        await this.setAppSettings({
+            utilization_forecast_calculation_status: status.toString(),
+            // @ts-ignore
             utilization_forecast_calculation_last_date: lastRun
         });
     }
@@ -213,9 +210,9 @@ export class AppSettingsHelper {
     }
 
     async setFoodParsingStatus(status: FlowStatus, lastRun: Date | null) {
-        let database = this.getDatabase();
-        await database(CollectionNames.APP_SETTINGS).update({
-            foods_parsing_status: status,
+        await this.setAppSettings({
+            foods_parsing_status: status.toString(),
+            // @ts-ignore
             foods_parsing_last_date: lastRun
         });
     }

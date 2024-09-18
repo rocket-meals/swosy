@@ -1,6 +1,7 @@
 import type {Accountability, PrimaryKey, Query, SchemaOverview, Item as DirectusItem, PermissionsAction} from '@directus/types';
 import type {Knex} from 'knex';
 import {ApiContext} from "./ApiContext";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 export type AbstractServiceOptions = {
     knex?: Knex | undefined;
@@ -78,10 +79,21 @@ class GetItemsService {
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts
 export class ItemsServiceCreator extends GetItemsService{
 
+    private eventContext: EventContext | undefined;
+
+    constructor(apiContext: ApiContext, eventContext?: EventContext) {
+        super(apiContext);
+        this.eventContext = eventContext;
+    }
+
     async getItemsService<Item>(tablename: string): Promise<ItemsService<Item>> {
         const {ItemsService} = this.apiContext.services;
-        let schema = await this.apiContext.getSchema();
-        let database = this.apiContext.database;
+        let schema = this.eventContext?.schema; // https://github.com/directus/directus/discussions/11051#discussioncomment-2014806
+        if(!schema){
+            schema = await this.apiContext.getSchema();
+        }
+
+        let database = this.eventContext?.database || this.apiContext.database; // https://github.com/directus/directus/discussions/11051#discussioncomment-2014806
         return new ItemsService(tablename, {
             accountability: null, //this makes us admin
             knex: database, //TODO: i think this is not neccessary

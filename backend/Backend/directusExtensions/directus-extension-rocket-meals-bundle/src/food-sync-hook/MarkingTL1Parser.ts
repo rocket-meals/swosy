@@ -1,8 +1,8 @@
 import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
 import {CSVExportParser} from "./CSVExportParser";
 import {TranslationHelper, TranslationsFromParsingType} from "../helpers/TranslationHelper";
-import {ApiContext} from "../helpers/ApiContext";
 import {SystemFileHelper} from "../helpers/SystemFileHelper";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 const FIELD_MARKING_TRANSLATION_NAME = "name"
 
@@ -11,11 +11,8 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     private path_to_tl1_export: string;
     private encoding: BufferEncoding;
     private parsedReport: {[p: string]: string}[];
-    // @ts-ignore
-    private apiContext: ApiContext
 
-    constructor(apiContext: ApiContext, path_to_tl1_marking_export: string, encoding: BufferEncoding) {
-        this.apiContext = apiContext
+    constructor(path_to_tl1_marking_export: string, encoding: BufferEncoding) {
         this.parsedReport = [];
         this.path_to_tl1_export = path_to_tl1_marking_export;
         this.encoding = encoding;
@@ -72,6 +69,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
         }
 
         let marking: MarkingsTypeForParser = {
+            excluded_by_markings: [],
             external_identifier: external_identifier,
             alias: name,
             translations: translations

@@ -15,7 +15,7 @@ import {DateHelper} from "../helpers/DateHelper";
 import {ListHelper} from "../helpers/ListHelper";
 import {
     Canteens,
-    Foodoffers,
+    Foodoffers, FoodoffersMarkings,
     Foods,
     FoodsMarkings,
     FoodsTranslations,
@@ -27,6 +27,7 @@ import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 import PQueue from "p-queue";
+import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -38,14 +39,16 @@ export class ParseSchedule {
     //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
     //private finished: boolean; // in multi instance environment this should be a field in the database
     private apiContext: ApiContext;
+    private eventContext: EventContext;
     private myDatabaseHelper: MyDatabaseHelper;
 
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
     private myAppSettingsHelper: AppSettingsHelper;
 
-    constructor(apiContext: ApiContext, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+    constructor(apiContext: ApiContext, eventContext: EventContext, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
         this.apiContext = apiContext;
-        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
+        this.eventContext = eventContext;
+        this.myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
         this.myAppSettingsHelper = this.myDatabaseHelper.getAppSettingsHelper();
         this.foodParser = foodParser;
         this.markingParser = markingParser;
@@ -329,7 +332,9 @@ export class ParseSchedule {
             let food_marking_json = {foods_id: food.id, markings_id: marking.id};
             const searchJSON = food_marking_json;
             const createJSON = food_marking_json;
-            await ItemsServiceHelper.findOrCreateItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, searchJSON, createJSON);
+
+            const foodMarkingsHelper = new ItemsServiceHelper<FoodsMarkings>(this.apiContext, tablename, this.eventContext);
+            await foodMarkingsHelper.findOrCreateItem(searchJSON, createJSON);
         }
     }
 
@@ -340,7 +345,8 @@ export class ParseSchedule {
 
         for (let marking of filteredMarkings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
-            await ItemsServiceHelper.createItemWithApiContext<FoodsMarkings>(this.apiContext, tablename, foodoffer_marking_json);
+            const foodMarkingsHelper = new ItemsServiceHelper<FoodoffersMarkings>(this.apiContext, tablename, this.eventContext);
+            await foodMarkingsHelper.createOne(foodoffer_marking_json);
         }
     }
 
@@ -349,7 +355,7 @@ export class ParseSchedule {
     }
 
     async updateFoodTranslations(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext);
+        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext, this.eventContext);
     }
 
     async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
@@ -605,7 +611,7 @@ export class ParseSchedule {
 
 
     async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.apiContext);
+        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.apiContext, this.eventContext);
     }
 
 }
