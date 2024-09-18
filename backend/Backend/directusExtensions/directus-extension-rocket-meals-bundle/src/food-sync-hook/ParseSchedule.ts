@@ -421,7 +421,7 @@ export class ParseSchedule {
 
                     //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                     amountCompleted++;
-                    myTimer.printEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
+                    myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
                 }
             });
         });

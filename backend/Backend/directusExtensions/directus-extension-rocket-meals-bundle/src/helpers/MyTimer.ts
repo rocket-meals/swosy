@@ -7,6 +7,7 @@ export class MyTimer {
     constructor(alias?: string) {
         this.alias = alias || "";
         this.resetTimer()
+        this.start(); // start timer immediately by default - user can still start it manually
     }
 
     public resetTimer() {
