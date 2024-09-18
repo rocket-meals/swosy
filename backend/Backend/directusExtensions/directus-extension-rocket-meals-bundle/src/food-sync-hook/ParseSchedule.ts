@@ -382,12 +382,14 @@ export class ParseSchedule {
         }
 
 
-        // Initialize the queue with a concurrency of 1000
-        const queue = new PQueue({ concurrency: 1000 });
+        // Initialize the queue with a concurrency of 100
+        const queue = new PQueue({ concurrency: 100 });
+
+        let amountCompleted = 0;
 
         const tasks = foodsInformationForParserList.map((foodsInformationForParser, index) => {
             return queue.add(async () => {
-                console.log("["+SCHEDULE_NAME+"]"+" - Start Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                //console.log("["+SCHEDULE_NAME+"]"+" - Start Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                 const basicFoodData = foodsInformationForParser.basicFoodData;
                 let searchJSON = {
                     id: basicFoodData.id,
@@ -409,7 +411,9 @@ export class ParseSchedule {
 
                     await this.updateFoodTranslations(foundFood, foodsInformationForParser);
 
-                    console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                    //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                    amountCompleted++;
+                    console.log("["+SCHEDULE_NAME+"]"+" - Completed " + amountCompleted + " / " + foodsInformationForParserList.length);
                 }
             });
         });
@@ -523,12 +527,14 @@ export class ParseSchedule {
             }
         }
 
-        // Initialize the queue with a concurrency of 1000
-        const queue = new PQueue({ concurrency: 1000 });
+        // Initialize the queue with a concurrency of 100
+        const queue = new PQueue({ concurrency: 100 });
+
+        let amountCompleted = 0;
 
         const tasks = foodofferListForParser.map((foodofferForParser, index) => {
             return queue.add(async () => {
-                console.log("["+SCHEDULE_NAME+"] - Start Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                //console.log("["+SCHEDULE_NAME+"] - Start Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
 
                 const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
                 const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
@@ -543,7 +549,9 @@ export class ParseSchedule {
 
                 if (canteen) {
                     await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
-                    console.log("["+SCHEDULE_NAME+"] - Finished Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                    //console.log("["+SCHEDULE_NAME+"] - Finished Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                    amountCompleted++;
+                    console.log("["+SCHEDULE_NAME+"]"+" - Completed " + amountCompleted + " / " + amountOfRawMealOffers);
                 }
             });
         });
