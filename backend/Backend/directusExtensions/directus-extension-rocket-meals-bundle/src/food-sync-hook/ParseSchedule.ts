@@ -3,7 +3,6 @@ import {
     CanteensTypeForParser,
     FoodofferDateType,
     FoodoffersTypeForParser,
-    FoodofferTypeForCreation,
     FoodParserInterface,
     FoodsInformationTypeForParser,
     FoodWithBasicData
@@ -27,7 +26,7 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
-import pLimit from "p-limit";
+import PQueue from "p-queue";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -490,28 +489,32 @@ export class ParseSchedule {
             }
         }
 
-        const limit = pLimit(100); // Limit concurrency to 20 - NOTE: No find and create operations should be done in parallel
+        // Initialize the queue with a concurrency of 100
+        const queue = new PQueue({ concurrency: 100 });
 
         const tasks = foodofferListForParser.map((foodofferForParser, index) => {
-            return limit(async () => {
-                console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+            return queue.add(async () => {
+                console.log("["+SCHEDULE_NAME+"] - Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+
                 const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
                 const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
                 const markings: Markings[] = [];
-                for(let marking_external_identifier of marking_external_identifiers){
+
+                for (let marking_external_identifier of marking_external_identifiers) {
                     const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
-                    if(!!marking){
+                    if (marking) {
                         markings.push(marking);
                     }
                 }
 
-                if(!!canteen){
+                if (canteen) {
                     await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
                 }
             });
         });
 
-        await Promise.all(tasks);
+        // Wait for all tasks in the queue to be processed
+        await queue.onIdle();
     }
 
     async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
