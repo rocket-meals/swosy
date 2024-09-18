@@ -27,6 +27,7 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
+import pLimit from "p-limit";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -403,54 +404,97 @@ export class ParseSchedule {
     }
 
 
-    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser, dictMarkingsExclusions: DictMarkingsExclusions) {
+    async createFoodOffer(foodofferForParser: FoodoffersTypeForParser, dictMarkingsExclusions: DictMarkingsExclusions, canteen: Canteens, markings: Markings[]) {
         const foodoffersHelper = this.myDatabaseHelper.getFoodoffersHelper();
 
-        let canteen_external_identifier = foodofferForParser.canteen_external_identifier
-        let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteen_external_identifier);
-        if (!!canteen) {
-            let food_id = foodofferForParser.food_id
-            const foodsService = await this.getFoodsService();
-            let foodFound = await foodsService.readOne(food_id);
-            if (!!foodFound) { // Check if meal exists
-                const basicFoodofferData = foodofferForParser.basicFoodofferData;
+        let food_id = foodofferForParser.food_id
+        const foodsService = await this.getFoodsService();
+        let foodFound = await foodsService.readOne(food_id);
+        if (!!foodFound) { // Check if meal exists
+            const basicFoodofferData = foodofferForParser.basicFoodofferData;
 
-                if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
-                    basicFoodofferData.alias = foodFound.alias; // Add alias to meal offer from meal
-                }
-                const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date
-                const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
+            if(!basicFoodofferData.alias){ // If alias is not set, try to get it from meal
+                basicFoodofferData.alias = foodFound.alias; // Add alias to meal offer from meal
+            }
+            const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date
+            const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
 
-                let foodOfferToCreate: FoodofferTypeForCreation = {
-                    ...foodofferForParser.basicFoodofferData,
-                    canteen: canteen.id,
-                    food: food_id,
-                    date: date,
-                    date_created: new Date().toISOString(),
-                    date_updated: new Date().toISOString()
-                }
+            let foodOfferToCreate: FoodofferTypeForCreation = {
+                ...foodofferForParser.basicFoodofferData,
+                canteen: canteen.id,
+                food: food_id,
+                date: date,
+                date_created: new Date().toISOString(),
+                date_updated: new Date().toISOString()
+            }
 
-                let foodoffer_id = await foodoffersHelper.createOne(foodOfferToCreate);
-                let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
+            let foodoffer_id = await foodoffersHelper.createOne(foodOfferToCreate);
+            let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
 
-                if (!!foodoffer) {
-                    let markings_external_identifiers = foodofferForParser.marking_external_identifiers
-                    let markings = await this.findOrCreateMarkingsByExternalIdentifierList(markings_external_identifiers);
-                    await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
-                }
+            if (!!foodoffer) {
+                await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
             }
         }
     }
 
     async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], dictMarkingsExclusions: DictMarkingsExclusions) {
-        let amountOfRawMealOffers = foodofferListForParser.length;
-        let currentRawMealOffer = 0;
-        console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers")
+        const amountOfRawMealOffers = foodofferListForParser.length;
+        console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers");
+
+        const dictCanteenExternalIdentifierToCanteen: Record<string, Canteens | null> = {};
+        const dictMarkingExternalIdentifierToMarking: Record<string, Markings |null> = {};
+
+        // fill the dicts with null values
         for (let foodofferForParser of foodofferListForParser) {
-            currentRawMealOffer++;
-            console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + currentRawMealOffer + " / " + amountOfRawMealOffers);
-            await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions);
+            let canteen_external_identifier = foodofferForParser.canteen_external_identifier;
+            dictCanteenExternalIdentifierToCanteen[canteen_external_identifier] = null;
+
+            let marking_external_identifiers = foodofferForParser.marking_external_identifiers;
+            for (let marking_external_identifier of marking_external_identifiers) {
+                dictMarkingExternalIdentifierToMarking[marking_external_identifier] = null;
+            }
         }
+
+        // create canteens
+        let canteenExternalIdentifiers = Object.keys(dictCanteenExternalIdentifierToCanteen);
+        for (let canteenExternalIdentifier of canteenExternalIdentifiers) {
+            let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
+            if(!!canteen){
+                dictCanteenExternalIdentifierToCanteen[canteenExternalIdentifier] = canteen;
+            }
+        }
+
+        // create markings
+        let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
+        for (let markingExternalIdentifier of markingExternalIdentifiers) {
+            let marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
+            if(!!marking){
+                dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
+            }
+        }
+
+        const limit = pLimit(20); // Limit concurrency to 20 - NOTE: No find and create operations should be done in parallel
+
+        const tasks = foodofferListForParser.map((foodofferForParser, index) => {
+            return limit(async () => {
+                console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
+                const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
+                const markings: Markings[] = [];
+                for(let marking_external_identifier of marking_external_identifiers){
+                    const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+                    if(!!marking){
+                        markings.push(marking);
+                    }
+                }
+
+                if(!!canteen){
+                    await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
+                }
+            });
+        });
+
+        await Promise.all(tasks);
     }
 
     async updateMarkings(markingsJSONList: MarkingsTypeForParser[]) {
