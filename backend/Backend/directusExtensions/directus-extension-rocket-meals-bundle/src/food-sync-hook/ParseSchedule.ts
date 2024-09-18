@@ -419,21 +419,38 @@ export class ParseSchedule {
             const foodoffers_import_without_date = !!canteen.foodoffers_import_without_date
             const date = foodoffers_import_without_date ? null : DateHelper.foodofferDateTypeToString(foodofferForParser.date);
 
-            let foodOfferToCreate: FoodofferTypeForCreation = {
+            const markingsCreate: any[] = markings.map(marking => {
+                return {
+                    foodoffers_id: "+",
+                    markings_id: {
+                        id: marking.id
+                    }
+                }
+            });
+
+            let foodOfferToCreate: Foodoffers = {
                 ...foodofferForParser.basicFoodofferData,
                 canteen: canteen.id,
                 food: food_id,
                 date: date,
                 date_created: new Date().toISOString(),
-                date_updated: new Date().toISOString()
+                date_updated: new Date().toISOString(),
+                markings: {
+                    // @ts-ignore
+                    "create": markingsCreate,
+                    "update": [],
+                    "delete": []
+                }
             }
 
             let foodoffer_id = await foodoffersHelper.createOne(foodOfferToCreate);
-            let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
 
-            if (!!foodoffer) {
-                await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
-            }
+            // replaced by directly assigning markings to foodoffer in the createOne method
+            //let foodoffer = await foodoffersHelper.readOne(foodoffer_id);
+
+            //if (!!foodoffer) {
+            //    await this.assignMarkingsToFoodoffer(markings, foodoffer, dictMarkingsExclusions);
+            //}
         }
     }
 
@@ -473,7 +490,7 @@ export class ParseSchedule {
             }
         }
 
-        const limit = pLimit(20); // Limit concurrency to 20 - NOTE: No find and create operations should be done in parallel
+        const limit = pLimit(100); // Limit concurrency to 20 - NOTE: No find and create operations should be done in parallel
 
         const tasks = foodofferListForParser.map((foodofferForParser, index) => {
             return limit(async () => {
