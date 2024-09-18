@@ -28,6 +28,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 import PQueue from "p-queue";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {MyTimer} from "../helpers/MyTimer";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -387,9 +388,10 @@ export class ParseSchedule {
             }
         }
 
+        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update Food");
 
         // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 100 });
+        const queue = new PQueue({ concurrency: 1000 });
 
         let amountCompleted = 0;
 
@@ -419,7 +421,7 @@ export class ParseSchedule {
 
                     //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                     amountCompleted++;
-                    console.log("["+SCHEDULE_NAME+"]"+" - Completed " + amountCompleted + " / " + foodsInformationForParserList.length);
+                    myTimer.printEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
                 }
             });
         });
@@ -534,9 +536,10 @@ export class ParseSchedule {
         }
 
         // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 100 });
+        const queue = new PQueue({ concurrency: 1000 });
 
         let amountCompleted = 0;
+        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Create Food Offers");
 
         const tasks = foodofferListForParser.map((foodofferForParser, index) => {
             return queue.add(async () => {
@@ -557,8 +560,10 @@ export class ParseSchedule {
                     await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
                     //console.log("["+SCHEDULE_NAME+"] - Finished Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
                     amountCompleted++;
-                    console.log("["+SCHEDULE_NAME+"]"+" - Completed " + amountCompleted + " / " + amountOfRawMealOffers);
+                    //console.log("["+SCHEDULE_NAME+"]"+" - Update Foodoffers Completed " + amountCompleted + " / " + amountOfRawMealOffers);
                 }
+
+                myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, amountOfRawMealOffers);
             });
         });
 

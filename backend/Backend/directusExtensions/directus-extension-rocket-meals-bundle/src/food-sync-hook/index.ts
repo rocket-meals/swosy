@@ -87,10 +87,9 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
         return;
     }
 
-    const myDatabaseHelper = new MyDatabaseHelper(apiContext);
-
     let collection = CollectionNames.APP_SETTINGS
 
+    const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
         console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
@@ -98,13 +97,14 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
     });
 
     // filter all update actions where from value running to start want to change, since this is not allowed
-    filter(collection+'.items.update', async (input: any, {keys, collection}) => {
+    filter(collection+'.items.update', async (input: any, {keys, collection}, eventContext) => {
         // Fetch the current item from the database
         if (!keys || keys.length === 0) {
             throw new Error("No keys provided for update");
         }
         // check if input has field FIELD_APP_SETTINGS_FOODS_PARSING_STATUS and if it is set to start
         if (input[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === FlowStatus.START) {
+            const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
             const parsingStatus = await myDatabaseHelper.getAppSettingsHelper().getFoodParsingStatus();
             if (parsingStatus === FlowStatus.RUNNING) {
                 throw new Error("Parsing is already running. Please wait until it is finished or set to "+FlowStatus.FINISHED+" manually.");
@@ -130,8 +130,7 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
                 }
 
                 const parseSchedule = new ParseSchedule(apiContext, eventContext, usedFoodParser, usedMarkingParser);
-
-                await parseSchedule.parse(false);
+                await parseSchedule.parse();
             } catch (err) {
                 console.log(err);
             }
