@@ -170,16 +170,16 @@ export class ParseSchedule {
         const assumedMaxLimit = realisticAverage*10; // normally during a single day only 6000 transactions are realistic, we set a limit of 10 times that value
 
         for(let cashregister of cashregisters){
-            //console.log("cashregister_id: "+cashregister.id);
+            console.log("cashregister_id: "+cashregister.id);
 
             // Instead we need to use the itemServiceCreator
             let transactions_ids_for_cashregister = await cashregisterHelper.getTransactionIdsForCashregister(cashregister.id, date_start, date_end, assumedMaxLimit);
 
             let amount_transactions_for_cashregister = transactions_ids_for_cashregister.length;
-            //console.log("-- in timeslot: "+amount_transactions_for_cashregister)
+            console.log("-- in timeslot: "+amount_transactions_for_cashregister)
             transactions += amount_transactions_for_cashregister;
         }
-        //console.log("total: "+transactions)
+        console.log("total: "+transactions)
 
         return transactions;
     }

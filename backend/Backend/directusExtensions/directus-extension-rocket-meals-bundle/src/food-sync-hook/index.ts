@@ -113,7 +113,7 @@ export default defineHook(async ({action, init, filter}, apiContext) => {
     });
 
     // filter all update actions where from value running to start want to change, since this is not allowed
-    filter(collection+'.items.update', async (input: any, {keys, collection}) => {
+    filter(collection+'.items.update', async (input, {keys, collection}) => {
         // Fetch the current item from the database
         if (!keys || keys.length === 0) {
             throw new Error("No keys provided for update");
