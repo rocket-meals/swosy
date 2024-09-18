@@ -363,27 +363,61 @@ export class ParseSchedule {
             }
         ); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
-        const amountOfMeals = foodsInformationForParserList.length;
-        for (let foodsInformationForParser of foodsInformationForParserList) {
-            currentFoodIndex++;
-
-            const basicFoodData = foodsInformationForParser.basicFoodData;
-            //console.log("["+SCHEDULE_NAME+"]"+" - Update Food " + currentFoodIndex + " / " + amountOfMeals);
-            let searchJSON = {
-                id: basicFoodData.id,
-            }
-            let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(searchJSON, searchJSON);
-            if (!!foundFood && foundFood.id && this.foodParser) {
-
-                let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
-                let markings = await this.findOrCreateMarkingsByExternalIdentifierList(marking_external_identifier_list);
-                await this.assignMarkingsToFood(markings, foundFood, dictMarkingsExclusions);
-
-                await this.updateFoodBasicFields(basicFoodData);
-
-                await this.updateFoodTranslations(foundFood, foodsInformationForParser);
+        // create dict with all marking external identifiers
+        const dictMarkingExternalIdentifierToMarking: Record<string, Markings | null> = {};
+        for(let foodsInformationForParser of foodsInformationForParserList){
+            let marking_external_identifiers = foodsInformationForParser.marking_external_identifiers;
+            for(let marking_external_identifier of marking_external_identifiers){
+                dictMarkingExternalIdentifierToMarking[marking_external_identifier] = null;
             }
         }
+
+        // create markings
+        let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
+        for (let markingExternalIdentifier of markingExternalIdentifiers) {
+            let marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
+            if(!!marking){
+                dictMarkingExternalIdentifierToMarking[markingExternalIdentifier] = marking;
+            }
+        }
+
+
+        // Initialize the queue with a concurrency of 1000
+        const queue = new PQueue({ concurrency: 1000 });
+
+        const tasks = foodsInformationForParserList.map((foodsInformationForParser, index) => {
+            return queue.add(async () => {
+                console.log("["+SCHEDULE_NAME+"]"+" - Start Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                const basicFoodData = foodsInformationForParser.basicFoodData;
+                let searchJSON = {
+                    id: basicFoodData.id,
+                }
+                let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(searchJSON, searchJSON);
+                if (!!foundFood && foundFood.id && this.foodParser) {
+
+                    let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
+                    let markings: Markings[] = [];
+                    for (let marking_external_identifier of marking_external_identifier_list) {
+                        let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+                        if(!!marking){
+                            markings.push(marking);
+                        }
+                    }
+                    await this.assignMarkingsToFood(markings, foundFood, dictMarkingsExclusions);
+
+                    await this.updateFoodBasicFields(basicFoodData);
+
+                    await this.updateFoodTranslations(foundFood, foodsInformationForParser);
+
+                    console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                }
+            });
+        });
+
+        // Wait for all tasks in the queue to be processed
+        await queue.onIdle();
+
+        console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Foods");
     }
 
 
@@ -489,12 +523,12 @@ export class ParseSchedule {
             }
         }
 
-        // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 100 });
+        // Initialize the queue with a concurrency of 1000
+        const queue = new PQueue({ concurrency: 1000 });
 
         const tasks = foodofferListForParser.map((foodofferForParser, index) => {
             return queue.add(async () => {
-                console.log("["+SCHEDULE_NAME+"] - Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
+                console.log("["+SCHEDULE_NAME+"] - Start Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
 
                 const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
                 const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
@@ -509,6 +543,7 @@ export class ParseSchedule {
 
                 if (canteen) {
                     await this.createFoodOffer(foodofferForParser, dictMarkingsExclusions, canteen, markings);
+                    console.log("["+SCHEDULE_NAME+"] - Finished Create Food Offer " + (index + 1) + " / " + amountOfRawMealOffers);
                 }
             });
         });
