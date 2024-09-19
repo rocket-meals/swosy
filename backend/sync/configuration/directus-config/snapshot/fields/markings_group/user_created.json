@@ -1,34 +1,34 @@
 {
-  "collection": "markings",
-  "field": "image",
+  "collection": "markings_group",
+  "field": "user_created",
   "type": "uuid",
   "meta": {
-    "collection": "markings",
+    "collection": "markings_group",
     "conditions": null,
-    "display": null,
+    "display": "user",
     "display_options": null,
-    "field": "image",
+    "field": "user_created",
     "group": null,
-    "hidden": false,
-    "interface": "file-image",
+    "hidden": true,
+    "interface": "select-dropdown-m2o",
     "note": null,
     "options": {
-      "folder": "bfc6d704-da2c-428e-84ee-b35e59c386d7"
+      "template": "{{avatar.$thumbnail}} {{first_name}} {{last_name}}"
     },
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 13,
+    "sort": 6,
     "special": [
-      "file"
+      "user-created"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "image",
-    "table": "markings",
+    "name": "user_created",
+    "table": "markings_group",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -40,7 +40,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_files",
+    "foreign_key_table": "directus_users",
     "foreign_key_column": "id"
   }
 }

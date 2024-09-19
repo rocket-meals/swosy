@@ -250,9 +250,9 @@ type Subscription {
   popup_events_mutated(event: EventEnum): popup_events_mutated
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
+  markings_mutated(event: EventEnum): markings_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   foods_mutated(event: EventEnum): foods_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   markings_translations_mutated(event: EventEnum): markings_translations_mutated
@@ -280,6 +280,8 @@ type Subscription {
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
   app_settings_balance_translations_mutated(event: EventEnum): app_settings_balance_translations_mutated
+  markings_group_translations_mutated(event: EventEnum): markings_group_translations_mutated
+  markings_group_mutated(event: EventEnum): markings_group_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2265,6 +2267,7 @@ type markings {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_group
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
@@ -2281,6 +2284,43 @@ type markings_exclusions_mutated {
   key: ID!
   event: EventEnum
   data: markings_exclusions
+}
+
+type markings_group {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  alias: String
+  external_identifier: String
+  translations(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_group_translations]
+  translations_func: count_functions
+}
+
+type markings_group_mutated {
+  key: ID!
+  event: EventEnum
+  data: markings_group
+}
+
+type markings_group_translations {
+  id: ID!
+  markings_group_id(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_group
+  languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
+type markings_group_translations_mutated {
+  key: ID!
+  event: EventEnum
+  data: markings_group_translations
 }
 
 type markings_mutated {
@@ -3579,6 +3619,28 @@ input create_markings_exclusions_input {
   restricted_by_markings_id: create_markings_input
 }
 
+input create_markings_group_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: create_directus_users_input
+  date_created: Date
+  user_updated: create_directus_users_input
+  date_updated: Date
+  alias: String
+  external_identifier: String
+  translations: [create_markings_group_translations_input]
+}
+
+input create_markings_group_translations_input {
+  id: ID
+  markings_group_id: create_markings_group_input
+  languages_code: create_languages_input
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
 input create_markings_input {
   """Interne Bezeichnung - Nicht sichtbar für Nutzer"""
   alias: String
@@ -3606,6 +3668,7 @@ input create_markings_input {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group: create_markings_group_input
   translations: [create_markings_translations_input]
   excluded_by_markings: [create_markings_exclusions_input]
 }
@@ -4385,12 +4448,42 @@ input markings_filter {
   short_code: string_filter_operators
   invert_background_color: boolean_filter_operators
   hide_border: boolean_filter_operators
+  group: markings_group_filter
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
   excluded_by_markings: markings_exclusions_filter
   excluded_by_markings_func: count_function_filter_operators
   _and: [markings_filter]
   _or: [markings_filter]
+}
+
+input markings_group_filter {
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  alias: string_filter_operators
+  external_identifier: string_filter_operators
+  translations: markings_group_translations_filter
+  translations_func: count_function_filter_operators
+  _and: [markings_group_filter]
+  _or: [markings_group_filter]
+}
+
+input markings_group_translations_filter {
+  id: number_filter_operators
+  markings_group_id: markings_group_filter
+  languages_code: languages_filter
+  name: string_filter_operators
+  be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
+  _and: [markings_group_translations_filter]
+  _or: [markings_group_translations_filter]
 }
 
 input markings_translations_filter {
@@ -5164,6 +5257,28 @@ input update_markings_exclusions_input {
   restricted_by_markings_id: update_markings_input
 }
 
+input update_markings_group_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: update_directus_users_input
+  date_created: Date
+  user_updated: update_directus_users_input
+  date_updated: Date
+  alias: String
+  external_identifier: String
+  translations: [update_markings_group_translations_input]
+}
+
+input update_markings_group_translations_input {
+  id: ID
+  markings_group_id: update_markings_group_input
+  languages_code: update_languages_input
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
 input update_markings_input {
   """Interne Bezeichnung - Nicht sichtbar für Nutzer"""
   alias: String
@@ -5191,6 +5306,7 @@ input update_markings_input {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group: update_markings_group_input
   translations: [update_markings_translations_input]
   excluded_by_markings: [update_markings_exclusions_input]
 }

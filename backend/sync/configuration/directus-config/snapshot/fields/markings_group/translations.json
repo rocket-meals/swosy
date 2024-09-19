@@ -1,9 +1,9 @@
 {
-  "collection": "markings",
+  "collection": "markings_group",
   "field": "translations",
   "type": "alias",
   "meta": {
-    "collection": "markings",
+    "collection": "markings_group",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -18,7 +18,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 16,
+    "sort": 10,
     "special": [
       "translations"
     ],

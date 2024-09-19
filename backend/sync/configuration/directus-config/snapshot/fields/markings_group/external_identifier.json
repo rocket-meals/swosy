@@ -1,23 +1,21 @@
 {
-  "collection": "markings",
-  "field": "icon",
+  "collection": "markings_group",
+  "field": "external_identifier",
   "type": "string",
   "meta": {
-    "collection": "markings",
+    "collection": "markings_group",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "icon",
+    "field": "external_identifier",
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": "Icon from: https://icons.expo.fyi/Index",
-    "options": {
-      "placeholder": "Iconfamily:Icon"
-    },
+    "note": null,
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 4,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,8 +23,8 @@
     "width": "full"
   },
   "schema": {
-    "name": "icon",
-    "table": "markings",
+    "name": "external_identifier",
+    "table": "markings_group",
     "data_type": "character varying",
     "default_value": null,
     "max_length": 255,

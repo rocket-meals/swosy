@@ -1,28 +1,28 @@
 {
-  "collection": "markings_translations",
+  "collection": "markings_group",
   "meta": {
     "accountability": "all",
     "archive_app_filter": true,
-    "archive_field": null,
-    "archive_value": null,
+    "archive_field": "status",
+    "archive_value": "archived",
     "collapse": "open",
-    "collection": "markings_translations",
+    "collection": "markings_group",
     "color": null,
     "display_template": null,
     "group": "markings",
-    "hidden": true,
-    "icon": "import_export",
+    "hidden": false,
+    "icon": null,
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 2,
-    "sort_field": null,
+    "sort": 1,
+    "sort_field": "sort",
     "translations": null,
-    "unarchive_value": null,
+    "unarchive_value": "draft",
     "versioning": false
   },
   "schema": {
-    "name": "markings_translations"
+    "name": "markings_group"
   }
 }

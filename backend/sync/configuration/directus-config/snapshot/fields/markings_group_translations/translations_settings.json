@@ -1,26 +1,25 @@
 {
-  "collection": "markings",
-  "field": "translations",
+  "collection": "markings_group_translations",
+  "field": "translations_settings",
   "type": "alias",
   "meta": {
-    "collection": "markings",
+    "collection": "markings_group_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "translations",
+    "field": "translations_settings",
     "group": null,
     "hidden": false,
-    "interface": "translations",
+    "interface": "group-raw",
     "note": null,
-    "options": {
-      "defaultOpenSplitView": true,
-      "userLanguage": true
-    },
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 16,
+    "sort": 5,
     "special": [
-      "translations"
+      "alias",
+      "group",
+      "no-data"
     ],
     "translations": null,
     "validation": null,

@@ -934,6 +934,30 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "markings_group_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "eb2b2943-5be9-4b4c-8cb0-c7ca72228b64"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "markings_group",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "09fe837f-abe5-49f3-992f-28c9688fef5c"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "markings_translations",
     "action": "read",
     "permissions": {},
@@ -1859,6 +1883,30 @@
       "*"
     ],
     "_syncId": "d828422a-5495-4127-9bc8-46de8abbbdfe"
+  },
+  {
+    "role": null,
+    "collection": "markings_group_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "2c3ac475-4ddc-4e5f-99a2-998b450f722e"
+  },
+  {
+    "role": null,
+    "collection": "markings_group",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "f2222642-0368-4d3a-899a-868e411046e7"
   },
   {
     "role": null,

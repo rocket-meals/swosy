@@ -1,35 +1,35 @@
 {
   "collection": "markings",
-  "field": "icon",
-  "type": "string",
+  "field": "group",
+  "type": "uuid",
   "meta": {
     "collection": "markings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "icon",
+    "field": "group",
     "group": null,
     "hidden": false,
-    "interface": "input",
-    "note": "Icon from: https://icons.expo.fyi/Index",
-    "options": {
-      "placeholder": "Iconfamily:Icon"
-    },
+    "interface": "select-dropdown-m2o",
+    "note": null,
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 12,
-    "special": null,
+    "sort": 11,
+    "special": [
+      "m2o"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "icon",
+    "name": "group",
     "table": "markings",
-    "data_type": "character varying",
+    "data_type": "uuid",
     "default_value": null,
-    "max_length": 255,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
@@ -38,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": null,
-    "foreign_key_column": null
+    "foreign_key_table": "markings_group",
+    "foreign_key_column": "id"
   }
 }

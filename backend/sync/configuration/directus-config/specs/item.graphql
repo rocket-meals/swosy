@@ -81,16 +81,16 @@ type Query {
   popup_events_translations_by_id(id: ID!, version: String): popup_events_translations
   popup_events_translations_aggregated(groupBy: [String], filter: popup_events_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [popup_events_translations_aggregated!]!
   popup_events_translations_by_version(version: String!, id: ID!): version_popup_events_translations
+  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
+  markings_by_id(id: ID!, version: String): markings
+  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
+  markings_by_version(version: String!, id: ID!): version_markings
   canteens(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteens!]!
   canteens_by_id(id: ID!, version: String): canteens
   canteens_aggregated(groupBy: [String], filter: canteens_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteens_aggregated!]!
   canteens_by_version(version: String!, id: ID!): version_canteens
   app_settings(version: String): app_settings
   app_settings_by_version(version: String!): version_app_settings
-  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
-  markings_by_id(id: ID!, version: String): markings
-  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
-  markings_by_version(version: String!, id: ID!): version_markings
   foods(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods!]!
   foods_by_id(id: ID!, version: String): foods
   foods_aggregated(groupBy: [String], filter: foods_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_aggregated!]!
@@ -199,6 +199,14 @@ type Query {
   app_settings_balance_translations_by_id(id: ID!, version: String): app_settings_balance_translations
   app_settings_balance_translations_aggregated(groupBy: [String], filter: app_settings_balance_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [app_settings_balance_translations_aggregated!]!
   app_settings_balance_translations_by_version(version: String!, id: ID!): version_app_settings_balance_translations
+  markings_group_translations(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_group_translations!]!
+  markings_group_translations_by_id(id: ID!, version: String): markings_group_translations
+  markings_group_translations_aggregated(groupBy: [String], filter: markings_group_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_group_translations_aggregated!]!
+  markings_group_translations_by_version(version: String!, id: ID!): version_markings_group_translations
+  markings_group(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_group!]!
+  markings_group_by_id(id: ID!, version: String): markings_group
+  markings_group_aggregated(groupBy: [String], filter: markings_group_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_group_aggregated!]!
+  markings_group_by_version(version: String!, id: ID!): version_markings_group
 }
 
 type Mutation {
@@ -242,10 +250,10 @@ type Mutation {
   create_popup_events_canteens_item(data: create_popup_events_canteens_input!): popup_events_canteens
   create_popup_events_translations_items(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_popup_events_translations_input!]): [popup_events_translations!]!
   create_popup_events_translations_item(data: create_popup_events_translations_input!): popup_events_translations
-  create_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_input!]): [canteens!]!
-  create_canteens_item(data: create_canteens_input!): canteens
   create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
   create_markings_item(data: create_markings_input!): markings
+  create_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_input!]): [canteens!]!
+  create_canteens_item(data: create_canteens_input!): canteens
   create_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_input!]): [foods!]!
   create_foods_item(data: create_foods_input!): foods
   create_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_input!]): [foodoffers!]!
@@ -300,6 +308,10 @@ type Mutation {
   create_markings_exclusions_item(data: create_markings_exclusions_input!): markings_exclusions
   create_app_settings_balance_translations_items(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_app_settings_balance_translations_input!]): [app_settings_balance_translations!]!
   create_app_settings_balance_translations_item(data: create_app_settings_balance_translations_input!): app_settings_balance_translations
+  create_markings_group_translations_items(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_group_translations_input!]): [markings_group_translations!]!
+  create_markings_group_translations_item(data: create_markings_group_translations_input!): markings_group_translations
+  create_markings_group_items(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_group_input!]): [markings_group!]!
+  create_markings_group_item(data: create_markings_group_input!): markings_group
   update_auto_translation_settings(data: update_auto_translation_settings_input!): auto_translation_settings
   update_directus_sync_id_map_items(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_directus_sync_id_map_input!): [directus_sync_id_map!]!
   update_directus_sync_id_map_batch(filter: directus_sync_id_map_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_directus_sync_id_map_input!]): [directus_sync_id_map!]!
@@ -361,13 +373,13 @@ type Mutation {
   update_popup_events_translations_items(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_popup_events_translations_input!): [popup_events_translations!]!
   update_popup_events_translations_batch(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_popup_events_translations_input!]): [popup_events_translations!]!
   update_popup_events_translations_item(id: ID!, data: update_popup_events_translations_input!): popup_events_translations
+  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
+  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
+  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_canteens_items(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteens_input!): [canteens!]!
   update_canteens_batch(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteens_input!]): [canteens!]!
   update_canteens_item(id: ID!, data: update_canteens_input!): canteens
   update_app_settings(data: update_app_settings_input!): app_settings
-  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
-  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
-  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_input!): [foods!]!
   update_foods_batch(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_input!]): [foods!]!
   update_foods_item(id: ID!, data: update_foods_input!): foods
@@ -449,6 +461,12 @@ type Mutation {
   update_app_settings_balance_translations_items(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_app_settings_balance_translations_input!): [app_settings_balance_translations!]!
   update_app_settings_balance_translations_batch(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_app_settings_balance_translations_input!]): [app_settings_balance_translations!]!
   update_app_settings_balance_translations_item(id: ID!, data: update_app_settings_balance_translations_input!): app_settings_balance_translations
+  update_markings_group_translations_items(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_group_translations_input!): [markings_group_translations!]!
+  update_markings_group_translations_batch(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_group_translations_input!]): [markings_group_translations!]!
+  update_markings_group_translations_item(id: ID!, data: update_markings_group_translations_input!): markings_group_translations
+  update_markings_group_items(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_group_input!): [markings_group!]!
+  update_markings_group_batch(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_group_input!]): [markings_group!]!
+  update_markings_group_item(id: ID!, data: update_markings_group_input!): markings_group
   delete_directus_sync_id_map_items(ids: [ID]!): delete_many
   delete_directus_sync_id_map_item(id: ID!): delete_one
   delete_buildings_items(ids: [ID]!): delete_many
@@ -489,10 +507,10 @@ type Mutation {
   delete_popup_events_canteens_item(id: ID!): delete_one
   delete_popup_events_translations_items(ids: [ID]!): delete_many
   delete_popup_events_translations_item(id: ID!): delete_one
-  delete_canteens_items(ids: [ID]!): delete_many
-  delete_canteens_item(id: ID!): delete_one
   delete_markings_items(ids: [ID]!): delete_many
   delete_markings_item(id: ID!): delete_one
+  delete_canteens_items(ids: [ID]!): delete_many
+  delete_canteens_item(id: ID!): delete_one
   delete_foods_items(ids: [ID]!): delete_many
   delete_foods_item(id: ID!): delete_one
   delete_foodoffers_items(ids: [ID]!): delete_many
@@ -547,6 +565,10 @@ type Mutation {
   delete_markings_exclusions_item(id: ID!): delete_one
   delete_app_settings_balance_translations_items(ids: [ID]!): delete_many
   delete_app_settings_balance_translations_item(id: ID!): delete_one
+  delete_markings_group_translations_items(ids: [ID]!): delete_many
+  delete_markings_group_translations_item(id: ID!): delete_one
+  delete_markings_group_items(ids: [ID]!): delete_many
+  delete_markings_group_item(id: ID!): delete_one
 }
 
 type Subscription {
@@ -589,9 +611,9 @@ type Subscription {
   popup_events_mutated(event: EventEnum): popup_events_mutated
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
+  markings_mutated(event: EventEnum): markings_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   foods_mutated(event: EventEnum): foods_mutated
   foodoffers_mutated(event: EventEnum): foodoffers_mutated
   markings_translations_mutated(event: EventEnum): markings_translations_mutated
@@ -619,6 +641,8 @@ type Subscription {
   canteen_food_feedback_report_schedules_canteens_mutated(event: EventEnum): canteen_food_feedback_report_schedules_canteens_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
   app_settings_balance_translations_mutated(event: EventEnum): app_settings_balance_translations_mutated
+  markings_group_translations_mutated(event: EventEnum): markings_group_translations_mutated
+  markings_group_mutated(event: EventEnum): markings_group_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2917,6 +2941,7 @@ type markings {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_group
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
   translations_func: count_functions
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
@@ -2963,6 +2988,7 @@ type markings_aggregated_count {
 
   """Keinen Rand verwenden"""
   hide_border: Int
+  group: Int
   translations: Int
 
   """
@@ -3008,6 +3034,99 @@ type markings_exclusions_mutated {
   key: ID!
   event: EventEnum
   data: markings_exclusions
+}
+
+type markings_group {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  alias: String
+  external_identifier: String
+  translations(filter: markings_group_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_group_translations]
+  translations_func: count_functions
+}
+
+type markings_group_aggregated {
+  group: JSON
+  countAll: Int
+  count: markings_group_aggregated_count
+  countDistinct: markings_group_aggregated_count
+  avg: markings_group_aggregated_fields
+  sum: markings_group_aggregated_fields
+  avgDistinct: markings_group_aggregated_fields
+  sumDistinct: markings_group_aggregated_fields
+  min: markings_group_aggregated_fields
+  max: markings_group_aggregated_fields
+}
+
+type markings_group_aggregated_count {
+  id: Int
+  status: Int
+  sort: Int
+  user_created: Int
+  date_created: Int
+  user_updated: Int
+  date_updated: Int
+  alias: Int
+  external_identifier: Int
+  translations: Int
+}
+
+type markings_group_aggregated_fields {
+  sort: Float
+}
+
+type markings_group_mutated {
+  key: ID!
+  event: EventEnum
+  data: markings_group
+}
+
+type markings_group_translations {
+  id: ID!
+  markings_group_id(filter: markings_group_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_group
+  languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
+type markings_group_translations_aggregated {
+  group: JSON
+  countAll: Int
+  count: markings_group_translations_aggregated_count
+  countDistinct: markings_group_translations_aggregated_count
+  avg: markings_group_translations_aggregated_fields
+  sum: markings_group_translations_aggregated_fields
+  avgDistinct: markings_group_translations_aggregated_fields
+  sumDistinct: markings_group_translations_aggregated_fields
+  min: markings_group_translations_aggregated_fields
+  max: markings_group_translations_aggregated_fields
+}
+
+type markings_group_translations_aggregated_count {
+  id: Int
+  markings_group_id: Int
+  languages_code: Int
+  name: Int
+  be_source_for_translations: Int
+  let_be_translated: Int
+}
+
+type markings_group_translations_aggregated_fields {
+  id: Float
+}
+
+type markings_group_translations_mutated {
+  key: ID!
+  event: EventEnum
+  data: markings_group_translations
 }
 
 type markings_mutated {
@@ -4340,6 +4459,7 @@ type version_markings {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group: JSON
   translations: JSON
   excluded_by_markings: JSON
 }
@@ -4349,6 +4469,30 @@ type version_markings_exclusions {
   id: ID
   restricted_markings_id: JSON
   restricted_by_markings_id: JSON
+}
+
+""""""
+type version_markings_group {
+  id: ID
+  status: String
+  sort: Int
+  user_created: JSON
+  date_created: Date
+  user_updated: JSON
+  date_updated: Date
+  alias: String
+  external_identifier: String
+  translations: JSON
+}
+
+""""""
+type version_markings_group_translations {
+  id: ID
+  markings_group_id: JSON
+  languages_code: JSON
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 """"""
@@ -5790,6 +5934,28 @@ input create_markings_exclusions_input {
   restricted_by_markings_id: create_markings_input
 }
 
+input create_markings_group_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: create_directus_users_input
+  date_created: Date
+  user_updated: create_directus_users_input
+  date_updated: Date
+  alias: String
+  external_identifier: String
+  translations: [create_markings_group_translations_input]
+}
+
+input create_markings_group_translations_input {
+  id: ID
+  markings_group_id: create_markings_group_input
+  languages_code: create_languages_input
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
 input create_markings_input {
   """Interne Bezeichnung - Nicht sichtbar für Nutzer"""
   alias: String
@@ -5817,6 +5983,7 @@ input create_markings_input {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group: create_markings_group_input
   translations: [create_markings_translations_input]
   excluded_by_markings: [create_markings_exclusions_input]
 }
@@ -6589,12 +6756,42 @@ input markings_filter {
   short_code: string_filter_operators
   invert_background_color: boolean_filter_operators
   hide_border: boolean_filter_operators
+  group: markings_group_filter
   translations: markings_translations_filter
   translations_func: count_function_filter_operators
   excluded_by_markings: markings_exclusions_filter
   excluded_by_markings_func: count_function_filter_operators
   _and: [markings_filter]
   _or: [markings_filter]
+}
+
+input markings_group_filter {
+  id: string_filter_operators
+  status: string_filter_operators
+  sort: number_filter_operators
+  user_created: directus_users_filter
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  user_updated: directus_users_filter
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  alias: string_filter_operators
+  external_identifier: string_filter_operators
+  translations: markings_group_translations_filter
+  translations_func: count_function_filter_operators
+  _and: [markings_group_filter]
+  _or: [markings_group_filter]
+}
+
+input markings_group_translations_filter {
+  id: number_filter_operators
+  markings_group_id: markings_group_filter
+  languages_code: languages_filter
+  name: string_filter_operators
+  be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
+  _and: [markings_group_translations_filter]
+  _or: [markings_group_translations_filter]
 }
 
 input markings_translations_filter {
@@ -7439,6 +7636,28 @@ input update_markings_exclusions_input {
   restricted_by_markings_id: update_markings_input
 }
 
+input update_markings_group_input {
+  id: ID
+  status: String
+  sort: Int
+  user_created: update_directus_users_input
+  date_created: Date
+  user_updated: update_directus_users_input
+  date_updated: Date
+  alias: String
+  external_identifier: String
+  translations: [update_markings_group_translations_input]
+}
+
+input update_markings_group_translations_input {
+  id: ID
+  markings_group_id: update_markings_group_input
+  languages_code: update_languages_input
+  name: String
+  be_source_for_translations: Boolean
+  let_be_translated: Boolean
+}
+
 input update_markings_input {
   """Interne Bezeichnung - Nicht sichtbar für Nutzer"""
   alias: String
@@ -7466,6 +7685,7 @@ input update_markings_input {
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
+  group: update_markings_group_input
   translations: [update_markings_translations_input]
   excluded_by_markings: [update_markings_exclusions_input]
 }
