@@ -4,6 +4,8 @@ export class NonPersistentStore {
 
 	static currentUser = 'NonPersistentStore.currentUser'
 
+	static showItemsWithEveryStatus = 'NonPersistentStore.showItemsWithEveryStatus'
+
 	static textDimensions = 'NonPersistentStore.textDimensions'
 	static iconDimensions = 'NonPersistentStore.iconDimensions'
 	static foodFeedbacks = 'NonPersistentStore.foodFeedbacks'

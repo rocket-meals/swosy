@@ -8,6 +8,10 @@ import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
+import SimpleBadge from "@/components/badge/SimpleBadge";
+import {IconNames} from "@/constants/IconNames";
+import SimpleBadgeIconButton from "@/components/badge/SimpleBadgeIconButton";
+import {ItemStatus} from "@/helper/database/ItemStatus";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
@@ -26,6 +30,7 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
 
 	const translation_select = useTranslation(TranslationKeys.select);
+	const translation_archived = useTranslation(TranslationKeys.archived);
 
 	const amountColumns = useMyGridListDefaultColumns();
 
@@ -69,11 +74,16 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     		}
     	}
 
+		const topRightComponent = canteen.status === ItemStatus.ARCHIVED ? (
+			<SimpleBadgeIconButton icon={IconNames.archived_icon} accessibilityLabel={translation_archived}/>
+		) : undefined
+
     	return (
     		<MyCardForResourcesWithImage
     			key={item.key}
     			heading={text}
 				separatorColor={foodsAreaColor}
+				topRightComponent={topRightComponent}
     			assetId={imageAssetId}
     			image_url={image_url}
     			thumbHash={thumbHash}

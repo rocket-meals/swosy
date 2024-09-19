@@ -327,6 +327,7 @@ export enum TranslationKeys {
 	button_disabled = "button_disabled",
 	select = "select",
 	upload = "upload",
+	archived = "archived",
 	is_loading = "is_loading",
 	camera = "camera",
 	gallery = "gallery",
@@ -446,6 +447,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Продолжить с кэшем',
 		[LanguageKeys.tr_TR]: 'Önbellekle devam et',
 		[LanguageKeys.zh_CN]: '继续使用缓存'
+	},
+	archived: {
+		[LanguageKeys.de_DE]: 'Archiviert',
+		[LanguageKeys.en_US]: 'Archived',
+		[LanguageKeys.ar_SA]: 'أرشفة',
+		[LanguageKeys.es_ES]: 'Archivado',
+		[LanguageKeys.fr_FR]: 'Archivé',
+		[LanguageKeys.ru_RU]: 'Архивировано',
+		[LanguageKeys.tr_TR]: 'Arşivlendi',
+		[LanguageKeys.zh_CN]: '已归档'
 	},
 	loggingInPleaseWait: {
 		[LanguageKeys.de_DE]: 'Anmelden, bitte warten',

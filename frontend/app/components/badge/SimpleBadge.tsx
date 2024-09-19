@@ -1,7 +1,6 @@
 import {useProjectColor} from '@/states/ProjectInfo';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
-import {View, Text, Icon} from "@/components/Themed";
-import {IconNames} from "@/constants/IconNames";
+import {Icon, Text, View} from "@/components/Themed";
 
 export type SimpleBadgeProps = {
   text: string;

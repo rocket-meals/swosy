@@ -90,6 +90,9 @@ export class IconNames {
 
     static server_icon = 'server'
 
+    static archived_icon = 'archive'
+    static archived_restore_icon = 'archive-arrow-up'
+
     static comment_icon = 'chat'
     static comment_send_icon = 'send'
 
