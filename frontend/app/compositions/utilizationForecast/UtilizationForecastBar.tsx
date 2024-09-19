@@ -3,6 +3,8 @@ import {DimensionValue} from 'react-native';
 import {useMyContrastColor} from '@/helper/color/MyContrastColor';
 import {Text, View} from '@/components/Themed';
 import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
+import {useIsDebug} from "@/states/Debug";
+import {UtilizationData} from "@/compositions/utilizationForecast/UtilizationForecastRow";
 
 const paddingLeft = 5;
 
@@ -12,6 +14,7 @@ const paddingLeft = 5;
 export type UtilizationForecastBarProps = {
     width: DimensionValue,
     height: DimensionValue,
+	populartime?: UtilizationData,
 	maxHeight: DimensionValue,
     bgColor: string,
     textInside: string | null,
@@ -21,20 +24,31 @@ export type UtilizationForecastBarProps = {
     tooltip?: string
 }
 export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
+	const isDebug = useIsDebug()
 	const width = props?.width;
 	const height = props?.height
 	const maxHeight = props?.maxHeight
 	const bgColor = props?.bgColor;
 	const textInside = props?.textInside;
 	const textBelow = props?.textBelow;
-	let isActive = props?.isActive
+	const populartime = props?.populartime;
+	let isActive: boolean | undefined = props?.isActive;
 
 	const bgContrast = useMyContrastColor(bgColor)
 
-	isActive = true;
 	const borderColor = isActive ? bgContrast : 'transparent';
 
-	const textStyle = {color: bgContrast}
+	function renderDebug() {
+		if (!isDebug) {
+			return null;
+		}
+
+		return (
+			<View style={{flexDirection: 'column', alignItems: 'center', borderColor: "red", borderWidth: 1}}>
+				<Text>{populartime?.percentage+"%"}</Text>
+			</View>
+		)
+	}
 
 	return (
 		<Tooltip
@@ -63,7 +77,6 @@ export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
 									height: height,
 									borderRadius: 10,
 									borderWidth: 2,
-									borderColor: borderColor,
 									backgroundColor: bgColor,
 									justifyContent: 'center',
 									alignItems: 'center',
@@ -81,7 +94,8 @@ export const UtilizationForecastBar = (props: UtilizationForecastBarProps) => {
 								</View>
 							</View>
 						</View>
-						<Text >{textBelow}</Text>
+						<Text>{textBelow}</Text>
+						{renderDebug()}
 					</View>
 				)
 			}}

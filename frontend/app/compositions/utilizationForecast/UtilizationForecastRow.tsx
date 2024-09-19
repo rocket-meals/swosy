@@ -4,6 +4,7 @@ import {UtilizationForecastBar} from './UtilizationForecastBar';
 import {useViewBackgroundColor, View, Text} from '@/components/Themed';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {useLighterOrDarkerColorForSelection} from "@/helper/color/MyContrastColor";
+import {useIsDebug} from "@/states/Debug";
 
 const paddingLeft = 5;
 
@@ -23,17 +24,19 @@ export type UtilizationData = {
 }
 
 export function clampNumberToPercentage(value: number): Percentage {
+	value = Math.round(value);
 	return Math.min(100, Math.max(0, value)) as Percentage;
 }
 
 export type UtilizationForecastRowProps = {
-	percentage_until_low?: Percentage,
-	percentage_until_medium?: Percentage,
-	percentage_until_high?: Percentage,
+	percentage_until_low: Percentage,
+	percentage_until_medium: Percentage,
+	percentage_until_high: Percentage,
     // utilization is a dict with key to UtilizationData
     data: UtilizationDictData
 }
 export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
+	const isDebug = useIsDebug()
 	const translation_utilization = useTranslation(TranslationKeys.utilization);
 	const translation_time_of_day = useTranslation(TranslationKeys.time_of_day);
 
@@ -45,10 +48,9 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 	const utilization = props?.data
 
 	function getColorForTraffic(traffic: number | undefined) {
-		const maxValue = 100;
-		const lowest = props.percentage_until_low || (0)*maxValue;
-		const medium = props.percentage_until_medium ||  (3.0/6.0)*maxValue;
-		const max = props.percentage_until_high || (5.0/6.0)*maxValue;
+		const lowest = props.percentage_until_low
+		const medium = props.percentage_until_medium
+		const max = props.percentage_until_high
 
 		const colors = {
 			[lowest+'']: '#93c34b',
@@ -78,41 +80,29 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		return lastColor;
 	}
 
-	function getBestIndexToScrollTo(now: Date, utilization: UtilizationDictData) {
+	function getCurrentActiveIndex(date: Date, utilization: UtilizationDictData) {
 		let activeIndex = -1;
-		let firstIndexPercentageNotZero = -1;
-		let lastIndexPercentageNotZero = -1;
-
-		const populartimes = utilization;
-
-		const keys = Object.keys(populartimes);
+		const keys = Object.keys(utilization);
 
 		let compareTime: Date | null = null;
 		let diffInMinutes: null | number = null;
 
 		for (let i = 0; i < keys.length; i++) { //search in all for the maximum value
-			const populartime = populartimes[keys[i]];
+			const populartime = utilization[keys[i]];
 
 			const time = populartime.start || '';
-			const percentage = populartime.percentage;
-			if(percentage !== 0 && firstIndexPercentageNotZero === -1){
-				firstIndexPercentageNotZero = i;
-			}
-			if(percentage !== 0){
-				lastIndexPercentageNotZero = i;
-			}
 
 			const timeParts = time.split(':');
 			const HH = timeParts[0];
 			const mm = timeParts[1];
 
-			const nextCompareTime = new Date(now);
+			const nextCompareTime = new Date(date);
 			nextCompareTime.setHours(parseInt(HH), parseInt(mm), 0, 0);
 			if (compareTime) {
 				diffInMinutes = (nextCompareTime.getTime() - compareTime.getTime()) / 1000 / 60;
 			}
 			compareTime = nextCompareTime;
-			if (now>=compareTime) {
+			if (date>=compareTime) {
 				activeIndex = i;
 			}
 		}
@@ -120,19 +110,45 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		if (diffInMinutes !== null && !!compareTime) {
 			const nextCompareTime = new Date(compareTime);
 			nextCompareTime.setMinutes(nextCompareTime.getMinutes() + diffInMinutes);
-			if (now>=nextCompareTime) {
+			if (date>=nextCompareTime) {
 				activeIndex = keys.length;
 			}
 		}
 
-		let bestIndex = activeIndex;
+		return activeIndex;
+	}
+
+	function getBestIndexToScrollTo(now: Date, utilization: UtilizationDictData) {
+		let activeIndex = getCurrentActiveIndex(now, utilization);
+		let firstIndexPercentageNotZero = -1;
+		let lastIndexPercentageNotZero = -1;
+
+		const populartimes = utilization;
+
+		const keys = Object.keys(populartimes);
+
+		for (let i = 0; i < keys.length; i++) { //search in all for the maximum value
+			const populartime = populartimes[keys[i]];
+
+			const percentage = populartime.percentage;
+			if(percentage !== 0 && firstIndexPercentageNotZero === -1){
+				firstIndexPercentageNotZero = i;
+			}
+			if(percentage !== 0){
+				lastIndexPercentageNotZero = i;
+			}
+		}
+
+		const scrollOffset = 2 // we want to show 2 items before the active item
+
+		let bestIndex = activeIndex - scrollOffset;
 		//if our current time is before the first time with a percentage not 0
 		if(firstIndexPercentageNotZero !== -1 && activeIndex < firstIndexPercentageNotZero){
-			bestIndex = firstIndexPercentageNotZero; // we want to show the first time with a percentage not 0
+			bestIndex = firstIndexPercentageNotZero - scrollOffset; // we want to show the first time with a percentage not 0
 		}
 		//if our current time is after the last time with a percentage not 0
 		if(lastIndexPercentageNotZero !== -1 && activeIndex > lastIndexPercentageNotZero){
-			bestIndex = lastIndexPercentageNotZero; // we want to show the last time with a percentage not 0
+			bestIndex = lastIndexPercentageNotZero - scrollOffset; // we want to show the last time with a percentage not 0
 		}
 
 		return bestIndex;
@@ -185,6 +201,10 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 		return keys;
 	}
 
+	function getMaxHeight(){
+		return 200;
+	}
+
 	/**
      * Render Rush Minutes
      * @returns {Array}
@@ -194,37 +214,26 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			return null
 		}
 
+		const maxHeight = getMaxHeight();
 		const now = getNow();
-
+		const activeIndex = getCurrentActiveIndex(now, utilization);
 		const bestIndexToScrollTo = getBestIndexToScrollTo(now, utilization);
-
 		const keys = getTimeKeys();
-
 		const width = getItemWidth();
 
 		const cols = [];
 
-		let lastTime = null;
 		for (let i = 0; i < keys.length; i++) { //for all rush minutes
 			const populartime = utilization[keys[i]];
 			const value = populartime.percentage;
 
-			let maxHeight = 100
-			let height = maxHeight
-			if (value !== undefined) {
-				height = (height * 5) * (value / 100);
-			}
+			let height = (maxHeight) * (value / 100);
 
 			const time = populartime.start || '';
 			const timeParts = time.split(':');
 			const HH = timeParts[0];
 			const mm = timeParts[1];
 
-			const timeEnd = populartime.end || '';
-			const timeEndParts = timeEnd.split(':');
-			const HH_end = timeEndParts[0];
-			const mm_end = timeEndParts[1];
-			lastTime = '' + HH_end + ':' + mm_end;
 			const timeAsString = '' + HH + ':' + mm;
 
 			const isFullHour = parseInt(mm) === 0;
@@ -235,15 +244,14 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			text = isFullHour ? HH : '  ';
 			renderedText = text;
 
-			//let bgColor = popularTimeHour === nowHour ? "#FFD500" : "#ffffff";
 			const bgColor = getColorForTraffic(value);
 
 			const tooltip = translation_utilization+': '+ timeAsString+' - '+ value + '%';
 			const accessibilityLabel = tooltip
 
-			const isActive = i === bestIndexToScrollTo;
+			const isActive = i === activeIndex;
 			cols.push(
-				renderBar(maxHeight, height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel)
+				renderBar(maxHeight, height, width, bgColor, renderedText, renderedTextInside, isActive, tooltip, accessibilityLabel, populartime)
 			);
 		}
 
@@ -256,7 +264,18 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 			</View>
 		)
 
-		const bestIndex = getBestIndexToScrollTo(now, utilization);
+		function renderDebug() {
+			if(isDebug) {
+				return (
+					<View style={{
+						width: '100%',
+					}}>
+						<Text>{"activeIndex: "+activeIndex}</Text>
+						<Text>{"bestIndexToScrollTo: "+bestIndexToScrollTo}</Text>
+					</View>
+				)
+			}
+		}
 
 		return (
 			<View style={{
@@ -282,13 +301,14 @@ export const UtilizationForecastRow = (props: UtilizationForecastRowProps) => {
 						{scrollViewContent}
 					</ScrollView>
 				</View>
+				{renderDebug()}
 			</View>
 		);
 	}
 
-	function renderBar(maxHeight: DimensionValue, height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean, tooltip?: string, accessibilityLabel?: string
+	function renderBar(maxHeight: DimensionValue, height: DimensionValue, width: DimensionValue, bgColor: string, textBelow: string | null, textInside: string | null, isActive?: boolean, tooltip?: string, accessibilityLabel?: string, populartime?: UtilizationData
 	) {
-		return <UtilizationForecastBar maxHeight={maxHeight} height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} tooltip={tooltip} accessibilityLabel={accessibilityLabel} />
+		return <UtilizationForecastBar populartime={populartime} maxHeight={maxHeight} height={height} width={width} bgColor={bgColor} textInside={textInside} textBelow={textBelow} isActive={isActive} tooltip={tooltip} accessibilityLabel={accessibilityLabel} />
 	}
 
 	const paddingTop = 5;

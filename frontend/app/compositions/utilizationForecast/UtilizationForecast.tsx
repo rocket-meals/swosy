@@ -50,6 +50,7 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 	let max = utilizationGroup.threshold_until_max || utilizationGroup.all_time_high || 100
 
 	// for sortedEntries
+	let entryIndex = 0
 	for (const entry of sortedEntries) {
 		const date_start = entry.date_start
 		const date_end = entry.date_end
@@ -59,8 +60,6 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 			const key = date_start_obj.toISOString()+date_end_obj.toISOString()
 			const value_unscaled = entry.value_real || entry.value_forecast_current || 0
 
-
-
 			let percentage = value_unscaled / max * 100
 
 			utilization[key] = {
@@ -69,17 +68,18 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 				percentage: clampNumberToPercentage(percentage)
 			};
 		}
+		entryIndex++
 	}
 
-	let percentage_until_low = undefined
+	let percentage_until_low = clampNumberToPercentage(50);
 	if(utilizationGroup.threshold_until_low) {
 		percentage_until_low = clampNumberToPercentage(utilizationGroup.threshold_until_low)
 	}
-	let percentage_until_medium = undefined
+	let percentage_until_medium = clampNumberToPercentage(65);
 	if(utilizationGroup.threshold_until_medium) {
 		percentage_until_medium = clampNumberToPercentage(utilizationGroup.threshold_until_medium)
 	}
-	let percentage_until_high = undefined
+	let percentage_until_high = clampNumberToPercentage(80);
 	if(utilizationGroup.threshold_until_high) {
 		percentage_until_high = clampNumberToPercentage(utilizationGroup.threshold_until_high)
 	}
@@ -111,6 +111,14 @@ export const UtilizationForecast = (props: UtilizationForecastProps) => {
 				<View style={{
 					width: '100%',
 				}}>
+					<Text>{"utilizationGroup.all_time_high: "+utilizationGroup.all_time_high}</Text>
+					<Text>{"max: "+max}</Text>
+					<Text>{"utilizationGroup.threshold_until_low: "+utilizationGroup.threshold_until_low}</Text>
+					<Text>{"percentage_until_low: "+percentage_until_low}</Text>
+					<Text>{"utilizationGroup.threshold_until_medium: "+utilizationGroup.threshold_until_medium}</Text>
+					<Text>{"percentage_until_medium: "+percentage_until_medium}</Text>
+					<Text>{"utilizationGroup.threshold_until_high: "+utilizationGroup.threshold_until_high}</Text>
+					<Text>{"percentage_until_high: "+percentage_until_high}</Text>
 					<Text>{"listOfEntriesAllValuesZero: "+listOfEntriesAllValuesZero}</Text>
 					<Text>{JSON.stringify(utilizationEntries, null, 2)}</Text>
 				</View>
