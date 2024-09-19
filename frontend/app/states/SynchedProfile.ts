@@ -473,7 +473,7 @@ export function useAccountBalance(): [number | null | undefined, ((newValue: num
 export function useAccountBalanceInformation(): [AccountBalanceInformationType, ((newValue: AccountBalanceInformationType) => void)] {
 	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
-	const credit_balance = useSynchedResourceSingleRawValue<Profiles, (AccountBalanceInformationType)>(PersistentStore.profile, (storedProfileRaw) => {
+	const credit_balance = useSynchedResourceSingleRawValue<Profiles, AccountBalanceInformationType>(PersistentStore.profile, (storedProfileRaw) => {
 		return {
 			credit_balance: storedProfileRaw?.data?.credit_balance,
 			credit_balance_last_transaction: storedProfileRaw?.data?.credit_balance_last_transaction,

@@ -62,7 +62,9 @@ export const AccountRequiredTouchableOpacity = ({translationOfDesiredAction, chi
 			<TouchableOpacityIgnoreChildEvents
 				accessibilityLabel={accessiblityLabel}
 				tooltip={accessiblityLabel}
-				style={{}}
+				style={{
+					width: "100%",
+				}}
 				useDefaultOpacity={true}
 				onPress={onPress}>
 				{children}

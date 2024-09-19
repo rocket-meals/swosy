@@ -132,7 +132,7 @@ export default function AccountbalanceScreen() {
 
 	useEffect(() => {
 		setDisplayBalance(accountBalanceInformation.credit_balance)
-	}, [accountBalanceInformation])
+	}, [accountBalanceInformation.credit_balance])
 
 	const isAndroid = PlatformHelper.isAndroid();
 

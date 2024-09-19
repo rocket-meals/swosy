@@ -137,7 +137,7 @@ export default function AppfeedbackScreen() {
 				<SettingsRowGroup>
 					<SettingsRowNavigateWithText labelLeft={translation_support_and_feedback} leftIcon={IconNames.support_icon} route={getRouteForAppfeedbackDetails()} />
 					<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_my_support_tickets} >
-						<SettingsRowNavigateSimple translation_key={TranslationKeys.my_support_tickets} route={getRouteToAppFeedbacks()} leftIcon={IconNames.mail_icon} />
+						<SettingsRowNavigateWithText labelLeft={translation_my_support_tickets} route={getRouteToAppFeedbacks()} leftIcon={IconNames.mail_icon} />
 					</AccountRequiredTouchableOpacity>
 				</SettingsRowGroup>
 				<SettingsRowGroup>
