@@ -79,23 +79,24 @@ export function getDemoMarkings(): Record<string, Markings> {
 }
 
 
-export function useSortedMarkings(marking_ids?: string[]) {
+export function useSortedMarkings(markings?: Markings[]) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const sortType = SortType.intelligent;
 
-	const markings: Markings[] = []
-	if (markingsDict) {
-		let usedMarkingIds = marking_ids || Object.keys(markingsDict)
-		for (let i = 0; i < usedMarkingIds.length; i++) {
-			const key = usedMarkingIds[i];
-			const marking = markingsDict[key];
-			if (marking) {
-				markings.push(marking)
+	let usedMarkings: Markings[] = []
+	if(!!markings){
+		usedMarkings = markings
+	} else {
+		let markingsList = Object.values(markingsDict || {})
+		for(let i=0; i<markingsList.length; i++){
+			let marking = markingsList[i]
+			if(!!marking){
+				usedMarkings.push(marking)
 			}
 		}
 	}
-	return sortMarkings(markings, markingsDict, sortType, languageCode);
+	return sortMarkings(usedMarkings, markingsDict, sortType, languageCode);
 }
 
 export function sortMarkings(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, sortType: SortType, languageCode: string): Markings[] {
@@ -145,6 +146,19 @@ function sortMarkingsByNames(resources: Markings[], resourcesDict: Record<string
 		return 0;
 	});
 	return resources;
+}
+
+export function useSynchedMarkingsListByMarkingIds(marking_ids: string[]): Markings[] {
+	const [resourcesDict, setResourcesDict] = useSynchedMarkingsDict();
+	const resources: Markings[] = []
+	for (let i = 0; i < marking_ids.length; i++) {
+		const marking_id = marking_ids[i];
+		const resource = resourcesDict?.[marking_id];
+		if (resource) {
+			resources.push(resource)
+		}
+	}
+	return resources
 }
 
 

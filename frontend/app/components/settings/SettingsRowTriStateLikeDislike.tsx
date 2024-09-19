@@ -16,6 +16,8 @@ interface AppState {
     debug?: boolean,
     disabled?: boolean
 }
+
+
 export const SettingsRowTriStateLikeDislike: FunctionComponent<AppState & SettingsRowProps> = ({accessibilityLabel, labelLeft,...props}) => {
 	const debug = props?.debug
 

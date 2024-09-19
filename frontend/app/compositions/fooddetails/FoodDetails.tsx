@@ -41,6 +41,8 @@ import {
 } from "@/states/SynchedFoodFeedbacksLabelsEntries";
 import {AppConfiguration} from "@/constants/AppConfiguration";
 import {CommonFieldsOfFoodAndFoodoffers, FoodDataList} from "@/components/food/FoodDataList";
+import {useSortedMarkings, useSynchedMarkingsListByMarkingIds} from "@/states/SynchedMarkings";
+import {ItemStatus, ItemStatusFilter} from "@/helper/database/ItemStatus";
 
 export enum FeedbackCommentType {
 	disabled='disabled',
@@ -528,6 +530,10 @@ const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 		markingIds.push(marking.markings_id);
 	});
 
+	const markings = useSynchedMarkingsListByMarkingIds(markingIds)
+	const filteredMarkings = ItemStatusFilter.filterListByItemStatus(markings, ItemStatus.PUBLISHED);
+	const sortedMarkings = useSortedMarkings(filteredMarkings);
+
 	let debugMarkings = undefined
 	if(isDebug){
 		debugMarkings = <View>
@@ -537,7 +543,7 @@ const FoodMarkingDetails = ({foodOfferData}: {foodOfferData: Foodoffers}) => {
 
 	return(
 		<>
-			<MarkingListSelective markingIds={markingIds}/>
+			<MarkingListSelective markings={sortedMarkings}/>
 			<FoodInformationDisclaimer />
 			{debugMarkings}
 		</>

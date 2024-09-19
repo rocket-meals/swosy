@@ -8,6 +8,8 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {MarkingListSelective} from "@/components/food/MarkingList";
 import {useDislikeColor} from "@/states/ColorScheme";
 import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {useSortedMarkings, useSynchedMarkingsListByMarkingIds} from "@/states/SynchedMarkings";
+import {ItemStatus, ItemStatusFilter} from "@/helper/database/ItemStatus";
 
 export type MarkingsDislikedWarningBadgeProps = {
 	foodoffer: Foodoffers,
@@ -20,6 +22,9 @@ export const MarkingsDislikedWarningBadge = ({foodoffer, borderRadius}: Markings
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	const dislikedMarkingIds = MarkingHelper.getDislikedMarkingIds(foodoffer, profilesMarkingsDict)
+	const dislikedMarkings = useSynchedMarkingsListByMarkingIds(dislikedMarkingIds);
+	const filteredMarkings = ItemStatusFilter.filterListByItemStatus(dislikedMarkings, ItemStatus.PUBLISHED);
+	const sortedMarkings = useSortedMarkings(filteredMarkings);
 
 	const translation_attention = useTranslation(TranslationKeys.attention);
 	const translation_eating_habit = useTranslation(TranslationKeys.eating_habits);
@@ -34,7 +39,7 @@ export const MarkingsDislikedWarningBadge = ({foodoffer, borderRadius}: Markings
 			key: "dislikedMarkingIds",
 			label: translation_eating_habit,
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return <MarkingListSelective markingIds={dislikedMarkingIds} />
+				return <MarkingListSelective markings={sortedMarkings} />
 			}
 		})
 	}

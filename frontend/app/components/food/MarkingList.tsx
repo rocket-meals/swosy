@@ -1,38 +1,29 @@
-import {useSortedMarkings, useSynchedMarkingsDict} from '@/states/SynchedMarkings';
+import {useSortedMarkings} from '@/states/SynchedMarkings';
 import React, {FunctionComponent} from 'react';
 import MarkingListItem, {getMarkingName} from "@/components/food/MarkingListItem";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {ListRenderItemInfo} from "react-native";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {ItemStatus, ItemStatusFilter} from "@/helper/database/ItemStatus";
 
 export const MarkingList = ({...props}) => {
 	const sortedMarkings = useSortedMarkings();
-	const all_marking_keys = []
-	for (let i=0; i<sortedMarkings.length; i++) {
-		const marking = sortedMarkings[i];
-		console.log("index", i, marking.sort)
-		all_marking_keys.push(marking.id)
-	}
-
-	return <MarkingListSelective markingIds={all_marking_keys} {...props} />
+	const filteredMarkings = ItemStatusFilter.filterListByItemStatus(sortedMarkings, ItemStatus.PUBLISHED);
+	return <MarkingListSelective markings={filteredMarkings} {...props} />
 }
 
-export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({markingIds, ...props}) => {
-	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+export const MarkingListSelective: FunctionComponent<{markings: Markings[]}> = ({markings, ...props}) => {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	type DataItem = { key: string; data: Markings; name: string}
 	const data: DataItem[] = []
-	if (markingsDict && markingIds) {
-		for (let i=0; i<markingIds.length; i++) {
-			const resource_id = markingIds[i];
-			const marking = markingsDict[resource_id]
-			if(!!marking){
-				const withoutExternalIdentifier = false;
-				const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
-				data.push({key: resource_id, data: marking, name: translated_name})
-			}
+	for (let i=0; i<markings.length; i++) {
+		const marking = markings[i];
+		if(!!marking){
+			const withoutExternalIdentifier = false;
+			const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+			data.push({key: marking.id, data: marking, name: translated_name})
 		}
 	}
 

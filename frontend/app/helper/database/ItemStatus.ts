@@ -1,5 +1,3 @@
-import {useShowItemsWithEveryStatusState} from "@/states/ShowItemWithStatusState";
-
 export enum ItemStatus {
 	PUBLISHED = "published",
 	DRAFT = "draft",
@@ -11,14 +9,38 @@ export type ItemWithFieldStatus = {
 }
 
 export class ItemStatusFilter {
-	static useFilterRecordByItemStatus<T extends ItemWithFieldStatus>(dict: Record<string, T | null | undefined> | null | undefined): Record<string, T | null | undefined> | null | undefined {
-		const [showItemsWithEveryStatus, setShowItemsWithEveryStatus] = useShowItemsWithEveryStatusState()
 
-		return ItemStatusFilter.filterRecordByItemStatus(dict, ItemStatus.PUBLISHED, !!showItemsWithEveryStatus);
+	public static filterListByItemStatus<T extends ItemWithFieldStatus>(list: T[], itemStatus: ItemStatus | undefined): T[] {
+		// transform list to dict with key = index
+		const dict = ItemStatusFilter.transformListToDict(list);
+		const filteredDict = ItemStatusFilter.filterRecordByItemStatus(dict, itemStatus);
+		return ItemStatusFilter.transformDictToList(filteredDict);
 	}
 
-	private static filterRecordByItemStatus<T extends ItemWithFieldStatus>(dict: Record<string, T | null | undefined> | null | undefined, itemStatus: ItemStatus, ignoreFilter: boolean): Record<string, T | null | undefined> | null | undefined {
-		if(ignoreFilter){
+	private static transformListToDict<T>(list: T[]): Record<string, T | null | undefined> {
+		const dict: Record<string, T | null | undefined> = {};
+		list.forEach((item, index) => {
+			dict[index.toString()] = item;
+		});
+		return dict;
+	}
+
+	private static transformDictToList<T>(dict: Record<string, T | null | undefined> | null | undefined): T[] {
+		const list: T[] = [];
+		if(!!dict){
+			Object.keys(dict).forEach((key) => {
+				const item = dict[key];
+				if (!item) {
+					return;
+				}
+				list.push(item);
+			});
+		}
+		return list;
+	}
+
+	public static filterRecordByItemStatus<T extends ItemWithFieldStatus>(dict: Record<string, T | null | undefined>, itemStatus: ItemStatus | undefined): Record<string, T | null | undefined> | null | undefined {
+		if(itemStatus === undefined) {
 			return dict;
 		}
 
