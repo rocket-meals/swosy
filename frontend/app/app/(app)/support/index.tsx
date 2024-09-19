@@ -136,9 +136,13 @@ export default function AppfeedbackScreen() {
 				<AnimationSupport />
 				<SettingsRowGroup>
 					<SettingsRowNavigateWithText labelLeft={translation_support_and_feedback} leftIcon={IconNames.support_icon} route={getRouteForAppfeedbackDetails()} />
-					<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_my_support_tickets} >
-						<SettingsRowNavigateWithText labelLeft={translation_my_support_tickets} route={getRouteToAppFeedbacks()} leftIcon={IconNames.mail_icon} />
-					</AccountRequiredTouchableOpacity>
+					<View style={{
+						width: "100%",
+					}}>
+						<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_my_support_tickets} >
+							<SettingsRowNavigateWithText labelLeft={translation_my_support_tickets} route={getRouteToAppFeedbacks()} leftIcon={IconNames.mail_icon} />
+						</AccountRequiredTouchableOpacity>
+					</View>
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					{renderedIosAppStoreLink}
