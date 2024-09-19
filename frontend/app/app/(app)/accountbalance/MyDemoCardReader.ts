@@ -1,5 +1,6 @@
 import {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
 import {BalanceStateLowerBound} from "@/app/(app)/accountbalance/BalanceStateBounds";
+import CardResponse from "@/helper/nfcCardReaderHelper/CardResponse";
 
 function getNextDemoBalance(displayBalance: number | null | undefined){
 	//console.log("demo mode");
@@ -30,6 +31,8 @@ function getNextDemoBalance(displayBalance: number | null | undefined){
 }
 
 export default class MyDemoCardReader implements MyCardReaderInterface {
+	private currentDemoBalance: number | null | undefined = 0;
+
 	async isNfcEnabled(): Promise<boolean> {
 		return true;
 	}
@@ -38,16 +41,25 @@ export default class MyDemoCardReader implements MyCardReaderInterface {
 		return true
 	}
 
-	async readCard(callBack: (balance: (number | undefined | null)) => Promise<void>, accountBalance: (number | undefined | null), showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
+	async readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
 		showInstruction();
-		let nextBalance = getNextDemoBalance(accountBalance);
+		let nextBalance = getNextDemoBalance(this.currentDemoBalance);
+		this.currentDemoBalance = nextBalance;
 		await new Promise((resolve) => {
 			setTimeout(() => {
 				resolve(true);
 			}, 2000);
 		});
 		hideInstruction();
-		callBack(nextBalance);
+		callBack({
+			currentBalance: nextBalance.toString(),
+			lastTransaction: 0.5.toString(),
+			currentBalanceRaw: nextBalance,
+			lastTransactionRaw: 0.5,
+			chooseAppRaw: "demo",
+			tag: "demo",
+			readTime: new Date()
+		});
 	}
 
 }

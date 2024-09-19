@@ -135,7 +135,8 @@ export enum TranslationKeys {
 	average_rating = "average_rating",
 	amount_ratings = "amount_ratings",
 	accountbalance = "accountbalance",
-	editYourRememberedAccountBalance = "editYourRememberedAccountBalance",
+	accountbalanceLastTransaction = "accountbalanceLastTransaction",
+	accountbalanceLastTransactionDate = "accountbalanceLastTransactionDate",
 	search = "search",
 	sort = "sort",
 	sort_option_none = "sort_option_none",
@@ -676,15 +677,25 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.tr_TR]: 'Hesap bakiyesi',
 		[LanguageKeys.zh_CN]: '账户余额'
 	},
-	editYourRememberedAccountBalance: {
-		[LanguageKeys.de_DE]: 'Dein gemerktes Guthaben bearbeiten',
-		[LanguageKeys.en_US]: 'Edit your remembered account balance',
-		[LanguageKeys.ar_SA]: 'تحرير رصيد حسابك المذكور',
-		[LanguageKeys.es_ES]: 'Editar tu saldo de cuenta recordado',
-		[LanguageKeys.fr_FR]: 'Modifier votre solde de compte mémorisé',
-		[LanguageKeys.ru_RU]: 'Изменить ваш запомненный баланс счета',
-		[LanguageKeys.tr_TR]: 'Hatırlanan hesap bakiyenizi düzenleyin',
-		[LanguageKeys.zh_CN]: '编辑您记住的账户余额'
+	accountbalanceLastTransaction: {
+		[LanguageKeys.de_DE]: 'Letzte Transaktion',
+		[LanguageKeys.en_US]: 'Last Transaction',
+		[LanguageKeys.ar_SA]: 'آخر عملية',
+		[LanguageKeys.es_ES]: 'Última transacción',
+		[LanguageKeys.fr_FR]: 'Dernière transaction',
+		[LanguageKeys.ru_RU]: 'Последняя транзакция',
+		[LanguageKeys.tr_TR]: 'Son işlem',
+		[LanguageKeys.zh_CN]: '最后交易'
+	},
+	accountbalanceLastTransactionDate: {
+		[LanguageKeys.de_DE]: 'Letzte Transaktion am',
+		[LanguageKeys.en_US]: 'Last Transaction at',
+		[LanguageKeys.ar_SA]: 'آخر عملية في',
+		[LanguageKeys.es_ES]: 'Última transacción en',
+		[LanguageKeys.fr_FR]: 'Dernière transaction à',
+		[LanguageKeys.ru_RU]: 'Последняя транзакция в',
+		[LanguageKeys.tr_TR]: 'Son işlem',
+		[LanguageKeys.zh_CN]: '最后交易'
 	},
 	sort: {
 		[LanguageKeys.de_DE]: 'Sortieren',

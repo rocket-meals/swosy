@@ -4,11 +4,12 @@ import MyDemoCardReader from "@/app/(app)/accountbalance/MyDemoCardReader";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import MyNativeCardReader from "@/app/(app)/accountbalance/MyNativeCardReader";
 import MyUnsupportedCardReader from "@/app/(app)/accountbalance/MyUnsupportedCardReader";
+import CardResponse from "@/helper/nfcCardReaderHelper/CardResponse";
 
 export interface MyCardReaderInterface {
 	isNfcSupported: () => Promise<boolean>;
 	isNfcEnabled: () => Promise<boolean>;
-	readCard: (callBack: (balance: number |undefined |null) => Promise<void>, accountBalance: number |undefined |null, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string) => Promise<void>;
+	readCard: (callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string) => Promise<void>;
 }
 
 export default function useMyCardReader() : MyCardReaderInterface {

@@ -125,6 +125,18 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "collection": "app_settings_balance_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "8ef9cb3f-d7c3-4ce0-9e64-ee0e5581fe04"
+  },
+  {
+    "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "collection": "app_settings_housing_translations",
     "action": "read",
     "permissions": {},
@@ -1336,7 +1348,9 @@
       "canteen",
       "course_timetable",
       "notifiy_on_free_apartments",
-      "avatar"
+      "avatar",
+      "credit_balance_last_transaction",
+      "credit_balance_date_updated"
     ],
     "_syncId": "15027718-2a64-4202-b7bd-ea8bae427c14"
   },
@@ -1384,7 +1398,9 @@
       "canteen",
       "course_timetable",
       "notifiy_on_free_apartments",
-      "avatar"
+      "avatar",
+      "credit_balance_last_transaction",
+      "credit_balance_date_updated"
     ],
     "_syncId": "1b4d4c56-aa65-43f4-824b-b94b2927ea63"
   },
@@ -1495,6 +1511,18 @@
       "positive"
     ],
     "_syncId": "0c54056d-0aca-4b17-8e04-f3ce3cb49714"
+  },
+  {
+    "role": null,
+    "collection": "app_settings_balance_translations",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "3ba50478-7011-4fb8-9a71-4a5f76ffd1ef"
   },
   {
     "role": null,

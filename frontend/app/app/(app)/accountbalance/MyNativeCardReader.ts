@@ -3,6 +3,7 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {Platform} from "react-native";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
 import CardReader from "@/helper/nfcCardReaderHelper/CardReader";
+import CardResponse from "@/helper/nfcCardReaderHelper/CardResponse";
 
 const isExpoGo = isInExpoGo();
 
@@ -28,7 +29,7 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 		return await NfcManager.isSupported();
 	}
 
-	async readCard(callBack: (balance: number | undefined | null) => Promise<void>, accountBalance: number | undefined | null, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
+	async readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
 		if (isExpoGo || !NfcManager) {
 			console.error("NFC operations are not supported in this environment.");
 			return;
@@ -44,11 +45,8 @@ export default class MyNativeCardReader implements MyCardReaderInterface {
 			let newAnswer = await reader.readCard(nfcInstruction);
 			console.log("Answer");
 			console.log(newAnswer);
-			let newBalance = newAnswer?.currentBalance;
-			if(newBalance !== undefined && newBalance !== null){
-				await callBack(parseFloat(newBalance));
-				hideInstruction()
-			}
+			await callBack(newAnswer);
+			hideInstruction()
 		} catch (e: any) {
 			throw e;
 		}

@@ -48,6 +48,7 @@ export type AppSettings = {
   app_stores_url_to_google?: string | null;
   balance_enabled?: boolean | null;
   balance_settings: string;
+  balance_translations: any[] | AppSettingsBalanceTranslations[];
   campus_enabled?: boolean | null;
   campus_parsing_enabled?: boolean | null;
   campus_parsing_last_date?: string | null;
@@ -119,6 +120,16 @@ export type AppSettings = {
   washingmachine_parsing_enabled?: boolean | null;
   washingmachine_parsing_last_date?: string | null;
   washingmachine_parsing_status?: string | null;
+};
+
+export type AppSettingsBalanceTranslations = {
+  app_settings_id?: number | AppSettings | null;
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  translation_settings: string;
 };
 
 export type AppSettingsHousingTranslations = {
@@ -986,6 +997,8 @@ export type Profiles = {
   canteen?: string | Canteens | null;
   course_timetable?: string | null;
   credit_balance?: number | null;
+  credit_balance_date_updated?: string | null;
+  credit_balance_last_transaction?: number | null;
   date_created?: string | null;
   date_privacy_policy_accepted?: string | null;
   date_updated?: string | null;
@@ -1148,6 +1161,7 @@ export type CustomDirectusTypes = {
   apartments: Apartments[];
   app_feedbacks: AppFeedbacks[];
   app_settings: AppSettings;
+  app_settings_balance_translations: AppSettingsBalanceTranslations[];
   app_settings_housing_translations: AppSettingsHousingTranslations[];
   auto_translation_settings: AutoTranslationSettings;
   buildings: Buildings[];

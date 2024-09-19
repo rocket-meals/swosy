@@ -447,25 +447,59 @@ export function useSynchedProfileCanteen(): [Canteens | null | undefined, ((newV
 	return [canteen, setCanteen];
 }
 
+export type AccountBalanceInformationType = {
+	credit_balance: number | null | undefined,
+	credit_balance_last_transaction: number | null | undefined,
+	credit_balance_date_updated: string | null | undefined
+}
+
 export function useAccountBalance(): [number | null | undefined, ((newValue: number | null | undefined) => void)] {
-	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
-	const credit_balance = useSynchedResourceSingleRawValue<Profiles, (number | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
-		return storedProfileRaw?.data?.credit_balance
-	});
-
-
+	const [accountBalanceInformation, setAccountBalanceInformation] = useAccountBalanceInformation();
+	const credit_balance = accountBalanceInformation.credit_balance;
 	const setAccountBalance = useCallback((newValue: number | null | undefined) => {
 		setProfile((currentValue) => {
 			if (currentValue) {
-				currentValue.credit_balance = newValue;
+				currentValue.credit_balance = newValue
+			}
+			return currentValue;
+		});
+	}, [setProfile]);
+
+	return [credit_balance, setAccountBalance];
+}
+
+
+export function useAccountBalanceInformation(): [AccountBalanceInformationType, ((newValue: AccountBalanceInformationType) => void)] {
+	//const [profile, setProfile] = useSynchedProfile();
+	const [setProfile] = useSynchedProfileSetter();
+	const credit_balance = useSynchedResourceSingleRawValue<Profiles, (AccountBalanceInformationType)>(PersistentStore.profile, (storedProfileRaw) => {
+		return {
+			credit_balance: storedProfileRaw?.data?.credit_balance,
+			credit_balance_last_transaction: storedProfileRaw?.data?.credit_balance_last_transaction,
+			credit_balance_date_updated: storedProfileRaw?.data?.credit_balance_date_updated
+		}
+	});
+
+	const setAccountBalance = useCallback((newValue: AccountBalanceInformationType) => {
+		setProfile((currentValue) => {
+			if (currentValue) {
+				currentValue.credit_balance = newValue.credit_balance
+				currentValue.credit_balance_last_transaction = newValue.credit_balance_last_transaction
+				currentValue.credit_balance_date_updated = newValue.credit_balance_date_updated
 			}
 			return currentValue;
 		});
 	}, [setProfile]);
 	//const credit_balance = profile?.credit_balance;
 
-	return [credit_balance, setAccountBalance];
+	const usedAccountBalanceInformation: AccountBalanceInformationType = {
+		credit_balance: credit_balance?.credit_balance,
+		credit_balance_last_transaction: credit_balance?.credit_balance_last_transaction,
+		credit_balance_date_updated: credit_balance?.credit_balance_date_updated
+	}
+
+	return [usedAccountBalanceInformation, setAccountBalance];
 }
 
 export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, dislike: boolean) => void, (marking_id: string) => void] {

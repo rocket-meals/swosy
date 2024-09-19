@@ -1,4 +1,5 @@
 import {MyCardReaderInterface} from "@/app/(app)/accountbalance/MyCardReader";
+import CardResponse from "@/helper/nfcCardReaderHelper/CardResponse";
 
 export default class MyUnsupportedCardReader implements MyCardReaderInterface {
 	async isNfcEnabled(): Promise<boolean> {
@@ -9,7 +10,7 @@ export default class MyUnsupportedCardReader implements MyCardReaderInterface {
 		return false
 	}
 
-	async readCard(callBack: (balance: (number | undefined | null)) => Promise<void>, accountBalance: (number | undefined | null), showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
+	async readCard(callBack: (answer: CardResponse | undefined) => Promise<void>, showInstruction: () => void, hideInstruction: () => void, nfcInstruction: string): Promise<void> {
 		throw new Error("NFC is not supported on this device");
 	}
 }

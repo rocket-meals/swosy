@@ -33,10 +33,6 @@ type Query {
   collections_dates_last_update_by_id(id: ID!, version: String): collections_dates_last_update
   collections_dates_last_update_aggregated(groupBy: [String], filter: collections_dates_last_update_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [collections_dates_last_update_aggregated!]!
   collections_dates_last_update_by_version(version: String!, id: ID!): version_collections_dates_last_update
-  profiles(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles!]!
-  profiles_by_id(id: ID!, version: String): profiles
-  profiles_aggregated(groupBy: [String], filter: profiles_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [profiles_aggregated!]!
-  profiles_by_version(version: String!, id: ID!): version_profiles
   devices(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [devices!]!
   devices_by_id(id: ID!, version: String): devices
   devices_aggregated(groupBy: [String], filter: devices_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [devices_aggregated!]!
@@ -119,6 +115,10 @@ type Query {
   utilizations_groups_by_id(id: ID!, version: String): utilizations_groups
   utilizations_groups_aggregated(groupBy: [String], filter: utilizations_groups_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [utilizations_groups_aggregated!]!
   utilizations_groups_by_version(version: String!, id: ID!): version_utilizations_groups
+  profiles(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles!]!
+  profiles_by_id(id: ID!, version: String): profiles
+  profiles_aggregated(groupBy: [String], filter: profiles_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [profiles_aggregated!]!
+  profiles_by_version(version: String!, id: ID!): version_profiles
   profiles_buildings_favorites(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_favorites!]!
   profiles_buildings_favorites_by_id(id: ID!, version: String): profiles_buildings_favorites
   profiles_buildings_favorites_aggregated(groupBy: [String], filter: profiles_buildings_favorites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [profiles_buildings_favorites_aggregated!]!
@@ -218,8 +218,6 @@ type Mutation {
   create_canteens_foodservice_hours_item(data: create_canteens_foodservice_hours_input!): canteens_foodservice_hours
   create_collections_dates_last_update_items(filter: collections_dates_last_update_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_collections_dates_last_update_input!]): [collections_dates_last_update!]!
   create_collections_dates_last_update_item(data: create_collections_dates_last_update_input!): collections_dates_last_update
-  create_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_input!]): [profiles!]!
-  create_profiles_item(data: create_profiles_input!): profiles
   create_devices_items(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_devices_input!]): [devices!]!
   create_devices_item(data: create_devices_input!): devices
   create_foodoffers_markings_items(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_markings_input!]): [foodoffers_markings!]!
@@ -260,6 +258,8 @@ type Mutation {
   create_languages_item(data: create_languages_input!): languages
   create_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_groups_input!]): [utilizations_groups!]!
   create_utilizations_groups_item(data: create_utilizations_groups_input!): utilizations_groups
+  create_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_input!]): [profiles!]!
+  create_profiles_item(data: create_profiles_input!): profiles
   create_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
   create_profiles_buildings_favorites_item(data: create_profiles_buildings_favorites_input!): profiles_buildings_favorites
   create_profiles_buildings_last_opened_items(filter: profiles_buildings_last_opened_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_buildings_last_opened_input!]): [profiles_buildings_last_opened!]!
@@ -325,9 +325,6 @@ type Mutation {
   update_collections_dates_last_update_items(filter: collections_dates_last_update_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_collections_dates_last_update_input!): [collections_dates_last_update!]!
   update_collections_dates_last_update_batch(filter: collections_dates_last_update_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_collections_dates_last_update_input!]): [collections_dates_last_update!]!
   update_collections_dates_last_update_item(id: ID!, data: update_collections_dates_last_update_input!): collections_dates_last_update
-  update_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_input!): [profiles!]!
-  update_profiles_batch(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_input!]): [profiles!]!
-  update_profiles_item(id: ID!, data: update_profiles_input!): profiles
   update_devices_items(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_devices_input!): [devices!]!
   update_devices_batch(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_devices_input!]): [devices!]!
   update_devices_item(id: ID!, data: update_devices_input!): devices
@@ -389,6 +386,9 @@ type Mutation {
   update_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_utilizations_groups_input!): [utilizations_groups!]!
   update_utilizations_groups_batch(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_utilizations_groups_input!]): [utilizations_groups!]!
   update_utilizations_groups_item(id: ID!, data: update_utilizations_groups_input!): utilizations_groups
+  update_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_input!): [profiles!]!
+  update_profiles_batch(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_input!]): [profiles!]!
+  update_profiles_item(id: ID!, data: update_profiles_input!): profiles
   update_profiles_buildings_favorites_items(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_buildings_favorites_input!): [profiles_buildings_favorites!]!
   update_profiles_buildings_favorites_batch(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_buildings_favorites_input!]): [profiles_buildings_favorites!]!
   update_profiles_buildings_favorites_item(id: ID!, data: update_profiles_buildings_favorites_input!): profiles_buildings_favorites
@@ -465,8 +465,6 @@ type Mutation {
   delete_canteens_foodservice_hours_item(id: ID!): delete_one
   delete_collections_dates_last_update_items(ids: [ID]!): delete_many
   delete_collections_dates_last_update_item(id: ID!): delete_one
-  delete_profiles_items(ids: [ID]!): delete_many
-  delete_profiles_item(id: ID!): delete_one
   delete_devices_items(ids: [ID]!): delete_many
   delete_devices_item(id: ID!): delete_one
   delete_foodoffers_markings_items(ids: [ID]!): delete_many
@@ -507,6 +505,8 @@ type Mutation {
   delete_languages_item(id: ID!): delete_one
   delete_utilizations_groups_items(ids: [ID]!): delete_many
   delete_utilizations_groups_item(id: ID!): delete_one
+  delete_profiles_items(ids: [ID]!): delete_many
+  delete_profiles_item(id: ID!): delete_one
   delete_profiles_buildings_favorites_items(ids: [ID]!): delete_many
   delete_profiles_buildings_favorites_item(id: ID!): delete_one
   delete_profiles_buildings_last_opened_items(ids: [ID]!): delete_many
@@ -577,7 +577,6 @@ type Subscription {
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
-  profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
@@ -599,6 +598,7 @@ type Subscription {
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   languages_mutated(event: EventEnum): languages_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
+  profiles_mutated(event: EventEnum): profiles_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
@@ -3334,16 +3334,19 @@ type profiles {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
+  credit_balance_date_updated_func: datetime_functions
   buildings_favorites(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_favorites]
   buildings_favorites_func: count_functions
   buildings_last_opened(filter: profiles_buildings_last_opened_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_last_opened]
   buildings_last_opened_func: count_functions
-  devices(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [devices]
-  devices_func: count_functions
   foods_feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   foods_feedbacks_func: count_functions
   markings(filter: profiles_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_markings]
   markings_func: count_functions
+  devices(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [devices]
+  devices_func: count_functions
 }
 
 type profiles_aggregated {
@@ -3376,16 +3379,19 @@ type profiles_aggregated_count {
   status: Int
   user_created: Int
   user_updated: Int
+  credit_balance_last_transaction: Int
+  credit_balance_date_updated: Int
   buildings_favorites: Int
   buildings_last_opened: Int
-  devices: Int
   foods_feedbacks: Int
   markings: Int
+  devices: Int
 }
 
 type profiles_aggregated_fields {
   credit_balance: Float
   sort: Float
+  credit_balance_last_transaction: Float
 }
 
 type profiles_buildings_favorites {
@@ -4443,11 +4449,13 @@ type version_profiles {
   status: String
   user_created: JSON
   user_updated: JSON
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
   buildings_favorites: JSON
   buildings_last_opened: JSON
-  devices: JSON
   foods_feedbacks: JSON
   markings: JSON
+  devices: JSON
 }
 
 """"""
@@ -5916,11 +5924,13 @@ input create_profiles_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
   buildings_favorites: [create_profiles_buildings_favorites_input]
   buildings_last_opened: [create_profiles_buildings_last_opened_input]
-  devices: [create_devices_input]
   foods_feedbacks: [create_foods_feedbacks_input]
   markings: [create_profiles_markings_input]
+  devices: [create_devices_input]
 }
 
 input create_profiles_markings_input {
@@ -6736,16 +6746,19 @@ input profiles_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  credit_balance_last_transaction: number_filter_operators
+  credit_balance_date_updated: date_filter_operators
+  credit_balance_date_updated_func: datetime_function_filter_operators
   buildings_favorites: profiles_buildings_favorites_filter
   buildings_favorites_func: count_function_filter_operators
   buildings_last_opened: profiles_buildings_last_opened_filter
   buildings_last_opened_func: count_function_filter_operators
-  devices: devices_filter
-  devices_func: count_function_filter_operators
   foods_feedbacks: foods_feedbacks_filter
   foods_feedbacks_func: count_function_filter_operators
   markings: profiles_markings_filter
   markings_func: count_function_filter_operators
+  devices: devices_filter
+  devices_func: count_function_filter_operators
   _and: [profiles_filter]
   _or: [profiles_filter]
 }
@@ -7560,11 +7573,13 @@ input update_profiles_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
   buildings_favorites: [update_profiles_buildings_favorites_input]
   buildings_last_opened: [update_profiles_buildings_last_opened_input]
-  devices: [update_devices_input]
   foods_feedbacks: [update_foods_feedbacks_input]
   markings: [update_profiles_markings_input]
+  devices: [update_devices_input]
 }
 
 input update_profiles_markings_input {

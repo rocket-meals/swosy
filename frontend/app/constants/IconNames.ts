@@ -53,6 +53,8 @@ export class IconNames {
     static amount_rating_icon = 'chart-bar'
 
     static account_balance_icon = 'credit-card'
+    static account_balance_last_transaction_icon = 'transfer'
+    static account_balance_last_transaction_date_update_icon = IconNames.calendar_icon
     static nfc_icon = 'credit-card-wireless'
 
     static utilization_icon = 'human-queue'

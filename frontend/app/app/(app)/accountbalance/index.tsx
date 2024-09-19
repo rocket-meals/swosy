@@ -3,10 +3,8 @@ import {Heading, Text, View} from "@/components/Themed";
 import {MyButton} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {useProjectColor} from "@/states/ProjectInfo";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useAccountBalance} from "@/states/SynchedProfile";
+import {useAccountBalance, useAccountBalanceInformation, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {useFocusEffect} from "expo-router";
 import {SystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {IconNames} from "@/constants/IconNames";
@@ -19,7 +17,13 @@ import useMyCardReader, {MyCardReaderInterface} from "@/app/(app)/accountbalance
 import useCardReadInstruction from "@/app/(app)/accountbalance/useCardReadInstruction";
 import {AccountBalanceAnimation} from "@/app/(app)/accountbalance/BalanceStateBounds";
 import {useIsDebug} from "@/states/Debug";
-import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
+import {SETTINGS_ROW_DEFAULT_PADDING, SettingsRow} from "@/components/settings/SettingsRow";
+import {useSynchedAppSettings} from "@/states/SynchedAppSettings";
+import {getDirectusTranslationUnsafe, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
+import {ThemedMarkdownWithCards} from "@/components/markdown/ThemedMarkdownWithCards";
+import CardResponse from "@/helper/nfcCardReaderHelper/CardResponse";
+import {DateHelper} from "@/helper/date/DateHelper";
 
 export function useMyFocusHandler(onFocus: any, deps: any) {
 
@@ -44,6 +48,15 @@ export function useMyFocusHandler(onFocus: any, deps: any) {
 	}
 }
 
+function useBalanceAdditionalInformationMarkdown(): string |null {
+	const [appSettings] = useSynchedAppSettings();
+	let [languageCode, setLanguage] = useProfileLanguageCode();
+	let translations = appSettings?.balance_translations
+	let usedTranslations = translations || [] as TranslationEntry[]
+	let translation = getDirectusTranslationUnsafe(languageCode, usedTranslations, "content")
+	return translation
+}
+
 export default function AccountbalanceScreen() {
 	const demo = useIsDemo()
 	const isExpoGo = isInExpoGo()
@@ -52,14 +65,46 @@ export default function AccountbalanceScreen() {
 	const translationReadNfc = useTranslation(TranslationKeys.nfcReadCard)
 	const translation_nfcNotSupported = useTranslation(TranslationKeys.nfcNotSupported)
 	const translation_nfcNotEnabled = useTranslation(TranslationKeys.nfcNotEnabled)
-	const translation_accountBalance = useTranslation(TranslationKeys.accountbalance)
 	const translation_nfcInstructionRead = useTranslation(TranslationKeys.nfcInstructionRead)
 
-	const translation_editYourRememberedAccountBalance = useTranslation(TranslationKeys.editYourRememberedAccountBalance)
+	const translation_accountBalance = useTranslation(TranslationKeys.accountbalance)
+	const translation_accountBalanceLastTransaction = useTranslation(TranslationKeys.accountbalanceLastTransaction)
+	const translation_accountBalanceLastTransactionDate = useTranslation(TranslationKeys.accountbalanceLastTransactionDate)
 
-	let callBack = async (nextBalance: number | null | undefined) => {
-		setAccountBalance(nextBalance);
-		setDisplayBalance(nextBalance);
+	const additionalInformationMarkdown = useBalanceAdditionalInformationMarkdown()
+
+	function renderAdditionalInformation() {
+		if(!!additionalInformationMarkdown){
+			const borderRaidus = MyCardDefaultBorderRadius
+			return (
+				<View style={{padding: 10, width: '100%', borderBottomLeftRadius: borderRaidus, borderBottomRightRadius: borderRaidus}}>
+					<ThemedMarkdownWithCards markdown={additionalInformationMarkdown} />
+				</View>
+			)
+		}
+	}
+
+
+	let callBack = async (answer: CardResponse | undefined) => {
+		if (!answer) {
+			return
+		}
+
+		const nextBalanceAsString = answer.currentBalance;
+		const nextBalanceDefined = nextBalanceAsString !== null && nextBalanceAsString !== undefined;
+
+		const lastTransactionAsString = answer.lastTransaction;
+		const lastTransactionDefined = lastTransactionAsString !== null && lastTransactionAsString !== undefined;
+
+		if(!!nextBalanceAsString){
+			const nextBalance = parseFloat(nextBalanceAsString);
+			setDisplayBalance(nextBalance);
+		}
+		setAccountBalanceInformation({
+			credit_balance: nextBalanceDefined ? parseFloat(nextBalanceAsString) : null,
+			credit_balance_last_transaction: lastTransactionDefined ? parseFloat(lastTransactionAsString) : null,
+			credit_balance_date_updated: answer.readTime.toISOString(),
+		})
 	}
 
 	let myCardReader: MyCardReaderInterface = useMyCardReader();
@@ -67,7 +112,7 @@ export default function AccountbalanceScreen() {
 	const [showInstruction, hideInstruction] = useCardReadInstruction()
 
 	const onReadNfcPress = async () => {
-		await myCardReader.readCard(callBack, accountBalance, showInstruction, hideInstruction, translation_nfcInstructionRead);
+		await myCardReader.readCard(callBack, showInstruction, hideInstruction, translation_nfcInstructionRead);
 	}
 
 	const [error, setError] = useState<string | undefined>(undefined);
@@ -78,14 +123,16 @@ export default function AccountbalanceScreen() {
 	let usedNfcEnabled = nfcEnabled || demo
 	let canReadNfc = (usedNfcSupported && usedNfcEnabled)
 
-	const [accountBalance, setAccountBalance] = useAccountBalance();
-	const [displayBalance, setDisplayBalance] = useState<number | null | undefined>(accountBalance || 0);
+	const [accountBalanceInformation, setAccountBalanceInformation] = useAccountBalanceInformation();
+	const [displayBalance, setDisplayBalance] = useState<number | null | undefined>(accountBalanceInformation.credit_balance || 0);
+	const lastTransaction = accountBalanceInformation.credit_balance_last_transaction
+	const lastTransactionDate = accountBalanceInformation.credit_balance_date_updated ? DateHelper.formatOfferDateToReadable(new Date(accountBalanceInformation.credit_balance_date_updated), true, true, true) : null;
 
 	const [focusCounter, setFocusCounter] = useState(0);
 
 	useEffect(() => {
-		setDisplayBalance(accountBalance)
-	}, [accountBalance])
+		setDisplayBalance(accountBalanceInformation.credit_balance)
+	}, [accountBalanceInformation])
 
 	const isAndroid = PlatformHelper.isAndroid();
 
@@ -207,20 +254,11 @@ export default function AccountbalanceScreen() {
 							</View>
 							)}
 					</View>
-					<View style={{
-						width: "100%",
-						padding: SETTINGS_ROW_DEFAULT_PADDING,
-						justifyContent: "center",
-						alignItems: "center"
-					}}>
-						<Text>{translation_editYourRememberedAccountBalance}</Text>
-					</View>
-					<SettingsRowNumberEdit key={displayBalance} accessibilityLabel={
-						translation_accountBalance
-					} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} value={displayBalance} onSave={(newBalance: number |undefined |null) => {
-						callBack(newBalance);
-					}} />
+					<SettingsRow key={"balance"+displayBalance} accessibilityLabel={translation_accountBalance} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} />
+					<SettingsRow key={"lastTransaction"+accountBalanceInformation.credit_balance_last_transaction} accessibilityLabel={translation_accountBalanceLastTransaction} labelLeft={translation_accountBalanceLastTransaction} leftIcon={IconNames.account_balance_last_transaction_icon} labelRight={formatPrice(lastTransaction)} />
+					<SettingsRow key={"lastTransactionDate"+accountBalanceInformation.credit_balance_date_updated} accessibilityLabel={translation_accountBalanceLastTransactionDate} labelLeft={translation_accountBalanceLastTransactionDate} leftIcon={IconNames.account_balance_last_transaction_date_update_icon} labelRight={lastTransactionDate} />
 				</View>
+				{renderAdditionalInformation()}
 			</MyScrollView>
 		</MySafeAreaView>
 	)

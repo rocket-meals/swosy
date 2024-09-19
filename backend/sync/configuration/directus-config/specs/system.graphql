@@ -238,7 +238,6 @@ type Subscription {
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   collections_dates_last_update_mutated(event: EventEnum): collections_dates_last_update_mutated
-  profiles_mutated(event: EventEnum): profiles_mutated
   devices_mutated(event: EventEnum): devices_mutated
   foodoffers_markings_mutated(event: EventEnum): foodoffers_markings_mutated
   foods_feedbacks_mutated(event: EventEnum): foods_feedbacks_mutated
@@ -260,6 +259,7 @@ type Subscription {
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   languages_mutated(event: EventEnum): languages_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
+  profiles_mutated(event: EventEnum): profiles_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
@@ -2431,16 +2431,19 @@ type profiles {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
+  credit_balance_date_updated_func: datetime_functions
   buildings_favorites(filter: profiles_buildings_favorites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_favorites]
   buildings_favorites_func: count_functions
   buildings_last_opened(filter: profiles_buildings_last_opened_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_buildings_last_opened]
   buildings_last_opened_func: count_functions
-  devices(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [devices]
-  devices_func: count_functions
   foods_feedbacks(filter: foods_feedbacks_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks]
   foods_feedbacks_func: count_functions
   markings(filter: profiles_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [profiles_markings]
   markings_func: count_functions
+  devices(filter: devices_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [devices]
+  devices_func: count_functions
 }
 
 type profiles_buildings_favorites {
@@ -3646,11 +3649,13 @@ input create_profiles_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
   buildings_favorites: [create_profiles_buildings_favorites_input]
   buildings_last_opened: [create_profiles_buildings_last_opened_input]
-  devices: [create_devices_input]
   foods_feedbacks: [create_foods_feedbacks_input]
   markings: [create_profiles_markings_input]
+  devices: [create_devices_input]
 }
 
 input create_profiles_markings_input {
@@ -4537,16 +4542,19 @@ input profiles_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  credit_balance_last_transaction: number_filter_operators
+  credit_balance_date_updated: date_filter_operators
+  credit_balance_date_updated_func: datetime_function_filter_operators
   buildings_favorites: profiles_buildings_favorites_filter
   buildings_favorites_func: count_function_filter_operators
   buildings_last_opened: profiles_buildings_last_opened_filter
   buildings_last_opened_func: count_function_filter_operators
-  devices: devices_filter
-  devices_func: count_function_filter_operators
   foods_feedbacks: foods_feedbacks_filter
   foods_feedbacks_func: count_function_filter_operators
   markings: profiles_markings_filter
   markings_func: count_function_filter_operators
+  devices: devices_filter
+  devices_func: count_function_filter_operators
   _and: [profiles_filter]
   _or: [profiles_filter]
 }
@@ -5226,11 +5234,13 @@ input update_profiles_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  credit_balance_last_transaction: Float
+  credit_balance_date_updated: Date
   buildings_favorites: [update_profiles_buildings_favorites_input]
   buildings_last_opened: [update_profiles_buildings_last_opened_input]
-  devices: [update_devices_input]
   foods_feedbacks: [update_foods_feedbacks_input]
   markings: [update_profiles_markings_input]
+  devices: [update_devices_input]
 }
 
 input update_profiles_markings_input {

@@ -5,14 +5,14 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {RatingType} from "@/components/buttons/MyRatingButton";
 import {FeedbackCommentType, FeedbackLabelsType} from "@/compositions/fooddetails/FoodDetails";
-import {MyCacheHelperDependencyEnum, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
+import {MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 import {useProjectColor} from "@/states/ProjectInfo";
 import {AppAreaColors} from "@/constants/Colors";
 
 export const TABLE_NAME_APP_SETTINGS = 'app_settings';
 async function loadAppSettingsFromServer(): Promise<AppSettings> {
 	const collectionHelper = new CollectionHelper<AppSettings>(TABLE_NAME_APP_SETTINGS);
-	const query = CollectionHelper.getQueryWithRelatedFields(['*', "housing_translations.*"]);
+	const query = CollectionHelper.getQueryWithRelatedFields(['*', "housing_translations.*", "balance_translations.*"]);
 	return await collectionHelper.readSingletonItem(query);
 }
 
