@@ -28,7 +28,11 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, wid
 		iconLeftCustom = <View style={{
 			width: width, height: height, justifyContent: 'center', alignItems: 'center', borderRadius: 3
 		}}>
-			<DirectusImage alt={alias} image_url={resource.image_remote_url} assetId={resource.image} thumbHash={resource.image_thumb_hash} style={{width: "100%", height: "100%"}} />
+			<View style={{
+				position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, height: height, width: width
+			}}>
+				<DirectusImage alt={alias} image_url={resource.image_remote_url} assetId={resource.image} thumbHash={resource.image_thumb_hash} style={{width: "100%", height: "100%"}} />
+			</View>
 		</View>
 	}
 	return iconLeftCustom

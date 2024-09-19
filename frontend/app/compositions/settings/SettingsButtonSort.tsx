@@ -65,7 +65,7 @@ export const SettingsButtonSort: FunctionComponent<AppState> = ({...props}) => {
 			label = translation_sort_option_intelligent;
 			icon = IconNames.sort_intelligent_icon;
 			key = 'sortOptionIntelligent';
-		} else if(sortType === SortType.eatingHabits){
+		} else if(sortType === SortType.eatingHabitsPreferences){
 			label = translation_sort_eating_habits;
 			icon = IconNames.eating_habit_icon;
 			key = 'sortOptionEatingHabits';

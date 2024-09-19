@@ -1,10 +1,4 @@
-import {
-	TEXT_SIZE_5_EXTRA_LARGE,
-	TEXT_SIZE_6_EXTRA_LARGE,
-	TEXT_SIZE_7_EXTRA_LARGE,
-	TEXT_SIZE_EXTRA_LARGE,
-	View
-} from '@/components/Themed';
+import {View} from '@/components/Themed';
 import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
 import {useProfileLanguageCode, useSynchedProfileMarking} from '@/states/SynchedProfile';
 import React, {useMemo} from 'react';
@@ -12,7 +6,6 @@ import {SettingsRowTriStateLikeDislike} from '@/components/settings/SettingsRowT
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
-import DirectusImageOrIconComponent from "@/components/image/DirectusImageOrIconComponent";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 

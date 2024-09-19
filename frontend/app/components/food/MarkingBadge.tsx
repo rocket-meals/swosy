@@ -98,17 +98,21 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 	if(hasImageOrIcon){
 		const imageWidthAndHeight = lineHeight
 		content = (
-			<DirectusImageOrIconComponent heightImage={imageWidthAndHeight} widthImage={imageWidthAndHeight} resource={marking} />
+			<View style={{
+				flexDirection: "row",
+			}}>
+				<DirectusImageOrIconComponent resource={marking} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} />
+			</View>
 		)
 	}
 
 	const backgroundColor = marking_invert_background_color ? viewContrastColor : undefined;
-	const borderColor = viewContrastColor;
+	const borderColor = hide_border ? "transparent" : viewContrastColor;
 
 	return (
 		<View style={{
 			flexDirection: "row",
-			alignItems: "flex-start",
+			alignItems: "center",
 			justifyContent: "flex-start",
 			flexShrink: 1,
 			paddingHorizontal: 2,

@@ -213,7 +213,7 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	let copiedFoodOffers = [...foodOffers];
 	if(sortType === SortType.intelligent){
 		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.alphabetical, SortType.favorite, SortType.eatingHabits];
+		let sortOrders = [SortType.alphabetical, SortType.favorite, SortType.eatingHabitsPreferences];
 		for(const sortOrder of sortOrders){
 			copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode);
 		}
@@ -221,7 +221,7 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
 		copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, foodFeedbacksDict);
-	} else if(sortType === SortType.eatingHabits){
+	} else if(sortType === SortType.eatingHabitsPreferences){
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
 	} else if(sortType === SortType.publicRating){
 		copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);

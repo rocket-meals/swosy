@@ -7,6 +7,9 @@ import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 import {IconNames} from "@/constants/IconNames";
 import {MARKDOWN_EXAMPLE} from "@/components/markdown/ThemedMarkdown";
+import {SortType} from "@/states/SynchedSortType";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {getMarkingName} from "@/components/food/MarkingListItem";
 
 export const TABLE_NAME_MARKINGS = 'markings';
 const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -53,6 +56,7 @@ function getDemoMarking(index: number): Markings {
 
 	const marking: Markings = {
 		id: id,
+		excluded_by_markings: [],
 		icon: IconNames.change_image_icon,
 		image_remote_url: image_remote_url,
 		translations: translations
@@ -73,6 +77,76 @@ export function getDemoMarkings(): Record<string, Markings> {
 
 	return resourceDict
 }
+
+
+export function useSortedMarkings(marking_ids?: string[]) {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const sortType = SortType.intelligent;
+
+	const markings: Markings[] = []
+	if (markingsDict) {
+		let usedMarkingIds = marking_ids || Object.keys(markingsDict)
+		for (let i = 0; i < usedMarkingIds.length; i++) {
+			const key = usedMarkingIds[i];
+			const marking = markingsDict[key];
+			if (marking) {
+				markings.push(marking)
+			}
+		}
+	}
+	return sortMarkings(markings, markingsDict, sortType, languageCode);
+}
+
+export function sortMarkings(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, sortType: SortType, languageCode: string): Markings[] {
+	let copiedResources = [...resources];
+	if(sortType === SortType.intelligent){
+		// sort first by name, then by eating habits, then by favorite
+		let sortOrders = [SortType.sortFromServer];
+		for(const sortOrder of sortOrders){
+			copiedResources = sortMarkings(copiedResources, resourcesDict, sortOrder, languageCode);
+		}
+	} else if(sortType === SortType.alphabetical){
+		copiedResources = sortMarkingsByNames(copiedResources, resourcesDict, languageCode);
+	} else if(sortType === SortType.sortFromServer){
+		copiedResources = sortMarkingsBySortFromServer(copiedResources, resourcesDict, languageCode);
+	}
+	return copiedResources;
+}
+
+function sortMarkingsBySortFromServer(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, languageCode: string): Markings[] {
+	resources.sort((a, b) => {
+		let sortA = a.sort;
+		let sortB = b.sort;
+		if(sortA && sortB){
+			return sortA - sortB;
+		} else if (sortA){
+			return -1;
+		} else if (sortB){
+			return 1;
+		}
+		return 0;
+	});
+	return resources;
+}
+
+function sortMarkingsByNames(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, languageCode: string): Markings[] {
+	resources.sort((a, b) => {
+		const withoutExternalIdentifier = true;
+		let nameA = getMarkingName(a, languageCode, withoutExternalIdentifier);
+		let nameB = getMarkingName(b, languageCode, withoutExternalIdentifier);
+		if(nameA && nameB){
+			return nameA.localeCompare(nameB);
+		} else if (nameA){
+			return -1;
+		} else if (nameB){
+			return 1;
+		}
+		return 0;
+	});
+	return resources;
+}
+
 
 export function useSynchedMarkingsDict(): [( Record<string, Markings | null | undefined> | null | undefined), (callback: (currentValue: (Record<string, Markings | null | undefined> | null | undefined)) => Record<string, Markings | null | undefined>, sync_cache_composed_key_local?: string) => void, cacheHelperObj: MyCacheHelperType]
 {

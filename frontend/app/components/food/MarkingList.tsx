@@ -1,4 +1,4 @@
-import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
+import {useSortedMarkings, useSynchedMarkingsDict} from '@/states/SynchedMarkings';
 import React, {FunctionComponent} from 'react';
 import MarkingListItem, {getMarkingName} from "@/components/food/MarkingListItem";
 import {Markings} from "@/helper/database/databaseTypes/types";
@@ -7,17 +7,19 @@ import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 
 export const MarkingList = ({...props}) => {
-	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-
-	let usedDict = markingsDict || {}
-	const all_marking_keys = Object.keys(usedDict);
+	const sortedMarkings = useSortedMarkings();
+	const all_marking_keys = []
+	for (let i=0; i<sortedMarkings.length; i++) {
+		const marking = sortedMarkings[i];
+		console.log("index", i, marking.sort)
+		all_marking_keys.push(marking.id)
+	}
 
 	return <MarkingListSelective markingIds={all_marking_keys} {...props} />
 }
 
 export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = ({markingIds, ...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
-
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	type DataItem = { key: string; data: Markings; name: string}
@@ -33,11 +35,6 @@ export const MarkingListSelective: FunctionComponent<{markingIds: string[]}> = (
 			}
 		}
 	}
-
-	// sort by name
-	data.sort((a, b) => {
-		return a.name.localeCompare(b.name);
-	});
 
 	const renderResource = (info: ListRenderItemInfo<DataItem>) => {
 		const {item, index} = info;

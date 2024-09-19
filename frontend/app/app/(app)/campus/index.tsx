@@ -37,6 +37,7 @@ function sortByBuildingName(resources: Buildings[], buildingsDict: Record<string
 		} else if (nameB){
 			return 1;
 		}
+		return 0;
 	});
 	return resources;
 }
