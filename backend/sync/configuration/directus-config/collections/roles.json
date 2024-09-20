@@ -5,7 +5,9 @@
     "description": null,
     "parent": null,
     "children": [],
-    "policies": [],
+    "policies": [
+      "9a0cf321-0455-47f8-8158-f1832c5cb2ef"
+    ],
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   }
 ]
