@@ -1,4 +1,4 @@
-import {Markings} from '@/helper/database/databaseTypes/types';
+import {Markings, MarkingsGroups} from '@/helper/database/databaseTypes/types';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
@@ -9,7 +9,8 @@ import {IconNames} from "@/constants/IconNames";
 import {MARKDOWN_EXAMPLE} from "@/components/markdown/ThemedMarkdown";
 import {SortType} from "@/states/SynchedSortType";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
-import {getMarkingName} from "@/components/food/MarkingListItem";
+import {getMarkingName, getMarkingShortCode} from "@/components/food/MarkingListItem";
+import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
 
 export const TABLE_NAME_MARKINGS = 'markings';
 const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -81,6 +82,7 @@ export function getDemoMarkings(): Record<string, Markings> {
 
 export function useSortedMarkings(markings?: Markings[]) {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+	const [markingsGroupsDict, setMarkingsGroupsDict] = useSynchedMarkingsGroupsDict();
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const sortType = SortType.intelligent;
 
@@ -96,23 +98,59 @@ export function useSortedMarkings(markings?: Markings[]) {
 			}
 		}
 	}
-	return sortMarkings(usedMarkings, markingsDict, sortType, languageCode);
+	return sortMarkings(usedMarkings, markingsDict, markingsGroupsDict, sortType, languageCode);
 }
 
-export function sortMarkings(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, sortType: SortType, languageCode: string): Markings[] {
+export function sortMarkings(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, markingsGroupsDict: Record<string, MarkingsGroups | null | undefined> | null | undefined, sortType: SortType, languageCode: string): Markings[] {
 	let copiedResources = [...resources];
 	if(sortType === SortType.intelligent){
 		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.sortFromServer];
+		let sortOrders = [SortType.markingShortCodeAlphabetical, SortType.sortFromServer, SortType.markingsGroupsSortFromServer];
 		for(const sortOrder of sortOrders){
-			copiedResources = sortMarkings(copiedResources, resourcesDict, sortOrder, languageCode);
+			copiedResources = sortMarkings(copiedResources, resourcesDict, markingsGroupsDict, sortOrder, languageCode);
 		}
 	} else if(sortType === SortType.alphabetical){
 		copiedResources = sortMarkingsByNames(copiedResources, resourcesDict, languageCode);
+	} else if(sortType === SortType.markingShortCodeAlphabetical) {
+		copiedResources = sortMarkingsByShortCode(copiedResources, resourcesDict, languageCode);
 	} else if(sortType === SortType.sortFromServer){
 		copiedResources = sortMarkingsBySortFromServer(copiedResources, resourcesDict, languageCode);
+	} else if(sortType === SortType.markingsGroupsSortFromServer){
+		copiedResources = sortMarkingsByMarkingsGroupsSortFromServer(copiedResources, resourcesDict, markingsGroupsDict, languageCode);
 	}
 	return copiedResources;
+}
+
+function getMarkingsGroupOfMarking(marking: Markings, markingsGroupsDict: Record<string, MarkingsGroups | null | undefined> | null | undefined): MarkingsGroups | null | undefined {
+	let group_id = marking.group as string | null | undefined;
+	if(group_id){
+		return markingsGroupsDict?.[group_id];
+	}
+	return null;
+}
+
+function sortMarkingsByMarkingsGroupsSortFromServer(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, markingsGroupsDict: Record<string, MarkingsGroups | null | undefined> | null | undefined, languageCode: string): Markings[] {
+	resources.sort((a, b) => {
+		let markingA = resourcesDict?.[a.id];
+		let markingB = resourcesDict?.[b.id];
+		if(markingA && markingB){
+			let markingGroupResourceA = getMarkingsGroupOfMarking(markingA, markingsGroupsDict);
+			let markingGroupResourceB = getMarkingsGroupOfMarking(markingB, markingsGroupsDict);
+			let sortA = markingGroupResourceA?.sort;
+			let sortB = markingGroupResourceB?.sort;
+
+			if(sortA && sortB){
+				return sortA - sortB;
+			} else if (sortA){
+				return -1;
+			} else if (sortB){
+				return 1;
+			}
+
+		}
+		return 0;
+	});
+	return resources;
 }
 
 function sortMarkingsBySortFromServer(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, languageCode: string): Markings[] {
@@ -124,6 +162,23 @@ function sortMarkingsBySortFromServer(resources: Markings[], resourcesDict: Reco
 		} else if (sortA){
 			return -1;
 		} else if (sortB){
+			return 1;
+		}
+		return 0;
+	});
+	return resources;
+}
+
+function sortMarkingsByShortCode(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, languageCode: string): Markings[] {
+	resources.sort((a, b) => {
+		const withoutExternalIdentifier = true;
+		let nameA = getMarkingShortCode(a);
+		let nameB = getMarkingShortCode(b);
+		if(nameA && nameB){
+			return nameA.localeCompare(nameB);
+		} else if (nameA){
+			return -1;
+		} else if (nameB){
 			return 1;
 		}
 		return 0;

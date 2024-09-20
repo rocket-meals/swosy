@@ -1,13 +1,13 @@
 {
-  "collection": "markings_group_translations",
-  "field": "translations_settings",
+  "collection": "markings_groups_translations",
+  "field": "translation_settings",
   "type": "alias",
   "meta": {
-    "collection": "markings_group_translations",
+    "collection": "markings_groups_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "translations_settings",
+    "field": "translation_settings",
     "group": null,
     "hidden": false,
     "interface": "group-raw",

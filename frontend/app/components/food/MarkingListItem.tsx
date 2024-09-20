@@ -51,7 +51,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 
 	return useMemo(() => {
 
-		console.log("Rendering MarkingListItemReal", markingId, status)
+		//console.log("Rendering MarkingListItemReal", markingId, status)
 
 		if(!marking){
 			return null;

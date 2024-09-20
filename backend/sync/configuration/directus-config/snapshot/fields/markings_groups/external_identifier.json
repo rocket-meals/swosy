@@ -1,9 +1,9 @@
 {
-  "collection": "markings_group",
+  "collection": "markings_groups",
   "field": "external_identifier",
   "type": "string",
   "meta": {
-    "collection": "markings_group",
+    "collection": "markings_groups",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -24,7 +24,7 @@
   },
   "schema": {
     "name": "external_identifier",
-    "table": "markings_group",
+    "table": "markings_groups",
     "data_type": "character varying",
     "default_value": null,
     "max_length": 255,

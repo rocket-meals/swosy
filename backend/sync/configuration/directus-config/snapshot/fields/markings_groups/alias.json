@@ -1,16 +1,16 @@
 {
-  "collection": "markings_group_translations",
-  "field": "languages_code",
+  "collection": "markings_groups",
+  "field": "alias",
   "type": "string",
   "meta": {
-    "collection": "markings_group_translations",
+    "collection": "markings_groups",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "languages_code",
+    "field": "alias",
     "group": null,
-    "hidden": true,
-    "interface": null,
+    "hidden": false,
+    "interface": "input",
     "note": null,
     "options": null,
     "readonly": false,
@@ -23,8 +23,8 @@
     "width": "full"
   },
   "schema": {
-    "name": "languages_code",
-    "table": "markings_group_translations",
+    "name": "alias",
+    "table": "markings_groups",
     "data_type": "character varying",
     "default_value": null,
     "max_length": 255,
@@ -36,7 +36,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "languages",
-    "foreign_key_column": "code"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

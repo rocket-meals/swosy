@@ -1,32 +1,34 @@
 {
-  "collection": "markings_group_translations",
-  "field": "markings_group_id",
-  "type": "uuid",
+  "collection": "markings_groups_translations",
+  "field": "let_be_translated",
+  "type": "boolean",
   "meta": {
-    "collection": "markings_group_translations",
+    "collection": "markings_groups_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "markings_group_id",
-    "group": null,
-    "hidden": true,
-    "interface": null,
+    "field": "let_be_translated",
+    "group": "translation_settings",
+    "hidden": false,
+    "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 2,
-    "special": null,
+    "special": [
+      "cast-boolean"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "markings_group_id",
-    "table": "markings_group_translations",
-    "data_type": "uuid",
-    "default_value": null,
+    "name": "let_be_translated",
+    "table": "markings_groups_translations",
+    "data_type": "boolean",
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
@@ -36,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "markings_group",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

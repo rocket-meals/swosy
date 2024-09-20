@@ -934,7 +934,7 @@
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "markings_group_translations",
+    "collection": "markings_groups_translations",
     "action": "read",
     "permissions": {},
     "validation": {},
@@ -942,11 +942,11 @@
     "fields": [
       "*"
     ],
-    "_syncId": "eb2b2943-5be9-4b4c-8cb0-c7ca72228b64"
+    "_syncId": "290e960a-6fe8-4086-bd7e-65ac30ab8bdc"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "collection": "markings_group",
+    "collection": "markings_groups",
     "action": "read",
     "permissions": {},
     "validation": {},
@@ -954,7 +954,7 @@
     "fields": [
       "*"
     ],
-    "_syncId": "09fe837f-abe5-49f3-992f-28c9688fef5c"
+    "_syncId": "ad5a4a79-4716-4809-b034-a02b9172b038"
   },
   {
     "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -1886,7 +1886,7 @@
   },
   {
     "role": null,
-    "collection": "markings_group_translations",
+    "collection": "markings_groups_translations",
     "action": "read",
     "permissions": {},
     "validation": {},
@@ -1894,11 +1894,11 @@
     "fields": [
       "*"
     ],
-    "_syncId": "2c3ac475-4ddc-4e5f-99a2-998b450f722e"
+    "_syncId": "ccfd43fd-13f6-46d8-a27f-0d8cc5f0419b"
   },
   {
     "role": null,
-    "collection": "markings_group",
+    "collection": "markings_groups",
     "action": "read",
     "permissions": {},
     "validation": {},
@@ -1906,7 +1906,7 @@
     "fields": [
       "*"
     ],
-    "_syncId": "f2222642-0368-4d3a-899a-868e411046e7"
+    "_syncId": "537797aa-8c1d-444f-9f1e-b7d94a590a73"
   },
   {
     "role": null,

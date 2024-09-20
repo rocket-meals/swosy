@@ -170,9 +170,9 @@ export function getLineHeightInPixelBySize(size: TextSizeType | undefined) {
 	const tokens = config.tokens;
 	const lineHeight = tokens.lineHeights
 	const usedSize = getCorrectedLineHeightInPixelBySize(size || TEXT_SIZE_DEFAULT);
-	console.log("getLineHeightInPixelBySize")
-	console.log("size: "+size)
-	console.log("usedSize: "+usedSize)
+	//console.log("getLineHeightInPixelBySize")
+	//console.log("size: "+size)
+	//console.log("usedSize: "+usedSize)
 	return lineHeight[usedSize];
 }
 

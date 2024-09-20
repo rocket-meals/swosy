@@ -1,25 +1,23 @@
 {
-  "collection": "markings_group",
-  "field": "date_created",
-  "type": "timestamp",
+  "collection": "markings_groups_translations",
+  "field": "be_source_for_translations",
+  "type": "boolean",
   "meta": {
-    "collection": "markings_group",
+    "collection": "markings_groups_translations",
     "conditions": null,
-    "display": "datetime",
-    "display_options": {
-      "relative": true
-    },
-    "field": "date_created",
-    "group": null,
-    "hidden": true,
-    "interface": "datetime",
+    "display": null,
+    "display_options": null,
+    "field": "be_source_for_translations",
+    "group": "translation_settings",
+    "hidden": false,
+    "interface": "boolean",
     "note": null,
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 1,
     "special": [
-      "date-created"
+      "cast-boolean"
     ],
     "translations": null,
     "validation": null,
@@ -27,10 +25,10 @@
     "width": "half"
   },
   "schema": {
-    "name": "date_created",
-    "table": "markings_group",
-    "data_type": "timestamp with time zone",
-    "default_value": null,
+    "name": "be_source_for_translations",
+    "table": "markings_groups_translations",
+    "data_type": "boolean",
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

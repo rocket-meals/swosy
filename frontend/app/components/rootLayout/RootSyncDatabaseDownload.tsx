@@ -23,6 +23,7 @@ import {Text} from "@/components/Themed";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 import {useSynchedPopupEventsDict} from "@/states/SynchedPopupEvents";
 import {useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict} from "@/states/SynchedFoodFeedbacksLabelsEntries";
+import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -55,6 +56,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [canteensDict, setCanteens, cacheHelperObjCanteens] = useSynchedCanteensDict()
 	const [businesshoursDict, setBusinesshoursDict, cacheHelperObjBusinesshours] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
+	const [markingsGroupsDict, setMarkingsGroupsDict, cacheHelperObjMarkingsGroups] = useSynchedMarkingsGroupsDict()
 	const [buildingsDict, setBuildingsDict, cacheHelperObjBuildings] = useSynchedBuildingsDict()
 	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels] = useSynchedFoodsFeedbacksLabelsDict()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
@@ -117,6 +119,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('ownFoodFeedbacksLabelsEntries', ownFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries)
 	addResourceToCheckForUpdates('languages', languagesDict, cacheHelperObjLanguages)
 	addResourceToCheckForUpdates('markings', markingsDict, cacheHelperObjMarkings);
+	addResourceToCheckForUpdates('markingsGroups', markingsGroupsDict, cacheHelperObjMarkingsGroups);
 	addResourceToCheckForUpdates('apartments', apartmentsDict, cacheHelperObjApartments);
 	addResourceToCheckForUpdates('roles', rolesDict, cacheHelperObjRoles);
 	addResourceToCheckForUpdates('permissions', permissionsDict, cacheHelperObjPermissions);

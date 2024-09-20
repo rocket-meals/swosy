@@ -4,6 +4,8 @@ export enum SortType {
 	none = 'none',
 	sortFromServer = 'sortFromServer',
 	alphabetical = 'alphabetical',
+	markingShortCodeAlphabetical = 'markingShortCodeAlphabetical',
+	markingsGroupsSortFromServer = 'markingsGroupsSortFromServer',
 	favorite = 'favorite',
 	publicRating = 'publicRating',
 	date = 'date',

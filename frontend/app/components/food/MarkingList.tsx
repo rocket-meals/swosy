@@ -9,6 +9,7 @@ import {ItemStatus, ItemStatusFilter} from "@/helper/database/ItemStatus";
 
 export const MarkingList = ({...props}) => {
 	const sortedMarkings = useSortedMarkings();
+	console.log("MarkingList", sortedMarkings)
 	const filteredMarkings = ItemStatusFilter.filterListByItemStatus(sortedMarkings, ItemStatus.PUBLISHED);
 	return <MarkingListSelective markings={filteredMarkings} {...props} />
 }

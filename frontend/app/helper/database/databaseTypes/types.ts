@@ -891,7 +891,7 @@ export type Markings = {
   date_updated?: string | null;
   excluded_by_markings: any[] | MarkingsExclusions[];
   external_identifier?: string | null;
-  group?: string | MarkingsGroup | null;
+  group?: string | MarkingsGroups | null;
   hide_border?: boolean | null;
   icon?: string | null;
   id: string;
@@ -914,27 +914,28 @@ export type MarkingsExclusions = {
   restricted_markings_id?: string | Markings | null;
 };
 
-export type MarkingsGroup = {
+export type MarkingsGroups = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
   id: string;
+  markings: any[] | Markings[];
   sort?: number | null;
-  status: string;
-  translations: any[] | MarkingsGroupTranslations[];
+  status?: string | null;
+  translations: any[] | MarkingsGroupsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
 
-export type MarkingsGroupTranslations = {
+export type MarkingsGroupsTranslations = {
   be_source_for_translations?: boolean | null;
   id: number;
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
-  markings_group_id?: string | MarkingsGroup | null;
+  markings_groups_id?: string | MarkingsGroups | null;
   name?: string | null;
-  translations_settings: string;
+  translation_settings: string;
 };
 
 export type MarkingsTranslations = {
@@ -1239,8 +1240,8 @@ export type CustomDirectusTypes = {
   languages: Languages[];
   markings: Markings[];
   markings_exclusions: MarkingsExclusions[];
-  markings_group: MarkingsGroup[];
-  markings_group_translations: MarkingsGroupTranslations[];
+  markings_groups: MarkingsGroups[];
+  markings_groups_translations: MarkingsGroupsTranslations[];
   markings_translations: MarkingsTranslations[];
   news: News[];
   news_translations: NewsTranslations[];
