@@ -1,4 +1,4 @@
-FROM directus/directus:10.11.2
+FROM directus/directus:11.1.0
 
 
 # Switch to root user to install packages
@@ -19,7 +19,7 @@ USER root
 RUN corepack enable
 USER node
 
-RUN pnpm install directus-extension-sync@2.0.0
+RUN pnpm install directus-extension-sync@3.0.0
 RUN pnpm install directus-extension-flow-manager@1.4.1
 #RUN pnpm install directus-extension-schema-management-module@1.5.0
 
