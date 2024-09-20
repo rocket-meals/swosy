@@ -578,8 +578,8 @@ type Subscription {
   directus_folders_mutated(event: EventEnum): directus_folders_mutated
   directus_files_mutated(event: EventEnum): directus_files_mutated
   directus_users_mutated(event: EventEnum): directus_users_mutated
-  directus_activity_mutated(event: EventEnum): directus_activity_mutated
   directus_permissions_mutated(event: EventEnum): directus_permissions_mutated
+  directus_activity_mutated(event: EventEnum): directus_activity_mutated
   directus_webhooks_mutated(event: EventEnum): directus_webhooks_mutated
   directus_panels_mutated(event: EventEnum): directus_panels_mutated
   directus_notifications_mutated(event: EventEnum): directus_notifications_mutated
@@ -588,7 +588,9 @@ type Subscription {
   directus_dashboards_mutated(event: EventEnum): directus_dashboards_mutated
   directus_operations_mutated(event: EventEnum): directus_operations_mutated
   directus_translations_mutated(event: EventEnum): directus_translations_mutated
+  directus_policies_mutated(event: EventEnum): directus_policies_mutated
   directus_versions_mutated(event: EventEnum): directus_versions_mutated
+  directus_access_mutated(event: EventEnum): directus_access_mutated
   directus_sync_id_map_mutated(event: EventEnum): directus_sync_id_map_mutated
   directus_settings_mutated(event: EventEnum): directus_settings_mutated
   auto_translation_settings_mutated(event: EventEnum): auto_translation_settings_mutated
@@ -643,8 +645,6 @@ type Subscription {
   wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
-  directus_policies_mutated(event: EventEnum): directus_policies_mutated
-  directus_access_mutated(event: EventEnum): directus_access_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
