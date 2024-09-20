@@ -136,7 +136,7 @@ export enum TranslationKeys {
 	amount_ratings = "amount_ratings",
 	accountbalance = "accountbalance",
 	accountbalanceLastTransaction = "accountbalanceLastTransaction",
-	accountbalanceLastTransactionDate = "accountbalanceLastTransactionDate",
+	accountbalanceDateUpdated = "accountbalanceDateUpdated",
 	search = "search",
 	sort = "sort",
 	sort_option_none = "sort_option_none",
@@ -698,15 +698,15 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.tr_TR]: 'Son işlem',
 		[LanguageKeys.zh_CN]: '最后交易'
 	},
-	accountbalanceLastTransactionDate: {
-		[LanguageKeys.de_DE]: 'Letzte Transaktion am',
-		[LanguageKeys.en_US]: 'Last Transaction at',
-		[LanguageKeys.ar_SA]: 'آخر عملية في',
-		[LanguageKeys.es_ES]: 'Última transacción en',
-		[LanguageKeys.fr_FR]: 'Dernière transaction à',
-		[LanguageKeys.ru_RU]: 'Последняя транзакция в',
-		[LanguageKeys.tr_TR]: 'Son işlem',
-		[LanguageKeys.zh_CN]: '最后交易'
+	accountbalanceDateUpdated: {
+		[LanguageKeys.de_DE]: 'Zuletzt ausgelesen am',
+		[LanguageKeys.en_US]: 'Last updated at',
+		[LanguageKeys.ar_SA]: 'آخر تحديث في',
+		[LanguageKeys.es_ES]: 'Última actualización en',
+		[LanguageKeys.fr_FR]: 'Dernière mise à jour à',
+		[LanguageKeys.ru_RU]: 'Последнее обновление в',
+		[LanguageKeys.tr_TR]: 'Son güncelleme',
+		[LanguageKeys.zh_CN]: '最后更新于'
 	},
 	sort: {
 		[LanguageKeys.de_DE]: 'Sortieren',

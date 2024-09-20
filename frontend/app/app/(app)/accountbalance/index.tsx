@@ -4,12 +4,11 @@ import {MyButton} from "@/components/buttons/MyButton";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {useAccountBalance, useAccountBalanceInformation, useProfileLanguageCode} from "@/states/SynchedProfile";
+import {useAccountBalanceInformation, useProfileLanguageCode} from "@/states/SynchedProfile";
 import {useFocusEffect} from "expo-router";
 import {SystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 import {IconNames} from "@/constants/IconNames";
 import {formatPrice} from "@/components/pricing/PricingBadge";
-import {SettingsRowNumberEdit} from "@/components/settings/SettingsRowNumberEdit";
 import {isInExpoGo} from "@/helper/device/DeviceRuntimeHelper";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
@@ -69,7 +68,7 @@ export default function AccountbalanceScreen() {
 
 	const translation_accountBalance = useTranslation(TranslationKeys.accountbalance)
 	const translation_accountBalanceLastTransaction = useTranslation(TranslationKeys.accountbalanceLastTransaction)
-	const translation_accountBalanceLastTransactionDate = useTranslation(TranslationKeys.accountbalanceLastTransactionDate)
+	const translation_accountBalanceDataUpdated = useTranslation(TranslationKeys.accountbalanceDateUpdated)
 
 	const additionalInformationMarkdown = useBalanceAdditionalInformationMarkdown()
 
@@ -256,7 +255,7 @@ export default function AccountbalanceScreen() {
 					</View>
 					<SettingsRow key={"balance"+displayBalance} accessibilityLabel={translation_accountBalance} labelLeft={translation_accountBalance} leftIcon={IconNames.account_balance_icon} labelRight={formatPrice(displayBalance)} />
 					<SettingsRow key={"lastTransaction"+accountBalanceInformation.credit_balance_last_transaction} accessibilityLabel={translation_accountBalanceLastTransaction} labelLeft={translation_accountBalanceLastTransaction} leftIcon={IconNames.account_balance_last_transaction_icon} labelRight={formatPrice(lastTransaction)} />
-					<SettingsRow key={"lastTransactionDate"+accountBalanceInformation.credit_balance_date_updated} accessibilityLabel={translation_accountBalanceLastTransactionDate} labelLeft={translation_accountBalanceLastTransactionDate} leftIcon={IconNames.account_balance_last_transaction_date_update_icon} labelRight={lastTransactionDate} />
+					<SettingsRow key={"lastTransactionDate"+accountBalanceInformation.credit_balance_date_updated} accessibilityLabel={translation_accountBalanceDataUpdated} labelLeft={translation_accountBalanceDataUpdated} leftIcon={IconNames.account_balance_last_transaction_date_update_icon} labelRight={lastTransactionDate} />
 				</View>
 				{renderAdditionalInformation()}
 			</MyScrollView>
