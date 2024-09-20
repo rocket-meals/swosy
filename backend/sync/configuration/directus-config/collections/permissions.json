@@ -38,6 +38,145 @@
     "_syncId": "9f9200b9-0ba4-4121-9456-84913ba26d58"
   },
   {
+    "collection": "app_feedbacks",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "positive",
+      "content",
+      "contact_email",
+      "profile",
+      "title",
+      "device_brand",
+      "display_width",
+      "display_fontscale",
+      "display_scale",
+      "display_pixelratio",
+      "display_height",
+      "device_system_version",
+      "device_platform",
+      "response_read_by_user"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "42974a6c-b55d-4e92-bb66-93556e2841a0"
+  },
+  {
+    "collection": "app_feedbacks",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "63d6994f-c957-4955-bb15-369db775176f"
+  },
+  {
+    "collection": "app_feedbacks",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "user_created",
+      "sort",
+      "date_created",
+      "user_updated",
+      "positive",
+      "date_updated",
+      "title",
+      "content",
+      "contact_email",
+      "profile",
+      "response",
+      "priority",
+      "response_read_by_user",
+      "feedback_read_by_support",
+      "device_platform",
+      "device_brand",
+      "display_width",
+      "device_system_version",
+      "display_height",
+      "display_fontscale",
+      "display_scale",
+      "display_pixelratio"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "f5b4d12a-6228-4906-b953-db98c0ea22c8"
+  },
+  {
+    "collection": "app_feedbacks",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "date_updated",
+      "title",
+      "positive",
+      "content",
+      "contact_email",
+      "response_read_by_user",
+      "device_brand",
+      "device_platform",
+      "device_system_version",
+      "display_height",
+      "display_pixelratio",
+      "display_scale",
+      "display_fontscale",
+      "display_width"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "65a5eec7-d773-425f-b489-a3f5f2fb2e22"
+  },
+  {
     "collection": "app_settings_balance_translations",
     "action": "read",
     "permissions": null,
@@ -166,6 +305,171 @@
     "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
     "role": null,
     "_syncId": "d136c687-e6a5-4345-867e-6d81f9794eee"
+  },
+  {
+    "collection": "devices",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_created",
+      "user_updated",
+      "date_created",
+      "date_updated",
+      "profile",
+      "alias",
+      "display_group",
+      "display_height",
+      "display_width",
+      "display_scale",
+      "display_pixelratio",
+      "system_group",
+      "display_fontscale",
+      "platform",
+      "brand",
+      "is_ios",
+      "system_version",
+      "is_android",
+      "is_web",
+      "is_simulator",
+      "is_tablet",
+      "is_landscape",
+      "pushTokenObj"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "b567621f-4992-4934-9812-c930fe71c422"
+  },
+  {
+    "collection": "devices",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "587dffcc-52e0-4674-9fdf-2804f2bda765"
+  },
+  {
+    "collection": "devices",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "user_created",
+      "sort",
+      "date_created",
+      "user_updated",
+      "profile",
+      "date_updated",
+      "alias",
+      "display_group",
+      "display_height",
+      "display_width",
+      "display_scale",
+      "display_pixelratio",
+      "system_group",
+      "display_fontscale",
+      "brand",
+      "platform",
+      "system_version",
+      "is_ios",
+      "is_web",
+      "is_android",
+      "is_tablet",
+      "is_simulator",
+      "pushTokenObj",
+      "is_landscape"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "8ea88cc8-b382-4cac-89a5-30d2299a3ea5"
+  },
+  {
+    "collection": "devices",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "user_created",
+      "sort",
+      "date_created",
+      "user_updated",
+      "profile",
+      "date_updated",
+      "alias",
+      "display_group",
+      "display_height",
+      "display_width",
+      "display_scale",
+      "display_pixelratio",
+      "system_group",
+      "display_fontscale",
+      "platform",
+      "brand",
+      "is_ios",
+      "system_version",
+      "is_android",
+      "is_web",
+      "is_simulator",
+      "is_tablet",
+      "is_landscape",
+      "pushTokenObj"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "dd9ccdca-0be6-435a-ba1e-9c8f3cbc9d45"
   },
   {
     "collection": "directus_access",
@@ -325,6 +629,58 @@
   },
   {
     "collection": "foods_feedbacks_labels_entries",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "date_created",
+      "user_updated",
+      "user_created",
+      "date_updated",
+      "profile",
+      "canteen",
+      "foodoffer",
+      "label",
+      "food",
+      "dislike"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "59366c36-7cc0-442b-b6b5-c3bbd92e5faf"
+  },
+  {
+    "collection": "foods_feedbacks_labels_entries",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "d7c41894-b40e-4d0b-b844-97af0f23004b"
+  },
+  {
+    "collection": "foods_feedbacks_labels_entries",
     "action": "read",
     "permissions": null,
     "validation": null,
@@ -335,6 +691,60 @@
     "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
     "role": null,
     "_syncId": "79ff79a7-3a36-4d95-a63b-50d4a009cb89"
+  },
+  {
+    "collection": "foods_feedbacks_labels_entries",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "61fd22c2-512f-4148-938f-e3a02e5a6bd2"
+  },
+  {
+    "collection": "foods_feedbacks_labels_entries",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_updated",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "profile",
+      "food",
+      "label",
+      "foodoffer",
+      "canteen",
+      "dislike"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "b64cdcfb-61a6-49d8-a575-c985f9af5a4e"
   },
   {
     "collection": "foods_feedbacks_labels_translations",
@@ -364,6 +774,59 @@
   },
   {
     "collection": "foods_feedbacks",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_updated",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "comment",
+      "notify",
+      "food",
+      "foodoffer",
+      "rating",
+      "profile",
+      "canteen"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "433fe4a4-55cf-4357-8133-7e8a6fffcca7"
+  },
+  {
+    "collection": "foods_feedbacks",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "54b01462-0dfe-439e-9c12-e1d3560e4e40"
+  },
+  {
+    "collection": "foods_feedbacks",
     "action": "read",
     "permissions": null,
     "validation": null,
@@ -374,6 +837,61 @@
     "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
     "role": null,
     "_syncId": "5cfd98bd-fe7d-4410-abe7-8816b3bde249"
+  },
+  {
+    "collection": "foods_feedbacks",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "d58f84ee-6570-4045-816b-2ba206ee87be"
+  },
+  {
+    "collection": "foods_feedbacks",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profile": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_updated",
+      "date_created",
+      "user_created",
+      "date_updated",
+      "comment",
+      "notify",
+      "canteen",
+      "profile",
+      "food",
+      "foodoffer",
+      "rating"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "ba6c557d-f1fe-4f68-9428-3bf6e3d18956"
   },
   {
     "collection": "foods_markings",
@@ -543,6 +1061,410 @@
     "policy": "abf8a154-5b1c-4a46-ac9c-7300570f4f17",
     "role": null,
     "_syncId": "db6cf28d-2ff1-4487-b136-f8018421781a"
+  },
+  {
+    "collection": "profiles_buildings_favorites",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "90205179-700d-4253-bd96-97170a2cd27b"
+  },
+  {
+    "collection": "profiles_buildings_favorites",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "ad161c98-8bb8-4616-be0e-52d5a0b4ed99"
+  },
+  {
+    "collection": "profiles_buildings_favorites",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "ffb7b410-56d6-4f95-8bd7-34393550b1ad"
+  },
+  {
+    "collection": "profiles_buildings_favorites",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "64d82852-e88e-4280-b8a2-c9d75ff86635"
+  },
+  {
+    "collection": "profiles_buildings_last_opened",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "47f49e5e-92ff-4de2-95d7-1075f2626167"
+  },
+  {
+    "collection": "profiles_buildings_last_opened",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "cc14a85b-b916-4972-b6d8-234ef037c941"
+  },
+  {
+    "collection": "profiles_buildings_last_opened",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "aeccd0eb-9bff-4bd8-8447-0d424f018c5b"
+  },
+  {
+    "collection": "profiles_buildings_last_opened",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "buildings_id"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "45f517ee-1ce1-462b-82fd-03978855de9b"
+  },
+  {
+    "collection": "profiles_markings",
+    "action": "create",
+    "permissions": null,
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "markings_id",
+      "dislike"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "82716288-3dd2-4c9c-8b07-617cc8769cf7"
+  },
+  {
+    "collection": "profiles_markings",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "b6295f51-b5da-45c9-9aa3-87af29d556cd"
+  },
+  {
+    "collection": "profiles_markings",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "markings_id",
+      "dislike"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "5181450d-58f9-4a40-be9b-cfce464224ec"
+  },
+  {
+    "collection": "profiles_markings",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "profiles_id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "profiles_id",
+      "markings_id",
+      "dislike"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "d2567fa1-bfd1-4a14-b067-8555cedf1801"
+  },
+  {
+    "collection": "profiles",
+    "action": "delete",
+    "permissions": {
+      "_and": [
+        {
+          "id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": null,
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "4aa45ca2-b568-403d-912f-14c972c6b2cf"
+  },
+  {
+    "collection": "profiles",
+    "action": "read",
+    "permissions": {
+      "_and": [
+        {
+          "id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "credit_balance",
+      "credit_balance_last_transaction",
+      "credit_balance_date_updated",
+      "language",
+      "nickname",
+      "foods_feedbacks",
+      "price_group",
+      "date_privacy_policy_accepted",
+      "buildings_favorites",
+      "buildings_last_opened",
+      "markings",
+      "devices",
+      "canteen",
+      "course_timetable",
+      "notifiy_on_free_apartments",
+      "avatar"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "d4364841-c525-4d83-82cf-159fd7ca9f17"
+  },
+  {
+    "collection": "profiles",
+    "action": "update",
+    "permissions": {
+      "_and": [
+        {
+          "id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "validation": {
+      "_and": [
+        {
+          "id": {
+            "_eq": "$CURRENT_USER.profile"
+          }
+        }
+      ]
+    },
+    "presets": null,
+    "fields": [
+      "id",
+      "status",
+      "sort",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "credit_balance",
+      "credit_balance_last_transaction",
+      "credit_balance_date_updated",
+      "language",
+      "nickname",
+      "foods_feedbacks",
+      "price_group",
+      "date_privacy_policy_accepted",
+      "buildings_favorites",
+      "buildings_last_opened",
+      "markings",
+      "devices",
+      "canteen",
+      "course_timetable",
+      "notifiy_on_free_apartments",
+      "avatar"
+    ],
+    "policy": "c8306892-d6b1-4c84-ad42-fd22624616ee",
+    "role": null,
+    "_syncId": "0a177ab2-6963-4e8d-b6db-17ea302fb250"
   },
   {
     "collection": "utilizations_entries",
