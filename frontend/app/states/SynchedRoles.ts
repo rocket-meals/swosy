@@ -29,7 +29,7 @@ export function useSynchedRolesDict(): [ Record<string, DirectusRoles | null | u
 		updateFromServer: updateFromServer,
 		dependencies: {
 			collections: ["directus_roles"],
-			update_always: false
+			update_always: true
 		}
 	}
 

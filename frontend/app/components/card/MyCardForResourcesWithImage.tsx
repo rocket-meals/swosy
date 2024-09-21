@@ -65,6 +65,7 @@ function ImageUploaderComponent(props: ImageUploaderComponentProps) {
 
 	const accessibilityLabel = title;
 
+	console.log("ImageUploaderComponent");
 	const canUpdateImageField = PermissionHelper.useCanUpdate(props.resourceCollectionName, 'image');
 	const canUpdateImageRemoteUrlField = PermissionHelper.useCanUpdate(props.resourceCollectionName, 'image_remote_url');
 

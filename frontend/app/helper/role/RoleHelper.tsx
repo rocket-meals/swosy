@@ -1,15 +1,13 @@
-import {DirectusRoles} from "@/helper/database/databaseTypes/types";
+import {PermissionHelperObject} from "@/helper/permission/PermissionHelper";
 
 export class RoleHelper {
 
-    static isAdmin(role: DirectusRoles | null){
-        if(!role){
-            return false;
-        }
-        return !!role?.admin_access;
+    static isAdmin(permissionHelperObject: PermissionHelperObject){
+        return permissionHelperObject.admin_access;
     }
 
-    static isManagement(role: DirectusRoles | null){
+    static isManagement(permissionHelperObject: PermissionHelperObject){
+        let role = permissionHelperObject.currentRole;
         if(!role){
             return false;
         }

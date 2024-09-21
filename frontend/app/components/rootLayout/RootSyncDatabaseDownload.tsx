@@ -10,7 +10,6 @@ import {useSynchedMarkingsDict} from '@/states/SynchedMarkings';
 import {useSynchedApartmentsDict} from '@/states/SynchedApartments';
 import {useSynchedCollectionsDatesLastUpdateDict} from '@/states/SynchedCollectionsLastUpdate';
 import {useSynchedRolesDict} from '@/states/SynchedRoles';
-import {useSynchedPermissionsDict} from '@/states/SynchedPermissions';
 import {LoadingScreenDatabase} from '@/compositions/loadingScreens/LoadingScreenDatabase';
 import {PleaseConnectFirstTimeWithInternet} from '@/compositions/loadingScreens/PleaseConnectFirstTimeWithInternet';
 import {useSynchedNewsDict} from '@/states/SynchedNews';
@@ -24,6 +23,7 @@ import {RootTranslationKey, useRootTranslation} from "@/helper/translations/Root
 import {useSynchedPopupEventsDict} from "@/states/SynchedPopupEvents";
 import {useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict} from "@/states/SynchedFoodFeedbacksLabelsEntries";
 import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
+import {useSynchedPoliciesDict} from "@/states/SynchedPolicies";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -65,9 +65,9 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [apartmentsDict, setApartmentsDict, cacheHelperObjApartments] = useSynchedApartmentsDict()
 	const [wikisDict, setWikisDict, cacheHelperObjWikis] = useSynchedWikisDict()
 	const [rolesDict, setRolesDict, cacheHelperObjRoles] = useSynchedRolesDict()
+	const [policiesDict, setPoliciesDict, cacheHelperObjPolicies] = useSynchedPoliciesDict()
 	const [newsDict, setNewsDict, cacheHelperObjNews] = useSynchedNewsDict()
 	const [popupEventsDict, setPopupEventsDict, cacheHelperObjPopupEvents] = useSynchedPopupEventsDict()
-	const [permissionsDict, setPermissionsDict, cacheHelperObjPermissions] = useSynchedPermissionsDict()
 	const [profile, setProfile, cacheHelperObjProfile] = useSynchedProfile()
 
 	// SYNC STATE PER RESOURCE
@@ -122,7 +122,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('markingsGroups', markingsGroupsDict, cacheHelperObjMarkingsGroups);
 	addResourceToCheckForUpdates('apartments', apartmentsDict, cacheHelperObjApartments);
 	addResourceToCheckForUpdates('roles', rolesDict, cacheHelperObjRoles);
-	addResourceToCheckForUpdates('permissions', permissionsDict, cacheHelperObjPermissions);
+	addResourceToCheckForUpdates('policies', policiesDict, cacheHelperObjPolicies);
 	addResourceToCheckForUpdates('news', newsDict, cacheHelperObjNews);
 	addResourceToCheckForUpdates('popupEvents', popupEventsDict, cacheHelperObjPopupEvents);
 
