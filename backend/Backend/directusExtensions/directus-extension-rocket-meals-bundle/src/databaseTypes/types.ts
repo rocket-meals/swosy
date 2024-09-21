@@ -344,6 +344,14 @@ export type Devices = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type DirectusAccess = {
+  id: string;
+  policy: string | DirectusPolicies;
+  role?: string | DirectusRoles | null;
+  sort?: number | null;
+  user?: string | DirectusUsers | null;
+};
+
 export type DirectusActivity = {
   action: string;
   collection: string;
@@ -424,6 +432,7 @@ export type DirectusFields = {
 
 export type DirectusFiles = {
   charset?: string | null;
+  created_on: string;
   description?: string | null;
   duration?: number | null;
   embed?: string | null;
@@ -442,9 +451,11 @@ export type DirectusFiles = {
   storage: string;
   tags?: unknown | null;
   title?: string | null;
+  tus_data?: unknown | null;
+  tus_id?: string | null;
   type?: string | null;
   uploaded_by?: string | DirectusUsers | null;
-  uploaded_on: string;
+  uploaded_on?: string | null;
   width?: number | null;
 };
 
@@ -527,9 +538,24 @@ export type DirectusPermissions = {
   fields?: unknown | null;
   id: number;
   permissions?: unknown | null;
+  policy: string | DirectusPolicies;
   presets?: unknown | null;
   role?: string | DirectusRoles | null;
   validation?: unknown | null;
+};
+
+export type DirectusPolicies = {
+  admin_access: boolean;
+  app_access: boolean;
+  description?: string | null;
+  enforce_tfa: boolean;
+  icon: string;
+  id: string;
+  ip_access?: unknown | null;
+  name: string;
+  permissions: any[] | DirectusPermissions[];
+  roles: any[] | DirectusAccess[];
+  users: any[] | DirectusAccess[];
 };
 
 export type DirectusPresets = {
@@ -573,15 +599,15 @@ export type DirectusRevisions = {
 };
 
 export type DirectusRoles = {
-  admin_access: boolean;
-  app_access: boolean;
+  children: any[] | DirectusRoles[];
   description?: string | null;
-  enforce_tfa: boolean;
   icon: string;
   id: string;
-  ip_access?: unknown | null;
   name: string;
+  parent?: string | DirectusRoles | null;
+  policies: any[] | DirectusAccess[];
   users: any[] | DirectusUsers[];
+  users_group: string;
 };
 
 export type DirectusSessions = {
@@ -619,7 +645,7 @@ export type DirectusSettings = {
   public_note?: string | null;
   public_registration: boolean;
   public_registration_email_filter?: unknown | null;
-  public_registration_role?: string | null;
+  public_registration_role?: string | DirectusRoles | null;
   public_registration_verify_email: boolean;
   report_bug_url?: string | null;
   report_error_url?: string | null;
@@ -678,6 +704,7 @@ export type DirectusUsers = {
   last_page?: string | null;
   location?: string | null;
   password?: string | null;
+  policies: any[] | DirectusAccess[];
   profile?: string | Profiles | null;
   provider: string;
   role?: string | DirectusRoles | null;
@@ -712,7 +739,7 @@ export type DirectusWebhooks = {
   headers?: unknown | null;
   id: number;
   method: string;
-  migrated_flow?: string | null;
+  migrated_flow?: string | DirectusFlows | null;
   name: string;
   status: string;
   url: string;
@@ -1202,6 +1229,7 @@ export type CustomDirectusTypes = {
   cashregisters_transactions: CashregistersTransactions[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
   devices: Devices[];
+  directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];
   directus_collections: DirectusCollections[];
   directus_dashboards: DirectusDashboards[];
@@ -1215,6 +1243,7 @@ export type CustomDirectusTypes = {
   directus_operations: DirectusOperations[];
   directus_panels: DirectusPanels[];
   directus_permissions: DirectusPermissions[];
+  directus_policies: DirectusPolicies[];
   directus_presets: DirectusPresets[];
   directus_relations: DirectusRelations[];
   directus_revisions: DirectusRevisions[];
