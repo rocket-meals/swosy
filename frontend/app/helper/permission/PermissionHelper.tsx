@@ -84,15 +84,15 @@ export class PermissionHelper {
     }
 
     static usePermissionHelperObject(): PermissionHelperObject{
-        console.log("usePermissionHelperObject");
+        //console.log("usePermissionHelperObject");
         const currentRole = useCurrentRole();
-        console.log("currentRole", currentRole);
+        //console.log("currentRole", currentRole);
         const [rolesDict, setRolesDict] = useSynchedRolesDict();
-        console.log("rolesDict", rolesDict);
+        //console.log("rolesDict", rolesDict);
         const [policiesDict, setPoliciesDict] = useSynchedPoliciesDict();
-        console.log("policiesDict", policiesDict);
+        //console.log("policiesDict", policiesDict);
         const policiesIdsForCurrentRole = PermissionHelper.getAllPoliciesIdsForCurrentRole(currentRole, policiesDict, rolesDict);
-        console.log("policiesIdsForCurrentRole", policiesIdsForCurrentRole);
+        //console.log("policiesIdsForCurrentRole", policiesIdsForCurrentRole);
         const policiesForCurrentRole = []
         for(let policyId of policiesIdsForCurrentRole){
             const policy = policiesDict?.[policyId];
@@ -100,7 +100,7 @@ export class PermissionHelper {
                 policiesForCurrentRole.push(policy);
             }
         }
-        console.log("policiesForCurrentRole", policiesForCurrentRole);
+        //console.log("policiesForCurrentRole", policiesForCurrentRole);
         let admin_access = false;
         for(let policy of policiesForCurrentRole){
             if(policy?.admin_access){
@@ -108,7 +108,7 @@ export class PermissionHelper {
                 break;
             }
         }
-        console.log("admin_access", admin_access);
+        //console.log("admin_access", admin_access);
         const permissionsForCurrentRole = []
         for(let policy of policiesForCurrentRole){
             const permissions = policy?.permissions || [];
@@ -128,7 +128,6 @@ export class PermissionHelper {
     }
 
     static filterItemForAllowedCreateFields<T extends Object>(permissionHelperObject: PermissionHelperObject, collection: string, item: Partial<T>): Partial<T>{
-        const role = permissionHelperObject.currentRole;
         if(RoleHelper.isAdmin(permissionHelperObject)){
             return item;
         }
@@ -149,7 +148,6 @@ export class PermissionHelper {
     }
 
     static filterItemForAllowedUpdateFields<T>(permissionHelperObject: PermissionHelperObject, collection: string, item: Partial<T>): Partial<T>{
-        const role = permissionHelperObject.currentRole;
         if(RoleHelper.isAdmin(permissionHelperObject)){
             return item;
         }
@@ -167,8 +165,6 @@ export class PermissionHelper {
 
 
     static isFieldAllowedForAction(permissionHelperObject: PermissionHelperObject, collection: string, field: string, action: PermissionActions){
-        console.log("isFieldAllowedForAction", collection, field, action);
-        const role = permissionHelperObject.currentRole;
         const permissions = permissionHelperObject.permissionsForCurrentRole;
 
         if(RoleHelper.isAdmin(permissionHelperObject)){

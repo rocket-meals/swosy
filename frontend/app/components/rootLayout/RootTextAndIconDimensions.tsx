@@ -54,7 +54,7 @@ export default function RootTextAndIconDimensions() {
                 }} onLayout={(event) => {
                     const {width, height} = event.nativeEvent.layout;
                     setIconDimensions((currentDimensions) => {
-                        console.log("######################## SetIconDimensions: " + width);
+                        //console.log("######################## SetIconDimensions: " + width);
                         return {
                             width: width,
                             height: height

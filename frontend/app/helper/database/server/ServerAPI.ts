@@ -222,7 +222,16 @@ export class ServerAPI {
 	static async readRemoteRoles() {
 		const directus = ServerAPI.getClient();
 		const roles = await directus.request<DirectusRoles[]>(readRoles({
-			fields: ['*', "permissions.*", "policy.*", "policies.*"]
+			fields: ['*'],
+			deep: {
+				"users": {
+					_limit: 0 // we don't need the users for the roles
+				},
+				"policies": {
+					_limit: 0 // since we dont get the "public" role, policies are not needed as we will get them separately
+				}
+			},
+			limit: -1 // we need all roles
 		}));
 		return roles;
 	}
@@ -231,7 +240,16 @@ export class ServerAPI {
 		const directus = ServerAPI.getClient();
 		console.log('readRemotePolicies()');
 		const policies = await directus.request<DirectusPolicies[]>(readPolicies({
-			fields: ['*', "permissions.*", "roles.*"]
+			fields: ['*', "permissions.*", "roles.*"],
+			deep: {
+				"permissions": {
+					_limit: -1 // we need all permissions
+				},
+				"users": {
+					_limit: 0
+				}
+			},
+			limit: -1 // we need all policies
 		}));
 		return policies
 	}

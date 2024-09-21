@@ -28,8 +28,12 @@ export function useSynchedPoliciesDict(): [ Record<string, DirectusPolicies | nu
 		sync_cache_composed_key_local: sync_cache_composed_key_local,
 		updateFromServer: updateFromServer,
 		dependencies: {
-			collections: ["directus_policies"],
-			update_always: true
+			collections: ["directus_policies",
+				"directus_roles",  // the roles are needed to check the policies
+				"directus_access", // this is the join table between roles and policies
+				"directus_permissions",  // the permissions are needed to check the policies
+			],
+			update_always: false
 		}
 	}
 
