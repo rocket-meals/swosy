@@ -21,7 +21,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@directus/sdk": "^16.0.0",
+    "@directus/sdk": "^17.0.1",
     "@dotlottie/react-player": "^1.6.17",
     "@expo/vector-icons": "^14.0.2",
     "@gluestack-style/react": "^1.0.56",
