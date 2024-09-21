@@ -18,7 +18,7 @@ export type DirectusImageProps = {
     style?: any;
     alt?: string;
     fallbackImage?: string;
-	fallbackAssetId?: string;
+	fallbackAssetId?: string | DirectusFiles | undefined | null;
     thumbHash?: string | undefined | null;
     showLoading?: boolean,
     contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down',
@@ -39,9 +39,12 @@ export default function DirectusImage(props: DirectusImageProps) {
 	function getInitialImageUrl() {
 		let url = AssetHelperDirectus.getAssetImageURL(props.assetId, props.imageTransform);
 		if (!url && props.image_url) {
-			url = props.image_url;
+			return  props.image_url;
 		}
-		return url;
+		if(url){
+			return url;
+		}
+		return undefined;
 	}
 
 	const state_failed = "failed";
