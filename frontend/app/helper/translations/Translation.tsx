@@ -145,6 +145,7 @@ export enum TranslationKeys {
 	sort_option_public_rating = "sort_option_public_rating",
 	sort_option_intelligent = "sort_option_intelligent",
 	sort_option_distance = "sort_option_distance",
+	automatic = "automatic",
 	free_rooms = "free_rooms",
 	foodweekplan = "foodweekplan",
 	foodBigScreen = "foodBigScreen",
@@ -334,6 +335,7 @@ export enum TranslationKeys {
 	image = "image",
 	language = "language",
 	language_system = "language_system",
+	amount_columns_for_cards = "amount_columns_for_cards",
 	drawer_config_position = "drawer_config_position",
 	drawer_config_position_left = "drawer_config_position_left",
 	drawer_config_position_right = "drawer_config_position_right",
@@ -447,6 +449,26 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Продолжить с кэшем',
 		[LanguageKeys.tr_TR]: 'Önbellekle devam et',
 		[LanguageKeys.zh_CN]: '继续使用缓存'
+	},
+	automatic: {
+		[LanguageKeys.de_DE]: 'Automatisch',
+		[LanguageKeys.en_US]: 'Automatic',
+		[LanguageKeys.ar_SA]: 'تلقائي',
+		[LanguageKeys.es_ES]: 'Automático',
+		[LanguageKeys.fr_FR]: 'Automatique',
+		[LanguageKeys.ru_RU]: 'Автоматически',
+		[LanguageKeys.tr_TR]: 'Otomatik',
+		[LanguageKeys.zh_CN]: '自动'
+	},
+	amount_columns_for_cards: {
+		[LanguageKeys.de_DE]: 'Anzahl Spalten für Karten',
+		[LanguageKeys.en_US]: 'Amount Columns for Cards',
+		[LanguageKeys.ar_SA]: 'عدد الأعمدة للبطاقات',
+		[LanguageKeys.es_ES]: 'Cantidad de columnas para tarjetas',
+		[LanguageKeys.fr_FR]: 'Nombre de colonnes pour les cartes',
+		[LanguageKeys.ru_RU]: 'Количество столбцов для карточек',
+		[LanguageKeys.tr_TR]: 'Kartlar için sütun sayısı',
+		[LanguageKeys.zh_CN]: '卡片的列数'
 	},
 	archived: {
 		[LanguageKeys.de_DE]: 'Archiviert',
