@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Neue Profile",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 19,
+    "height": 15,
+    "options": {
+      "collection": "profiles",
+      "dateField": "date_created",
+      "range": "auto",
+      "function": "count",
+      "valueField": "id"
+    },
+    "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
+  }
+]
