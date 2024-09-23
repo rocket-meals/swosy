@@ -69,7 +69,7 @@ services:
       REDIS: "redis://rocket-meals-cache:6379" # For Cache and Synchronization of Replicas # Required for Replicas to work - Directus communicates which replica is the master
       # Directus synchronization configuration
       SYNCHRONIZATION_STORE: "redis" # Multiple instances of Directus need to communicate with each other to not trigger the same event multiple times - https://docs.directus.io/self-hosted/config-options.html#synchronization
-
+      MARKETPLACE_TRUST: "all" # Trust all marketplace extensions - Directus Marketplace does not support extensions that require a database connection out of the box
 
       EMAIL_TEMPLATES_PATH: "/directus/extensions/templates" # https://docs.directus.io/self-hosted/email-templates.html
 

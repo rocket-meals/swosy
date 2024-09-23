@@ -1,26 +1,29 @@
 import {
+	authentication,
 	AuthenticationClient,
 	AuthenticationConfig,
 	AuthenticationData,
 	AuthenticationStorage,
-	DirectusClient,
-	GraphqlClient,
-	ReadProviderOutput,
-	RestClient,
-	ServerInfoOutput,
-	authentication,
 	createDirectus,
-	deleteUser, graphql,
+	deleteUser,
+	DirectusClient,
+	graphql,
+	GraphqlClient,
 	readMe,
+	readPermissions,
+	readPolicies,
+	ReadProviderOutput,
 	readProviders,
 	readRoles,
 	rest,
-	serverHealth, serverInfo, readPermissions, serverPing
+	RestClient,
+	serverInfo,
+	ServerInfoOutput
 } from '@directus/sdk';
 import {
 	CustomDirectusTypes,
-	DirectusFiles,
 	DirectusPermissions,
+	DirectusPolicies,
 	DirectusRoles
 } from '@/helper/database/databaseTypes/types';
 import {UrlHelper} from '@/helper/UrlHelper';
@@ -218,14 +221,37 @@ export class ServerAPI {
 
 	static async readRemoteRoles() {
 		const directus = ServerAPI.getClient();
-		const roles = await directus.request<DirectusRoles[]>(readRoles());
+		const roles = await directus.request<DirectusRoles[]>(readRoles({
+			fields: ['*'],
+			deep: {
+				"users": {
+					_limit: 0 // we don't need the users for the roles
+				},
+				"policies": {
+					_limit: 0 // since we dont get the "public" role, policies are not needed as we will get them separately
+				}
+			},
+			limit: -1 // we need all roles
+		}));
 		return roles;
 	}
 
-	static async readRemotePermissions() {
+	static async readRemotePolicies() {
 		const directus = ServerAPI.getClient();
-		const permissions = await directus.request<DirectusPermissions[]>(readPermissions());
-		return permissions;
+		console.log('readRemotePolicies()');
+		const policies = await directus.request<DirectusPolicies[]>(readPolicies({
+			fields: ['*', "permissions.*", "roles.*"],
+			deep: {
+				"permissions": {
+					_limit: -1 // we need all permissions
+				},
+				"users": {
+					_limit: 0
+				}
+			},
+			limit: -1 // we need all policies
+		}));
+		return policies
 	}
 
 	static async downloadServerInfo(): Promise<ServerInfo> {

@@ -8,6 +8,7 @@ import {ServerAPI} from '@/helper/database/server/ServerAPI';
 import {useSynchedRolesDict} from "@/states/SynchedRoles";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {RoleHelper} from "@/helper/role/RoleHelper";
+import {PermissionHelper, PermissionHelperObject} from "@/helper/permission/PermissionHelper";
 
 export type CachedUserInformation = {
     data: DirectusUsers | undefined,
@@ -103,21 +104,17 @@ export function useCurrentRole(): DirectusRoles | null {
 }
 
 export function useCurrentRoleIsAdmin(): boolean | null{
-	const role = useCurrentRole();
-	if(role?.admin_access){
-		return true;
-	}
-	// TODO: check if other roles are required
-	return false;
+	let permissionHelperObject = PermissionHelper.usePermissionHelperObject();
+	return RoleHelper.isAdmin(permissionHelperObject);
 }
 
 export function useCurrentRoleIsAtleastManagement(){
-	const role = useCurrentRole();
-	if(RoleHelper.isAdmin(role)){
+	let permissionHelperObject = PermissionHelper.usePermissionHelperObject();
+	if(RoleHelper.isAdmin(permissionHelperObject)){
 		return true;
 	}
 
-	if(RoleHelper.isManagement(role)){
+	if(RoleHelper.isManagement(permissionHelperObject)){
 		return true;
 	}
 	return false;

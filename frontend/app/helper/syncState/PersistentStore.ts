@@ -39,6 +39,7 @@ export class PersistentStore {
 	static popup_events = 'PersistentStore.popup_events'
 	static popup_events_read = 'PersistentStore.popup_events_read'
 	static roles = 'PersistentStore.roles'
+	static policies = 'PersistentStore.policies'
 	static permissions = 'PersistentStore.permissions'
 
 	static ownFoodFeedbacks = 'PersistentStore.ownFoodFeedbacks'
