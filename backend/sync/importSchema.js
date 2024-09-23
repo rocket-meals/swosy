@@ -261,7 +261,7 @@ const enableRequiredSettings = async (headers) => {
 
 const getDirectusSyncParams = () => {
     // Properly escape the password for shell command
-    const preserverIds = "dashboards,operations,panels,roles,translations";
+    const preserverIds = "dashboards,operations,panels,policies,roles,translations";
     const preserveOption = "--preserve-ids "+preserverIds;
     return '--directus-url ' + directus_url + ' --directus-email ' + admin_email + ' --directus-password "' + admin_password + '" --dump-path ' + dumpPath+ " "+preserveOption
 }
@@ -303,7 +303,7 @@ const execWithOutput = async (command) => {
 }
 
 const execDirectusSync = async (params) => {
-    let command = 'npx directus-sync@2.1.0 ' + params;
+    let command = 'npx directus-sync@3.1.3 ' + params;
     let output = await execWithOutput(command);
     const lines = output.split('\n');
     for (const line of lines) {
