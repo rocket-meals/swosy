@@ -592,13 +592,13 @@ type Subscription {
   buildings_translations_mutated(event: EventEnum): buildings_translations_mutated
   canteens_foodservice_hours_mutated(event: EventEnum): canteens_foodservice_hours_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
-  directus_permissions_mutated(event: EventEnum): directus_permissions_mutated
   directus_dashboards_mutated(event: EventEnum): directus_dashboards_mutated
   directus_folders_mutated(event: EventEnum): directus_folders_mutated
   devices_mutated(event: EventEnum): devices_mutated
   directus_notifications_mutated(event: EventEnum): directus_notifications_mutated
   directus_operations_mutated(event: EventEnum): directus_operations_mutated
   directus_panels_mutated(event: EventEnum): directus_panels_mutated
+  directus_permissions_mutated(event: EventEnum): directus_permissions_mutated
   directus_activity_mutated(event: EventEnum): directus_activity_mutated
   directus_flows_mutated(event: EventEnum): directus_flows_mutated
   directus_versions_mutated(event: EventEnum): directus_versions_mutated
