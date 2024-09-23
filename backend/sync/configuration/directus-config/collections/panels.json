@@ -25,6 +25,113 @@
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
   },
   {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Beliebteste Speisen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "list",
+    "position_x": 1,
+    "position_y": 2,
+    "width": 40,
+    "height": 13,
+    "options": {
+      "collection": "foods",
+      "limit": 10,
+      "sortField": "rating_average",
+      "displayTemplate": "{{rating_average}}⭐ ({{rating_amount}}) {{alias}} (id:{{id}})",
+      "filter": {
+        "_and": [
+          {
+            "rating_average": {
+              "_nnull": true
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "440768e2-3239-4fe0-981b-75f3b6d6d8d9"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Am Häufigsten Bewertet",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "list",
+    "position_x": 42,
+    "position_y": 2,
+    "width": 26,
+    "height": 13,
+    "options": {
+      "collection": "foods",
+      "limit": 10,
+      "sortField": "rating_amount",
+      "displayTemplate": "({{rating_amount}}) {{alias}} (id:{{id}})",
+      "filter": {
+        "_and": [
+          {
+            "rating_average": {
+              "_nnull": true
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "5a227cab-b387-439f-9ecf-cffa7ea52299"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Bewertungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 42,
+    "position_y": 17,
+    "width": 26,
+    "height": 13,
+    "options": {
+      "collection": "foods_feedbacks",
+      "xAxis": "date_updated",
+      "horizontal": true,
+      "aggregation": "count",
+      "function": "count",
+      "dateField": "date_updated",
+      "precision": "day",
+      "valueField": "id",
+      "range": "1 month"
+    },
+    "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": null,
+    "icon": null,
+    "color": null,
+    "show_header": false,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 36,
+    "height": 16,
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "precision": "day",
+      "filter": null
+    },
+    "_syncId": "82fb9eb8-1b59-48b7-92d3-db78c89df122"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Kartenguthaben",
     "icon": null,
@@ -55,21 +162,21 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
-    "name": "Beliebteste Speisen",
+    "name": "Unbeliebteste Speisen",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "list",
     "position_x": 1,
-    "position_y": 1,
-    "width": 59,
-    "height": 14,
+    "position_y": 17,
+    "width": 40,
+    "height": 13,
     "options": {
       "collection": "foods",
       "limit": 10,
       "sortField": "rating_average",
-      "displayTemplate": "{{rating_average}} ({{rating_amount}}) {{alias}} ({{id}})",
+      "displayTemplate": "{{rating_average}}⭐ ({{rating_amount}}) {{alias}} (id:{{id}})",
       "filter": {
         "_and": [
           {
@@ -78,9 +185,10 @@
             }
           }
         ]
-      }
+      },
+      "sortDirection": "asc"
     },
-    "_syncId": "b39f4680-4904-470c-8541-609ec0afb2d5"
+    "_syncId": "b832f73c-4f21-4039-874c-e59dd9f7a646"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -102,5 +210,38 @@
       "valueField": "id"
     },
     "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Login Zeiten",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 25,
+    "height": 16,
+    "options": {
+      "collection": "directus_activity",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "action": {
+                  "_eq": "login"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "f8a26906-3282-4bbb-aea9-88d569127084"
   }
 ]

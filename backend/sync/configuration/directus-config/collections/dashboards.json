@@ -7,6 +7,13 @@
     "_syncId": "116a8172-4d9a-4e62-adeb-24160389d016"
   },
   {
+    "name": "Server",
+    "icon": "space_dashboard",
+    "note": null,
+    "color": null,
+    "_syncId": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62"
+  },
+  {
     "name": "Speisen",
     "icon": "space_dashboard",
     "note": null,
