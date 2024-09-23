@@ -3,7 +3,7 @@
   "info": {
     "title": "Dynamic API Specification",
     "description": "This is a dynamically generated API specification for all endpoints existing on the current project.",
-    "version": "10.11.2"
+    "version": "11.1.0"
   },
   "servers": [
     {
@@ -946,6 +946,401 @@
         },
         "tags": [
           "Utilities"
+        ]
+      }
+    },
+    "/files": {
+      "get": {
+        "summary": "List Files",
+        "description": "List the files.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "getFiles",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Files"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a File",
+        "description": "Create a new file",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "createFile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Files"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Files",
+        "description": "Update multiple files at the same time.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "updateFiles",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "keys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Files"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Files",
+        "description": "Delete multiple existing files.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "deleteFiles",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/files/{id}": {
+      "get": {
+        "summary": "Retrieve a Files",
+        "description": "Retrieve a single file by unique identifier.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "getFile",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UUId"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Files"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a File",
+        "description": "Update an existing file, and/or replace it's file contents.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "updateFile",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UUId"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "title": {
+                    "description": "Title for the file. Is extracted from the filename on upload, but can be edited by the user.",
+                    "example": "User Avatar",
+                    "type": "string"
+                  },
+                  "filename_download": {
+                    "description": "Preferred filename when file is downloaded.",
+                    "type": "string"
+                  },
+                  "description": {
+                    "description": "Description for the file.",
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "folder": {
+                    "description": "Virtual folder where this file resides in.",
+                    "example": null,
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/components/schemas/Folders"
+                      }
+                    ],
+                    "nullable": true
+                  },
+                  "tags": {
+                    "description": "Tags for the file. Is automatically populated based on Exif data for images.",
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "file": {
+                    "description": "File contents.",
+                    "format": "binary"
+                  }
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "description": "Title for the file. Is extracted from the filename on upload, but can be edited by the user.",
+                    "example": "User Avatar",
+                    "type": "string"
+                  },
+                  "filename_download": {
+                    "description": "Preferred filename when file is downloaded.",
+                    "type": "string"
+                  },
+                  "description": {
+                    "description": "Description for the file.",
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "folder": {
+                    "description": "Virtual folder where this file resides in.",
+                    "example": null,
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "$ref": "#/components/schemas/Folders"
+                      }
+                    ],
+                    "nullable": true
+                  },
+                  "tags": {
+                    "description": "Tags for the file. Is automatically populated based on Exif data for images.",
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Files"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a File",
+        "description": "Delete an existing file.",
+        "tags": [
+          "Files"
+        ],
+        "operationId": "deleteFile",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UUId"
+          }
         ]
       }
     },
@@ -7528,6 +7923,640 @@
         ]
       }
     },
+    "/permissions": {
+      "get": {
+        "summary": "List Permissions",
+        "description": "List all permissions.",
+        "operationId": "getPermissions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Permissions"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "post": {
+        "summary": "Create a Permission",
+        "description": "Create a new permission.",
+        "operationId": "createPermission",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "collection": {
+                    "description": "What collection this permission applies to.",
+                    "type": "string",
+                    "example": "customers"
+                  },
+                  "comment": {
+                    "description": "If the user can post comments.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "create",
+                      "update",
+                      "full"
+                    ]
+                  },
+                  "create": {
+                    "description": "If the user can create items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "full"
+                    ]
+                  },
+                  "delete": {
+                    "description": "If the user can update items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "explain": {
+                    "description": "If the user is required to leave a comment explaining what was changed.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "create",
+                      "update",
+                      "always"
+                    ]
+                  },
+                  "read": {
+                    "description": "If the user can read items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "role": {
+                    "description": "Unique identifier of the role this permission applies to.",
+                    "type": "integer",
+                    "example": 3
+                  },
+                  "read_field_blacklist": {
+                    "description": "Explicitly denies read access for specific fields.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "featured_image"
+                    ]
+                  },
+                  "status": {
+                    "description": "What status this permission applies to.",
+                    "type": "string"
+                  },
+                  "status_blacklist": {
+                    "description": "Explicitly denies specific statuses to be used.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "update": {
+                    "description": "If the user can update items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "write_field_blacklist": {
+                    "description": "Explicitly denies write access for specific fields.",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Permissions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "patch": {
+        "summary": "Update Multiple Permissions",
+        "description": "Update multiple permissions at the same time.",
+        "tags": [
+          "Permissions"
+        ],
+        "operationId": "updatePermissions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "keys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "data": {
+                    "properties": {
+                      "collection": {
+                        "description": "What collection this permission applies to.",
+                        "type": "string",
+                        "example": "customers"
+                      },
+                      "comment": {
+                        "description": "If the user can post comments.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "create",
+                          "update",
+                          "full"
+                        ]
+                      },
+                      "create": {
+                        "description": "If the user can create items.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "full"
+                        ]
+                      },
+                      "delete": {
+                        "description": "If the user can update items.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "mine",
+                          "role",
+                          "full"
+                        ]
+                      },
+                      "explain": {
+                        "description": "If the user is required to leave a comment explaining what was changed.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "create",
+                          "update",
+                          "always"
+                        ]
+                      },
+                      "read": {
+                        "description": "If the user can read items.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "mine",
+                          "role",
+                          "full"
+                        ]
+                      },
+                      "role": {
+                        "description": "Unique identifier of the role this permission applies to.",
+                        "type": "integer",
+                        "example": 3
+                      },
+                      "read_field_blacklist": {
+                        "description": "Explicitly denies read access for specific fields.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": [
+                          "featured_image"
+                        ]
+                      },
+                      "status": {
+                        "description": "What status this permission applies to.",
+                        "type": "string"
+                      },
+                      "status_blacklist": {
+                        "description": "Explicitly denies specific statuses to be used.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "update": {
+                        "description": "If the user can update items.",
+                        "type": "string",
+                        "enum": [
+                          "none",
+                          "mine",
+                          "role",
+                          "full"
+                        ]
+                      },
+                      "write_field_blacklist": {
+                        "description": "Explicitly denies write access for specific fields.",
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Permissions"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Permissions",
+        "description": "Delete multiple existing permissions.",
+        "tags": [
+          "Permissions"
+        ],
+        "operationId": "deletePermissions",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/permissions/me": {
+      "get": {
+        "summary": "List My Permissions",
+        "description": "List the permissions that apply to the current user.",
+        "operationId": "getMyPermissions",
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Permissions"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/{id}": {
+      "get": {
+        "summary": "Retrieve a Permission",
+        "description": "Retrieve a single permissions object by unique identifier.",
+        "operationId": "getPermission",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          },
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Permissions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "patch": {
+        "summary": "Update a Permission",
+        "description": "Update an existing permission",
+        "operationId": "updatePermission",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "collection": {
+                    "description": "What collection this permission applies to.",
+                    "type": "object"
+                  },
+                  "comment": {
+                    "description": "If the user can post comments. `full`.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "create",
+                      "update"
+                    ]
+                  },
+                  "create": {
+                    "description": "If the user can create items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "full"
+                    ]
+                  },
+                  "delete": {
+                    "description": "If the user can update items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "explain": {
+                    "description": "If the user is required to leave a comment explaining what was changed.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "create",
+                      "update",
+                      "always"
+                    ]
+                  },
+                  "read": {
+                    "description": "If the user can read items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "read_field_blacklist": {
+                    "description": "Explicitly denies read access for specific fields.",
+                    "type": "object"
+                  },
+                  "role": {
+                    "description": "Unique identifier of the role this permission applies to.",
+                    "type": "object"
+                  },
+                  "status": {
+                    "description": "What status this permission applies to.",
+                    "type": "object"
+                  },
+                  "status_blacklist": {
+                    "description": "Explicitly denies specific statuses to be used.",
+                    "type": "object"
+                  },
+                  "update": {
+                    "description": "If the user can update items.",
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "mine",
+                      "role",
+                      "full"
+                    ]
+                  },
+                  "write_field_blacklist": {
+                    "description": "Explicitly denies write access for specific fields.",
+                    "type": "object"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Permissions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a Permission",
+        "description": "Delete an existing permission",
+        "operationId": "deletePermission",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "tags": [
+          "Permissions"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ]
+      }
+    },
     "/folders": {
       "get": {
         "summary": "List Folders",
@@ -7991,7 +9020,7 @@
       "patch": {
         "summary": "Update an Extension",
         "description": "Update an existing extension.",
-        "operationId": "updateExtensions",
+        "operationId": "updateExtensionBundle",
         "parameters": [
           {
             "in": "path",
@@ -9449,640 +10478,6 @@
         ]
       }
     },
-    "/permissions": {
-      "get": {
-        "summary": "List Permissions",
-        "description": "List all permissions.",
-        "operationId": "getPermissions",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          },
-          {
-            "$ref": "#/components/parameters/Page"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Permissions"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ]
-      },
-      "post": {
-        "summary": "Create a Permission",
-        "description": "Create a new permission.",
-        "operationId": "createPermission",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "collection": {
-                    "description": "What collection this permission applies to.",
-                    "type": "string",
-                    "example": "customers"
-                  },
-                  "comment": {
-                    "description": "If the user can post comments.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "create",
-                      "update",
-                      "full"
-                    ]
-                  },
-                  "create": {
-                    "description": "If the user can create items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "full"
-                    ]
-                  },
-                  "delete": {
-                    "description": "If the user can update items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "explain": {
-                    "description": "If the user is required to leave a comment explaining what was changed.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "create",
-                      "update",
-                      "always"
-                    ]
-                  },
-                  "read": {
-                    "description": "If the user can read items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "role": {
-                    "description": "Unique identifier of the role this permission applies to.",
-                    "type": "integer",
-                    "example": 3
-                  },
-                  "read_field_blacklist": {
-                    "description": "Explicitly denies read access for specific fields.",
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "example": [
-                      "featured_image"
-                    ]
-                  },
-                  "status": {
-                    "description": "What status this permission applies to.",
-                    "type": "string"
-                  },
-                  "status_blacklist": {
-                    "description": "Explicitly denies specific statuses to be used.",
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "update": {
-                    "description": "If the user can update items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "write_field_blacklist": {
-                    "description": "Explicitly denies write access for specific fields.",
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "type": "object"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Permissions"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ]
-      },
-      "patch": {
-        "summary": "Update Multiple Permissions",
-        "description": "Update multiple permissions at the same time.",
-        "tags": [
-          "Permissions"
-        ],
-        "operationId": "updatePermissions",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "keys": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "data": {
-                    "properties": {
-                      "collection": {
-                        "description": "What collection this permission applies to.",
-                        "type": "string",
-                        "example": "customers"
-                      },
-                      "comment": {
-                        "description": "If the user can post comments.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "create",
-                          "update",
-                          "full"
-                        ]
-                      },
-                      "create": {
-                        "description": "If the user can create items.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "full"
-                        ]
-                      },
-                      "delete": {
-                        "description": "If the user can update items.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "mine",
-                          "role",
-                          "full"
-                        ]
-                      },
-                      "explain": {
-                        "description": "If the user is required to leave a comment explaining what was changed.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "create",
-                          "update",
-                          "always"
-                        ]
-                      },
-                      "read": {
-                        "description": "If the user can read items.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "mine",
-                          "role",
-                          "full"
-                        ]
-                      },
-                      "role": {
-                        "description": "Unique identifier of the role this permission applies to.",
-                        "type": "integer",
-                        "example": 3
-                      },
-                      "read_field_blacklist": {
-                        "description": "Explicitly denies read access for specific fields.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "example": [
-                          "featured_image"
-                        ]
-                      },
-                      "status": {
-                        "description": "What status this permission applies to.",
-                        "type": "string"
-                      },
-                      "status_blacklist": {
-                        "description": "Explicitly denies specific statuses to be used.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "update": {
-                        "description": "If the user can update items.",
-                        "type": "string",
-                        "enum": [
-                          "none",
-                          "mine",
-                          "role",
-                          "full"
-                        ]
-                      },
-                      "write_field_blacklist": {
-                        "description": "Explicitly denies write access for specific fields.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "type": "object"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Permissions"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Permissions",
-        "description": "Delete multiple existing permissions.",
-        "tags": [
-          "Permissions"
-        ],
-        "operationId": "deletePermissions",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      }
-    },
-    "/permissions/me": {
-      "get": {
-        "summary": "List My Permissions",
-        "description": "List the permissions that apply to the current user.",
-        "operationId": "getMyPermissions",
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Permissions"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ]
-      }
-    },
-    "/permissions/{id}": {
-      "get": {
-        "summary": "Retrieve a Permission",
-        "description": "Retrieve a single permissions object by unique identifier.",
-        "operationId": "getPermission",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          },
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Permissions"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ]
-      },
-      "patch": {
-        "summary": "Update a Permission",
-        "description": "Update an existing permission",
-        "operationId": "updatePermission",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "properties": {
-                  "collection": {
-                    "description": "What collection this permission applies to.",
-                    "type": "object"
-                  },
-                  "comment": {
-                    "description": "If the user can post comments. `full`.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "create",
-                      "update"
-                    ]
-                  },
-                  "create": {
-                    "description": "If the user can create items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "full"
-                    ]
-                  },
-                  "delete": {
-                    "description": "If the user can update items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "explain": {
-                    "description": "If the user is required to leave a comment explaining what was changed.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "create",
-                      "update",
-                      "always"
-                    ]
-                  },
-                  "read": {
-                    "description": "If the user can read items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "read_field_blacklist": {
-                    "description": "Explicitly denies read access for specific fields.",
-                    "type": "object"
-                  },
-                  "role": {
-                    "description": "Unique identifier of the role this permission applies to.",
-                    "type": "object"
-                  },
-                  "status": {
-                    "description": "What status this permission applies to.",
-                    "type": "object"
-                  },
-                  "status_blacklist": {
-                    "description": "Explicitly denies specific statuses to be used.",
-                    "type": "object"
-                  },
-                  "update": {
-                    "description": "If the user can update items.",
-                    "type": "string",
-                    "enum": [
-                      "none",
-                      "mine",
-                      "role",
-                      "full"
-                    ]
-                  },
-                  "write_field_blacklist": {
-                    "description": "Explicitly denies write access for specific fields.",
-                    "type": "object"
-                  }
-                },
-                "type": "object"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Permissions"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ]
-      },
-      "delete": {
-        "summary": "Delete a Permission",
-        "description": "Delete an existing permission",
-        "operationId": "deletePermission",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "tags": [
-          "Permissions"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Id"
-          }
-        ]
-      }
-    },
     "/activity": {
       "get": {
         "operationId": "getActivities",
@@ -10332,401 +10727,6 @@
         },
         "tags": [
           "Activity"
-        ]
-      }
-    },
-    "/files": {
-      "get": {
-        "summary": "List Files",
-        "description": "List the files.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "getFiles",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Files"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a File",
-        "description": "Create a new file",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "createFile",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Files"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Files",
-        "description": "Update multiple files at the same time.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "updateFiles",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "data": {
-                    "type": "object",
-                    "properties": {
-                      "data": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "keys": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Files"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Files",
-        "description": "Delete multiple existing files.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "deleteFiles",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      }
-    },
-    "/files/{id}": {
-      "get": {
-        "summary": "Retrieve a Files",
-        "description": "Retrieve a single file by unique identifier.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "getFile",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/UUId"
-          },
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Files"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update a File",
-        "description": "Update an existing file, and/or replace it's file contents.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "updateFile",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/UUId"
-          },
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/data": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "file"
-                ],
-                "properties": {
-                  "title": {
-                    "description": "Title for the file. Is extracted from the filename on upload, but can be edited by the user.",
-                    "example": "User Avatar",
-                    "type": "string"
-                  },
-                  "filename_download": {
-                    "description": "Preferred filename when file is downloaded.",
-                    "type": "string"
-                  },
-                  "description": {
-                    "description": "Description for the file.",
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "folder": {
-                    "description": "Virtual folder where this file resides in.",
-                    "example": null,
-                    "oneOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "$ref": "#/components/schemas/Folders"
-                      }
-                    ],
-                    "nullable": true
-                  },
-                  "tags": {
-                    "description": "Tags for the file. Is automatically populated based on Exif data for images.",
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "file": {
-                    "description": "File contents.",
-                    "format": "binary"
-                  }
-                }
-              }
-            },
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "description": "Title for the file. Is extracted from the filename on upload, but can be edited by the user.",
-                    "example": "User Avatar",
-                    "type": "string"
-                  },
-                  "filename_download": {
-                    "description": "Preferred filename when file is downloaded.",
-                    "type": "string"
-                  },
-                  "description": {
-                    "description": "Description for the file.",
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "folder": {
-                    "description": "Virtual folder where this file resides in.",
-                    "example": null,
-                    "oneOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "$ref": "#/components/schemas/Folders"
-                      }
-                    ],
-                    "nullable": true
-                  },
-                  "tags": {
-                    "description": "Tags for the file. Is automatically populated based on Exif data for images.",
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/Files"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a File",
-        "description": "Delete an existing file.",
-        "tags": [
-          "Files"
-        ],
-        "operationId": "deleteFile",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/UUId"
-          }
         ]
       }
     },
@@ -13154,393 +13154,6 @@
         ]
       }
     },
-    "/items/directus_sync_id_map": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new directus_sync_id_map item.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "createItemsDirectusSyncIDMap",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the directus_sync_id_map items.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "readItemsDirectusSyncIDMap",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple directus_sync_id_map items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "updateItemsDirectusSyncIDMap",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing directus_sync_id_map items.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "deleteItemsDirectusSyncIDMap",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/directus_sync_id_map/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single directus_sync_id_map item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "readSingleItemsDirectusSyncIDMap",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing directus_sync_id_map item.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "updateSingleItemsDirectusSyncIDMap",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing directus_sync_id_map item.",
-        "tags": [
-          "Items",
-          "ItemsDirectusSyncIDMap"
-        ],
-        "operationId": "deleteSingleItemsDirectusSyncIDMap",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/roles": {
       "get": {
         "summary": "List Roles",
@@ -13951,6 +13564,393 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/UUId"
+          }
+        ]
+      }
+    },
+    "/items/directus_sync_id_map": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new directus_sync_id_map item.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "createItemsDirectusSyncIDMap",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the directus_sync_id_map items.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "readItemsDirectusSyncIDMap",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple directus_sync_id_map items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "updateItemsDirectusSyncIDMap",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing directus_sync_id_map items.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "deleteItemsDirectusSyncIDMap",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/directus_sync_id_map/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single directus_sync_id_map item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "readSingleItemsDirectusSyncIDMap",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing directus_sync_id_map item.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "updateSingleItemsDirectusSyncIDMap",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsDirectusSyncIDMap"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing directus_sync_id_map item.",
+        "tags": [
+          "Items",
+          "ItemsDirectusSyncIDMap"
+        ],
+        "operationId": "deleteSingleItemsDirectusSyncIDMap",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
           }
         ]
       }
@@ -27830,6 +27830,11 @@
       ]
     },
     {
+      "name": "Files",
+      "description": "Files can be saved in any given location. Directus has a powerful assets endpoint that can be used to generate thumbnails for images on the fly.",
+      "x-collection": "directus_files"
+    },
+    {
       "name": "ItemsAppFeedbacks",
       "x-collection": "app_feedbacks"
     },
@@ -27898,6 +27903,11 @@
       "x-collection": "cashregisters"
     },
     {
+      "name": "Permissions",
+      "description": "Permissions control who has access to what and when.",
+      "x-collection": "directus_permissions"
+    },
+    {
       "name": "Folders",
       "description": "Group files by virtual folders.",
       "x-collection": "directus_folders"
@@ -27922,19 +27932,9 @@
       "x-collection": "directus_operations"
     },
     {
-      "name": "Permissions",
-      "description": "Permissions control who has access to what and when.",
-      "x-collection": "directus_permissions"
-    },
-    {
       "name": "Activity",
       "description": "All events that happen within Directus are tracked and stored in the activities collection. This gives you full accountability over everything that happens.",
       "x-collection": "directus_activity"
-    },
-    {
-      "name": "Files",
-      "description": "Files can be saved in any given location. Directus has a powerful assets endpoint that can be used to generate thumbnails for images on the fly.",
-      "x-collection": "directus_files"
     },
     {
       "name": "Collections",
@@ -27972,13 +27972,13 @@
       "x-collection": "directus_webhooks"
     },
     {
-      "name": "ItemsDirectusSyncIDMap",
-      "x-collection": "directus_sync_id_map"
-    },
-    {
       "name": "Roles",
       "description": "Roles are groups of users that share permissions.",
       "x-collection": "directus_roles"
+    },
+    {
+      "name": "ItemsDirectusSyncIDMap",
+      "x-collection": "directus_sync_id_map"
     },
     {
       "name": "Users",
@@ -28260,8 +28260,8 @@
               }
             ]
           },
-          "uploaded_on": {
-            "description": "When the file was uploaded.",
+          "created_on": {
+            "description": "When the file was created.",
             "example": "2019-12-03T00:10:15+00:00",
             "type": "string",
             "format": "date-time"
@@ -28348,6 +28348,19 @@
           "focal_point_y": {
             "nullable": true,
             "type": "integer"
+          },
+          "tus_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "tus_data": {
+            "nullable": true
+          },
+          "uploaded_on": {
+            "description": "When the file was last uploaded/replaced.",
+            "example": "2019-12-03T00:10:15+00:00",
+            "type": "string",
+            "format": "date-time"
           }
         },
         "x-collection": "directus_files"
@@ -28405,28 +28418,37 @@
             "type": "string",
             "nullable": true
           },
-          "ip_access": {
-            "description": "Array of IP addresses that are allowed to connect to the API as a user of this role.",
-            "example": [],
+          "parent": {
+            "nullable": true,
+            "description": "$t:field_options.directus_roles.parent_note",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Roles"
+              }
+            ]
+          },
+          "children": {
+            "nullable": true,
+            "description": "$t:field_options.directus_roles.children_note",
             "type": "array",
             "items": {
-              "type": "string"
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "$ref": "#/components/schemas/Roles"
+                }
+              ]
             }
           },
-          "enforce_tfa": {
-            "description": "Whether or not this role enforces the use of 2FA.",
-            "example": false,
-            "type": "boolean"
-          },
-          "admin_access": {
-            "description": "Admin role. If true, skips all permission checks.",
-            "example": false,
-            "type": "boolean"
-          },
-          "app_access": {
-            "description": "The users in the role are allowed to use the app.",
-            "example": true,
-            "type": "boolean"
+          "policies": {
+            "nullable": true
           },
           "users": {
             "nullable": true,
@@ -28644,6 +28666,9 @@
                 "$ref": "#/components/schemas/ItemsProfiles"
               }
             ]
+          },
+          "policies": {
+            "nullable": true
           }
         },
         "x-collection": "directus_users"
@@ -30231,6 +30256,59 @@
         },
         "x-collection": "cashregisters"
       },
+      "Permissions": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique identifier for the permission.",
+            "example": 1,
+            "type": "integer"
+          },
+          "collection": {
+            "description": "What collection this permission applies to.",
+            "example": "customers",
+            "type": "string"
+          },
+          "action": {
+            "description": "What action this permission applies to.",
+            "example": "create",
+            "type": "string",
+            "enum": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ]
+          },
+          "permissions": {
+            "description": "JSON structure containing the permissions checks for this permission.",
+            "type": "object",
+            "nullable": true
+          },
+          "validation": {
+            "description": "JSON structure containing the validation checks for this permission.",
+            "type": "object",
+            "nullable": true
+          },
+          "presets": {
+            "description": "JSON structure containing the preset value for created/updated items.",
+            "type": "object",
+            "nullable": true
+          },
+          "fields": {
+            "description": "CSV of fields that the user is allowed to interact with.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "policy": {
+            "nullable": false
+          }
+        },
+        "x-collection": "directus_permissions"
+      },
       "Extensions": {
         "type": "object",
         "properties": {
@@ -30578,62 +30656,6 @@
           }
         },
         "x-collection": "directus_operations"
-      },
-      "Permissions": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "Unique identifier for the permission.",
-            "example": 1,
-            "type": "integer"
-          },
-          "role": {
-            "description": "Unique identifier of the role this permission applies to.",
-            "example": "2f24211d-d928-469a-aea3-3c8f53d4e426",
-            "type": "string",
-            "nullable": true
-          },
-          "collection": {
-            "description": "What collection this permission applies to.",
-            "example": "customers",
-            "type": "string"
-          },
-          "action": {
-            "description": "What action this permission applies to.",
-            "example": "create",
-            "type": "string",
-            "enum": [
-              "create",
-              "read",
-              "update",
-              "delete"
-            ]
-          },
-          "permissions": {
-            "description": "JSON structure containing the permissions checks for this permission.",
-            "type": "object",
-            "nullable": true
-          },
-          "validation": {
-            "description": "JSON structure containing the validation checks for this permission.",
-            "type": "object",
-            "nullable": true
-          },
-          "presets": {
-            "description": "JSON structure containing the preset value for created/updated items.",
-            "type": "object",
-            "nullable": true
-          },
-          "fields": {
-            "description": "CSV of fields that the user is allowed to interact with.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          }
-        },
-        "x-collection": "directus_permissions"
       },
       "Activity": {
         "type": "object",
