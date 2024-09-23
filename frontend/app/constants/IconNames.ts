@@ -25,6 +25,7 @@ export class IconNames {
     static course_timetable_icon = 'calendar-clock'
     static eating_habit_icon = 'medical-bag'
     static settings_icon = 'cog'
+    static amount_columns_icon = IconFamily.FontAwesome5+IconParseDelimeter+"columns";
     static drawer_position_icon = 'menu'
     static drawer_position_left_icon = 'format-horizontal-align-left'
     static drawer_position_right_icon = 'format-horizontal-align-right'

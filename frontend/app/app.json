@@ -116,12 +116,8 @@
       "buildNumber": "112"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "package": "com.baumgartnersoftware.rocketmealsdev",
-      "versionCode": 112
+      "versionCode": 113
     },
     "web": {
       "bundler": "metro",

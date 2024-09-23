@@ -53,6 +53,8 @@ export class PersistentStore {
 	static profile = 'PersistentStore.profile'
 
 	static firstWeekday = 'PersistentStore.firstWeekday'
+
+	static displaySettings = 'PersistentStore.displaySettings'
 }
 
 type ValueOf<T> = T[keyof T];

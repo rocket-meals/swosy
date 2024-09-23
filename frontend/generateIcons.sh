@@ -75,8 +75,8 @@ generate_images() {
     # Ensure the output folder exists
     mkdir -p "$OUTPUT_FOLDER"
 
-    # Generate adaptive-icon.png
-    convert "$icon_path" -resize $ADAPTIVE_ICON_SIZE "$OUTPUT_FOLDER/adaptive-icon.png"
+    # Generate adaptive-icon.png # Ignore adaptive icon for now
+    #convert "$icon_path" -resize $ADAPTIVE_ICON_SIZE "$OUTPUT_FOLDER/adaptive-icon.png"
 
     # Generate favicon.png
     convert "$icon_path" -resize $FAVICON_SIZE "$OUTPUT_FOLDER/favicon.png"

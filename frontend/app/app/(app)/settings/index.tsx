@@ -30,6 +30,7 @@ import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 import {SettingsRowResetPopupEventsRead} from "@/compositions/settings/SettingsResetPopupEventsRead";
 import {SettingsRowConsentDateTermsAndPrivacy} from "@/compositions/settings/SettingsRowConsentDateTermsAndPrivacy";
+import {SettingsRowAmountColumns} from "@/compositions/settings/SettingsRowAmountColumns";
 
 const ProjectVersionInformation = () => {
 	const [develop, setDevelop] = useDeveloperModeRaw();
@@ -95,6 +96,7 @@ export default function SettingsScreen() {
 				<SettingsRowGroup>
 					<SettingsRowColorScheme />
 					<SettingsRowDrawerPosition />
+					<SettingsRowAmountColumns />
 					<SettingsRowFirstDayOfWeek />
 				</SettingsRowGroup>
 				<SettingsRowGroup>

@@ -19,9 +19,15 @@ import {
 } from "@/compositions/header/HeaderSearchButtonParams";
 import {useCampusAreaColor} from "@/states/SynchedAppSettings";
 
-function getBuildingName(building: Buildings, languageCode: string): string | null {
-	if(building.alias){
-		return building.alias;
+export function getBuildingName(building: Buildings, languageCode: string): string | null {
+	let alias = building.alias;
+	let externalIdentifier = building.external_identifier;
+	let totalName = alias;
+	if(externalIdentifier){
+		totalName += ' (' + externalIdentifier + ')';
+	}
+	if(totalName){
+		return totalName;
 	}
 	return building.id;
 }
@@ -93,17 +99,23 @@ export function useBuildingIdFromLocalSearchParams() {
 	return params[SEARCH_PARAM_BUILDINGS_ID];
 }
 
-export default function BuildingsScreen() {
-	return <BuildingsScreenIndex />
+export default function CampusScreen() {
+	return <CampusScreenIndex />
 }
 
 function filterForSearchValue(resources: Buildings[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
 	return filterAndSortResourcesBySearchValue(resources, searchValue, (resource) => {
-		return getBuildingName(resource, languageCode)
+		let buildingName = getBuildingName(resource, languageCode)
+		let buildingExternalIdentifier = resource.external_identifier;
+		let totalName = buildingName;
+		if(buildingExternalIdentifier){
+			totalName += ' ' + buildingExternalIdentifier;
+		}
+		return totalName;
 	});
 }
 
-function BuildingsScreenIndex() {
+function CampusScreenIndex() {
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
@@ -172,9 +184,6 @@ function BuildingsScreenIndex() {
   		}
   		if (resource?.image_thumb_hash) {
   			thumb_hash = resource.image_thumb_hash
-  		}
-  		if (resource?.alias) {
-  			title = resource.alias
   		}
   	}
 
