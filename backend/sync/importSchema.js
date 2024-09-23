@@ -25,6 +25,10 @@ const requiredModules = ["flow-manager", "schema-management-module", "generate-t
 const collectionsToSkip = ["2-wikis.json"];
 
 // Load directus .env file
+const currentPackageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, './package.json'), 'utf8'));
+console.log("Current package.json: ")
+console.log(JSON.stringify(currentPackageJson, null, 4));
+const DirectusSyncVersion = currentPackageJson.dependencies['directus-sync'];
 
 // Path to the .env file
 const envFilePath = path.resolve(__dirname, './../../.env');
@@ -303,7 +307,7 @@ const execWithOutput = async (command) => {
 }
 
 const execDirectusSync = async (params) => {
-    let command = 'npx directus-sync@3.1.3 ' + params;
+    let command = 'npx directus-sync@'+DirectusSyncVersion+' ' + params;
     let output = await execWithOutput(command);
     const lines = output.split('\n');
     for (const line of lines) {
