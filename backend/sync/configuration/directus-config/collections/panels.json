@@ -1,13 +1,96 @@
 [
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": null,
+    "icon": null,
+    "color": null,
+    "show_header": false,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 48,
+    "position_y": 1,
+    "width": 21,
+    "height": 16,
+    "options": {
+      "collection": "directus_users",
+      "column": "provider",
+      "donut": true,
+      "showLabels": true,
+      "legend": "bottom",
+      "conditionalFill": null,
+      "function": "count",
+      "yAxis": "provider",
+      "xAxis": "provider"
+    },
+    "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Kartenguthaben",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 43,
+    "position_y": 19,
+    "width": 25,
+    "height": 13,
+    "options": {
+      "collection": "profiles",
+      "xAxis": "credit_balance",
+      "yAxis": "credit_balance",
+      "aggregation": "count",
+      "decimals": 1,
+      "min": null,
+      "max": null,
+      "function": "count",
+      "grouping": null,
+      "fillType": "solid",
+      "showLegend": true,
+      "showAxisLabels": "yAxis",
+      "field": "date_created"
+    },
+    "_syncId": "ad158891-103d-4233-91ff-937919a441b1"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Beliebteste Speisen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "list",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 59,
+    "height": 14,
+    "options": {
+      "collection": "foods",
+      "limit": 10,
+      "sortField": "rating_average",
+      "displayTemplate": "{{rating_average}} ({{rating_amount}}) {{alias}} ({{id}})",
+      "filter": {
+        "_and": [
+          {
+            "rating_average": {
+              "_nnull": true
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "b39f4680-4904-470c-8541-609ec0afb2d5"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Neue Profile",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 1,
+    "position_x": 28,
     "position_y": 1,
     "width": 19,
     "height": 15,

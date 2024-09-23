@@ -216,6 +216,18 @@
     "_syncId": "bc5c0cc4-0567-4fd7-999c-8bd9a845bf2f"
   },
   {
+    "collection": "directus_policies",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "_sync_default_public_policy",
+    "_syncId": "8fdb1420-bc5f-4c49-8941-0eff60a4c804"
+  },
+  {
     "collection": "directus_relations",
     "action": "read",
     "permissions": {},
