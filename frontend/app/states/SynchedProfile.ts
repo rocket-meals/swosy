@@ -113,14 +113,20 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 				if (isServerOnline && !isCurrentUserAnonymous) {
 					if (profile_id && newValue) {
 						//console.log('profile_id: ', profile_id);
+						const different = JSON.stringify(newValue) !== JSON.stringify(currentValue);
+						let newValueOnlyDateUpdatedOld = JSON.parse(JSON.stringify(newValue));
+						newValueOnlyDateUpdatedOld.date_updated = currentValue?.date_updated;
+						const onlyDateUpdatedChanged = JSON.stringify(newValueOnlyDateUpdatedOld) === JSON.stringify(currentValue);
 
+						const shouldUpdate = different && !onlyDateUpdatedChanged; // only update if different and not only date_updated changed
 
-						updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
-							//console.log('remoteAnswer: ', remoteAnswer);
-						}).catch((err) => {
-							console.log(err);
-						});
-
+						if(shouldUpdate){ // only update if different
+							updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+								//console.log('remoteAnswer: ', remoteAnswer);
+							}).catch((err) => {
+								console.log(err);
+							});
+						}
 
 						return newValue;
 					} else {
