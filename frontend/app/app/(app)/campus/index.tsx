@@ -99,8 +99,8 @@ export function useBuildingIdFromLocalSearchParams() {
 	return params[SEARCH_PARAM_BUILDINGS_ID];
 }
 
-export default function BuildingsScreen() {
-	return <BuildingsScreenIndex />
+export default function CampusScreen() {
+	return <CampusScreenIndex />
 }
 
 function filterForSearchValue(resources: Buildings[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
@@ -111,10 +111,11 @@ function filterForSearchValue(resources: Buildings[], searchValue: string | unde
 		if(buildingExternalIdentifier){
 			totalName += ' ' + buildingExternalIdentifier;
 		}
+		return totalName;
 	});
 }
 
-function BuildingsScreenIndex() {
+function CampusScreenIndex() {
 	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
@@ -183,9 +184,6 @@ function BuildingsScreenIndex() {
   		}
   		if (resource?.image_thumb_hash) {
   			thumb_hash = resource.image_thumb_hash
-  		}
-  		if (resource?.alias) {
-  			title = resource.alias
   		}
   	}
 
