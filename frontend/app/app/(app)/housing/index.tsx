@@ -25,6 +25,7 @@ import {
 	filterAndSortResourcesBySearchValue,
 	useSearchTextFromGlobalSearchParams
 } from "@/compositions/header/HeaderSearchButtonParams";
+import {getBuildingName} from "@/app/(app)/campus";
 
 function useHousingAdditionalInformationMarkdown(): string |null {
 	const [appSettings] = useSynchedAppSettings();
@@ -36,13 +37,18 @@ function useHousingAdditionalInformationMarkdown(): string |null {
 }
 
 function getApartmentName(apartment: Apartments, buildingsDict: Record<string, Buildings> | undefined, languageCode: string): string | null {
-	const building_id = apartment.building
+	let building_id: string | undefined = undefined
+	if(apartment.building){
+		if(typeof apartment.building === 'string'){
+			building_id = apartment.building;
+		} else {
+			building_id = apartment.building.id;
+		}
+	}
 	if(building_id && buildingsDict){
 		let building = buildingsDict[building_id];
 		if(building){
-			if(building.alias){
-				return building.alias;
-			}
+			return getBuildingName(building, languageCode);
 		}
 	}
 	return apartment.id;

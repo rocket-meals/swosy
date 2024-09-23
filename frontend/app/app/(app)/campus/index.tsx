@@ -19,9 +19,15 @@ import {
 } from "@/compositions/header/HeaderSearchButtonParams";
 import {useCampusAreaColor} from "@/states/SynchedAppSettings";
 
-function getBuildingName(building: Buildings, languageCode: string): string | null {
-	if(building.alias){
-		return building.alias;
+export function getBuildingName(building: Buildings, languageCode: string): string | null {
+	let alias = building.alias;
+	let externalIdentifier = building.external_identifier;
+	let totalName = alias;
+	if(externalIdentifier){
+		totalName += ' (' + externalIdentifier + ')';
+	}
+	if(totalName){
+		return totalName;
 	}
 	return building.id;
 }
@@ -99,7 +105,12 @@ export default function BuildingsScreen() {
 
 function filterForSearchValue(resources: Buildings[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
 	return filterAndSortResourcesBySearchValue(resources, searchValue, (resource) => {
-		return getBuildingName(resource, languageCode)
+		let buildingName = getBuildingName(resource, languageCode)
+		let buildingExternalIdentifier = resource.external_identifier;
+		let totalName = buildingName;
+		if(buildingExternalIdentifier){
+			totalName += ' ' + buildingExternalIdentifier;
+		}
 	});
 }
 
