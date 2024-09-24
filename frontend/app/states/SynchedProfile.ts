@@ -107,21 +107,47 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 			//console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
 
 			setResource((currentValue) => {
+				const copyCurrentValue = JSON.parse(JSON.stringify(currentValue || {}));
+				//console.log('############## currentValue: ', copyCurrentValue);
 				const newValue = callback(currentValue);
-				const profile_id = newValue?.id || currentValue?.id;
+				//console.log('############## newValue: ', JSON.parse(JSON.stringify(newValue)));
+				const profile_id = newValue?.id || copyCurrentValue?.id;
 
 				if (isServerOnline && !isCurrentUserAnonymous) {
 					if (profile_id && newValue) {
 						//console.log('profile_id: ', profile_id);
-						const different = JSON.stringify(newValue) !== JSON.stringify(currentValue);
+						const different = JSON.stringify(newValue) !== JSON.stringify(copyCurrentValue);
 						let newValueOnlyDateUpdatedOld = JSON.parse(JSON.stringify(newValue));
-						newValueOnlyDateUpdatedOld.date_updated = currentValue?.date_updated;
-						const onlyDateUpdatedChanged = JSON.stringify(newValueOnlyDateUpdatedOld) === JSON.stringify(currentValue);
+						newValueOnlyDateUpdatedOld.date_updated = copyCurrentValue?.date_updated;
+						// also set the date_updated of the device to the old value
+						// this is necessary to detect conflicts
+						const newValueDevices = newValue.devices;
+						const currentValueDevices = copyCurrentValue?.devices;
+						if(newValueDevices && currentValueDevices){
+							for (let i=0; i<newValueDevices.length; i++) {
+								const device = newValueDevices[i];
+								const device_id = device.id;
+								const currentDevice = currentValueDevices.find((x) => x.id === device_id);
+								if(currentDevice){
+									device.date_updated = currentDevice.date_updated;
+								}
+							}
+						}
+
+						const onlyDateUpdatedChanged = JSON.stringify(newValueOnlyDateUpdatedOld) === JSON.stringify(copyCurrentValue);
+
 
 						const shouldUpdate = different && !onlyDateUpdatedChanged; // only update if different and not only date_updated changed
+						//console.log('############## different: ', different);
+						//console.log('############## onlyDateUpdatedChanged: ', onlyDateUpdatedChanged);
+						//console.log('############## shouldUpdate: ', shouldUpdate);
 
 						if(shouldUpdate){ // only update if different
 							updateProfileRemote(profile_id, newValue).then((remoteAnswer) => {
+								//console.log('############## REMOTE ANSWER: remoteAnswer: ', remoteAnswer);
+								setResource((currentValue) => {
+									return remoteAnswer;
+								});
 								//console.log('remoteAnswer: ', remoteAnswer);
 							}).catch((err) => {
 								console.log(err);
