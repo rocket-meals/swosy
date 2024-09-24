@@ -12,10 +12,13 @@
     "hidden": false,
     "interface": "group-detail",
     "note": null,
-    "options": null,
+    "options": {
+      "headerIcon": "nest_clock_farsight_analog",
+      "start": "closed"
+    },
     "readonly": false,
     "required": false,
-    "sort": 15,
+    "sort": 13,
     "special": [
       "alias",
       "group",

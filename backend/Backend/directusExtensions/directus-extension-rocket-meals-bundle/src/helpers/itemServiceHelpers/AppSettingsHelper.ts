@@ -174,15 +174,6 @@ export class AppSettingsHelper {
         return false;
     }
 
-    async isCanteenReportEnabled(): Promise<boolean> {
-        // canteen_reports_enabled
-        const appSettings = await this.getAppSettings();
-        if (appSettings?.canteen_reports_enabled) {
-            return appSettings.canteen_reports_enabled;
-        }
-        return false;
-    }
-
     async setUtilizationForecastCalculationStatus(status: FlowStatus, lastRun: Date | null) {
         let database = this.getDatabase();
         await database(CollectionNames.APP_SETTINGS).update({

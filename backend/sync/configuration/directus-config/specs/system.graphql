@@ -715,6 +715,13 @@ type canteen_food_feedback_report_schedules {
   """
   use_canteen_specific_feedbacks_only: Boolean
   show_images: Boolean
+  send_for_mondays: Boolean
+  send_for_wednesdays: Boolean
+  send_for_tuesdays: Boolean
+  send_for_thursdays: Boolean
+  send_for_fridays: Boolean
+  send_for_saturdays: Boolean
+  send_for_sundays: Boolean
   canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
   canteens_func: count_functions
   recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
@@ -3157,6 +3164,13 @@ input canteen_food_feedback_report_schedules_filter {
   alias: string_filter_operators
   use_canteen_specific_feedbacks_only: boolean_filter_operators
   show_images: boolean_filter_operators
+  send_for_mondays: boolean_filter_operators
+  send_for_wednesdays: boolean_filter_operators
+  send_for_tuesdays: boolean_filter_operators
+  send_for_thursdays: boolean_filter_operators
+  send_for_fridays: boolean_filter_operators
+  send_for_saturdays: boolean_filter_operators
+  send_for_sundays: boolean_filter_operators
   canteens: canteen_food_feedback_report_schedules_canteens_filter
   canteens_func: count_function_filter_operators
   recipients: canteen_food_feedback_report_schedules_report_recipients_filter

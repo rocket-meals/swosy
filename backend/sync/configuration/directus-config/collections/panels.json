@@ -45,10 +45,10 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": null,
+    "name": "Genutzte Login Anbieter",
     "icon": null,
     "color": null,
-    "show_header": false,
+    "show_header": true,
     "note": null,
     "type": "bar-chart",
     "position_x": 46,
@@ -490,8 +490,34 @@
             ]
           }
         ]
-      }
+      },
+      "range": "1 day"
     },
     "_syncId": "f8a26906-3282-4bbb-aea9-88d569127084"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Geräte Typen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 23,
+    "position_y": 1,
+    "width": 21,
+    "height": 16,
+    "options": {
+      "collection": "devices",
+      "column": "provider",
+      "donut": true,
+      "showLabels": true,
+      "legend": "bottom",
+      "conditionalFill": null,
+      "function": "count",
+      "yAxis": "id",
+      "xAxis": "platform"
+    },
+    "_syncId": "f9288676-dfa7-41d6-b8e9-a8c825f18e22"
   }
 ]

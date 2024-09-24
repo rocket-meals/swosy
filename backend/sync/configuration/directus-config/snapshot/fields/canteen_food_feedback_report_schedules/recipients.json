@@ -10,7 +10,7 @@
       "template": "{{report_recipients_id.name}}"
     },
     "field": "recipients",
-    "group": null,
+    "group": "report_recipient_settings",
     "hidden": false,
     "interface": "list-m2m",
     "note": "Report Empfänger",
@@ -19,7 +19,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 1,
     "special": [
       "m2m"
     ],

@@ -34051,6 +34051,34 @@
             "nullable": true,
             "type": "boolean"
           },
+          "send_for_mondays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_wednesdays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_tuesdays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_thursdays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_fridays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_saturdays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "send_for_sundays": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "canteens": {
             "nullable": true,
             "type": "array",

@@ -1,6 +1,70 @@
 import {FoodofferDateType} from "../food-sync-hook/FoodParserInterface";
 
+
+export enum Weekday {
+    MONDAY = "MONDAY",
+    TUESDAY = "TUESDAY",
+    WEDNESDAY = "WEDNESDAY",
+    THURSDAY = "THURSDAY",
+    FRIDAY = "FRIDAY",
+    SATURDAY = "SATURDAY",
+    SUNDAY = "SUNDAY"
+}
+
+export type MySimpleDate = {
+    year: number,
+    month: number,
+    day: number,
+    hours: number,
+    minutes: number,
+    seconds: number
+    milliseconds: number
+}
+
 export class DateHelper {
+
+    static getWeekdayList(): Weekday[] {
+        return [
+            Weekday.MONDAY,
+            Weekday.TUESDAY,
+            Weekday.WEDNESDAY,
+            Weekday.THURSDAY,
+            Weekday.FRIDAY,
+            Weekday.SATURDAY,
+            Weekday.SUNDAY
+        ];
+    }
+
+    static getWeekdayListFromDate(date: Date): Weekday[] { // for example today is wednesday, so the list will be [WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY, MONDAY, TUESDAY]
+        const weekdayList = DateHelper.getWeekdayList();
+        const weekday = DateHelper.getWeekdayFromDate(date);
+        const index = weekdayList.indexOf(weekday);
+        const firstPart = weekdayList.slice(index);
+        const secondPart = weekdayList.slice(0, index);
+        return firstPart.concat(secondPart);
+    }
+
+    static getWeekdayFromDate(date: Date): Weekday {
+        const weekday = date.getDay();
+        switch (weekday) {
+            case 0:
+                return Weekday.SUNDAY;
+            case 1:
+                return Weekday.MONDAY;
+            case 2:
+                return Weekday.TUESDAY;
+            case 3:
+                return Weekday.WEDNESDAY;
+            case 4:
+                return Weekday.THURSDAY;
+            case 5:
+                return Weekday.FRIDAY;
+            case 6:
+                return Weekday.SATURDAY;
+            default:
+                throw new Error(`Invalid weekday: ${weekday}`);
+        }
+    }
 
     static getHumanReadableDate(date: Date, includeWeekdayName: boolean): string {
         const numericString = date.toLocaleDateString('de-DE', {
@@ -61,5 +125,9 @@ export class DateHelper {
         }
 
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
+    static getDate(mySimpleDate: MySimpleDate): Date {
+        return new Date(mySimpleDate.year, mySimpleDate.month-1, mySimpleDate.day, mySimpleDate.hours, mySimpleDate.minutes, mySimpleDate.seconds, mySimpleDate.milliseconds);
     }
 }

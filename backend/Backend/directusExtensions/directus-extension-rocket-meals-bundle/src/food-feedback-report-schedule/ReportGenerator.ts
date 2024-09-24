@@ -87,7 +87,7 @@ export class ReportGenerator {
         ]
       }
      */
-    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, generateReportForDate: Date, report_feedback_period_days: number | null |undefined, canteenEntries: Canteens[]): Promise<ReportType>{
+    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, generateReportForDate: Date, canteenEntries: Canteens[]): Promise<ReportType>{
         let date = generateReportForDate;
         let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
         //console.log("Generate report for date: "+dateHumanReadable);
@@ -99,6 +99,8 @@ export class ReportGenerator {
         if(show_images === null || show_images === undefined){
             show_images = true;
         }
+
+        let report_feedback_period_days = reportSchedule?.report_feedback_period_days
 
         let report: ReportType = {
             canteen_alias: canteen_alias,

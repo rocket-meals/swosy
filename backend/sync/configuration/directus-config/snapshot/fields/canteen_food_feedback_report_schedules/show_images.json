@@ -8,14 +8,14 @@
     "display": null,
     "display_options": null,
     "field": "show_images",
-    "group": null,
+    "group": "report_display_settings",
     "hidden": false,
     "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 17,
+    "sort": 1,
     "special": [
       "cast-boolean"
     ],

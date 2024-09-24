@@ -219,6 +219,7 @@ export type Businesshours = {
 export type CanteenFoodFeedbackReportSchedules = {
   alias?: string | null;
   canteens: any[] | CanteenFoodFeedbackReportSchedulesCanteens[];
+  canteens_settings: string;
   date_created?: string | null;
   date_next_report_is_due?: string | null;
   date_updated?: string | null;
@@ -227,13 +228,23 @@ export type CanteenFoodFeedbackReportSchedules = {
   last_saved_send_amount_days_before_offer_date?: number | null;
   last_saved_send_report_at_hh_mm?: string | null;
   recipients: any[] | CanteenFoodFeedbackReportSchedulesReportRecipients[];
+  report_display_settings: string;
   report_feedback_period_days?: number | null;
   report_information: string;
+  report_recipient_settings: string;
   report_status_log?: string | null;
   report_time_settings: string;
-  send_amount_days_before_offer_date?: number | null;
+  report_time_settings_days: string;
+  send_amount_days_before_offer_date: number;
+  send_for_fridays?: boolean | null;
+  send_for_mondays?: boolean | null;
+  send_for_saturdays?: boolean | null;
+  send_for_sundays?: boolean | null;
+  send_for_thursdays?: boolean | null;
+  send_for_tuesdays?: boolean | null;
+  send_for_wednesdays?: boolean | null;
   send_once_now_for_date?: string | null;
-  send_report_at_hh_mm?: string | null;
+  send_report_at_hh_mm: string;
   show_images?: boolean | null;
   sort?: number | null;
   status?: string | null;
@@ -540,7 +551,6 @@ export type DirectusPermissions = {
   permissions?: unknown | null;
   policy: string | DirectusPolicies;
   presets?: unknown | null;
-  role?: string | DirectusRoles | null;
   validation?: unknown | null;
 };
 

@@ -10,7 +10,7 @@
       "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
     },
     "field": "canteens",
-    "group": null,
+    "group": "canteens_settings",
     "hidden": false,
     "interface": "list-m2m",
     "note": null,
@@ -19,7 +19,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 3,
     "special": [
       "m2m"
     ],
