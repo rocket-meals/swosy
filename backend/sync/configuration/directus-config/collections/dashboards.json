@@ -14,6 +14,13 @@
     "_syncId": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62"
   },
   {
+    "name": "App",
+    "icon": "space_dashboard",
+    "note": null,
+    "color": null,
+    "_syncId": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd"
+  },
+  {
     "name": "Speisen",
     "icon": "space_dashboard",
     "note": null,

@@ -1,5 +1,49 @@
 [
   {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Dateien - Geänderte ID",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": "Prüfen, ob das gleiche wie beim linken Panel?",
+    "type": "time-series",
+    "position_x": 30,
+    "position_y": 52,
+    "width": 25,
+    "height": 13,
+    "options": {
+      "collection": "directus_files",
+      "dateField": "modified_on",
+      "valueField": "id",
+      "function": "countDistinct",
+      "filter": null
+    },
+    "_syncId": "059e0e07-1942-4924-968e-1b959e36f8a0"
+  },
+  {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "App Feedbacks",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 66,
+    "height": 9,
+    "options": {
+      "collection": "app_feedbacks",
+      "xAxis": "date_created",
+      "function": "count",
+      "precision": "day",
+      "dateField": "date_created",
+      "range": "1 month",
+      "valueField": "id"
+    },
+    "_syncId": "261ce990-c5d7-4630-96d9-734b5e559f7e"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": null,
     "icon": null,
@@ -7,7 +51,7 @@
     "show_header": false,
     "note": null,
     "type": "bar-chart",
-    "position_x": 48,
+    "position_x": 46,
     "position_y": 1,
     "width": 21,
     "height": 16,
@@ -23,6 +67,31 @@
       "xAxis": "provider"
     },
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Aktivitäten der letzten 24 Stunden (Stunden-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 13,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "range": "1 day",
+      "curveType": "stepline"
+    },
+    "_syncId": "309cec2f-964e-4a82-ba09-6a3fb8e3bc03"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -54,6 +123,47 @@
     "_syncId": "440768e2-3239-4fe0-981b-75f3b6d6d8d9"
   },
   {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "App Feedbacks Negativ",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 11,
+    "width": 66,
+    "height": 9,
+    "options": {
+      "collection": "app_feedbacks",
+      "xAxis": "date_created",
+      "function": "count",
+      "precision": "day",
+      "dateField": "date_created",
+      "range": "1 month",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_or": [
+              {
+                "positive": {
+                  "_eq": null
+                }
+              },
+              {
+                "positive": {
+                  "_eq": false
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "4926166b-f196-431c-b20a-34bea642114e"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Am Häufigsten Bewertet",
     "icon": null,
@@ -83,6 +193,36 @@
     "_syncId": "5a227cab-b387-439f-9ecf-cffa7ea52299"
   },
   {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Profil Aktualisierungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 46,
+    "width": 66,
+    "height": 14,
+    "options": {
+      "collection": "directus_activity",
+      "dateField": "timestamp",
+      "range": "auto",
+      "function": "count",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "collection": {
+              "_contains": "profiles"
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "5e967127-45c6-4bec-8da1-53185ebb5173"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Bewertungen",
     "icon": null,
@@ -90,10 +230,10 @@
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 42,
-    "position_y": 17,
-    "width": 26,
-    "height": 13,
+    "position_x": 36,
+    "position_y": 31,
+    "width": 32,
+    "height": 19,
     "options": {
       "collection": "foods_feedbacks",
       "xAxis": "date_updated",
@@ -103,22 +243,24 @@
       "dateField": "date_updated",
       "precision": "day",
       "valueField": "id",
-      "range": "1 month"
+      "range": "1 month",
+      "min": 0,
+      "max": 500
     },
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
   },
   {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
-    "name": null,
+    "name": "Aktivitäten der letzten 24 Stunden (Minuten-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": false,
+    "show_header": true,
     "note": null,
     "type": "time-series",
     "position_x": 1,
     "position_y": 1,
-    "width": 36,
-    "height": 16,
+    "width": 65,
+    "height": 12,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -126,10 +268,118 @@
       "function": "count",
       "dateField": "timestamp",
       "valueField": "id",
-      "precision": "day",
-      "filter": null
+      "filter": null,
+      "range": "1 day",
+      "curveType": "stepline",
+      "precision": "minute"
     },
     "_syncId": "82fb9eb8-1b59-48b7-92d3-db78c89df122"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Bewertungen Feedback Labels",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 31,
+    "width": 34,
+    "height": 19,
+    "options": {
+      "collection": "foods_feedbacks_labels_entries",
+      "xAxis": "date_updated",
+      "horizontal": true,
+      "aggregation": "count",
+      "function": "count",
+      "dateField": "date_created",
+      "precision": "day",
+      "valueField": "id",
+      "range": "1 month",
+      "min": 0,
+      "max": 500
+    },
+    "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Letzte Guthaben Aktualisierungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 74,
+    "width": 66,
+    "height": 15,
+    "options": {
+      "collection": "profiles",
+      "dateField": "credit_balance_date_updated",
+      "range": "auto",
+      "function": "count",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance_last_transaction": {
+                  "_nnull": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "9b4cc0ef-cfaf-47c1-a5c7-9d2a425f84c8"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Speisen - Geänderte Fotos",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 3,
+    "position_y": 52,
+    "width": 25,
+    "height": 13,
+    "options": {
+      "collection": "foods",
+      "dateField": "date_updated",
+      "valueField": "image",
+      "function": "countDistinct",
+      "filter": null
+    },
+    "_syncId": "a13fead4-90cd-4e1a-bef4-5ee5c2655d04"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Aktivitäten der letzten 7 Tage (Stunden-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 25,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "curveType": "stepline"
+    },
+    "_syncId": "a549ef8d-025e-490a-a734-fc0a3c32d2e9"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -139,24 +389,24 @@
     "show_header": true,
     "note": null,
     "type": "bar-chart",
-    "position_x": 43,
-    "position_y": 19,
-    "width": 25,
+    "position_x": 1,
+    "position_y": 61,
+    "width": 95,
     "height": 13,
     "options": {
       "collection": "profiles",
       "xAxis": "credit_balance",
       "yAxis": "credit_balance",
       "aggregation": "count",
-      "decimals": 1,
+      "decimals": 0,
       "min": null,
       "max": null,
       "function": "count",
       "grouping": null,
       "fillType": "solid",
       "showLegend": true,
-      "showAxisLabels": "yAxis",
-      "field": "date_created"
+      "field": "date_created",
+      "curveType": "straight"
     },
     "_syncId": "ad158891-103d-4233-91ff-937919a441b1"
   },
@@ -198,10 +448,10 @@
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 28,
-    "position_y": 1,
-    "width": 19,
-    "height": 15,
+    "position_x": 1,
+    "position_y": 33,
+    "width": 66,
+    "height": 13,
     "options": {
       "collection": "profiles",
       "dateField": "date_created",
@@ -220,9 +470,9 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 1,
-    "width": 25,
-    "height": 16,
+    "position_y": 19,
+    "width": 66,
+    "height": 14,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
