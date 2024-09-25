@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "bookmark": null,
+    "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
+    "collection": "apartments",
+    "search": null,
+    "layout": "tabular",
+    "layout_query": {
+      "tabular": {
+        "fields": [
+          "building",
+          "available_from",
+          "handicapped_accessible",
+          "family_friendly",
+          "singleflat"
+        ]
+      }
+    },
+    "layout_options": null,
+    "refresh_interval": null,
+    "filter": null,
+    "icon": "bookmark",
+    "color": null,
+    "_syncId": "adf9b001-649f-4fdd-af29-2052246c27ff"
+  }
+]
