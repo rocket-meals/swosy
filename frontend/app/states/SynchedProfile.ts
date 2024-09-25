@@ -308,7 +308,11 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 	const setLanguage = useCallback((newLanguage: string | null | undefined) => {
 			setProfile((currentValue) => {
 				if(currentValue){
-					currentValue.language = newLanguage;
+					let nextLanguage: string | Languages | null | undefined = newLanguage;
+					if(!nextLanguage){
+						nextLanguage = null;
+					}
+					currentValue.language = nextLanguage;
 				}
 				return currentValue;
 			});
