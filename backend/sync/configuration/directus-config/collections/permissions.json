@@ -138,7 +138,18 @@
     "validation": {},
     "presets": null,
     "fields": [
-      "*"
+      "id",
+      "status",
+      "sort",
+      "user_created",
+      "date_created",
+      "user_updated",
+      "date_updated",
+      "building",
+      "external_identifier",
+      "alias",
+      "utilization_group",
+      "foodservice_hours"
     ],
     "policy": "_sync_default_public_policy",
     "_syncId": "5228485b-8bb3-4579-bdf9-3c6d1a09d52e"

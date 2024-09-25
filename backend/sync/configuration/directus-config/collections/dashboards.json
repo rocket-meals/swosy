@@ -1,5 +1,12 @@
 [
   {
+    "name": "Mensen",
+    "icon": "space_dashboard",
+    "note": null,
+    "color": null,
+    "_syncId": "09b59cc1-13e5-4210-84b8-ad6704b867e4"
+  },
+  {
     "name": "Nutzer",
     "icon": "space_dashboard",
     "note": null,

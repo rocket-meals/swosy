@@ -1,5 +1,38 @@
 [
   {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Profile ohne ausgelesenes Guthaben",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 24,
+    "position_y": 62,
+    "width": 23,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_null": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "012851df-3ac6-4d56-a378-93a07c7c134f"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Dateien - Geänderte ID",
     "icon": null,
@@ -21,16 +54,45 @@
     "_syncId": "059e0e07-1942-4924-968e-1b959e36f8a0"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Verteilung der Nutzer auf die Mensen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 27,
+    "position_y": 2,
+    "width": 39,
+    "height": 22,
+    "options": {
+      "collection": "profiles",
+      "column": "canteen",
+      "showLabels": true,
+      "legend": "right",
+      "xAxis": "canteen",
+      "limit": -1,
+      "groupByField": "canteen",
+      "aggregateFunction": "count",
+      "aggregateField": "canteen",
+      "sortField": null,
+      "function": "count",
+      "yAxis": "id",
+      "conditionalFill": null
+    },
+    "_syncId": "1499db05-9b7d-4cb6-8367-1e62f3a52f19"
+  },
+  {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
-    "name": "App Feedbacks",
+    "name": "Anzahl: App Feedbacks",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 1,
-    "width": 66,
+    "position_x": 18,
+    "position_y": 4,
+    "width": 49,
     "height": 9,
     "options": {
       "collection": "app_feedbacks",
@@ -94,6 +156,53 @@
     "_syncId": "309cec2f-964e-4a82-ba09-6a3fb8e3bc03"
   },
   {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Guthaben: [10,75] €",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 33,
+    "position_y": 67,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "credit_balance": {
+                      "_gte": "10"
+                    }
+                  },
+                  {
+                    "credit_balance": {
+                      "_lte": "75"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "32858d7b-2149-4f4c-bc5c-9d3ac1f6f129"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Beliebteste Speisen",
     "icon": null,
@@ -124,15 +233,34 @@
   },
   {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
-    "name": "App Feedbacks Negativ",
+    "name": "Anzahl: Push-Nachrichten",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 2,
+    "position_y": 24,
+    "width": 16,
+    "height": 9,
+    "options": {
+      "collection": "push_notifications",
+      "field": "id",
+      "function": "countDistinct"
+    },
+    "_syncId": "450eb909-aa3c-47a4-8563-ac180e95d659"
+  },
+  {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "Anzahl:  Feedbacks Negativ",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 11,
-    "width": 66,
+    "position_x": 18,
+    "position_y": 13,
+    "width": 49,
     "height": 9,
     "options": {
       "collection": "app_feedbacks",
@@ -145,18 +273,9 @@
       "filter": {
         "_and": [
           {
-            "_or": [
-              {
-                "positive": {
-                  "_eq": null
-                }
-              },
-              {
-                "positive": {
-                  "_eq": false
-                }
-              }
-            ]
+            "positive": {
+              "_neq": true
+            }
           }
         ]
       }
@@ -223,6 +342,53 @@
     "_syncId": "5e967127-45c6-4bec-8da1-53185ebb5173"
   },
   {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Guthaben: [5,10[ €",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 67,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "credit_balance": {
+                      "_gte": "5"
+                    }
+                  },
+                  {
+                    "credit_balance": {
+                      "_lt": "10"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "63184507-10c2-4b90-9cc7-0ee8c3079246"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Bewertungen",
     "icon": null,
@@ -248,6 +414,77 @@
       "max": 500
     },
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
+  },
+  {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "Anzahl: App Feedbacks",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 2,
+    "position_y": 4,
+    "width": 16,
+    "height": 9,
+    "options": {
+      "collection": "app_feedbacks",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": null
+    },
+    "_syncId": "6d3eeebe-7f47-414c-8a57-78f480a78bf6"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Profile",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": null
+    },
+    "_syncId": "6e7cce59-88a3-4ece-a3d3-c6b1b0f7ea4e"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Häufigste Ungewollte Kennzeichnungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric-list",
+    "position_x": 1,
+    "position_y": 91,
+    "width": 31,
+    "height": 16,
+    "options": {
+      "collection": "profiles_markings",
+      "limit": 10,
+      "groupByField": "markings_id",
+      "aggregateField": "id",
+      "aggregateFunction": "count",
+      "filter": {
+        "_and": [
+          {
+            "dislike": {
+              "_eq": true
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "75a638eb-d006-429f-9ec6-42181ba44e81"
   },
   {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
@@ -304,6 +541,56 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Gesamt Guthaben",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 47,
+    "position_y": 62,
+    "width": 18,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "sum",
+      "sortField": "credit_balance",
+      "filter": {
+        "_and": [
+          {
+            "credit_balance": {
+              "_nnull": true
+            }
+          }
+        ]
+      },
+      "suffix": "€"
+    },
+    "_syncId": "94a71a98-8dfa-4cd6-93b3-1e64b8267883"
+  },
+  {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "Anzahl: Push-Nachrichten",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 18,
+    "position_y": 24,
+    "width": 49,
+    "height": 9,
+    "options": {
+      "collection": "push_notifications",
+      "function": "count",
+      "dateField": "date_created",
+      "valueField": "id"
+    },
+    "_syncId": "98c39a02-dc47-4b41-89da-c3694c6007c8"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Letzte Guthaben Aktualisierungen",
     "icon": null,
     "color": null,
@@ -332,7 +619,8 @@
             ]
           }
         ]
-      }
+      },
+      "curveType": "stepline"
     },
     "_syncId": "9b4cc0ef-cfaf-47c1-a5c7-9d2a425f84c8"
   },
@@ -356,6 +644,35 @@
       "filter": null
     },
     "_syncId": "a13fead4-90cd-4e1a-bef4-5ee5c2655d04"
+  },
+  {
+    "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
+    "name": "Anzahl: App Feedbacks",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 2,
+    "position_y": 13,
+    "width": 16,
+    "height": 9,
+    "options": {
+      "collection": "app_feedbacks",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": null,
+      "filter": {
+        "_and": [
+          {
+            "positive": {
+              "_neq": true
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "a36d923f-d148-43c7-849e-e633121dd44b"
   },
   {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
@@ -383,32 +700,36 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": "Kartenguthaben",
+    "name": "Anzahl Profile mit ausgelesenem Guthaben",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
-    "type": "bar-chart",
+    "type": "metric",
     "position_x": 1,
-    "position_y": 61,
-    "width": 95,
-    "height": 13,
+    "position_y": 62,
+    "width": 23,
+    "height": 5,
     "options": {
       "collection": "profiles",
-      "xAxis": "credit_balance",
-      "yAxis": "credit_balance",
-      "aggregation": "count",
-      "decimals": 0,
-      "min": null,
-      "max": null,
-      "function": "count",
-      "grouping": null,
-      "fillType": "solid",
-      "showLegend": true,
-      "field": "date_created",
-      "curveType": "straight"
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
-    "_syncId": "ad158891-103d-4233-91ff-937919a441b1"
+    "_syncId": "ac2b9638-3eec-4404-b0c3-0c2874db0e5f"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -442,6 +763,56 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Häufigste Gewollte Kennzeichnungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric-list",
+    "position_x": 32,
+    "position_y": 91,
+    "width": 31,
+    "height": 16,
+    "options": {
+      "collection": "profiles_markings",
+      "limit": 10,
+      "groupByField": "markings_id",
+      "aggregateField": "id",
+      "aggregateFunction": "count",
+      "filter": {
+        "_and": [
+          {
+            "dislike": {
+              "_eq": false
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "c7dd7f74-84b1-433d-9911-b6b7fece5307"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Verteilung der Nutzer auf die Mensen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "pie-chart",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 25,
+    "height": 24,
+    "options": {
+      "collection": "profiles",
+      "column": "canteen",
+      "showLabels": true,
+      "legend": "right"
+    },
+    "_syncId": "c92c8a5f-b171-4a63-ac8e-5d56b2bfe71d"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Neue Profile",
     "icon": null,
     "color": null,
@@ -460,6 +831,88 @@
       "valueField": "id"
     },
     "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Guthaben: > 75 €",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 49,
+    "position_y": 67,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "credit_balance": {
+                      "_gt": "75"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "d71b1374-1846-4585-9aa9-7dc2a4fdec14"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Verteilung gewählter Sprachen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "pie-chart",
+    "position_x": 1,
+    "position_y": 7,
+    "width": 21,
+    "height": 10,
+    "options": {
+      "collection": "profiles",
+      "column": "language",
+      "legend": "right",
+      "showLabels": true
+    },
+    "_syncId": "df2e0b13-5835-4a00-a7f4-23404e5975c6"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Geräte",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 23,
+    "position_y": 1,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id"
+    },
+    "_syncId": "e9b09c5f-263a-494c-b66e-103231d0fbd2"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -504,9 +957,9 @@
     "note": null,
     "type": "bar-chart",
     "position_x": 23,
-    "position_y": 1,
+    "position_y": 6,
     "width": 21,
-    "height": 16,
+    "height": 11,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -519,5 +972,52 @@
       "xAxis": "platform"
     },
     "_syncId": "f9288676-dfa7-41d6-b8e9-a8c825f18e22"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Guthaben: [0,5[ €",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 67,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "credit_balance": {
+                      "_gte": "0"
+                    }
+                  },
+                  {
+                    "credit_balance": {
+                      "_lt": "5"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "fd6b34ff-59c3-4ab2-96bb-67dc5afc5898"
   }
 ]
