@@ -108,7 +108,6 @@ export function useAdditionalCanteensFromLocalSearchParams() {
 }
 
 export default function FoodDayPlanScreen() {
-	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
