@@ -365,9 +365,9 @@ export default function FoodOfferScreen() {
 					<View style={{
 						flexDirection: 'column',
 					}}>
-						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius}/>
+						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer} />
 						{markingBadge}
-						<FoodNotifyButton food={food} showOnlyWhenNotificationIsActive={true} />
+						<FoodNotifyButton food={food} showOnlyWhenNotificationIsActive={true} foodoffer={foodOffer} />
 					</View>
 				}
 				imageUploaderConfig={{

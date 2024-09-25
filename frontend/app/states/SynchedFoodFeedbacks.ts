@@ -34,7 +34,7 @@ export async function loadFoodFeedbacksRemoteByProfileId(id: string) {
 	return await resourceCollectionHelper.readItems(query);
 }
 
-async function updateFoodFeedbackRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacks | null | undefined> | null | undefined, rating: number | null | undefined, comment: string | null | undefined, notify: boolean | null | undefined) {
+async function updateFoodFeedbackRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacks | null | undefined> | null | undefined, rating: number | null | undefined, comment: string | null | undefined, notify: boolean | null | undefined, canteen: string | null | undefined, foodoffer: string | null | undefined) {
 	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS)
 
 	let searchedFoodFeedback: FoodsFeedbacks | undefined | null = foodIdToFoodFeedbackDict?.[foodId];
@@ -70,6 +70,14 @@ async function updateFoodFeedbackRemote(foodId: string, profile_id: string, food
 	}
 	if(notify !== undefined) {
 		existingFoodFeedback.notify = notify;
+	}
+
+	// set canteen and foodoffer if they are not undefined
+	if(canteen !== undefined) {
+		existingFoodFeedback.canteen = canteen;
+	}
+	if(foodoffer !== undefined) {
+		existingFoodFeedback.foodoffer = foodoffer;
 	}
 
 	const ratingIsNull = existingFoodFeedback.rating === null || existingFoodFeedback.rating === undefined;
@@ -138,13 +146,13 @@ export function useSynchedOwnFoodIdToFoodFeedbacksDict(): [ Record<string, Foods
 	return [usedResources, setResourcesOnly, cacheHelperObj]
 }
 
-export function useIsNotificationActiveForFood(food_id: string){
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food_id);
+export function useIsNotificationActiveForFood(food_id: string, canteen_id?: string, foodoffer_id?: string): boolean {
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food_id, canteen_id, foodoffer_id);
 	const notify = foodFeedback?.notify;
 	return !!notify;
 }
 
-export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>] {
+export function useSynchedOwnFoodFeedback(food_id: string, canteen_id?: string, foodoffer_id?: string): [FoodsFeedbacks | null | undefined, (rating: number | null | undefined) => Promise<void>, (comment: string | null | undefined) => Promise<void>, (notify: boolean | null | undefined) => Promise<void>] {
 	const [foodFeedbacksDict, setFoodFeedbacksDict, cacheHelperObj] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	let usedResources = foodFeedbacksDict
 	const [currentUser, setUserWithCache] = useCurrentUser();
@@ -153,17 +161,17 @@ export function useSynchedOwnFoodFeedback(food_id: string): [FoodsFeedbacks | nu
 	const foodFeedback = foodFeedbacksDict?.[food_id];
 
 	const setOwnRating = async (rating: number | null | undefined) => {
-		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, rating, undefined, undefined)
+		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, rating, undefined, undefined, canteen_id, foodoffer_id)
 		await cacheHelperObj.updateFromServer()
 	}
 
 	const setOwnComment = async (comment: string | null | undefined) => {
-		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, comment, undefined)
+		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, comment, undefined, canteen_id, foodoffer_id)
 		await cacheHelperObj.updateFromServer()
 	}
 
 	const setOwnNotify = async (notify: boolean | null | undefined) => {
-		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, undefined, notify)
+		await updateFoodFeedbackRemote(food_id, usersProfileId as unknown as string, usedResources, undefined, undefined, notify, canteen_id, foodoffer_id)
 		await cacheHelperObj.updateFromServer()
 	}
 

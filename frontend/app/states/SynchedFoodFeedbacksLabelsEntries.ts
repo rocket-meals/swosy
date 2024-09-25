@@ -38,7 +38,7 @@ export async function loadFoodFeedbacksLabelsEntriesRemoteByProfileId(id: string
 	return await resourceCollectionHelper.readItems(query);
 }
 
-async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacksLabelsEntries[] | null | undefined> | null | undefined, foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null){
+async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacksLabelsEntries[] | null | undefined> | null | undefined, foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null, canteen_id: string | null | undefined, foodoffer_id: string | null | undefined) {
 	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS_LABELS_ENTRIES)
 
 	let foodFeedbackLabelEntries: FoodsFeedbacksLabelsEntries[] | null | undefined = foodIdToFoodFeedbackDict?.[foodId];
@@ -76,6 +76,13 @@ async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: st
 
 	const shouldDelete = dislikeIsNotSet
 	console.log('updateFoodFeedbackRemote: shouldDelete', shouldDelete)
+
+	if(canteen_id) {
+		existingFoodFeedbackLabelEntry.canteen = canteen_id
+	}
+	if(foodoffer_id) {
+		existingFoodFeedbackLabelEntry.foodoffer = foodoffer_id
+	}
 
 	if(shouldDelete) {
 		if(existingFoodFeedbackLabelEntry.id) {
@@ -243,8 +250,10 @@ export async function loadFoodsFeedbacksLabelsCountsForFood(foodId: string, visi
  * resourceAsDict: As key is the foodFeedbackLabelId and as value is the FoodsFeedbacksLabelsEntries
  * setOwnLabel: Function to set the own label for a food
  * @param food_id
+ * @param canteen_id
+ * @param foodoffer_id
  */
-export function useSynchedOwnFoodFeedbackLabelEntries(food_id: string): [Record<any, FoodsFeedbacksLabelsEntries | null | undefined>, (foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null) => Promise<void>] {
+export function useSynchedOwnFoodFeedbackLabelEntries(food_id: string, canteen_id?: string, foodoffer_id?: string): [Record<any, FoodsFeedbacksLabelsEntries | null | undefined>, (foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null) => Promise<void>] {
 	const [foodFeedbacksLabelsEntriesListDict, setFoodFeedbacksLabelsEntriesListDict, cacheHelperObj] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
 	let usedResources = foodFeedbacksLabelsEntriesListDict
 	const [currentUser, setUserWithCache] = useCurrentUser();
@@ -256,7 +265,7 @@ export function useSynchedOwnFoodFeedbackLabelEntries(food_id: string): [Record<
 
 
 	const setOwnLabel = async (foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null) => {
-		await updateFoodFeedbackLabelEntryRemote(food_id, usersProfileId as unknown as string, usedResources, foodFeedbackLabel, dislike)
+		await updateFoodFeedbackLabelEntryRemote(food_id, usersProfileId as unknown as string, usedResources, foodFeedbackLabel, dislike, canteen_id, foodoffer_id)
 		await cacheHelperObj.updateFromServer()
 	}
 

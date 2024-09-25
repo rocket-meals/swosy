@@ -96,6 +96,9 @@ export class IconNames {
 
     static comment_icon = 'chat'
     static comment_send_icon = 'send'
+    static comment_delete_icon = IconNames.delete_icon
+
+    static trash_icon = 'delete'
 
     static food_data_list_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'nutrition'
     static nutrition_calories_icon = 'fire'

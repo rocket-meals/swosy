@@ -132,6 +132,7 @@ export enum TranslationKeys {
 	others_comments = "others_comments",
 	comments = "comments",
 	save_comment = "save_comment",
+	delete_comment = "delete_comment",
 	average_rating = "average_rating",
 	amount_ratings = "amount_ratings",
 	accountbalance = "accountbalance",
@@ -659,6 +660,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Сохранить комментарий',
 		[LanguageKeys.tr_TR]: 'Yorumu kaydet',
 		[LanguageKeys.zh_CN]: '保存评论'
+	},
+	delete_comment: {
+		[LanguageKeys.de_DE]: 'Kommentar löschen',
+		[LanguageKeys.en_US]: 'Delete Comment',
+		[LanguageKeys.ar_SA]: 'حذف التعليق',
+		[LanguageKeys.es_ES]: 'Eliminar comentario',
+		[LanguageKeys.fr_FR]: 'Supprimer le commentaire',
+		[LanguageKeys.ru_RU]: 'Удалить комментарий',
+		[LanguageKeys.tr_TR]: 'Yorumu sil',
+		[LanguageKeys.zh_CN]: '删除评论'
 	},
 	average_rating: {
 		[LanguageKeys.de_DE]: 'Durchschnittsbewertung',

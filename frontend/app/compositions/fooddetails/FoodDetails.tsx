@@ -84,10 +84,10 @@ export const useFeedbackLabelsType = (): FeedbackLabelsType => {
 	return feedbackLabelsType
 }
 
-type FoodFeedbackSettingsRowDataProps = {food_id: string, label: FoodsFeedbacksLabels, translation: string, amount_likes: number|undefined|null, amount_dislikes: number|undefined|null}
+type FoodFeedbackSettingsRowDataProps = {food_id: string, label: FoodsFeedbacksLabels, translation: string, amount_likes: number|undefined|null, amount_dislikes: number|undefined|null, canteen_id?: string, foodoffer_id?: string}
 type FoodFeedbackSettingsRowProps = {refresh: () => void} & FoodFeedbackSettingsRowDataProps
-const FoodFeedbackSettingsRow = ({food_id, label, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
-	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food_id);
+const FoodFeedbackSettingsRow = ({food_id, canteen_id, foodoffer_id, label, translation, amount_likes, amount_dislikes, refresh}: FoodFeedbackSettingsRowProps) => {
+	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food_id, canteen_id, foodoffer_id);
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
 	const feedback_label_id = label.id;
 	const foodFeedbackLabel = foodFeedbackLabelsDict?.[feedback_label_id];
@@ -122,10 +122,18 @@ const FoodFeedbackSettingsRow = ({food_id, label, translation, amount_likes, amo
 }
 
 
-export const FoodFeedbacksLabelsComponent = ({food, foodFeedbackLabelsCounts, refresh}: {food: Foods, foodFeedbackLabelsCounts: FoodFeedbacksLabelsCountsType, refresh: () => void}) => {
+export const FoodFeedbacksLabelsComponent = ({food, foodoffer, foodFeedbackLabelsCounts, refresh}: {food: Foods, foodoffer: Foodoffers, foodFeedbackLabelsCounts: FoodFeedbacksLabelsCountsType, refresh: () => void}) => {
 	const foods_feedbacks_labels_type = useFeedbackLabelsType()
 	const [foodFeedbackLabelsDict] = useSynchedFoodsFeedbacksLabelsDict();
-	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food.id)
+	let canteen_id: string | null | undefined = undefined
+	if(!!foodoffer?.canteen){
+		if(typeof foodoffer?.canteen === 'string'){
+			canteen_id = foodoffer.canteen
+		} else if(typeof foodoffer?.canteen === 'object'){
+			canteen_id = foodoffer.canteen.id
+		}
+	}
+	const [ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict, setFoodFeedbackLabel] = useSynchedOwnFoodFeedbackLabelEntries(food.id, canteen_id, foodoffer?.id);
 
 	const [language, setLanguage] = useProfileLanguageCode()
 
@@ -176,7 +184,9 @@ export const FoodFeedbacksLabelsComponent = ({food, foodFeedbackLabelsCounts, re
 							label: label,
 							translation: translation,
 							amount_likes: amount_likes,
-							amount_dislikes: amount_dislikes
+							amount_dislikes: amount_dislikes,
+							foodoffer_id: foodoffer?.id,
+							canteen_id: canteen_id
 						}})
 				}
 			}
@@ -248,9 +258,17 @@ export const FoodFeedbackCommentSingle = ({foodFeedback}: {foodFeedback: FoodsFe
 	)
 }
 
-export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
+export const FoodFeedbackCommentDetails = ({food, foodoffer}: {food: Foods; foodoffer: Foodoffers}) => {
 	const usedFoodId = food.id;
-	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
+	let canteen_id: string | null | undefined = undefined
+	if(!!foodoffer?.canteen){
+		if(typeof foodoffer?.canteen === 'string'){
+			canteen_id = foodoffer.canteen
+		} else if(typeof foodoffer?.canteen === 'object'){
+			canteen_id = foodoffer.canteen.id
+		}
+	}
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id, canteen_id, foodoffer?.id);
 	const [offset, setOffset] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(10);
 	const remoteFoodFeedbacks = useFoodFeedbacks(usedFoodId, offset, limit)
@@ -261,6 +279,7 @@ export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 	const translation_no_data_found = useTranslation(TranslationKeys.no_data_found);
 	const translation_comments = useTranslation(TranslationKeys.comments);
 	const translation_save_comment = useTranslation(TranslationKeys.save_comment);
+	const translation_delete_comment = useTranslation(TranslationKeys.delete_comment);
 
 	// get app_settings
 	const [appSettings] = useSynchedAppSettings();
@@ -293,12 +312,19 @@ export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 
 	let renderedOthersComments: any[] = [];
 
+	let is_comment_changed = saved_comment !== comment;
+	let is_new_comment_empty = comment === null || comment === '';
+	const is_comment_delete = is_comment_changed && is_new_comment_empty;
+
+	let translation_of_desired_action = is_comment_delete ? translation_delete_comment : translation_save_comment;
+	let leftIcon = is_comment_delete ? IconNames.comment_delete_icon : IconNames.comment_send_icon;
+
 	if(!!foods_feedbacks_custom_url){
 		commentContent = <MyButton openHrefInNewTab={true} href={foods_feedbacks_custom_url} accessibilityLabel={translation_to_the_forum} tooltip={translation_to_the_forum} text={translation_to_the_forum} leftIcon={IconNames.comment_icon} rightIcon={IconNames.open_link_icon} />
 	} else {
 		commentContent = (
 			<View style={{ width: "100%", paddingBottom: 20}}>
-				<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_save_comment}>
+				<AccountRequiredTouchableOpacity translationOfDesiredAction={translation_of_desired_action}>
 					<TextInput placeholder={translation_your_comment} value={comment ?? ''} returnKeyType={ReturnKeyType.send} onChangeText={onChangeText} onSubmitEditing={() => {
 						onSubmit();
 					}} />
@@ -307,9 +333,9 @@ export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 						height: 10
 					}} />
 					<MyButton disabled={saved_comment === comment} isActive={saved_comment !== comment}
-							  accessibilityLabel={translation_save_comment}
-							  text={translation_save_comment}
-							  leftIcon={IconNames.comment_send_icon}
+							  accessibilityLabel={translation_of_desired_action}
+							  text={translation_of_desired_action}
+							  leftIcon={leftIcon}
 							  onPress={() => {
 								  onSubmit();
 							  }}
@@ -376,7 +402,7 @@ export const FoodFeedbackCommentDetails = ({food}: {food: Foods;}) => {
 			)
 		} else {
 			renderedOthersComments.push(
-				<MyGridFlatList data={data} renderItem={(item) => {
+				<MyGridFlatList data={data} amountColumns={1} renderItem={(item) => {
 					let feedback: FoodsFeedbacks = item.item.data;
 					return <FoodFeedbackCommentSingle foodFeedback={feedback} />
 				}} />
@@ -431,11 +457,19 @@ export const FoodFeedbackRatingDetails = ({food}: {food: Foods}) => {
 			</SettingsRowGroup>
 }
 
-export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
+export const FoodFeedbackDetails = ({food, foodoffer}: {food: Foods, foodoffer: Foodoffers}) => {
 	// get app_settings
 	const [usedFood, setUsedFood] = useState<Foods>(food);
+	let canteen_id: string | null | undefined = undefined
+	if(!!foodoffer?.canteen){
+		if(typeof foodoffer?.canteen === 'string'){
+			canteen_id = foodoffer.canteen
+		} else if(typeof foodoffer?.canteen === 'object'){
+			canteen_id = foodoffer.canteen.id
+		}
+	}
 
-	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
+	const [ownFoodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id, canteen_id, foodoffer?.id);
 	const ownFoodFeedbackReloadKey = ownFoodFeedback?.date_updated+""
 	const [foodFeedbackLabelsCounts, setFoodsFeedbacksLabelsCounts] = useState<FoodFeedbacksLabelsCountsType>({});
 
@@ -486,8 +520,8 @@ export const FoodFeedbackDetails = ({food}: {food: Foods}) => {
 			}}>
 				<FoodFeedbackRatingDetails food={usedFood} />
 			</View>
-			<FoodFeedbacksLabelsComponent food={usedFood} foodFeedbackLabelsCounts={foodFeedbackLabelsCounts} refresh={refresh}/>
-			<FoodFeedbackCommentDetails food={usedFood}/>
+			<FoodFeedbacksLabelsComponent food={usedFood} foodFeedbackLabelsCounts={foodFeedbackLabelsCounts} refresh={refresh} foodoffer={foodoffer}/>
+			<FoodFeedbackCommentDetails food={usedFood} foodoffer={foodoffer}/>
 		</View>
 	)
 }
@@ -614,7 +648,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 			<FoodFeedbackRating food={food} showQuickAction={false}/>
 		</View>
 		<View>
-			<FoodNotifyButton food={food}/>
+			<FoodNotifyButton food={food} foodoffer={foodOfferData} />
 		</View>
 	</View>
 
@@ -631,7 +665,7 @@ function FoodDetailsWithFoodOfferAndFood({ foodOfferData, food }: { foodOfferDat
 			content: <View style={{
 				width: "100%",
 				minHeight: detailsMinHeight // in order to prevent on small devices the jump up when the content is not large enough
-			}}><FoodFeedbackDetails food={food} /></View>
+			}}><FoodFeedbackDetails food={food} foodoffer={foodOfferData} /></View>
 		})
 
 	if(AppConfiguration.DEFAULT_FOOD_NUTRITION_SHOW || AppConfiguration.DEFAULT_ENVIRONMENTAL_IMPACT_SHOW){

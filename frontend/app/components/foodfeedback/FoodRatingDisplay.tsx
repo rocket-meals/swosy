@@ -1,5 +1,5 @@
 import {useFoodsAreaColor, useSynchedAppSettings} from "@/states/SynchedAppSettings";
-import {Foods} from "@/helper/database/databaseTypes/types";
+import {Canteens, Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
 import React from "react";
 import {MyRatingButton, RatingType} from "@/components/buttons/MyRatingButton";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
@@ -31,10 +31,18 @@ export const useFeedbackRatingType = (): RatingType => {
  * @param borderRadius the border radius
  * @constructor
  */
-export const FoodFeedbackRating = ({food, showQuickAction, borderRadius}: {food: Foods, showQuickAction: boolean, borderRadius?: number}) => {
+export const FoodFeedbackRating = ({food, foodoffer, showQuickAction, borderRadius}: {food: Foods, showQuickAction: boolean, borderRadius?: number, foodoffer?: Foodoffers | null | undefined}) => {
 	let foods_ratings_type = useFeedbackRatingType();
 	const usedFoodId = food.id;
-	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id);
+	let canteen_id: string | null | undefined = undefined
+	if(!!foodoffer?.canteen){
+		if(typeof foodoffer?.canteen === 'string'){
+			canteen_id = foodoffer.canteen
+		} else if(typeof foodoffer?.canteen === 'object'){
+			canteen_id = foodoffer.canteen.id
+		}
+	}
+	const [foodFeedback, setOwnRating, setOwnComment, setOwnNotify] = useSynchedOwnFoodFeedback(food.id, canteen_id, foodoffer?.id);
 	const translation_set_rating = useTranslation(TranslationKeys.set_rating);
 
 	const foodsAreaColor = useFoodsAreaColor();
