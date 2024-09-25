@@ -128,8 +128,6 @@ export default function FoodDayPlanScreen() {
 	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
 	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
 
-	const translation_no_value = useTranslation(TranslationKeys.no_value);
-
 	const [reloadNumberForData, setReloadNumberForData] = useState(0);
 
 	const viewBackgroundColor = useViewBackgroundColor()
