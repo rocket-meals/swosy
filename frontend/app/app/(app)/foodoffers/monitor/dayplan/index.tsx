@@ -17,15 +17,20 @@ export default function FoodoffersDayplanScreenSettings() {
 	const isDemo = useIsDemo()
 
 	const [selectedCanteen, setSelectedCanteen] = React.useState<Canteens | null>(null);
+	const [additionalCanteens, setAdditionalCanteens] = React.useState<Canteens[]>([]);
 	const canteenAlias = selectedCanteen?.alias || selectedCanteen?.id || undefined
 	const canteenId = selectedCanteen?.id || undefined
+
+	let labelAdditionalCanteens = "Optional: Zusätzliche Mensa/Cafeteria";
+	const aliasAdditionalCanteensString = additionalCanteens.map(canteen => canteen.alias || canteen.id).join(", ");
 
 	const [nextPageIntervalInSeconds, setNextPageIntervalInSeconds] = React.useState<number | null | undefined>(10);
 	const [refreshDataIntervalInSeconds, setRefreshDataIntervalInSeconds] = React.useState<number | null | undefined>(5*60);
 
 	let route: null | ExpoRouter.Href = null;
 	if(canteenId){
-		route = getRouteToFoodofferDayplanScreen(canteenId, nextPageIntervalInSeconds, refreshDataIntervalInSeconds);
+		const additionalCanteenIds = additionalCanteens.map(canteen => canteen.id);
+		route = getRouteToFoodofferDayplanScreen(canteenId, nextPageIntervalInSeconds, refreshDataIntervalInSeconds, additionalCanteenIds);
 	}
 
 	function showNavigationToBigScreen(){
@@ -38,6 +43,11 @@ export default function FoodoffersDayplanScreenSettings() {
 		<MyScrollView>
 			<SettingsRowGroup>
 				<SettingsRowCanteenSelection onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
+				<SettingsRowCanteenSelection labelLeft={labelAdditionalCanteens} onSelectCanteen={(canteen) => {
+					if(canteen){
+						setAdditionalCanteens([canteen]);
+					}
+				}} labelRight={aliasAdditionalCanteensString} />
 				<SettingsRowNumberEdit value={nextPageIntervalInSeconds} labelRight={nextPageIntervalInSeconds?.toString()} onSave={(value) => setNextPageIntervalInSeconds(value)} accessibilityLabel={"Next Food Interval"} labelLeft={"Next Food Interval"} />
 				<SettingsRowNumberEdit value={refreshDataIntervalInSeconds} labelRight={refreshDataIntervalInSeconds?.toString()} onSave={(value) => setRefreshDataIntervalInSeconds(value)} accessibilityLabel={"Refresh Data Interval (seconds)"} labelLeft={"Refresh Data Interval (seconds)"} />
 			</SettingsRowGroup>

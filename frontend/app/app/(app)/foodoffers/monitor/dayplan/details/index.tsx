@@ -9,7 +9,7 @@ import {
 	View
 } from "@/components/Themed";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
+import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
@@ -30,11 +30,14 @@ import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {FoodInformationValueFormatter} from "@/components/food/FoodDataList";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
+import {useIsDebug} from "@/states/Debug";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
 
-export function getRouteToFoodofferDayplanScreen(canteen_id: string, nextPageIntervalInSeconds: number | null | undefined, refreshDataIntervalInSeconds: number | null |undefined): ExpoRouter.Href {
+export function getRouteToFoodofferDayplanScreen(canteen_id: string, nextPageIntervalInSeconds: number | null | undefined, refreshDataIntervalInSeconds: number | null |undefined, additionalCanTeenIds?: string[] | null | undefined
+): ExpoRouter.Href {
 	let paramsRaw = []
 	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
@@ -54,6 +57,11 @@ export function getRouteToFoodofferDayplanScreen(canteen_id: string, nextPageInt
 	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+encodeURIComponent(fullscreen) : null;
 	if(paramForFullScreen){
 		paramsRaw.push(paramForFullScreen)
+	}
+
+	let paramForAdditionalCanteens = additionalCanTeenIds ? SearchParams.MONITOR_ADDITIONAL_CANTEENS_ID+"="+encodeURIComponent(additionalCanTeenIds.join(",")) : null;
+	if(paramForAdditionalCanteens){
+		paramsRaw.push(paramForAdditionalCanteens)
 	}
 
 	let paramForKioskMode = SearchParams.KIOSK_MODE+"="+encodeURIComponent(true);
@@ -81,11 +89,31 @@ export function useRefreshDataIntervalInSecondsFromLocalSearchParams() {
 	return undefined;
 }
 
+export function useAdditionalCanteensFromLocalSearchParams() {
+	const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
+	const additionalCanteens: Canteens[] = [];
+	const params = useLocalSearchParams<{ [SearchParams.MONITOR_ADDITIONAL_CANTEENS_ID]?: string }>();
+	let additionalCanteenIdsString = params[SearchParams.MONITOR_ADDITIONAL_CANTEENS_ID];
+	if(additionalCanteenIdsString){
+		let additionalCanteenIds = additionalCanteenIdsString.split(",");
+		for(let i=0; i<additionalCanteenIds.length; i++){
+			let canteenId = additionalCanteenIds[i];
+			let canteen = canteensDict?.[canteenId];
+			if(canteen){
+				additionalCanteens.push(canteen);
+			}
+		}
+	}
+	return additionalCanteens
+}
+
 export default function FoodDayPlanScreen() {
 	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
+
+	const isDebug = useIsDebug()
 
 	const translation_category = useTranslation(TranslationKeys.category)
 	const translation_foodname = useTranslation(TranslationKeys.foodname)
@@ -113,33 +141,43 @@ export default function FoodDayPlanScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const [canteen, setCanteen] = useSynchedProfileCanteen();
-
 	const nextPageIntervalInSeconds = useNextPageIntervalInSecondsFromLocalSearchParams() || 10;
 	const [reloadNumberForPage, setReloadNumberForPage] = useState(0);
 
 	const refreshDataIntervalInSeconds = useRefreshDataIntervalInSecondsFromLocalSearchParams() || 5 * 60;
-	const canteen_name = getCanteenName(canteen);
 
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
 
-	const [layout, setLayout] = useState({width: 0, height: 0});
+	// Main canteen
+	const [canteen, setCanteen] = useSynchedProfileCanteen();
+	const canteen_name = getCanteenName(canteen);
+	const [foodOffers, setFoodOffers] = useState<Foodoffers[]>([]);
+	const [layoutMainCanteen, setLayoutMainCanteen] = useState({width: 0, height: 0});
+	const scrollViewRefMainCanteen = useRef(null);
+	const [currentIndexMainCanteen, setCurrentIndexMainCanteen] = useState(0);
+	const [visibleItemsMainCanteen, setVisibleItemsMainCanteen] = useState([]);
+	const [itemHeightsMainCanteen, setItemHeightsMainCanteen] = useState([]);
 
-	const scrollViewRef = useRef(null);
-	const [currentIndex, setCurrentIndex] = useState(0);
-	const [visibleItems, setVisibleItems] = useState([]);
-	const [itemHeights, setItemHeights] = useState([]);
+	// Additional canteens
+	const additionalCanteens = useAdditionalCanteensFromLocalSearchParams();
+	const [additionalFoodOffers, setAdditionalFoodOffers] = useState<Foodoffers[]>([]);
+	const [layoutAdditionalCanteens, setLayoutAdditionalCanteens] = useState({width: 0, height: 0});
+	const scrollViewRefAdditionalCanteens = useRef(null);
+	const [currentIndexAdditionalCanteens, setCurrentIndexAdditionalCanteens] = useState(0);
+	const [visibleItemsAdditionalCanteens, setVisibleItemsAdditionalCanteens] = useState([]);
+	const [itemHeightsAdditionalCanteens, setItemHeightsAdditionalCanteens] = useState([]);
+
 
 
 	// Calculate visible items count
-	const calculateVisibleItemsCount = () => {
-		if (itemHeights.length === 0 || layout.height === 0) return 1;
-		const totalHeight = layout.height;
+	const calculateVisibleItemsCountMainCanteen = () => {
+		if (itemHeightsMainCanteen.length === 0 || layoutMainCanteen.height === 0) return 1;
+		const totalHeight = layoutMainCanteen.height;
 		let sumHeight = 0;
 		let count = 0;
 
-		for (let i = 0; i < itemHeights.length; i++) {
-			sumHeight += itemHeights[i];
+		for (let i = 0; i < itemHeightsMainCanteen.length; i++) {
+			sumHeight += itemHeightsMainCanteen[i];
 			if (sumHeight > totalHeight) break;
 			count++;
 		}
@@ -147,47 +185,101 @@ export default function FoodDayPlanScreen() {
 		return count;
 	};
 
+	const calculateVisibleItemsCountAdditionalCanteens = () => {
+		if (itemHeightsAdditionalCanteens.length === 0 || layoutAdditionalCanteens.height === 0) return 1;
+		const totalHeight = layoutAdditionalCanteens.height;
+		let sumHeight = 0;
+		let count = 0;
+
+		for (let i = 0; i < itemHeightsAdditionalCanteens.length; i++) {
+			sumHeight += itemHeightsAdditionalCanteens[i];
+			if (sumHeight > totalHeight) break;
+			count++;
+		}
+
+		return count;
+	}
+
 	// Auto-Scroll functionality
 	useEffect(() => {
 		const interval = setInterval(() => {
-			const visibleCount = calculateVisibleItemsCount();
-			if (visibleCount > 0 && currentIndex < foodOffers.length) {
+			console.log("Auto-Scrolling to next page");
+			const visibleCountMainCanteen = calculateVisibleItemsCountMainCanteen();
+			if (visibleCountMainCanteen > 0 && currentIndexMainCanteen < foodOffers.length) {
 				// Scroll to the next set of visible items
-				if (scrollViewRef.current) {
-					const nextIndex = currentIndex + visibleCount;
-					const nextPosition = visibleItems[nextIndex] || 0;
-					scrollViewRef.current.scrollTo({ y: nextPosition, animated: true });
-					setCurrentIndex((prev) => (nextIndex >= foodOffers.length ? 0 : nextIndex));
+				if (scrollViewRefMainCanteen.current) {
+					console.log("Main: currentIndexMainCanteen: "+currentIndexMainCanteen)
+					console.log("Main: visibleCountMainCanteen: "+visibleCountMainCanteen)
+					const nextIndex = currentIndexMainCanteen + visibleCountMainCanteen;
+					const nextPosition = visibleItemsMainCanteen[nextIndex] || 0;
+					console.log("Main: nextIndex: "+nextIndex)
+					console.log("Main: nextPosition: "+nextPosition)
+					scrollViewRefMainCanteen.current.scrollTo({ y: nextPosition, animated: false });
+					setCurrentIndexMainCanteen((prev) => (nextIndex >= foodOffers.length ? 0 : nextIndex));
 				}
 			}
+
+			const visibleCountAdditionalCanteens = calculateVisibleItemsCountAdditionalCanteens();
+			if (visibleCountAdditionalCanteens > 0 && currentIndexAdditionalCanteens < additionalFoodOffers.length) {
+				// Scroll to the next set of visible items
+				if (scrollViewRefAdditionalCanteens.current) {
+					console.log("Additional: currentIndexAdditionalCanteens: "+currentIndexAdditionalCanteens)
+					console.log("Additional: visibleCountAdditionalCanteens: "+visibleCountAdditionalCanteens)
+					const nextIndex = currentIndexAdditionalCanteens + visibleCountAdditionalCanteens;
+					const nextPosition = visibleItemsAdditionalCanteens[nextIndex] || 0;
+					console.log("Additional: nextIndex: "+nextIndex)
+					console.log("Additional: nextPosition: "+nextPosition)
+					scrollViewRefAdditionalCanteens.current.scrollTo({ y: nextPosition, animated: false });
+					setCurrentIndexAdditionalCanteens((prev) => (nextIndex >= additionalFoodOffers.length ? 0 : nextIndex));
+				}
+			}
+
+
 			setReloadNumberForPage((prev) => prev + 1);
 		}, nextPageIntervalInSeconds * 1000);
 
 		return () => clearInterval(interval);
-	}, [visibleItems, currentIndex, nextPageIntervalInSeconds, itemHeights, layout]);
+	}, [visibleItemsMainCanteen, currentIndexMainCanteen, currentIndexAdditionalCanteens, nextPageIntervalInSeconds, itemHeightsMainCanteen, layoutMainCanteen, itemHeightsAdditionalCanteens, layoutAdditionalCanteens]);
 
 	// Function to handle layout of food offers
-	const onFoodOfferLayout = useCallback(
+	const onFoodOfferLayoutMainCanteen = useCallback(
 		(event, index) => {
 			const { y, height } = event.nativeEvent.layout;
-			setVisibleItems((prev) => {
+			setVisibleItemsMainCanteen((prev) => {
 				const newItems = [...prev];
 				newItems[index] = y;
 				return newItems;
 			});
-			setItemHeights((prev) => {
+			setItemHeightsMainCanteen((prev) => {
 				const newHeights = [...prev];
 				newHeights[index] = height;
 				return newHeights;
 			});
 		},
-		[setVisibleItems, setItemHeights]
+		[setVisibleItemsMainCanteen, setItemHeightsMainCanteen]
+	);
+
+	const onFoodOfferLayoutAdditionalCanteens = useCallback(
+		(event, index) => {
+			const { y, height } = event.nativeEvent.layout;
+			setVisibleItemsAdditionalCanteens((prev) => {
+				const newItems = [...prev];
+				newItems[index] = y;
+				return newItems;
+			});
+			setItemHeightsAdditionalCanteens((prev) => {
+				const newHeights = [...prev];
+				newHeights[index] = height;
+				return newHeights;
+			});
+		},
+		[setVisibleItemsAdditionalCanteens, setItemHeightsAdditionalCanteens]
 	);
 
 
 	const isDemo = useIsDemo();
 
-	const [foodOffers, setFoodOffers] = useState<Foodoffers[]>([]);
+
 	const [loading, setLoading] = useState(true);
 
 	async function loadFoodOffers(){
@@ -195,13 +287,16 @@ export default function FoodDayPlanScreen() {
 		if(!!canteen){
 			const date = new Date();
 			setFoodOfferDateHumanReadable(DateHelper.formatOfferDateToReadable(date, true));
-			let offers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			//let extraLongList = []
-			//for(let i=0; i<10; i++){
-			//	extraLongList.push(...offers)
-			//}
-			//offers = extraLongList
-			setFoodOffers(offers);
+			let foodoffer = await getFoodOffersForSelectedDate(isDemo, date, canteen)
+			setFoodOffers(foodoffer);
+
+			let additionalFoodOffers = [];
+			for(let i=0; i<additionalCanteens.length; i++){
+				let additionalCanteen = additionalCanteens[i];
+				let additionalFoodoffer = await getFoodOffersForSelectedDate(isDemo, date, additionalCanteen)
+				additionalFoodOffers.push(...additionalFoodoffer);
+			}
+			setAdditionalFoodOffers(additionalFoodOffers);
 		}
 		setLoading(false);
 	}
@@ -353,20 +448,20 @@ export default function FoodDayPlanScreen() {
 	}
 
 	function renderRowForFoodoffer({
-		textForCategoryColumn,
-		textForFoodnameColumn,
-		elementForMarkingsColumn,
-		textForKcalColumn,
-		textForFatAndSaturatedFatColumn,
-		textForCarbohydratesAndSugarColumn,
-		textForProteinColumn,
-		textForSaltColumn,
-		textForPriceColumn,
-		backgroundColor,
-		textColor,
-		textBold = false,
-		paddingVertical = 2,
-		paddingHorizontal = 2,
+									   textForCategoryColumn,
+									   textForFoodnameColumn,
+									   elementForMarkingsColumn,
+									   textForKcalColumn,
+									   textForFatAndSaturatedFatColumn,
+									   textForCarbohydratesAndSugarColumn,
+									   textForProteinColumn,
+									   textForSaltColumn,
+									   textForPriceColumn,
+									   backgroundColor,
+									   textColor,
+									   textBold = false,
+									   paddingVertical = 2,
+									   paddingHorizontal = 2,
 								   }: {
 		textForCategoryColumn: string | null | undefined;
 		textForFoodnameColumn: string | null | undefined;
@@ -504,9 +599,12 @@ export default function FoodDayPlanScreen() {
 
 	// Render individual food offers
 	const renderFoodOffer = ({
-		foodOffer,
-		index,
-							 }: { foodOffer: Foodoffers; index: number }) => {
+								 foodOffer,
+								 index,
+								 onLayout,
+							 }: { foodOffer: Foodoffers; index: number,
+		onLayout?: (event: any, index: number) => void
+	}) => {
 
 		const isEven = index % 2 === 0;
 		let backgroundColor = isEven ? viewBackgroundColorLighter : viewBackgroundColor;
@@ -526,18 +624,22 @@ export default function FoodDayPlanScreen() {
 					width: "100%",
 					backgroundColor: backgroundColor,
 				}}
-				onLayout={(event) => onFoodOfferLayout(event, index)}
+				onLayout={(event) => {
+					if (onLayout) {
+						onLayout(event, index);
+					}
+				}}
 			>
 				{
 					renderRowForFoodoffer({
 						textForCategoryColumn: category,
 						textForFoodnameColumn: foodName,
 						elementForMarkingsColumn: renderMarkingsForFoodRow(foodOffer),
-						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer, translation_no_value),
-						textForFatAndSaturatedFatColumn: FoodInformationValueFormatter.formatFoodInformationValueFat(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(foodOffer, translation_no_value),
-						textForCarbohydratesAndSugarColumn: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(foodOffer, translation_no_value) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSugar(foodOffer, translation_no_value),
-						textForProteinColumn: FoodInformationValueFormatter.formatFoodInformationValueProtein(foodOffer, translation_no_value),
-						textForSaltColumn: FoodInformationValueFormatter.formatFoodInformationValueSalt(foodOffer, translation_no_value),
+						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer),
+						textForFatAndSaturatedFatColumn: FoodInformationValueFormatter.formatFoodInformationValueFat(foodOffer) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(foodOffer),
+						textForCarbohydratesAndSugarColumn: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(foodOffer) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSugar(foodOffer),
+						textForProteinColumn: FoodInformationValueFormatter.formatFoodInformationValueProtein(foodOffer),
+						textForSaltColumn: FoodInformationValueFormatter.formatFoodInformationValueSalt(foodOffer),
 						textForPriceColumn: priceText,
 						backgroundColor: backgroundColor,
 						textColor: textColor,
@@ -549,30 +651,108 @@ export default function FoodDayPlanScreen() {
 		);
 	};
 
-	function renderPaginatedFoodoffers() {
+	function renderPaginatedFoodoffersMainCanteen() {
+		const content: any = [];
+		for (let i = 0; i < foodOffers.length; i++) {
+			const offer = foodOffers[i];
+			content.push(renderFoodOffer({
+				foodOffer: offer,
+				index: i,
+				onLayout: onFoodOfferLayoutMainCanteen
+			}));
+		}
+
 		return (
 			<ScrollView
-				ref={scrollViewRef}
+				ref={scrollViewRefMainCanteen}
 				onLayout={(event) => {
-					const {width, height} = event.nativeEvent.layout;
-					setLayout({width, height});
+					const { width, height } = event.nativeEvent.layout;
+					setLayoutMainCanteen({ width, height });
 				}}
 				style={{
 					overflow: "hidden",
+					maxHeight: "50%",  // Set maximum height to 50% of the container
+					flexGrow: 0, // Prevent ScrollView from stretching more than it needs
 				}}
 				onContentSizeChange={(contentWidth, contentHeight) => {
-					if (contentHeight <= layout.height) {
+					if (contentHeight <= layoutMainCanteen.height) {
 						// No need to scroll if content fits within the view
-						setCurrentIndex(0);
+						setCurrentIndexMainCanteen(0);
 					}
 				}}
 			>
-				{foodOffers.map((offer, index) => renderFoodOffer({
-					foodOffer: offer,
-					index: index
-				}))}
+				{content}
 			</ScrollView>
 		);
+	}
+
+	function renderPaginatedFoodoffersAdditionalCanteens() {
+		const content: any = [];
+		if (additionalFoodOffers.length <= 0) {
+			return null;
+		}
+
+		for (let i = 0; i < additionalFoodOffers.length; i++) {
+			const offer = additionalFoodOffers[i];
+			content.push(renderFoodOffer({
+				foodOffer: offer,
+				index: i,
+				onLayout: onFoodOfferLayoutAdditionalCanteens
+			}));
+		}
+
+		return (
+			<>
+				<View style={{
+					width: '100%',
+					height: 10,
+					backgroundColor: foodAreaColor
+				}} />
+				<ScrollView
+					ref={scrollViewRefAdditionalCanteens}
+					onLayout={(event) => {
+						const { width, height } = event.nativeEvent.layout;
+						setLayoutAdditionalCanteens({ width, height });
+					}}
+					style={{
+						overflow: "hidden",
+						flex: 1, // Use the remaining space available
+					}}
+					onContentSizeChange={(contentWidth, contentHeight) => {
+						if (contentHeight <= layoutAdditionalCanteens.height) {
+							// No need to scroll if content fits within the view
+							setCurrentIndexAdditionalCanteens(0);
+						}
+					}}
+				>
+					{content}
+				</ScrollView>
+			</>
+		);
+	}
+
+
+	function renderHeaderRow(){
+		return(
+			renderRowForFoodoffer({
+				textForCategoryColumn: translation_category,
+				textForFoodnameColumn: translation_foodname,
+				elementForMarkingsColumn: <Text bold={true} size={TEXT_SIZE_EXTRA_SMALL} style={{
+					color: foodAreaContrastColor,
+				}}>{translation_markings}</Text>,
+				textForKcalColumn: translation_kcal,
+				textForFatAndSaturatedFatColumn: translation_nutrition_fat + " / " + translation_nutrition_saturated_fat,
+				textForCarbohydratesAndSugarColumn: translation_nutrition_nutrition_carbohydrate + " / " + translation_nutrition_sugar,
+				textForProteinColumn: translation_nutrition_protein,
+				textForSaltColumn: translation_nutrition_salt,
+				textForPriceColumn: translation_price_group_student + " / " + translation_price_group_employee + " / " + translation_price_group_guest,
+				backgroundColor: foodAreaColor,
+				textColor: foodAreaContrastColor,
+				textBold: true,
+				paddingVertical: 7,
+				paddingHorizontal: 7,
+			})
+		)
 	}
 
 	function renderContent(){
@@ -619,33 +799,16 @@ export default function FoodDayPlanScreen() {
 			</View>
 			<View style={{
 				width: '100%',
-				backgroundColor: "blue",
 			}}>
-				{renderRowForFoodoffer({
-					textForCategoryColumn: translation_category,
-					textForFoodnameColumn: translation_foodname,
-					elementForMarkingsColumn: <Text bold={true} size={TEXT_SIZE_EXTRA_SMALL} style={{
-						color: foodAreaContrastColor,
-					}}>{translation_markings}</Text>,
-					textForKcalColumn: translation_kcal,
-					textForFatAndSaturatedFatColumn: translation_nutrition_fat + " / " + translation_nutrition_saturated_fat,
-					textForCarbohydratesAndSugarColumn: translation_nutrition_nutrition_carbohydrate + " / " + translation_nutrition_sugar,
-					textForProteinColumn: translation_nutrition_protein,
-					textForSaltColumn: translation_nutrition_salt,
-					textForPriceColumn: translation_price_group_student + " / " + translation_price_group_employee + " / " + translation_price_group_guest,
-					backgroundColor: foodAreaColor,
-					textColor: foodAreaContrastColor,
-					textBold: true,
-					paddingVertical: 7,
-					paddingHorizontal: 7,
-				})}
+				{renderHeaderRow()}
 			</View>
 			<View style={{
 				flex: 1,
 				width: '100%',
 				overflow: "hidden",
 			}}>
-				{renderPaginatedFoodoffers()}
+				{renderPaginatedFoodoffersMainCanteen()}
+				{renderPaginatedFoodoffersAdditionalCanteens()}
 			</View>
 			<View style={{
 				width: '100%',
@@ -669,7 +832,34 @@ export default function FoodDayPlanScreen() {
 			}}>
 				<MyProgressbar key={""+reloadNumberForData} duration={refreshDataIntervalInSeconds} color={foodAreaColor} />
 			</View>
+			{renderDebug()}
 		</View>
+	}
+
+	function renderDebug(){
+		if(isDebug){
+			return <View style={{
+				position: "absolute",
+				bottom: 0,
+				right: 0,
+				width: "50%",
+				height: "50%",
+				flexDirection: "column",
+				alignItems: "flex-end",
+			}}>
+				<View style={{
+					backgroundColor: viewBackgroundColor,
+					padding: 10,
+				}}>
+					<Text>{"Amount visible Main Canteen: "+calculateVisibleItemsCountMainCanteen()}</Text>
+					<Text>{"Current Index Main Canteen: "+currentIndexMainCanteen}</Text>
+					<Text>{"Amount visible Additional Canteens: "+calculateVisibleItemsCountAdditionalCanteens()}</Text>
+					<Text>{"Current Index Additional Canteens: "+currentIndexAdditionalCanteens}</Text>
+				</View>
+			</View>
+		} else {
+			return null;
+		}
 	}
 
 	return <MySafeAreaView>

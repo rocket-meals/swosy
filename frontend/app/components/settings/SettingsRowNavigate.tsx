@@ -5,15 +5,16 @@ import {MyAccessibilityRoles} from "@/helper/accessibility/MyAccessibilityRoles"
 import {AllRoutes, router} from "expo-router";
 import {IconNames} from "@/constants/IconNames";
 
-export type SettingsRowNavigateSimpleProps = {
-	// translation_key is a static field from the class TranslationKeys
-	translation_key: TranslationKeys;
+export type SettingsRowNavigateSimpleProps = (
+	| { translation_key: TranslationKeys; title?: never }
+	| { translation_key?: never; title: string }
+	) & {
 	leftIcon?: string;
 	labelRight?: string;
-	route: AllRoutes
-}
+	route: AllRoutes;
+};
 export const SettingsRowNavigateSimple = (props: SettingsRowNavigateSimpleProps) => {
-	const translation_title = useTranslation(props.translation_key);
+	const translation_title = props.translation_key ? useTranslation(props.translation_key) : props.title;
 	return <SettingsRowNavigateWithText labelLeft={translation_title} route={props.route} leftIcon={props.leftIcon} labelRight={props.labelRight} />
 }
 

@@ -11,12 +11,12 @@ export default function ManagementScreen() {
 		<MySafeAreaView>
 			<MyScrollView>
 				<SettingsRowGroup label={"Statistiken"}>
-					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/statistics"} />
+					<SettingsRowNavigateSimple title={"Test Statistik"} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/statistics"} />
 				</SettingsRowGroup>
 				<SettingsRowGroup label={"Monitore"}>
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/foodoffers/monitor/weekplan"} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodBigScreen} leftIcon={IconNames.gallery_icon} route={"/(app)/foodoffers/monitor/bigscreen"} />
-					<SettingsRowNavigateSimple translation_key={TranslationKeys.monitorDayPlan} leftIcon={IconNames.foodoffers_icon} route={"/(app)/foodoffers/monitor/dayplan"} />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.monitorDayPlan} leftIcon={IconNames.monitorDayPlan_icon} route={"/(app)/foodoffers/monitor/dayplan"} />
 				</SettingsRowGroup>
 			</MyScrollView>
 		</MySafeAreaView>

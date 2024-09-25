@@ -24,13 +24,14 @@ export function useEditCanteenAccessibilityLabel(): string {
 
 interface SettingsRowCanteenSelectionProps {
 	labelRight?: string;
+	labelLeft?: string;
 	onSelectCanteen: (canteen: Canteens | null) => void;
 }
-export const SettingsRowCanteenSelection: FunctionComponent<SettingsRowCanteenSelectionProps> = ({...props}) => {
+export const SettingsRowCanteenSelection: FunctionComponent<SettingsRowCanteenSelectionProps> = ({labelLeft, ...props}) => {
 	const leftIcon = IconNames.canteen_icon
 	const translation_title = useTranslation(TranslationKeys.canteen)
 	const translation_unknown = useTranslation(TranslationKeys.unknown)
-	const label = translation_title
+	const label = labelLeft || translation_title
 	const labelRight: string = props.labelRight || translation_unknown;
 
 	const accessibilityLabel = useEditCanteenAccessibilityLabel();

@@ -17,6 +17,7 @@ export class IconNames {
     static fullscreen_exit_icon = 'fullscreen-exit'
     static print_icon = 'printer'
     static foodoffers_icon = 'silverware-variant'
+    static monitorDayPlan_icon = 'view-list'
     static foodweekplan_icon = "calendar"
     static map_icon = 'map'
     static campus_icon = IconFamily.FontAwesome5+IconParseDelimeter+"university"

@@ -822,34 +822,34 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.zh_CN]: '空房间'
 	},
 	foodweekplan: {
-		[LanguageKeys.de_DE]: 'Speise Wochenplan',
-		[LanguageKeys.en_US]: 'Food Week Plan',
-		[LanguageKeys.ar_SA]: 'خطة أسبوع الطعام',
-		[LanguageKeys.es_ES]: 'Plan semanal de alimentos',
-		[LanguageKeys.fr_FR]: 'Plan de la semaine alimentaire',
-		[LanguageKeys.ru_RU]: 'План питания на неделю',
-		[LanguageKeys.tr_TR]: 'Yemek Haftası Planı',
-		[LanguageKeys.zh_CN]: '食品周计划'
+		[LanguageKeys.de_DE]: 'Speiseplan: Woche',
+		[LanguageKeys.en_US]: 'Food Plan: Week',
+		[LanguageKeys.ar_SA]: 'خطة الطعام: الأسبوع',
+		[LanguageKeys.es_ES]: 'Plan de alimentos: Semana',
+		[LanguageKeys.fr_FR]: 'Plan alimentaire: Semaine',
+		[LanguageKeys.ru_RU]: 'План питания: Неделя',
+		[LanguageKeys.tr_TR]: 'Yemek Planı: Hafta',
+		[LanguageKeys.zh_CN]: '食品计划：周'
 	},
 	monitorDayPlan: {
-		[LanguageKeys.de_DE]: 'Tages Speise Monitor',
-		[LanguageKeys.en_US]: 'Day Food Monitor',
-		[LanguageKeys.ar_SA]: 'شاشة طعام اليوم',
-		[LanguageKeys.es_ES]: 'Monitor de alimentos diarios',
-		[LanguageKeys.fr_FR]: 'Moniteur alimentaire quotidien',
-		[LanguageKeys.ru_RU]: 'Мониторинг питания на день',
-		[LanguageKeys.tr_TR]: 'Gün Yemek Monitörü',
-		[LanguageKeys.zh_CN]: '每日食品监视器'
+		[LanguageKeys.de_DE]: 'Speiseplan: Tag: Liste',
+		[LanguageKeys.en_US]: 'Food Plan: Day: List',
+		[LanguageKeys.ar_SA]: 'خطة الطعام: اليوم: قائمة',
+		[LanguageKeys.es_ES]: 'Plan de alimentos: Día: Lista',
+		[LanguageKeys.fr_FR]: 'Plan alimentaire: Jour: Liste',
+		[LanguageKeys.ru_RU]: 'План питания: День: Список',
+		[LanguageKeys.tr_TR]: 'Yemek Planı: Gün: Liste',
+		[LanguageKeys.zh_CN]: '食品计划：天：列表'
 	},
 	foodBigScreen: {
-		[LanguageKeys.de_DE]: 'Speise Großbildschirm',
-		[LanguageKeys.en_US]: 'Food Big Screen',
-		[LanguageKeys.ar_SA]: 'شاشة كبيرة للطعام',
-		[LanguageKeys.es_ES]: 'Pantalla grande de alimentos',
-		[LanguageKeys.fr_FR]: 'Grand écran alimentaire',
-		[LanguageKeys.ru_RU]: 'Большой экран питания',
-		[LanguageKeys.tr_TR]: 'Yemek Büyük',
-		[LanguageKeys.zh_CN]: '食品大屏幕'
+		[LanguageKeys.de_DE]: 'Speiseplan: Tag: Einzelansicht mit Bild',
+		[LanguageKeys.en_US]: 'Food Plan: Day: Single View with Image',
+		[LanguageKeys.ar_SA]: 'خطة الطعام: اليوم: عرض واحد مع صورة',
+		[LanguageKeys.es_ES]: 'Plan de alimentos: Día: Vista única con imagen',
+		[LanguageKeys.fr_FR]: 'Plan alimentaire: Jour: Vue unique avec image',
+		[LanguageKeys.ru_RU]: 'План питания: День: Одиночный вид с изображением',
+		[LanguageKeys.tr_TR]: 'Yemek Planı: Gün: Resimli Tek Görünüm',
+		[LanguageKeys.zh_CN]: '食品计划：天：单视图与图片'
 	},
 	data_access_introduction: {
 		[LanguageKeys.de_DE]: `## 🌟 Deine Daten - Dein Recht

@@ -11,6 +11,7 @@ export enum SearchParams {
     KIOSK_MODE = 'kiosk_mode',
     LANGUAGE = 'language',
     CANTEENS_ID = 'canteens_id',
+    MONITOR_ADDITIONAL_CANTEENS_ID = 'monitor_additional_canteens_id',
     FOODOFFERS_DATE = 'foodoffers_date',
 }
 
@@ -22,6 +23,11 @@ export function useSearchParamLanguage() {
 export function useSearchParamSelectedCanteensId() {
     const params = useGlobalSearchParams<{ [SearchParams.CANTEENS_ID]?: string }>();
     return params[SearchParams.CANTEENS_ID];
+}
+
+export function useSearchParamMonitorAdditionalCanteensId() {
+    const params = useGlobalSearchParams<{ [SearchParams.MONITOR_ADDITIONAL_CANTEENS_ID]?: string }>();
+    return params[SearchParams.MONITOR_ADDITIONAL_CANTEENS_ID];
 }
 
 export function useSearchParamSelectedFoodoffersDate(): [string | undefined, (date: Date) => void] {
