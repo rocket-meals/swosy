@@ -40,8 +40,8 @@
     "show_header": true,
     "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "type": "time-series",
-    "position_x": 30,
-    "position_y": 52,
+    "position_x": 26,
+    "position_y": 67,
     "width": 25,
     "height": 13,
     "options": {
@@ -211,7 +211,7 @@
     "note": null,
     "type": "list",
     "position_x": 1,
-    "position_y": 2,
+    "position_y": 11,
     "width": 40,
     "height": 13,
     "options": {
@@ -291,7 +291,7 @@
     "note": null,
     "type": "list",
     "position_x": 42,
-    "position_y": 2,
+    "position_y": 11,
     "width": 26,
     "height": 13,
     "options": {
@@ -396,8 +396,8 @@
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 36,
-    "position_y": 31,
+    "position_x": 35,
+    "position_y": 46,
     "width": 32,
     "height": 19,
     "options": {
@@ -487,6 +487,44 @@
     "_syncId": "75a638eb-d006-429f-9ec6-42181ba44e81"
   },
   {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Profile mit Nicknamen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 109,
+    "width": 29,
+    "height": 6,
+    "options": {
+      "collection": "profiles",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "nickname": {
+                  "_nnull": true
+                }
+              },
+              {
+                "nickname": {
+                  "_nempty": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "7cf30283-cc2a-4de9-be54-781db630fd40"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
     "name": "Aktivitäten der letzten 24 Stunden (Minuten-Präzision)",
     "icon": null,
@@ -521,7 +559,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 31,
+    "position_y": 46,
     "width": 34,
     "height": 19,
     "options": {
@@ -565,7 +603,8 @@
           }
         ]
       },
-      "suffix": "€"
+      "suffix": "€",
+      "maximumFractionDigits": 2
     },
     "_syncId": "94a71a98-8dfa-4cd6-93b3-1e64b8267883"
   },
@@ -626,14 +665,34 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Bewertungen Speise Feedback",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 35,
+    "position_y": 40,
+    "width": 32,
+    "height": 6,
+    "options": {
+      "collection": "foods_feedbacks",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id"
+    },
+    "_syncId": "9c422335-e73b-401c-b89c-5519f3ba490e"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Speisen - Geänderte Fotos",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 3,
-    "position_y": 52,
+    "position_x": 1,
+    "position_y": 67,
     "width": 25,
     "height": 13,
     "options": {
@@ -733,6 +792,26 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Bewertungen Feedback Labels",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 40,
+    "width": 34,
+    "height": 6,
+    "options": {
+      "collection": "foods_feedbacks_labels_entries",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id"
+    },
+    "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Unbeliebteste Speisen",
     "icon": null,
     "color": null,
@@ -740,7 +819,7 @@
     "note": null,
     "type": "list",
     "position_x": 1,
-    "position_y": 17,
+    "position_y": 24,
     "width": 40,
     "height": 13,
     "options": {
@@ -760,6 +839,39 @@
       "sortDirection": "asc"
     },
     "_syncId": "b832f73c-4f21-4039-874c-e59dd9f7a646"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzah gesetzter Benachrichtigungen für Speisen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 42,
+    "position_y": 2,
+    "width": 26,
+    "height": 5,
+    "options": {
+      "collection": "foods_feedbacks",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "notify": {
+                  "_eq": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "c6fa058b-f8a9-4de7-9da9-f0390ff81058"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
