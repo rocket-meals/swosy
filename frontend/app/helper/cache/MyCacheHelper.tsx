@@ -1,4 +1,5 @@
 import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types";
+import {ItemStatus} from "@/helper/database/ItemStatus";
 
 export type MyCacheHelperType = {
     sync_cache_composed_key_local: string | undefined,
@@ -45,18 +46,39 @@ export function getSyncCacheComposedObj(localCacheHelperObj: MyCacheHelperType, 
 
 export class MyCacheHelperDeepFields {
     deepFieldList: MyCacheHelperDeepField[];
+    private filter?: any;
 
-    constructor(deepFieldList: MyCacheHelperDeepField[]) {
+    static PUBLISHED_FILTER = {
+        _and: [
+            {
+                status: {
+                    _eq: ItemStatus.PUBLISHED
+                }
+            }
+        ]
+    }
+
+    constructor(deepFieldList: MyCacheHelperDeepField[], filter?: any) {
         this.deepFieldList = deepFieldList;
+        this.filter = filter;
     }
 
     public getQuery(){
         const fields = this.getFields();
         const deepFields = this.getDeepFields();
+
+        let publishedFilter = {}
+        if (this.filter) {
+            publishedFilter = {
+                filter: this.filter
+            }
+        }
+
         return {
             limit: -1,
             deep: deepFields,
-            fields: fields
+            fields: fields,
+            ...publishedFilter
         }
     }
 

@@ -1,30 +1,34 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
-  "field": "foods_feedbacks_labels_id",
+  "collection": "canteens_feedbacks_labels_entries",
+  "field": "user_updated",
   "type": "uuid",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "canteens_feedbacks_labels_entries",
     "conditions": null,
-    "display": null,
+    "display": "user",
     "display_options": null,
-    "field": "foods_feedbacks_labels_id",
+    "field": "user_updated",
     "group": null,
     "hidden": true,
-    "interface": null,
+    "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
-    "readonly": false,
+    "options": {
+      "template": "{{avatar.$thumbnail}} {{first_name}} {{last_name}}"
+    },
+    "readonly": true,
     "required": false,
-    "sort": 3,
-    "special": null,
+    "sort": 6,
+    "special": [
+      "user-updated"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "foods_feedbacks_labels_id",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "name": "user_updated",
+    "table": "canteens_feedbacks_labels_entries",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -36,7 +40,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_feedbacks_labels",
+    "foreign_key_table": "directus_users",
     "foreign_key_column": "id"
   }
 }

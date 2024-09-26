@@ -163,7 +163,7 @@ export class CollectionHelper<CollectionScheme> {
 	}
 
 	async createItem<CollectionScheme>(data: Partial<CollectionScheme>) {
-		return await this.client.request(createItem(this.collection, data));
+		return await this.client.request(createItem(this.collection, data)) as CollectionScheme;
 	}
 
 	convertListToDict(list: CollectionScheme[], key: string) {
@@ -182,18 +182,23 @@ export class CollectionHelper<CollectionScheme> {
 		return dict;
 	}
 
-	static convertListToDictWithListAsValue<CollectionScheme>(list: CollectionScheme[], key: string) {
-		const dict: Record<any, CollectionScheme[] | undefined | null> = {};
+	static convertListToDictWithListAsValue<CollectionScheme extends Record<string, any>>(
+		list: CollectionScheme[],
+		key: keyof CollectionScheme | ((item: CollectionScheme) => string)
+	): Record<string, CollectionScheme[]> {
+		const dict: Record<string, CollectionScheme[]> = {};
+
 		for (const item of list) {
-			// @ts-ignore
-			const id = item[key];
-			// @ts-ignore
+			const id = typeof key === 'function' ? key(item) : item[key] as unknown as string;
+
 			if (!dict[id]) {
 				dict[id] = [];
 			}
-			// @ts-ignore
+
 			dict[id].push(item);
 		}
+
 		return dict;
 	}
+
 }

@@ -21,9 +21,10 @@ import {CollectionsDatesLastUpdate} from "@/helper/database/databaseTypes/types"
 import {Text} from "@/components/Themed";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 import {useSynchedPopupEventsDict} from "@/states/SynchedPopupEvents";
-import {useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict} from "@/states/SynchedFoodFeedbacksLabelsEntries";
+import {useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict} from "@/states/SynchedFoodsFeedbacksLabelsEntries";
 import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
 import {useSynchedPoliciesDict} from "@/states/SynchedPolicies";
+import {useSynchedCanteensFeedbacksLabelsDict} from "@/states/SynchedCanteensFeedbacksLabels";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -59,8 +60,10 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [markingsGroupsDict, setMarkingsGroupsDict, cacheHelperObjMarkingsGroups] = useSynchedMarkingsGroupsDict()
 	const [buildingsDict, setBuildingsDict, cacheHelperObjBuildings] = useSynchedBuildingsDict()
 	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels] = useSynchedFoodsFeedbacksLabelsDict()
+	const [canteensFeedbacksLabelsDict, setCanteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels] = useSynchedCanteensFeedbacksLabelsDict()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [ownFoodFeedbacksLabelsEntriesListDict, setOwnFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
+	const [ownCanteenFeedbacksLabelsEntriesDict, setOwnCanteenFeedbacksLabelsEntriesDict, cacheHelperObjOwnCanteenFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
 	const [languagesDict, setLanguagesDict, cacheHelperObjLanguages] = useSynchedLanguagesDict()
 	const [apartmentsDict, setApartmentsDict, cacheHelperObjApartments] = useSynchedApartmentsDict()
 	const [wikisDict, setWikisDict, cacheHelperObjWikis] = useSynchedWikisDict()
@@ -113,10 +116,12 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('businesshours', businesshoursDict, cacheHelperObjBusinesshours)
 	addResourceToCheckForUpdates('buildings', buildingsDict, cacheHelperObjBuildings)
 	addResourceToCheckForUpdates('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels)
+	addResourceToCheckForUpdates('canteensFeedbacksLabels', canteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels	)
 	addResourceToCheckForUpdates('profile', profile, cacheHelperObjProfile);
 	addResourceToCheckForUpdates('wikis', wikisDict, cacheHelperObjWikis)
 	addResourceToCheckForUpdates('ownFoodFeedbacks', ownFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks)
 	addResourceToCheckForUpdates('ownFoodFeedbacksLabelsEntries', ownFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries)
+	addResourceToCheckForUpdates('ownCanteenFeedbacksLabelsEntries', ownCanteenFeedbacksLabelsEntriesDict, cacheHelperObjOwnCanteenFeedbacksLabelEntries)
 	addResourceToCheckForUpdates('languages', languagesDict, cacheHelperObjLanguages)
 	addResourceToCheckForUpdates('markings', markingsDict, cacheHelperObjMarkings);
 	addResourceToCheckForUpdates('markingsGroups', markingsGroupsDict, cacheHelperObjMarkingsGroups);

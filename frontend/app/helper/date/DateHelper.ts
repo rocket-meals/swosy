@@ -353,6 +353,10 @@ export class DateHelper {
 	}
 
 	static foodofferDateTypeToString(dateObj: Date){
+		return DateHelper.getDirectusDateOnlyString(dateObj);
+	}
+
+	static getDirectusDateOnlyString(dateObj: Date) {
 		const date = {
 			year: dateObj.getFullYear(),
 			month: dateObj.getMonth() + 1,

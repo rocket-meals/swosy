@@ -1,23 +1,23 @@
 {
-  "collection": "foods_feedbacks_labels",
-  "field": "visible",
-  "type": "boolean",
+  "collection": "canteens_feedbacks_labels_entries",
+  "field": "label",
+  "type": "uuid",
   "meta": {
-    "collection": "foods_feedbacks_labels",
+    "collection": "canteens_feedbacks_labels_entries",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "visible",
+    "field": "label",
     "group": null,
     "hidden": false,
-    "interface": "boolean",
+    "interface": "select-dropdown-m2o",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 10,
     "special": [
-      "cast-boolean"
+      "m2o"
     ],
     "translations": null,
     "validation": null,
@@ -25,10 +25,10 @@
     "width": "full"
   },
   "schema": {
-    "name": "visible",
-    "table": "foods_feedbacks_labels",
-    "data_type": "boolean",
-    "default_value": true,
+    "name": "label",
+    "table": "canteens_feedbacks_labels_entries",
+    "data_type": "uuid",
+    "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
@@ -38,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": null,
-    "foreign_key_column": null
+    "foreign_key_table": "canteens_feedbacks_labels",
+    "foreign_key_column": "id"
   }
 }

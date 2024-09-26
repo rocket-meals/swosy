@@ -14,7 +14,7 @@ const cacheHelperDeepFields_apartments: MyCacheHelperDeepFields = new MyCacheHel
 		limit: -1,
 		dependency_collections_or_enum: [TABLE_NAME_APARTMENTS],
 	},
-])
+], null)
 async function loadApartmentsFromServer(): Promise<Apartments[]> {
 	const collectionHelper = new CollectionHelper<Apartments>(TABLE_NAME_APARTMENTS);
 	const query = cacheHelperDeepFields_apartments.getQuery()

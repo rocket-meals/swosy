@@ -44,6 +44,7 @@ import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {SEARCH_PARAM_FOODOFFER_ID} from "@/app/(app)/foodoffers/details";
 import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
+import {CanteenFeedbacksLabelsComponent} from "@/compositions/canteens/CanteenFeedbacks";
 
 
 function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -242,7 +243,7 @@ export default function FoodOfferScreen() {
 	const foodsAreaColor = useFoodsAreaColor();
 
 
-	const dateAsString = selectedDate.toISOString();
+	const dateAsIsoString = selectedDate.toISOString();
 
 	const initialAmountColumns = useMyGridListDefaultColumns();
 
@@ -281,7 +282,7 @@ export default function FoodOfferScreen() {
 	}
 
 	// wait half a second before loading the food offers but reset the timeout if any dependencies change
-	let depsReloadFood = [dateAsString, profileCanteen?.id]
+	let depsReloadFood = [dateAsIsoString, profileCanteen?.id]
 	useEffect(() => {
 		setFoodOffers(undefined)
 		setFoodoffersSorted(undefined)
@@ -424,6 +425,7 @@ export default function FoodOfferScreen() {
   					data={data}
   					renderItem={renderItem}
   					amountColumns={initialAmountColumns}
+					postItem={<CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />}
   				/>
 				<PopupEventsOverlay />
   			</MySafeAreaView>

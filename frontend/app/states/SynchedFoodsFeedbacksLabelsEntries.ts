@@ -46,17 +46,17 @@ async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: st
 	let foodFeedbackLabelId = foodFeedbackLabel.id;
 	let searchedFoodFeedbackLabelEntry = foodFeedbackLabelEntries?.find(x => x.label === foodFeedbackLabelId);
 
-	let newFoodFeedbackLabelEntry: FoodsFeedbacksLabelsEntries = {
+	let newFoodFeedbackLabelEntry: Partial<FoodsFeedbacksLabelsEntries> = {
 		food: foodId,
 		label: foodFeedbackLabelId,
 		dislike: dislike,
 		profile: profile_id,
 		// @ts-ignore
 		id: undefined,
-	} as unknown as FoodsFeedbacksLabelsEntries
+	}
 
 	let isNewEntry = !searchedFoodFeedbackLabelEntry;
-	let existingFoodFeedbackLabelEntry: FoodsFeedbacksLabelsEntries = searchedFoodFeedbackLabelEntry ? searchedFoodFeedbackLabelEntry : newFoodFeedbackLabelEntry
+	let existingFoodFeedbackLabelEntry: FoodsFeedbacksLabelsEntries | null = searchedFoodFeedbackLabelEntry ? searchedFoodFeedbackLabelEntry : null
 	if(isNewEntry) {
 		let answer: FoodsFeedbacks = await resourceCollectionHelper.createItem(newFoodFeedbackLabelEntry) as FoodsFeedbacksLabelsEntries;
 		console.log('updateFoodFeedbackRemote: createItem: answer', answer)

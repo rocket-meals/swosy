@@ -18,7 +18,7 @@ const cacheHelperDeepFields_foodsFeedbacksLabels: MyCacheHelperDeepFields = new 
 		limit: -1,
 		dependency_collections_or_enum: ["foods_feedbacks_labels_translations"],
 	}
-])
+], MyCacheHelperDeepFields.PUBLISHED_FILTER)
 async function loadResourcesFromServer(): Promise<FoodsFeedbacksLabels[]> {
 	const collectionHelper = new CollectionHelper<FoodsFeedbacksLabels>(TABLE_NAME_FOODS_FEEDBACKS_LABELS);
 	const query = cacheHelperDeepFields_foodsFeedbacksLabels.getQuery()
@@ -73,7 +73,6 @@ function getDemoResource(index: number, nameOfLabel: string, icon: string): Food
 		alias: name,
 		id: index+'',
 		status: '',
-		visible: true,
 		translations: translations,
 		icon: icon
 	}

@@ -1,13 +1,13 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
-  "field": "foods_feedbacks_id",
-  "type": "uuid",
+  "collection": "canteens_feedbacks_labels_translations",
+  "field": "languages_code",
+  "type": "string",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "canteens_feedbacks_labels_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_feedbacks_id",
+    "field": "languages_code",
     "group": null,
     "hidden": true,
     "interface": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 2,
+    "sort": 3,
     "special": null,
     "translations": null,
     "validation": null,
@@ -23,11 +23,11 @@
     "width": "full"
   },
   "schema": {
-    "name": "foods_feedbacks_id",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
-    "data_type": "uuid",
+    "name": "languages_code",
+    "table": "canteens_feedbacks_labels_translations",
+    "data_type": "character varying",
     "default_value": null,
-    "max_length": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
@@ -36,7 +36,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_feedbacks",
-    "foreign_key_column": "id"
+    "foreign_key_table": "languages",
+    "foreign_key_column": "code"
   }
 }

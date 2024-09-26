@@ -10,6 +10,11 @@
     "_syncId": "462bf197-f235-4d92-9d86-88361d7f201c"
   },
   {
+    "name": "CanteenFeedbackLabels",
+    "parent": "6baff1a8-400e-4dab-8f39-a5422df94db2",
+    "_syncId": "65f72179-f42e-4ff1-8921-7223c50f0797"
+  },
+  {
     "name": "Images",
     "parent": null,
     "_syncId": "6baff1a8-400e-4dab-8f39-a5422df94db2"

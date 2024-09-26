@@ -38,7 +38,7 @@ import {
 	FoodFeedbacksLabelsCountsType,
 	loadFoodsFeedbacksLabelsCountsForFood,
 	useSynchedOwnFoodFeedbackLabelEntries
-} from "@/states/SynchedFoodFeedbacksLabelsEntries";
+} from "@/states/SynchedFoodsFeedbacksLabelsEntries";
 import {AppConfiguration} from "@/constants/AppConfiguration";
 import {CommonFieldsOfFoodAndFoodoffers, FoodDataList} from "@/components/food/FoodDataList";
 import {useSortedMarkings, useSynchedMarkingsListByMarkingIds} from "@/states/SynchedMarkings";
@@ -171,24 +171,22 @@ export const FoodFeedbacksLabelsComponent = ({food, foodoffer, foodFeedbackLabel
 			let label = foodFeedbackLabelsDict[key];
 			if(!!label){
 				let sort = label?.sort
-				let visible = label?.visible || isDebug
 				let amount_information = foodFeedbackLabelsCounts?.[label?.id];
 				let amount_likes = amount_information?.amount_likes ?? null;
 				let amount_dislikes = amount_information?.amount_dislikes ?? null;
 
-				if(visible){
-					data.push({key: key,
-						sort: sort,
-						data: {
-							food_id: food_id,
-							label: label,
-							translation: translation,
-							amount_likes: amount_likes,
-							amount_dislikes: amount_dislikes,
-							foodoffer_id: foodoffer?.id,
-							canteen_id: canteen_id
-						}})
-				}
+				data.push({key: key,
+					sort: sort,
+					data: {
+						food_id: food_id,
+						label: label,
+						translation: translation,
+						amount_likes: amount_likes,
+						amount_dislikes: amount_dislikes,
+						foodoffer_id: foodoffer?.id,
+						canteen_id: canteen_id
+					}
+				})
 			}
 		}
 	});
@@ -479,7 +477,7 @@ export const FoodFeedbackDetails = ({food, foodoffer}: {food: Foods, foodoffer: 
 		const foodFeedbackLabels = Object.values(foodFeedbackLabelsDict)
 		for(let i=0; i<foodFeedbackLabels.length; i++){
 			let label = foodFeedbackLabels[i];
-			if(!!label && label.visible){
+			if(!!label){
 				visibleLabels.push(label)
 			}
 		}

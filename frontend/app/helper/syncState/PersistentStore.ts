@@ -32,6 +32,7 @@ export class PersistentStore {
 	static news = 'PersistentStore.news'
 	static buildings = 'PersistentStore.buildings'
 	static foodsFeedbacksLabels = 'PersistentStore.foodsFeedbacksLabels'
+	static canteensFeedbacksLabels = 'PersistentStore.canteensFeedbacksLabels'
 	static apartments = 'PersistentStore.apartments'
 	static app_settings = 'PersistentStore.app_settings'
 	static markings = 'PersistentStore.markings'
@@ -44,6 +45,7 @@ export class PersistentStore {
 
 	static ownFoodFeedbacks = 'PersistentStore.ownFoodFeedbacks'
 	static ownFoodFeedbacksLabelsEntries = 'PersistentStore.ownFoodFeedbacksLabelsEntries'
+	static ownCanteenFeedbacksLabelsEntries = 'PersistentStore.ownCanteenFeedbacksLabelsEntries'
 
 	static sortConfigFoodoffers = 'PersistentStore.sortConfigFoodoffers'
 	static sortConfigBuildings = 'PersistentStore.sortConfigBuildings'

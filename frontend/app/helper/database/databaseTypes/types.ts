@@ -235,7 +235,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   report_status_log?: string | null;
   report_time_settings: string;
   report_time_settings_days: string;
-  send_amount_days_before_offer_date: number;
+  send_amount_days_before_offer_date?: number | null;
   send_for_fridays?: boolean | null;
   send_for_mondays?: boolean | null;
   send_for_saturdays?: boolean | null;
@@ -244,7 +244,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_for_tuesdays?: boolean | null;
   send_for_wednesdays?: boolean | null;
   send_once_now_for_date?: string | null;
-  send_report_at_hh_mm: string;
+  send_report_at_hh_mm?: string | null;
   show_images?: boolean | null;
   sort?: number | null;
   status?: string | null;
@@ -280,6 +280,47 @@ export type Canteens = {
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   utilization_group?: string | UtilizationsGroups | null;
+};
+
+export type CanteensFeedbacksLabels = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  icon?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  sort?: number | null;
+  status?: string | null;
+  translations: any[] | CanteensFeedbacksLabelsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CanteensFeedbacksLabelsEntries = {
+  canteen?: string | Canteens | null;
+  date?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  dislike?: boolean | null;
+  id: string;
+  label?: string | CanteensFeedbacksLabels | null;
+  profile?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CanteensFeedbacksLabelsTranslations = {
+  be_source_for_translations?: boolean | null;
+  canteens_feedbacks_labels_id?: string | CanteensFeedbacksLabels | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  text?: string | null;
+  translation_settings: string;
 };
 
 export type CanteensFoodserviceHours = {
@@ -849,13 +890,6 @@ export type FoodsFeedbacks = {
   user_updated?: string | DirectusUsers | null;
 };
 
-export type FoodsFeedbacksFoodsFeedbacksLabels = {
-  dislike?: boolean | null;
-  foods_feedbacks_id?: string | FoodsFeedbacks | null;
-  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
-  id: number;
-};
-
 export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
@@ -870,7 +904,6 @@ export type FoodsFeedbacksLabels = {
   translations: any[] | FoodsFeedbacksLabelsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
-  visible?: boolean | null;
 };
 
 export type FoodsFeedbacksLabelsEntries = {
@@ -1234,6 +1267,9 @@ export type CustomDirectusTypes = {
   canteen_food_feedback_report_schedules_canteens: CanteenFoodFeedbackReportSchedulesCanteens[];
   canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
   canteens: Canteens[];
+  canteens_feedbacks_labels: CanteensFeedbacksLabels[];
+  canteens_feedbacks_labels_entries: CanteensFeedbacksLabelsEntries[];
+  canteens_feedbacks_labels_translations: CanteensFeedbacksLabelsTranslations[];
   canteens_foodservice_hours: CanteensFoodserviceHours[];
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
@@ -1270,7 +1306,6 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
-  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
