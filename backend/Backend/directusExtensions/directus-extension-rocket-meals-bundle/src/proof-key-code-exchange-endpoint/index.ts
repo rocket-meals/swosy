@@ -17,8 +17,8 @@ function getUrlToProviderLogin(providerName: string, redirectURL: string) {
 // https://www.rfc-editor.org/rfc/rfc7636
 
 
-function mylog(message: any){
-	console.log(EndpointTopName+": "+message);
+function mylog(...message: any){
+	//console.log(EndpointTopName+": "+message);
 }
 
 type AuthorizationCodeAndRedirectType = {
@@ -294,7 +294,7 @@ export default defineEndpoint({
 		const redisUrl = env?.["REDIS"];
 		let validRedisUrl: string | null = null;
 		if(!redisUrl || redisUrl.length===0){
-			console.log(EndpointTopName+" current is only supported with redis. Please configure env var REDIS.")
+			mylog(EndpointTopName+" current is only supported with redis. Please configure env var REDIS.")
 			return;
 		} else {
 			validRedisUrl = redisUrl;
@@ -471,9 +471,9 @@ export default defineEndpoint({
 
 		// 4.5.  Client Sends the Authorization Code and the Code Verifier to the Token Endpoint
 		router.post('/token', async (req, res) => {
-			console.log(EndpointTopName+" Token Called")
+			mylog(EndpointTopName+" Token Called")
 			const { code, code_verifier } = req.body;
-			console.log(req.body);
+			//console.log(req.body);
 
 			//    code_verifier
 			//       REQUIRED.  Code verifier

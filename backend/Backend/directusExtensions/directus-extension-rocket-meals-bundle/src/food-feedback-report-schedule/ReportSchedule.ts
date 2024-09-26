@@ -57,6 +57,7 @@ export class ReportSchedule {
                                     for(let toMail of recipientEmailList){
                                         await this.sendReport(generateReportForDate, generated_report_data, reportSchedule, canteenEntries, toMail);
                                     }
+                                    //console.log("Report was sent successfully for the date: setting the next report date")
                                     await this.setNextReportDate(reportSchedule);
                                     await this.updateReportLogSuccess(generateReportForDate, reportSchedule);
                                 } else {
@@ -181,6 +182,7 @@ export class ReportSchedule {
     }
 
     async setNextReportDate(recipientEntry: CanteenFoodFeedbackReportSchedules){
+        //console.log(SCHEDULE_NAME + " setNextReportDate")
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
         let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
@@ -194,7 +196,10 @@ export class ReportSchedule {
                 await this.updateReportLog(recipientEntry, messageNoSuitableNextReportDateFoundPleaseSelectAtLeastOneWeekday);
             }
         } else {
+            //console.log("Next report due date was calculated: "+new_date_next_report_is_due_iso)
+            //console.log("Update recipientEntry.id: "+recipientEntry.id)
             await itemService.updateOne(recipientEntry.id, {date_next_report_is_due: new_date_next_report_is_due_iso});
+            //console.log("Update report_status_log after setting next report date")
             await this.updateReportLog(recipientEntry, "Next report date was not set. Set next report due date to: "+new_date_next_report_is_due_iso);
         }
     }
@@ -231,6 +236,9 @@ export class ReportSchedule {
 
 
     async getDateForWhichTheReportShouldBeSend(recipientEntry: CanteenFoodFeedbackReportSchedules){
+        //console.log("#############");
+        //console.log(SCHEDULE_NAME + " getDateForWhichTheReportShouldBeSend")
+
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         //console.log("Checking if report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
@@ -260,6 +268,7 @@ export class ReportSchedule {
         //console.log("date_for_which_the_report_should_be_generated_moment_date: " + date_for_which_the_report_should_be_generated_moment_date);
 
         if(!current_date_next_report_is_due){
+            //console.log("date_next_report_is_due is not set, lets set it")
             // if the date_next_report_is_due is not set, we have to set it
             // date_when_the_next_report_should_be_generated is date_for_which_the_report_should_be_generated_moment_date minus send_amount_days_before_offer_date
             await this.setNextReportDate(recipientEntry);
@@ -434,19 +443,36 @@ export class ReportSchedule {
         return null;
     }
 
-    public static haveTimeSettingsChanged(currentCanteenFoodFeedbackReportSchedules: CanteenFoodFeedbackReportSchedules, newCanteenFoodFeedbackReportSchedules: Partial<CanteenFoodFeedbackReportSchedules>){
-        let send_report_at_hh_mm_changed = currentCanteenFoodFeedbackReportSchedules.send_report_at_hh_mm !== newCanteenFoodFeedbackReportSchedules.send_report_at_hh_mm;
-        let send_amount_days_before_offer_date_changed = currentCanteenFoodFeedbackReportSchedules.send_amount_days_before_offer_date !== newCanteenFoodFeedbackReportSchedules.send_amount_days_before_offer_date;
-        let send_for_mondays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_mondays !== newCanteenFoodFeedbackReportSchedules.send_for_mondays;
-        let send_for_tuesdays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_tuesdays !== newCanteenFoodFeedbackReportSchedules.send_for_tuesdays;
-        let send_for_wednesdays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_wednesdays !== newCanteenFoodFeedbackReportSchedules.send_for_wednesdays;
-        let send_for_thursdays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_thursdays !== newCanteenFoodFeedbackReportSchedules.send_for_thursdays;
-        let send_for_fridays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_fridays !== newCanteenFoodFeedbackReportSchedules.send_for_fridays;
-        let send_for_saturdays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_saturdays !== newCanteenFoodFeedbackReportSchedules.send_for_saturdays;
-        let send_for_sundays_changed = currentCanteenFoodFeedbackReportSchedules.send_for_sundays !== newCanteenFoodFeedbackReportSchedules.send_for_sundays;
-        const send_for_weekdays_changed = send_for_mondays_changed || send_for_tuesdays_changed || send_for_wednesdays_changed || send_for_thursdays_changed || send_for_fridays_changed || send_for_saturdays_changed || send_for_sundays_changed;
+    public static haveTimeSettingsChanged(
+        currentCanteenFoodFeedbackReportSchedules: Partial<CanteenFoodFeedbackReportSchedules>,
+        newCanteenFoodFeedbackReportSchedules: Partial<CanteenFoodFeedbackReportSchedules>
+    ): boolean {
+        const fieldsToCheck: Array<keyof CanteenFoodFeedbackReportSchedules> = [
+            "send_report_at_hh_mm",
+            "send_amount_days_before_offer_date",
+            "send_for_mondays",
+            "send_for_tuesdays",
+            "send_for_wednesdays",
+            "send_for_thursdays",
+            "send_for_fridays",
+            "send_for_saturdays",
+            "send_for_sundays",
+        ];
 
-        return send_report_at_hh_mm_changed || send_amount_days_before_offer_date_changed || send_for_weekdays_changed;
+        // Iterate over the fields and return true if any of the corresponding fields have changed
+        return fieldsToCheck.some((field) => {
+            // Only compare if the newCanteenFoodFeedbackReportSchedules field is defined
+            if (newCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules] !== undefined) {
+                const currentValue = currentCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules];
+                const newValue = newCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules];
+
+                // Check if the values are different
+                return currentValue !== newValue;
+            }
+
+            // If the field is not present in newCanteenFoodFeedbackReportSchedules, do not treat it as a change
+            return false;
+        });
     }
 
     async getAllReportSchedules(){
