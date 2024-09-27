@@ -2079,5 +2079,65 @@
     ],
     "policy": "e836149f-70da-4884-8985-a622acd6221b",
     "_syncId": "4150a17b-9d71-4a71-94e3-359bf2f6ca90"
+  },
+  {
+    "collection": "directus_files",
+    "action": "create",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "e836149f-70da-4884-8985-a622acd6221b",
+    "_syncId": "9355fa4a-1d03-46c5-845f-a591aaf33b46"
+  },
+  {
+    "collection": "directus_files",
+    "action": "delete",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "e836149f-70da-4884-8985-a622acd6221b",
+    "_syncId": "e24c2b8b-9693-4884-aeb8-c1d19c239fcc"
+  },
+  {
+    "collection": "directus_files",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "e836149f-70da-4884-8985-a622acd6221b",
+    "_syncId": "59a3ea32-1f03-4784-8d96-ff5e48955a5c"
+  },
+  {
+    "collection": "directus_files",
+    "action": "update",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "e836149f-70da-4884-8985-a622acd6221b",
+    "_syncId": "b0a623a9-330a-4fd9-b84e-3c748ac4890f"
+  },
+  {
+    "collection": "directus_folders",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "e836149f-70da-4884-8985-a622acd6221b",
+    "_syncId": "80f0605a-3091-4db7-bf26-7a94f649fe61"
   }
 ]

@@ -7,6 +7,13 @@
     "_syncId": "_sync_default_admin_role"
   },
   {
+    "name": "Gebäudemanager",
+    "icon": "supervised_user_circle",
+    "description": null,
+    "parent": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "_syncId": "9aaa0300-e0ee-4874-b32f-2d165607867d"
+  },
+  {
     "name": "User",
     "icon": "supervised_user_circle",
     "description": null,
@@ -17,7 +24,7 @@
     "name": "Abteilung Wohnen",
     "icon": "supervised_user_circle",
     "description": null,
-    "parent": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+    "parent": "9aaa0300-e0ee-4874-b32f-2d165607867d",
     "_syncId": "e0d3b51c-8f50-4844-a788-b5152180bf43"
   }
 ]

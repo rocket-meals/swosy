@@ -85,6 +85,10 @@
     "app_access": true,
     "roles": [
       {
+        "role": "9aaa0300-e0ee-4874-b32f-2d165607867d",
+        "sort": 1
+      },
+      {
         "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
         "sort": 2
       }
