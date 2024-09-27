@@ -40,8 +40,8 @@
     "show_header": true,
     "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "type": "time-series",
-    "position_x": 26,
-    "position_y": 67,
+    "position_x": 41,
+    "position_y": 79,
     "width": 25,
     "height": 13,
     "options": {
@@ -52,6 +52,47 @@
       "filter": null
     },
     "_syncId": "059e0e07-1942-4924-968e-1b959e36f8a0"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Endzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 23,
+    "position_y": 5,
+    "width": 22,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW()",
+      "options": {}
+    },
+    "_syncId": "05a1c237-a632-4d8c-a005-f1d4ad1628d6"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speisen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 2,
+    "position_y": 6,
+    "width": 15,
+    "height": 5,
+    "options": {
+      "collection": "foods",
+      "field": "id",
+      "sortField": "id",
+      "function": "countDistinct"
+    },
+    "_syncId": "10385b18-5d59-4354-9e8d-26ad97f30e6c"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
@@ -81,6 +122,26 @@
       "conditionalFill": null
     },
     "_syncId": "1499db05-9b7d-4cb6-8367-1e62f3a52f19"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 6,
+    "width": 14,
+    "height": 5,
+    "options": {
+      "collection": "foodoffers",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id"
+    },
+    "_syncId": "1cc63e66-9b68-49d1-bf08-ca24838ca17f"
   },
   {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
@@ -139,7 +200,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 13,
+    "position_y": 37,
     "width": 65,
     "height": 12,
     "options": {
@@ -201,6 +262,66 @@
       }
     },
     "_syncId": "32858d7b-2149-4f4c-bc5c-9d3ac1f6f129"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Anzahl Aktivitäten: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 11,
+    "width": 64,
+    "height": 13,
+    "options": {
+      "collection": "directus_activity",
+      "dateField": "timestamp",
+      "valueField": "item",
+      "function": "countDistinct",
+      "range": "auto",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "timestamp": {
+                  "_lte": "{{CUSTOM_DIRECTUS_ACTIVITY_DATE_END}}"
+                }
+              },
+              {
+                "timestamp": {
+                  "_gte": "{{CUSTOM_DIRECTUS_ACTIVITY_DATE_START}}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "curveType": "stepline",
+      "precision": "{{CUSTOM_DIRECTUS_ACTIVITY_PRECISION}}"
+    },
+    "_syncId": "3dc1e080-34d5-4ede-9266-7e51b65df623"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speise Bewertungen (alt)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 20,
+    "position_y": 41,
+    "width": 18,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_amount_legacy",
+      "function": "sum"
+    },
+    "_syncId": "3ebe40d0-c8a2-4ad2-bfb4-dccc0f004556"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -312,6 +433,25 @@
     "_syncId": "5a227cab-b387-439f-9ecf-cffa7ea52299"
   },
   {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speise Bewertungen (alt + neu)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 42,
+    "position_y": 35,
+    "width": 24,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_amount",
+      "function": "sum"
+    },
+    "_syncId": "5bc97abc-deb7-4b5a-bced-5598ed74a55f"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Profil Aktualisierungen",
     "icon": null,
@@ -397,7 +537,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 35,
-    "position_y": 46,
+    "position_y": 58,
     "width": 32,
     "height": 19,
     "options": {
@@ -411,9 +551,75 @@
       "valueField": "id",
       "range": "1 month",
       "min": 0,
-      "max": 500
+      "max": 500,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "rating": {
+                  "_nnull": true
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Präzision",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 45,
+    "position_y": 5,
+    "width": 20,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
+      "type": "string",
+      "inter": "select-dropdown",
+      "defaultValue": "minute",
+      "options": {
+        "choices": [
+          {
+            "text": "Second",
+            "value": "second"
+          },
+          {
+            "text": "Minute",
+            "value": "minute"
+          },
+          {
+            "text": "Hour",
+            "value": "hour"
+          },
+          {
+            "text": "Day",
+            "value": "day"
+          },
+          {
+            "text": "Week",
+            "value": "week"
+          },
+          {
+            "text": "Month",
+            "value": "month"
+          },
+          {
+            "text": "Year",
+            "value": "year"
+          }
+        ],
+        "allowOther": true
+      }
+    },
+    "_syncId": "6ad39cd0-2103-4469-ae1c-471d7ef525f7"
   },
   {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
@@ -533,7 +739,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 1,
+    "position_y": 25,
     "width": 65,
     "height": 12,
     "options": {
@@ -551,6 +757,27 @@
     "_syncId": "82fb9eb8-1b59-48b7-92d3-db78c89df122"
   },
   {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Startzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 1,
+    "position_y": 5,
+    "width": 22,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW(-1 day)",
+      "options": {}
+    },
+    "_syncId": "83aaceb2-405a-44cb-a216-c67c56e7f0cd"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Bewertungen Feedback Labels",
     "icon": null,
@@ -559,7 +786,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 46,
+    "position_y": 58,
     "width": 34,
     "height": 19,
     "options": {
@@ -576,6 +803,25 @@
       "max": 500
     },
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Durchschnittliche Anzahl Speise Bewertungen (alt)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 38,
+    "position_y": 41,
+    "width": 29,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_amount_legacy",
+      "function": "avg"
+    },
+    "_syncId": "8e1a3004-5d21-4405-b7fe-aa27fd45cefc"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -665,21 +911,30 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
-    "name": "Anzahl Bewertungen Speise Feedback",
+    "name": "Anzahl Bewertungen Speise Feedback (in neuer Version)",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "metric",
     "position_x": 35,
-    "position_y": 40,
+    "position_y": 46,
     "width": 32,
     "height": 6,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
       "function": "countDistinct",
-      "sortField": "id"
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "rating": {
+              "_nnull": true
+            }
+          }
+        ]
+      }
     },
     "_syncId": "9c422335-e73b-401c-b89c-5519f3ba490e"
   },
@@ -691,8 +946,8 @@
     "show_header": true,
     "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 67,
+    "position_x": 5,
+    "position_y": 79,
     "width": 25,
     "height": 13,
     "options": {
@@ -742,7 +997,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 25,
+    "position_y": 49,
     "width": 65,
     "height": 12,
     "options": {
@@ -792,6 +1047,25 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Summe aller Speise Durchschnitte (alt + neu)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 42,
+    "position_y": 31,
+    "width": 24,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_average",
+      "function": "sum"
+    },
+    "_syncId": "ae86b069-3049-4f31-88fb-b95e489b0525"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Bewertungen Feedback Labels",
     "icon": null,
     "color": null,
@@ -799,7 +1073,7 @@
     "note": null,
     "type": "metric",
     "position_x": 1,
-    "position_y": 40,
+    "position_y": 46,
     "width": 34,
     "height": 6,
     "options": {
@@ -839,6 +1113,25 @@
       "sortDirection": "asc"
     },
     "_syncId": "b832f73c-4f21-4039-874c-e59dd9f7a646"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Gefundener Speise Durschnitt Bewertungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 42,
+    "position_y": 27,
+    "width": 24,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_average",
+      "function": "count"
+    },
+    "_syncId": "bc58867a-1382-47ec-a965-7c1fe4d7c61c"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -1005,6 +1298,26 @@
       "showLabels": true
     },
     "_syncId": "df2e0b13-5835-4a00-a7f4-23404e5975c6"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Durchschnitt Speisebewertung (alt)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 41,
+    "width": 19,
+    "height": 4,
+    "options": {
+      "collection": "foods",
+      "field": "rating_average_legacy",
+      "function": "avg",
+      "maximumFractionDigits": 2
+    },
+    "_syncId": "e75b9497-dca7-4048-a1ac-ba3cdbcc1620"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
