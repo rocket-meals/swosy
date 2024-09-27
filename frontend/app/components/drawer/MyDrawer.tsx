@@ -36,6 +36,7 @@ export type MyDrawerItemProps = {
 	color?: string | undefined | null;
     visibleInDrawer?: boolean | null | undefined;
 	showBackButton?: boolean | null | undefined;
+	hideDrawer?: boolean | null | undefined;
     getHeader?: ((props: DrawerHeaderProps) => ReactNode) | undefined | null;
     params?: any
 };
@@ -57,7 +58,7 @@ export function useRenderMyDrawerScreen({...props}: MyDrawerItemProps) {
 
 // Function to render individual screens within the Drawer navigation.
 // It dynamically sets the drawer's appearance based on the current project color.
-export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, getHeader, params}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
+export function renderMyDrawerScreen({routeName, label, title, icon, showBackButton, visibleInDrawer, getHeader, params, hideDrawer}: MyDrawerItemProps, drawerActiveBackgroundColor: string) {
 	const fullscreen = useIsFullscreenModeFromSearchParam()
 	let usedVisible = true;
 	if (visibleInDrawer!==undefined) {
@@ -72,6 +73,14 @@ export function renderMyDrawerScreen({routeName, label, title, icon, showBackBut
 		usedHeader = () => null
 	}
 
+	let drawerHiddenOptions = {}
+	if(hideDrawer){
+		drawerHiddenOptions = {
+			drawerType: 'back',
+			swipeEnabled: false
+		}
+	}
+
 	return (
 		<Drawer.Screen
 			key={routeName}
@@ -81,6 +90,7 @@ export function renderMyDrawerScreen({routeName, label, title, icon, showBackBut
 				// @ts-ignore - Expo's TypeScript definitions might not recognize 'visible' as a valid option.
 				visible: usedVisible, // This custom property is used to conditionally render drawer items.
 				label: label,
+				...drawerHiddenOptions,
 				showBackButton: showBackButton,
 				title: title,
 				drawerIcon: getMyDrawerItemIcon(icon),

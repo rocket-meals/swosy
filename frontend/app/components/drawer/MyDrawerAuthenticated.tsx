@@ -4,23 +4,25 @@ import {TranslationKeys, useTranslation, useTranslationSupportAndFeedback} from 
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {getMyScreenHeaderFoodOffers} from '@/compositions/foodoffers/MyScreenHeaderFoodOffers';
 import {IconNames} from '@/constants/IconNames';
-import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from '@/components/drawer/useMyDrawerWikiItems';
 import {
 	useCampusAreaColor,
-	useFoodsAreaColor, useHousingAreaColor,
+	useFoodsAreaColor,
+	useHousingAreaColor,
 	useIsAccountBalanceEnabled,
 	useIsBuildingsEnabled,
 	useIsCourseTimetableEnabled,
 	useIsFoodsEnabled,
 	useIsHousingEnabled,
 	useIsMapEnabled,
-	useIsNewsEnabled, useNewsAreaColor
+	useIsNewsEnabled,
+	useNewsAreaColor
 } from '@/states/SynchedAppSettings';
 import {getMyScreenHeaderHousing} from "@/compositions/housing/MyScreenHeaderHousing";
 import {getMyScreenHeaderBuildings} from "@/compositions/buildings/MyScreenHeaderBuildings";
 import {useIsDeveloperModeActive} from "@/states/Develop";
 import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
-import {useCurrentRoleIsAtleastManagement, useCurrentRole, useCurrentRoleIsAdmin} from "@/states/User";
+import {useCurrentRole, useCurrentRoleIsAdmin, useCurrentRoleIsAtleastManagement} from "@/states/User";
+import {useMyDrawerAuxItems, useRenderedMyDrawerAuxScreens} from "@/components/drawer/useMyDrawerAuxItems";
 
 export const MyDrawerAuthenticated = (props: any) => {
 	const develop = useIsDeveloperModeActive();
@@ -63,13 +65,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 
 	const translation_delete_account = useTranslationAccountDelete();
 
-	const customDrawerWikiItems = useMyDrawerWikiItems()
-	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
+	const customDrawerAuxItems = useMyDrawerAuxItems()
+	const renderedMyDrawerAuxItems = useRenderedMyDrawerAuxScreens()
 
 	const customDrawerItems: MyDrawerCustomItemProps[] = []
 
-	if (customDrawerWikiItems) {
-		customDrawerItems.push(...customDrawerWikiItems)
+	if (customDrawerAuxItems) {
+		customDrawerItems.push(...customDrawerAuxItems)
 	}
 
 	const foodsAreaColor = useFoodsAreaColor();
@@ -82,6 +84,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 		<MyDrawer
 			customDrawerItems={customDrawerItems}
 		>
+
 			{useRenderMyDrawerScreen({
 				routeName: 'home/index',
 				label: translation_home,
@@ -299,7 +302,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				icon: 'drawing-box',
 				visibleInDrawer: develop
 			})}
-			{renderedMyDrawerWikiItems}
+			{renderedMyDrawerAuxItems}
 		</MyDrawer>
 	)
 }

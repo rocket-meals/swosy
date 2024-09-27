@@ -22,7 +22,7 @@ const getBestLanguageKeyFromProfileLanguage = (profileLanguage: string): Languag
 }
 
 export const getTranslation = (key: TranslationKeys, language: LanguageKeys): string => {
-	return Translations[key][language];
+	return Translations?.[key]?.[language];
 }
 
 
@@ -118,6 +118,7 @@ export enum TranslationKeys {
 	loggingInPleaseWait = "loggingInPleaseWait",
 	developer = "developer",
 	developer_homepage = "developer_homepage",
+	download_or_open_the_app = "download_or_open_the_app",
 	software_homepage = "software_homepage",
 	software_name = "software_name",
 	profile = "profile",
@@ -510,6 +511,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Домашняя страница разработчика',
 		[LanguageKeys.tr_TR]: 'Geliştirici Ana Sayfası',
 		[LanguageKeys.zh_CN]: '开发者主页'
+	},
+	download_or_open_the_app: {
+		[LanguageKeys.de_DE]: 'App herunterladen oder öffnen',
+		[LanguageKeys.en_US]: 'Download or Open the App',
+		[LanguageKeys.ar_SA]: 'تحميل أو فتح التطبيق',
+		[LanguageKeys.es_ES]: 'Descargar o abrir la aplicación',
+		[LanguageKeys.fr_FR]: 'Télécharger ou ouvrir l\'application',
+		[LanguageKeys.ru_RU]: 'Скачать или открыть приложение',
+		[LanguageKeys.tr_TR]: 'Uygulamayı indir veya aç',
+		[LanguageKeys.zh_CN]: '下载或打开应用'
 	},
 	software_homepage: {
 		[LanguageKeys.de_DE]: 'Software-Homepage',

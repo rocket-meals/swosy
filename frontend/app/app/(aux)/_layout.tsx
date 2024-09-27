@@ -1,15 +1,15 @@
 import React from 'react';
 import {isUserLoggedIn} from '@/states/User';
-import {MyDrawer, useRenderMyDrawerScreen} from '@/components/drawer/MyDrawer';
+import {MyDrawer} from '@/components/drawer/MyDrawer';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
 import {MyDrawerCustomItemProps} from '@/components/drawer/MyDrawerCustomItemCenter';
 import {DEFAULT_AUTHENTICATED_ROUTE} from "@/app/(app)/home";
-import {useMyDrawerWikiItems, useRenderedMyDrawerWikiScreens} from "@/components/drawer/useMyDrawerWikiItems";
+import {useMyDrawerAuxItems, useRenderedMyDrawerAuxScreens} from "@/components/drawer/useMyDrawerAuxItems";
 
-export const unstable_settings = {
-	// Ensure that reloading on `/modal` keeps a back button present.
-	initialRouteName: 'wikis/index',
-};
+//export const unstable_settings = {
+//	// Ensure that reloading on `/modal` keeps a back button present.
+//	initialRouteName: 'open-or-download-app/index',
+//};
 
 export default function AppLayout() {
 	// This layout can be deferred because it's not the root layout.
@@ -18,8 +18,8 @@ export default function AppLayout() {
 	const translation_home = useTranslation(TranslationKeys.home);
 	const translation_sign_in = useTranslation(TranslationKeys.sign_in);
 
-	const customDrawerWikiItems = useMyDrawerWikiItems()
-	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
+	const customDrawerAuxItems = useMyDrawerAuxItems()
+	const renderedMyDrawerAuxItems = useRenderedMyDrawerAuxScreens()
 
 	const customDrawerItems: MyDrawerCustomItemProps[] = [
 		/**
@@ -61,15 +61,15 @@ export default function AppLayout() {
 		)
 	}
 
-	if (customDrawerWikiItems) {
-		customDrawerItems.push(...customDrawerWikiItems)
+	if (customDrawerAuxItems) {
+		customDrawerItems.push(...customDrawerAuxItems)
 	}
 
 	return (
 		<MyDrawer
 			customDrawerItems={customDrawerItems}
 		>
-			{renderedMyDrawerWikiItems}
+			{renderedMyDrawerAuxItems}
 		</MyDrawer>
 	)
 }
