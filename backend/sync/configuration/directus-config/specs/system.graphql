@@ -286,13 +286,13 @@ type Subscription {
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
   profiles_buildings_last_opened_mutated(event: EventEnum): profiles_buildings_last_opened_mutated
   push_notifications_mutated(event: EventEnum): push_notifications_mutated
-  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   wikis_mutated(event: EventEnum): wikis_mutated
   wikis_directus_roles_mutated(event: EventEnum): wikis_directus_roles_mutated
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
   foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
   markings_mutated(event: EventEnum): markings_mutated
+  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
@@ -310,6 +310,7 @@ type Subscription {
   canteens_feedbacks_labels_mutated(event: EventEnum): canteens_feedbacks_labels_mutated
   canteens_feedbacks_labels_entries_mutated(event: EventEnum): canteens_feedbacks_labels_entries_mutated
   canteens_feedbacks_labels_translations_mutated(event: EventEnum): canteens_feedbacks_labels_translations_mutated
+  washingmachines_jobs_mutated(event: EventEnum): washingmachines_jobs_mutated
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -2900,6 +2901,32 @@ type washingmachines {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_stated: Date
+  date_stated_func: datetime_functions
+}
+
+type washingmachines_jobs {
+  id: ID!
+  status: String
+  sort: Int
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_created: Date
+  date_created_func: datetime_functions
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  date_updated: Date
+  date_updated_func: datetime_functions
+  washingmachine(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): washingmachines
+  apartment(filter: apartments_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): apartments
+  date_start: Date
+  date_start_func: datetime_functions
+  date_end: Date
+  date_end_func: datetime_functions
+}
+
+type washingmachines_jobs_mutated {
+  key: ID!
+  event: EventEnum
+  data: washingmachines_jobs
 }
 
 type washingmachines_mutated {
@@ -4051,6 +4078,7 @@ input create_washingmachines_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
+  date_stated: Date
 }
 
 input date_filter_operators {
@@ -5755,6 +5783,7 @@ input update_washingmachines_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
+  date_stated: Date
 }
 
 input utilizations_entries_filter {
@@ -5815,6 +5844,8 @@ input washingmachines_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
+  date_stated: date_filter_operators
+  date_stated_func: datetime_function_filter_operators
   _and: [washingmachines_filter]
   _or: [washingmachines_filter]
 }

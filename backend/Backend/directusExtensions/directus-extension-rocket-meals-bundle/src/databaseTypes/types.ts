@@ -890,6 +890,13 @@ export type FoodsFeedbacks = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type FoodsFeedbacksFoodsFeedbacksLabels = {
+  dislike?: boolean | null;
+  foods_feedbacks_id?: string | FoodsFeedbacks | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  id: number;
+};
+
 export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
@@ -1203,6 +1210,7 @@ export type Washingmachines = {
   apartment?: string | Apartments | null;
   date_created?: string | null;
   date_finished?: string | null;
+  date_stated?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
   id: string;
@@ -1210,6 +1218,20 @@ export type Washingmachines = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type WashingmachinesJobs = {
+  apartment?: string | Apartments | null;
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  washingmachine?: string | Washingmachines | null;
 };
 
 export type Wikis = {
@@ -1306,6 +1328,7 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
+  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
@@ -1331,6 +1354,7 @@ export type CustomDirectusTypes = {
   utilizations_entries: UtilizationsEntries[];
   utilizations_groups: UtilizationsGroups[];
   washingmachines: Washingmachines[];
+  washingmachines_jobs: WashingmachinesJobs[];
   wikis: Wikis[];
   wikis_directus_roles: WikisDirectusRoles[];
   wikis_translations: WikisTranslations[];

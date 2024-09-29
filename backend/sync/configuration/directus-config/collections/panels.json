@@ -33,6 +33,34 @@
     "_syncId": "012851df-3ac6-4d56-a378-93a07c7c134f"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Anzahl Aktuell Laufender Waschmaschienen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 20,
+    "position_y": 1,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "date_finished": {
+              "_lte": "$NOW()"
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "03934103-b35a-4f69-a72e-30b9835606b6"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Dateien - Geänderte ID",
     "icon": null,
@@ -1215,6 +1243,27 @@
       "legend": "right"
     },
     "_syncId": "c92c8a5f-b171-4a63-ac8e-5d56b2bfe71d"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Anzahl Waschmaschienen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 1,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines",
+      "field": "id",
+      "fn": "count",
+      "function": "count",
+      "sortField": "id"
+    },
+    "_syncId": "cfa01879-865a-4598-b635-0da14d5bbd50"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",

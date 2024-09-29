@@ -1,13 +1,13 @@
 {
-  "collection": "washingmachines",
-  "field": "date_finished",
+  "collection": "washingmachines_jobs",
+  "field": "date_end",
   "type": "dateTime",
   "meta": {
-    "collection": "washingmachines",
+    "collection": "washingmachines_jobs",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "date_finished",
+    "field": "date_end",
     "group": null,
     "hidden": false,
     "interface": "datetime",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 9,
+    "sort": 11,
     "special": null,
     "translations": null,
     "validation": null,
@@ -23,8 +23,8 @@
     "width": "half"
   },
   "schema": {
-    "name": "date_finished",
-    "table": "washingmachines",
+    "name": "date_end",
+    "table": "washingmachines_jobs",
     "data_type": "timestamp without time zone",
     "default_value": null,
     "max_length": null,

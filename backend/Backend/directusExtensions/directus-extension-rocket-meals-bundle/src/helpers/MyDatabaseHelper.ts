@@ -14,7 +14,7 @@ import {
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
     FoodsFeedbacksLabelsEntries, Markings, MarkingsExclusions, News, Profiles,
-    PushNotifications, UtilizationsEntries, UtilizationsGroups, Washingmachines
+    PushNotifications, UtilizationsEntries, UtilizationsGroups, Washingmachines, WashingmachinesJobs
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {EmailOptions} from "@directus/api/dist/services/mail";
@@ -141,5 +141,9 @@ export class MyDatabaseHelper {
 
     getWashingmachinesHelper() {
         return new ItemsServiceHelper<Washingmachines>(this.apiContext, CollectionNames.WASHINGMACHINES, this.eventContext);
+    }
+
+    getWashingmachinesJobsHelper() {
+        return new ItemsServiceHelper<WashingmachinesJobs>(this.apiContext, CollectionNames.WASHINGMACHINES_JOBS, this.eventContext);
     }
 }

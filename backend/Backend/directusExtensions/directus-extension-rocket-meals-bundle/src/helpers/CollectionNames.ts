@@ -9,6 +9,7 @@ export function getAllCollectionNames() {
         CollectionNames.APP_FEEDBACKS,
         CollectionNames.BUILDINGS,
         CollectionNames.WASHINGMACHINES,
+        CollectionNames.WASHINGMACHINES_JOBS,
         CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES,
         CollectionNames.CASHREGISTERS,
         CollectionNames.CASHREGISTERS_TRANSACTIONS,
@@ -60,6 +61,7 @@ export class CollectionNames{
     static APARTMENTS = "apartments"
 
     static WASHINGMACHINES = "washingmachines"
+    static WASHINGMACHINES_JOBS = "washingmachines_jobs"
 
     static NEWS = "news"
 
