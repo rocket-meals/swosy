@@ -68,19 +68,21 @@ export default defineHook(async ({action, filter, init}, apiContext) => {
         let washingmachine_new: Partial<Washingmachines> = input;
         let new_date_finished = washingmachine_new.date_finished;
 
-        let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-        if(!!washingmachines_ids){
-            for(let washingmachine_id of washingmachines_ids){
-                let washingmachine_curent = await myDatabaseHelper.getWashingmachinesHelper().readOne(washingmachine_id);
+        const hasWashingmachineNewPropertyDateFinished = Object.prototype.hasOwnProperty.call(washingmachine_new, 'date_finished');
 
-                let current_date_stated = washingmachine_curent.date_stated;
-                let current_date_finished = washingmachine_curent.date_finished;
+        if(hasWashingmachineNewPropertyDateFinished && new_date_finished===null){
+            let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
+            if(!!washingmachines_ids) {
+                for (let washingmachine_id of washingmachines_ids) {
+                    let washingmachine_curent = await myDatabaseHelper.getWashingmachinesHelper().readOne(washingmachine_id);
 
-                if(!!current_date_stated && !!current_date_finished){ // currently washing
-                    if(new_date_finished === null){ // but now finished
+                    let current_date_stated = washingmachine_curent.date_stated;
+                    let current_date_finished = washingmachine_curent.date_finished;
+
+                    if (!!current_date_stated && !!current_date_finished) { // currently washing
                         // then save it as a finished washing job
                         let time_diff = new Date(current_date_finished).getTime() - new Date(current_date_stated).getTime();
-                        if(time_diff > 0){
+                        if (time_diff > 0) {
                             let time_hours = parseInt(time_diff / 1000 / 60 / 60 + "");
                             let time_minutes = parseInt(time_diff / 1000 / 60 % 60 + "");
                             let time_seconds = parseInt(time_diff / 1000 % 60 + "");
@@ -94,8 +96,8 @@ export default defineHook(async ({action, filter, init}, apiContext) => {
                                 apartment: washingmachine_curent.apartment
                             });
                         }
-                    }
 
+                    }
                 }
             }
         }

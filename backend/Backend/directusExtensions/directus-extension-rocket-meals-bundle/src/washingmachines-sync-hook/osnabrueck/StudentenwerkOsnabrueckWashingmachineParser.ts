@@ -28,7 +28,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
         return "osnabrueck_" + terminalNr + "_" + automateNr;
     }
 
-    async getWashingmachines(): Promise<WashingmachinesTypeForParser[]> {
+    async getWashingmachines(simulated_now?: Date): Promise<WashingmachinesTypeForParser[]> {
         let answer: WashingmachinesTypeForParser[] = [];
         let intercardWashers = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalFromIntercard();
         for (let i = 0; i < intercardWashers.length; i++) {
@@ -37,11 +37,11 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
                 let external_identifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(washer.terminalNr, washer.automateNr);
                 let date_finished: string | null = null
                 if(washer.intercardStatus === "true" && washer.expectedFreeTimeInMinutes > 0) {
-                    let date = new Date();
+                    let date = new Date(simulated_now || new Date());
                     //console.log("Date now: " + DateHelper.formatDateToIso8601WithoutTimezone(date));
                     date.setMinutes(date.getMinutes() + washer.expectedFreeTimeInMinutes);
                     date_finished = DateHelper.formatDateToIso8601WithoutTimezone(date);
-                    //console.log("Date finished: " + date_finished);
+                    //console.log("Washer " + washer.terminalNr + " " + washer.automateNr + " expected free time: " + washer.expectedFreeTimeInMinutes + " Date finished: " + date_finished);
                 } else {
                     date_finished = null
                 }

@@ -39,8 +39,14 @@ export class WashingmachineParseSchedule {
 
             try {
                 let washingmachinesForParser = await this.parser.getWashingmachines();
-                await this.updateWashingmachines(washingmachinesForParser);
+                let washingmachinesForParserRecheck = await this.parser.getWashingmachines();
+                // sometimes the service endpoint is not reliable, so we check twice
 
+                // then we check if the data is the same
+                let areEqual = this.checkIfArraysOfWashingmachinesAreEqual(washingmachinesForParser, washingmachinesForParserRecheck);
+                if(areEqual){
+                    await this.updateWashingmachines(washingmachinesForParser);
+                }
 
                 await this.setStatus(FlowStatus.FINISHED);
             } catch (err) {
@@ -50,6 +56,31 @@ export class WashingmachineParseSchedule {
                 await this.setStatus(FlowStatus.FAILED);
             }
         }
+    }
+
+    checkIfArraysOfWashingmachinesAreEqual(washingmachines1: WashingmachinesTypeForParser[], washingmachines2: WashingmachinesTypeForParser[]) {
+        if (washingmachines1.length !== washingmachines2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < washingmachines1.length; i++) {
+            let washingmachine1 = washingmachines1[i];
+            let washingmachine2 = washingmachines2[i];
+            if(!!washingmachine1 && !!washingmachine2) {
+                let keysOfBasicData = Object.keys(washingmachine1.basicData);
+                for (let key of keysOfBasicData) {
+                    let keyOfBasicData = key as keyof typeof washingmachine1.basicData;
+
+                    let value1 = washingmachine1?.basicData?.[keyOfBasicData];
+                    let value2 = washingmachine2?.basicData?.[keyOfBasicData];
+                    if (value1 !== value2) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     async updateWashingmachines(washingmachinesForParser: WashingmachinesTypeForParser[]) {
