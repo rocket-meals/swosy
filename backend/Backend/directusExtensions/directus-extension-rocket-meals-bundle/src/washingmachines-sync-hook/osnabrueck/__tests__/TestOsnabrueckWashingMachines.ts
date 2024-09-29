@@ -27,7 +27,23 @@ describe("Osnabrueck Washer Test", () => {
         let simulated_now = new Date();
         let washers = await getWashingmachines(simulated_now);
         expect(washers.length).toBeGreaterThan(0);
-        expect(washers.length).toBe(41);
+        expect(washers.length).toBe(37);
+    });
+
+    it("Find no duplicates", async () => {
+        let dictExternalIdentifier = new Map<string, boolean>();
+        let simulated_now = new Date();
+        let washers = await getWashingmachines(simulated_now);
+
+        for (let i = 0; i < washers.length; i++) {
+            let washer = washers[i];
+            expect(washer).toBeDefined();
+            if(!!washer) {
+                let external_identifier = washer.basicData.external_identifier;
+                expect(dictExternalIdentifier.get(external_identifier)).toBeUndefined();
+                dictExternalIdentifier.set(external_identifier, true);
+            }
+        }
     });
 
     it("Check time free correct", async () => {
@@ -65,7 +81,7 @@ describe("Osnabrueck Washer Test", () => {
         let simulated_now = new Date();
         let washers = await getWashingmachines(simulated_now);
 
-        const runningWasherExternalIdentifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(151, 2);
+        const runningWasherExternalIdentifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(150, 2);
         const runningWasher = washers.find(w => w.basicData.external_identifier === runningWasherExternalIdentifier);
         expect(runningWasher).toBeDefined();
         expect(runningWasher?.basicData.date_finished).toBeNull();

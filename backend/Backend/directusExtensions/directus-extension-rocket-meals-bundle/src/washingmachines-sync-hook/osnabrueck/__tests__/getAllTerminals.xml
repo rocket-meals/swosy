@@ -11,7 +11,7 @@
                 <list>
                     <automatenNR>2</automatenNR>
                     <expectedFreeTime>0</expectedFreeTime>
-                    <stateRunning>false</stateRunning>
+                    <stateRunning>true</stateRunning>
                     <terminalN5>150</terminalN5>
                 </list>
                 <list>
@@ -29,7 +29,7 @@
                 <list>
                     <automatenNR>2</automatenNR>
                     <expectedFreeTime>0</expectedFreeTime>
-                    <stateRunning>true</stateRunning>
+                    <stateRunning>false</stateRunning>
                     <terminalN5>151</terminalN5>
                 </list>
                 <list>

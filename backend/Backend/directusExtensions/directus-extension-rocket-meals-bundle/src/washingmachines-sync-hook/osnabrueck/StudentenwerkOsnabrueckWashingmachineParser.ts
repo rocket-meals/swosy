@@ -55,6 +55,36 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
                 answer.push({basicData: washingmachine});
             }
         }
+
+        let filteredWashingmachines = this.filterDuplicateWashingmachines(answer);
+
+        return filteredWashingmachines;
+    }
+
+    /**
+     * Will filter out all duplicate washingmachines and use the one with a date_finished if available
+     * @param washingmachines
+     */
+    filterDuplicateWashingmachines(washingmachines: WashingmachinesTypeForParser[]): WashingmachinesTypeForParser[] {
+        let answer: WashingmachinesTypeForParser[] = [];
+        let map: Map<string, WashingmachinesTypeForParser> = new Map<string, WashingmachinesTypeForParser>();
+        for (let i = 0; i < washingmachines.length; i++) {
+            let washingmachine = washingmachines[i];
+            if(!!washingmachine) {
+                let external_identifier = washingmachine.basicData.external_identifier;
+                let existing = map.get(external_identifier);
+                if(!!existing) {
+                    if(!!washingmachine.basicData.date_finished) {
+                        map.set(external_identifier, washingmachine);
+                    }
+                } else {
+                    map.set(external_identifier, washingmachine);
+                }
+            }
+        }
+        map.forEach((value, key) => {
+            answer.push(value);
+        });
         return answer;
     }
 
