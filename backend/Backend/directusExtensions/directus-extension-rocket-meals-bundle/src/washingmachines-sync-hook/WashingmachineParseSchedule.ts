@@ -73,8 +73,8 @@ export class WashingmachineParseSchedule {
             const isExistingAlisNotEmpty = existingAlias && existingAlias.length > 0
             let newAlias = isExistingAlisNotEmpty ? existingAlias : washingmachine.basicData.alias
 
-            let isJobStarting = foundItem.date_finished === null && washingmachine.basicData.date_finished !== null
-            let isJobEnding = foundItem.date_finished !== null && washingmachine.basicData.date_finished === null
+            let isJobStarting = foundItem.date_finished === null && washingmachine.basicData.date_finished !== null // maybe the finish time is just extended
+            let isJobEnding = washingmachine.basicData.date_finished === null // but if the finish time is null, the job is ending
 
             const additionalWashingmachineData: Partial<Washingmachines> = {}
 
@@ -90,18 +90,6 @@ export class WashingmachineParseSchedule {
                 ...additionalWashingmachineData,
                 alias: newAlias // do not overwrite alias if it is already set
             })
-
-            let washingmachinesJobsService = this.myDatabaseHelper.getWashingmachinesJobsHelper();
-            if(isJobEnding){
-                await washingmachinesJobsService.createOne({
-                    date_start: foundItem.date_stated,
-                    date_end: washingmachine.basicData.date_finished,
-                    washingmachine: foundItem.id,
-                    apartment: foundItem.apartment
-                })
-            }
-
-
         }
 
     }
