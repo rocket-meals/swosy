@@ -36133,6 +36133,11 @@
             "nullable": true,
             "type": "string",
             "format": "date-time"
+          },
+          "duration_calculated": {
+            "nullable": true,
+            "type": "string",
+            "format": "time"
           }
         },
         "x-collection": "washingmachines_jobs"

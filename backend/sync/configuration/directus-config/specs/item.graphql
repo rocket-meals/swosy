@@ -5049,6 +5049,7 @@ type version_washingmachines_jobs {
   apartment: JSON
   date_start: Date
   date_end: Date
+  duration_calculated: Date
 }
 
 """"""
@@ -5161,6 +5162,8 @@ type washingmachines_jobs {
   date_start_func: datetime_functions
   date_end: Date
   date_end_func: datetime_functions
+  duration_calculated: Date
+  duration_calculated_func: time_functions
 }
 
 type washingmachines_jobs_aggregated {
@@ -5188,6 +5191,7 @@ type washingmachines_jobs_aggregated_count {
   apartment: Int
   date_start: Int
   date_end: Int
+  duration_calculated: Int
 }
 
 type washingmachines_jobs_aggregated_fields {
@@ -6746,6 +6750,7 @@ input create_washingmachines_jobs_input {
   apartment: create_apartments_input
   date_start: Date
   date_end: Date
+  duration_calculated: Date
 }
 
 input create_wikis_directus_roles_input {
@@ -8604,6 +8609,7 @@ input update_washingmachines_jobs_input {
   apartment: update_apartments_input
   date_start: Date
   date_end: Date
+  duration_calculated: Date
 }
 
 input update_wikis_directus_roles_input {
@@ -8726,6 +8732,8 @@ input washingmachines_jobs_filter {
   date_start_func: datetime_function_filter_operators
   date_end: date_filter_operators
   date_end_func: datetime_function_filter_operators
+  duration_calculated: date_filter_operators
+  duration_calculated_func: time_function_filter_operators
   _and: [washingmachines_jobs_filter]
   _or: [washingmachines_jobs_filter]
 }

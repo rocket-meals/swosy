@@ -2921,6 +2921,8 @@ type washingmachines_jobs {
   date_start_func: datetime_functions
   date_end: Date
   date_end_func: datetime_functions
+  duration_calculated: Date
+  duration_calculated_func: time_functions
 }
 
 type washingmachines_jobs_mutated {
