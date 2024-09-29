@@ -36138,6 +36138,10 @@
             "nullable": true,
             "type": "string",
             "format": "time"
+          },
+          "duration_in_minutes_calculated": {
+            "nullable": true,
+            "type": "integer"
           }
         },
         "x-collection": "washingmachines_jobs"

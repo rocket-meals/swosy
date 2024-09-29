@@ -40,8 +40,8 @@
     "show_header": true,
     "note": null,
     "type": "metric",
-    "position_x": 20,
-    "position_y": 1,
+    "position_x": 17,
+    "position_y": 10,
     "width": 21,
     "height": 5,
     "options": {
@@ -52,7 +52,7 @@
         "_and": [
           {
             "date_finished": {
-              "_lte": "$NOW()"
+              "_nnull": true
             }
           }
         ]
@@ -430,6 +430,25 @@
       }
     },
     "_syncId": "4926166b-f196-431c-b20a-34bea642114e"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Anzahl Waschvorgänge",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 16,
+    "width": 16,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "id",
+      "function": "count"
+    },
+    "_syncId": "4cc34d1c-cab1-4aa0-a4d2-c6be4a6facee"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -988,6 +1007,27 @@
     "_syncId": "a13fead4-90cd-4e1a-bef4-5ee5c2655d04"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": null,
+    "icon": null,
+    "color": null,
+    "show_header": false,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 21,
+    "position_y": 16,
+    "width": 28,
+    "height": 13,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "duration_calculated",
+      "function": "count",
+      "xAxis": "duration_calculated",
+      "yAxis": "id"
+    },
+    "_syncId": "a283da30-5245-4dbf-8dae-1f2254935b11"
+  },
+  {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
     "name": "Anzahl: App Feedbacks",
     "icon": null,
@@ -1253,7 +1293,7 @@
     "note": null,
     "type": "metric",
     "position_x": 1,
-    "position_y": 1,
+    "position_y": 10,
     "width": 16,
     "height": 5,
     "options": {

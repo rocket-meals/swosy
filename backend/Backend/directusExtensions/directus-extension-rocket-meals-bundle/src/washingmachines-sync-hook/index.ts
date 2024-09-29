@@ -88,10 +88,13 @@ export default defineHook(async ({action, filter, init}, apiContext) => {
                             let time_seconds = parseInt(time_diff / 1000 % 60 + "");
                             let hh_mm_ss = time_hours + ":" + time_minutes + ":" + time_seconds;
 
+                            const duration_in_minutes = parseInt(time_diff / 1000 / 60 + "");
+
                             await myDatabaseHelper.getWashingmachinesJobsHelper().createOne({
                                 date_start: current_date_stated,
                                 date_end: current_date_finished,
                                 duration_calculated: hh_mm_ss,
+                                duration_in_minutes_calculated: duration_in_minutes,
                                 washingmachine: washingmachine_curent.id,
                                 apartment: washingmachine_curent.apartment
                             });

@@ -2923,6 +2923,7 @@ type washingmachines_jobs {
   date_end_func: datetime_functions
   duration_calculated: Date
   duration_calculated_func: time_functions
+  duration_in_minutes_calculated: Int
 }
 
 type washingmachines_jobs_mutated {

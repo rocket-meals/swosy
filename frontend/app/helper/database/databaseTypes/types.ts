@@ -1227,6 +1227,7 @@ export type WashingmachinesJobs = {
   date_start?: string | null;
   date_updated?: string | null;
   duration_calculated?: string | null;
+  duration_in_minutes_calculated?: number | null;
   id: string;
   sort?: number | null;
   status: string;
