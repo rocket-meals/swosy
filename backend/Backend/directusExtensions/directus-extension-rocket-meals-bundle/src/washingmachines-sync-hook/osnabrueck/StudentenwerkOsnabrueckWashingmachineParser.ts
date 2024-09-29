@@ -36,7 +36,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
             if(!!washer) {
                 let external_identifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(washer.terminalNr, washer.automateNr);
                 let date_finished: string | null = null
-                if(washer.intercardStatus === "true") {
+                if(washer.intercardStatus === "true" && washer.expectedFreeTimeInMinutes > 0) {
                     let date = new Date();
                     //console.log("Date now: " + DateHelper.formatDateToIso8601WithoutTimezone(date));
                     date.setMinutes(date.getMinutes() + washer.expectedFreeTimeInMinutes);

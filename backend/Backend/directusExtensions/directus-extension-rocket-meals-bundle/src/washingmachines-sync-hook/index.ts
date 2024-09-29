@@ -79,12 +79,21 @@ export default defineHook(async ({action, filter, init}, apiContext) => {
                 if(!!current_date_stated && !!current_date_finished){ // currently washing
                     if(new_date_finished === null){ // but now finished
                         // then save it as a finished washing job
-                        await myDatabaseHelper.getWashingmachinesJobsHelper().createOne({
-                            date_start: current_date_stated,
-                            date_end: current_date_finished,
-                            washingmachine: washingmachine_curent.id,
-                            apartment: washingmachine_curent.apartment
-                        });
+                        let time_diff = new Date(current_date_finished).getTime() - new Date(current_date_stated).getTime();
+                        if(time_diff > 0){
+                            let time_hours = parseInt(time_diff / 1000 / 60 / 60 + "");
+                            let time_minutes = parseInt(time_diff / 1000 / 60 % 60 + "");
+                            let time_seconds = parseInt(time_diff / 1000 % 60 + "");
+                            let hh_mm_ss = time_hours + ":" + time_minutes + ":" + time_seconds;
+
+                            await myDatabaseHelper.getWashingmachinesJobsHelper().createOne({
+                                date_start: current_date_stated,
+                                date_end: current_date_finished,
+                                duration_calculated: hh_mm_ss,
+                                washingmachine: washingmachine_curent.id,
+                                apartment: washingmachine_curent.apartment
+                            });
+                        }
                     }
 
                 }

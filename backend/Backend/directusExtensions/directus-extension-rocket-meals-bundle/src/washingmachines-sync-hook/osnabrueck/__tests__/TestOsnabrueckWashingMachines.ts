@@ -39,4 +39,29 @@ describe("Osnabrueck Washer Test", () => {
         const nowWithoutTimezone = new Date(DateHelper.formatDateToIso8601WithoutTimezone(new Date()));
         expect(dateFinished.getTime()).toBeGreaterThan(nowWithoutTimezone.getTime());
     });
+
+    it("Washingmachine with state running but no minutes free is finished", async () => {
+
+        jest.spyOn(axios, 'get').mockImplementation((url) => {
+            if (url === StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsUrl) {
+                return Promise.resolve({ data: xml });
+            }
+            return Promise.reject(new Error('Unknown URL'));
+        });
+
+        let washers = await osnabrueckWasherParser.getWashingmachines();
+        expect(washers.length).toBeGreaterThan(0);
+        expect(washers.length).toBe(41);
+
+        /**
+         * <automatenNR>4</automatenNR>
+         * <expectedFreeTime>153</expectedFreeTime>
+         * <stateRunning>true</stateRunning>
+         * <terminalN5>151</terminalN5>
+         */
+        const runningWasherExternalIdentifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(151, 2);
+        const runningWasher = washers.find(w => w.basicData.external_identifier === runningWasherExternalIdentifier);
+        expect(runningWasher).toBeDefined();
+        expect(runningWasher?.basicData.date_finished).toBeNull();
+    });
 });
