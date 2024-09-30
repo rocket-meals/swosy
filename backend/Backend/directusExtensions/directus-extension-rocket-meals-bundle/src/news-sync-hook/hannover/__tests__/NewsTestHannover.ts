@@ -6,9 +6,9 @@ import path from "path";
 import fs from "fs";
 
 // load preloaded html file content from "./HannoverNews.html"
-const htmlNews = fs.readFileSync(path.resolve(__dirname, './hannover/News.html'), 'utf8');
-const htmlNewsUnterstuetzungBeimStart = fs.readFileSync(path.resolve(__dirname, './hannover/NewsUnterstuetzungBeimStart.html'), 'utf8');
-const htmlNewsBafoegAntragLeichterGemacht = fs.readFileSync(path.resolve(__dirname, './hannover/NewsBafoegAntragLeichterGemacht.html'), 'utf8');
+const htmlNews = fs.readFileSync(path.resolve(__dirname, './News.html'), 'utf8');
+const htmlNewsUnterstuetzungBeimStart = fs.readFileSync(path.resolve(__dirname, './NewsUnterstuetzungBeimStart.html'), 'utf8');
+const htmlNewsBafoegAntragLeichterGemacht = fs.readFileSync(path.resolve(__dirname, './NewsBafoegAntragLeichterGemacht.html'), 'utf8');
 
 describe("NewsTestHannover", () => {
     let newsParser = new StudentenwerkHannoverNews_Parser();

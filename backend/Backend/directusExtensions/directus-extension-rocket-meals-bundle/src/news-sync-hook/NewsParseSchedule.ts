@@ -58,19 +58,11 @@ export class NewsParseSchedule {
     async findOrCreateSingleNews(newsJSON: NewsTypeForParser) {
         let itemService = await this.myDatabaseHelper.getNewsHelper();
 
-        let items = await itemService.readByQuery({
-            filter: {external_identifier: {
-                    _eq: newsJSON?.basicNews.external_identifier
-            }}
-        });
-        let item = items[0];
-        if (!item) {
-            let itemId = await itemService.createOne({
-                external_identifier: newsJSON?.basicNews.external_identifier,
-            });
-            item = await itemService.readOne(itemId);
-        }
-        return item;
+        const searchJson = {
+            external_identifier: newsJSON?.basicNews.external_identifier
+        };
+
+        return await itemService.findOrCreateItem(searchJson, searchJson);
     }
 
     async updateNewsTranslations(item: News, newsJSON: NewsTypeForParser) {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import {load as cheerioLoad, CheerioAPI, Element as CheerioElement} from 'cheerio';
-import { TranslationHelper } from "../helpers/TranslationHelper";
-import { NewsParserInterface, NewsTypeForParser } from "./NewsParserInterface";
+import { TranslationHelper } from "../../helpers/TranslationHelper";
+import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
 
 export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
