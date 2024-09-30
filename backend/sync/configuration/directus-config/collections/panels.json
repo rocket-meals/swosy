@@ -43,7 +43,7 @@
     "position_x": 17,
     "position_y": 10,
     "width": 21,
-    "height": 6,
+    "height": 5,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -61,6 +61,28 @@
     "_syncId": "03934103-b35a-4f69-a72e-30b9835606b6"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 24 Stunden (Stunden-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 55,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "range": "1 day"
+    },
+    "_syncId": "0554b6a2-1649-4fcd-818c-bf57c156d51f"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Dateien - Geänderte ID",
     "icon": null,
@@ -74,7 +96,7 @@
     "height": 13,
     "options": {
       "collection": "directus_files",
-      "dateField": "modified_on",
+      "dateField": "created_on",
       "valueField": "id",
       "function": "countDistinct",
       "filter": null
@@ -89,9 +111,9 @@
     "show_header": true,
     "note": null,
     "type": "variable",
-    "position_x": 23,
-    "position_y": 3,
-    "width": 22,
+    "position_x": 15,
+    "position_y": 11,
+    "width": 14,
     "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
@@ -131,7 +153,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 23,
+    "position_y": 32,
     "width": 65,
     "height": 12,
     "options": {
@@ -198,6 +220,29 @@
     "_syncId": "1cc63e66-9b68-49d1-bf08-ca24838ca17f"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 1 Woche (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 67,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "precision": "day",
+      "curveType": "stepline"
+    },
+    "_syncId": "2544dd39-acb1-4f24-b011-20697e29d5f6"
+  },
+  {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
     "name": "Anzahl: App Feedbacks",
     "icon": null,
@@ -246,6 +291,30 @@
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen Insgesamt (Jahres-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 127,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "precision": "year",
+      "curveType": "straight",
+      "range": "auto"
+    },
+    "_syncId": "2d853452-bbe6-489c-8fad-8cb60a69eba9"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
     "name": "Aktivitäten der letzten 24 Stunden (Stunden-Präzision)",
     "icon": null,
@@ -254,7 +323,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 47,
+    "position_y": 56,
     "width": 65,
     "height": 12,
     "options": {
@@ -318,15 +387,35 @@
     "_syncId": "32858d7b-2149-4f4c-bc5c-9d3ac1f6f129"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Endzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 14,
+    "position_y": 23,
+    "width": 13,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW()"
+    },
+    "_syncId": "348c52b8-bff3-4c8e-8d62-2bdf51900cad"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
-    "name": "Anzahl Aktivitäten: (Nutzerspezifische Präzision)",
+    "name": "Aktivitäten: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 9,
+    "position_y": 17,
     "width": 65,
     "height": 13,
     "options": {
@@ -376,6 +465,70 @@
       "function": "sum"
     },
     "_syncId": "3ebe40d0-c8a2-4ad2-bfb4-dccc0f004556"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 29,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION}}",
+      "range": "auto"
+    },
+    "_syncId": "3f1723b8-aa2a-4acb-8c02-c88f21810a8a"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 3 Monate (Wochen-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 91,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "precision": "week",
+      "curveType": "stepline",
+      "range": "3 months"
+    },
+    "_syncId": "3f36650c-12ef-49a6-9145-4a01bfdaa056"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -669,9 +822,9 @@
     "show_header": true,
     "note": null,
     "type": "variable",
-    "position_x": 45,
-    "position_y": 3,
-    "width": 21,
+    "position_x": 29,
+    "position_y": 11,
+    "width": 13,
     "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
@@ -752,6 +905,26 @@
     "_syncId": "6e7cce59-88a3-4ece-a3d3-c6b1b0f7ea4e"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Startzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 1,
+    "position_y": 23,
+    "width": 13,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW(-1 day)"
+    },
+    "_syncId": "6f87c11a-0612-42fa-9a62-0c565d4a4b87"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Häufigste Ungewollte Kennzeichnungen",
     "icon": null,
@@ -820,6 +993,47 @@
     "_syncId": "7cf30283-cc2a-4de9-be54-781db630fd40"
   },
   {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 12 Monate (Monats-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 115,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date": {
+                  "_gte": "$NOW(-365 days)"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "$NOW()"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "month",
+      "curveType": "straight",
+      "range": "auto"
+    },
+    "_syncId": "7eb0c329-2a4c-4bf7-a282-862e59235bfd"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
     "name": "Aktivitäten der letzten 24 Stunden (Minuten-Präzision)",
     "icon": null,
@@ -828,7 +1042,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 35,
+    "position_y": 44,
     "width": 65,
     "height": 12,
     "options": {
@@ -854,8 +1068,8 @@
     "note": null,
     "type": "variable",
     "position_x": 1,
-    "position_y": 3,
-    "width": 22,
+    "position_y": 11,
+    "width": 14,
     "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
@@ -931,6 +1145,55 @@
       "function": "avg"
     },
     "_syncId": "8e1a3004-5d21-4405-b7fe-aa27fd45cefc"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Präzision",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 27,
+    "position_y": 23,
+    "width": 14,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION",
+      "type": "string",
+      "inter": "select-dropdown",
+      "defaultValue": "minute",
+      "options": {
+        "choices": [
+          {
+            "text": "Minute",
+            "value": "minute"
+          },
+          {
+            "text": "Hour",
+            "value": "hour"
+          },
+          {
+            "text": "Day",
+            "value": "day"
+          },
+          {
+            "text": "Week",
+            "value": "week"
+          },
+          {
+            "text": "Month",
+            "value": "month"
+          },
+          {
+            "text": "Year",
+            "value": "year"
+          }
+        ],
+        "allowOther": true
+      }
+    },
+    "_syncId": "916a4dc7-4816-4974-a827-a0e5edb8f2ac"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1069,25 +1332,44 @@
     "_syncId": "9c422335-e73b-401c-b89c-5519f3ba490e"
   },
   {
-    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
-    "name": "Speisen - Geänderte Fotos",
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Anzahl Kassentransaktionen (Insgesamt)",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
-    "type": "time-series",
-    "position_x": 5,
-    "position_y": 79,
+    "type": "metric",
+    "position_x": 41,
+    "position_y": 6,
     "width": 25,
-    "height": 13,
+    "height": 5,
     "options": {
-      "collection": "foods",
-      "dateField": "date_updated",
-      "valueField": "image",
-      "function": "countDistinct",
-      "filter": null
+      "collection": "cashregisters_transactions",
+      "field": "id",
+      "function": "count",
+      "sortField": "id"
     },
-    "_syncId": "a13fead4-90cd-4e1a-bef4-5ee5c2655d04"
+    "_syncId": "9df430e2-ad90-467e-9216-05f617658693"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Anzahl Kassen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 2,
+    "position_y": 6,
+    "width": 20,
+    "height": 5,
+    "options": {
+      "collection": "cashregisters",
+      "field": "id",
+      "function": "count",
+      "sortField": "id"
+    },
+    "_syncId": "9e5b18d2-6d30-4fa1-a77b-874d12481b54"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -1148,7 +1430,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 59,
+    "position_y": 68,
     "width": 65,
     "height": 12,
     "options": {
@@ -1162,6 +1444,26 @@
       "curveType": "stepline"
     },
     "_syncId": "a549ef8d-025e-490a-a734-fc0a3c32d2e9"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Anzahl Kassentransaktionen: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 41,
+    "position_y": 23,
+    "width": 25,
+    "height": 6,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "field": "id",
+      "function": "count",
+      "sortField": "id"
+    },
+    "_syncId": "a6dfabe0-e891-4347-b1a1-a5307d7686ac"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1195,6 +1497,30 @@
       }
     },
     "_syncId": "ac2b9638-3eec-4404-b0c3-0c2874db0e5f"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 1 Monat (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 79,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "precision": "day",
+      "range": "1 month",
+      "curveType": "stepline"
+    },
+    "_syncId": "ae41294b-9f15-4fdb-94c2-1ef7a01049f9"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -1304,6 +1630,69 @@
       "function": "count"
     },
     "_syncId": "bc58867a-1382-47ec-a965-7c1fe4d7c61c"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 12 Monat (Wochen-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 103,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date": {
+                  "_gte": "$NOW(-365 days)"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "$NOW()"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "week",
+      "range": "auto"
+    },
+    "_syncId": "bc5e99aa-3c87-47ba-a371-2d920ea45d8f"
+  },
+  {
+    "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
+    "name": "Kassentransaktionen der letzen 1 Stunde (Minuten-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 43,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "cashregisters_transactions",
+      "function": "countDistinct",
+      "dateField": "date",
+      "valueField": "id",
+      "filter": null,
+      "range": "1 hour",
+      "precision": "minute"
+    },
+    "_syncId": "bffb93fe-9ffb-47b1-a59e-6eba69337454"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -1491,6 +1880,44 @@
       }
     },
     "_syncId": "d71b1374-1846-4585-9aa9-7dc2a4fdec14"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Anzahl Aktivitäten: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 42,
+    "position_y": 11,
+    "width": 24,
+    "height": 6,
+    "options": {
+      "collection": "directus_activity",
+      "field": "id",
+      "sortField": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "timestamp": {
+                  "_lte": "{{CUSTOM_DIRECTUS_ACTIVITY_DATE_END}}"
+                }
+              },
+              {
+                "timestamp": {
+                  "_gte": "{{CUSTOM_DIRECTUS_ACTIVITY_DATE_START}}"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "dd226a90-36f5-453f-a68a-cfb0711210cb"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",

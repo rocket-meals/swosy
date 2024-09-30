@@ -28,6 +28,13 @@
     "_syncId": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd"
   },
   {
+    "name": "Kassendaten",
+    "icon": "space_dashboard",
+    "note": null,
+    "color": null,
+    "_syncId": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab"
+  },
+  {
     "name": "Waschmaschienen",
     "icon": "space_dashboard",
     "note": null,
