@@ -29,6 +29,7 @@ import {useLocales as useLocalesExpo} from "expo-localization";
 import {useSynchedLanguagesDict} from "@/states/SynchedLanguages";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import {useSearchParamLanguage, useSearchParamSelectedCanteensId} from "@/helper/searchParams/SearchParams";
+import {useSyncState} from "@/helper/syncState/SyncState";
 
 export const TABLE_NAME_PROFILES = 'profiles';
 const cacheHelperDeepFields_profile: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -102,6 +103,12 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 	const isServerOnline = useIsServerOnline()
 	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
 
+	const profileLanguageSaved = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
+		return storedProfileRaw?.data?.language
+	});
+	const [shouldUseSystemLanguage, setShouldUseSystemLanguage] = useSystemLanguage();
+	let bestLanguageForProfile: string = useBestLanguageCodeForProfile(profileLanguageSaved);
+
 	const usedSetResource = useCallback(
 		(callback: (currentValue: Partial<Profiles> | null | undefined) => Partial<Profiles> | null | undefined, sync_cache_composed_key_local?: string) => {
 			//console.log("setProfile, isServerOnline: ", isServerOnline, "isCurrentUserAnonymous: ", isCurrentUserAnonymous)
@@ -110,6 +117,17 @@ export function useSynchedProfileSetter(): [(callback: (currentValue: Partial<Pr
 				const copyCurrentValue = JSON.parse(JSON.stringify(currentValue || {}));
 				//console.log('############## currentValue: ', copyCurrentValue);
 				const newValue = callback(currentValue);
+
+				// Language set for profile - when the profile is created, the language is not set - or it is set to the system language
+				const hasCurrentProfileLanguage = currentValue?.language !== undefined && currentValue?.language !== null;
+				const newValueHashPropertyLanguageSet = newValue?.language !== undefined && newValue?.language !== null;
+
+				if(newValue && !newValueHashPropertyLanguageSet){
+					if(!hasCurrentProfileLanguage || shouldUseSystemLanguage){
+						newValue.language = bestLanguageForProfile;
+					}
+				}
+
 				//console.log('############## newValue: ', JSON.parse(JSON.stringify(newValue)));
 				const profile_id = newValue?.id || copyCurrentValue?.id;
 
@@ -228,9 +246,9 @@ export function useSynchedProfile(): [Partial<Profiles>, (callback: (currentValu
 }
 
 export enum PriceGroups {
-    Student = 'student',
-    Employee = 'employee',
-    Guest = 'guest'
+	Student = 'student',
+	Employee = 'employee',
+	Guest = 'guest'
 }
 export function useProfilePriceGroup(): [PriceGroups, ((newValue: string) => void), PriceGroups | string | null | undefined] {
 	//const [profile, setProfile] = useSynchedProfile();
@@ -293,26 +311,39 @@ export function useEstimatedLocationUponSelectedCanteen(): LocationType | null {
 	return location;
 }
 
+export function useSystemLanguage(): [boolean, (newValue: boolean) => void] {
+	const [value, setValue] = useSyncState<boolean>(PersistentStore.useSystemLanguage)
+	let usedValue = value;
+	if(usedValue === undefined || usedValue === null){
+		usedValue = true
+	}
+	return [usedValue, setValue]
+}
+
 export function useProfileLanguageCode(): [string, ((newValue: string | null | undefined) => void), string | Languages | null | undefined] {
 	//const [profile, setProfile] = useSynchedProfile();
 	const [setProfile] = useSynchedProfileSetter();
-	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
-	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
 	const languageCodeFromParams = useSearchParamLanguage();
 
 	const profileLanguageSaved = useSynchedResourceSingleRawValue<Profiles, (string | Languages | null | undefined)>(PersistentStore.profile, (storedProfileRaw) => {
 		return storedProfileRaw?.data?.language
 	});
-
+	const [shouldUseSystemLanguage, setShouldUseSystemLanguage] = useSystemLanguage();
+	let bestLanguageForProfile: string = useBestLanguageCodeForProfile(profileLanguageSaved);
+	let usedLanguage = bestLanguageForProfile;
 
 	const setLanguage = useCallback((newLanguage: string | null | undefined) => {
 			setProfile((currentValue) => {
 				if(currentValue){
 					let nextLanguage: string | Languages | null | undefined = newLanguage;
 					if(!nextLanguage){
-						nextLanguage = null;
+						setShouldUseSystemLanguage(true);
+						currentValue.language = bestLanguageForProfile;
+					} else {
+						setShouldUseSystemLanguage(false);
+						currentValue.language = nextLanguage;
 					}
-					currentValue.language = nextLanguage;
+
 				}
 				return currentValue;
 			});
@@ -320,7 +351,7 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 		[setProfile]
 	);
 
-	let usedLanguage: string = getBestLanguageCodeForProfile(profileLanguageSaved, deviceLocaleCodesWithoutRegionCode, languageDict);
+
 	if(languageCodeFromParams){
 		usedLanguage = languageCodeFromParams;
 	}
@@ -328,21 +359,36 @@ export function useProfileLanguageCode(): [string, ((newValue: string | null | u
 	return [usedLanguage, setLanguage, profileLanguageSaved];
 }
 
-function getBestLanguageCodeForProfile(profileLanguage: string | Languages | null | undefined, deviceLocaleCodesWithOrWithoutRegionCode: string[], languageDict: Record<string, Languages | null | undefined> | null | undefined): string {
+function useBestLanguageCodeForProfile(profileLanguage: string | Languages | null | undefined): string {
+	const deviceLocaleCodesWithoutRegionCode = useDeviceLocaleCodesWithoutRegionCode();
+	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
+	const [shouldUseSystemLanguage, setShouldUseSystemLanguage] = useSystemLanguage();
+
 	let languageCodeOrderToCheck: string[] = [];
 
+	let profileLanguageCode = null;
 	// most important is the locale saved in the profile
 	if(!!profileLanguage){
 		if (typeof profileLanguage === "string") {
-			languageCodeOrderToCheck.push(profileLanguage);
+			profileLanguageCode = profileLanguage;
 		} else {
-			let profileLanguageCode = profileLanguage.code;
-			languageCodeOrderToCheck.push(profileLanguageCode);
+			profileLanguageCode = profileLanguage.code;
 		}
 	}
 
-	// we then would like to use the device locale
-	languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithOrWithoutRegionCode);
+	if(shouldUseSystemLanguage){ // if we should use the system language, we want to check the device locale first
+		languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithoutRegionCode);
+		if(profileLanguageCode){ // and then the profile language
+			languageCodeOrderToCheck.push(profileLanguageCode);
+		}
+	} else { // if we should not use the system language,
+		if(profileLanguageCode){ // we want to check the profile language first
+			languageCodeOrderToCheck.push(profileLanguageCode);
+		}
+		// and then the device locale
+		languageCodeOrderToCheck = languageCodeOrderToCheck.concat(deviceLocaleCodesWithoutRegionCode);
+	}
+
 
 	const serverLanguageDict = languageDict;
 	// if we have knowledge about which languages the server supports, we can use this information

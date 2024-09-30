@@ -1,5 +1,5 @@
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {useProfileLanguageCode} from '@/states/SynchedProfile';
+import {useProfileLanguageCode, useSystemLanguage} from '@/states/SynchedProfile';
 import {useSynchedLanguagesDict} from '@/states/SynchedLanguages';
 import {Text} from '@/components/Themed';
 import CountryFlag from 'react-native-country-flag';
@@ -19,6 +19,7 @@ export const useProfileLanguageModal = () => {
 	const language_system = useTranslation(TranslationKeys.language_system)
 
 	const [selectedLanguageKey, setSavedLanguageKey, rawSelectedLanguageKey] = useProfileLanguageCode()
+	const [shouldUseSystemLanguage, setShouldUseSystemLanguage] = useSystemLanguage();
 	const [languageDict, setLanguageDict] = useSynchedLanguagesDict();
 	const usedLanguageDict = languageDict || {}
 	const selectedKey = rawSelectedLanguageKey
@@ -30,7 +31,7 @@ export const useProfileLanguageModal = () => {
 	items.push({
 		key: "system",
 		label: language_system,
-		active: selectedKey === undefined,
+		active: shouldUseSystemLanguage,
 		accessibilityLabel: language_system+' '+translation_select,
 		iconLeft: IconNames.settings_system_auto_icon,
 		onSelect: async (code: string, hide: () => void) => {

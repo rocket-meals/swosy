@@ -2,7 +2,7 @@ import {useSyncState} from '@/helper/syncState/SyncState';
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
 import {useGlobalSearchParams} from "expo-router";
 
-export function useDebugRaw(): [boolean | null, (newValue: boolean) => void] {
+export function useDebugRaw(): [boolean | undefined | null, (newValue: boolean) => void] {
 	const [debug, setDebug] = useSyncState<boolean>(PersistentStore.debug)
 	return [debug, setDebug]
 }

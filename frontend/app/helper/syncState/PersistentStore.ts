@@ -8,6 +8,8 @@ export class PersistentStore {
 	static develop = 'PersistentStore.develop'
 	static consentStatusTermsAndPrivacy = 'PersistentStore.consentStatusTermsAndPrivacy'
 
+	static useSystemLanguage = 'PersistentStore.useSystemLanguage'
+
 	static debugAutoLogin = 'PersistentStore.debugAutoLogin'
 
 	static drawerConfig = 'PersistentStore.drawerConfig'

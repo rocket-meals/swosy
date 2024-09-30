@@ -43,7 +43,7 @@
     "position_x": 17,
     "position_y": 10,
     "width": 21,
-    "height": 5,
+    "height": 6,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -90,7 +90,7 @@
     "note": null,
     "type": "variable",
     "position_x": 23,
-    "position_y": 5,
+    "position_y": 3,
     "width": 22,
     "height": 6,
     "options": {
@@ -121,6 +121,32 @@
       "function": "countDistinct"
     },
     "_syncId": "10385b18-5d59-4354-9e8d-26ad97f30e6c"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "name": "Aktivitäten der letzten 1 Stunde (Minuten-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 23,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "range": "1 hour",
+      "curveType": "stepline",
+      "precision": "minute"
+    },
+    "_syncId": "10b8cdaa-a479-4028-b50a-eea2c3d5f60b"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
@@ -228,7 +254,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 37,
+    "position_y": 47,
     "width": 65,
     "height": 12,
     "options": {
@@ -300,8 +326,8 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 11,
-    "width": 64,
+    "position_y": 9,
+    "width": 65,
     "height": 13,
     "options": {
       "collection": "directus_activity",
@@ -644,8 +670,8 @@
     "note": null,
     "type": "variable",
     "position_x": 45,
-    "position_y": 5,
-    "width": 20,
+    "position_y": 3,
+    "width": 21,
     "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
@@ -654,10 +680,6 @@
       "defaultValue": "minute",
       "options": {
         "choices": [
-          {
-            "text": "Second",
-            "value": "second"
-          },
           {
             "text": "Minute",
             "value": "minute"
@@ -806,7 +828,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 25,
+    "position_y": 35,
     "width": 65,
     "height": 12,
     "options": {
@@ -832,7 +854,7 @@
     "note": null,
     "type": "variable",
     "position_x": 1,
-    "position_y": 5,
+    "position_y": 3,
     "width": 22,
     "height": 6,
     "options": {
@@ -951,8 +973,8 @@
     "type": "metric-list",
     "position_x": 1,
     "position_y": 52,
-    "width": 36,
-    "height": 8,
+    "width": 37,
+    "height": 14,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "washingmachine",
@@ -1069,7 +1091,7 @@
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
-    "name": "Waschmaschienen Vorgänge Verteilung",
+    "name": "Waschmaschienen Vorgänge Verteilung (in Minuten, gerundet)",
     "icon": null,
     "color": null,
     "show_header": true,
@@ -1077,13 +1099,13 @@
     "type": "bar-chart",
     "position_x": 1,
     "position_y": 37,
-    "width": 28,
+    "width": 37,
     "height": 13,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_calculated",
       "function": "count",
-      "xAxis": "duration_calculated",
+      "xAxis": "duration_in_minutes_rounded_10min_calculated",
       "yAxis": "id"
     },
     "_syncId": "a283da30-5245-4dbf-8dae-1f2254935b11"
@@ -1126,7 +1148,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 49,
+    "position_y": 59,
     "width": 65,
     "height": 12,
     "options": {
@@ -1223,7 +1245,7 @@
     "type": "metric",
     "position_x": 17,
     "position_y": 16,
-    "width": 18,
+    "width": 21,
     "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
@@ -1477,7 +1499,7 @@
     "color": null,
     "show_header": true,
     "note": null,
-    "type": "pie-chart",
+    "type": "bar-chart",
     "position_x": 1,
     "position_y": 7,
     "width": 21,
@@ -1486,7 +1508,11 @@
       "collection": "profiles",
       "column": "language",
       "legend": "right",
-      "showLabels": true
+      "showLabels": true,
+      "xAxis": "language",
+      "function": "count",
+      "yAxis": "language",
+      "horizontal": true
     },
     "_syncId": "df2e0b13-5835-4a00-a7f4-23404e5975c6"
   },
