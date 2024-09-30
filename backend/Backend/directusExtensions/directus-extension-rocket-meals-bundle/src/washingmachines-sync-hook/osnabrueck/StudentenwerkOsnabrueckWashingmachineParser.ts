@@ -18,7 +18,7 @@ type IntercardWasher = {
 export class StudentenwerkOsnabrueckWashingmachineParser implements WashingmachineParserInterface {
 
     static url = "https://swic.sw-os.de/smartWASH-SimpleWebClient/";
-    static getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + "getAllTerminals";
+    static getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + "allTerminals";
 
     constructor() {
 
@@ -95,14 +95,14 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      */
     static async getAllTerminalFromIntercard(): Promise<IntercardWasher[]> {
         let html = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsRawFromIntercard();
-        console.log("HTML from Intercard");
-        console.log(html);
+        //console.log("HTML from Intercard");
+        //console.log(html);
         if(!html) {
             throw new Error("No HTML from Intercard");
         }
         let washerJSON = await StudentenwerkOsnabrueckWashingmachineParser.parseTerminalsRawFromIntercardToJSON(html);
-        console.log("JSON from Intercard");
-        console.log(JSON.stringify(washerJSON, null, 2));
+        //console.log("JSON from Intercard");
+        //console.log(JSON.stringify(washerJSON, null, 2));
         return washerJSON;
     }
 
@@ -113,19 +113,20 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
     static async getAllTerminalsRawFromIntercard(): Promise<string | null> {
         let urlForRequest = StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsUrl
         try {
-            console.log("Requesting Intercard from URL: " + urlForRequest);
+            //console.log("Requesting Intercard from URL: " + urlForRequest);
             let response = await axios.get(urlForRequest); //get the html
              //get the data
-            console.log("Response from Intercard");
-            console.log(response.data);
+            //console.log("Response from Intercard");
+            //console.log(response.data);
             let data = response.data;
-            console.log("Data from Intercard");
-            console.log(data);
+            //console.log("Data from Intercard");
+            //console.log(data);
             if(!!data && typeof data === "string") {
                 return response.data;
             }
         } catch (e) {
-            console.error("Error getting data from Intercard", e);
+            console.error("Error getting data from Intercard");
+            console.error(e.toString());
         }
         return null;
     }
