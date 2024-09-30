@@ -95,14 +95,14 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      */
     static async getAllTerminalFromIntercard(): Promise<IntercardWasher[]> {
         let html = await StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsRawFromIntercard();
-        //console.log("HTML from Intercard");
-        //console.log(html);
+        console.log("HTML from Intercard");
+        console.log(html);
         if(!html) {
             return [];
         }
         let washerJSON = await StudentenwerkOsnabrueckWashingmachineParser.parseTerminalsRawFromIntercardToJSON(html);
-        //console.log("JSON from Intercard");
-        //console.log(washerJSON);
+        console.log("JSON from Intercard");
+        console.log(JSON.stringify(washerJSON, null, 2));
         return washerJSON;
     }
 
@@ -115,11 +115,11 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
         try {
             let response = await axios.get(urlForRequest); //get the html
              //get the data
-            //console.log("Response from Intercard");
-            //console.log(response.data);
+            console.log("Response from Intercard");
+            console.log(response.data);
             let data = response.data;
-            //console.log("Data from Intercard");
-            //console.log(data);
+            console.log("Data from Intercard");
+            console.log(data);
             if(!!data && typeof data === "string") {
                 return response.data;
             }
