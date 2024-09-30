@@ -39,7 +39,7 @@ export class WashingmachineParseSchedule {
 
             try {
                 let washingmachinesForParser = await this.parser.getWashingmachines();
-                // sometimes the service endpoint is not reliable, so we check twice
+
                 await this.updateWashingmachines(washingmachinesForParser);
 
                 await this.setStatus(FlowStatus.FINISHED);
