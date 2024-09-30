@@ -7,6 +7,7 @@ import fs from "fs";
 import {DateHelper} from "../../../helpers/DateHelper";
 
 const xml = fs.readFileSync(path.resolve(__dirname, './getAllTerminals.xml'), 'utf8');
+const html = fs.readFileSync(path.resolve(__dirname, './getAllTerminalsWeb.html'), 'utf8');
 
 describe("Osnabrueck Washer Test", () => {
     let osnabrueckWasherParser = new StudentenwerkOsnabrueckWashingmachineParser();
@@ -14,7 +15,7 @@ describe("Osnabrueck Washer Test", () => {
     async function getWashingmachines(simulated_now?: Date) {
         jest.spyOn(axios, 'get').mockImplementation((url) => {
             if (url === StudentenwerkOsnabrueckWashingmachineParser.getAllTerminalsUrl) {
-                return Promise.resolve({ data: xml });
+                return Promise.resolve({ data: html });
             }
             return Promise.reject(new Error('Unknown URL'));
         });
@@ -27,7 +28,7 @@ describe("Osnabrueck Washer Test", () => {
         let simulated_now = new Date();
         let washers = await getWashingmachines(simulated_now);
         expect(washers.length).toBeGreaterThan(0);
-        expect(washers.length).toBe(37);
+        expect(washers.length).toBe(38);
     });
 
     it("Find no duplicates", async () => {

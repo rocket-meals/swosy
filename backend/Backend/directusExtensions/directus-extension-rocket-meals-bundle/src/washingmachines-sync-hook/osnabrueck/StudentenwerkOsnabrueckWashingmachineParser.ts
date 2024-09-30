@@ -1,5 +1,5 @@
 import axios from "axios";
-import xml2js from "xml2js";
+import {CheerioAPI, load as cheerioLoad} from 'cheerio';
 
 import {
     WashingmachineParserInterface,
@@ -11,13 +11,13 @@ import {DateHelper} from "../../helpers/DateHelper";
 type IntercardWasher = {
     terminalNr: number,
     automateNr: number,
-    intercardStatus: "false" | "true",
+    intercardStatus: boolean,
     expectedFreeTimeInMinutes: number
 }
 
 export class StudentenwerkOsnabrueckWashingmachineParser implements WashingmachineParserInterface {
 
-    static url = "http://131.173.252.37:8080/smartWASH-WebService/JaxWsWashService/";
+    static url = "https://swic.sw-os.de/smartWASH-SimpleWebClient/";
     static getAllTerminalsUrl = StudentenwerkOsnabrueckWashingmachineParser.url + "getAllTerminals";
 
     constructor() {
@@ -36,7 +36,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
             if(!!washer) {
                 let external_identifier = StudentenwerkOsnabrueckWashingmachineParser.getWasherExternalIdentifier(washer.terminalNr, washer.automateNr);
                 let date_finished: string | null = null
-                if(washer.intercardStatus === "true" && washer.expectedFreeTimeInMinutes > 0) {
+                if(washer.intercardStatus && washer.expectedFreeTimeInMinutes > 0) {
                     let date = new Date(simulated_now || new Date());
                     //console.log("Date now: " + DateHelper.formatDateToIso8601WithoutTimezone(date));
                     date.setMinutes(date.getMinutes() + washer.expectedFreeTimeInMinutes);
@@ -134,37 +134,43 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
      * @returns {Promise<Array>} the parsed JSON
      */
     static async parseTerminalsRawFromIntercardToJSON(html: string): Promise<IntercardWasher[]> {
-        let answer: IntercardWasher[] = []; //prepare an empty answer we will fill
+        let answer: IntercardWasher[] = []; // prepare an empty array to fill
+
         try {
-            let json = await xml2js.parseStringPromise(html); //parse the html into json with too much informations for us
+            const parsedHtml: CheerioAPI = cheerioLoad(html);
 
-            //now search inside this hughe json our desired information
-            let envelope = json["soap:Envelope"];
-            let body = envelope["soap:Body"];
-            let result = body[0];
-            let list = result["ns1:getAllTerminalsResponse"];
-            let firstList = list[0];
-            let returnObj = firstList["return"][0];
-            let listOfWashers = returnObj["list"]; //here are our washers finally
+            // Select each row in the table, skipping the header row
+            parsedHtml("table tr").each((index, element) => {
+                // Skip the first row (header)
+                if (index === 0) return;
 
-            for (let i = 0; i < listOfWashers.length; i++) { //for all washers
-                let washerRaw = listOfWashers[i]; //get the washer
-                let terminalNr = parseInt(washerRaw.terminalN5[0]); //get the terminal number, which represents the building
-                let automateNr = parseInt(washerRaw.automatenNR[0]); //get the automate nr which represents the machine in the building
-                let status = washerRaw.stateRunning[0]; //get state of the machine
-                let expectedFreeTime = parseInt(washerRaw.expectedFreeTime[0]); //get when the machine thinks it will finish
-                let washer: IntercardWasher = { //make nice json
-                    terminalNr: terminalNr,
-                    automateNr: automateNr,
-                    intercardStatus: status, // "false": it did stop, "true": it is running or started
-                    expectedFreeTimeInMinutes: expectedFreeTime
-                };
-                answer.push(washer); //add to answer
-            }
+                let columns = parsedHtml(element).find('td'); // Get all columns (td) in this row
+
+                // Ensure there are 4 columns (N5, AutomatenNr, Frei / Belegt, Zeit bis Frei)
+                if (columns.length === 4) {
+                    let terminalNr = parseInt(parsedHtml(columns[0]).text());
+                    let automateNr = parseInt(parsedHtml(columns[1]).text());
+                    let statusText = parsedHtml(columns[2]).text().toLowerCase(); // Frei / Belegt
+                    let expectedFreeTime = parseInt(parsedHtml(columns[3]).text());
+
+                    let intercardStatus: boolean = (statusText === "belegt") ? true : false;
+
+                    // Add washer info to the answer array
+                    let washer: IntercardWasher = {
+                        terminalNr: terminalNr,
+                        automateNr: automateNr,
+                        intercardStatus: intercardStatus, // "false": not running, "true": running
+                        expectedFreeTimeInMinutes: expectedFreeTime
+                    };
+                    answer.push(washer);
+                }
+            });
+
         } catch (e) {
+            console.error("Error parsing HTML", e);
         }
-        return answer;
 
+        return answer;
     }
 
 
