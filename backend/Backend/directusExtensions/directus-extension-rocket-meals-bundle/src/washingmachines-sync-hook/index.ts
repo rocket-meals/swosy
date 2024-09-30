@@ -88,13 +88,17 @@ export default defineHook(async ({action, filter, init}, apiContext) => {
                             let time_seconds = parseInt(time_diff / 1000 % 60 + "");
                             let hh_mm_ss = time_hours + ":" + time_minutes + ":" + time_seconds;
 
-                            const duration_in_minutes = parseInt(time_diff / 1000 / 60 + "");
+                            const duration_in_minutes = parseInt((time_diff / 1000 / 60)+""); // Total duration in minutes
+
+                            // Round duration to the nearest 10-minute interval
+                            const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;
 
                             await myDatabaseHelper.getWashingmachinesJobsHelper().createOne({
                                 date_start: current_date_stated,
                                 date_end: current_date_finished,
                                 duration_calculated: hh_mm_ss,
                                 duration_in_minutes_calculated: duration_in_minutes,
+                                duration_in_minutes_rounded_10min_calculated: duration_rounded_10min_calculated,
                                 washingmachine: washingmachine_curent.id,
                                 apartment: washingmachine_curent.apartment
                             });

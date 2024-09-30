@@ -5051,6 +5051,7 @@ type version_washingmachines_jobs {
   date_end: Date
   duration_calculated: Date
   duration_in_minutes_calculated: Int
+  duration_in_minutes_rounded_10min_calculated: Int
 }
 
 """"""
@@ -5166,6 +5167,7 @@ type washingmachines_jobs {
   duration_calculated: Date
   duration_calculated_func: time_functions
   duration_in_minutes_calculated: Int
+  duration_in_minutes_rounded_10min_calculated: Int
 }
 
 type washingmachines_jobs_aggregated {
@@ -5195,11 +5197,13 @@ type washingmachines_jobs_aggregated_count {
   date_end: Int
   duration_calculated: Int
   duration_in_minutes_calculated: Int
+  duration_in_minutes_rounded_10min_calculated: Int
 }
 
 type washingmachines_jobs_aggregated_fields {
   sort: Float
   duration_in_minutes_calculated: Float
+  duration_in_minutes_rounded_10min_calculated: Float
 }
 
 type washingmachines_jobs_mutated {
@@ -6756,6 +6760,7 @@ input create_washingmachines_jobs_input {
   date_end: Date
   duration_calculated: Date
   duration_in_minutes_calculated: Int
+  duration_in_minutes_rounded_10min_calculated: Int
 }
 
 input create_wikis_directus_roles_input {
@@ -8616,6 +8621,7 @@ input update_washingmachines_jobs_input {
   date_end: Date
   duration_calculated: Date
   duration_in_minutes_calculated: Int
+  duration_in_minutes_rounded_10min_calculated: Int
 }
 
 input update_wikis_directus_roles_input {
@@ -8741,6 +8747,7 @@ input washingmachines_jobs_filter {
   duration_calculated: date_filter_operators
   duration_calculated_func: time_function_filter_operators
   duration_in_minutes_calculated: number_filter_operators
+  duration_in_minutes_rounded_10min_calculated: number_filter_operators
   _and: [washingmachines_jobs_filter]
   _or: [washingmachines_jobs_filter]
 }

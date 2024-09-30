@@ -451,6 +451,26 @@
     "_syncId": "4cc34d1c-cab1-4aa0-a4d2-c6be4a6facee"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Summe Waschzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 21,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "duration_in_minutes_calculated",
+      "function": "sum",
+      "suffix": "min"
+    },
+    "_syncId": "51d4fab2-8ea5-400f-beef-767862e13fd5"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Am Häufigsten Bewertet",
     "icon": null,
@@ -852,6 +872,26 @@
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Kürzeste Waschzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 31,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "duration_in_minutes_calculated",
+      "function": "min",
+      "suffix": "min"
+    },
+    "_syncId": "8bc98a74-5cb9-4d3d-aa04-2442d143e4f9"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Durchschnittliche Anzahl Speise Bewertungen (alt)",
     "icon": null,
@@ -900,6 +940,27 @@
       "maximumFractionDigits": 2
     },
     "_syncId": "94a71a98-8dfa-4cd6-93b3-1e64b8267883"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Anzahl Waschvorgänge pro Waschmaschine",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric-list",
+    "position_x": 1,
+    "position_y": 52,
+    "width": 36,
+    "height": 8,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "washingmachine",
+      "groupByField": "washingmachine",
+      "aggregateField": "id",
+      "aggregateFunction": "count"
+    },
+    "_syncId": "95b31311-bf5a-4e78-a988-cc02778f7975"
   },
   {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
@@ -1008,14 +1069,14 @@
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
-    "name": null,
+    "name": "Waschmaschienen Vorgänge Verteilung",
     "icon": null,
     "color": null,
-    "show_header": false,
+    "show_header": true,
     "note": null,
     "type": "bar-chart",
-    "position_x": 21,
-    "position_y": 16,
+    "position_x": 1,
+    "position_y": 37,
     "width": 28,
     "height": 13,
     "options": {
@@ -1153,6 +1214,27 @@
     "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Durschnittliche Waschzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 16,
+    "width": 18,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "duration_in_minutes_calculated",
+      "function": "avg",
+      "sortField": "id",
+      "suffix": "min"
+    },
+    "_syncId": "b6838b93-5c54-43d9-851d-8edfdfd27c09"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Unbeliebteste Speisen",
     "icon": null,
@@ -1200,6 +1282,26 @@
       "function": "count"
     },
     "_syncId": "bc58867a-1382-47ec-a965-7c1fe4d7c61c"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Längste Waschzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 17,
+    "position_y": 26,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "field": "duration_in_minutes_calculated",
+      "function": "max",
+      "suffix": "min"
+    },
+    "_syncId": "c2df9a8e-88a6-4b73-a338-6f3b78c4c3fb"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
