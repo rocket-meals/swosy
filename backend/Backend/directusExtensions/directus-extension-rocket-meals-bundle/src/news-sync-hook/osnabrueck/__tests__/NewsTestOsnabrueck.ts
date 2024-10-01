@@ -44,6 +44,6 @@ describe("NewsTestOsnabrueck", () => {
         });
 
         expect(found).toBeDefined();
-        console.log(JSON.stringify(found, null, 2));
+        //console.log(JSON.stringify(found, null, 2));
     });
 });

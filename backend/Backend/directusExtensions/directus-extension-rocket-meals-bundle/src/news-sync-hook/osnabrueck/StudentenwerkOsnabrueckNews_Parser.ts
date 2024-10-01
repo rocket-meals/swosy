@@ -84,7 +84,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
     async getArticleDetails(articleUrl: string): Promise<ArticleDetails> {
         let articleDetails: ArticleDetails = {};
-        console.log("Fetching article details: " + articleUrl);
+        //console.log("Fetching article details: " + articleUrl);
         try {
             let response = await axios.get(articleUrl);
 

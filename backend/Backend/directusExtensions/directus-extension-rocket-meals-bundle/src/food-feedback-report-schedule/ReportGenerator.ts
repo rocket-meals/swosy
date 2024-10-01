@@ -128,8 +128,8 @@ export class ReportGenerator {
             filter: {
                 _and: [
                     {
-                        visible: {
-                            _eq: true // get only visible feedback labels
+                        status: {
+                            _eq: "published" // get only published feedback labels
                         }
                     }
                 ]
