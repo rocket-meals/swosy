@@ -33,6 +33,62 @@
     "_syncId": "012851df-3ac6-4d56-a378-93a07c7c134f"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Anzahl Dislikes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 41,
+    "width": 30,
+    "height": 5,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "0255e43c-e8b0-42de-9d1c-7fffd9a017e9"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Anzahl Aktuell Laufender Waschmaschienen",
     "icon": null,
@@ -83,6 +139,28 @@
     "_syncId": "0554b6a2-1649-4fcd-818c-bf57c156d51f"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 3 Monate (Wochen-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 118,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "week",
+      "range": "3 months"
+    },
+    "_syncId": "05561ef0-80d8-414e-9e2a-5b321f0dc986"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Dateien - Geänderte ID",
     "icon": null,
@@ -90,10 +168,10 @@
     "show_header": true,
     "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "type": "time-series",
-    "position_x": 41,
-    "position_y": 79,
+    "position_x": 1,
+    "position_y": 140,
     "width": 25,
-    "height": 13,
+    "height": 9,
     "options": {
       "collection": "directus_files",
       "dateField": "created_on",
@@ -123,6 +201,28 @@
       "options": {}
     },
     "_syncId": "05a1c237-a632-4d8c-a005-f1d4ad1628d6"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 1 Monat (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 94,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "day",
+      "range": "1 month"
+    },
+    "_syncId": "0756d748-3008-402c-aa80-d1642404cff6"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -171,6 +271,28 @@
     "_syncId": "10b8cdaa-a479-4028-b50a-eea2c3d5f60b"
   },
   {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote der letzen 12 Monate (Monats-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 190,
+    "width": 61,
+    "height": 13,
+    "options": {
+      "collection": "foodoffers",
+      "precision": "month",
+      "dateField": "date",
+      "function": "count",
+      "valueField": "id",
+      "range": "12 month"
+    },
+    "_syncId": "11c2d375-988d-45d6-b27e-53cba2243945"
+  },
+  {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
     "name": "Verteilung der Nutzer auf die Mensen",
     "icon": null,
@@ -200,6 +322,128 @@
     "_syncId": "1499db05-9b7d-4cb6-8367-1e62f3a52f19"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Samstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 66,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "6"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "17968fbd-6eb7-491a-8c22-f763fd5e04ae"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Samstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 66,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "6"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "1aeb553e-41b9-4ac3-b42a-dcaa0b53e7c0"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Speiseangebote",
     "icon": null,
@@ -218,6 +462,169 @@
       "sortField": "id"
     },
     "_syncId": "1cc63e66-9b68-49d1-bf08-ca24838ca17f"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Präzision",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 1,
+    "position_y": 92,
+    "width": 60,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CANTEENS_FEEDBACKS_PRECISION",
+      "type": "string",
+      "inter": "select-dropdown",
+      "defaultValue": "day",
+      "options": {
+        "choices": [
+          {
+            "text": "Day",
+            "value": "day"
+          },
+          {
+            "text": "Week",
+            "value": "week"
+          },
+          {
+            "text": "Month",
+            "value": "month"
+          },
+          {
+            "text": "Year",
+            "value": "year"
+          }
+        ],
+        "allowOther": true
+      }
+    },
+    "_syncId": "204a7cad-d54d-474d-a09e-37573e03383a"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Dienstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 50,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "234a2594-c578-403e-a4c5-b983130435ad"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Sonntags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 70,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "0"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "2465589c-fd5a-42fc-8dc9-7b40e812d651"
   },
   {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
@@ -407,6 +814,62 @@
     "_syncId": "348c52b8-bff3-4c8e-8d62-2bdf51900cad"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldung: Anzahl Dislikes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 31,
+    "position_y": 98,
+    "width": 30,
+    "height": 18,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "xAxis": "canteen",
+      "function": "count",
+      "yAxis": "id",
+      "horizontal": true,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "{{CUSTOM_CANTEENS_FEEDBACKS_PRECISION}}",
+      "range": "auto",
+      "dateField": "date",
+      "valueField": "id",
+      "color": "#E35169"
+    },
+    "_syncId": "3db93980-d807-42ce-89de-1a8d5cbe66fd"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
     "name": "Aktivitäten: (Nutzerspezifische Präzision)",
     "icon": null,
@@ -531,6 +994,89 @@
     "_syncId": "3f36650c-12ef-49a6-9145-4a01bfdaa056"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Montags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 46,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "3f55a030-4ba0-4a38-ba8d-4b01c5eedfa0"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten Insgesamt (Monats-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 154,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "month",
+      "range": "auto"
+    },
+    "_syncId": "4216a7d3-b287-4c57-8ade-abf3c65d81e5"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Beliebteste Speisen",
     "icon": null,
@@ -577,6 +1123,67 @@
       "function": "countDistinct"
     },
     "_syncId": "450eb909-aa3c-47a4-8563-ac180e95d659"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Freitags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 62,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "5"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "4626573e-7dfe-4e9f-90c4-d1af8ad03ff3"
   },
   {
     "dashboard": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd",
@@ -680,6 +1287,28 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote Insgesamt (Monats-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 203,
+    "width": 61,
+    "height": 13,
+    "options": {
+      "collection": "foodoffers",
+      "precision": "month",
+      "dateField": "date",
+      "function": "count",
+      "valueField": "id",
+      "range": "auto"
+    },
+    "_syncId": "5b1dd6a4-9e55-4e7c-a160-86fefb23d01f"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Speise Bewertungen (alt + neu)",
     "icon": null,
     "color": null,
@@ -726,6 +1355,50 @@
       }
     },
     "_syncId": "5e967127-45c6-4bec-8da1-53185ebb5173"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote der letzen 12 Monate (Wochen-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 177,
+    "width": 61,
+    "height": 13,
+    "options": {
+      "collection": "foodoffers",
+      "precision": "week",
+      "dateField": "date",
+      "function": "count",
+      "valueField": "id",
+      "range": "12 month"
+    },
+    "_syncId": "5ecac9b4-a981-402e-b316-b222f98cf0a1"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Start Zeit (Standart: Heute)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 31,
+    "position_y": 35,
+    "width": 30,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END",
+      "collection": "canteens_feedbacks_labels",
+      "displayTemplate": "{{alias}} ({{id}})",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW()"
+    },
+    "_syncId": "627b2065-a5c3-4062-890a-df853a67f0f6"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -775,6 +1448,28 @@
     "_syncId": "63184507-10c2-4b90-9cc7-0ee8c3079246"
   },
   {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 3 Monate (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 106,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "day",
+      "range": "3 months"
+    },
+    "_syncId": "655289bc-9023-4d9f-aabf-1b9e48b6fc9c"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Bewertungen",
     "icon": null,
@@ -783,7 +1478,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 35,
-    "position_y": 58,
+    "position_y": 52,
     "width": 32,
     "height": 19,
     "options": {
@@ -813,6 +1508,69 @@
       }
     },
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldung: Likes (false) vs Dislikes (true)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "line-chart",
+    "position_x": 1,
+    "position_y": 116,
+    "width": 60,
+    "height": 17,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "xAxis": "date",
+      "function": "count",
+      "yAxis": "id",
+      "horizontal": true,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_nnull": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFill": [
+        {
+          "axis": "Y",
+          "operator": ">=",
+          "value": "0",
+          "color": "#E35169"
+        }
+      ],
+      "aggregation": "count",
+      "grouping": "dislike",
+      "curveType": "straight",
+      "showLegend": true
+    },
+    "_syncId": "67bdb532-05ca-444c-9585-18380d85e3d1"
   },
   {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
@@ -923,6 +1681,25 @@
       "defaultValue": "$NOW(-1 day)"
     },
     "_syncId": "6f87c11a-0612-42fa-9a62-0c565d4a4b87"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Label",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "relational-variable",
+    "position_x": 1,
+    "position_y": 29,
+    "width": 38,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID",
+      "collection": "canteens_feedbacks_labels",
+      "displayTemplate": "{{alias}} ({{id}})"
+    },
+    "_syncId": "74bea7a1-26fc-417d-8d1a-a7e0ed60b778"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1089,7 +1866,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 58,
+    "position_y": 52,
     "width": 34,
     "height": 19,
     "options": {
@@ -1147,6 +1924,65 @@
     "_syncId": "8e1a3004-5d21-4405-b7fe-aa27fd45cefc"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldung: Anzahl Likes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 1,
+    "position_y": 74,
+    "width": 30,
+    "height": 18,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "xAxis": "canteen",
+      "function": "count",
+      "yAxis": "id",
+      "horizontal": true,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFill": [
+        {
+          "axis": "Y",
+          "operator": ">=",
+          "value": "0",
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "91148c24-97f4-4bb1-99e4-ab0e9b01c8e9"
+  },
+  {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
     "name": "Präzision",
     "icon": null,
@@ -1194,6 +2030,87 @@
       }
     },
     "_syncId": "916a4dc7-4816-4974-a827-a0e5edb8f2ac"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 1 Woche (Stunden-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 70,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id"
+    },
+    "_syncId": "92c7f736-3560-4c31-b580-530f21df584e"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Sonntags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 70,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "0"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "9387d9c7-e5ff-4e15-98c8-84c9fb1b50be"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1301,6 +2218,62 @@
       "curveType": "stepline"
     },
     "_syncId": "9b4cc0ef-cfaf-47c1-a5c7-9d2a425f84c8"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Anzahl Likes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 41,
+    "width": 30,
+    "height": 5,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "9b8bd53c-5247-43ef-a662-49c46df250e3"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -1422,6 +2395,65 @@
     "_syncId": "a36d923f-d148-43c7-849e-e633121dd44b"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldung: Anzahl Dislikes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 31,
+    "position_y": 74,
+    "width": 30,
+    "height": 18,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "xAxis": "canteen",
+      "function": "count",
+      "yAxis": "id",
+      "horizontal": true,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFill": [
+        {
+          "axis": "Y",
+          "operator": ">=",
+          "value": "0",
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "a54544e1-8c26-4c83-ab74-9856b052fc60"
+  },
+  {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
     "name": "Aktivitäten der letzten 7 Tage (Stunden-Präzision)",
     "icon": null,
@@ -1461,9 +2493,110 @@
       "collection": "cashregisters_transactions",
       "field": "id",
       "function": "count",
-      "sortField": "id"
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      }
     },
     "_syncId": "a6dfabe0-e891-4347-b1a1-a5307d7686ac"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Donnerstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 58,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "4"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "a905ecb4-8b03-46f2-9ea9-dfa813688946"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten Insgesamt (Jahres-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 166,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "year",
+      "range": "auto"
+    },
+    "_syncId": "a99204d8-c8f8-476c-8989-3d2a6f6a1bc9"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1560,6 +2693,27 @@
       "sortField": "id"
     },
     "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 1 Woche (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 82,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "day"
+    },
+    "_syncId": "b58ce19e-d32e-4011-b190-5a2fb591262b"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -1695,6 +2849,89 @@
     "_syncId": "bffb93fe-9ffb-47b1-a59e-6eba69337454"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Start Zeit (Standart: Vor 31 Tagen)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 1,
+    "position_y": 35,
+    "width": 30,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START",
+      "collection": "canteens_feedbacks_labels",
+      "displayTemplate": "{{alias}} ({{id}})",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW(-31 days)"
+    },
+    "_syncId": "c2173f69-94e0-4d2c-bf38-115541c2f194"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Donnerstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 58,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "4"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "c2a9c985-adb7-4c7f-96a9-fe0051be740c"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Längste Waschzeit",
     "icon": null,
@@ -1713,6 +2950,62 @@
       "suffix": "min"
     },
     "_syncId": "c2df9a8e-88a6-4b73-a338-6f3b78c4c3fb"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldung: Anzahl Likes",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 98,
+    "width": 30,
+    "height": 18,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "xAxis": "canteen",
+      "function": "count",
+      "yAxis": "id",
+      "horizontal": true,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "{{CUSTOM_CANTEENS_FEEDBACKS_PRECISION}}",
+      "dateField": "date",
+      "valueField": "id",
+      "range": "auto",
+      "color": "#2ECDA7"
+    },
+    "_syncId": "c35ae794-c1d0-4a2d-83fc-b3d063343b4b"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -1840,6 +3133,67 @@
     "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Freitags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 62,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "5"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "d132f5e6-0e93-481c-97fb-5532f0a694a8"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Anzahl Guthaben: > 75 €",
     "icon": null,
@@ -1920,6 +3274,50 @@
     "_syncId": "dd226a90-36f5-453f-a68a-cfb0711210cb"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Mensa Rückmeldungen: Anzahl Bewertungen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 39,
+    "position_y": 29,
+    "width": 22,
+    "height": 6,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "deecb988-5196-484f-8e80-5eed5d9b0f45"
+  },
+  {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Verteilung gewählter Sprachen",
     "icon": null,
@@ -1945,6 +3343,28 @@
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote der letzen 1 Monate (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 164,
+    "width": 61,
+    "height": 13,
+    "options": {
+      "collection": "foodoffers",
+      "precision": "day",
+      "dateField": "date",
+      "function": "count",
+      "valueField": "id",
+      "range": "1 month"
+    },
+    "_syncId": "e4e238eb-fcf2-4bc7-ab8c-12b436307330"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Durchschnitt Speisebewertung (alt)",
     "icon": null,
     "color": null,
@@ -1962,6 +3382,67 @@
       "maximumFractionDigits": 2
     },
     "_syncId": "e75b9497-dca7-4048-a1ac-ba3cdbcc1620"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Mittwochs",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 54,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "e99bbe32-5185-4ebc-af46-68065ab707cf"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -1982,6 +3463,233 @@
       "sortField": "id"
     },
     "_syncId": "e9b09c5f-263a-494c-b66e-103231d0fbd2"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Likes: Dienstags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 50,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": false
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#2ECDA7"
+        }
+      ]
+    },
+    "_syncId": "eb659e53-9486-4576-92e1-aaee48715101"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 12 Monate (Monats-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 142,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "month",
+      "range": "12 months"
+    },
+    "_syncId": "ee075b66-cbd7-483d-8936-066f89f591f4"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Mittwochs",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 54,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "f0d0c3d3-551c-48c5-9b93-fc1073871509"
+  },
+  {
+    "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
+    "name": "Waschvorgänge Startzeiten der letzen 12 Monate (Wochen-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 130,
+    "width": 61,
+    "height": 12,
+    "options": {
+      "collection": "washingmachines_jobs",
+      "dateField": "date_start",
+      "function": "count",
+      "valueField": "id",
+      "precision": "week",
+      "range": "12 months"
+    },
+    "_syncId": "f5784795-036b-4130-b609-52eaf697b0b0"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "name": "Dislikes: Montags",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 31,
+    "position_y": 46,
+    "width": 30,
+    "height": 4,
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              },
+              {
+                "dislike": {
+                  "_eq": true
+                }
+              },
+              {
+                "weekday(date)": {
+                  "_eq": "1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ]
+    },
+    "_syncId": "f74e0dba-e962-4ca5-878e-d6c1c100c5b2"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
@@ -2041,6 +3749,27 @@
       "xAxis": "platform"
     },
     "_syncId": "f9288676-dfa7-41d6-b8e9-a8c825f18e22"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "name": "Anzahl Speiseangebote der letzen 1 Woche (Tages-Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 1,
+    "position_y": 151,
+    "width": 61,
+    "height": 13,
+    "options": {
+      "collection": "foodoffers",
+      "precision": "day",
+      "dateField": "date",
+      "function": "count",
+      "valueField": "id"
+    },
+    "_syncId": "fbbe153c-df1f-486f-b94e-d5c4ccc8546e"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
