@@ -246,6 +246,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_once_now_for_reference_date?: string | null;
   send_report_at_hh_mm?: string | null;
   show_canteen_feedbacks?: boolean | null;
+  show_food?: boolean | null;
   show_food_comments?: boolean | null;
   show_food_feedback_labels?: boolean | null;
   show_images?: boolean | null;

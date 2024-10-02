@@ -1,21 +1,21 @@
 {
   "collection": "canteen_food_feedback_report_schedules",
-  "field": "show_food_comments",
+  "field": "show_food",
   "type": "boolean",
   "meta": {
     "collection": "canteen_food_feedback_report_schedules",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "show_food_comments",
+    "field": "show_food",
     "group": "report_content_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": "Zeige Rückmeldungen zu den Speisen: Kommentare",
+    "note": "Zeige Rückmeldungen zu den Speisen: Labels",
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 5,
+    "sort": 3,
     "special": [
       "cast-boolean"
     ],
@@ -25,7 +25,7 @@
     "width": "full"
   },
   "schema": {
-    "name": "show_food_comments",
+    "name": "show_food",
     "table": "canteen_food_feedback_report_schedules",
     "data_type": "boolean",
     "default_value": true,

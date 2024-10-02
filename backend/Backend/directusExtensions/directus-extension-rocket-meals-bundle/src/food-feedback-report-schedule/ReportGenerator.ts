@@ -47,6 +47,7 @@ export type ReportType = {
     canteen_alias: string,
     dateHumanReadable: string,
     show_images: boolean,
+    show_food: boolean,
     show_food_feedback_labels: boolean,
     show_food_comments: boolean,
     show_canteen_feedbacks: boolean,
@@ -105,11 +106,16 @@ export class ReportGenerator {
         if(show_canteen_feedbacks === null || show_canteen_feedbacks === undefined){
             show_canteen_feedbacks = true;
         }
+        let show_food = reportSchedule.show_food;
+        if(show_food === null || show_food === undefined){
+            show_food = true;
+        }
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
             dateHumanReadable: dateHumanReadable,
             show_images: show_images,
+            show_food: show_food,
             show_food_feedback_labels: show_food_feedback_labels,
             show_food_comments: show_food_comments,
             show_canteen_feedbacks: show_canteen_feedbacks,

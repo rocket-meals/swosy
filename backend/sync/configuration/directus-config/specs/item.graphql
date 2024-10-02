@@ -3,14 +3,14 @@ type Query {
   canteens_feedbacks_labels_by_id(id: ID!, version: String): canteens_feedbacks_labels
   canteens_feedbacks_labels_aggregated(groupBy: [String], filter: canteens_feedbacks_labels_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteens_feedbacks_labels_aggregated!]!
   canteens_feedbacks_labels_by_version(version: String!, id: ID!): version_canteens_feedbacks_labels
-  washingmachines(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [washingmachines!]!
-  washingmachines_by_id(id: ID!, version: String): washingmachines
-  washingmachines_aggregated(groupBy: [String], filter: washingmachines_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [washingmachines_aggregated!]!
-  washingmachines_by_version(version: String!, id: ID!): version_washingmachines
   canteen_food_feedback_report_schedules(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules!]!
   canteen_food_feedback_report_schedules_by_id(id: ID!, version: String): canteen_food_feedback_report_schedules
   canteen_food_feedback_report_schedules_aggregated(groupBy: [String], filter: canteen_food_feedback_report_schedules_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [canteen_food_feedback_report_schedules_aggregated!]!
   canteen_food_feedback_report_schedules_by_version(version: String!, id: ID!): version_canteen_food_feedback_report_schedules
+  washingmachines(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [washingmachines!]!
+  washingmachines_by_id(id: ID!, version: String): washingmachines
+  washingmachines_aggregated(groupBy: [String], filter: washingmachines_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [washingmachines_aggregated!]!
+  washingmachines_by_version(version: String!, id: ID!): version_washingmachines
   foods_feedbacks_foods_feedbacks_labels(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_feedbacks_foods_feedbacks_labels!]!
   foods_feedbacks_foods_feedbacks_labels_by_id(id: ID!, version: String): foods_feedbacks_foods_feedbacks_labels
   foods_feedbacks_foods_feedbacks_labels_aggregated(groupBy: [String], filter: foods_feedbacks_foods_feedbacks_labels_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_feedbacks_foods_feedbacks_labels_aggregated!]!
@@ -232,10 +232,10 @@ type Query {
 type Mutation {
   create_canteens_feedbacks_labels_items(filter: canteens_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_feedbacks_labels_input!]): [canteens_feedbacks_labels!]!
   create_canteens_feedbacks_labels_item(data: create_canteens_feedbacks_labels_input!): canteens_feedbacks_labels
-  create_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_washingmachines_input!]): [washingmachines!]!
-  create_washingmachines_item(data: create_washingmachines_input!): washingmachines
   create_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
   create_canteen_food_feedback_report_schedules_item(data: create_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
+  create_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_washingmachines_input!]): [washingmachines!]!
+  create_washingmachines_item(data: create_washingmachines_input!): washingmachines
   create_foods_feedbacks_foods_feedbacks_labels_items(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_foods_feedbacks_labels_input!]): [foods_feedbacks_foods_feedbacks_labels!]!
   create_foods_feedbacks_foods_feedbacks_labels_item(data: create_foods_feedbacks_foods_feedbacks_labels_input!): foods_feedbacks_foods_feedbacks_labels
   create_canteens_feedbacks_labels_translations_items(filter: canteens_feedbacks_labels_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteens_feedbacks_labels_translations_input!]): [canteens_feedbacks_labels_translations!]!
@@ -345,12 +345,12 @@ type Mutation {
   update_canteens_feedbacks_labels_items(filter: canteens_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteens_feedbacks_labels_input!): [canteens_feedbacks_labels!]!
   update_canteens_feedbacks_labels_batch(filter: canteens_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteens_feedbacks_labels_input!]): [canteens_feedbacks_labels!]!
   update_canteens_feedbacks_labels_item(id: ID!, data: update_canteens_feedbacks_labels_input!): canteens_feedbacks_labels
-  update_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_washingmachines_input!): [washingmachines!]!
-  update_washingmachines_batch(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_washingmachines_input!]): [washingmachines!]!
-  update_washingmachines_item(id: ID!, data: update_washingmachines_input!): washingmachines
   update_canteen_food_feedback_report_schedules_items(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_canteen_food_feedback_report_schedules_input!): [canteen_food_feedback_report_schedules!]!
   update_canteen_food_feedback_report_schedules_batch(filter: canteen_food_feedback_report_schedules_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_canteen_food_feedback_report_schedules_input!]): [canteen_food_feedback_report_schedules!]!
   update_canteen_food_feedback_report_schedules_item(id: ID!, data: update_canteen_food_feedback_report_schedules_input!): canteen_food_feedback_report_schedules
+  update_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_washingmachines_input!): [washingmachines!]!
+  update_washingmachines_batch(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_washingmachines_input!]): [washingmachines!]!
+  update_washingmachines_item(id: ID!, data: update_washingmachines_input!): washingmachines
   update_foods_feedbacks_foods_feedbacks_labels_items(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_feedbacks_foods_feedbacks_labels_input!): [foods_feedbacks_foods_feedbacks_labels!]!
   update_foods_feedbacks_foods_feedbacks_labels_batch(filter: foods_feedbacks_foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_feedbacks_foods_feedbacks_labels_input!]): [foods_feedbacks_foods_feedbacks_labels!]!
   update_foods_feedbacks_foods_feedbacks_labels_item(id: ID!, data: update_foods_feedbacks_foods_feedbacks_labels_input!): foods_feedbacks_foods_feedbacks_labels
@@ -514,10 +514,10 @@ type Mutation {
   update_wikis_translations_item(id: ID!, data: update_wikis_translations_input!): wikis_translations
   delete_canteens_feedbacks_labels_items(ids: [ID]!): delete_many
   delete_canteens_feedbacks_labels_item(id: ID!): delete_one
-  delete_washingmachines_items(ids: [ID]!): delete_many
-  delete_washingmachines_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_items(ids: [ID]!): delete_many
   delete_canteen_food_feedback_report_schedules_item(id: ID!): delete_one
+  delete_washingmachines_items(ids: [ID]!): delete_many
+  delete_washingmachines_item(id: ID!): delete_one
   delete_foods_feedbacks_foods_feedbacks_labels_items(ids: [ID]!): delete_many
   delete_foods_feedbacks_foods_feedbacks_labels_item(id: ID!): delete_one
   delete_canteens_feedbacks_labels_translations_items(ids: [ID]!): delete_many
@@ -631,8 +631,8 @@ type Subscription {
   directus_policies_mutated(event: EventEnum): directus_policies_mutated
   directus_access_mutated(event: EventEnum): directus_access_mutated
   canteens_feedbacks_labels_mutated(event: EventEnum): canteens_feedbacks_labels_mutated
-  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   canteen_food_feedback_report_schedules_mutated(event: EventEnum): canteen_food_feedback_report_schedules_mutated
+  washingmachines_mutated(event: EventEnum): washingmachines_mutated
   foods_feedbacks_foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_foods_feedbacks_labels_mutated
   canteens_feedbacks_labels_translations_mutated(event: EventEnum): canteens_feedbacks_labels_translations_mutated
   washingmachines_jobs_mutated(event: EventEnum): washingmachines_jobs_mutated
@@ -1375,6 +1375,9 @@ type canteen_food_feedback_report_schedules {
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Date
   send_once_now_for_reference_date_func: date_functions
+
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food: Boolean
   recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
   recipients_func: count_functions
   canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
@@ -1440,6 +1443,9 @@ type canteen_food_feedback_report_schedules_aggregated_count {
 
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Int
+
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food: Int
 
   """Report Empfänger"""
   recipients: Int
@@ -4519,6 +4525,9 @@ type version_canteen_food_feedback_report_schedules {
 
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Date
+
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food: Boolean
   recipients: JSON
   canteens: JSON
 }
@@ -5798,6 +5807,7 @@ input canteen_food_feedback_report_schedules_filter {
   show_canteen_feedbacks: boolean_filter_operators
   send_once_now_for_reference_date: date_filter_operators
   send_once_now_for_reference_date_func: date_function_filter_operators
+  show_food: boolean_filter_operators
   recipients: canteen_food_feedback_report_schedules_report_recipients_filter
   recipients_func: count_function_filter_operators
   canteens: canteen_food_feedback_report_schedules_canteens_filter
@@ -6193,6 +6203,9 @@ input create_canteen_food_feedback_report_schedules_input {
 
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Date
+
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food: Boolean
   recipients: [create_canteen_food_feedback_report_schedules_report_recipients_input]
   canteens: [create_canteen_food_feedback_report_schedules_canteens_input]
 }
@@ -8102,6 +8115,9 @@ input update_canteen_food_feedback_report_schedules_input {
 
   """Bericht einmalig senden, als wäre es Tag X"""
   send_once_now_for_reference_date: Date
+
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food: Boolean
   recipients: [update_canteen_food_feedback_report_schedules_report_recipients_input]
   canteens: [update_canteen_food_feedback_report_schedules_canteens_input]
 }
