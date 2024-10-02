@@ -13,6 +13,7 @@
     "interface": "group-detail",
     "note": null,
     "options": {
+      "headerIcon": "filter_alt",
       "start": "closed"
     },
     "readonly": false,

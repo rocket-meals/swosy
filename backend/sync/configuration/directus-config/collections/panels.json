@@ -1077,6 +1077,26 @@
     "_syncId": "4216a7d3-b287-4c57-8ade-abf3c65d81e5"
   },
   {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Endzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 16,
+    "position_y": 25,
+    "width": 13,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_MAILS_DATE_END",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW()"
+    },
+    "_syncId": "43b0ffd3-0042-4af2-baec-d64ead28ae70"
+  },
+  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Beliebteste Speisen",
     "icon": null,
@@ -1255,6 +1275,26 @@
       "suffix": "min"
     },
     "_syncId": "51d4fab2-8ea5-400f-beef-767862e13fd5"
+  },
+  {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Startzeit",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 3,
+    "position_y": 25,
+    "width": 13,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_MAILS_DATE_START",
+      "type": "dateTime",
+      "inter": "datetime",
+      "defaultValue": "$NOW(-31 day)"
+    },
+    "_syncId": "564f99a3-e32d-4ea2-a6f8-710279723a60"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -2478,6 +2518,46 @@
     "_syncId": "a549ef8d-025e-490a-a734-fc0a3c32d2e9"
   },
   {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Mails: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "time-series",
+    "position_x": 3,
+    "position_y": 31,
+    "width": 65,
+    "height": 12,
+    "options": {
+      "collection": "mails",
+      "function": "countDistinct",
+      "dateField": "date_created",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date_created": {
+                  "_gte": "{{CUSTOM_MAILS_DATE_START}}"
+                }
+              },
+              {
+                "date_created": {
+                  "_lte": "{{CUSTOM_MAILS_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "precision": "{{CUSTOM_MAILS_PRECISION}}",
+      "range": "auto"
+    },
+    "_syncId": "a68efab1-5ff5-4184-805e-59b71b9025b2"
+  },
+  {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
     "name": "Anzahl Kassentransaktionen: (Nutzerspezifische Präzision)",
     "icon": null,
@@ -2693,6 +2773,26 @@
       "sortField": "id"
     },
     "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
+  },
+  {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Anzahl Mails versendet",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 51,
+    "position_y": 10,
+    "width": 17,
+    "height": 5,
+    "options": {
+      "collection": "mails",
+      "field": "id",
+      "function": "count",
+      "sortField": "id"
+    },
+    "_syncId": "b2463e48-ebda-4268-acf8-0ce686b1dfed"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -3526,6 +3626,44 @@
     "_syncId": "eb659e53-9486-4576-92e1-aaee48715101"
   },
   {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Anzahl Mails: (Nutzerspezifische Präzision)",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 43,
+    "position_y": 25,
+    "width": 25,
+    "height": 6,
+    "options": {
+      "collection": "mails",
+      "field": "id",
+      "function": "count",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date_created": {
+                  "_gte": "{{CUSTOM_MAILS_DATE_START}}"
+                }
+              },
+              {
+                "date_created": {
+                  "_lte": "{{CUSTOM_MAILS_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "ecf8b5aa-aab6-45a6-9a29-d82cf6ad87f2"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Waschvorgänge Startzeiten der letzen 12 Monate (Monats-Präzision)",
     "icon": null,
@@ -3607,6 +3745,55 @@
       ]
     },
     "_syncId": "f0d0c3d3-551c-48c5-9b93-fc1073871509"
+  },
+  {
+    "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
+    "name": "Präzision",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "variable",
+    "position_x": 29,
+    "position_y": 25,
+    "width": 14,
+    "height": 6,
+    "options": {
+      "field": "CUSTOM_MAILS_PRECISION",
+      "type": "string",
+      "inter": "select-dropdown",
+      "defaultValue": "day",
+      "options": {
+        "choices": [
+          {
+            "text": "Minute",
+            "value": "minute"
+          },
+          {
+            "text": "Hour",
+            "value": "hour"
+          },
+          {
+            "text": "Day",
+            "value": "day"
+          },
+          {
+            "text": "Week",
+            "value": "week"
+          },
+          {
+            "text": "Month",
+            "value": "month"
+          },
+          {
+            "text": "Year",
+            "value": "year"
+          }
+        ],
+        "allowOther": true
+      }
+    },
+    "_syncId": "f51ef2cb-66b6-4b25-a641-27790d582996"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
