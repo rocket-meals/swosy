@@ -102,4 +102,92 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
     });
 
 
+    it("StartDate based on ReferenceDate same day", async () => {
+        const sendReportAtHour = 6;
+        const sendReportAtMinute = 0;
+        const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
+        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            send_report_at_hh_mm: sendReportAtHhMmPadded,
+            foodoffers_days_offset: 0,
+            foodoffers_days_limit: 1,
+            send_on_mondays: true,
+            send_on_tuesdays: true,
+            send_on_wednesdays: true,
+            send_on_thursdays: true,
+            send_on_fridays: true,
+            send_on_saturdays: true,
+            send_on_sundays: true,
+        }
+
+        const referenceDate = DateHelper.getDate({
+            year: 2024,
+            month: 7,
+            day: 5,
+            hours: sendReportAtHour,
+            minutes: sendReportAtMinute,
+            seconds: 0,
+            milliseconds: 0
+        });
+
+        let expectedStartDate = DateHelper.getDate({
+            year: 2024,
+            month: 7,
+            day: 5,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0
+        });
+        const expectedStartDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(expectedStartDate);
+
+        const startDate = ReportSchedule.getStartDateBasedOnReferenceDate(referenceDate, recipientEntry);
+        const startDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(startDate);
+
+        expect(expectedStartDateOnly).toEqual(startDateOnly);
+    });
+
+    it("StartDate based on ReferenceDate previous day", async () => {
+        const sendReportAtHour = 6;
+        const sendReportAtMinute = 0;
+        const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
+        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            send_report_at_hh_mm: sendReportAtHhMmPadded,
+            foodoffers_days_offset: 0,
+            foodoffers_days_limit: 2,
+            send_on_mondays: true,
+            send_on_tuesdays: true,
+            send_on_wednesdays: true,
+            send_on_thursdays: true,
+            send_on_fridays: true,
+            send_on_saturdays: true,
+            send_on_sundays: true,
+        }
+
+        const referenceDate = DateHelper.getDate({
+            year: 2024,
+            month: 7,
+            day: 5,
+            hours: sendReportAtHour,
+            minutes: sendReportAtMinute,
+            seconds: 0,
+            milliseconds: 0
+        });
+
+        let expectedStartDate = DateHelper.getDate({
+            year: 2024,
+            month: 7,
+            day: 4,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0
+        });
+        const expectedStartDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(expectedStartDate);
+
+        const startDate = ReportSchedule.getStartDateBasedOnReferenceDate(referenceDate, recipientEntry);
+        const startDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(startDate);
+
+        expect(expectedStartDateOnly).toEqual(startDateOnly);
+    });
+
 });

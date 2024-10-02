@@ -28,7 +28,7 @@
     "name": "foodoffers_days_limit",
     "table": "canteen_food_feedback_report_schedules",
     "data_type": "integer",
-    "default_value": 7,
+    "default_value": 1,
     "max_length": null,
     "numeric_precision": 32,
     "numeric_scale": 0,

@@ -30938,7 +30938,7 @@
           },
           "show_food": {
             "nullable": true,
-            "description": "Zeige Rückmeldungen zu den Speisen: Labels",
+            "description": "Zeige Rückmeldungen zu den Speisen",
             "type": "boolean"
           },
           "recipients": {

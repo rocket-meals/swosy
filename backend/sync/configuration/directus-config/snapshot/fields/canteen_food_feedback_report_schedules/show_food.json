@@ -11,7 +11,7 @@
     "group": "report_content_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": "Zeige Rückmeldungen zu den Speisen: Labels",
+    "note": "Zeige Rückmeldungen zu den Speisen",
     "options": null,
     "readonly": false,
     "required": false,

@@ -88,9 +88,9 @@ export class ReportSchedule {
         }
     }
 
-    static getStartDateBasedOnReferenceDate(referenceDate: Date, reportSchedule: CanteenFoodFeedbackReportSchedules): Date {
+    static getStartDateBasedOnReferenceDate(referenceDate: Date, reportSchedule: Partial<CanteenFoodFeedbackReportSchedules>): Date {
         // use foodoffers_days_limit to get the start date of the report. foodoffers_days_limit is the amount of days before the reference date
-        const DEFAULT_FOODOFFERS_DAYS_LIMIT = 7;
+        const DEFAULT_FOODOFFERS_DAYS_LIMIT = 1;
         let foodoffers_days_limit = reportSchedule.foodoffers_days_limit || DEFAULT_FOODOFFERS_DAYS_LIMIT;
         if(foodoffers_days_limit < 0){
             foodoffers_days_limit = -foodoffers_days_limit;
@@ -98,6 +98,7 @@ export class ReportSchedule {
         if(foodoffers_days_limit === 0){
             foodoffers_days_limit = DEFAULT_FOODOFFERS_DAYS_LIMIT;
         }
+        foodoffers_days_limit = foodoffers_days_limit-1; // 1 means the reference date itself, so we have to subtract 1
 
         let startDate = new Date(referenceDate);
         startDate.setDate(startDate.getDate() - foodoffers_days_limit);
