@@ -14,10 +14,9 @@
 <div>
     {% if show_canteen_feedbacks %}
         <div>
-            <div style="display: flex; align-items: center;">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVR4nO3WuwlCQRBG4c8HRmINgj2YGAkGBpZkYiFWY2IJgoHgIxcMDBTGRC8qiHphAsGFHzY6h92ZHbYSETJXNZX+F/wFvyEQEUUwwBLHL7JA/57zwHwSrBElskf7E0EZ+C0z1DIFgXG24IRupiCuTdLMFASmN2bWO2gUu4QTrNDKuqIzeplFnmS26Rz1d4JdSfgBnU9GxQjbL+EbDF8Nu0r2t+UCGgPg5+dCrlIAAAAASUVORK5CYII=" alt="label" style="width:24px; height:24px; margin-right:8px;">
-                Rückmeldungen zur Mensa:
-            </div>
+            <h2>Mensa Rückmeldungen</h2>
+        </div>
+        <div>
             <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
                 <thead>
                 <tr>
@@ -52,9 +51,15 @@
                 {% endfor %}
                 </tbody>
             </table>
-
+            {% comment %}
+                Now a divider is added to separate the canteen feedbacks from the food feedbacks
+            {% endcomment %}
+            <div style="border-bottom: 2px solid #ddd; margin-bottom: 20px;">&nbsp;</div>
         </div>
     {% endif %}
+    <div>
+        <h2>Speise Rückmeldungen</h2>
+    </div>
     {% for food in foods %}
         <div>
             <h3>{{ food.alias }}</h3>
