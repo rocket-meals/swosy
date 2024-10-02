@@ -7,7 +7,7 @@
 {% endcomment %}
 
 
-<h2>Bericht für den {{dateHumanReadable}}</h2>
+<h2>Bericht über den Zeitraum {{dateHumanReadable}}</h2>
 <p>Dieser Bericht enthält detaillierte Informationen über die angebotenen Speisen, einschließlich Bewertungen und Kundenkommentare. Sehen Sie sich die Liste unten an, um zu erfahren, was unsere Kunden dazu sagen.</p>
 <p>Die folgenden Speisen der Mensen wurden in den Bericht aufgenommen: {{canteen_alias}}</p>
 
@@ -30,62 +30,66 @@
                     Durchschnittliche Bewertung: {{ food.rating_average }}
                 </div>
             </div>
-            <div>
-                <div style="display: flex; align-items: center;">
-                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVR4nO3WuwlCQRBG4c8HRmINgj2YGAkGBpZkYiFWY2IJgoHgIxcMDBTGRC8qiHphAsGFHzY6h92ZHbYSETJXNZX+F/wFvyEQEUUwwBLHL7JA/57zwHwSrBElskf7E0EZ+C0z1DIFgXG24IRupiCuTdLMFASmN2bWO2gUu4QTrNDKuqIzeplFnmS26Rz1d4JdSfgBnU9GxQjbL+EbDF8Nu0r2t+UCGgPg5+dCrlIAAAAASUVORK5CYII=" alt="label" style="width:24px; height:24px; margin-right:8px;">
-                    Labels:
-                </div>
-                <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
-                    <thead>
-                    <tr>
-                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
-                            Label
-                        </th>
-                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
-                            <div style="display: flex; align-items: center;">
-                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABAElEQVR4nNWWQUoDQRREXzlBPIYbj5B1li6ELA0qHiTH8AhqLpBTuBOPkE0S9QSCGcuFEzI0M3Z3tEE/fHr49K/q+k0XI9uUjIOi6PsSSLqWNJNURTfbzkrgCqgBA9PY/iwFki6BW3bKT2I9yQSSLoA7oD2Wx2hj4lgmwIavsbRzGO1NAD8H3jvA34DDHxEA4x5wAw9J6iME6x5wAx8NeVcugNPtI646mqueek6ubaMGaBPc/aBZw3puDP6mVSTGq+26JMH99qPEJdfAcbYXZcTc9qKkglHrLf06wdPedp0YN2GhU0Ej7znz9C/AUWA33xKMgWUi+Ao4C/1M//6v4hOPeLxiSEvz8gAAAABJRU5ErkJggg==" alt="thumb-up" style="width:24px; height:24px; margin-right:8px;">
-                                Anzahl Positiv
-                            </div>
-                        </th>
-                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
-                            <div style="display: flex; align-items: center;">
-                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA9UlEQVR4nN2Uvw4BQRCHP07EY3gFDa3oJKKkQqIXb0W8iVKtk4g/byDh/BRWnI07w2Ubm0w2m8l+v5nZmS1IIuQqBqX/hQCSXgxoATtABtsCbXcveuOPfHgFOBjhD9t9IzD+Ev4EGQVWwQSA5o/wTIFkF00JsVz0VSAOmcGEUDPhMjjmiD4zg4JzXHLGWXK7zymF/4skxdxLFGa5N+gAG+CcYlfS67/3/7OX4c1yJoZwmQI/A91cAkAZOKXAex/vGwTqb+AXoG/J3tJFDe8cAwNJC8sbWwRqHnwoaW6BWwXWbr8CI0kzKxwwvUEEzLiXxdR1SbsBsGjcPBnp/foAAAAASUVORK5CYII=" alt="thumb-down" style="width:24px; height:24px; margin-right:8px;">
-                                Anzahl Negativ
-                            </div>
-                        </th>
-                        <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
-                            Anzahl Insgesamt
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for label in food.labels %}
-                        <tr style="border-bottom: 1px solid #aaa;">
-                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.alias }}</td>
-                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_positive }}</td>
-                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_negative }}</td>
-                            <td style="padding: 12px; text-align: left;">{{ label.amount_total }}</td>
+            {% if show_food_feedback_labels %}
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVR4nO3WuwlCQRBG4c8HRmINgj2YGAkGBpZkYiFWY2IJgoHgIxcMDBTGRC8qiHphAsGFHzY6h92ZHbYSETJXNZX+F/wFvyEQEUUwwBLHL7JA/57zwHwSrBElskf7E0EZ+C0z1DIFgXG24IRupiCuTdLMFASmN2bWO2gUu4QTrNDKuqIzeplFnmS26Rz1d4JdSfgBnU9GxQjbL+EbDF8Nu0r2t+UCGgPg5+dCrlIAAAAASUVORK5CYII=" alt="label" style="width:24px; height:24px; margin-right:8px;">
+                        Labels:
+                    </div>
+                    <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
+                        <thead>
+                        <tr>
+                            <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                                Label
+                            </th>
+                            <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                                <div style="display: flex; align-items: center;">
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABAElEQVR4nNWWQUoDQRREXzlBPIYbj5B1li6ELA0qHiTH8AhqLpBTuBOPkE0S9QSCGcuFEzI0M3Z3tEE/fHr49K/q+k0XI9uUjIOi6PsSSLqWNJNURTfbzkrgCqgBA9PY/iwFki6BW3bKT2I9yQSSLoA7oD2Wx2hj4lgmwIavsbRzGO1NAD8H3jvA34DDHxEA4x5wAw9J6iME6x5wAx8NeVcugNPtI646mqueek6ubaMGaBPc/aBZw3puDP6mVSTGq+26JMH99qPEJdfAcbYXZcTc9qKkglHrLf06wdPedp0YN2GhU0Ej7znz9C/AUWA33xKMgWUi+Ao4C/1M//6v4hOPeLxiSEvz8gAAAABJRU5ErkJggg==" alt="thumb-up" style="width:24px; height:24px; margin-right:8px;">
+                                    Anzahl Positiv (davon neu)
+                                </div>
+                            </th>
+                            <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                                <div style="display: flex; align-items: center;">
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA9UlEQVR4nN2Uvw4BQRCHP07EY3gFDa3oJKKkQqIXb0W8iVKtk4g/byDh/BRWnI07w2Ubm0w2m8l+v5nZmS1IIuQqBqX/hQCSXgxoATtABtsCbXcveuOPfHgFOBjhD9t9IzD+Ev4EGQVWwQSA5o/wTIFkF00JsVz0VSAOmcGEUDPhMjjmiD4zg4JzXHLGWXK7zymF/4skxdxLFGa5N+gAG+CcYlfS67/3/7OX4c1yJoZwmQI/A91cAkAZOKXAex/vGwTqb+AXoG/J3tJFDe8cAwNJC8sbWwRqHnwoaW6BWwXWbr8CI0kzKxwwvUEEzLiXxdR1SbsBsGjcPBnp/foAAAAASUVORK5CYII=" alt="thumb-down" style="width:24px; height:24px; margin-right:8px;">
+                                    Anzahl Negativ (davon neu)
+                                </div>
+                            </th>
+                            <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                                Anzahl Insgesamt
+                            </th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-
-            </div>
-            <div>
-                <div style="display: flex; align-items: center;">
-                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAxklEQVR4nO2WQQrCMBBF30guJrgRBI8hiEf1BOKqqHgDBavfhUkrmmpIKm76YTYh8z8zk/zEJBFgZo58SNI1tgowB46ACqKWxGsEgVLyTgEDHHDx1VhBi6IY9U0Yg8OX2fQNJsAWOGfECdgA43CAYgIV5TOpOmdgZu3ZLYAk+/kMBoFBoBxOUg307kEBf2vRoQfuPcCbf3svmvkNuT60A6bNg5MaHWSrjzmFAsuvOZkCtxTyHIE1D2tfpObY87clBWYW7k4S7hqGud4/iAy5AAAAAElFTkSuQmCC" alt="comment-multiple" style="width:24px; height:24px; margin-right:8px;">
-                    Kommentare:
-                </div>
-                <ul>
-                    {% if food.comments.size > 0 %}
-                        {% for comment in food.comments %}
-                            <li>{{ comment }}</li>
+                        </thead>
+                        <tbody>
+                        {% for label in food.labels %}
+                            <tr style="border-bottom: 1px solid #aaa;">
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.alias }}</td>
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_positive }} ({{ label.amount_positive_new }})</td>
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_negative }} ({{ label.amount_negative_new }})</td>
+                                <td style="padding: 12px; text-align: left;">{{ label.amount_total }}</td>
+                            </tr>
                         {% endfor %}
-                    {% else %}
-                        <li>Keine</li>
-                    {% endif %}
-                </ul>
-            </div>
+                        </tbody>
+                    </table>
+
+                </div>
+            {% endif %}
+            {% if show_food_comments %}
+                <div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAxklEQVR4nO2WQQrCMBBF30guJrgRBI8hiEf1BOKqqHgDBavfhUkrmmpIKm76YTYh8z8zk/zEJBFgZo58SNI1tgowB46ACqKWxGsEgVLyTgEDHHDx1VhBi6IY9U0Yg8OX2fQNJsAWOGfECdgA43CAYgIV5TOpOmdgZu3ZLYAk+/kMBoFBoBxOUg307kEBf2vRoQfuPcCbf3svmvkNuT60A6bNg5MaHWSrjzmFAsuvOZkCtxTyHIE1D2tfpObY87clBWYW7k4S7hqGud4/iAy5AAAAAElFTkSuQmCC" alt="comment-multiple" style="width:24px; height:24px; margin-right:8px;">
+                        Kommentare während dieses Zeitraums:
+                    </div>
+                    <ul>
+                        {% if food.comments.size > 0 %}
+                            {% for comment in food.comments %}
+                                <li>{{ comment }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>Keine</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     {% endfor %}
 </div>

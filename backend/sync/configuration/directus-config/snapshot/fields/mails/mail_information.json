@@ -1,19 +1,18 @@
 {
-  "collection": "canteen_food_feedback_report_schedules",
-  "field": "report_display_settings",
+  "collection": "mails",
+  "field": "mail_information",
   "type": "alias",
   "meta": {
-    "collection": "canteen_food_feedback_report_schedules",
+    "collection": "mails",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "report_display_settings",
+    "field": "mail_information",
     "group": null,
     "hidden": false,
     "interface": "group-detail",
     "note": null,
     "options": {
-      "headerIcon": "image",
       "start": "closed"
     },
     "readonly": false,

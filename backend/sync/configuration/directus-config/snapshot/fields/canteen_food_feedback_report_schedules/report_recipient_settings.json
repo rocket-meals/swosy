@@ -11,14 +11,14 @@
     "group": null,
     "hidden": false,
     "interface": "group-detail",
-    "note": null,
+    "note": "Empfänger Einstellungen",
     "options": {
       "headerIcon": "mail",
       "start": "closed"
     },
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 10,
     "special": [
       "alias",
       "group",

@@ -10,8 +10,8 @@ export class ItemsServiceHelper<T>{
     private eventContext: EventContext | undefined;
     private tablename: string;
 
-    private static FIELD_STATUS = 'status';
-    private static FIELD_STATUS_PUBLISHED = 'published';
+    public static FIELD_STATUS = 'status';
+    public static FIELD_STATUS_PUBLISHED = 'published';
 
     constructor(apiContext: ApiContext, tablename: string, eventContext?: EventContext) {
         this.apiContext = apiContext;
@@ -24,6 +24,26 @@ export class ItemsServiceHelper<T>{
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
         // DO not update status. It should be only set on creation
         return await itemsService.updateOne(primary_key, update);
+    }
+
+    async countItems(query?: Query): Promise<number>{
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
+        let aggregateFilter: Query = {
+            aggregate: {
+                count: ["*"]
+            },
+            limit: -1
+        }
+        let totalQuery: Query = {...query, ...aggregateFilter};
+        type AggregateAnswer = {count: string};
+        let answer = await itemsService.readByQuery(totalQuery)
+        // data = {"data":[{"count":"1869"}]}
+        if(!!answer && !!answer[0]){
+            return parseInt(answer[0].count);
+        } else {
+            return 0;
+        }
     }
 
     async findOrCreateItem(search: Partial<T>, create: Partial<T>): Promise<T | undefined>{

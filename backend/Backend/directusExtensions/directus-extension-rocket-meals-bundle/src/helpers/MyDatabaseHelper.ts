@@ -3,21 +3,31 @@ import {ApiContext} from "./ApiContext";
 import {CashregisterHelper} from "./itemServiceHelpers/CashregisterHelper";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
 import {CollectionNames} from "./CollectionNames";
-import {MailService as MailServiceType} from "@directus/api";
 import {
-    Apartments, AppFeedbacks, Buildings,
-    Canteens,
+    Apartments,
+    AppFeedbacks,
+    Buildings,
+    Canteens, CanteensFeedbacksLabels, CanteensFeedbacksLabelsEntries,
     CollectionsDatesLastUpdate,
-    Devices, DirectusUsers,
+    Devices,
+    DirectusUsers,
     Foodoffers,
     Foods,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
-    FoodsFeedbacksLabelsEntries, Markings, MarkingsExclusions, News, Profiles,
-    PushNotifications, UtilizationsEntries, UtilizationsGroups, Washingmachines, WashingmachinesJobs
+    FoodsFeedbacksLabelsEntries,
+    Mails,
+    Markings,
+    MarkingsExclusions,
+    News,
+    Profiles,
+    PushNotifications,
+    UtilizationsEntries,
+    UtilizationsGroups,
+    Washingmachines,
+    WashingmachinesJobs
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
-import {EmailOptions} from "@directus/api/dist/services/mail";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
@@ -36,19 +46,6 @@ export class MyDatabaseHelper {
     async getServerInfo() {
         const serverServiceCreator = new ServerServiceCreator(this.apiContext);
         return await serverServiceCreator.getServerInfo();
-    }
-
-    async sendMail(options: EmailOptions) {
-        let {MailService} = this.apiContext.services;
-        const getSchema = this.apiContext.getSchema;
-        const database = this.apiContext.database;
-        const schema = await getSchema();
-        let mailService: MailServiceType = new MailService({
-            accountability: null, //this makes us admin
-            knex: database, //TODO: i think this is not neccessary
-            schema: schema,
-        });
-        return await mailService.send(options);
     }
 
     getAppSettingsHelper() {
@@ -85,6 +82,14 @@ export class MyDatabaseHelper {
 
     getFoodFeedbackLabelEntriesHelper() {
         return new ItemsServiceHelper<FoodsFeedbacksLabelsEntries>(this.apiContext, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES, this.eventContext);
+    }
+
+    getCanteenFeedbackLabelsHelper() {
+        return new ItemsServiceHelper<CanteensFeedbacksLabels>(this.apiContext, CollectionNames.CANTEENS_FEEDBACK_LABELS, this.eventContext);
+    }
+
+    getCanteenFeedbackLabelsEntriesHelper() {
+        return new ItemsServiceHelper<CanteensFeedbacksLabelsEntries>(this.apiContext, CollectionNames.CANTEENS_FEEDBACKS_LABELS_ENTRIES, this.eventContext);
     }
 
     getFoodoffersHelper() {
@@ -145,5 +150,14 @@ export class MyDatabaseHelper {
 
     getWashingmachinesJobsHelper() {
         return new ItemsServiceHelper<WashingmachinesJobs>(this.apiContext, CollectionNames.WASHINGMACHINES_JOBS, this.eventContext);
+    }
+
+    async sendMail(mail: Partial<Mails>) {
+        let mailsHelper = this.getMailsHelper();
+        return await mailsHelper.createOne(mail);
+    }
+
+    getMailsHelper() {
+        return new ItemsServiceHelper<Mails>(this.apiContext, CollectionNames.MAILS, this.eventContext);
     }
 }

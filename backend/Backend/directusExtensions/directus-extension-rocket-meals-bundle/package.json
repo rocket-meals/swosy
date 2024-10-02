@@ -98,6 +98,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "mails-hook",
+				"source": "src/mails-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "news-sync-hook",
 				"source": "src/news-sync-hook/index.ts"
 			},

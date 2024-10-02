@@ -1,6 +1,6 @@
 import {
     CanteenFoodFeedbackReportSchedules,
-    Canteens,
+    Canteens, CanteensFeedbacksLabels,
     Foods,
     FoodsFeedbacks,
     FoodsFeedbacksLabels
@@ -11,10 +11,13 @@ import {Filter} from "@directus/types/dist/filter";
 import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DictHelper} from "../helpers/DictHelper";
+import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 
 export type ReportFoodEntryLabelType = {
     id: string,
     alias: string,
+    amount_positive_new: number,
+    amount_negative_new: number,
     amount_positive: number,
     amount_negative: number,
     amount_total: number
@@ -30,20 +33,30 @@ export type ReportFoodEntryType = {
     labels: ReportFoodEntryLabelType[]
 }
 
+export type ReportCanteenEntryType = {
+    id: string,
+    alias: string | null | undefined,
+    amount_positive_new: number,
+    amount_negative_new: number,
+    amount_positive: number,
+    amount_negative: number,
+    amount_total: number
+}
+
 export type ReportType = {
     canteen_alias: string,
     dateHumanReadable: string,
-    report_feedback_period_days: number | null | undefined,
     show_images: boolean,
+    show_food_feedback_labels: boolean,
+    show_food_comments: boolean,
     foods: ReportFoodEntryType[],
+    canteen_labels: ReportCanteenEntryType[]
 }
 
 export class ReportGenerator {
-    private apiContext: ApiContext;
     private myDatabaseHelper: MyDatabaseHelper;
 
     constructor(apiContext: ApiContext) {
-        this.apiContext = apiContext;
         this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
     }
 
@@ -59,37 +72,17 @@ export class ReportGenerator {
 
     /**
      *
-     * @param generateReportForDate
-     * @param report_feedback_period_days
+     * @param reportSchedule
+     * @param startDate
+     * @param endDate
      * @param canteenEntries
      * @return {Promise<{report_feedback_period_days: *, foods: {}}>}
-      {
-        "report_feedback_period_days": 180,
-        "canteen": "Canteen 1",
-        "foods": [
-          {
-            "id": "2351",
-            "alias": "Falafel mit Persischem Reis, Pinienkernen und Pfirsich-Tomatenchutney",
-            "image_url": "http://127.0.0.1/rocket-meals/api/assets/15a32c55-85ac-497e-9306-3f4b356aa5c0",
-            "rating_average": 4,
-            "rating_amount": 1,
-            "comments": [
-              "Total lecker!"
-            ],
-            "labels": [
-              {
-                "id": "454beee0-0a2c-4174-b5c2-fd80a95d7cda",
-                "alias": "lecker",
-                "count": 1
-              }
-            ]
-          }
-        ]
-      }
      */
-    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, generateReportForDate: Date, canteenEntries: Canteens[]): Promise<ReportType>{
-        let date = generateReportForDate;
-        let dateHumanReadable = DateHelper.getHumanReadableDate(date, true);
+    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]): Promise<ReportType>{
+
+        let dateStartHumanReadable = DateHelper.getHumanReadableDate(startDate, true);
+        let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
+        const dateHumanReadable = "["+dateStartHumanReadable + " - " + dateEndHumanReadable+"]";
         //console.log("Generate report for date: "+dateHumanReadable);
 
         let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
@@ -99,22 +92,144 @@ export class ReportGenerator {
         if(show_images === null || show_images === undefined){
             show_images = true;
         }
-
-        let report_feedback_period_days = reportSchedule?.report_feedback_period_days
+        let show_food_feedback_labels = reportSchedule.show_food_feedback_labels;
+        if(show_food_feedback_labels === null || show_food_feedback_labels === undefined){
+            show_food_feedback_labels = true;
+        }
+        let show_food_comments = reportSchedule.show_food_comments;
+        if(show_food_comments === null || show_food_comments === undefined){
+            show_food_comments = true;
+        }
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
-            report_feedback_period_days: report_feedback_period_days,
             dateHumanReadable: dateHumanReadable,
             show_images: show_images,
-            foods: []
+            show_food_feedback_labels: show_food_feedback_labels,
+            show_food_comments: show_food_comments,
+            foods: [],
+            canteen_labels: []
         }
 
+        report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
+        report.canteen_labels = await this.getReportForCanteenFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
+
+
+        return report
+    }
+
+    async getReportForCanteenFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]){
+        let canteens: ReportCanteenEntryType[] = [];
+
+        let canteenFeedbackLabelsWithTranslations = await this.myDatabaseHelper.getCanteenFeedbackLabelsHelper().readByQuery({
+            limit: -1,
+            filter: {
+                _and: [
+                    {
+                        [ItemsServiceHelper.FIELD_STATUS]: {
+                            _eq: ItemsServiceHelper.FIELD_STATUS_PUBLISHED // get only published feedback labels
+                        }
+                    }
+                ]
+            },
+            fields: ['*', 'translations.*']
+        })
+
+        const filterLikes = {
+            dislike: {
+                _eq: false
+            }
+        }
+
+        const filterDislikes = {
+            dislike: {
+                _eq: true
+            }
+        }
+
+        const canteenIds = canteenEntries.map((canteen) => canteen.id);
+
+        const filterCanteens = {
+            canteen: {
+                _in: canteenIds
+            }
+        }
+
+        const filterDateUpdatedFeedbackLabelEntries: Filter = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
+
+        for(let canteenFeedbackLabelsWithTranslation of canteenFeedbackLabelsWithTranslations){
+            let alias = this.getTranslationOfFeedbackLabel(canteenFeedbackLabelsWithTranslation);
+
+            const filterLabel = {
+                label: {
+                    _eq: canteenFeedbackLabelsWithTranslation.id
+                }
+            }
+
+            const amount_positive_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
+                filter: {
+                    _and: [
+                        filterLabel,
+                        filterCanteens,
+                        filterLikes,
+                        filterDateUpdatedFeedbackLabelEntries,
+                    ]
+                }
+            });
+            const amount_negative_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
+                filter: {
+                    _and: [
+                        filterLabel,
+                        filterCanteens,
+                        filterDislikes,
+                        filterDateUpdatedFeedbackLabelEntries,
+                    ]
+                }
+            });
+            const amount_positive = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
+                filter: {
+                    _and: [
+                        filterLabel,
+                        filterCanteens,
+                        filterLikes,
+                    ]
+                }
+            });
+            const amount_negative = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
+                filter: {
+                    _and: [
+                        filterLabel,
+                        filterCanteens,
+                        filterDislikes,
+                    ]
+                }
+            });
+            const amount_total = amount_positive + amount_negative;
+
+            let canteenSummary: ReportCanteenEntryType = {
+                id: canteenFeedbackLabelsWithTranslation?.id,
+                alias: alias,
+                amount_positive_new: amount_positive_new,
+                amount_negative_new: amount_negative_new,
+                amount_positive: amount_positive,
+                amount_negative: amount_negative,
+                amount_total: amount_total
+            };
+
+            canteens.push(canteenSummary)
+        }
+
+
+
+        return canteens;
+    }
+
+    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]){
         let foods: ReportFoodEntryType[] = [];
 
         let foodDict: {[key: string]: Foods} = {};
         for(let canteenEntry of canteenEntries){
-            let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(generateReportForDate, canteenEntry?.id);
+            let foodOffersWithFood = await this.getFoodOffersWithFoodAtDateInCanteen(startDate, endDate, canteenEntry?.id);
             for(let foodOfferWithFood of foodOffersWithFood){
                 let food = foodOfferWithFood?.food;
                 if(!!food && typeof food !== "string"){
@@ -128,8 +243,8 @@ export class ReportGenerator {
             filter: {
                 _and: [
                     {
-                        status: {
-                            _eq: "published" // get only published feedback labels
+                        [ItemsServiceHelper.FIELD_STATUS]: {
+                            _eq: ItemsServiceHelper.FIELD_STATUS_PUBLISHED // get only published feedback labels
                         }
                     }
                 ]
@@ -145,9 +260,9 @@ export class ReportGenerator {
             //console.log("food")
             //console.log(food)
 
-            let feedbacksWithComments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, report_feedback_period_days);
+            let feedbacksWithComments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, startDate, endDate);
             //console.log("Found amount of feedbacksWithLabels: "+feedbacksWithLabels.length)
-            let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, dictFeedbackLabelsWithTranslation, report_feedback_period_days);
+            let feedbackLabelEntryListForReport = await this.getReportFeedbackLabelsList(food_id, dictFeedbackLabelsWithTranslation, startDate, endDate);
             //console.log("Found amount of feedbackLabels: "+feedbackLabelEntryListForReport.length)
             //console.log("feedbackLabelEntryListForReport")
             //console.log(feedbackLabelEntryListForReport)
@@ -193,9 +308,7 @@ export class ReportGenerator {
 
             foods.push(foodSummary)
         }
-
-        report.foods = foods;
-        return report
+        return foods;
     }
 
     getFoodFeedbackComments(feedbacks: FoodsFeedbacks[]){
@@ -211,93 +324,128 @@ export class ReportGenerator {
         return comments;
     }
 
-    getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: FoodsFeedbacksLabels): string {
+    getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: FoodsFeedbacksLabels | CanteensFeedbacksLabels): string {
         // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
         // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
         return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
     }
 
-    async getReportFeedbackLabelsList(food_id: string, dictFeedbackLabelsWithTranslation: Record<string, FoodsFeedbacksLabels>, report_feedback_period_days: number | null | undefined): Promise<ReportFoodEntryLabelType[]> {
+    async getReportFeedbackLabelsList(food_id: string, dictFeedbackLabelsWithTranslation: Record<string, FoodsFeedbacksLabels>, startDate: Date, endDate: Date): Promise<ReportFoodEntryLabelType[]> {
         const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
-        const filter: Filter[] = [
-            {
-                food: {
-                    _eq: food_id
-                }
-            },
-        ]
-
-        let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
-        if(filterDateUpdated){
-            filter.push(filterDateUpdated);
-        }
-
-        const labelFeedbacks = await foodFeedbackLabelEntriesService.readByQuery({filter: {
-                _and: filter
-            },
-            limit: -1,
-        });
-
-        let labels_counted_dict: {[key: string]: ReportFoodEntryLabelType} = {};
-        for(let labelFeedback of labelFeedbacks){
-            let label_id = labelFeedback?.label;
-            if(!!label_id && typeof label_id === "string"){
-                let feedbackLabelWithTranslation = dictFeedbackLabelsWithTranslation[label_id];
-                if(!!feedbackLabelWithTranslation){
-                    let alias = this.getTranslationOfFeedbackLabel(feedbackLabelWithTranslation);
-                    let labels_counted_obj: ReportFoodEntryLabelType | undefined = labels_counted_dict[label_id];
-                    if(!labels_counted_obj){
-                        labels_counted_obj = {
-                            id: label_id,
-                            alias: alias,
-                            amount_negative: 0,
-                            amount_positive: 0,
-                            amount_total: 0
-                        }
-                    }
-                    if(!!labels_counted_obj){
-                        if(labelFeedback?.dislike){
-                            labels_counted_obj.amount_negative += 1;
-                        } else {
-                            labels_counted_obj.amount_positive += 1;
-                        }
-                        labels_counted_obj.amount_total += 1;
-                        labels_counted_dict[label_id] = labels_counted_obj;
-                    }
-                }
+        const filterLikes = {
+            dislike: {
+                _eq: false
             }
         }
 
+        const filterDislikes = {
+            dislike: {
+                _eq: true
+            }
+        }
+
+        const filterFeedbackLabelEntriesFoodEquals: Filter = {
+                food: {
+                    _eq: food_id
+                }
+            }
+
+
+
+        let filterDateUpdatedFeedbackLabelEntries: Filter = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
+
         let labels_counted_as_list: ReportFoodEntryLabelType[] = [];
-        for(let label_id in labels_counted_dict){
-            let label_counted_obj = labels_counted_dict[label_id];
-            if(!!label_counted_obj){
-                labels_counted_as_list.push(label_counted_obj);
+
+        let feedbackLabelKeys = Object.keys(dictFeedbackLabelsWithTranslation);
+        for(let feedbackLabelKey of feedbackLabelKeys){
+            let feedbackLabelWithTranslation = dictFeedbackLabelsWithTranslation[feedbackLabelKey];
+            if(!!feedbackLabelWithTranslation){
+                let feedbackLabelId = feedbackLabelWithTranslation?.id;
+
+                let filterFeedbackLabelEntriesFeedbackLabelEquals: Filter = {
+                    label: {
+                        _eq: feedbackLabelId
+                    }
+                }
+
+                let amount_positive_new = await foodFeedbackLabelEntriesService.countItems({
+                    filter: {
+                        _and: [
+                            filterFeedbackLabelEntriesFoodEquals,
+                            filterFeedbackLabelEntriesFeedbackLabelEquals,
+                            filterDateUpdatedFeedbackLabelEntries,
+                            filterLikes
+                        ]
+                    }
+                });
+                let amount_negative_new = await foodFeedbackLabelEntriesService.countItems({
+                    filter: {
+                        _and: [
+                            filterFeedbackLabelEntriesFoodEquals,
+                            filterFeedbackLabelEntriesFeedbackLabelEquals,
+                            filterDateUpdatedFeedbackLabelEntries,
+                            filterDislikes
+                        ]
+                    }
+                });
+
+                let amount_positive = await foodFeedbackLabelEntriesService.countItems({
+                    filter: {
+                        _and: [
+                            filterFeedbackLabelEntriesFoodEquals,
+                            filterFeedbackLabelEntriesFeedbackLabelEquals,
+                            filterLikes
+                        ]
+                    }
+                });
+
+                let amount_negative = await foodFeedbackLabelEntriesService.countItems({
+                    filter: {
+                        _and: [
+                            filterFeedbackLabelEntriesFoodEquals,
+                            filterFeedbackLabelEntriesFeedbackLabelEquals,
+                            filterDislikes
+                        ]
+                    }
+                });
+
+                let amount_total = amount_positive + amount_negative;
+
+                let alias = this.getTranslationOfFeedbackLabel(feedbackLabelWithTranslation);
+
+                let labelEntry: ReportFoodEntryLabelType = {
+                    id: feedbackLabelId,
+                    alias: alias,
+                    amount_positive_new: amount_positive_new,
+                    amount_negative_new: amount_negative_new,
+                    amount_positive: amount_positive,
+                    amount_negative: amount_negative,
+                    amount_total: amount_total
+                }
+
+                labels_counted_as_list.push(labelEntry);
+
             }
         }
 
         return labels_counted_as_list;
     }
 
-    private getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days: number | null | undefined){
-        let filter: Filter | undefined = undefined
-        if(report_feedback_period_days !== null && report_feedback_period_days !== undefined){
-            let end = new Date();
-            let start = new Date(end);
-            // subtract report_feedback_period_days amount days from start
-            start.setDate(start.getDate() - report_feedback_period_days);
-            filter =
-                {
-                    date_updated: {
-                        _between: [start.toISOString(), end.toISOString()]
-                    }
-                }
-        }
-        return filter;
+    private getFilterDateUpdatedForReportFeedbackPeriodDays(startDate: Date, endDate: Date): Filter {
+        let beginOfTheDayOfStartDate = new Date(startDate); // copy the date
+        beginOfTheDayOfStartDate.setHours(0,0,0,0);
+        let endOfTheDayOfEndDate = new Date(endDate); // copy the date
+        endOfTheDayOfEndDate.setHours(23,59,59,999);
+
+        return {
+            date_updated: {
+                _between: [beginOfTheDayOfStartDate.toISOString(), endOfTheDayOfEndDate.toISOString()]
+            }
+        };
     }
 
-    async getAllFoodFeedbacksWithCommentsForFood(food_id: string, report_feedback_period_days: number | null | undefined){
+    async getAllFoodFeedbacksWithCommentsForFood(food_id: string, startDate: Date, endDate: Date){
         let itemService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
         const filter: Filter[] = [
@@ -313,7 +461,7 @@ export class ReportGenerator {
             }
         ]
 
-        let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(report_feedback_period_days);
+        let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
         if(filterDateUpdated){
             filter.push(filterDateUpdated);
         }
@@ -327,11 +475,10 @@ export class ReportGenerator {
         });
     }
 
-    async getFoodOffersWithFoodAtDateInCanteen(date: Date, canteen_id: string){
+    async getFoodOffersWithFoodAtDateInCanteen(startDate: Date, endDate: Date, canteen_id: string){
 
-        let startOfTheDay = new Date(date); // copy the date
-        const foodofferDate = DateHelper.getFoodofferDateTypeFromDate(startOfTheDay);
-        const foodofferDateString = DateHelper.foodofferDateTypeToString(foodofferDate);
+        const startFoodofferDateString = DateHelper.foodofferDateTypeToString(DateHelper.getFoodofferDateTypeFromDate(startDate));
+        const endFoodofferDateString = DateHelper.foodofferDateTypeToString(DateHelper.getFoodofferDateTypeFromDate(endDate));
 
         let itemService = this.myDatabaseHelper.getFoodoffersHelper();
 
@@ -340,7 +487,7 @@ export class ReportGenerator {
                 _and: [
                     {
                         date: {
-                            _eq: foodofferDateString
+                            _between: [startFoodofferDateString, endFoodofferDateString]
                         }
                     },
                     {

@@ -10,10 +10,10 @@
       "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
     },
     "field": "canteens",
-    "group": "canteens_settings",
+    "group": "report_filter_settings",
     "hidden": false,
     "interface": "list-m2m",
-    "note": null,
+    "note": "Keine Auswahl: Alle Mensen betrachten | Auswahl: Nur Rückmeldungen und Angebote der ausgewählten Mensen werden betrachtet.",
     "options": {
       "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
     },

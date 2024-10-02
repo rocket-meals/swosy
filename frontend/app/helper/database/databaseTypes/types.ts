@@ -219,36 +219,38 @@ export type Businesshours = {
 export type CanteenFoodFeedbackReportSchedules = {
   alias?: string | null;
   canteens: any[] | CanteenFoodFeedbackReportSchedulesCanteens[];
-  canteens_settings: string;
   date_created?: string | null;
   date_next_report_is_due?: string | null;
   date_updated?: string | null;
   enabled?: boolean | null;
+  foodoffers_days_limit?: number | null;
+  foodoffers_days_offset?: number | null;
   id: string;
-  last_saved_send_amount_days_before_offer_date?: number | null;
-  last_saved_send_report_at_hh_mm?: string | null;
   recipients: any[] | CanteenFoodFeedbackReportSchedulesReportRecipients[];
-  report_display_settings: string;
-  report_feedback_period_days?: number | null;
+  report_content_settings: string;
+  report_debug_settings: string;
+  report_filter_settings: string;
   report_information: string;
   report_recipient_settings: string;
+  report_send_successfully?: boolean | null;
   report_status_log?: string | null;
   report_time_settings: string;
   report_time_settings_days: string;
-  send_amount_days_before_offer_date?: number | null;
-  send_for_fridays?: boolean | null;
-  send_for_mondays?: boolean | null;
-  send_for_saturdays?: boolean | null;
-  send_for_sundays?: boolean | null;
-  send_for_thursdays?: boolean | null;
-  send_for_tuesdays?: boolean | null;
-  send_for_wednesdays?: boolean | null;
-  send_once_now_for_date?: string | null;
+  send_on_fridays?: boolean | null;
+  send_on_mondays?: boolean | null;
+  send_on_saturdays?: boolean | null;
+  send_on_sundays?: boolean | null;
+  send_on_thursdays?: boolean | null;
+  send_on_tuesdays?: boolean | null;
+  send_on_wednesdays?: boolean | null;
+  send_once_now_for_reference_date?: string | null;
   send_report_at_hh_mm?: string | null;
+  show_canteen_feedbacks?: boolean | null;
+  show_food_comments?: boolean | null;
+  show_food_feedback_labels?: boolean | null;
   show_images?: boolean | null;
   sort?: number | null;
   status?: string | null;
-  use_canteen_specific_feedbacks_only?: boolean | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -962,6 +964,24 @@ export type Languages = {
   status?: string | null;
 };
 
+export type Mails = {
+  content?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  mail_information: string;
+  recipient?: string | null;
+  send_status: string;
+  sort?: number | null;
+  status: string;
+  subject?: string | null;
+  template_data?: unknown | null;
+  template_name?: string | null;
+  template_settings: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type Markings = {
   alias?: string | null;
   date_created?: string | null;
@@ -1338,6 +1358,7 @@ export type CustomDirectusTypes = {
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];
   languages: Languages[];
+  mails: Mails[];
   markings: Markings[];
   markings_exclusions: MarkingsExclusions[];
   markings_groups: MarkingsGroups[];
