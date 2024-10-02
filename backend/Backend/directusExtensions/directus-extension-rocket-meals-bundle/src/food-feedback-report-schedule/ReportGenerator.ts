@@ -49,6 +49,7 @@ export type ReportType = {
     show_images: boolean,
     show_food_feedback_labels: boolean,
     show_food_comments: boolean,
+    show_canteen_feedbacks: boolean,
     foods: ReportFoodEntryType[],
     canteen_labels: ReportCanteenEntryType[]
 }
@@ -100,6 +101,10 @@ export class ReportGenerator {
         if(show_food_comments === null || show_food_comments === undefined){
             show_food_comments = true;
         }
+        let show_canteen_feedbacks = reportSchedule.show_canteen_feedbacks;
+        if(show_canteen_feedbacks === null || show_canteen_feedbacks === undefined){
+            show_canteen_feedbacks = true;
+        }
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
@@ -107,6 +112,7 @@ export class ReportGenerator {
             show_images: show_images,
             show_food_feedback_labels: show_food_feedback_labels,
             show_food_comments: show_food_comments,
+            show_canteen_feedbacks: show_canteen_feedbacks,
             foods: [],
             canteen_labels: []
         }
