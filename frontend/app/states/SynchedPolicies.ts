@@ -33,7 +33,7 @@ export function useSynchedPoliciesDict(): [ Record<string, DirectusPolicies | nu
 				"directus_access", // this is the join table between roles and policies
 				"directus_permissions",  // the permissions are needed to check the policies
 			],
-			update_always: false
+			update_always: true
 		}
 	}
 

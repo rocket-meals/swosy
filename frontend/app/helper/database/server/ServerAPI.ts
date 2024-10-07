@@ -238,12 +238,15 @@ export class ServerAPI {
 
 	static async readRemotePolicies() {
 		const directus = ServerAPI.getClient();
-		console.log('readRemotePolicies()');
+		console.log('#################### readRemotePolicies()');
 		const policies = await directus.request<DirectusPolicies[]>(readPolicies({
 			fields: ['*', "permissions.*", "roles.*"],
 			deep: {
 				"permissions": {
 					_limit: -1 // we need all permissions
+				},
+				"roles": {
+					_limit: -1,
 				},
 				"users": {
 					_limit: 0
@@ -251,6 +254,7 @@ export class ServerAPI {
 			},
 			limit: -1 // we need all policies
 		}));
+		console.log("policies: ",policies)
 		return policies
 	}
 
