@@ -16,3 +16,6 @@ frontend/app/android
 
 tools/screenshotGenerator/dist/
 secrets/
+
+# Virtual environment folder
+**/venv/
