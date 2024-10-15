@@ -246,8 +246,26 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 					const preferredBrowserPackage = customTabsSupporting.preferredBrowserPackage;
 					console.log("customTabsSupporting: ")
 					console.log(JSON.stringify(customTabsSupporting, null, 2))
-					let defaultPrefferedBrowserPacckage = "com.android.chrome" // https://github.com/expo/expo/issues/6289
-					let usedPreferredBrowserPackage = preferredBrowserPackage || defaultPrefferedBrowserPacckage
+					// Set default to Chrome in case no preferred or available browsers are found
+					let defaultPrefferedBrowserPacckage = "com.android.chrome"; // Set a default fallback (can be Chrome)
+
+					// Get the preferred browser if available
+					let usedPreferredBrowserPackage = customTabsSupporting.preferredBrowserPackage;
+
+					// If no preferred browser, use the first available from browserPackages or servicePackages
+					if (!usedPreferredBrowserPackage) {
+						if (customTabsSupporting.browserPackages.length > 0) {
+							// Use the first available browser from browserPackages
+							usedPreferredBrowserPackage = customTabsSupporting.browserPackages[0];
+						} else if (customTabsSupporting.servicePackages.length > 0) {
+							// If no browserPackages, fall back to the first available servicePackage
+							usedPreferredBrowserPackage = customTabsSupporting.servicePackages[0];
+						} else {
+							// Fallback to Chrome if no packages are available
+							usedPreferredBrowserPackage = defaultPrefferedBrowserPacckage;
+						}
+					}
+
 					console.log("openBrowserAsync with preferredBrowserPackage: "+usedPreferredBrowserPackage)
 					result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, {browserPackage: usedPreferredBrowserPackage})
 				} else {
