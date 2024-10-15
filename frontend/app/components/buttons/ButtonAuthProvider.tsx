@@ -11,6 +11,7 @@ import {Text, View} from "@/components/Themed";
 import {PlatformHelper} from "@/helper/PlatformHelper";
 import * as Crypto from 'expo-crypto';
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {WebBrowserCustomTabsResults} from "expo-web-browser";
 
 // Define the type for Single Sign-On (SSO) providers
 type ButtonAuthProviderProps = {
@@ -151,7 +152,7 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 	};
 
 	const onPress = async () => {
-		//console.log("START PKCE");
+		console.log("START PKCE");
 		let debugObj: Record<any, any> = {}
 		const authorize_url = ServerAPI.getServerUrl() + '/proof-key-code-exchange/authorize'
 		debugObj.authorize_url = authorize_url
@@ -159,16 +160,16 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 		const provider = providerNameInDirectusAuthProviderList;
 		const redirect_url = desiredRedirectURL;
 		const code_challenge_method = "S256";
-		//console.log("code_verifier")
+		console.log("code_verifier")
 		const code_verifier = await generateCodeVerifier();
 		debugObj.code_verifier = code_verifier
 		renderDebugItem(debugObj)
-		//console.log(code_verifier)
-		//console.log("code_challenge")
+		console.log(code_verifier)
+		console.log("code_challenge")
 		const code_challenge = await generateCodeChallenge(code_verifier);
 		debugObj.code_challenge = code_challenge
 		renderDebugItem(debugObj)
-		//console.log(code_challenge)
+		console.log(code_challenge)
 
 		const requestBody = {
 			provider: provider, // e.g., 'google'
@@ -177,7 +178,7 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 			code_challenge_method: code_challenge_method, // or 'plain' if not using S256
 		};
 
-		//console.log("Fetch authorize url: "+authorize_url);
+		console.log("Fetch authorize url: "+authorize_url);
 
 		try{
 			const response = await fetch(authorize_url, {
@@ -188,10 +189,10 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 				body: JSON.stringify(requestBody),
 			});
 
-			//console.log("Response:")
-			//console.log(response)
+			console.log("Response:")
+			console.log(response)
 			let json = await response.json()
-			//console.log(json)
+			console.log(json)
 			const urlToProviderLogin = json.urlToProviderLogin;
 			const url = urlToProviderLogin;
 
@@ -235,11 +236,26 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 					}
 				}, WEB_CHECK_INTERVAL);
 			} else {
-				const options:  WebBrowser.AuthSessionOpenOptions = {
-					preferEphemeralSession: false // iOS browser doesn’t share cookies or other browsing data between the authentication session
+
+				// add the customTabsSupporting to the options
+
+				console.log("desiredRedirectURL: "+desiredRedirectURL)
+				let result = null;
+				if(PlatformHelper.isAndroid()){
+					let customTabsSupporting: WebBrowserCustomTabsResults = await WebBrowser.getCustomTabsSupportingBrowsersAsync()
+					const preferredBrowserPackage = customTabsSupporting.preferredBrowserPackage;
+					console.log("customTabsSupporting: ")
+					console.log(JSON.stringify(customTabsSupporting, null, 2))
+					let defaultPrefferedBrowserPacckage = "com.android.chrome" // https://github.com/expo/expo/issues/6289
+					let usedPreferredBrowserPackage = preferredBrowserPackage || defaultPrefferedBrowserPacckage
+					console.log("openBrowserAsync with preferredBrowserPackage: "+usedPreferredBrowserPackage)
+					result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, {browserPackage: usedPreferredBrowserPackage})
+				} else {
+					const options:  WebBrowser.AuthSessionOpenOptions = {
+						preferEphemeralSession: false, // iOS browser doesn’t share cookies or other browsing data between the authentication session
+					}
+					result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
 				}
-				//console.log("desiredRedirectURL: "+desiredRedirectURL)
-				let result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, options);
 				//console.log("ButtonAuthProvider result: ", result);
 
 				debugObj.result = result
