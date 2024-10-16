@@ -242,32 +242,10 @@ export const ButtonAuthProvider = ({ onPressWhenPrivacyPolicyIsNotAccepted, priv
 				console.log("desiredRedirectURL: "+desiredRedirectURL)
 				let result = null;
 				if(PlatformHelper.isAndroid()){
-					let customTabsSupporting: WebBrowserCustomTabsResults = await WebBrowser.getCustomTabsSupportingBrowsersAsync()
-					const preferredBrowserPackage = customTabsSupporting.preferredBrowserPackage;
-					console.log("customTabsSupporting: ")
-					console.log(JSON.stringify(customTabsSupporting, null, 2))
-					// Set default to Chrome in case no preferred or available browsers are found
-					let defaultPrefferedBrowserPacckage = "com.android.chrome"; // Set a default fallback (can be Chrome)
+					let androidPreferredBrowserPackageOption = await PlatformHelper.getAndroidPreferredBrowserPackageOption()
 
-					// Get the preferred browser if available
-					let usedPreferredBrowserPackage = customTabsSupporting.preferredBrowserPackage;
-
-					// If no preferred browser, use the first available from browserPackages or servicePackages
-					if (!usedPreferredBrowserPackage) {
-						if (customTabsSupporting.browserPackages.length > 0) {
-							// Use the first available browser from browserPackages
-							usedPreferredBrowserPackage = customTabsSupporting.browserPackages[0];
-						} else if (customTabsSupporting.servicePackages.length > 0) {
-							// If no browserPackages, fall back to the first available servicePackage
-							usedPreferredBrowserPackage = customTabsSupporting.servicePackages[0];
-						} else {
-							// Fallback to Chrome if no packages are available
-							usedPreferredBrowserPackage = defaultPrefferedBrowserPacckage;
-						}
-					}
-
-					console.log("openBrowserAsync with preferredBrowserPackage: "+usedPreferredBrowserPackage)
-					result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, {browserPackage: usedPreferredBrowserPackage})
+					console.log("openBrowserAsync with preferredBrowserPackage: "+androidPreferredBrowserPackageOption.browserPackage)
+					result = await WebBrowser.openAuthSessionAsync(url, desiredRedirectURL, {browserPackage: androidPreferredBrowserPackageOption.browserPackage})
 				} else {
 					const options:  WebBrowser.AuthSessionOpenOptions = {
 						preferEphemeralSession: false, // iOS browser doesn’t share cookies or other browsing data between the authentication session

@@ -358,6 +358,7 @@ export type CashregistersTransactions = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+  weekday_index_calculated?: number | null;
 };
 
 export type CollectionsDatesLastUpdate = {
@@ -1250,12 +1251,14 @@ export type WashingmachinesJobs = {
   duration_calculated?: string | null;
   duration_in_minutes_calculated?: number | null;
   duration_in_minutes_rounded_10min_calculated?: number | null;
+  hour_start_calculated?: number | null;
   id: string;
   sort?: number | null;
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   washingmachine?: string | Washingmachines | null;
+  weekday_index_calculated?: number | null;
 };
 
 export type Wikis = {

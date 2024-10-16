@@ -128,6 +128,8 @@ export default function FoodDayPlanScreen() {
 	const translation_price_group_student = useTranslation(TranslationKeys.price_group_student)
 	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
 
+	const translation_foods = useTranslation(TranslationKeys.foods)
+
 	const [reloadNumberForData, setReloadNumberForData] = useState(0);
 
 	const viewBackgroundColor = useViewBackgroundColor()
@@ -650,7 +652,15 @@ export default function FoodDayPlanScreen() {
 
 	function renderPaginatedFoodoffersMainCanteen() {
 		const content: any = [];
-		for (let i = 0; i < foodOffers.length; i++) {
+
+		const amountOffers = foodOffers.length;
+		const currentIndex = currentIndexMainCanteen;
+		const visibleCount = calculateVisibleItemsCountMainCanteen();
+		const nextIndexRaw = currentIndex + visibleCount;
+		const amountItemsShown = nextIndexRaw > amountOffers ? amountOffers : nextIndexRaw;
+
+
+		for (let i = 0; i < amountOffers; i++) {
 			const offer = foodOffers[i];
 			content.push(renderFoodOffer({
 				foodOffer: offer,
@@ -659,27 +669,48 @@ export default function FoodDayPlanScreen() {
 			}));
 		}
 
+		const maxHeight = additionalFoodOffers.length > 0 ? "50%" : "100%";
+
 		return (
-			<ScrollView
-				ref={scrollViewRefMainCanteen}
-				onLayout={(event) => {
-					const { width, height } = event.nativeEvent.layout;
-					setLayoutMainCanteen({ width, height });
-				}}
-				style={{
-					overflow: "hidden",
-					maxHeight: "50%",  // Set maximum height to 50% of the container
-					flexGrow: 0, // Prevent ScrollView from stretching more than it needs
-				}}
-				onContentSizeChange={(contentWidth, contentHeight) => {
-					if (contentHeight <= layoutMainCanteen.height) {
-						// No need to scroll if content fits within the view
-						setCurrentIndexMainCanteen(0);
-					}
-				}}
-			>
-				{content}
-			</ScrollView>
+			<View style={{
+				width: '100%',
+				flexGrow: 0, // Prevent ScrollView from stretching more than it needs
+				maxHeight: maxHeight,
+				overflow: "hidden",
+			}}>
+				<View style={{
+					width: '100%',
+					backgroundColor: foodAreaColor,
+					paddingHorizontal: 2,
+				}}>
+					<Text style={{
+						textAlign: "right",
+					}}>
+						{translation_foods+": "+amountItemsShown+ " / "+amountOffers}
+					</Text>
+				</View>
+				<ScrollView
+					ref={scrollViewRefMainCanteen}
+					onLayout={(event) => {
+						const { width, height } = event.nativeEvent.layout;
+						setLayoutMainCanteen({ width, height });
+					}}
+					style={{
+						overflow: "hidden",
+						flex: 1,
+						//maxHeight: maxHeight,  // Set maximum height to 50% of the container
+						//flexGrow: 0, // Prevent ScrollView from stretching more than it needs
+					}}
+					onContentSizeChange={(contentWidth, contentHeight) => {
+						if (contentHeight <= layoutMainCanteen.height) {
+							// No need to scroll if content fits within the view
+							setCurrentIndexMainCanteen(0);
+						}
+					}}
+				>
+					{content}
+				</ScrollView>
+			</View>
 		);
 	}
 
@@ -688,6 +719,12 @@ export default function FoodDayPlanScreen() {
 		if (additionalFoodOffers.length <= 0) {
 			return null;
 		}
+
+		const amountOffers = additionalFoodOffers.length;
+		const currentIndex = currentIndexAdditionalCanteens;
+		const visibleCount = calculateVisibleItemsCountAdditionalCanteens();
+		const nextIndexRaw = currentIndex + visibleCount;
+		const amountItemsShown = nextIndexRaw > amountOffers ? amountOffers : nextIndexRaw;
 
 		for (let i = 0; i < additionalFoodOffers.length; i++) {
 			const offer = additionalFoodOffers[i];
@@ -699,12 +736,22 @@ export default function FoodDayPlanScreen() {
 		}
 
 		return (
-			<>
+			<View style={{
+				width: '100%',
+				flex: 1,
+				overflow: "hidden",
+			}}>
 				<View style={{
 					width: '100%',
-					height: 10,
-					backgroundColor: foodAreaColor
-				}} />
+					backgroundColor: foodAreaColor,
+					paddingHorizontal: 2,
+				}}>
+					<Text style={{
+						textAlign: "right",
+					}}>
+						{translation_foods+": "+amountItemsShown+ " / "+amountOffers}
+					</Text>
+				</View>
 				<ScrollView
 					ref={scrollViewRefAdditionalCanteens}
 					onLayout={(event) => {
@@ -713,7 +760,8 @@ export default function FoodDayPlanScreen() {
 					}}
 					style={{
 						overflow: "hidden",
-						flex: 1, // Use the remaining space available
+						flex: 1, // Use the remaining space available,
+						//flexGrow: 0, // Prevent ScrollView from stretching more than it needs
 					}}
 					onContentSizeChange={(contentWidth, contentHeight) => {
 						if (contentHeight <= layoutAdditionalCanteens.height) {
@@ -724,7 +772,7 @@ export default function FoodDayPlanScreen() {
 				>
 					{content}
 				</ScrollView>
-			</>
+			</View>
 		);
 	}
 
