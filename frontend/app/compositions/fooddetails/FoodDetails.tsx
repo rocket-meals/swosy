@@ -172,8 +172,13 @@ export const FoodFeedbacksLabelsComponent = ({food, foodoffer, foodFeedbackLabel
 			if(!!label){
 				let sort = label?.sort
 				let amount_information = foodFeedbackLabelsCounts?.[label?.id];
-				let amount_likes = amount_information?.amount_likes ?? null;
-				let amount_dislikes = amount_information?.amount_dislikes ?? null;
+				let amount_likes: number | null = amount_information?.amount_likes ?? null;
+				let amount_dislikes: number | null = amount_information?.amount_dislikes ?? null;
+
+				if(foods_feedbacks_labels_type === FeedbackLabelsType.use){
+					amount_likes = null;
+					amount_dislikes = null;
+				}
 
 				data.push({key: key,
 					sort: sort,
