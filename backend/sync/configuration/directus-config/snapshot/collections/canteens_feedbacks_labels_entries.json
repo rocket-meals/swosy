@@ -10,7 +10,7 @@
     "color": null,
     "display_template": null,
     "group": "canteens_feedbacks_labels",
-    "hidden": false,
+    "hidden": true,
     "icon": null,
     "item_duplication_fields": null,
     "note": null,

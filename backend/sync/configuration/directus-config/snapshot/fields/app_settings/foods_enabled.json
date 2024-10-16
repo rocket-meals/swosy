@@ -11,7 +11,7 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Bereich \"Mensa\" in der App aktivieren?",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speisen Aktiviert"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

@@ -1,11 +1,13 @@
 import requests
 import markdown2
+import datetime
 from fpdf import FPDF
-
-# variable for server endpoint
+import json
 
 # Example variables
-SERVER_ENDPOINT = "https://swosy.rocket-meals.de/rocket-meals/api/items"
+server_endpoint = "https://swosy.rocket-meals.de/rocket-meals/api/items"
+start_date = "2024-10-01"
+end_date = "2024-10-01"
 
 # Predefined Server Endpoints
 predefinedOptions = {
@@ -28,7 +30,6 @@ def select_server_endpoint():
         print(f"{key}. {name} ({serverEndpoints[name]})")
     print("5. Enter a custom server URL")
 
-    # Ask the user to select an option or enter their own URL
     choice = input("Enter the number of your choice (1-5): ")
 
     if choice in predefinedOptions:
@@ -43,61 +44,181 @@ def select_server_endpoint():
         return select_server_endpoint()
 
 def create_markdown_instruction_get_canteens():
-    # {SERVER_ENDPOINT}/items/canteens?limit=-1
-    # call the endpoint and ask the user interactively to select the canteen
-
-    # make a GET request to the endpoint
-    URL = f"{SERVER_ENDPOINT}/canteens?limit=-1"
+    URL = f"{server_endpoint}/items/canteens?limit=-1&fields=alias,id"
+    print("Get all canteens from the server from the following URL: ", URL)
     response = requests.get(URL)
-    data = response.json()
-    print(data)
+    data_raw = response.json()
+    data = data_raw["data"]
+    #print("Data: ", data)
+
+    print("Please select a canteen from the following options with a number:")
+    amount_of_canteens = len(data)
+    print("Canteens:")
+    for i in range(amount_of_canteens):
+        print(f"{i+1}. {data[i]['alias']} ({data[i]['id']})")
+    print("Enter the number of your choice: ")
+    choice = int(input())
+    selected_canteen_id = data[choice-1]["id"]
+    print(f"Selected canteen: {data[choice-1]['alias']} ({selected_canteen_id})")
+
+    markdown = f'''
+# Server Endpoint
+
+The following instructions are based for the server endpoint:
+```
+{server_endpoint}
+```
+
+# Canteen Selection
+    '''
+
+    markdown += f'''
+## Get all canteens
+Make a GET request to the following endpoint:
+```
+{URL}
+```
+The response will contain a list of canteens with their alias and id. Select a canteen by its id.
+    '''
+
+    markdown += f'''
+## Example Data of Canteens
+```
+   data = [
+      ...
+      {json.dumps(data[choice-1], indent=2)}
+      ...
+   ]
+```
+    '''
+
+    # now ask the user to select the date range
+    print("Please enter the start date (YYYY-MM-DD) or press Enter for today: ")
+    start_date = input()
+    if start_date == "":
+        start_date = datetime.date.today().strftime("%Y-%m-%d")
+    print("Please enter the end date (YYYY-MM-DD) or press Enter for today: ")
+    end_date = input()
+    if end_date == "":
+        end_date = start_date
+    print(f"Selected date range: {start_date} to {end_date}")
+    print("Selected canteen ID: ", selected_canteen_id)
+
+    return markdown, selected_canteen_id, start_date, end_date
+
+def create_markdown_instruction_get_foodoffers_with_image(selected_canteen_id, start_date, end_date):
+    print("Get all food offers with image from the server")
+    print("Selected canteen ID: ", selected_canteen_id)
+    print("Selected date range: ", start_date, " to ", end_date)
+
+    URL_WITH_PLACEHOLDER = f"{server_endpoint}/items/foodoffers?fields=id,food.image,food.alias,food.id,alias,date&filter={{\"_and\":[{{\"_or\":[{{\"_and\":[{{\"date\":{{\"_gte\":\"<DATE_START_YYYY_MM_DD>\"}}}},{{\"date\":{{\"_lte\":\"<DATE_END_YYYY_MM_DD>\"}}}}]}},{{\"date\":{{\"_null\":true}}}}]}},{{\"canteen\":{{\"_eq\":\"<CANTEEN_ID>\"}}}}]}}&limit=-1"
+    URL = f"{server_endpoint}/items/foodoffers?fields=id,food.image,food.alias,food.id,alias,date&filter={{\"_and\":[{{\"_or\":[{{\"_and\":[{{\"date\":{{\"_gte\":\"{start_date}\"}}}},{{\"date\":{{\"_lte\":\"{end_date}\"}}}}]}},{{\"date\":{{\"_null\":true}}}}]}},{{\"canteen\":{{\"_eq\":\"{selected_canteen_id}\"}}}}]}}&limit=-1"
+    markdown = '''
+# Food Offer Selection
+    '''
+
+    markdown += f'''
+## Get all food offers with image
+
+This instruction is based on the selected canteen ID:
+```
+{selected_canteen_id}
+```
+and the selected date range:
+```
+{start_date} to {end_date}
+```
+
+For other canteens or date ranges, please adjust the filter in the URL accordingly. This is the URL with the placeholders:
+```
+{URL_WITH_PLACEHOLDER}
+```
+
+
+
+Make a GET request to the following endpoint for our selected canteen and date range in this example:
+```
+{URL}
+```
+The response will contain a list of food offers with their images. Select a food offer by its id.
+    '''
+
+    print("Get all food offers with image from the server from the following URL: ", URL)
+    response = requests.get(URL)
+    data_raw = response.json()
+    data = data_raw["data"]
+    #print("Data: ", data)
+    print("Please select a food offer from the following options with a number:")
+    amount_of_foodoffers = len(data)
+    print("Food Offers:")
+    for i in range(amount_of_foodoffers):
+        print(f"{i+1}. {data[i]['food']['alias']} ({data[i]['id']})")
+    print("Enter the number of your choice: ")
+    choice = int(input())
+    image_id = data[choice-1]["food"]["image"]
+    print(f"Selected food offer: {data[choice-1]['food']['alias']} ({image_id})")
     
+    markdown += f'''
+## Example Data of Food Offers
+```
+   data = [
+      ...
+      {json.dumps(data[choice-1], indent=2)}
+      ...
+   ]
+```
+    '''
+    
+    markdown += f'''
+## Example Image ID
+```
+   image_id = {image_id}
+```
+    '''
 
+    return markdown, image_id
 
-    # and to select the date range, predefined would be today in format YYYY-MM-DD but MM as 10 for October
+def create_markdown_instruction_get_image(image_id):
+    print("Get the image with the following image ID: ", image_id)
+    # https://swosy.rocket-meals.de/rocket-meals/api/assets/c54d549f-1aaa-487c-ac6e-4fc1fe206dcb?fit=cover&width=512&height=512&quality=100
 
+    URL_WITH_PLACEHOLDER = f"{server_endpoint}/assets/<IMAGE_ID>?fit=cover&width=512&height=512&quality=100"
+    URL = f"{server_endpoint}/assets/{image_id}?fit=cover&width=512&height=512&quality=100"
 
-def create_markdown_instruction_get_foodoffers_with_image(EXAMPLE_CANTEEN_ID, DATE_START, DATE_END):
-    # https://swosy.rocket-meals.de/rocket-meals/api/items/foodoffers?fields=*,food.*,!food.feedbacks,food.translations.*,markings.*&filter={"_and":[{"_or":[{"_and":[{"date":{"_gte":"2024-10-16"}},{"date":{"_lte":"2024-10-16"}}]},{"date":{"_null":true}}]},{"canteen":{"_eq":<MENSA_ID>}}]}&limit=-1
-    # call the endpoint and get the data
-    # example_data = {
-    #                                 "data": [
-    #                                                {
-    #                                                                "id": "35c91e2d-db0d-4b7d-8ab4-be0fc729c53b",
-    #                                                                "food": {
-    #                                                                                "id": "25554-4654",
-    #                                                                                "alias": "Hot Dog",
-    #                                                                                "image_remote_url": null,
-    #                                                                                "image": "ba2e4e89-28f8-4707-91f7-70740a6db841"
-    #                                                                },
-    #                                                                ….
-    #                                                },
-    #                                                ...
-    #                                 ]
-    #                 }
+    markdown = '''
+# Image Selection
+    '''
 
+    markdown += f'''
 
-def create_markdown_instruction_get_image(EXAMPLE_IMAGE_ID):
-    # https://swosy.rocket-meals.de/rocket-meals/api/assets/<IMAGE_ID>?fit=cover&width=512&height=512&quality=100
-    # optional parameters can be more read here: https://docs.directus.io/reference/files.html#custom-transformations
+This instruction is based on the selected image ID:
+```
+{image_id}
+```
 
+For other images, please adjust the image ID in the URL accordingly. This is the URL with the placeholders:
+```
+{URL_WITH_PLACEHOLDER}
+```
 
-def create_markdown_instruction():
+## Get the image with the selected example image ID
+Make a GET request to the following endpoint:
+```
+{URL}
+```
+The response will contain the image.
+Further transformations can be done by adding parameters to the URL, which are documented here: https://docs.directus.io/reference/files.html#custom-transformations
+    '''
 
-
-def generate_pdf_instruction_from_markdown(markdown_instruction):
-    # Generate pdf from markdown
-    # Return path to pdf file
-    pass
+    return markdown
 
 if __name__ == "__main__":
-    # Select the server endpoint
-    SERVER_ENDPOINT = select_server_endpoint()
+    server_endpoint = select_server_endpoint()
 
-    # Create markdown instruction
-    markdown_instruction = create_markdown_instruction()
+    markdown, selected_canteen_id, start_date, end_date = create_markdown_instruction_get_canteens()
+    foodoffers_markdown, image_id = create_markdown_instruction_get_foodoffers_with_image(selected_canteen_id, start_date, end_date)
+    markdown += foodoffers_markdown
+    markdown += create_markdown_instruction_get_image(image_id)
+    print("-----------------------------------")
 
-    # Generate PDF instruction from markdown
-    pdf_file_path = generate_pdf_instruction_from_markdown(markdown_instruction)
-
-    print(f"PDF instruction generated successfully at {pdf_file_path}")
+    print(markdown)

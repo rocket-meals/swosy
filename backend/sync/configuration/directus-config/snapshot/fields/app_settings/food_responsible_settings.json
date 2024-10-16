@@ -21,7 +21,12 @@
       "group",
       "no-data"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speisen Rechtliche Einstellungen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

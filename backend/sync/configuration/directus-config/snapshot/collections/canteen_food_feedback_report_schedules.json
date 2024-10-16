@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 14,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Mensa Berichte Zeitpläne",
+        "singular": "Mensa Bericht Zeitplan",
+        "plural": "Mensa Berichte Zeitpläne"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

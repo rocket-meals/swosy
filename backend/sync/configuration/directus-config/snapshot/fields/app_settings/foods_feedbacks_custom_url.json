@@ -11,13 +11,18 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 15,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "URL für externes Forum"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

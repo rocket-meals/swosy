@@ -19,7 +19,12 @@
     "required": false,
     "sort": 4,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnanlagen Import Letztes Datum"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

@@ -15,11 +15,16 @@
     "options": {
       "includeSeconds": true
     },
-    "readonly": false,
+    "readonly": true,
     "required": false,
     "sort": 2,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Kassentransaktionen Datum Letzter Import"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

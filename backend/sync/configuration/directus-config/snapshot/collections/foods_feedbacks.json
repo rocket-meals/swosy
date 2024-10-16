@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 5,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Rückmeldungen",
+        "singular": "Speise Rückmeldung",
+        "plural": "Speise Rückmeldungen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

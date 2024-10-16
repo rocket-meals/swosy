@@ -1,13 +1,13 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
-  "field": "foods_feedbacks_id",
+  "collection": "canteens_foodservice_hours_during_semester_break",
+  "field": "canteens_id",
   "type": "uuid",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "canteens_foodservice_hours_during_semester_break",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_feedbacks_id",
+    "field": "canteens_id",
     "group": null,
     "hidden": true,
     "interface": null,
@@ -23,8 +23,8 @@
     "width": "full"
   },
   "schema": {
-    "name": "foods_feedbacks_id",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "name": "canteens_id",
+    "table": "canteens_foodservice_hours_during_semester_break",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -36,7 +36,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_feedbacks",
+    "foreign_key_table": "canteens",
     "foreign_key_column": "id"
   }
 }

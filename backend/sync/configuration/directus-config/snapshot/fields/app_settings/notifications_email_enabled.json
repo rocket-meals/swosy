@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "E-Mail Benachrichtigungen Aktiviert für Speisen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

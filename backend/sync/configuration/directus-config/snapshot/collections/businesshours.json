@@ -10,7 +10,7 @@
     "color": null,
     "display_template": null,
     "group": null,
-    "hidden": false,
+    "hidden": true,
     "icon": null,
     "item_duplication_fields": null,
     "note": null,
@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 4,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Öffnungszeiten",
+        "singular": "Öffnungszeit",
+        "plural": "Öffnungszeiten"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

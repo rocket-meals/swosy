@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Sonntags versenden?"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

@@ -24,7 +24,12 @@
       "group",
       "no-data"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Berichts Filter und Datumsbereiche"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

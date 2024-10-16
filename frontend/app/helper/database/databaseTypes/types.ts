@@ -246,6 +246,7 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_once_now_for_reference_date?: string | null;
   send_report_at_hh_mm?: string | null;
   show_canteen_feedbacks?: boolean | null;
+  show_canteen_feedbacks_also_per_canteen?: boolean | null;
   show_food?: boolean | null;
   show_food_comments?: boolean | null;
   show_food_feedback_labels?: boolean | null;
@@ -277,6 +278,7 @@ export type Canteens = {
   foodoffers_import_delete_all_without_dates?: boolean | null;
   foodoffers_import_without_date?: boolean | null;
   foodservice_hours: any[] | CanteensFoodserviceHours[];
+  foodservice_hours_during_semester_break: any[] | CanteensFoodserviceHoursDuringSemesterBreak[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -327,6 +329,12 @@ export type CanteensFeedbacksLabelsTranslations = {
 };
 
 export type CanteensFoodserviceHours = {
+  businesshours_id?: string | Businesshours | null;
+  canteens_id?: string | Canteens | null;
+  id: number;
+};
+
+export type CanteensFoodserviceHoursDuringSemesterBreak = {
   businesshours_id?: string | Businesshours | null;
   canteens_id?: string | Canteens | null;
   id: number;
@@ -894,13 +902,6 @@ export type FoodsFeedbacks = {
   user_updated?: string | DirectusUsers | null;
 };
 
-export type FoodsFeedbacksFoodsFeedbacksLabels = {
-  dislike?: boolean | null;
-  foods_feedbacks_id?: string | FoodsFeedbacks | null;
-  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
-  id: number;
-};
-
 export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
@@ -1251,14 +1252,12 @@ export type WashingmachinesJobs = {
   duration_calculated?: string | null;
   duration_in_minutes_calculated?: number | null;
   duration_in_minutes_rounded_10min_calculated?: number | null;
-  hour_start_calculated?: number | null;
   id: string;
   sort?: number | null;
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   washingmachine?: string | Washingmachines | null;
-  weekday_index_calculated?: number | null;
 };
 
 export type Wikis = {
@@ -1320,6 +1319,7 @@ export type CustomDirectusTypes = {
   canteens_feedbacks_labels_entries: CanteensFeedbacksLabelsEntries[];
   canteens_feedbacks_labels_translations: CanteensFeedbacksLabelsTranslations[];
   canteens_foodservice_hours: CanteensFoodserviceHours[];
+  canteens_foodservice_hours_during_semester_break: CanteensFoodserviceHoursDuringSemesterBreak[];
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
@@ -1355,7 +1355,6 @@ export type CustomDirectusTypes = {
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_feedbacks: FoodsFeedbacks[];
-  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];

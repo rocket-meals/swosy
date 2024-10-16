@@ -1,9 +1,9 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
+  "collection": "canteens_foodservice_hours_during_semester_break",
   "field": "id",
   "type": "integer",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "canteens_foodservice_hours_during_semester_break",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -24,9 +24,9 @@
   },
   "schema": {
     "name": "id",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "table": "canteens_foodservice_hours_during_semester_break",
     "data_type": "integer",
-    "default_value": "nextval('foods_feedbacks_foods_feedbacks_labels_id_seq'::regclass)",
+    "default_value": "nextval('canteens_foodservice_hours_during_semester_break_id_seq'::regclass)",
     "max_length": null,
     "numeric_precision": 32,
     "numeric_scale": 0,

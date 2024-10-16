@@ -15,11 +15,16 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 5,
+    "sort": 6,
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Zeige Rückmeldungen zu den Speisen: Kommentare"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

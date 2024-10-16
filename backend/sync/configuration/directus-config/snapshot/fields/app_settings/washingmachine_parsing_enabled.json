@@ -15,11 +15,16 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 6,
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Waschmaschinen Automatisch Importieren"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

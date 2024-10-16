@@ -256,6 +256,7 @@ export enum TranslationKeys {
 	previous = "previous",
 	businesshours = "businesshours",
 	foodservicehours = "foodservicehours",
+	foodservicehoursDuringSemesterBreak = "foodservicehoursDuringSemesterBreak",
 	until = "until",
 	day = "day",
 	today = "today",
@@ -1938,6 +1939,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Часы работы питания',
 		[LanguageKeys.tr_TR]: 'Yemek Servisi Saatleri',
 		[LanguageKeys.zh_CN]: '餐饮服务时间'
+	},
+	foodservicehoursDuringSemesterBreak: {
+		[LanguageKeys.de_DE]: 'Essenszeiten während der Semesterferien',
+		[LanguageKeys.en_US]: 'Food Service Hours during Semester Break',
+		[LanguageKeys.ar_SA]: 'ساعات خدمة الطعام خلال إجازة الفصل الدراسي',
+		[LanguageKeys.es_ES]: 'Horario de servicio de comida durante las vacaciones del semestre',
+		[LanguageKeys.fr_FR]: 'Heures de service de nourriture pendant les vacances du semestre',
+		[LanguageKeys.ru_RU]: 'Часы работы питания во время каникул',
+		[LanguageKeys.tr_TR]: 'Dönem Tatili Sırasında Yemek Servisi Saatleri',
+		[LanguageKeys.zh_CN]: '学期休息期间的餐饮服务时间'
 	},
 	until: {
 		[LanguageKeys.de_DE]: 'bis',

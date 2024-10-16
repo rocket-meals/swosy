@@ -12,6 +12,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             foodoffers_days_offset: 0,
             foodoffers_days_limit: 7,
@@ -59,6 +60,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         let startDay = 1; // 1st of July is a Monday
         let offset = 3; // 3 days offset
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             foodoffers_days_offset: offset,
             foodoffers_days_limit: 7,
@@ -107,6 +109,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             foodoffers_days_offset: 0,
             foodoffers_days_limit: 1,
@@ -151,6 +154,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             foodoffers_days_offset: 0,
             foodoffers_days_limit: 2,
@@ -189,5 +193,40 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
         expect(expectedStartDateOnly).toEqual(startDateOnly);
     });
+
+    it("ReferenceDate null if report not enabled", async () => {
+        const sendReportAtHour = 6;
+        const sendReportAtMinute = 0;
+        const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
+        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            enabled: false,
+            send_report_at_hh_mm: sendReportAtHhMmPadded,
+            foodoffers_days_offset: 0,
+            foodoffers_days_limit: 2,
+            send_on_mondays: true,
+            send_on_tuesdays: true,
+            send_on_wednesdays: true,
+            send_on_thursdays: true,
+            send_on_fridays: true,
+            send_on_saturdays: true,
+            send_on_sundays: true,
+        }
+
+        const now_simulated = DateHelper.getDate({
+            year: 2024,
+            month: 7,
+            day: 5,
+            hours: sendReportAtHour,
+            minutes: sendReportAtMinute,
+            seconds: 0,
+            milliseconds: 0
+        });
+
+        const generateForDate = ReportSchedule.getReferenceDate(recipientEntry, now_simulated);
+
+        expect(generateForDate).toBeNull();
+    });
+
+
 
 });

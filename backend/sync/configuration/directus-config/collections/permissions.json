@@ -156,6 +156,18 @@
     "_syncId": "3cbc1884-f56c-424b-9d12-c73c0ebe45ae"
   },
   {
+    "collection": "canteens_foodservice_hours_during_semester_break",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "_sync_default_public_policy",
+    "_syncId": "9380159c-1156-4147-a2e9-81ea0865fb02"
+  },
+  {
     "collection": "canteens_foodservice_hours",
     "action": "read",
     "permissions": {},
@@ -185,7 +197,8 @@
       "external_identifier",
       "alias",
       "utilization_group",
-      "foodservice_hours"
+      "foodservice_hours",
+      "foodservice_hours_during_semester_break"
     ],
     "policy": "_sync_default_public_policy",
     "_syncId": "5228485b-8bb3-4579-bdf9-3c6d1a09d52e"

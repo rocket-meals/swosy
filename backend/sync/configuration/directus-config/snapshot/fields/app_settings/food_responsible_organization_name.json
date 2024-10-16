@@ -11,13 +11,18 @@
     "group": "food_responsible_settings",
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 1,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Name der verantwortlichen Stelle"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

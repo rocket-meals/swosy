@@ -11,7 +11,7 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Soll die Anzahl der Bewertungen angezeigt werden?",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Bewertungen Anzahl Anzeigen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

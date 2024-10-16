@@ -56,7 +56,7 @@
         }
       ]
     },
-    "readonly": false,
+    "readonly": true,
     "required": false,
     "sort": 2,
     "special": null,

@@ -11,7 +11,7 @@
     "group": null,
     "hidden": false,
     "interface": "group-detail",
-    "note": null,
+    "note": "Push-Nachrichten Einstellungen",
     "options": {
       "headerIcon": "notifications_active",
       "start": "closed"
@@ -24,7 +24,12 @@
       "group",
       "no-data"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Benachrichtigung Einstellungen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

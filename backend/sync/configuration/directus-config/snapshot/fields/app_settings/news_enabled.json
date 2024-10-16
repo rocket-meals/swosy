@@ -11,7 +11,7 @@
     "group": "news_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Zeigt in der App den Bereich News an",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "News Aktiviert"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

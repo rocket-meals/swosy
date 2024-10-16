@@ -11,7 +11,7 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "select-dropdown",
-    "note": null,
+    "note": "Wie sollen die Bewertungen angezeigt werden? Sterne, Daumen, ...",
     "options": {
       "allowNone": true,
       "allowOther": true,
@@ -42,7 +42,12 @@
     "required": false,
     "sort": 12,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Bewertung Typ Schnittstelle"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

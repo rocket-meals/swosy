@@ -35,7 +35,12 @@
     "special": [
       "m2m"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gebäude Öffnungzeiten"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

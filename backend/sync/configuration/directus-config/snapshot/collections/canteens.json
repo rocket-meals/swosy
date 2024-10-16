@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 5,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Mensen",
+        "singular": "Mensa",
+        "plural": "Mensen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

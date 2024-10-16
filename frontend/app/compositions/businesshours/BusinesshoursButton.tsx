@@ -11,10 +11,12 @@ import {Heading, View} from "@/components/Themed";
 interface AppState {
 	businesshours?: Businesshours[] | undefined,
 	foodservicehours?: Businesshours[] | undefined,
+	foodservicehoursDuringSemesterBreak?: Businesshours[] | undefined,
 }
-export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours, foodservicehours, ...props}) => {
+export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours, foodservicehours, foodservicehoursDuringSemesterBreak, ...props}) => {
 	const translation_businesshours = useTranslation(TranslationKeys.businesshours)
 	const translation_foodservicehours = useTranslation(TranslationKeys.foodservicehours)
+	const translation_foodservicehoursDuringSemesterBreak = useTranslation(TranslationKeys.foodservicehoursDuringSemesterBreak)
 
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
@@ -42,6 +44,16 @@ export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours,
 		</>
 	}
 
+	let foodservicehoursDuringSemesterBreakInformation: any = undefined
+	if(foodservicehoursDuringSemesterBreak && foodservicehoursDuringSemesterBreak.length > 0){
+		foodservicehoursDuringSemesterBreakInformation = <>
+			<View style={{width: '100%', paddingLeft: 20, paddingRight: 20}}>
+				<Heading>{translation_foodservicehoursDuringSemesterBreak}</Heading>
+			</View>
+			<BusinesshoursTable businesshours={foodservicehoursDuringSemesterBreak} />
+		</>
+	}
+
 	const onPress = () => {
 		setModalConfig({
 			title: title,
@@ -54,6 +66,8 @@ export const BusinesshoursButton: FunctionComponent<AppState> = ({businesshours,
 						{businesshoursInformation}
 						<View style={{height: 20}} />
 						{foodservicehoursInformation}
+						<View style={{height: 20}} />
+						{foodservicehoursDuringSemesterBreakInformation}
 					</MyScrollView>
 				)
 			}

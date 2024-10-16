@@ -11,7 +11,7 @@
     "group": "housing_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Zeigt den Bereich Wohnen in der App an",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnen Bereich Aktiviert"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

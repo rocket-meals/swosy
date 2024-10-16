@@ -7,7 +7,7 @@
     "conditions": null,
     "display": "related-values",
     "display_options": {
-      "template": "{{alias}}({{id}})"
+      "template": "{{alias}} ({{id}})"
     },
     "field": "building",
     "group": null,
@@ -15,7 +15,7 @@
     "interface": "select-dropdown-m2o",
     "note": null,
     "options": {
-      "template": "{{alias}}({{id}})"
+      "template": "{{alias}} ({{id}})"
     },
     "readonly": false,
     "required": false,
@@ -23,7 +23,12 @@
     "special": [
       "m2o"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gebäude"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

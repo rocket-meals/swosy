@@ -13,7 +13,7 @@
     "interface": "input",
     "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
     "sort": 10,
     "special": null,

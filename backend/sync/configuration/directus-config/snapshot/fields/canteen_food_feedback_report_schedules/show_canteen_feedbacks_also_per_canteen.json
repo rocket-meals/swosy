@@ -1,32 +1,37 @@
 {
-  "collection": "foods_feedbacks_foods_feedbacks_labels",
-  "field": "dislike",
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "show_canteen_feedbacks_also_per_canteen",
   "type": "boolean",
   "meta": {
-    "collection": "foods_feedbacks_foods_feedbacks_labels",
+    "collection": "canteen_food_feedback_report_schedules",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "dislike",
-    "group": null,
+    "field": "show_canteen_feedbacks_also_per_canteen",
+    "group": "report_content_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Zeige Rückmeldungen zu den Mensen pro Mensa: Labels",
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 4,
+    "sort": 3,
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "dislike",
-    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "name": "show_canteen_feedbacks_also_per_canteen",
+    "table": "canteen_food_feedback_report_schedules",
     "data_type": "boolean",
     "default_value": true,
     "max_length": null,

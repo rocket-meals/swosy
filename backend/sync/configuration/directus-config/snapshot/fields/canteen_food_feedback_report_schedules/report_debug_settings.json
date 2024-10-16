@@ -9,7 +9,7 @@
     "display_options": null,
     "field": "report_debug_settings",
     "group": null,
-    "hidden": false,
+    "hidden": true,
     "interface": "group-detail",
     "note": null,
     "options": {
@@ -18,7 +18,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 15,
     "special": [
       "alias",
       "group",

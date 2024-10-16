@@ -24,6 +24,9 @@
                         Label
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                        Mensa
+                    </th>
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
                             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABAElEQVR4nNWWQUoDQRREXzlBPIYbj5B1li6ELA0qHiTH8AhqLpBTuBOPkE0S9QSCGcuFEzI0M3Z3tEE/fHr49K/q+k0XI9uUjIOi6PsSSLqWNJNURTfbzkrgCqgBA9PY/iwFki6BW3bKT2I9yQSSLoA7oD2Wx2hj4lgmwIavsbRzGO1NAD8H3jvA34DDHxEA4x5wAw9J6iME6x5wAx8NeVcugNPtI646mqueek6ubaMGaBPc/aBZw3puDP6mVSTGq+26JMH99qPEJdfAcbYXZcTc9qKkglHrLf06wdPedp0YN2GhU0Ej7znz9C/AUWA33xKMgWUi+Ao4C/1M//6v4hOPeLxiSEvz8gAAAABJRU5ErkJggg==" alt="thumb-up" style="width:24px; height:24px; margin-right:8px;">
                             Anzahl Positiv (davon neu)
@@ -43,7 +46,8 @@
                 <tbody>
                 {% for label in canteen_labels %}
                     <tr style="border-bottom: 1px solid #aaa;">
-                        <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.alias }}</td>
+                        <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.label_alias }}</td>
+                        <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.canteen_alias }}</td>
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_positive }} ({{ label.amount_positive_new }})</td>
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_negative }} ({{ label.amount_negative_new }})</td>
                         <td style="padding: 12px; text-align: left;">{{ label.amount_total }}</td>

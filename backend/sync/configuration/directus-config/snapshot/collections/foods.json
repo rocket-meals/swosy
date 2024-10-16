@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 7,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speisen",
+        "singular": "Speise",
+        "plural": "Speisen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

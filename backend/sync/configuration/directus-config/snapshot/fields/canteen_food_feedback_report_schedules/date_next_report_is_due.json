@@ -8,16 +8,21 @@
     "display": null,
     "display_options": null,
     "field": "date_next_report_is_due",
-    "group": "report_information",
+    "group": null,
     "hidden": false,
     "interface": "datetime",
     "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 1,
+    "sort": 14,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Nächster Bericht fällig am"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

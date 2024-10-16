@@ -11,13 +11,18 @@
     "group": "foods_settings",
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "Ändert sich die Prüfsumme, wird der Speiseplan erneut importiert",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 5,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speiseangebote Letzte Prüfsumme"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

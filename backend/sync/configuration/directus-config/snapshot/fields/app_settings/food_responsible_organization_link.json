@@ -11,13 +11,18 @@
     "group": "food_responsible_settings",
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "URL bzw. Link zu der verantwortlichen Stelle",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 2,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "URL zu der verantwortlichen Stelle"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

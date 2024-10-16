@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 4,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Nutzer Geräte",
+        "singular": "Nutzer Gerät",
+        "plural": "Nutzer Geräte"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

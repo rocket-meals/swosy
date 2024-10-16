@@ -17,15 +17,15 @@
       "allowOther": true,
       "choices": [
         {
-          "text": "disabled",
+          "text": "Ausgeschaltet",
           "value": "disabled"
         },
         {
-          "text": "use only",
+          "text": "Nur verwenden",
           "value": "use"
         },
         {
-          "text": "use and read",
+          "text": "Verwenden und Anzahl fremder Bewertungen sehen",
           "value": "useAndRead"
         }
       ]
@@ -34,7 +34,12 @@
     "required": false,
     "sort": 14,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Rückmeldung Label Typ"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

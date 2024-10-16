@@ -614,7 +614,6 @@ const FoodDataListDetails = ({foodOfferOrFood}: {foodOfferOrFood: CommonFieldsOf
 export default function FoodDetails({ foodOfferId }: { foodOfferId: string }) {
 	const [foodOfferData, setFoodOfferData] = useState<Foodoffers>();
 	const isDemo = useIsDemo()
-	const server = useServerInfo();
 
 	useEffect(() => {
 		loadFoodOffer(isDemo, foodOfferId)

@@ -13,7 +13,7 @@
     "interface": "datetime",
     "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
     "sort": 12,
     "special": null,

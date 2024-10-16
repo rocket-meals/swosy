@@ -1,5 +1,10 @@
 import {PersistentStore} from '@/helper/syncState/PersistentStore';
-import {Businesshours, Canteens, CanteensFoodserviceHours} from '@/helper/database/databaseTypes/types';
+import {
+	Businesshours,
+	Canteens,
+	CanteensFoodserviceHours,
+	CanteensFoodserviceHoursDuringSemesterBreak
+} from '@/helper/database/databaseTypes/types';
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
@@ -18,7 +23,12 @@ const cacheHelperDeepFields_canteen: MyCacheHelperDeepFields = new MyCacheHelper
 	{
 		field: 'foodservice_hours.*',
 		limit: -1,
-		dependency_collections_or_enum: ["canteens_foodservicehours"],
+		dependency_collections_or_enum: ["canteens_foodservice_hours"],
+	},
+	{
+		field: 'foodservice_hours_during_semester_break.*',
+		limit: -1,
+		dependency_collections_or_enum: ["canteens_foodservice_hours_during_semester_break"],
 	},
 	{
 		field: 'utilization_group.*',
@@ -140,5 +150,31 @@ export function useSynchedCanteensFoodServicehoursDict(): Record<string, Busines
 		 }
 	 }
 	 return canteensBusinesshoursDict
+}
 
+export function useSynchedCanteensFoodServicehoursDuringSemesterBreakDict(): Record<string, Businesshours[] | undefined> {
+	const isDemo = useIsDemo()
+	const [canteensDict, setCanteensDict] = useSynchedCanteensDict()
+	const [businesshoursDict, setBusinesshoursDict] = useSynchedBusinesshoursDict()
+
+	const canteensBusinesshoursDict: Record<string, Businesshours[] | undefined> = {}
+
+	for (const canteenId in canteensDict) {
+		const canteen_id_as_string: string = canteenId
+		const canteen = canteensDict[canteenId]
+		if (canteen?.foodservice_hours_during_semester_break) {
+			let canteensBusinesshours: CanteensFoodserviceHoursDuringSemesterBreak[] = canteen.foodservice_hours_during_semester_break as CanteensFoodserviceHoursDuringSemesterBreak[]
+			let businesshours: Businesshours[] = []
+			canteensBusinesshours.forEach((canteensBusinesshours) => {
+				let businesshoursId = canteensBusinesshours.businesshours_id as string
+				let businesshoursEntry = businesshoursDict?.[businesshoursId]
+				if (businesshoursEntry) {
+					businesshours.push(businesshoursEntry)
+				}
+			})
+
+			canteensBusinesshoursDict[canteen_id_as_string] = businesshours
+		}
+	}
+	return canteensBusinesshoursDict
 }

@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 3,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gebäude",
+        "singular": "Gebäude",
+        "plural": "Gebäude"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

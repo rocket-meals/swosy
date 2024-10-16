@@ -9,7 +9,7 @@
     "collection": "foods_feedbacks_labels",
     "color": null,
     "display_template": null,
-    "group": "foods_feedbacks_labels_entries",
+    "group": "foods",
     "hidden": false,
     "icon": null,
     "item_duplication_fields": null,
@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 1,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Speise Rückmeldung Labels",
+        "singular": "Speise Rückmeldung Label",
+        "plural": "Speise Rückmeldung Labels"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

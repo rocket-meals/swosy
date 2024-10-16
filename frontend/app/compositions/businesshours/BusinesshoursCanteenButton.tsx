@@ -1,7 +1,10 @@
 import React, {FunctionComponent} from 'react';
 import {useSynchedProfileCanteen} from '@/states/SynchedProfile';
 import {BusinesshoursButton} from "@/compositions/businesshours/BusinesshoursButton";
-import {useSynchedCanteensFoodServicehoursDict} from "@/states/SynchedCanteens";
+import {
+	useSynchedCanteensFoodServicehoursDict,
+	useSynchedCanteensFoodServicehoursDuringSemesterBreakDict
+} from "@/states/SynchedCanteens";
 import {Buildings, Businesshours} from "@/helper/database/databaseTypes/types";
 import {useSynchedBuildingsBusinesshours, useSynchedBuildingsDict} from "@/states/SynchedBuildings";
 
@@ -10,7 +13,8 @@ interface AppState {
 }
 export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const canteensBusinesshours = useSynchedCanteensFoodServicehoursDict();
+	const canteensFoodserviceHours = useSynchedCanteensFoodServicehoursDict();
+	const canteensFoodserviceHoursDuringSemesterBreak = useSynchedCanteensFoodServicehoursDuringSemesterBreakDict();
 	const buildingsBusinesshours = useSynchedBuildingsBusinesshours();
 
 	let canteen_id = profileCanteen?.id;
@@ -26,15 +30,13 @@ export const BusinesshoursCanteenButton: FunctionComponent<AppState> = ({...prop
 	//console.log("BusinesshoursCanteenButton: building_id", building_id)
 
 	let buildingBusinesshours: Businesshours[] | undefined = buildingsBusinesshours[building_id];
-	let canteenFoodServicehours: Businesshours[] | undefined = canteensBusinesshours[canteen_id];
-
-	const noBuildingBusinesshours = buildingBusinesshours === undefined || buildingBusinesshours.length === 0;
-	const noCanteenFoodServicehours = canteenFoodServicehours === undefined || canteenFoodServicehours.length === 0;
+	let canteenFoodServicehours: Businesshours[] | undefined = canteensFoodserviceHours[canteen_id];
+	let canteenFoodServicehoursDuringSemesterBreak: Businesshours[] | undefined = canteensFoodserviceHoursDuringSemesterBreak[canteen_id];
 
 	//console.log("BusinesshoursCanteenButton: profileCanteen", profileCanteen);
 	//console.log("BusinesshoursCanteenButton: canteensBusinesshours", canteensBusinesshours);
 	//console.log("BusinesshoursCanteenButton: buildingBusinesshours", buildingBusinesshours)
 
 
-	return <BusinesshoursButton businesshours={buildingBusinesshours} foodservicehours={canteenFoodServicehours} {...props} />
+	return <BusinesshoursButton businesshours={buildingBusinesshours} foodservicehours={canteenFoodServicehours} foodservicehoursDuringSemesterBreak={canteenFoodServicehoursDuringSemesterBreak} {...props} />
 }

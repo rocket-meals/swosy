@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 1,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Kennzeichnungs Gruppen",
+        "singular": "Kennzeichnungs Gruppe",
+        "plural": "Kennzeichnungs Gruppen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 1,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Waschmaschinen",
+        "singular": "Waschmaschine",
+        "plural": "Waschmaschinen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },
