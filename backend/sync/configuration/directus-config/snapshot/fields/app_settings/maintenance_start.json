@@ -19,7 +19,12 @@
     "required": false,
     "sort": 1,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wartungs Zeitpunkt Start"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

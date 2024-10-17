@@ -15,11 +15,16 @@
     "options": {
       "includeSeconds": true
     },
-    "readonly": false,
+    "readonly": true,
     "required": false,
     "sort": 4,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Campus Import Letztes Datum"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

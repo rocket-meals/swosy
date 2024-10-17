@@ -33679,6 +33679,7 @@
           },
           "map_enabled": {
             "nullable": true,
+            "description": "Zeige den Lageplan in der App an",
             "type": "boolean"
           },
           "news_enabled": {
@@ -33721,7 +33722,8 @@
             "type": "boolean"
           },
           "redirect_whitelist": {
-            "nullable": true
+            "nullable": true,
+            "description": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen"
           },
           "status": {
             "nullable": false,
@@ -33766,6 +33768,7 @@
           },
           "campus_enabled": {
             "nullable": true,
+            "description": "Zeige in der App den Bereich Campus an",
             "type": "boolean"
           },
           "campus_parsing_enabled": {

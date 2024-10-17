@@ -11,7 +11,7 @@
     "group": "map_settings",
     "hidden": false,
     "interface": "boolean",
-    "note": null,
+    "note": "Zeige den Lageplan in der App an",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Lageplan Aktiviert"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

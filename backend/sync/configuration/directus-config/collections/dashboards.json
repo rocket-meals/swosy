@@ -35,6 +35,13 @@
     "_syncId": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab"
   },
   {
+    "name": "Geräte",
+    "icon": "space_dashboard",
+    "note": null,
+    "color": null,
+    "_syncId": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25"
+  },
+  {
     "name": "Mails",
     "icon": "space_dashboard",
     "note": null,

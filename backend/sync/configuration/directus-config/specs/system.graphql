@@ -503,6 +503,8 @@ type app_settings {
   maintenance_end_func: datetime_functions
   maintenance_start: Date
   maintenance_start_func: datetime_functions
+
+  """Zeige den Lageplan in der App an"""
   map_enabled: Boolean
 
   """Zeigt in der App den Bereich News an"""
@@ -517,6 +519,8 @@ type app_settings {
   notifications_foods_last_date_func: datetime_functions
   notifications_foods_status: String
   notifications_ios_enabled: Boolean
+
+  """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
   redirect_whitelist_func: count_functions
   status: String
@@ -526,6 +530,8 @@ type app_settings {
   utilization_forecast_calculation_last_date: Date
   utilization_forecast_calculation_last_date_func: datetime_functions
   utilization_forecast_calculation_status: String
+
+  """Zeige in der App den Bereich Campus an"""
   campus_enabled: Boolean
   campus_parsing_enabled: Boolean
   campus_parsing_last_date: Date

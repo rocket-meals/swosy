@@ -11,7 +11,7 @@
     "group": "redirect_settings",
     "hidden": false,
     "interface": "select-multiple-dropdown",
-    "note": null,
+    "note": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen",
     "options": {
       "allowNone": true,
       "allowOther": true,
@@ -40,7 +40,12 @@
     "special": [
       "cast-json"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Erlaubte Quellen der Weiterleitungen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

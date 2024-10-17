@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Kassen",
+        "singular": "Kasse",
+        "plural": "Kassen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

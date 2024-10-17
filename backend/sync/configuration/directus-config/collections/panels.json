@@ -8,7 +8,7 @@
     "note": null,
     "type": "metric",
     "position_x": 24,
-    "position_y": 62,
+    "position_y": 79,
     "width": 23,
     "height": 5,
     "options": {
@@ -115,6 +115,37 @@
       }
     },
     "_syncId": "03934103-b35a-4f69-a72e-30b9835606b6"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "iOS System Versionen Verteilung",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "line-chart",
+    "position_x": 1,
+    "position_y": 69,
+    "width": 65,
+    "height": 14,
+    "options": {
+      "collection": "devices",
+      "xAxis": "system_version",
+      "yAxis": "id",
+      "aggregation": "count",
+      "grouping": null,
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "platform": {
+              "_contains": "iOS"
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "0472759f-f4c1-416f-a9f7-f80f32d34726"
   },
   {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
@@ -413,6 +444,46 @@
       ]
     },
     "_syncId": "17968fbd-6eb7-491a-8c22-f763fd5e04ae"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Neue Nutzer Erstellungen mit Google in den letzten 31 Tagen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 38,
+    "position_y": 23,
+    "width": 29,
+    "height": 5,
+    "options": {
+      "collection": "directus_users",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": null,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "provider": {
+                  "_eq": "google"
+                }
+              },
+              {
+                "profile": {
+                  "date_created": {
+                    "_gte": "$NOW(-31 days)"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "192f4fe6-bb52-4616-9a28-79878f06f1d7"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -778,9 +849,9 @@
     "show_header": true,
     "note": null,
     "type": "bar-chart",
-    "position_x": 46,
+    "position_x": 38,
     "position_y": 1,
-    "width": 21,
+    "width": 29,
     "height": 16,
     "options": {
       "collection": "directus_users",
@@ -853,7 +924,7 @@
     "note": null,
     "type": "metric",
     "position_x": 33,
-    "position_y": 67,
+    "position_y": 84,
     "width": 16,
     "height": 5,
     "options": {
@@ -939,6 +1010,39 @@
       }
     },
     "_syncId": "36879a56-20b4-4b54-9f30-1633da11171f"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte: Simulatoren",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 18,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "is_simulator": {
+                  "_eq": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "3735c850-1661-4307-9d83-f3821b33ba08"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
@@ -1182,6 +1286,58 @@
     "_syncId": "3f55a030-4ba0-4a38-ba8d-4b01c5eedfa0"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte: Tablets",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 8,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "is_simulator": {
+                  "_neq": true
+                }
+              },
+              {
+                "is_tablet": {
+                  "_eq": true
+                }
+              },
+              {
+                "_or": [
+                  {
+                    "is_android": {
+                      "_eq": true
+                    }
+                  },
+                  {
+                    "is_ios": {
+                      "_eq": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "3ff302e3-84c5-45d9-9b08-52990c7f8fda"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Waschvorgänge Startzeiten Insgesamt (Monats-Präzision)",
     "icon": null,
@@ -1384,6 +1540,96 @@
     "_syncId": "4cc34d1c-cab1-4aa0-a4d2-c6be4a6facee"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte: Browser",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 13,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "is_simulator": {
+                  "_neq": true
+                }
+              },
+              {
+                "is_tablet": {
+                  "_eq": false
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "is_android": {
+                      "_eq": false
+                    }
+                  },
+                  {
+                    "is_ios": {
+                      "_eq": false
+                    }
+                  },
+                  {
+                    "is_web": {
+                      "_eq": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "50961912-3ae9-47d0-9c36-6f38d3bd2279"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte Marken",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 1,
+    "position_y": 24,
+    "width": 65,
+    "height": 43,
+    "options": {
+      "collection": "devices",
+      "column": "provider",
+      "donut": true,
+      "showLabels": true,
+      "legend": "bottom",
+      "conditionalFill": null,
+      "function": "count",
+      "yAxis": "id",
+      "xAxis": "brand",
+      "horizontal": true,
+      "limit": -1,
+      "groupByField": "brand",
+      "aggregateField": "id",
+      "aggregateFunction": "count",
+      "prefix": null,
+      "sortField": "brand",
+      "decimals": 0
+    },
+    "_syncId": "50c956d0-f1d2-4272-b295-a9fdf2183ff5"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Summe Waschzeit",
     "icon": null,
@@ -1534,7 +1780,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 46,
+    "position_y": 63,
     "width": 66,
     "height": 14,
     "options": {
@@ -1578,6 +1824,83 @@
     "_syncId": "5ecac9b4-a981-402e-b316-b222f98cf0a1"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte Typen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "bar-chart",
+    "position_x": 25,
+    "position_y": 8,
+    "width": 21,
+    "height": 11,
+    "options": {
+      "collection": "devices",
+      "column": "provider",
+      "donut": true,
+      "showLabels": true,
+      "legend": "bottom",
+      "conditionalFill": null,
+      "function": "count",
+      "yAxis": "id",
+      "xAxis": "platform"
+    },
+    "_syncId": "5ff8fd06-4963-4114-89df-182d7d722eed"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte: Handy",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 3,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "is_tablet": {
+                  "_neq": true
+                }
+              },
+              {
+                "is_web": {
+                  "_neq": true
+                }
+              },
+              {
+                "_or": [
+                  {
+                    "is_android": {
+                      "_eq": true
+                    }
+                  },
+                  {
+                    "is_ios": {
+                      "_eq": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "61f071fe-5665-4d86-85fc-0ec059bf8352"
+  },
+  {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
     "name": "Mensa Rückmeldungen: Start Zeit (Standart: Heute)",
     "icon": null,
@@ -1608,7 +1931,7 @@
     "note": null,
     "type": "metric",
     "position_x": 17,
-    "position_y": 67,
+    "position_y": 84,
     "width": 16,
     "height": 5,
     "options": {
@@ -1874,6 +2197,39 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Neue Profile in den letzen 31 Tagen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 1,
+    "position_y": 18,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "profiles",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "date_created": {
+                  "_gte": "$NOW(-31 days)"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "6da128de-e845-49e7-b2d6-a2e51a972087"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
     "name": "Anzahl Profile",
     "icon": null,
     "color": null,
@@ -1942,7 +2298,7 @@
     "note": null,
     "type": "metric-list",
     "position_x": 1,
-    "position_y": 91,
+    "position_y": 106,
     "width": 31,
     "height": 16,
     "options": {
@@ -1972,7 +2328,7 @@
     "note": null,
     "type": "metric",
     "position_x": 1,
-    "position_y": 109,
+    "position_y": 123,
     "width": 29,
     "height": 6,
     "options": {
@@ -2117,6 +2473,27 @@
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Geräte Bildschirm Breite Verteilung",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "line-chart",
+    "position_x": 1,
+    "position_y": 98,
+    "width": 65,
+    "height": 14,
+    "options": {
+      "collection": "devices",
+      "xAxis": "display_width",
+      "yAxis": "display_width",
+      "aggregation": "count",
+      "grouping": null
+    },
+    "_syncId": "856b62e4-a569-488b-92a1-2d114da32caf"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Waschmaschinen gestartet Freitags",
     "icon": null,
@@ -2167,6 +2544,66 @@
       "suffix": "min"
     },
     "_syncId": "8bc98a74-5cb9-4d3d-aa04-2442d143e4f9"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Anzahl Geräte",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 25,
+    "position_y": 3,
+    "width": 21,
+    "height": 5,
+    "options": {
+      "collection": "devices",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": "id"
+    },
+    "_syncId": "8bf14f79-1baa-40f2-a5c1-aa5df34f8f16"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Neue Nutzer Erstellungen mit Apple in den letzten 31 Tagen",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "metric",
+    "position_x": 38,
+    "position_y": 18,
+    "width": 29,
+    "height": 5,
+    "options": {
+      "collection": "directus_users",
+      "field": "id",
+      "function": "countDistinct",
+      "sortField": null,
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "provider": {
+                  "_eq": "apple"
+                }
+              },
+              {
+                "profile": {
+                  "date_created": {
+                    "_gte": "$NOW(-31 days)"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "_syncId": "8c27ad7c-a327-44a7-ad1f-2388966c7a21"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -2385,7 +2822,7 @@
     "note": null,
     "type": "metric",
     "position_x": 47,
-    "position_y": 62,
+    "position_y": 79,
     "width": 18,
     "height": 5,
     "options": {
@@ -2482,7 +2919,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 74,
+    "position_y": 89,
     "width": 66,
     "height": 15,
     "options": {
@@ -2985,7 +3422,7 @@
     "note": null,
     "type": "metric",
     "position_x": 1,
-    "position_y": 62,
+    "position_y": 79,
     "width": 23,
     "height": 5,
     "options": {
@@ -3447,7 +3884,7 @@
     "note": null,
     "type": "metric-list",
     "position_x": 32,
-    "position_y": 91,
+    "position_y": 106,
     "width": 31,
     "height": 16,
     "options": {
@@ -3518,7 +3955,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 33,
+    "position_y": 50,
     "width": 66,
     "height": 13,
     "options": {
@@ -3592,6 +4029,27 @@
     "_syncId": "d132f5e6-0e93-481c-97fb-5532f0a694a8"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Geräte Bildschirm Höhe Verteilung",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "line-chart",
+    "position_x": 1,
+    "position_y": 112,
+    "width": 65,
+    "height": 14,
+    "options": {
+      "collection": "devices",
+      "xAxis": "display_height",
+      "yAxis": "display_height",
+      "aggregation": "count",
+      "grouping": null
+    },
+    "_syncId": "d31f445f-36f1-4e12-9e7a-fa02b55b5346"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "name": "Waschmaschinen gestartet Mittwochs",
     "icon": null,
@@ -3632,7 +4090,7 @@
     "note": null,
     "type": "metric",
     "position_x": 49,
-    "position_y": 67,
+    "position_y": 84,
     "width": 16,
     "height": 5,
     "options": {
@@ -3664,6 +4122,37 @@
       }
     },
     "_syncId": "d71b1374-1846-4585-9aa9-7dc2a4fdec14"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "name": "Android System Versionen Verteilung",
+    "icon": null,
+    "color": null,
+    "show_header": true,
+    "note": null,
+    "type": "line-chart",
+    "position_x": 1,
+    "position_y": 83,
+    "width": 65,
+    "height": 14,
+    "options": {
+      "collection": "devices",
+      "xAxis": "system_version",
+      "yAxis": "id",
+      "aggregation": "count",
+      "grouping": null,
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "platform": {
+              "_contains": "Android"
+            }
+          }
+        ]
+      }
+    },
+    "_syncId": "dc0be0a4-5972-448e-b956-5b689bee1b06"
   },
   {
     "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
@@ -3873,26 +4362,6 @@
       ]
     },
     "_syncId": "e99bbe32-5185-4ebc-af46-68065ab707cf"
-  },
-  {
-    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": "Anzahl Geräte",
-    "icon": null,
-    "color": null,
-    "show_header": true,
-    "note": null,
-    "type": "metric",
-    "position_x": 23,
-    "position_y": 1,
-    "width": 21,
-    "height": 5,
-    "options": {
-      "collection": "devices",
-      "field": "id",
-      "function": "countDistinct",
-      "sortField": "id"
-    },
-    "_syncId": "e9b09c5f-263a-494c-b66e-103231d0fbd2"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
@@ -4217,7 +4686,7 @@
     "note": null,
     "type": "time-series",
     "position_x": 1,
-    "position_y": 19,
+    "position_y": 36,
     "width": 66,
     "height": 14,
     "options": {
@@ -4243,31 +4712,6 @@
     "_syncId": "f8a26906-3282-4bbb-aea9-88d569127084"
   },
   {
-    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": "Anzahl Geräte Typen",
-    "icon": null,
-    "color": null,
-    "show_header": true,
-    "note": null,
-    "type": "bar-chart",
-    "position_x": 23,
-    "position_y": 6,
-    "width": 21,
-    "height": 11,
-    "options": {
-      "collection": "devices",
-      "column": "provider",
-      "donut": true,
-      "showLabels": true,
-      "legend": "bottom",
-      "conditionalFill": null,
-      "function": "count",
-      "yAxis": "id",
-      "xAxis": "platform"
-    },
-    "_syncId": "f9288676-dfa7-41d6-b8e9-a8c825f18e22"
-  },
-  {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
     "name": "Anzahl Speiseangebote der letzen 1 Woche (Tages-Präzision)",
     "icon": null,
@@ -4290,14 +4734,14 @@
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": "Anzahl Guthaben: [0,5[ €",
+    "name": "Anzahl Guthaben: ]0,5[ €",
     "icon": null,
     "color": null,
     "show_header": true,
     "note": null,
     "type": "metric",
     "position_x": 1,
-    "position_y": 67,
+    "position_y": 84,
     "width": 16,
     "height": 5,
     "options": {
@@ -4318,7 +4762,7 @@
                 "_and": [
                   {
                     "credit_balance": {
-                      "_gte": "0"
+                      "_gt": "0"
                     }
                   },
                   {

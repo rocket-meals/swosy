@@ -9,16 +9,23 @@
     "collection": "report_recipients",
     "color": null,
     "display_template": null,
-    "group": "canteen_food_feedback_report_schedules_report_recipients",
+    "group": "canteen_food_feedback_report_schedules",
     "hidden": false,
     "icon": null,
     "item_duplication_fields": null,
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 1,
+    "sort": 2,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Bericht Empfänger",
+        "singular": "Bericht Empfänger",
+        "plural": "Bericht Empfänger"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },
