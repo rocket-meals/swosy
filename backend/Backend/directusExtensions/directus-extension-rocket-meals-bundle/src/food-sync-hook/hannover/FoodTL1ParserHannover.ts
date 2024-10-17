@@ -23,11 +23,11 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
 
     /**
      * Wait for confirmation in mail if we should user the markings from the ZS_NUMMERN field
-     *
+     * Hannover Mail: 17.10.2024
+     */
     override getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
-        return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
+        //return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
 
-        /**
         let tl1_zusatz_nummern_string = rawFoodoffer.raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
         // for example: " 3, 15, 20, 20A, 20D, 99"
         if(!!tl1_zusatz_nummern_string){
@@ -39,6 +39,5 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         return [];
 
     }
-        */
 
 }
