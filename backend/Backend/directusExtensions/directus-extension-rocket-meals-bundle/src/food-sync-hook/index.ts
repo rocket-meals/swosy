@@ -3,7 +3,6 @@ import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {FoodParserInterface} from "./FoodParserInterface";
-import {FoodTL1Parser} from "./FoodTL1Parser";
 import {FoodTL1Parser_RawReportFtpReader} from "./FoodTL1Parser_RawReportFtpReader";
 import {FoodTL1Parser_RawReportUrlReader} from "./FoodTL1Parser_RawReportUrlReader";
 import {MarkingTL1Parser} from "./MarkingTL1Parser";
@@ -14,7 +13,6 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -33,7 +31,8 @@ function getFoodParser(): FoodParserInterface | null {
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             const ftpFileReader = new FoodTL1Parser_RawReportFtpReader(DIRECTUS_TL1_FOOD_PATH, FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(ftpFileReader));
+
+            return FoodParserWithCustomerAdaptions.getFoodParser(ftpFileReader);
         case "TL1WEB":
             /* TL1 URL */
             const FOOD_SYNC_TL1WEB_EXPORT_URL = EnvVariableHelper.getFoodSyncTL1WebExportUrl();
@@ -45,11 +44,11 @@ function getFoodParser(): FoodParserInterface | null {
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from URL: " + FOOD_SYNC_TL1WEB_EXPORT_URL);
             const urlReader = new FoodTL1Parser_RawReportUrlReader(FOOD_SYNC_TL1WEB_EXPORT_URL);
             // @ts-ignore // this should be fine, because the class implements the interface // TODO: Investigate why this is necessary
-            return new FoodParserWithCustomerAdaptions(new FoodTL1Parser(urlReader));
+            return FoodParserWithCustomerAdaptions.getFoodParser(urlReader);
         case "SWOSY_API":
             const FOOD_SYNC_SWOSY_API_URL = EnvVariableHelper.getFoodImageSyncSwosyApiServerUrl();
             if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
-                return new FoodParserWithCustomerAdaptions(new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7));
+                //return new FoodParserWithCustomerAdaptions(new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7));
             } else {
                 console.log(SCHEDULE_NAME + ": no URL configured for SWOSY_API, please set the environment variable FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
             }

@@ -4,11 +4,12 @@ import {FoodTL1Parser} from "../../FoodTL1Parser";
 import {FoodTL1Parser_GetRawReportInterface} from "../../FoodTL1Parser_GetRawReportInterface";
 import {
     FoodTL1Parser_RawReportTestReaderOsnabrueck
-} from "../../exampleData/osnabrueck/FoodTL1Parser_RawReportTestReaderOsnabrueck";
+} from "../FoodTL1Parser_RawReportTestReaderOsnabrueck";
+import {FoodTL1ParserOsnabrueck} from "../FoodTL1ParserOsnabrueck";
 
 describe("FoodTL1ParserOsnabrueck Test", () => {
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderOsnabrueck();
-    let foodParser: FoodTL1Parser = new FoodTL1Parser(testFileGetter);
+    let foodParser: FoodTL1Parser = new FoodTL1ParserOsnabrueck(testFileGetter);
 
     // should find atleast one food
     it("Find more than one food", async () => {
@@ -59,6 +60,32 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
         } else {
             expect(false).toBe(true);
         }
+    });
+
+    it("Foods shall have not fiber_g", async () => {
+        await foodParser.createNeededData();
+        let foodsJson = await foodParser.getFoodsListForParser();
+        let foundFiber = false;
+        for(let food of foodsJson){
+            if(!!food.basicFoodData.fiber_g){
+                foundFiber = true;
+                break;
+            }
+        }
+        expect(foundFiber).toBe(false);
+    });
+
+    it("Foodoffers shall have not fiber_g", async () => {
+        await foodParser.createNeededData();
+        let foodOffersJson = await foodParser.getFoodoffersForParser();
+        let foundFiber = false;
+        for(let foodOffer of foodOffersJson){
+            if(!!foodOffer.basicFoodofferData.fiber_g){
+                foundFiber = true;
+                break;
+            }
+        }
+        expect(foundFiber).toBe(false);
     });
 
 });

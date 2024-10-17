@@ -1,14 +1,15 @@
 // small jest test
 import { describe, it, expect } from '@jest/globals';
-import {FoodTL1Parser} from "../../FoodTL1Parser";
+import {FoodTL1ParserHannover} from "../FoodTL1ParserHannover";
 import {FoodTL1Parser_GetRawReportInterface} from "../../FoodTL1Parser_GetRawReportInterface";
-import {FoodTL1Parser_RawReportTestReaderHannover} from "../../exampleData/hannover/FoodTL1Parser_RawReportTestReaderHannover";
+import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawReportTestReaderHannover";
 import {FoodoffersTypeForParser} from "../../FoodParserInterface";
+import {FoodTL1Parser} from "../../FoodTL1Parser";
 
 describe("FoodTL1ParserHannover Test", () => {
 
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
-    let foodParser: FoodTL1Parser = new FoodTL1Parser(testFileGetter);
+    let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
 
     // should find atleast one food
     it("Find more than one food", async () => {
@@ -120,5 +121,31 @@ describe("FoodTL1ParserHannover Test", () => {
         }
         expect(criticalDuplicateKeys.length).toBe(0);
 
+    });
+
+    it("Foods shall have not fiber_g", async () => {
+        await foodParser.createNeededData();
+        let foodsJson = await foodParser.getFoodsListForParser();
+        let foundFiber = false;
+        for(let food of foodsJson){
+            if(!!food.basicFoodData.fiber_g){
+                foundFiber = true;
+                break;
+            }
+        }
+        expect(foundFiber).toBe(false);
+    });
+
+    it("Foodoffers shall have not fiber_g", async () => {
+        await foodParser.createNeededData();
+        let foodOffersJson = await foodParser.getFoodoffersForParser();
+        let foundFiber = false;
+        for(let foodOffer of foodOffersJson){
+            if(!!foodOffer.basicFoodofferData.fiber_g){
+                foundFiber = true;
+                break;
+            }
+        }
+        expect(foundFiber).toBe(false);
     });
 });

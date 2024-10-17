@@ -223,7 +223,7 @@ export class ReportGenerator {
 
                     let canteenSummary: ReportCanteenEntryType = {
                         id: canteenFeedbackLabelsWithTranslation?.id,
-                        label_alias: "^", // indicates that the label is the same as the one above
+                        label_alias: "↳ davon", // indicates that the label is the same as the one above
                         canteen_alias: canteen.alias,
                         amount_positive_new: this.formatAmountNewToReportString(countsForCanteen.amount_positive_new),
                         amount_negative_new: this.formatAmountNewToReportString(countsForCanteen.amount_negative_new),

@@ -19,7 +19,7 @@ import {DictHelper} from "../helpers/DictHelper";
 type FoodofferIdentifierType = string
 export type RawTL1FoodofferType = { [x: string]: string; }
 
-type RawFoodofferInformationType = {
+export type RawFoodofferInformationType = {
     food_id: string,
     raw_tl1_foodoffer_json: RawTL1FoodofferType,
     date: FoodofferDateType,
@@ -55,6 +55,8 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_CO2_SAVING_PERCENTAGE_FIELD = "EXTINFO_CO2_EINSPARUNG";
     static DEFAULT_CO2_RATING_FIELD = "EXTINFO_CO2_BEWERTUNG";
 
+    static DEFAULT_ZSNUMMERN_FIELD = "ZSNUMMERN";
+
     private rawFoodoffersJSONList: RawFoodofferInformationListType = [];
     private rawFoodofferReader: FoodTL1Parser_GetRawReportInterface;
 
@@ -67,6 +69,9 @@ export class FoodTL1Parser implements FoodParserInterface {
         this.rawFoodoffersJSONList = [];
     }
 
+    /**
+     * @implements FoodParserInterface
+     */
     public async createNeededData(){
         this.resetData()
 
@@ -74,6 +79,9 @@ export class FoodTL1Parser implements FoodParserInterface {
         this.rawFoodoffersJSONList = await FoodTL1Parser.getRawFoodofferJSONListFromRawReport(rawReport);
     }
 
+    /**
+     * @implements FoodParserInterface
+     */
     async getFoodsListForParser(){
         let foodIdToRawFoodofferDict = FoodTL1Parser.getFoodIdToRawFoodofferDict(this.rawFoodoffersJSONList);
         let foodIds = Object.keys(foodIdToRawFoodofferDict);
@@ -81,7 +89,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         for(let foodId of foodIds){
             let rawFoodoffer = foodIdToRawFoodofferDict[foodId];
             if(!!rawFoodoffer){
-                let foodInformationForParser = FoodTL1Parser.getFoodInformationFromRawFoodoffer(rawFoodoffer);
+                let foodInformationForParser = this.getFoodInformationFromRawFoodoffer(rawFoodoffer);
                 if(!!foodInformationForParser){
                     foodsJSONList.push(foodInformationForParser);
                 }
@@ -90,6 +98,39 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodsJSONList;
     }
 
+    getFoodInformationFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): FoodsInformationTypeForParser | null {
+        const food_id = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawFoodoffer);
+        if(!food_id){
+            return null;
+        }
+
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+
+        const translations: TranslationsFromParsingType = {
+            [LanguageCodes.DE]: {"name": FoodTL1Parser._getFoodNameDe(parsedReportItem)},
+            [LanguageCodes.EN]: {"name": FoodTL1Parser._getFoodNameEn(parsedReportItem)}
+        };
+
+        const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
+        const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
+        const basicFoodData: FoodWithBasicData = {
+            id: food_id,
+            alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
+            category: parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
+            ...foodNutritions,
+            ...foodEnvironmentImpact
+        }
+
+        return {
+            basicFoodData: basicFoodData,
+            translations: translations,
+            marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer)
+        };
+    }
+
+    /**
+     * @implements FoodParserInterface
+     */
     async getCanteensList(): Promise<CanteensTypeForParser[]> {
         let rawFoodoffers = this.rawFoodoffersJSONList;
         let canteenLabelsDict: { [x: string]: CanteensTypeForParser } = {};
@@ -107,6 +148,9 @@ export class FoodTL1Parser implements FoodParserInterface {
         return DictHelper.getValueListFromDict(canteenLabelsDict);
     }
 
+    /**
+     * @implements FoodParserInterface
+     */
     async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]>{
         const result: FoodoffersTypeForParser[] = [];
         let rawFoodoffers = this.rawFoodoffersJSONList;
@@ -126,7 +170,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodofferForParser: FoodoffersTypeForParser = {
                 date: rawFoodoffer.date,
                 basicFoodofferData: basicFoodofferData,
-                marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
+                marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
                 canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
                 food_id: rawFoodoffer.food_id
             }
@@ -134,6 +178,16 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
 
         return result;
+    }
+
+    getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string[] {
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+        let rawName = FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
+        let markingsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(rawName);
+        let marking_external_identifier_list_from_food_name = Object.keys(markingsDict);
+        let menu_line_external_identifiers = FoodTL1Parser.getMarkingExternalIdentifiersForMenuLinesFromParsedReportItem(parsedReportItem);
+        let total_marking_external_identifier_list = marking_external_identifier_list_from_food_name.concat(menu_line_external_identifiers);
+        return total_marking_external_identifier_list;
     }
 
     static async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
@@ -261,35 +315,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodIdsDictTorawFoodoffers
     }
 
-    static getFoodInformationFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): FoodsInformationTypeForParser | null {
-        const food_id = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawFoodoffer);
-        if(!food_id){
-            return null;
-        }
 
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
-
-        const translations: TranslationsFromParsingType = {
-            [LanguageCodes.DE]: {"name": FoodTL1Parser._getFoodNameDe(parsedReportItem)},
-            [LanguageCodes.EN]: {"name": FoodTL1Parser._getFoodNameEn(parsedReportItem)}
-        };
-
-        const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
-        const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
-        const basicFoodData: FoodWithBasicData = {
-            id: food_id,
-            alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
-            category: parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
-            ...foodNutritions,
-            ...foodEnvironmentImpact
-        }
-
-        return {
-            basicFoodData: basicFoodData,
-            translations: translations,
-            marking_external_identifiers: FoodTL1Parser.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer)
-        };
-    }
 
     static getParsedReportItemFromrawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
         return rawFoodoffer.raw_tl1_foodoffer_json
@@ -485,15 +511,7 @@ export class FoodTL1Parser implements FoodParserInterface {
      *
      */
 
-    static getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
-        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
-        let rawName = FoodTL1Parser._getRawNamesList(parsedReportItem).join("");
-        let markingsDict = FoodTL1Parser.getMarkingLabelsDictFromFoodName(rawName);
-        let marking_external_identifier_list_from_food_name = Object.keys(markingsDict);
-        let menu_line_external_identifiers = FoodTL1Parser.getMarkingExternalIdentifiersForMenuLinesFromParsedReportItem(parsedReportItem);
-        let total_marking_external_identifier_list = marking_external_identifier_list_from_food_name.concat(menu_line_external_identifiers);
-        return total_marking_external_identifier_list;
-    }
+
 
     static MARKING_EXTERNAL_IDENTIFIER_PREFIX_FOR_MENU_LINE = "menu_line_";
     static getMarkingExternalIdentifiersForMenuLinesFromParsedReportItem(parsedReportItem: RawTL1FoodofferType): string[]{

@@ -90,23 +90,6 @@ Similar steps can be made for local testing
         - Change the "redirect settings" and add your "scheme" of your app:
           - `app-rocket-meals` which you can find in the `app.json` file
 
-## Configure Email
-
-- 1. Zunächst müssen Sie in Ihrem Gmail-Account die Zweifaktor-Authentifizierung "Bestätigung in zwei Schritten" aktivieren.
-- 2. Danach können Sie ein App-Passwort für lexoffice generieren: https://myaccount.google.com/apppasswords Wählen Sie hier einen Namen und generieren Sie das Passwort.
-- 3. Das generierte 16-stellige Passwort müssen Sie nun nur noch abspeichern
-
-==> Weitere Mail Adressen:
-- Google Admin Console: Neuen E-Mail Alias hinzufügen
-  - Admin Console --> Nutzer --> Alternative E-Mail-Adressen hinzufügen
-- In den Kontoeinstellungen den Alias aktivieren: https://support.google.com/mail/answer/22370
-  - Öffnen Sie Gmail auf dem Computer.
-  - Klicken Sie rechts oben auf "Einstellungen" Einstellungen und dann Alle Einstellungen aufrufen.
-  - Klicken Sie auf den Tab Konten & Import oder Konten.
-  - Klicken Sie im Abschnitt "Senden als" auf Weitere E-Mail-Adresse hinzufügen.
-  - Geben Sie Ihren Namen und die E-Mail-Adresse ein, über die Sie E-Mails senden möchten.
-
-
 ## Configure Directus
 
 - `docker-compose build`
@@ -114,20 +97,6 @@ Similar steps can be made for local testing
 - Enable Extension: Types
   - `http://127.0.0.1/rocket-meals/api/admin/settings/project`
     - Check "Generate Types" Extension
-
-## Configure Flows
-
-- See
-
-Create a new directus flow
-Trigger Setup --> Configure as Schedule (CRON)
-Create a operation --> Update Data
-Collection: Auto Backup Settings
-Permission: Full Access
-Emit Events: true
-Payload : { "state": "create", "latest_log": "" }
-Query : { "filter": { "_and": [] } }
-
 
 ## Configure SSO
 

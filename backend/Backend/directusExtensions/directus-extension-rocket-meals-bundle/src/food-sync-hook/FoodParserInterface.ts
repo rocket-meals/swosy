@@ -13,7 +13,7 @@ export type FoodsInformationTypeForParser = {
 }
 
 // Remove all fields with relation to other tables
-type CanteenTypeOmitedFields = Omit<Canteens, "id" | "user_created" | "user_updated" | "building" | "foodservice_hours" | "utilization_group">;
+type CanteenTypeOmitedFields = Omit<Canteens, "id" | "user_created" | "user_updated" | "building" | "foodservice_hours" | "foodservice_hours_during_semester_break" | "utilization_group">;
 export type CanteensTypeForParser = CanteenTypeOmitedFields & {external_identifier: string}; // make external_identifier required
 
 export type FoodofferDateType = {
