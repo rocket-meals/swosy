@@ -987,6 +987,7 @@ export type Mails = {
 
 export type Markings = {
   alias?: string | null;
+  background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   excluded_by_markings: any[] | MarkingsExclusions[];

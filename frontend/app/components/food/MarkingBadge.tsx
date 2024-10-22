@@ -74,6 +74,7 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 	const alias = getMarkingShortCode(marking);
 	const short_code = getMarkingShortCode(marking);
 	const hide_border = !!marking?.hide_border;
+	const marking_backgroundcolor = marking?.background_color;
 	const marking_invert_background_color = !!marking.invert_background_color
 	const short_code_text_color = marking_invert_background_color ? textContrastColor : textColor;
 	
@@ -106,7 +107,11 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 		)
 	}
 
-	const backgroundColor = marking_invert_background_color ? viewContrastColor : undefined;
+	let backgroundColor = marking_backgroundcolor;
+	if(!backgroundColor){
+		backgroundColor = marking_invert_background_color ? viewContrastColor : undefined;
+	}
+	
 	const borderColor = hide_border ? "transparent" : viewContrastColor;
 
 	return (
