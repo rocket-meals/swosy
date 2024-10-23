@@ -18,6 +18,7 @@ import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
+	hasResourceImageIconOrRemoteImage,
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
@@ -54,12 +55,12 @@ export const MarkingBadges = ({foodoffer}: {foodoffer: Foodoffers}) => {
 }
 
 
-export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {markingId: string, textSize: TextSizeType | undefined}) => {
+export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize, imageSize, hide_border, ignoreSpacer}: {ignoreSpacer?: boolean, hide_border?: boolean, markingId: string, textSize: TextSizeType | undefined, imageSize?: number}) => {
 	const viewBackgroundColor = useViewBackgroundColor()
-	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
-	const textColor = useTextContrastColor();
-	const textContrastColor = useMyContrastColor(textColor);
-	const lineHeight = getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
+	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
+	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
+
+	const lineHeight = imageSize || getLineHeightInPixelBySize(textSize || TEXT_SIZE_DEFAULT) || 10;
 	const defaultLineHeightNormal = getLineHeightInPixelBySize(TEXT_SIZE_DEFAULT) || 10
 	const defaultBorderRadius = BUTTON_DEFAULT_BorderRadius/2;
 	const percentageBorderRadiusToHeight = defaultBorderRadius / defaultLineHeightNormal;
@@ -71,48 +72,59 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 	if(!marking){
 		return null;
 	}
+
+	const hasImageOrRemoteImage = hasResourceImageOrRemoteImage(marking);
+	const hasImageIconOrRemoteImage = hasResourceImageIconOrRemoteImage(marking);
+
 	const alias = getMarkingShortCode(marking);
 	const short_code = getMarkingShortCode(marking);
-	const hide_border = !!marking?.hide_border;
+	const hide_border_used = hide_border || !!marking?.hide_border
+
 	const marking_backgroundcolor = marking?.background_color;
 	const marking_invert_background_color = !!marking.invert_background_color
-	const short_code_text_color = marking_invert_background_color ? textContrastColor : textColor;
-	
-	const hasImageOrIcon = hasResourceImageOrRemoteImage(marking);
+	let backgroundColor = marking_backgroundcolor
+	if(!backgroundColor && !hasImageOrRemoteImage){
+		backgroundColor = viewWhiteOrBlackBackgroundColor;
+	}
+	const invertedBackgroundColor = useMyContrastColor(backgroundColor);
+	if(marking_invert_background_color){
+		backgroundColor = invertedBackgroundColor;
+	}
 
 
-	if(!short_code && !hasImageOrIcon){
+	//const short_code_text_color = marking_invert_background_color ? textContrastColor : textColor;
+	const textColor = useMyContrastColor(backgroundColor);
+
+	if(!short_code && !hasImageOrRemoteImage){
 		return null;
 	}
 
 	let content = <View style={{
 		flexDirection: "row",
 		marginHorizontal: 2,
+		backgroundColor: backgroundColor
 	}}>
 		<Text style={{
-			color: short_code_text_color
+			color: textColor
 		}} size={textSize}>
 			{short_code}
 		</Text>
 	</View>
 
-	if(hasImageOrIcon){
-		const imageWidthAndHeight = lineHeight
+	if(hasImageIconOrRemoteImage){
+		const imageWidthAndHeight = imageSize || lineHeight
+
 		content = (
 			<View style={{
 				flexDirection: "row",
 			}}>
-				<DirectusImageOrIconComponent resource={marking} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} />
+				<DirectusImageOrIconComponent resource={marking} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} iconColor={textColor} />
+
 			</View>
 		)
 	}
-
-	let backgroundColor = marking_backgroundcolor;
-	if(!backgroundColor){
-		backgroundColor = marking_invert_background_color ? viewContrastColor : undefined;
-	}
 	
-	const borderColor = hide_border ? "transparent" : viewContrastColor;
+	const borderColor = hide_border_used ? "transparent" : viewBackgroundContrastColor;
 
 	return (
 		<View style={{
@@ -133,10 +145,12 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize}: {marki
 			}}>
 				{content}
 			</View>
-			<View style={{
-				height: lineHeight,
-				width: 3
-			}} />
+			{ignoreSpacer &&
+				<View style={{
+					height: lineHeight,
+					width: 3
+				}} />
+			}
 		</View>
 	)
 }
@@ -195,7 +209,11 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 				return <MyScrollView>
 					<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
 						<View style={{width: "100%", alignItems: "center"}}>
-							<DirectusImageOrIconComponent resource={marking} widthImage={widthByCharacters} heightImage={widthByCharacters} />
+							<View style={{
+								//backgroundColor: "red"
+							}}>
+								<MarkingIconOrShortCodeWithTextSize ignoreSpacer={true} markingId={markingId} textSize={TEXT_SIZE_DEFAULT} imageSize={widthByCharacters} />
+							</View>
 						</View>
 						<ThemedMarkdown markdown={translated_description} />
 					</View>

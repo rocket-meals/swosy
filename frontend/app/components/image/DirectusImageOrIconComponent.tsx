@@ -7,7 +7,11 @@ export function hasResourceImageOrRemoteImage(resource: any){
 	return resource.image || resource.image_remote_url;
 }
 
-export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number }) {
+export function hasResourceImageIconOrRemoteImage(resource: any){
+	return hasResourceImageOrRemoteImage(resource) || resource.icon;
+}
+
+export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage, iconColor }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number, iconColor?: string }) {
 	let iconLeft = resource.icon
 	const alias = resource.alias
 	let iconLeftCustom = undefined
@@ -16,9 +20,9 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, wid
 			let {
 				family, icon
 			} = IconParseDirectusStringToIconAndFamily(iconLeft)
-			iconLeftCustom = <Icon accessibilityLabel={alias} name={icon} family={family} />
+			iconLeftCustom = <Icon accessibilityLabel={alias} name={icon} family={family} color={iconColor} />
 		} else {
-			iconLeftCustom = <Icon accessibilityLabel={alias}  name={iconLeft} />
+			iconLeftCustom = <Icon accessibilityLabel={alias}  name={iconLeft} color={iconColor} />
 		}
 	}
 	if(hasResourceImageOrRemoteImage(resource)){
