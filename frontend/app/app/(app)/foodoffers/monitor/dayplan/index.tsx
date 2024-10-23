@@ -42,8 +42,8 @@ export default function FoodoffersDayplanScreenSettings() {
 	return <MySafeAreaView>
 		<MyScrollView>
 			<SettingsRowGroup>
-				<SettingsRowCanteenSelection onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
-				<SettingsRowCanteenSelection labelLeft={labelAdditionalCanteens} onSelectCanteen={(canteen) => {
+				<SettingsRowCanteenSelection showArchived={true} onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
+				<SettingsRowCanteenSelection showArchived={true} labelLeft={labelAdditionalCanteens} onSelectCanteen={(canteen) => {
 					if(canteen){
 						setAdditionalCanteens([canteen]);
 					}

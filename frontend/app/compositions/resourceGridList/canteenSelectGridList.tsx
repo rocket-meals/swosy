@@ -5,6 +5,7 @@ import {CanteenGridList} from '@/compositions/resourceGridList/canteenGridList';
 
 interface AppState {
     onPress?: (canteen: Canteens | undefined) => void;
+	showArchived?: boolean;
 }
 export const CanteenSelectGridList: FunctionComponent<AppState> = ({onPress, ...props}) => {
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
@@ -17,6 +18,6 @@ export const CanteenSelectGridList: FunctionComponent<AppState> = ({onPress, ...
 	}
 
 	return (
-		<CanteenGridList onPress={onSelectCanteen} />
+		<CanteenGridList showArchived={props.showArchived} onPress={onSelectCanteen} />
 	)
 }

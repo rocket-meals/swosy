@@ -13,7 +13,7 @@ export default function FoodOfferScreen() {
 	return <MySafeAreaView>
 		<MyScrollView>
 			<SettingsRowGroup>
-				<SettingsRowCanteenSelection onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
+				<SettingsRowCanteenSelection showArchived={true} onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
 			</SettingsRowGroup>
 		</MyScrollView>
 	</MySafeAreaView>

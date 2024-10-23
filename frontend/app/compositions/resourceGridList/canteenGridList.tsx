@@ -15,6 +15,7 @@ import {ItemStatus} from "@/helper/database/ItemStatus";
 
 interface AppState {
     onPress?: (canteen: Canteens) => void;
+	showArchived?: boolean;
 }
 
 
@@ -28,6 +29,8 @@ export const getCanteenName = (canteen: Canteens | null | undefined) => {
 export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}) => {
 	const [canteenDict, setCanteenDict] = useSynchedCanteensDict();
 	const [buildingsDict, setBuildingsDict] = useSynchedBuildingsDict()
+
+	const showArchived = props.showArchived || false
 
 	const translation_select = useTranslation(TranslationKeys.select);
 	const translation_archived = useTranslation(TranslationKeys.archived);
@@ -44,7 +47,14 @@ export const CanteenGridList: FunctionComponent<AppState> = ({onPress, ...props}
     		const canteen_key = canteen_keys[i];
     		const canteen = canteenDict[canteen_key]
     		if(!!canteen) {
-				data.push({key: canteen_key, data: canteen})
+				let addCanteen = true
+				if (!showArchived && canteen.status === ItemStatus.ARCHIVED) {
+					addCanteen = false
+				}
+
+				if(addCanteen){
+					data.push({key: canteen_key, data: canteen})
+				}
 			}
     	}
     }

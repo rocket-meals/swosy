@@ -26,6 +26,7 @@ interface SettingsRowCanteenSelectionProps {
 	labelRight?: string;
 	labelLeft?: string;
 	onSelectCanteen: (canteen: Canteens | null) => void;
+	showArchived?: boolean;
 }
 export const SettingsRowCanteenSelection: FunctionComponent<SettingsRowCanteenSelectionProps> = ({labelLeft, ...props}) => {
 	const leftIcon = IconNames.canteen_icon
@@ -36,7 +37,7 @@ export const SettingsRowCanteenSelection: FunctionComponent<SettingsRowCanteenSe
 
 	const accessibilityLabel = useEditCanteenAccessibilityLabel();
 
-	const onPress = useShowCanteenSelectionModal({onSelectCanteen: props.onSelectCanteen});
+	const onPress = useShowCanteenSelectionModal({onSelectCanteen: props.onSelectCanteen, showArchived: props.showArchived});
 
 	return (
 		<>

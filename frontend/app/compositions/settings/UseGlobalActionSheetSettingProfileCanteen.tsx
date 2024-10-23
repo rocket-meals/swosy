@@ -7,6 +7,7 @@ import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 
 export interface CanteenSelectionModalProps {
 	onSelectCanteen: (canteen: Canteens | null) => void;
+	showArchived?: boolean;
 }
 
 export const useShowCanteenSelectionModal = (props: CanteenSelectionModalProps) => {
@@ -21,7 +22,7 @@ export const useShowCanteenSelectionModal = (props: CanteenSelectionModalProps) 
 			key: 'canteenSelect',
 			renderAsContentInsteadItems: (key: string, hide: () => void) => {
 				return(
-					<CanteenSelectGridList onPress={(canteen: Canteens | undefined) => {
+					<CanteenSelectGridList showArchived={props.showArchived} onPress={(canteen: Canteens | undefined) => {
 						if(canteen){
 							props.onSelectCanteen(canteen);
 						} else {
