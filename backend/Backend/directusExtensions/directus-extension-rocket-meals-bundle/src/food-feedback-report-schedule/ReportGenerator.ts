@@ -168,14 +168,6 @@ export class ReportGenerator {
             }
         };
 
-        const canteenIds = canteenEntries.map((canteen) => canteen.id);
-
-        const filterCanteens = {
-            canteen: {
-                _in: canteenIds
-            }
-        };
-
         const filterDateUpdatedFeedbackLabelEntries: Filter[] = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
 
         for (let canteenFeedbackLabelsWithTranslation of canteenFeedbackLabelsWithTranslations) {
@@ -190,13 +182,13 @@ export class ReportGenerator {
             // Get the counts for all canteens
             const countsAllCanteens = await this.getCanteenFeedbackCounts(
                 filterLabel,
-                filterCanteens,
                 filterLikes,
                 filterDislikes,
-                filterDateUpdatedFeedbackLabelEntries
+                filterDateUpdatedFeedbackLabelEntries,
+                null
             );
 
-            let canteenSummary: ReportCanteenEntryType = {
+            let allCanteensSummary: ReportCanteenEntryType = {
                 id: canteenFeedbackLabelsWithTranslation?.id,
                 label_alias: alias,
                 canteen_alias: "Alle",
@@ -207,14 +199,13 @@ export class ReportGenerator {
                 amount_total: countsAllCanteens.amount_total,
             };
 
-            canteens.push(canteenSummary);
+            canteens.push(allCanteensSummary);
 
             // If per-canteen feedbacks are to be shown
             if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
                 for (let canteen of canteenEntries) {
                     const countsForCanteen = await this.getCanteenFeedbackCounts(
                         filterLabel,
-                        filterCanteens,
                         filterLikes,
                         filterDislikes,
                         filterDateUpdatedFeedbackLabelEntries,
@@ -240,14 +231,13 @@ export class ReportGenerator {
         return canteens;
     }
 
-    async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterCanteens: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: Canteens | null = null) {
+    async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: Canteens | null = null) {
         const canteenFilter: FieldFilter = canteen ? { canteen: { _eq: canteen.id } } : {};
 
         const amount_positive_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
             filter: {
                 _and: [
                     filterLabel,
-                    filterCanteens,
                     filterLikes,
                     ...filterDateUpdatedFeedbackLabelEntries,
                     canteenFilter,
@@ -259,7 +249,6 @@ export class ReportGenerator {
             filter: {
                 _and: [
                     filterLabel,
-                    filterCanteens,
                     filterDislikes,
                     ...filterDateUpdatedFeedbackLabelEntries,
                     canteenFilter,
@@ -271,7 +260,6 @@ export class ReportGenerator {
             filter: {
                 _and: [
                     filterLabel,
-                    filterCanteens,
                     filterLikes,
                     canteenFilter,
                 ]
@@ -282,7 +270,6 @@ export class ReportGenerator {
             filter: {
                 _and: [
                     filterLabel,
-                    filterCanteens,
                     filterDislikes,
                     canteenFilter,
                 ]
