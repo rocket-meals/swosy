@@ -36,7 +36,7 @@ export class ItemsServiceHelper<T>{
      */
     async calculateAverage(fieldName: string): Promise<number | undefined> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        type AggregateAnswer = { [fieldName: string]: string };
+        type AggregateAnswer = { avg: {[fieldName: string]: string} };
         let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
 
         //console.log("Calculating average for field: " + fieldName);
@@ -59,8 +59,8 @@ export class ItemsServiceHelper<T>{
         //console.log("Answer: " + JSON.stringify(answer, null, 2));
 
         // Parse and return the average result
-        if (answer && answer[0] && answer[0][fieldName]) {
-            return parseFloat(answer[0][fieldName]);  // Parse the average to a float
+        if (answer && answer[0] && answer[0].avg && answer[0].avg?.[fieldName]) {
+            return parseFloat(answer[0].avg?.[fieldName]);  // Parse the average to a float
         } else {
             return undefined;  // Return 0 if no data is found
         }
