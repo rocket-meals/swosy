@@ -16,10 +16,17 @@
         <div>
             <h2>Mensa Rückmeldungen</h2>
         </div>
+        <p>
+            {{ status_explanation }}
+        </p>
         <div>
             <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
                 <thead>
                 <tr>
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                        Status
+                        (Statusänderung)
+                    </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         Label
                     </th>
@@ -28,12 +35,12 @@
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            👍 Anzahl Positiv (davon neu)
+                            👍 Positiv (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            👎 Anzahl Negativ (davon neu)
+                            👎 Negativ (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -44,6 +51,7 @@
                 <tbody>
                 {% for label in canteen_labels %}
                     <tr style="border-bottom: 1px solid #aaa;">
+                        <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.status_total }} ({{ label.status_new }})</td>
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.label_alias }}</td>
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.canteen_alias }}</td>
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_positive }} ({{ label.amount_positive_new }})</td>
@@ -63,6 +71,9 @@
         <div>
             <h2>Speise Rückmeldungen</h2>
         </div>
+        <p>
+            {{ status_explanation }}
+        </p>
         {% for food in foods %}
             <div>
                 <h3>{{ food.alias }}</h3>
@@ -82,16 +93,20 @@
                             <thead>
                             <tr>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
+                                    Status
+                                    (Statusänderung)
+                                </th>
+                                <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     Label
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        👍 Anzahl Positiv (davon neu)
+                                        👍 Positiv (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        👎 Anzahl Negativ (davon neu)
+                                        👎 Negativ (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -102,6 +117,7 @@
                             <tbody>
                             {% for label in food.labels %}
                                 <tr style="border-bottom: 1px solid #aaa;">
+                                    <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.status_total }} ({{ label.status_new }})</td>
                                     <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.alias }}</td>
                                     <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_positive }} ({{ label.amount_positive_new }})</td>
                                     <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa;">{{ label.amount_negative }} ({{ label.amount_negative_new }})</td>

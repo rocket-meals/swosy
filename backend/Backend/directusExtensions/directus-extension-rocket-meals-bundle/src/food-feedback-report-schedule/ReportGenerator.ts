@@ -13,6 +13,14 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DictHelper} from "../helpers/DictHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 
+enum ReportStatusTrafficLightEnum {
+    RED = "🔴",
+    YELLOW = "🟡",
+    GREEN = "🟢",
+}
+
+export type ReportStatusTrafficLightType = ReportStatusTrafficLightEnum;
+
 export type ReportFoodEntryLabelType = {
     id: string,
     alias: string,
@@ -20,7 +28,9 @@ export type ReportFoodEntryLabelType = {
     amount_negative_new: string,
     amount_positive: number,
     amount_negative: number,
-    amount_total: number
+    amount_total: number,
+    status_total: ReportStatusTrafficLightType,
+    status_new: ReportStatusTrafficLightType
 }
 
 export type ReportFoodEntryType = {
@@ -41,7 +51,9 @@ export type ReportCanteenEntryType = {
     amount_negative_new: string,
     amount_positive: number,
     amount_negative: number,
-    amount_total: number
+    amount_total: number,
+    status_total: ReportStatusTrafficLightType,
+    status_new: ReportStatusTrafficLightType
 }
 
 export type ReportType = {
@@ -52,6 +64,7 @@ export type ReportType = {
     show_food_feedback_labels: boolean,
     show_food_comments: boolean,
     show_canteen_feedbacks: boolean,
+    status_explanation: string,
     foods: ReportFoodEntryType[],
     canteen_labels: ReportCanteenEntryType[]
 }
@@ -115,6 +128,7 @@ export class ReportGenerator {
         let report: ReportType = {
             canteen_alias: canteen_alias,
             dateHumanReadable: dateHumanReadable,
+            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightEnum.GREEN+" (Positiv), "+ReportStatusTrafficLightEnum.RED+" (Negativ) und "+ReportStatusTrafficLightEnum.YELLOW+" (Neutral) an. Der Status in Klammern zeigt die Änderung in diesem Zeitraum an. Der Status ändert sich bei einer Änderung von mehr als "+ReportGenerator.THRESHOLD_PERCENTAGE+" der Bewertungen.",
             show_images: show_images,
             show_food: show_food,
             show_food_feedback_labels: show_food_feedback_labels,
@@ -137,6 +151,28 @@ export class ReportGenerator {
 
     formatAmountNewToReportString(amount: number): string {
         return "+"+amount;
+    }
+
+    static THRESHOLD_PERCENTAGE = 0.1;
+
+    calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightEnum {
+        // if there are no feedbacks, the status is orange
+        let threshold_percentage = ReportGenerator.THRESHOLD_PERCENTAGE;
+        // if the amount of positive is more than 10% of the amount of negative feedbacks, the status is green
+        // if the amount of negative is more than 10% of the amount of positive feedbacks, the status is red
+        // otherwise, the status is yellow, as the amount of positive and negative feedbacks are almost equal
+        if(amount_positive === 0 && amount_negative === 0){
+            return ReportStatusTrafficLightEnum.YELLOW;
+        }
+        let percentage_positive = amount_positive / (amount_positive + amount_negative);
+        let percentage_negative = amount_negative / (amount_positive + amount_negative);
+        if(percentage_positive > threshold_percentage){
+            return ReportStatusTrafficLightEnum.GREEN;
+        }
+        if(percentage_negative > threshold_percentage){
+            return ReportStatusTrafficLightEnum.RED;
+        }
+        return ReportStatusTrafficLightEnum.YELLOW;
     }
 
     async getReportForCanteenFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]) {
@@ -188,6 +224,8 @@ export class ReportGenerator {
                 null
             );
 
+
+
             let allCanteensSummary: ReportCanteenEntryType = {
                 id: canteenFeedbackLabelsWithTranslation?.id,
                 label_alias: alias,
@@ -197,6 +235,8 @@ export class ReportGenerator {
                 amount_positive: countsAllCanteens.amount_positive,
                 amount_negative: countsAllCanteens.amount_negative,
                 amount_total: countsAllCanteens.amount_total,
+                status_total: this.calculateTrafficLightStatus(countsAllCanteens.amount_positive, countsAllCanteens.amount_negative),
+                status_new: this.calculateTrafficLightStatus(countsAllCanteens.amount_positive_new, countsAllCanteens.amount_negative_new)
             };
 
             canteens.push(allCanteensSummary);
@@ -221,6 +261,8 @@ export class ReportGenerator {
                         amount_positive: countsForCanteen.amount_positive,
                         amount_negative: countsForCanteen.amount_negative,
                         amount_total: countsForCanteen.amount_total,
+                        status_total: this.calculateTrafficLightStatus(countsForCanteen.amount_positive, countsForCanteen.amount_negative),
+                        status_new: this.calculateTrafficLightStatus(countsForCanteen.amount_positive_new, countsForCanteen.amount_negative_new)
                     };
 
                     canteens.push(canteenSummary);
@@ -470,7 +512,9 @@ export class ReportGenerator {
                     amount_negative_new: this.formatAmountNewToReportString(amount_negative_new),
                     amount_positive: amount_positive,
                     amount_negative: amount_negative,
-                    amount_total: amount_total
+                    amount_total: amount_total,
+                    status_total: this.calculateTrafficLightStatus(amount_positive, amount_negative),
+                    status_new: this.calculateTrafficLightStatus(amount_positive_new, amount_negative_new)
                 }
 
                 labels_counted_as_list.push(labelEntry);
