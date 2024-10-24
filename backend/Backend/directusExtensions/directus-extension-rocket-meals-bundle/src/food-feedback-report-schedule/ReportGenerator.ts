@@ -40,7 +40,8 @@ export type ReportFoodEntryType = {
     rating_average: string | null | undefined,
     rating_amount: string | null | undefined,
     comments: string[],
-    labels: ReportFoodEntryLabelType[]
+    labels: ReportFoodEntryLabelType[],
+    status_rating: ReportStatusTrafficLightType
 }
 
 export type ReportCanteenEntryType = {
@@ -86,6 +87,10 @@ export class ReportGenerator {
         return canteen_alias_list;
     }
 
+    async getAverageRatingForAllFoods(){
+        return await this.myDatabaseHelper.getFoodsHelper().calculateAverage("rating_average");
+    }
+
     /**
      *
      * @param reportSchedule
@@ -125,10 +130,13 @@ export class ReportGenerator {
             show_food = true;
         }
 
+        const foodAverageRating = await this.getAverageRatingForAllFoods();
+        const foodAverageRatingString = foodAverageRating.toFixed(2);
+
         let report: ReportType = {
             canteen_alias: canteen_alias,
             dateHumanReadable: dateHumanReadable,
-            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightEnum.GREEN+" (Positiv), "+ReportStatusTrafficLightEnum.RED+" (Negativ) und "+ReportStatusTrafficLightEnum.YELLOW+" (Neutral) an. Der Status in Klammern zeigt die Änderung in diesem Zeitraum an. Der Status ändert sich bei einer Änderung von mehr als "+ReportGenerator.THRESHOLD_PERCENTAGE+" der Bewertungen.",
+            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightEnum.GREEN+" (Positiv), "+ReportStatusTrafficLightEnum.RED+" (Negativ) und "+ReportStatusTrafficLightEnum.YELLOW+" (Neutral) an. Der Status ändert bei einer Abweichung von mehr als "+(ReportGenerator.THRESHOLD_PERCENTAGE*100)+"%. Bei den Rückmeldungen mit Labels zeigt der Status in Klammern die Änderung in diesem Zeitraum an. Bei den Bewertungen der Speisen werden diese Verglichen mit der Durchschnittlichen Bewertung von "+foodAverageRatingString+".",
             show_images: show_images,
             show_food: show_food,
             show_food_feedback_labels: show_food_feedback_labels,
@@ -139,7 +147,7 @@ export class ReportGenerator {
         }
 
         if(show_food){
-            report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries, show_food_feedback_labels, show_food_comments);
+            report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries, show_food_feedback_labels, show_food_comments, foodAverageRating);
         }
         if(show_canteen_feedbacks){
             report.canteen_labels = await this.getReportForCanteenFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
@@ -329,7 +337,7 @@ export class ReportGenerator {
         };
     }
 
-    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[], show_food_feedback_labels: boolean, show_food_comments: boolean){
+    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[], show_food_feedback_labels: boolean, show_food_comments: boolean, foodAverageRating: number = 0){
         let foods: ReportFoodEntryType[] = [];
 
         let foodDict: {[key: string]: Foods} = {};
@@ -400,6 +408,16 @@ export class ReportGenerator {
                 usedRatingAmount = food?.rating_amount+"";
             }
 
+            let status_rating = ReportStatusTrafficLightEnum.YELLOW;
+            if(food?.rating_average){
+                const epsilon = 5*ReportGenerator.THRESHOLD_PERCENTAGE;
+                if(food.rating_average > foodAverageRating + epsilon){
+                    status_rating = ReportStatusTrafficLightEnum.GREEN;
+                } else if(food.rating_average < foodAverageRating - epsilon) {
+                    status_rating = ReportStatusTrafficLightEnum.RED;
+                }
+            }
+
             let foodSummary: ReportFoodEntryType = {
                 id: food.id,
                 alias: food.alias,
@@ -407,7 +425,8 @@ export class ReportGenerator {
                 rating_average: usedRatingAverage,
                 rating_amount: usedRatingAmount,
                 comments: comments,
-                labels: labels
+                labels: labels,
+                status_rating: status_rating
             };
 
             foods.push(foodSummary)
