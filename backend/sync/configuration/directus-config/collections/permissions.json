@@ -216,6 +216,18 @@
     "_syncId": "f983b8e6-ab13-419e-b6d5-0d927ece6bbf"
   },
   {
+    "collection": "directus_access",
+    "action": "read",
+    "permissions": null,
+    "validation": null,
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "policy": "_sync_default_public_policy",
+    "_syncId": "35a8f24d-48db-4560-9b5a-39f4cb73243a"
+  },
+  {
     "collection": "directus_collections",
     "action": "read",
     "permissions": {},
@@ -848,7 +860,8 @@
       "display_height",
       "display_fontscale",
       "display_scale",
-      "display_pixelratio"
+      "display_pixelratio",
+      "id"
     ],
     "policy": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "_syncId": "8d396e07-958b-4b79-b686-3508fc28d2f6"

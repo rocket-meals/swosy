@@ -9,6 +9,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "web:offline": "expo start --web --offline",
     "deploy:gh:pages": "npm run export:web && gh-pages -t -d dist",
     "deploy:local": "npm run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export --platform web",

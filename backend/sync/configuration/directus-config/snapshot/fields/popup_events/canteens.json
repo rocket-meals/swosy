@@ -11,7 +11,7 @@
     "group": null,
     "hidden": false,
     "interface": "list-m2m",
-    "note": null,
+    "note": "Falls keine Mensa ausgewählt ist, wird es für alle angezeigt.",
     "options": null,
     "readonly": false,
     "required": false,
@@ -19,7 +19,12 @@
     "special": [
       "m2m"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Relevant für Mensen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

@@ -35,7 +35,8 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_TEXT_FIELD = "TEXT";
     static DEFAULT_RECIPE_ID_FIELD = "REZEPTUR_ID";
     static DEFAULT_NUTRITIONS_FIELD = "NAEHRWERTEJEPORT";
-    static DEFAULT_CATEGORY_FIELD = "SPEISE";
+    static DEFAULT_CATEGORY_FIELD = "SPEISE_BEZEICHNUNG";
+    static DEFAULT_FOODOFFER_CATEGORY_FIELD = "SPEISE";
 
     static FIELD_PRICE_STUDENT_OSNABRUECK = "STD_PREIS";
     static FIELD_PRICE_STUDENT_HANNOVER = "PREIS_STUDENT"; // Hannover TL1 specific
@@ -98,6 +99,11 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodsJSONList;
     }
 
+    getFoodCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+        return parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD] || null;
+    }
+
     getFoodInformationFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): FoodsInformationTypeForParser | null {
         const food_id = FoodTL1Parser.getFoodIdFromRawFoodoffer(rawFoodoffer);
         if(!food_id){
@@ -116,7 +122,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
             alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
-            category: parsedReportItem?.[FoodTL1Parser.DEFAULT_CATEGORY_FIELD],
+            category: this.getFoodCategoryFromRawFoodoffer(rawFoodoffer),
             ...foodNutritions,
             ...foodEnvironmentImpact
         }
@@ -148,6 +154,11 @@ export class FoodTL1Parser implements FoodParserInterface {
         return DictHelper.getValueListFromDict(canteenLabelsDict);
     }
 
+    getFoodofferCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+        return parsedReportItem?.[FoodTL1Parser.DEFAULT_FOODOFFER_CATEGORY_FIELD] || null;
+    }
+
     /**
      * @implements FoodParserInterface
      */
@@ -161,6 +172,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
             const basicFoodofferData: FoodofferTypeWithBasicData = {
                 alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
+                category: this.getFoodofferCategoryFromRawFoodoffer(rawFoodoffer),
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
                 price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
                 price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
@@ -190,6 +202,8 @@ export class FoodTL1Parser implements FoodParserInterface {
         let total_marking_external_identifier_list = marking_external_identifier_list_from_food_name.concat(menu_line_external_identifiers);
         return total_marking_external_identifier_list;
     }
+
+
 
     static async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
         let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);

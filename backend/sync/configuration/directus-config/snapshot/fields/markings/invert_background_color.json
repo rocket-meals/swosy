@@ -19,7 +19,12 @@
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Hintergrundfarbe umkehren"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

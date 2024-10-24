@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {Text, View} from "@/components/Themed";
-import {PopupEvents} from "@/helper/database/databaseTypes/types";
+import {Canteens, PopupEvents} from "@/helper/database/databaseTypes/types";
 import {
 	usePopupEventsAreHidden,
 	useSynchedPopupEventsDict,
@@ -13,6 +13,7 @@ import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/Synched
 import {useIsDebug} from "@/states/Debug";
 import DirectusImage from "@/components/project/DirectusImage";
 import {RectangleWithLayoutCharactersWide} from '@/components/shapes/Rectangle';
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export type PopupEventsOverlayProps = {
 
@@ -58,10 +59,16 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	function getPopupEventsForCanteen(canteen_id: string | undefined | null, popupEvents: PopupEvents[]) {
 		let popupEventsForCanteen: PopupEvents[] = []
 		for(let popupEvent of popupEvents) {
-			if(!popupEvent.canteen) { // if the canteen is null in the popup event
+			let canteens = popupEvent.canteens
+			if(!canteens || canteens.length === 0) {
 				popupEventsForCanteen.push(popupEvent)
-			} else if(!!canteen_id && popupEvent.canteen === canteen_id) { // or if the canteen matches the profile canteen when set
-				popupEventsForCanteen.push(popupEvent)
+			} else {
+				let canteenRelationAsCanteens = canteens as Canteens[]
+				for(let canteenRelation of canteenRelationAsCanteens) {
+					if(!canteen_id || canteenRelation.id === canteen_id) {
+						popupEventsForCanteen.push(popupEvent)
+					}
+				}
 			}
 		}
 		return popupEventsForCanteen
@@ -102,14 +109,33 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	}
 
 	function getNextActivePopupEvent() {
+		//console.log("getNextActivePopupEvent")
 		if(popupEventsDict && !popupEventsHidden) {
+			//console.log("popupEventsDict", popupEventsDict)
 			// okay check which popup events are not read yet and are not expired
 			let unreadPopupEvents = getUnreadPopupEvents()
+			//console.log("unreadPopupEvents", unreadPopupEvents)
 			let popupEventsForCanteen = getPopupEventsForCanteen(profileCanteenId, unreadPopupEvents)
+			//console.log("popupEventsForCanteen", popupEventsForCanteen)
 			let activePopupEvents = getTimeRelevantPopupEvents(popupEventsForCanteen)
-			if(activePopupEvents.length > 0) {
-				return activePopupEvents[0]
-			}
+			//console.log("activePopupEvents", activePopupEvents)
+			// sort activePopupEvents by date_start and get the latest start date
+			activePopupEvents.sort((a, b) => {
+				let date_start_a = a.date_start
+				let date_start_b = b.date_start
+				if(date_start_a && date_start_b) {
+					return new Date(date_start_a).getTime() - new Date(date_start_b).getTime()
+				} else if(date_start_a) {
+					return -1
+				} else if(date_start_b) {
+					return 1
+				} else {
+					return 0
+				}
+			})
+
+			// return the latest start date
+			return activePopupEvents[activePopupEvents.length-1]
 		}
 		return null
 	}
@@ -184,15 +210,33 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 			if(activePopupEvent && activePopupEvent.id) {
 
 				setPopupEventsReadDict((currentValue) => {
-					console.log("setPopupEventsReadDict")
-					let newValue = {...currentValue}
-					if(!newValue) {
-						newValue = {}
+					let newValue = { ...currentValue };
+					if (!newValue) {
+						newValue = {};
 					}
-					newValue[activePopupEvent?.id] = true
-					console.log("newValue", newValue)
-					return {...newValue}
-				})
+					newValue[activePopupEvent.id] = true;
+
+					// Get the date of the active popup event (end date or start date)
+					const activePopupEventDate = activePopupEvent.date_end
+						? new Date(activePopupEvent.date_end)
+						: new Date(activePopupEvent.date_start);
+
+					// Mark all older popup events as read
+					Object.keys(popupEventsDict).forEach((key) => {
+						const popupEvent = popupEventsDict[key];
+						if (popupEvent && popupEvent.id) {
+							const popupEventDate = new Date(popupEvent.date_start);
+
+							// Mark as read if the event is older than or equal to the active event
+							if (popupEventDate <= activePopupEventDate) {
+								newValue[popupEvent.id] = true;
+							}
+						}
+					});
+
+					console.log("newValue", newValue);
+					return { ...newValue };
+				});
 			}
 			return;
 		},
@@ -207,7 +251,7 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 		}
 	}, [activePopupEvent?.id])
 
-	return null
+	return null;
 
 
 }

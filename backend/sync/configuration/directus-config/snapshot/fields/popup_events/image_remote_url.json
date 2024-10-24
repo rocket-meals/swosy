@@ -11,13 +11,18 @@
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": null,
+    "note": "Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 10,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Bild URL"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

@@ -1,35 +1,30 @@
 {
-  "collection": "markings",
-  "field": "short_code",
+  "collection": "foodoffers",
+  "field": "category",
   "type": "string",
   "meta": {
-    "collection": "markings",
+    "collection": "foodoffers",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "short_code",
+    "field": "category",
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": "Kürzel, welches Nutzern angezeigt werden soll",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 12,
     "special": null,
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Kürzel"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "short_code",
-    "table": "markings",
+    "name": "category",
+    "table": "foodoffers",
     "data_type": "character varying",
     "default_value": null,
     "max_length": 255,

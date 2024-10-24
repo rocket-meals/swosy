@@ -427,7 +427,6 @@ export default function FoodOfferScreen() {
   					amountColumns={initialAmountColumns}
 					postItem={<CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />}
   				/>
-				<PopupEventsOverlay />
   			</MySafeAreaView>
   		);
   	}

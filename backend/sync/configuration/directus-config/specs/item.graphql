@@ -65,16 +65,16 @@ type Query {
   profiles_by_id(id: ID!, version: String): profiles
   profiles_aggregated(groupBy: [String], filter: profiles_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [profiles_aggregated!]!
   profiles_by_version(version: String!, id: ID!): version_profiles
-  foodoffers(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers!]!
-  foodoffers_by_id(id: ID!, version: String): foodoffers
-  foodoffers_aggregated(groupBy: [String], filter: foodoffers_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foodoffers_aggregated!]!
-  foodoffers_by_version(version: String!, id: ID!): version_foodoffers
   cashregisters(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [cashregisters!]!
   cashregisters_by_id(id: ID!, version: String): cashregisters
   cashregisters_aggregated(groupBy: [String], filter: cashregisters_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cashregisters_aggregated!]!
   cashregisters_by_version(version: String!, id: ID!): version_cashregisters
   app_settings(version: String): app_settings
   app_settings_by_version(version: String!): version_app_settings
+  foodoffers(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers!]!
+  foodoffers_by_id(id: ID!, version: String): foodoffers
+  foodoffers_aggregated(groupBy: [String], filter: foodoffers_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foodoffers_aggregated!]!
+  foodoffers_by_version(version: String!, id: ID!): version_foodoffers
   languages(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [languages!]!
   languages_by_id(id: ID!, version: String): languages
   languages_aggregated(groupBy: [String], filter: languages_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [languages_aggregated!]!
@@ -147,10 +147,6 @@ type Query {
   foods_feedbacks_labels_entries_by_id(id: ID!, version: String): foods_feedbacks_labels_entries
   foods_feedbacks_labels_entries_aggregated(groupBy: [String], filter: foods_feedbacks_labels_entries_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_feedbacks_labels_entries_aggregated!]!
   foods_feedbacks_labels_entries_by_version(version: String!, id: ID!): version_foods_feedbacks_labels_entries
-  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
-  markings_by_id(id: ID!, version: String): markings
-  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
-  markings_by_version(version: String!, id: ID!): version_markings
   washingmachines(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [washingmachines!]!
   washingmachines_by_id(id: ID!, version: String): washingmachines
   washingmachines_aggregated(groupBy: [String], filter: washingmachines_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [washingmachines_aggregated!]!
@@ -175,6 +171,10 @@ type Query {
   cashregisters_transactions_by_id(id: ID!, version: String): cashregisters_transactions
   cashregisters_transactions_aggregated(groupBy: [String], filter: cashregisters_transactions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [cashregisters_transactions_aggregated!]!
   cashregisters_transactions_by_version(version: String!, id: ID!): version_cashregisters_transactions
+  markings(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings!]!
+  markings_by_id(id: ID!, version: String): markings
+  markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
+  markings_by_version(version: String!, id: ID!): version_markings
   markings_exclusions(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions!]!
   markings_exclusions_by_id(id: ID!, version: String): markings_exclusions
   markings_exclusions_aggregated(groupBy: [String], filter: markings_exclusions_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_exclusions_aggregated!]!
@@ -262,10 +262,10 @@ type Mutation {
   create_foods_feedbacks_labels_translations_item(data: create_foods_feedbacks_labels_translations_input!): foods_feedbacks_labels_translations
   create_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_profiles_input!]): [profiles!]!
   create_profiles_item(data: create_profiles_input!): profiles
-  create_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_input!]): [foodoffers!]!
-  create_foodoffers_item(data: create_foodoffers_input!): foodoffers
   create_cashregisters_items(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_cashregisters_input!]): [cashregisters!]!
   create_cashregisters_item(data: create_cashregisters_input!): cashregisters
+  create_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foodoffers_input!]): [foodoffers!]!
+  create_foodoffers_item(data: create_foodoffers_input!): foodoffers
   create_languages_items(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_languages_input!]): [languages!]!
   create_languages_item(data: create_languages_input!): languages
   create_utilizations_groups_items(filter: utilizations_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_groups_input!]): [utilizations_groups!]!
@@ -302,8 +302,6 @@ type Mutation {
   create_profiles_markings_item(data: create_profiles_markings_input!): profiles_markings
   create_foods_feedbacks_labels_entries_items(filter: foods_feedbacks_labels_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_labels_entries_input!]): [foods_feedbacks_labels_entries!]!
   create_foods_feedbacks_labels_entries_item(data: create_foods_feedbacks_labels_entries_input!): foods_feedbacks_labels_entries
-  create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
-  create_markings_item(data: create_markings_input!): markings
   create_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_washingmachines_input!]): [washingmachines!]!
   create_washingmachines_item(data: create_washingmachines_input!): washingmachines
   create_utilizations_entries_items(filter: utilizations_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_utilizations_entries_input!]): [utilizations_entries!]!
@@ -316,6 +314,8 @@ type Mutation {
   create_markings_translations_item(data: create_markings_translations_input!): markings_translations
   create_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_cashregisters_transactions_input!]): [cashregisters_transactions!]!
   create_cashregisters_transactions_item(data: create_cashregisters_transactions_input!): cashregisters_transactions
+  create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
+  create_markings_item(data: create_markings_input!): markings
   create_markings_exclusions_items(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_exclusions_input!]): [markings_exclusions!]!
   create_markings_exclusions_item(data: create_markings_exclusions_input!): markings_exclusions
   create_canteen_food_feedback_report_schedules_report_recipients_items(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_canteen_food_feedback_report_schedules_report_recipients_input!]): [canteen_food_feedback_report_schedules_report_recipients!]!
@@ -391,13 +391,13 @@ type Mutation {
   update_profiles_items(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_profiles_input!): [profiles!]!
   update_profiles_batch(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_profiles_input!]): [profiles!]!
   update_profiles_item(id: ID!, data: update_profiles_input!): profiles
-  update_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foodoffers_input!): [foodoffers!]!
-  update_foodoffers_batch(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foodoffers_input!]): [foodoffers!]!
-  update_foodoffers_item(id: ID!, data: update_foodoffers_input!): foodoffers
   update_cashregisters_items(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_cashregisters_input!): [cashregisters!]!
   update_cashregisters_batch(filter: cashregisters_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_cashregisters_input!]): [cashregisters!]!
   update_cashregisters_item(id: ID!, data: update_cashregisters_input!): cashregisters
   update_app_settings(data: update_app_settings_input!): app_settings
+  update_foodoffers_items(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foodoffers_input!): [foodoffers!]!
+  update_foodoffers_batch(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foodoffers_input!]): [foodoffers!]!
+  update_foodoffers_item(id: ID!, data: update_foodoffers_input!): foodoffers
   update_languages_items(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_languages_input!): [languages!]!
   update_languages_batch(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_languages_input!]): [languages!]!
   update_languages_item(id: ID!, data: update_languages_input!): languages
@@ -452,9 +452,6 @@ type Mutation {
   update_foods_feedbacks_labels_entries_items(filter: foods_feedbacks_labels_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_feedbacks_labels_entries_input!): [foods_feedbacks_labels_entries!]!
   update_foods_feedbacks_labels_entries_batch(filter: foods_feedbacks_labels_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_feedbacks_labels_entries_input!]): [foods_feedbacks_labels_entries!]!
   update_foods_feedbacks_labels_entries_item(id: ID!, data: update_foods_feedbacks_labels_entries_input!): foods_feedbacks_labels_entries
-  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
-  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
-  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_washingmachines_items(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_washingmachines_input!): [washingmachines!]!
   update_washingmachines_batch(filter: washingmachines_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_washingmachines_input!]): [washingmachines!]!
   update_washingmachines_item(id: ID!, data: update_washingmachines_input!): washingmachines
@@ -473,6 +470,9 @@ type Mutation {
   update_cashregisters_transactions_items(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_cashregisters_transactions_input!): [cashregisters_transactions!]!
   update_cashregisters_transactions_batch(filter: cashregisters_transactions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_cashregisters_transactions_input!]): [cashregisters_transactions!]!
   update_cashregisters_transactions_item(id: ID!, data: update_cashregisters_transactions_input!): cashregisters_transactions
+  update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
+  update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
+  update_markings_item(id: ID!, data: update_markings_input!): markings
   update_markings_exclusions_items(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_exclusions_input!): [markings_exclusions!]!
   update_markings_exclusions_batch(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_exclusions_input!]): [markings_exclusions!]!
   update_markings_exclusions_item(id: ID!, data: update_markings_exclusions_input!): markings_exclusions
@@ -544,10 +544,10 @@ type Mutation {
   delete_foods_feedbacks_labels_translations_item(id: ID!): delete_one
   delete_profiles_items(ids: [ID]!): delete_many
   delete_profiles_item(id: ID!): delete_one
-  delete_foodoffers_items(ids: [ID]!): delete_many
-  delete_foodoffers_item(id: ID!): delete_one
   delete_cashregisters_items(ids: [ID]!): delete_many
   delete_cashregisters_item(id: ID!): delete_one
+  delete_foodoffers_items(ids: [ID]!): delete_many
+  delete_foodoffers_item(id: ID!): delete_one
   delete_languages_items(ids: [ID]!): delete_many
   delete_languages_item(id: ID!): delete_one
   delete_utilizations_groups_items(ids: [ID]!): delete_many
@@ -584,8 +584,6 @@ type Mutation {
   delete_profiles_markings_item(id: ID!): delete_one
   delete_foods_feedbacks_labels_entries_items(ids: [ID]!): delete_many
   delete_foods_feedbacks_labels_entries_item(id: ID!): delete_one
-  delete_markings_items(ids: [ID]!): delete_many
-  delete_markings_item(id: ID!): delete_one
   delete_washingmachines_items(ids: [ID]!): delete_many
   delete_washingmachines_item(id: ID!): delete_one
   delete_utilizations_entries_items(ids: [ID]!): delete_many
@@ -598,6 +596,8 @@ type Mutation {
   delete_markings_translations_item(id: ID!): delete_one
   delete_cashregisters_transactions_items(ids: [ID]!): delete_many
   delete_cashregisters_transactions_item(id: ID!): delete_one
+  delete_markings_items(ids: [ID]!): delete_many
+  delete_markings_item(id: ID!): delete_one
   delete_markings_exclusions_items(ids: [ID]!): delete_many
   delete_markings_exclusions_item(id: ID!): delete_one
   delete_canteen_food_feedback_report_schedules_report_recipients_items(ids: [ID]!): delete_many
@@ -662,9 +662,9 @@ type Subscription {
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   languages_mutated(event: EventEnum): languages_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
@@ -683,13 +683,13 @@ type Subscription {
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
   foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
   foods_mutated(event: EventEnum): foods_mutated
   markings_translations_mutated(event: EventEnum): markings_translations_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
+  markings_mutated(event: EventEnum): markings_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   app_settings_balance_translations_mutated(event: EventEnum): app_settings_balance_translations_mutated
@@ -2729,6 +2729,7 @@ type foodoffers {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
 }
@@ -2772,6 +2773,7 @@ type foodoffers_aggregated_count {
   co2_rating: Int
   co2_saving_percentage: Int
   salt_g: Int
+  category: Int
   markings: Int
 }
 
@@ -3337,6 +3339,10 @@ type markings {
   icon: String
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -3354,6 +3360,11 @@ type markings {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group(filter: markings_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_groups
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
   excluded_by_markings_func: count_functions
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
@@ -3384,6 +3395,10 @@ type markings_aggregated_count {
   icon: Int
   id: Int
   image: Int
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: Int
   image_thumb_hash: Int
   sort: Int
@@ -3401,6 +3416,11 @@ type markings_aggregated_count {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: Int
   group: Int
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: Int
 
   """
   Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein
@@ -3706,14 +3726,20 @@ type popup_events {
   alias: String
   date_created: Date
   date_created_func: datetime_functions
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
   date_end_func: datetime_functions
-  date_start: Date
+
+  """* Muss gesetzt sein"""
+  date_start: Date!
   date_start_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: String
   image_thumb_hash: String
   send_notification: Boolean
@@ -3721,10 +3747,10 @@ type popup_events {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens]
-  canteens_func: count_functions
   translations(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_translations]
   translations_func: count_functions
+  canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens]
+  canteens_func: count_functions
 }
 
 type popup_events_aggregated {
@@ -3743,11 +3769,17 @@ type popup_events_aggregated {
 type popup_events_aggregated_count {
   alias: Int
   date_created: Int
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Int
+
+  """* Muss gesetzt sein"""
   date_start: Int
   date_updated: Int
   id: Int
   image: Int
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: Int
   image_thumb_hash: Int
   send_notification: Int
@@ -3755,8 +3787,10 @@ type popup_events_aggregated_count {
   status: Int
   user_created: Int
   user_updated: Int
-  canteens: Int
   translations: Int
+
+  """Falls keine Mensa ausgewählt ist, wird es für alle angezeigt."""
+  canteens: Int
 }
 
 type popup_events_aggregated_fields {
@@ -4811,6 +4845,7 @@ type version_foodoffers {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings: JSON
 }
 
@@ -4974,6 +5009,10 @@ type version_markings {
   icon: String
   id: ID
   image: JSON
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -4991,6 +5030,11 @@ type version_markings {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group: JSON
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings: JSON
   translations: JSON
 }
@@ -5073,11 +5117,17 @@ type version_news_translations {
 type version_popup_events {
   alias: String
   date_created: Date
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
+
+  """* Muss gesetzt sein"""
   date_start: Date
   date_updated: Date
   id: ID
   image: JSON
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: String
   image_thumb_hash: String
   send_notification: Boolean
@@ -5085,8 +5135,8 @@ type version_popup_events {
   status: String
   user_created: JSON
   user_updated: JSON
-  canteens: JSON
   translations: JSON
+  canteens: JSON
 }
 
 """"""
@@ -6627,6 +6677,7 @@ input create_foodoffers_input {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings: [create_foodoffers_markings_input]
 }
 
@@ -6808,6 +6859,10 @@ input create_markings_input {
   icon: String
   id: ID
   image: create_directus_files_input
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -6825,6 +6880,11 @@ input create_markings_input {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group: create_markings_groups_input
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings: [create_markings_exclusions_input]
   translations: [create_markings_translations_input]
 }
@@ -6877,11 +6937,17 @@ input create_popup_events_canteens_input {
 input create_popup_events_input {
   alias: String
   date_created: Date
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
-  date_start: Date
+
+  """* Muss gesetzt sein"""
+  date_start: Date!
   date_updated: Date
   id: ID
   image: create_directus_files_input
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: String
   image_thumb_hash: String
   send_notification: Boolean
@@ -6889,8 +6955,8 @@ input create_popup_events_input {
   status: String
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
-  canteens: [create_popup_events_canteens_input]
   translations: [create_popup_events_translations_input]
+  canteens: [create_popup_events_canteens_input]
 }
 
 input create_popup_events_translations_input {
@@ -7467,6 +7533,7 @@ input foodoffers_filter {
   co2_rating: string_filter_operators
   co2_saving_percentage: number_filter_operators
   salt_g: number_filter_operators
+  category: string_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
   _and: [foodoffers_filter]
@@ -7680,6 +7747,7 @@ input markings_filter {
   invert_background_color: boolean_filter_operators
   short_code: string_filter_operators
   group: markings_groups_filter
+  background_color: string_filter_operators
   excluded_by_markings: markings_exclusions_filter
   excluded_by_markings_func: count_function_filter_operators
   translations: markings_translations_filter
@@ -7811,10 +7879,10 @@ input popup_events_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  canteens: popup_events_canteens_filter
-  canteens_func: count_function_filter_operators
   translations: popup_events_translations_filter
   translations_func: count_function_filter_operators
+  canteens: popup_events_canteens_filter
+  canteens_func: count_function_filter_operators
   _and: [popup_events_filter]
   _or: [popup_events_filter]
 }
@@ -8564,6 +8632,7 @@ input update_foodoffers_input {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings: [update_foodoffers_markings_input]
 }
 
@@ -8745,6 +8814,10 @@ input update_markings_input {
   icon: String
   id: ID
   image: update_directus_files_input
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -8762,6 +8835,11 @@ input update_markings_input {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group: update_markings_groups_input
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings: [update_markings_exclusions_input]
   translations: [update_markings_translations_input]
 }
@@ -8814,11 +8892,17 @@ input update_popup_events_canteens_input {
 input update_popup_events_input {
   alias: String
   date_created: Date
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
+
+  """* Muss gesetzt sein"""
   date_start: Date
   date_updated: Date
   id: ID
   image: update_directus_files_input
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: String
   image_thumb_hash: String
   send_notification: Boolean
@@ -8826,8 +8910,8 @@ input update_popup_events_input {
   status: String
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
-  canteens: [update_popup_events_canteens_input]
   translations: [update_popup_events_translations_input]
+  canteens: [update_popup_events_canteens_input]
 }
 
 input update_popup_events_translations_input {

@@ -60,6 +60,7 @@ export default function AppfeedbackDetails() {
 	const myToast = useMyToast();
 
 	const permissionHelperObject: PermissionHelperObject = PermissionHelper.usePermissionHelperObject();
+	console.log(permissionHelperObject)
 
 	const collectionHelper = new CollectionHelper<AppFeedbacks>(TABLE_NAME_APP_FEEDBACKS)
 

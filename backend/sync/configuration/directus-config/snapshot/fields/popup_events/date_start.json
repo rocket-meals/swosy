@@ -11,13 +11,18 @@
     "group": null,
     "hidden": false,
     "interface": "datetime",
-    "note": null,
+    "note": "* Muss gesetzt sein",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 12,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Start Datum"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"
@@ -30,7 +35,7 @@
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
-    "is_nullable": true,
+    "is_nullable": false,
     "is_unique": false,
     "is_primary_key": false,
     "is_generated": false,

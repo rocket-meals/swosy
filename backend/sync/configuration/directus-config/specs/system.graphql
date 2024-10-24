@@ -269,9 +269,9 @@ type Subscription {
   foods_feedbacks_labels_mutated(event: EventEnum): foods_feedbacks_labels_mutated
   foods_feedbacks_labels_translations_mutated(event: EventEnum): foods_feedbacks_labels_translations_mutated
   profiles_mutated(event: EventEnum): profiles_mutated
-  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   cashregisters_mutated(event: EventEnum): cashregisters_mutated
   app_settings_mutated(event: EventEnum): app_settings_mutated
+  foodoffers_mutated(event: EventEnum): foodoffers_mutated
   languages_mutated(event: EventEnum): languages_mutated
   utilizations_groups_mutated(event: EventEnum): utilizations_groups_mutated
   canteens_mutated(event: EventEnum): canteens_mutated
@@ -290,13 +290,13 @@ type Subscription {
   wikis_translations_mutated(event: EventEnum): wikis_translations_mutated
   profiles_markings_mutated(event: EventEnum): profiles_markings_mutated
   foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
-  markings_mutated(event: EventEnum): markings_mutated
   washingmachines_mutated(event: EventEnum): washingmachines_mutated
   utilizations_entries_mutated(event: EventEnum): utilizations_entries_mutated
   report_recipients_mutated(event: EventEnum): report_recipients_mutated
   foods_mutated(event: EventEnum): foods_mutated
   markings_translations_mutated(event: EventEnum): markings_translations_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
+  markings_mutated(event: EventEnum): markings_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
   canteen_food_feedback_report_schedules_report_recipients_mutated(event: EventEnum): canteen_food_feedback_report_schedules_report_recipients_mutated
   app_settings_balance_translations_mutated(event: EventEnum): app_settings_balance_translations_mutated
@@ -2294,6 +2294,7 @@ type foodoffers {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
 }
@@ -2530,6 +2531,10 @@ type markings {
   icon: String
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -2547,6 +2552,11 @@ type markings {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group(filter: markings_groups_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings_groups
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
   excluded_by_markings_func: count_functions
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
@@ -2682,14 +2692,20 @@ type popup_events {
   alias: String
   date_created: Date
   date_created_func: datetime_functions
+
+  """Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist."""
   date_end: Date
   date_end_func: datetime_functions
-  date_start: Date
+
+  """* Muss gesetzt sein"""
+  date_start: Date!
   date_start_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+
+  """Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde"""
   image_remote_url: String
   image_thumb_hash: String
   send_notification: Boolean
@@ -2697,10 +2713,10 @@ type popup_events {
   status: String
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens]
-  canteens_func: count_functions
   translations(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_translations]
   translations_func: count_functions
+  canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens]
+  canteens_func: count_functions
 }
 
 type popup_events_canteens {
@@ -3934,6 +3950,7 @@ input create_foodoffers_input {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings: [create_foodoffers_markings_input]
 }
 
@@ -4056,6 +4073,10 @@ input create_markings_input {
   icon: String
   id: ID
   image: create_directus_files_input
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -4073,6 +4094,11 @@ input create_markings_input {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group: create_markings_groups_input
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings: [create_markings_exclusions_input]
   translations: [create_markings_translations_input]
 }
@@ -4718,6 +4744,7 @@ input foodoffers_filter {
   co2_rating: string_filter_operators
   co2_saving_percentage: number_filter_operators
   salt_g: number_filter_operators
+  category: string_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
   _and: [foodoffers_filter]
@@ -4890,6 +4917,7 @@ input markings_filter {
   invert_background_color: boolean_filter_operators
   short_code: string_filter_operators
   group: markings_groups_filter
+  background_color: string_filter_operators
   excluded_by_markings: markings_exclusions_filter
   excluded_by_markings_func: count_function_filter_operators
   translations: markings_translations_filter
@@ -5021,10 +5049,10 @@ input popup_events_filter {
   status: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  canteens: popup_events_canteens_filter
-  canteens_func: count_function_filter_operators
   translations: popup_events_translations_filter
   translations_func: count_function_filter_operators
+  canteens: popup_events_canteens_filter
+  canteens_func: count_function_filter_operators
   _and: [popup_events_filter]
   _or: [popup_events_filter]
 }
@@ -5646,6 +5674,7 @@ input update_foodoffers_input {
   co2_rating: String
   co2_saving_percentage: Float
   salt_g: Float
+  category: String
   markings: [update_foodoffers_markings_input]
 }
 
@@ -5768,6 +5797,10 @@ input update_markings_input {
   icon: String
   id: ID
   image: update_directus_files_input
+
+  """
+  Falls kein Bild hochgeladen wurde, kann auch auf ein Bild von einer anderen Seite angezeigt werden.
+  """
   image_remote_url: String
   image_thumb_hash: String
   sort: Int
@@ -5785,6 +5818,11 @@ input update_markings_input {
   """Kürzel, welches Nutzern angezeigt werden soll"""
   short_code: String
   group: update_markings_groups_input
+
+  """
+  Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.
+  """
+  background_color: String
   excluded_by_markings: [update_markings_exclusions_input]
   translations: [update_markings_translations_input]
 }

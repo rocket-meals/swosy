@@ -106,4 +106,47 @@ describe("FoodTL1ParserHannover Test", () => {
 
         }
     })
+
+    it("Foodoffers shall have correct category", async () => {
+        await foodParser.createNeededData();
+        let foodOffersJson = await foodParser.getFoodoffersForParser();
+        let foundCategory = false;
+        for(let foodOffer of foodOffersJson){
+            if(!!foodOffer.basicFoodofferData.category){
+                foundCategory = true;
+                break;
+            }
+        }
+        expect(foundCategory).toBe(true);
+
+        let firstFoodOffer = foodOffersJson[0];
+
+        expect(!!firstFoodOffer).toBe(true);
+        if(firstFoodOffer){
+            expect(firstFoodOffer.basicFoodofferData.category).toBe("QUEERBEET");
+        }
+
+    });
+
+    it("Food shall have correct category", async () => {
+        await foodParser.createNeededData();
+        let foodsJson = await foodParser.getFoodsListForParser();
+        let foundCategory = false;
+        for(let food of foodsJson){
+            if(!!food.basicFoodData.category){
+                foundCategory = true;
+                break;
+            }
+        }
+        expect(foundCategory).toBe(true);
+
+        let firstFood = foodsJson[0];
+
+        expect(!!firstFood).toBe(true);
+        if(firstFood){
+            expect(firstFood.basicFoodData.category).toBe("QUEERBEET");
+        }
+    })
+
+
 });

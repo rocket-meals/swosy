@@ -814,6 +814,7 @@ export type Foodoffers = {
   calories_kcal?: number | null;
   canteen?: string | Canteens | null;
   carbohydrate_g?: number | null;
+  category?: string | null;
   co2_g?: number | null;
   co2_rating?: string | null;
   co2_saving_percentage?: number | null;
@@ -1085,7 +1086,7 @@ export type PopupEvents = {
   canteens: any[] | PopupEventsCanteens[];
   date_created?: string | null;
   date_end?: string | null;
-  date_start?: string | null;
+  date_start: string;
   date_updated?: string | null;
   id: string;
   image?: string | DirectusFiles | null;

@@ -21,6 +21,11 @@ const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelpe
 		dependency_collections_or_enum: [TABLE_NAME_POPUPEVENTS],
 	},
 	{
+		field: 'canteens.*',
+		limit: -1,
+		dependency_collections_or_enum: ["popup_events_canteens"],
+	},
+	{
 		field: 'translations.*',
 		limit: -1,
 		dependency_collections_or_enum: ["popup_events_translations"],

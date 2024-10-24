@@ -11,13 +11,18 @@
     "group": null,
     "hidden": false,
     "interface": "datetime",
-    "note": null,
+    "note": "Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist.",
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 13,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "End Datum"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

@@ -40,4 +40,14 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
 
     }
 
+    override getFoodCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+        return parsedReportItem?.["SPEISE"] || null;
+    }
+
+    override getFoodofferCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
+        let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
+        return parsedReportItem?.["SPEISE"] || null; // ATTENTION: Hannover has no specific field for foodoffer category
+    }
+
 }

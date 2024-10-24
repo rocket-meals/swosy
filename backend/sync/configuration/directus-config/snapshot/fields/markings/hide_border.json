@@ -15,11 +15,16 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 19,
+    "sort": 20,
     "special": [
       "cast-boolean"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Rand verstecken"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

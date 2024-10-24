@@ -9,7 +9,7 @@
     "display_options": null,
     "field": "send_notification",
     "group": null,
-    "hidden": false,
+    "hidden": true,
     "interface": "boolean",
     "note": null,
     "options": null,
