@@ -86,6 +86,9 @@
                     <div style="display: flex; align-items: center;">
                         ⭐ Bewertung: {{ food.rating_average }} (Anzahl Bewertungen: {{ food.rating_amount }})
                     </div>
+                    <div style="display: flex; align-items: center;">
+                        {{ food.status_rating }} Speise Bewertung im Vergleich zur durchschnittlichen Bewertung aller Speisen {{ food_rating_average }}
+                    </div>
                 </div>
                 {% if show_food_feedback_labels %}
                     <div>

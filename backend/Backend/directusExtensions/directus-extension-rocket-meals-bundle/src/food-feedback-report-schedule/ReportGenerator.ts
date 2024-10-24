@@ -70,6 +70,7 @@ export type ReportType = {
     show_food_comments: boolean,
     show_canteen_feedbacks: boolean,
     status_explanation: string,
+    food_rating_average: string,
     foods: ReportFoodEntryType[],
     canteen_labels: ReportCanteenEntryType[]
 }
@@ -146,6 +147,7 @@ export class ReportGenerator {
             show_food_feedback_labels: show_food_feedback_labels,
             show_food_comments: show_food_comments,
             show_canteen_feedbacks: show_canteen_feedbacks,
+            food_rating_average: foodAverageRatingString,
             foods: [],
             canteen_labels: []
         }
