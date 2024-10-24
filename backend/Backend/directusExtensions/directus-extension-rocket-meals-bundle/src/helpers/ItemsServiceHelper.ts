@@ -26,23 +26,12 @@ export class ItemsServiceHelper<T>{
         return await itemsService.updateOne(primary_key, update);
     }
 
+
+
     // Function to calculate the average of a number field
-    async calculateAverage<K extends keyof T>(fieldName: K): Promise<number> {
-        // Ensure the field is of type number
-        if (typeof fieldName !== "string") {
-            throw new Error("Field name must be a string");
-        }
-
-        // Type constraint to ensure fieldName is a number field in T
-        type NumberFields = { [P in keyof T]: T[P] extends number ? P : never }[keyof T];
-
-        if (!(fieldName as string in ({} as Record<NumberFields, number>))) {
-            throw new Error(`${String(fieldName)} is not a number field in the provided type.`);
-        }
-
-        type AggregateAnswer = { avg: string };
-
+    async calculateAverage(fieldName: string): Promise<number> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        type AggregateAnswer = { avg: string };
         let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
 
         // Construct the query to calculate average on the field
@@ -50,24 +39,25 @@ export class ItemsServiceHelper<T>{
             aggregate: {
                 avg: [fieldName as string]  // Pass the field name to the aggregate function
             },
-            limit: -1 // No limit for aggregation queries
+            limit: -1
         };
 
-        // Define the type for the response
+        // Define the response structure
 
         // Execute the query
         let answer = await itemsService.readByQuery(aggregateQuery);
 
-        // Parse the average result
+        // Parse and return the average result
         if (answer && answer[0]) {
-            return parseFloat(answer[0].avg); // Parse the average to a float
+            return parseFloat(answer[0].avg);  // Parse the average to a float
         } else {
-            return 0; // Return 0 if no data is found
+            return 0;  // Return 0 if no data is found
         }
     }
 
     async countItems(query?: Query): Promise<number>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        type AggregateAnswer = {count: string};
         let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
         let aggregateFilter: Query = {
             aggregate: {
@@ -76,7 +66,6 @@ export class ItemsServiceHelper<T>{
             limit: -1
         }
         let totalQuery: Query = {...query, ...aggregateFilter};
-        type AggregateAnswer = {count: string};
         let answer = await itemsService.readByQuery(totalQuery)
         // data = {"data":[{"count":"1869"}]}
         if(!!answer && !!answer[0]){
