@@ -34,6 +34,8 @@ export class ItemsServiceHelper<T>{
         type AggregateAnswer = { avg: string };
         let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
 
+        console.log("Calculating average for field: " + fieldName);
+
         // Construct the query to calculate average on the field
         let aggregateQuery: Query = {
             aggregate: {
@@ -42,10 +44,14 @@ export class ItemsServiceHelper<T>{
             limit: -1
         };
 
+        console.log("Query: " + JSON.stringify(aggregateQuery, null, 2));
+
         // Define the response structure
 
         // Execute the query
         let answer = await itemsService.readByQuery(aggregateQuery);
+
+        console.log("Answer: " + JSON.stringify(answer, null, 2));
 
         // Parse and return the average result
         if (answer && answer[0]) {
