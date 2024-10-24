@@ -12,12 +12,16 @@ import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helper
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DictHelper} from "../helpers/DictHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
+import {FoodRatingCalculator} from "../food-feedback-rating-calculate-hook/FoodRatingCalculator";
 
 enum ReportStatusTrafficLightEnum {
     RED = "🔴",
     YELLOW = "🟡",
     GREEN = "🟢",
 }
+
+// NA = Not Available
+const VALUE_NOT_AVAILABLE = "N/A";
 
 export type ReportStatusTrafficLightType = ReportStatusTrafficLightEnum;
 
@@ -131,7 +135,7 @@ export class ReportGenerator {
         }
 
         const foodAverageRating = await this.getAverageRatingForAllFoods();
-        const foodAverageRatingString = foodAverageRating ? foodAverageRating.toFixed(2) : "N/A";
+        const foodAverageRatingString = foodAverageRating ? foodAverageRating.toFixed(2) : VALUE_NOT_AVAILABLE;
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
@@ -397,7 +401,7 @@ export class ReportGenerator {
                 image_url = food?.image_remote_url;
             }
 
-            let usedRatingAverage = "N/A";
+            let usedRatingAverage = VALUE_NOT_AVAILABLE;
             if(food?.rating_average){
                 // to fixed 2 decimal places
                 usedRatingAverage = food?.rating_average.toFixed(2);
@@ -410,7 +414,7 @@ export class ReportGenerator {
 
             let status_rating = ReportStatusTrafficLightEnum.YELLOW;
             if(food?.rating_average && foodAverageRating){
-                const epsilon = 5*ReportGenerator.THRESHOLD_PERCENTAGE;
+                const epsilon = FoodRatingCalculator.MAX_RATING_VALUE*ReportGenerator.THRESHOLD_PERCENTAGE;
                 if(food.rating_average > foodAverageRating + epsilon){
                     status_rating = ReportStatusTrafficLightEnum.GREEN;
                 } else if(food.rating_average < foodAverageRating - epsilon) {
