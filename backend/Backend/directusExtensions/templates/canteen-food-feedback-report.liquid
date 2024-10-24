@@ -73,18 +73,11 @@
                  {% endif %}
                 <div>
                     <div style="display: flex; align-items: center;">
-                        ⭐ Anzahl Bewertungen: {{ food.rating_amount }}
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        📊 Durchschnittliche Bewertung: {{ food.rating_average }}
+                        ⭐ Bewertung: {{ food.rating_average }} (Anzahl Bewertungen: {{ food.rating_amount }})
                     </div>
                 </div>
                 {% if show_food_feedback_labels %}
                     <div>
-                        <div style="display: flex; align-items: center;">
-                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAp0lEQVR4nO3WuwlCQRBG4c8HRmINgj2YGAkGBpZkYiFWY2IJgoHgIxcMDBTGRC8qiHphAsGFHzY6h92ZHbYSETJXNZX+F/wFvyEQEUUwwBLHL7JA/57zwHwSrBElskf7E0EZ+C0z1DIFgXG24IRupiCuTdLMFASmN2bWO2gUu4QTrNDKuqIzeplFnmS26Rz1d4JdSfgBnU9GxQjbL+EbDF8Nu0r2t+UCGgPg5+dCrlIAAAAASUVORK5CYII=" alt="label" style="width:24px; height:24px; margin-right:8px;">
-                            Labels:
-                        </div>
                         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
                             <thead>
                             <tr>
@@ -123,8 +116,7 @@
                 {% if show_food_comments %}
                     <div>
                         <div style="display: flex; align-items: center;">
-                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAxklEQVR4nO2WQQrCMBBF30guJrgRBI8hiEf1BOKqqHgDBavfhUkrmmpIKm76YTYh8z8zk/zEJBFgZo58SNI1tgowB46ACqKWxGsEgVLyTgEDHHDx1VhBi6IY9U0Yg8OX2fQNJsAWOGfECdgA43CAYgIV5TOpOmdgZu3ZLYAk+/kMBoFBoBxOUg307kEBf2vRoQfuPcCbf3svmvkNuT60A6bNg5MaHWSrjzmFAsuvOZkCtxTyHIE1D2tfpObY87clBWYW7k4S7hqGud4/iAy5AAAAAElFTkSuQmCC" alt="comment-multiple" style="width:24px; height:24px; margin-right:8px;">
-                            Kommentare während dieses Zeitraums:
+                            💬 Kommentare während dieses Zeitraums:
                         </div>
                         <ul>
                             {% if food.comments.size > 0 %}
@@ -138,6 +130,7 @@
                     </div>
                 {% endif %}
             </div>
+            <div style="border-bottom: 2px solid #ddd; margin-bottom: 20px;">&nbsp;</div>
         {% endfor %}
     </div>
 {% endif %}
