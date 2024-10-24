@@ -131,7 +131,7 @@ export class ReportGenerator {
         }
 
         const foodAverageRating = await this.getAverageRatingForAllFoods();
-        const foodAverageRatingString = foodAverageRating.toFixed(2);
+        const foodAverageRatingString = foodAverageRating ? foodAverageRating.toFixed(2) : "N/A";
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
@@ -337,7 +337,7 @@ export class ReportGenerator {
         };
     }
 
-    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[], show_food_feedback_labels: boolean, show_food_comments: boolean, foodAverageRating: number = 0){
+    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[], show_food_feedback_labels: boolean, show_food_comments: boolean, foodAverageRating: number | undefined){
         let foods: ReportFoodEntryType[] = [];
 
         let foodDict: {[key: string]: Foods} = {};
@@ -409,7 +409,7 @@ export class ReportGenerator {
             }
 
             let status_rating = ReportStatusTrafficLightEnum.YELLOW;
-            if(food?.rating_average){
+            if(food?.rating_average && foodAverageRating){
                 const epsilon = 5*ReportGenerator.THRESHOLD_PERCENTAGE;
                 if(food.rating_average > foodAverageRating + epsilon){
                     status_rating = ReportStatusTrafficLightEnum.GREEN;

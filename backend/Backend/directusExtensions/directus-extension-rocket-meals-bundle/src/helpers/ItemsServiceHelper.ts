@@ -29,12 +29,17 @@ export class ItemsServiceHelper<T>{
 
 
     // Function to calculate the average of a number field
-    async calculateAverage(fieldName: string): Promise<number> {
+    /**
+     * Calculate the average of a number field in the table
+     * @param fieldName
+     * @returns {Promise<number>} The average of the field or NaN if no data is found
+     */
+    async calculateAverage(fieldName: string): Promise<number | undefined> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        type AggregateAnswer = { avg: string };
+        type AggregateAnswer = { [fieldName: string]: string };
         let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
 
-        console.log("Calculating average for field: " + fieldName);
+        //console.log("Calculating average for field: " + fieldName);
 
         // Construct the query to calculate average on the field
         let aggregateQuery: Query = {
@@ -44,20 +49,20 @@ export class ItemsServiceHelper<T>{
             limit: -1
         };
 
-        console.log("Query: " + JSON.stringify(aggregateQuery, null, 2));
+        //console.log("Query: " + JSON.stringify(aggregateQuery, null, 2));
 
         // Define the response structure
 
         // Execute the query
         let answer = await itemsService.readByQuery(aggregateQuery);
 
-        console.log("Answer: " + JSON.stringify(answer, null, 2));
+        //console.log("Answer: " + JSON.stringify(answer, null, 2));
 
         // Parse and return the average result
-        if (answer && answer[0]) {
-            return parseFloat(answer[0].avg);  // Parse the average to a float
+        if (answer && answer[0] && answer[0][fieldName]) {
+            return parseFloat(answer[0][fieldName]);  // Parse the average to a float
         } else {
-            return 0;  // Return 0 if no data is found
+            return undefined;  // Return 0 if no data is found
         }
     }
 
