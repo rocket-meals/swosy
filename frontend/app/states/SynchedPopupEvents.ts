@@ -30,7 +30,10 @@ const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelpe
 		limit: -1,
 		dependency_collections_or_enum: ["popup_events_translations"],
 	}
-])
+],
+	// add PUBLISHED_FILTER
+	MyCacheHelperDeepFields.PUBLISHED_FILTER
+	)
 export async function loadPopupEventsFromServer(): Promise<PopupEvents[]> {
 	const collectionHelper = new CollectionHelper<PopupEvents>(TABLE_NAME_POPUPEVENTS);
 	const query = cacheHelperDeepFields_markings.getQuery()

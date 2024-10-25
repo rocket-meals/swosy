@@ -2,18 +2,14 @@ import React, {useEffect} from 'react';
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {Text, View} from "@/components/Themed";
 import {Canteens, PopupEvents} from "@/helper/database/databaseTypes/types";
-import {
-	usePopupEventsAreHidden,
-	useSynchedPopupEventsDict,
-	useSynchedPopupEventsReadDict
-} from "@/states/SynchedPopupEvents";
+import {useSynchedPopupEventsDict, useSynchedPopupEventsReadDict} from "@/states/SynchedPopupEvents";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {useIsDebug} from "@/states/Debug";
 import DirectusImage from "@/components/project/DirectusImage";
 import {RectangleWithLayoutCharactersWide} from '@/components/shapes/Rectangle';
-import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {useSearchParamKioskMode} from "@/helper/searchParams/SearchParams";
 
 export type PopupEventsOverlayProps = {
 
@@ -26,12 +22,17 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	const profileCanteenId = profileCanteen?.id
 	const isDebug = useIsDebug()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const kioskMode = useSearchParamKioskMode()
 
 	let activePopupEvent: PopupEvents | undefined | null = getNextActivePopupEvent()
 
 	const resource_translations = activePopupEvent?.translations as TranslationEntry[] || []
 	const translated_title = getDirectusTranslation(languageCode, resource_translations, "title");
 	const translated_content = getDirectusTranslation(languageCode, resource_translations, "content");
+
+	if(kioskMode) {
+		return null;
+	}
 
 	function getUnreadPopupEvents() {
 		let unreadPopupEvents: PopupEvents[] = []
