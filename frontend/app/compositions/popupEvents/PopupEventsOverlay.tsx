@@ -245,7 +245,11 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	})
 
 	useEffect(() => {
+		console.log("activePopupEvent", activePopupEvent)
+		console.log("kioskMode", kioskMode)
+		console.log("useEffect kiosk mode is: "+kioskMode+" and activePopupEvent is: "+activePopupEvent)
 		if(!kioskMode){
+			console.log("okay lets show it")
 			if(activePopupEvent) {
 				showPopup()
 			}

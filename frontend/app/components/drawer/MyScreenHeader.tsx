@@ -21,6 +21,7 @@ import {router, useFocusEffect, useNavigation} from 'expo-router';
 import {PlatformHelper} from '@/helper/PlatformHelper';
 import {BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
 import {MyButton} from "@/components/buttons/MyButton";
+import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 
 /**
  * Defines the properties for the custom drawer header.
@@ -160,6 +161,7 @@ export const MyScreenHeaderCustom = ({ title, numberOfLines, headerStyle, showBa
 				>
 					{title}
 				</Heading>
+				<PopupEventsOverlay />
 			</View>
 		);
 	};
