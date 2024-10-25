@@ -30,9 +30,7 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	const translated_title = getDirectusTranslation(languageCode, resource_translations, "title");
 	const translated_content = getDirectusTranslation(languageCode, resource_translations, "content");
 
-	if(kioskMode) {
-		return null;
-	}
+	console.log("kioskMode", kioskMode)
 
 	function getUnreadPopupEvents() {
 		let unreadPopupEvents: PopupEvents[] = []
@@ -247,10 +245,12 @@ export const PopupEventsOverlay = (props: PopupEventsOverlayProps) => {
 	})
 
 	useEffect(() => {
-		if(activePopupEvent) {
-			showPopup()
+		if(!kioskMode){
+			if(activePopupEvent) {
+				showPopup()
+			}
 		}
-	}, [activePopupEvent?.id])
+	}, [activePopupEvent?.id, kioskMode])
 
 	return null;
 
