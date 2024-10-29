@@ -76,7 +76,8 @@ export type ReportType = {
     canteen_labels: ReportCanteenEntryType[],
     icon_thumbs_up: string,
     icon_thumbs_down: string,
-    icon_comment: string
+    icon_comment: string,
+    icon_star: string
 }
 
 export class ReportGenerator {
@@ -154,9 +155,10 @@ export class ReportGenerator {
             food_rating_average: foodAverageRatingString,
             foods: [],
             canteen_labels: [],
-            icon_thumbs_up: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_UP),
-            icon_thumbs_down: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_DOWN),
-            icon_comment: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.SPEECH_BUBBLE)
+            icon_thumbs_up: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_UP, EmojiHelper.DivTextSize.MEDIUM),
+            icon_thumbs_down: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_DOWN, EmojiHelper.DivTextSize.MEDIUM),
+            icon_comment: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.SPEECH_BUBBLE, EmojiHelper.DivTextSize.SMALL),
+            icon_star: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.STAR, EmojiHelper.DivTextSize.MEDIUM)
         }
 
         if(show_food){

@@ -35,12 +35,12 @@
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            {{ icon_thumbs_up }} Positiv (davon neu)
+                            <span style="margin-right: 4px;">{{ icon_thumbs_up }}</span> Positiv (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            {{ icon_thumbs_down }} Negativ (davon neu)
+                            <span style="margin-right: 4px;">{{ icon_thumbs_down }} Negativ (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -84,7 +84,7 @@
                  {% endif %}
                 <div>
                     <div style="display: flex; align-items: center;">
-                        ⭐ Bewertung: {{ food.rating_average }} (Anzahl Bewertungen: {{ food.rating_amount }})
+                        <span style="margin-right: 4px;">{{ icon_star }}</span> Bewertung: {{ food.rating_average }} (Anzahl Bewertungen: {{ food.rating_amount }})
                     </div>
                     <div style="display: flex; align-items: center;">
                         {{ food.status_rating }} Speise Bewertung im Vergleich zur durchschnittlichen Bewertung aller Speisen {{ food_rating_average }}
@@ -104,12 +104,12 @@
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        {{ icon_thumbs_up }} Positiv (davon neu)
+                                        <span style="margin-right: 4px;">{{ icon_thumbs_up }} Positiv (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        {{ icon_thumbs_down }} Negativ (davon neu)
+                                        <span style="margin-right: 4px;">{{ icon_thumbs_down }} Negativ (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -135,7 +135,7 @@
                 {% if show_food_comments %}
                     <div>
                         <div style="display: flex; align-items: center;">
-                            {{ icon_comment }} Kommentare während dieses Zeitraums:
+                            <span style="margin-right: 4px;">{{ icon_comment}} Kommentare während dieses Zeitraums:
                         </div>
                         <ul>
                             {% if food.comments.size > 0 %}
