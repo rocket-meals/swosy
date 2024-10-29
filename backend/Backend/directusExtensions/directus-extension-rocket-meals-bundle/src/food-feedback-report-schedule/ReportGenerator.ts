@@ -13,31 +13,13 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DictHelper} from "../helpers/DictHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {FoodRatingCalculator} from "../food-feedback-rating-calculate-hook/FoodRatingCalculator";
+import {EmojiHelper} from "../helpers/EmojiHelper";
 
 class ReportStatusTrafficLightValues {
-    static RED = getTrafficLightDivCircle("#C41F20", "R")
-    static YELLOW = getTrafficLightDivCircle("#E7C60B", "Y")
-    static GREEN = getTrafficLightDivCircle("#09A40B", "G")
+    static RED = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.RED_CIRCLE);
+    static YELLOW = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.YELLOW_CIRCLE);
+    static GREEN = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.GREEN_CIRCLE);
 }
-
-function getTrafficLightDivCircle(colorHex: string, char: string): string {
-    // Render the `div` with the appropriate styles
-    return `<div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "1em",
-            height: "1em",
-            borderRadius: "50%",
-            fontSize: "1em",
-            fontWeight: "bold",
-            color: "transparent", // Make character invisible
-            backgroundColor: "${colorHex}"
-        }}>
-            ${char}
-        </div>`
-}
-
 
 // NA = Not Available
 const VALUE_NOT_AVAILABLE = "N/A";
@@ -91,7 +73,10 @@ export type ReportType = {
     status_explanation: string,
     food_rating_average: string,
     foods: ReportFoodEntryType[],
-    canteen_labels: ReportCanteenEntryType[]
+    canteen_labels: ReportCanteenEntryType[],
+    icon_thumbs_up: string,
+    icon_thumbs_down: string,
+    icon_comment: string
 }
 
 export class ReportGenerator {
@@ -168,7 +153,10 @@ export class ReportGenerator {
             show_canteen_feedbacks: show_canteen_feedbacks,
             food_rating_average: foodAverageRatingString,
             foods: [],
-            canteen_labels: []
+            canteen_labels: [],
+            icon_thumbs_up: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_UP),
+            icon_thumbs_down: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_DOWN),
+            icon_comment: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.SPEECH_BUBBLE)
         }
 
         if(show_food){

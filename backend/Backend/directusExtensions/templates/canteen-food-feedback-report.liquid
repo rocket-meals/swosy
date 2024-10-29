@@ -35,12 +35,12 @@
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            👍 Positiv (davon neu)
+                            {{ icon_thumbs_up }} Positiv (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                         <div style="display: flex; align-items: center;">
-                            👎 Negativ (davon neu)
+                            {{ icon_thumbs_down }} Negativ (davon neu)
                         </div>
                     </th>
                     <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -104,12 +104,12 @@
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        👍 Positiv (davon neu)
+                                        {{ icon_thumbs_up }} Positiv (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
                                     <div style="display: flex; align-items: center;">
-                                        👎 Negativ (davon neu)
+                                        {{ icon_thumbs_down }} Negativ (davon neu)
                                     </div>
                                 </th>
                                 <th style="padding: 12px; text-align: left; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">
@@ -135,7 +135,7 @@
                 {% if show_food_comments %}
                     <div>
                         <div style="display: flex; align-items: center;">
-                            💬 Kommentare während dieses Zeitraums:
+                            {{ icon_comment }} Kommentare während dieses Zeitraums:
                         </div>
                         <ul>
                             {% if food.comments.size > 0 %}
