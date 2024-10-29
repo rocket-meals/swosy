@@ -14,16 +14,35 @@ import {DictHelper} from "../helpers/DictHelper";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {FoodRatingCalculator} from "../food-feedback-rating-calculate-hook/FoodRatingCalculator";
 
-enum ReportStatusTrafficLightEnum {
-    RED = "🔴",
-    YELLOW = "🟡",
-    GREEN = "🟢",
+class ReportStatusTrafficLightValues {
+    static RED = getTrafficLightDivCircle("#C41F20", "R")
+    static YELLOW = getTrafficLightDivCircle("#E7C60B", "Y")
+    static GREEN = getTrafficLightDivCircle("#09A40B", "G")
 }
+
+function getTrafficLightDivCircle(colorHex: string, char: string): string {
+    // Render the `div` with the appropriate styles
+    return `<div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "1em",
+            height: "1em",
+            borderRadius: "50%",
+            fontSize: "1em",
+            fontWeight: "bold",
+            color: "transparent", // Make character invisible
+            backgroundColor: "${colorHex}"
+        }}>
+            ${char}
+        </div>`
+}
+
 
 // NA = Not Available
 const VALUE_NOT_AVAILABLE = "N/A";
 
-export type ReportStatusTrafficLightType = ReportStatusTrafficLightEnum;
+export type ReportStatusTrafficLightType = string;
 
 export type ReportFoodEntryLabelType = {
     id: string,
@@ -141,7 +160,7 @@ export class ReportGenerator {
         let report: ReportType = {
             canteen_alias: canteen_alias,
             dateHumanReadable: dateHumanReadable,
-            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightEnum.GREEN+" (Positiv), "+ReportStatusTrafficLightEnum.RED+" (Negativ) und "+ReportStatusTrafficLightEnum.YELLOW+" (Neutral) an. Der Status ändert bei einer Abweichung von mehr als "+(ReportGenerator.THRESHOLD_PERCENTAGE*100)+"%. Bei den Rückmeldungen mit Labels zeigt der Status in Klammern die Änderung in diesem Zeitraum an. Bei den Bewertungen der Speisen werden diese Verglichen mit der Durchschnittlichen Bewertung von "+foodAverageRatingString+".",
+            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightValues.GREEN+" (Positiv), "+ReportStatusTrafficLightValues.RED+" (Negativ) und "+ReportStatusTrafficLightValues.YELLOW+" (Neutral) an. Der Status ändert bei einer Abweichung von mehr als "+(ReportGenerator.THRESHOLD_PERCENTAGE*100)+"%. Bei den Rückmeldungen mit Labels zeigt der Status in Klammern die Änderung in diesem Zeitraum an. Bei den Bewertungen der Speisen werden diese Verglichen mit der Durchschnittlichen Bewertung von "+foodAverageRatingString+".",
             show_images: show_images,
             show_food: show_food,
             show_food_feedback_labels: show_food_feedback_labels,
@@ -169,24 +188,24 @@ export class ReportGenerator {
 
     static THRESHOLD_PERCENTAGE = 0.1;
 
-    calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightEnum {
+    calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightType {
         // if there are no feedbacks, the status is orange
         let threshold_percentage = ReportGenerator.THRESHOLD_PERCENTAGE;
         // if the amount of positive is more than 10% of the amount of negative feedbacks, the status is green
         // if the amount of negative is more than 10% of the amount of positive feedbacks, the status is red
         // otherwise, the status is yellow, as the amount of positive and negative feedbacks are almost equal
         if(amount_positive === 0 && amount_negative === 0){
-            return ReportStatusTrafficLightEnum.YELLOW;
+            return ReportStatusTrafficLightValues.YELLOW;
         }
         let percentage_positive = amount_positive / (amount_positive + amount_negative);
         let percentage_negative = amount_negative / (amount_positive + amount_negative);
         if(percentage_positive > threshold_percentage){
-            return ReportStatusTrafficLightEnum.GREEN;
+            return ReportStatusTrafficLightValues.GREEN;
         }
         if(percentage_negative > threshold_percentage){
-            return ReportStatusTrafficLightEnum.RED;
+            return ReportStatusTrafficLightValues.RED;
         }
-        return ReportStatusTrafficLightEnum.YELLOW;
+        return ReportStatusTrafficLightValues.YELLOW;
     }
 
     async getReportForCanteenFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]) {
@@ -414,13 +433,13 @@ export class ReportGenerator {
                 usedRatingAmount = food?.rating_amount+"";
             }
 
-            let status_rating = ReportStatusTrafficLightEnum.YELLOW;
+            let status_rating = ReportStatusTrafficLightValues.YELLOW;
             if(food?.rating_average && foodAverageRating){
                 const epsilon = FoodRatingCalculator.MAX_RATING_VALUE*ReportGenerator.THRESHOLD_PERCENTAGE;
                 if(food.rating_average > foodAverageRating + epsilon){
-                    status_rating = ReportStatusTrafficLightEnum.GREEN;
+                    status_rating = ReportStatusTrafficLightValues.GREEN;
                 } else if(food.rating_average < foodAverageRating - epsilon) {
-                    status_rating = ReportStatusTrafficLightEnum.RED;
+                    status_rating = ReportStatusTrafficLightValues.RED;
                 }
             }
 
