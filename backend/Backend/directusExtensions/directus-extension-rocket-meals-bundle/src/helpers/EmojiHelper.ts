@@ -20,7 +20,7 @@ export class EmojiHelper {
     public static EmojiFileNames = EmojiFileNames;
 
     private static getEmojiImageURL(filename: EmojiFileNames, size: EmojiPixelSize): string {
-        return "https://github.com/rocket-meals/noto-emoji/blob/main/png/"+size+"/"+filename+".png"
+        return "https://raw.githubusercontent.com/rocket-meals/noto-emoji/refs/heads/main/png/"+size+"/"+filename+".png"
     }
 
     private static getEmojiDivTextSize(size: EmojiPixelSize): string {
