@@ -146,6 +146,7 @@ export default function FoodDayPlanScreen() {
 	const refreshDataIntervalInSeconds = useRefreshDataIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
+	const [timeHumanReadable, setTimeHumanReadable] = useState<string | null>(null);
 
 	// Main canteen
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
@@ -198,6 +199,18 @@ export default function FoodDayPlanScreen() {
 
 		return count;
 	}
+
+	// Use effect to update the current time every second
+	useEffect(() => {
+		const interval = setInterval(() => {
+			const date = new Date();
+			const time = DateHelper.formatDateToTime(date, true, true, false);
+			setTimeHumanReadable(time);
+		}, 1000);
+		return () => clearInterval(interval);
+	}, []);
+
+
 
 	// Auto-Scroll functionality
 	useEffect(() => {
@@ -832,7 +845,7 @@ export default function FoodDayPlanScreen() {
 						{canteen_name}
 					</Text>
 					<Text bold={true}>
-						{foodOfferDateHumanReadable}
+						{foodOfferDateHumanReadable} {timeHumanReadable}
 					</Text>
 				</View>
 			</View>

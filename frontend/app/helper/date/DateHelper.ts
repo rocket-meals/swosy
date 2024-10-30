@@ -410,6 +410,29 @@ export class DateHelper {
 		return DateHelper.formatOfferDateToReadable(dateCopy, false, false);
 	}
 
+	static formatDateToTime(date: Date, withHours?: boolean, withMinutes?: boolean, withSeconds?: boolean) {
+		const hours = date.getHours();
+		const minutes = date.getMinutes();
+		const seconds = date.getSeconds();
+		let output = '';
+		if (withHours) {
+			output+=hours;
+		}
+		if (withMinutes) {
+			if (output.length>0) {
+				output+=':';
+			}
+			output+=minutes;
+		}
+		if (withSeconds) {
+			if (output.length>0) {
+				output+=':';
+			}
+			output+=seconds;
+		}
+		return output;
+	}
+
 	static formatOfferDateToReadable(offerDate: Date, withYear?: boolean, withTime?: boolean, withSeconds?: boolean) {
 		let date = offerDate;
 		if (!offerDate) {
