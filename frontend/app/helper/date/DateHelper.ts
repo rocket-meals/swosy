@@ -411,9 +411,12 @@ export class DateHelper {
 	}
 
 	static formatDateToTime(date: Date, withHours?: boolean, withMinutes?: boolean, withSeconds?: boolean) {
-		const hours = date.getHours();
-		const minutes = date.getMinutes();
-		const seconds = date.getSeconds();
+		let hours: string = date.getHours().toString();
+		hours = hours.length === 1 ? '0'+hours : hours;
+		let minutes = date.getMinutes().toString();
+		minutes = minutes.length === 1 ? '0'+minutes : minutes;
+		let seconds = date.getSeconds().toString();
+		seconds = seconds.length === 1 ? '0'+seconds : seconds
 		let output = '';
 		if (withHours) {
 			output+=hours;
