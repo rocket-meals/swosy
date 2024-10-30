@@ -204,7 +204,7 @@ export default function FoodDayPlanScreen() {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const date = new Date();
-			const time = DateHelper.formatDateToTime(date, true, true, false);
+			const time = DateHelper.formatDateToTime(date, true, true, true);
 			setTimeHumanReadable(time);
 		}, 1000);
 		return () => clearInterval(interval);
@@ -845,7 +845,7 @@ export default function FoodDayPlanScreen() {
 						{canteen_name}
 					</Text>
 					<Text bold={true}>
-						{foodOfferDateHumanReadable} {timeHumanReadable}
+						{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
 					</Text>
 				</View>
 			</View>

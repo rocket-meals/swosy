@@ -11,6 +11,7 @@ import {SortType} from "@/states/SynchedSortType";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getMarkingName, getMarkingShortCode} from "@/components/food/MarkingListItem";
 import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
+import {ItemStatus, ItemStatusFilter} from "@/helper/database/ItemStatus";
 
 export const TABLE_NAME_MARKINGS = 'markings';
 const cacheHelperDeepFields_markings: MyCacheHelperDeepFields = new MyCacheHelperDeepFields([
@@ -229,7 +230,8 @@ export function useSynchedMarkingsDict(): [( Record<string, Markings | null | un
 
 	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const markingsList = await loadMarkingsFromServer();
-		const markingsDict = CollectionHelper.convertListToDict(markingsList, 'id')
+		const filteredMarkings = ItemStatusFilter.filterListByItemStatus(markingsList, ItemStatus.PUBLISHED);
+		const markingsDict = CollectionHelper.convertListToDict(filteredMarkings, 'id')
 		setResourcesOnly((currentValue) => {
 			return markingsDict
 		}, sync_cache_composed_key_local);
