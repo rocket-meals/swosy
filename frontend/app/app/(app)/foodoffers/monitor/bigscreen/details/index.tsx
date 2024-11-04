@@ -90,10 +90,13 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 
 const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSizeType | undefined}> = ({markingIds, textSize}) => {
 
+	//return null;
+	console.log("MarkingInformationList", markingIds)
+
 	let renderedMarkings: any[] = [];
 	for(let markingId of markingIds) {
 		renderedMarkings.push(
-			<MarkingIconOrShortCodeWithTextSize markingId={markingId} textSize={textSize} />
+			<MarkingIconOrShortCodeWithTextSize key={markingId+textSize} markingId={markingId} textSize={textSize} />
 		)
 	}
 	return <View style={{
@@ -119,6 +122,8 @@ export default function FoodBigScreenScreen() {
 
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
+
+	const timeHumanReadable = DateHelper.useCurrentTimeForDate();
 
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	console.log(canteen)
@@ -176,6 +181,8 @@ export default function FoodBigScreenScreen() {
 
 	const foodOffersForCategory = getFoodOffersForCategory(category);
 	const currentFoodOfferForCategory = foodOffersForCategory[food_index];
+
+
 
 	// Load foodOffers and markings every 5 minutes
 	const INTERVAL = refreshFoodOffersIntervalInSeconds * 1000;
@@ -279,7 +286,7 @@ export default function FoodBigScreenScreen() {
 								{canteen_name}
 							</Text>
 							<Text bold={true}>
-								{foodOfferDateHumanReadable}
+								{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
 							</Text>
 						</View>
 					</View>
@@ -369,7 +376,7 @@ export default function FoodBigScreenScreen() {
 									{translation_markings+":"}
 								</Text>
 							</View>
-							<MarkingInformationList markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
+							<MarkingInformationList  markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
 						</View>
 					</View>
 				</View>

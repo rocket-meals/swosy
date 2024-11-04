@@ -1,5 +1,6 @@
 import {StringHelper} from '@/helper/string/StringHelper';
 import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
+import {useEffect, useState} from "react";
 
 export enum Weekday {
     MONDAY = 'Monday',
@@ -13,6 +14,22 @@ export enum Weekday {
 
 export class DateHelper {
 	static Weekday = Weekday;
+
+	static useCurrentTimeForDate() {
+		const [timeHumanReadable, setTimeHumanReadable] = useState<string | null>(null);
+
+		// Use effect to update the current time every second
+		useEffect(() => {
+			const interval = setInterval(() => {
+				const date = new Date();
+				const time = DateHelper.formatDateToTime(date, true, true, true);
+				setTimeHumanReadable(time);
+			}, 1000);
+			return () => clearInterval(interval);
+		}, []);
+
+		return timeHumanReadable;
+	}
 
 	static isWeekend(date: Date) {
 		const weekday = date.getDay();
