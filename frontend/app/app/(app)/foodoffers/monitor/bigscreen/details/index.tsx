@@ -91,7 +91,7 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSizeType | undefined}> = ({markingIds, textSize}) => {
 
 	//return null;
-	console.log("MarkingInformationList", markingIds)
+	//console.log("MarkingInformationList", markingIds)
 
 	let renderedMarkings: any[] = [];
 	for(let markingId of markingIds) {
@@ -126,7 +126,7 @@ export default function FoodBigScreenScreen() {
 	const timeHumanReadable = DateHelper.useCurrentTimeForDate();
 
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
-	console.log(canteen)
+	//console.log(canteen)
 	const canteen_name = getCanteenName(canteen);
 
 	const category = useFoodCategoryFromLocalSearchParams();
@@ -137,6 +137,7 @@ export default function FoodBigScreenScreen() {
 	const [food_index, setFoodIndex] = useState(0);
 	const [foodofferReloadKey, setFoodofferReloadKey] = useState<string>("");
 
+
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
 
 	const translation_markings = useTranslation(TranslationKeys.markings)
@@ -145,10 +146,14 @@ export default function FoodBigScreenScreen() {
 	const translation_price_group_employee = useTranslation(TranslationKeys.price_group_employee)
 	const translation_price_group_guest = useTranslation(TranslationKeys.price_group_guest)
 
+	const translation_foods = useTranslation(TranslationKeys.foods)
+
 	const isDemo = useIsDemo();
 
 	const [foodOffers, setFoodOffers] = useState<Foodoffers[]>([]);
 	const [loading, setLoading] = useState(true);
+
+	const [foodOffersForCategory, setFoodOffersForCategory] = useState<Foodoffers[]>([]);
 
 	async function loadFoodOffers(){
 		console.log("loadFoodOffers")
@@ -164,7 +169,7 @@ export default function FoodBigScreenScreen() {
 		setLoading(false);
 	}
 
-	function getFoodOffersForCategory(category: string | null | undefined): Foodoffers[] {
+	function getFoodOffersForCategory(category: string | null | undefined, foodOffers: Foodoffers[]): Foodoffers[] {
 		if(!category){
 			return foodOffers;
 		}
@@ -179,10 +184,14 @@ export default function FoodBigScreenScreen() {
 		return filteredFoodOffers
 	}
 
-	const foodOffersForCategory = getFoodOffersForCategory(category);
+	//console.log("category", category)
+	//console.log("foodOffersForCategory", foodOffersForCategory)
 	const currentFoodOfferForCategory = foodOffersForCategory[food_index];
 
 
+	useEffect(() => {
+		setFoodOffersForCategory(getFoodOffersForCategory(category, foodOffers));
+	}, [category, foodOffers]);
 
 	// Load foodOffers and markings every 5 minutes
 	const INTERVAL = refreshFoodOffersIntervalInSeconds * 1000;
@@ -200,14 +209,27 @@ export default function FoodBigScreenScreen() {
 	// UseEffect to increase food_index every nextFoodIntervalInSeconds
 	useEffect(() => {
 		const interval = setInterval(() => {
+			console.log("useEffect nextFoodIntervalInSeconds")
+			console.log("food_index", food_index)
+			console.log("foodOffersForCategory.length", foodOffersForCategory.length)
 			setFoodIndex((food_index) => {
-				return (food_index + 1) % foodOffersForCategory.length;
+				if(foodOffersForCategory.length === 0){
+					return 0;
+				}
+
+				let nextIndex = (food_index + 1) % foodOffersForCategory.length;
+				// check if nextIndex is NaN
+				if(isNaN(nextIndex)){
+					return 0;
+				}
+
+				return nextIndex;
 			});
 		}, nextFoodIntervalInSeconds * 1000);
 		return () => clearInterval(interval);
-	}, [foodOffersForCategory, nextFoodIntervalInSeconds]);
+	}, [nextFoodIntervalInSeconds, foodOffersForCategory]);
 
-	function renderContent(currentFoodOfferForCategory: Foodoffers | undefined){
+	function renderContent(currentFoodOfferForCategory: Foodoffers | undefined, food_index: number, foodOffersForCategory: Foodoffers[]) {
 		let {width, height} = layout;
 		if(!width || !height){
 			return <Text>Loading...</Text>
@@ -282,12 +304,27 @@ export default function FoodBigScreenScreen() {
 							paddingHorizontal: 10,
 							paddingVertical: 10,
 						}}>
-							<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
-								{canteen_name}
-							</Text>
-							<Text bold={true}>
-								{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
-							</Text>
+							<View>
+								<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
+									{canteen_name}
+								</Text>
+								<View style={{
+									flexDirection: 'row',
+									justifyContent: 'space-between',
+									width: '100%',
+								}}>
+									<View>
+										<Text bold={true}>
+											{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
+										</Text>
+									</View>
+									<View>
+										<Text bold={true}>
+											{(food_index+1)+"/"+foodOffersForCategory.length+" "+translation_foods}
+										</Text>
+									</View>
+								</View>
+							</View>
 						</View>
 					</View>
 					<View style={{
@@ -413,7 +450,7 @@ export default function FoodBigScreenScreen() {
 			const {width, height} = event.nativeEvent.layout;
 			setLayout({width, height});
 		}}>
-			{renderContent(currentFoodOfferForCategory)}
+			{renderContent(currentFoodOfferForCategory, food_index, foodOffersForCategory)}
 		</View>
 	</MySafeAreaView>
 }
