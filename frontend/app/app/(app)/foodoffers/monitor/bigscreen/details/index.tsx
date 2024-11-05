@@ -275,6 +275,8 @@ export default function FoodBigScreenScreen() {
 		const designHeightLogo = 100;
 		const designHeightContent = designHeight - designHeightLogo;
 
+		const foodPosition = foodOffersForCategory.length > 0 ? (food_index+1) : 0;
+
 
 		return <View style={{
 			width: '100%',
@@ -320,7 +322,7 @@ export default function FoodBigScreenScreen() {
 									</View>
 									<View>
 										<Text bold={true}>
-											{(food_index+1)+"/"+foodOffersForCategory.length+" "+translation_foods}
+											{(foodPosition)+" / "+foodOffersForCategory.length+" "+translation_foods}
 										</Text>
 									</View>
 								</View>

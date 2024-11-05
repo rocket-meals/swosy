@@ -175,6 +175,7 @@ export enum TranslationKeys {
 	description = "description",
 	information = "information",
 	food_data = "food_data",
+	loading = "loading",
 	no_data_currently_calculating = "no_data_currently_calculating",
 	food_feedbacks = "food_feedbacks",
 	to_the_forum = "to_the_forum",
@@ -542,6 +543,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Название программы',
 		[LanguageKeys.tr_TR]: 'Yazılım Adı',
 		[LanguageKeys.zh_CN]: '软件名称'
+	},
+	loading: {
+		[LanguageKeys.de_DE]: 'Lädt',
+		[LanguageKeys.en_US]: 'Loading',
+		[LanguageKeys.ar_SA]: 'جار التحميل',
+		[LanguageKeys.es_ES]: 'Cargando',
+		[LanguageKeys.fr_FR]: 'Chargement',
+		[LanguageKeys.ru_RU]: 'Загрузка',
+		[LanguageKeys.tr_TR]: 'Yükleniyor',
+		[LanguageKeys.zh_CN]: '加载中'
 	},
 	profile: {
 		[LanguageKeys.de_DE]: 'Profil',

@@ -15,6 +15,7 @@ import {getRouteToFoodBigScreen} from "@/app/(app)/foodoffers/monitor/bigscreen/
 import {ExpoRouter} from "expo-router/types/expo-router";
 import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavigate";
 import {SettingsRowBooleanSwitch} from "@/components/settings/SettingsRowBooleanSwitch";
+import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 
 export default function FoodBigScreenSettings() {
 
@@ -25,25 +26,16 @@ export default function FoodBigScreenSettings() {
 	const canteenAlias = selectedCanteen?.alias || selectedCanteen?.id || undefined
 	const canteenId = selectedCanteen?.id || undefined
 
+	const translation_loading = useTranslation(TranslationKeys.loading);
+
 	const [nextFoodIntervalInSeconds, setNextFoodIntervalInSeconds] = React.useState<number | null | undefined>(10);
 	const [refreshFoodOffersIntervalInSeconds, setRefreshFoodOffersIntervalInSeconds] = React.useState<number | null | undefined>(5*60);
 
 	const [fullScreen, setFullScreen] = React.useState<boolean>(true);
 
-	const [foodCategories, setFoodCategories] = React.useState<string[]>([]);
+	const [foodCategories, setFoodCategories] = React.useState<string[] | undefined>(undefined);
 	const [foodCategory, setFoodCategory] = React.useState<string | null | undefined>(null);
-	const options: MyModalActionSheetItem[] = foodCategories.map((category) => {
-		return {
-			key: category,
-			active: category === foodCategory,
-			label: category,
-			accessibilityLabel: category,
-			onSelect: (key: string, hide: () => void) => {
-				setFoodCategory(key);
-				hide();
-			}
-		}
-	});
+
 
 	let route: null | ExpoRouter.Href = null;
 	if(canteenId){
@@ -61,7 +53,7 @@ export default function FoodBigScreenSettings() {
 	}, [])
 
 
-	const renderFoodCategorySelection = () => {
+	const renderFoodCategorySelection = (foodCategory: string | null | undefined, foodCategories: string[] | undefined) => {
 		// Auf den TVs wird ein TV
 		// ·         Pasta&Friends,
 		// ·         einer Fleisch und Meer,
@@ -69,25 +61,48 @@ export default function FoodBigScreenSettings() {
 		// ·         einer Queerbeet,
 		// ·         einer Evergreens
 
-		return <SettingsRowOptionWithCustomInput options={{
-			onCustomInputSave: (value: string | undefined | null) => {
-				setFoodCategory(value);
-			},
-			currentValue: foodCategory,
-			title: "Select Food Category",
-			items: options
-		}} labelLeft="Category" accessibilityLabel={"Category"} labelRight={foodCategory} />
+		const allCategoriesLoaded = !!foodCategories;
+		const labelRight = foodCategory || (allCategoriesLoaded ? undefined: translation_loading);
+
+		const options: MyModalActionSheetItem[] = [];
+		if(foodCategories){
+			for(const category of foodCategories) {
+				options.push({
+					key: category,
+					active: category === foodCategory,
+					label: category,
+					accessibilityLabel: category,
+					onSelect: (key: string, hide: () => void) => {
+						setFoodCategory(key);
+						hide();
+					}
+				})
+			}
+		}
+
+		return <>
+			<SettingsRowOptionWithCustomInput key={JSON.stringify(foodCategories)+foodCategory} options={{
+				onCustomInputSave: (value: string | undefined | null) => {
+					setFoodCategory(value);
+				},
+				currentValue: foodCategory,
+				title: "Select Food Category",
+				items: options
+			}} labelLeft="Category" accessibilityLabel={"Category"} labelRight={labelRight} />
+		</>
 	}
 
 	function renderDebugInfo(){
 		if(isDebug){
-			return <SettingsRowGroup>
-				<View>
-					<Text>
-						{JSON.stringify(foodCategories, null, 2)}
-					</Text>
-				</View>
-			</SettingsRowGroup>
+			return <>
+				<SettingsRowGroup label={"foodCategories"}>
+					<View>
+						<Text>
+							{JSON.stringify(foodCategories, null, 2)}
+						</Text>
+					</View>
+				</SettingsRowGroup>
+			</>
 		}
 
 	}
@@ -102,7 +117,7 @@ export default function FoodBigScreenSettings() {
 		<MyScrollView>
 			<SettingsRowGroup>
 				<SettingsRowCanteenSelection showArchived={true} onSelectCanteen={setSelectedCanteen} labelRight={canteenAlias} />
-				{renderFoodCategorySelection()}
+				{renderFoodCategorySelection(foodCategory, foodCategories)}
 				<SettingsRowNumberEdit value={nextFoodIntervalInSeconds} labelRight={nextFoodIntervalInSeconds?.toString()} onSave={(value) => setNextFoodIntervalInSeconds(value)} accessibilityLabel={"Next Food Interval"} labelLeft={"Next Food Interval"} />
 				<SettingsRowNumberEdit value={refreshFoodOffersIntervalInSeconds} labelRight={refreshFoodOffersIntervalInSeconds?.toString()} onSave={(value) => setRefreshFoodOffersIntervalInSeconds(value)} accessibilityLabel={"Refresh Food Offers Interval"} labelLeft={"Refresh Food Offers Interval"} />
 				<SettingsRowBooleanSwitch value={fullScreen} labelLeft={"Full Screen"} accessibilityLabel={"Full Screen"} onPress={(nextValue: boolean) => setFullScreen(nextValue)} />

@@ -686,6 +686,7 @@ export default function FoodDayPlanScreen() {
 				}}>
 					<Text style={{
 						textAlign: "right",
+						color: foodAreaContrastColor,
 					}}>
 						{translation_foods+": "+amountItemsShown+ " / "+amountOffers}
 					</Text>
@@ -749,6 +750,7 @@ export default function FoodDayPlanScreen() {
 				}}>
 					<Text style={{
 						textAlign: "right",
+						color: foodAreaContrastColor,
 					}}>
 						{translation_foods+": "+amountItemsShown+ " / "+amountOffers}
 					</Text>
