@@ -49,7 +49,7 @@ jobs:
           SCREENSHOT_DIR: ${{ github.workspace }}/screenshots
 
       - name: ☁️ Upload Screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@vv
         with:
           path: ${{ github.workspace }}/screenshots
           name: ${{ github.event.repository.name }}-screenshots
