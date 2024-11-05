@@ -99,14 +99,15 @@ export function useSortedMarkings(markings?: Markings[]) {
 			}
 		}
 	}
-	return sortMarkings(usedMarkings, markingsDict, markingsGroupsDict, sortType, languageCode);
+	let sortedMarkings = sortMarkings(usedMarkings, markingsDict, markingsGroupsDict, sortType, languageCode);
+	return sortedMarkings
 }
 
 export function sortMarkings(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, markingsGroupsDict: Record<string, MarkingsGroups | null | undefined> | null | undefined, sortType: SortType, languageCode: string): Markings[] {
 	let copiedResources = [...resources];
 	if(sortType === SortType.intelligent){
 		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.markingShortCodeAlphabetical, SortType.sortFromServer, SortType.markingsGroupsSortFromServer];
+		let sortOrders = [SortType.alphabetical, SortType.sortFromServer, SortType.markingsGroupsSortFromServer];
 		for(const sortOrder of sortOrders){
 			copiedResources = sortMarkings(copiedResources, resourcesDict, markingsGroupsDict, sortOrder, languageCode);
 		}
