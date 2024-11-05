@@ -16,9 +16,16 @@
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 16,
+    "sort": 15,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "App Rückmeldungen",
+        "singular": "App Rückmeldung",
+        "plural": "App Rückmeldungen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

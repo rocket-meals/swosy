@@ -20,7 +20,7 @@
         },
         {
           "name": "Schwarz",
-          "color": "#00000000"
+          "color": "#000000"
         },
         {
           "name": "Grau",
@@ -29,6 +29,10 @@
         {
           "name": "Dunkel Blau",
           "color": "#18222F"
+        },
+        {
+          "name": "Transparent",
+          "color": "#00000000"
         }
       ]
     },

@@ -1,0 +1,32 @@
+{
+  "collection": "foods_categories",
+  "field": "translations",
+  "type": "alias",
+  "meta": {
+    "collection": "foods_categories",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "translations",
+    "group": null,
+    "hidden": false,
+    "interface": "translations",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 9,
+    "special": [
+      "translations"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Übersetzung"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

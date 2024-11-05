@@ -1,10 +1,14 @@
 [
   {
-    "bookmark": null,
     "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
+    "bookmark": null,
     "collection": "apartments",
-    "search": null,
     "layout": "tabular",
+    "search": null,
+    "icon": "bookmark",
+    "color": null,
+    "layout_options": null,
+    "filter": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -16,11 +20,7 @@
         ]
       }
     },
-    "layout_options": null,
     "refresh_interval": null,
-    "filter": null,
-    "icon": "bookmark",
-    "color": null,
     "_syncId": "adf9b001-649f-4fdd-af29-2052246c27ff"
   }
 ]

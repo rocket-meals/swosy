@@ -17,7 +17,12 @@
     "required": false,
     "sort": 1,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Kalorien (kcal)"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"

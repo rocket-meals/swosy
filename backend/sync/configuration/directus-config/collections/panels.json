@@ -4,13 +4,7 @@
     "name": "Anzahl Profile ohne ausgelesenes Guthaben",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 24,
-    "position_y": 79,
-    "width": 23,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -30,6 +24,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 23,
+    "position_y": 79,
+    "position_x": 24,
+    "show_header": true,
     "_syncId": "012851df-3ac6-4d56-a378-93a07c7c134f"
   },
   {
@@ -37,13 +37,7 @@
     "name": "Mensa Rückmeldungen: Anzahl Dislikes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 63,
-    "width": 30,
-    "height": 5,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -86,6 +80,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 5,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "0255e43c-e8b0-42de-9d1c-7fffd9a017e9"
   },
   {
@@ -93,13 +93,7 @@
     "name": "Anzahl Aktuell Laufender Waschmaschienen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 9,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -114,6 +108,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 9,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "03934103-b35a-4f69-a72e-30b9835606b6"
   },
   {
@@ -121,13 +121,7 @@
     "name": "iOS System Versionen Verteilung",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "line-chart",
-    "position_x": 1,
-    "position_y": 69,
-    "width": 65,
-    "height": 14,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -145,6 +139,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 14,
+    "width": 65,
+    "position_y": 69,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "0472759f-f4c1-416f-a9f7-f80f32d34726"
   },
   {
@@ -152,13 +152,7 @@
     "name": "Kassentransaktionen der letzen 24 Stunden (Stunden-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 55,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -167,6 +161,12 @@
       "filter": null,
       "range": "1 day"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 55,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "0554b6a2-1649-4fcd-818c-bf57c156d51f"
   },
   {
@@ -174,13 +174,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 3 Monate (Wochen-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 128,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -189,6 +183,12 @@
       "precision": "week",
       "range": "3 months"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 128,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "05561ef0-80d8-414e-9e2a-5b321f0dc986"
   },
   {
@@ -196,13 +196,7 @@
     "name": "Dateien - Geänderte ID",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 140,
-    "width": 25,
-    "height": 9,
     "options": {
       "collection": "directus_files",
       "dateField": "created_on",
@@ -210,6 +204,12 @@
       "function": "countDistinct",
       "filter": null
     },
+    "note": "Prüfen, ob das gleiche wie beim linken Panel?",
+    "height": 9,
+    "width": 25,
+    "position_y": 140,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "059e0e07-1942-4924-968e-1b959e36f8a0"
   },
   {
@@ -217,13 +217,7 @@
     "name": "Endzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 15,
-    "position_y": 11,
-    "width": 14,
-    "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
       "type": "dateTime",
@@ -231,6 +225,12 @@
       "defaultValue": "$NOW()",
       "options": {}
     },
+    "note": null,
+    "height": 6,
+    "width": 14,
+    "position_y": 11,
+    "position_x": 15,
+    "show_header": true,
     "_syncId": "05a1c237-a632-4d8c-a005-f1d4ad1628d6"
   },
   {
@@ -238,13 +238,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 1 Monat (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 104,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -253,6 +247,12 @@
       "precision": "day",
       "range": "1 month"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 104,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "0756d748-3008-402c-aa80-d1642404cff6"
   },
   {
@@ -260,19 +260,19 @@
     "name": "Anzahl Speisen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 2,
-    "position_y": 6,
-    "width": 15,
-    "height": 5,
     "options": {
       "collection": "foods",
       "field": "id",
       "sortField": "id",
       "function": "countDistinct"
     },
+    "note": null,
+    "height": 5,
+    "width": 15,
+    "position_y": 6,
+    "position_x": 2,
+    "show_header": true,
     "_syncId": "10385b18-5d59-4354-9e8d-26ad97f30e6c"
   },
   {
@@ -280,13 +280,7 @@
     "name": "Aktivitäten der letzten 1 Stunde (Minuten-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 32,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -299,6 +293,12 @@
       "curveType": "stepline",
       "precision": "minute"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 32,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "10b8cdaa-a479-4028-b50a-eea2c3d5f60b"
   },
   {
@@ -306,13 +306,7 @@
     "name": "Anzahl Speiseangebote der letzen 12 Monate (Monats-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 190,
-    "width": 61,
-    "height": 13,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -321,6 +315,12 @@
       "valueField": "id",
       "range": "12 month"
     },
+    "note": null,
+    "height": 13,
+    "width": 61,
+    "position_y": 190,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "11c2d375-988d-45d6-b27e-53cba2243945"
   },
   {
@@ -328,13 +328,7 @@
     "name": "Waschmaschinen gestartet Dienstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 6,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -353,6 +347,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 6,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "120d5523-4049-4e11-b014-96f50201dc70"
   },
   {
@@ -360,13 +360,7 @@
     "name": "Verteilung der Nutzer auf die Mensen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 27,
-    "position_y": 2,
-    "width": 39,
-    "height": 22,
     "options": {
       "collection": "profiles",
       "column": "canteen",
@@ -382,6 +376,12 @@
       "yAxis": "id",
       "conditionalFill": null
     },
+    "note": null,
+    "height": 22,
+    "width": 39,
+    "position_y": 2,
+    "position_x": 27,
+    "show_header": true,
     "_syncId": "1499db05-9b7d-4cb6-8367-1e62f3a52f19"
   },
   {
@@ -389,13 +389,7 @@
     "name": "Dislikes: Samstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 88,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -443,6 +437,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 88,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "17968fbd-6eb7-491a-8c22-f763fd5e04ae"
   },
   {
@@ -450,13 +450,7 @@
     "name": "Neue Nutzer Erstellungen mit Google in den letzten 31 Tagen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 38,
-    "position_y": 23,
-    "width": 29,
-    "height": 5,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -483,6 +477,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 29,
+    "position_y": 23,
+    "position_x": 38,
+    "show_header": true,
     "_syncId": "192f4fe6-bb52-4616-9a28-79878f06f1d7"
   },
   {
@@ -490,13 +490,7 @@
     "name": "Speise Kommentare",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "list",
-    "position_x": 1,
-    "position_y": 73,
-    "width": 67,
-    "height": 16,
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
@@ -517,6 +511,12 @@
       "sortField": "date_updated",
       "limit": 10
     },
+    "note": null,
+    "height": 16,
+    "width": 67,
+    "position_y": 73,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "1a89a1bd-ce89-49e8-832e-947100552f02"
   },
   {
@@ -524,13 +524,7 @@
     "name": "Likes: Samstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 88,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -578,6 +572,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 88,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "1aeb553e-41b9-4ac3-b42a-dcaa0b53e7c0"
   },
   {
@@ -585,19 +585,19 @@
     "name": "Anzahl Speiseangebote",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 6,
-    "width": 14,
-    "height": 5,
     "options": {
       "collection": "foodoffers",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 14,
+    "position_y": 6,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "1cc63e66-9b68-49d1-bf08-ca24838ca17f"
   },
   {
@@ -605,13 +605,7 @@
     "name": "Präzision",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 1,
-    "position_y": 114,
-    "width": 60,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_PRECISION",
       "type": "string",
@@ -639,6 +633,12 @@
         "allowOther": true
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 60,
+    "position_y": 114,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "204a7cad-d54d-474d-a09e-37573e03383a"
   },
   {
@@ -646,13 +646,7 @@
     "name": "Waschmaschinen gestartet Samstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 22,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -671,6 +665,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 22,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "233c03f9-9604-4605-9189-9cc54d19c146"
   },
   {
@@ -678,13 +678,7 @@
     "name": "Dislikes: Dienstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 72,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -732,20 +726,67 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 72,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "234a2594-c578-403e-a4c5-b983130435ad"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Guthaben: [10,25[ €",
+    "icon": null,
+    "color": null,
+    "type": "metric",
+    "options": {
+      "collection": "profiles",
+      "field": "credit_balance",
+      "function": "countDistinct",
+      "sortField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance": {
+                  "_nnull": true
+                }
+              },
+              {
+                "_and": [
+                  {
+                    "credit_balance": {
+                      "_gte": "10"
+                    }
+                  },
+                  {
+                    "credit_balance": {
+                      "_lt": "25"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "note": null,
+    "height": 5,
+    "width": 14,
+    "position_y": 84,
+    "position_x": 27,
+    "show_header": true,
+    "_syncId": "243c4ef9-0066-4810-a600-6be6a199d190"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
     "name": "Dislikes: Sonntags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 92,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -793,6 +834,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 92,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "2465589c-fd5a-42fc-8dc9-7b40e812d651"
   },
   {
@@ -800,13 +847,7 @@
     "name": "Kassentransaktionen der letzen 1 Woche (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 67,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -816,6 +857,12 @@
       "precision": "day",
       "curveType": "stepline"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 67,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "2544dd39-acb1-4f24-b011-20697e29d5f6"
   },
   {
@@ -823,13 +870,7 @@
     "name": "Anzahl: App Feedbacks",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 18,
-    "position_y": 4,
-    "width": 49,
-    "height": 9,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -839,6 +880,12 @@
       "range": "1 month",
       "valueField": "id"
     },
+    "note": null,
+    "height": 9,
+    "width": 49,
+    "position_y": 4,
+    "position_x": 18,
+    "show_header": true,
     "_syncId": "261ce990-c5d7-4630-96d9-734b5e559f7e"
   },
   {
@@ -846,13 +893,7 @@
     "name": "Genutzte Login Anbieter",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 38,
-    "position_y": 1,
-    "width": 29,
-    "height": 16,
     "options": {
       "collection": "directus_users",
       "column": "provider",
@@ -864,6 +905,12 @@
       "yAxis": "provider",
       "xAxis": "provider"
     },
+    "note": null,
+    "height": 16,
+    "width": 29,
+    "position_y": 1,
+    "position_x": 38,
+    "show_header": true,
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
   },
   {
@@ -871,13 +918,7 @@
     "name": "Kassentransaktionen Insgesamt (Jahres-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 127,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -888,6 +929,12 @@
       "curveType": "straight",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 127,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "2d853452-bbe6-489c-8fad-8cb60a69eba9"
   },
   {
@@ -895,13 +942,7 @@
     "name": "Aktivitäten der letzten 24 Stunden (Stunden-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 56,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -913,20 +954,20 @@
       "range": "1 day",
       "curveType": "stepline"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 56,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "309cec2f-964e-4a82-ba09-6a3fb8e3bc03"
   },
   {
     "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
-    "name": "Anzahl Guthaben: [10,75] €",
+    "name": "Anzahl Guthaben: [25,75] €",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 33,
-    "position_y": 84,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -945,7 +986,7 @@
                 "_and": [
                   {
                     "credit_balance": {
-                      "_gte": "10"
+                      "_gte": "25"
                     }
                   },
                   {
@@ -960,6 +1001,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 14,
+    "position_y": 84,
+    "position_x": 41,
+    "show_header": true,
     "_syncId": "32858d7b-2149-4f4c-bc5c-9d3ac1f6f129"
   },
   {
@@ -967,19 +1014,19 @@
     "name": "Endzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 14,
-    "position_y": 23,
-    "width": 13,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
+    "height": 6,
+    "width": 13,
+    "position_y": 23,
+    "position_x": 14,
+    "show_header": true,
     "_syncId": "348c52b8-bff3-4c8e-8d62-2bdf51900cad"
   },
   {
@@ -987,13 +1034,7 @@
     "name": "Anzahl Kassentransaktionen (Letze 24 Stunden)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 41,
-    "position_y": 11,
-    "width": 25,
-    "height": 5,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -1009,6 +1050,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 25,
+    "position_y": 11,
+    "position_x": 41,
+    "show_header": true,
     "_syncId": "36879a56-20b4-4b54-9f30-1633da11171f"
   },
   {
@@ -1016,13 +1063,7 @@
     "name": "Anzahl Geräte: Simulatoren",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 18,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1042,6 +1083,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 18,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3735c850-1661-4307-9d83-f3821b33ba08"
   },
   {
@@ -1049,13 +1096,7 @@
     "name": "Mensa Rückmeldung: Anzahl Dislikes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 31,
-    "position_y": 120,
-    "width": 30,
-    "height": 18,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -1098,6 +1139,12 @@
       "valueField": "id",
       "color": "#E35169"
     },
+    "note": null,
+    "height": 18,
+    "width": 30,
+    "position_y": 120,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "3db93980-d807-42ce-89de-1a8d5cbe66fd"
   },
   {
@@ -1105,13 +1152,7 @@
     "name": "Aktivitäten: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 17,
-    "width": 65,
-    "height": 13,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -1139,6 +1180,12 @@
       "curveType": "stepline",
       "precision": "{{CUSTOM_DIRECTUS_ACTIVITY_PRECISION}}"
     },
+    "note": null,
+    "height": 13,
+    "width": 65,
+    "position_y": 17,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3dc1e080-34d5-4ede-9266-7e51b65df623"
   },
   {
@@ -1146,18 +1193,18 @@
     "name": "Anzahl Speise Bewertungen (alt)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 20,
-    "position_y": 41,
-    "width": 18,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_amount_legacy",
       "function": "sum"
     },
+    "note": null,
+    "height": 4,
+    "width": 18,
+    "position_y": 41,
+    "position_x": 20,
+    "show_header": true,
     "_syncId": "3ebe40d0-c8a2-4ad2-bfb4-dccc0f004556"
   },
   {
@@ -1165,13 +1212,7 @@
     "name": "Kassentransaktionen: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 29,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1198,6 +1239,12 @@
       "precision": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION}}",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 29,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3f1723b8-aa2a-4acb-8c02-c88f21810a8a"
   },
   {
@@ -1205,13 +1252,7 @@
     "name": "Kassentransaktionen der letzen 3 Monate (Wochen-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 91,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1222,6 +1263,12 @@
       "curveType": "stepline",
       "range": "3 months"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 91,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3f36650c-12ef-49a6-9145-4a01bfdaa056"
   },
   {
@@ -1229,13 +1276,7 @@
     "name": "Likes: Montags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 68,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1283,6 +1324,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 68,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3f55a030-4ba0-4a38-ba8d-4b01c5eedfa0"
   },
   {
@@ -1290,13 +1337,7 @@
     "name": "Anzahl Geräte: Tablets",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 8,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1335,6 +1376,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 8,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "3ff302e3-84c5-45d9-9b08-52990c7f8fda"
   },
   {
@@ -1342,13 +1389,7 @@
     "name": "Waschvorgänge Startzeiten Insgesamt (Monats-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 164,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -1357,6 +1398,12 @@
       "precision": "month",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 164,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "4216a7d3-b287-4c57-8ade-abf3c65d81e5"
   },
   {
@@ -1364,19 +1411,19 @@
     "name": "Endzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 16,
-    "position_y": 24,
-    "width": 13,
-    "height": 6,
     "options": {
       "field": "CUSTOM_MAILS_DATE_END",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
+    "height": 6,
+    "width": 13,
+    "position_y": 24,
+    "position_x": 16,
+    "show_header": true,
     "_syncId": "43b0ffd3-0042-4af2-baec-d64ead28ae70"
   },
   {
@@ -1384,13 +1431,7 @@
     "name": "Beliebteste Speisen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "list",
-    "position_x": 1,
-    "position_y": 11,
-    "width": 40,
-    "height": 13,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -1406,6 +1447,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 13,
+    "width": 40,
+    "position_y": 11,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "440768e2-3239-4fe0-981b-75f3b6d6d8d9"
   },
   {
@@ -1413,18 +1460,18 @@
     "name": "Anzahl: Push-Nachrichten",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 2,
-    "position_y": 24,
-    "width": 16,
-    "height": 9,
     "options": {
       "collection": "push_notifications",
       "field": "id",
       "function": "countDistinct"
     },
+    "note": null,
+    "height": 9,
+    "width": 16,
+    "position_y": 24,
+    "position_x": 2,
+    "show_header": true,
     "_syncId": "450eb909-aa3c-47a4-8563-ac180e95d659"
   },
   {
@@ -1432,13 +1479,7 @@
     "name": "Dislikes: Freitags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 84,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1486,6 +1527,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 84,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "4626573e-7dfe-4e9f-90c4-d1af8ad03ff3"
   },
   {
@@ -1493,13 +1540,7 @@
     "name": "Anzahl:  Feedbacks Negativ",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 18,
-    "position_y": 13,
-    "width": 49,
-    "height": 9,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -1518,6 +1559,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 9,
+    "width": 49,
+    "position_y": 13,
+    "position_x": 18,
+    "show_header": true,
     "_syncId": "4926166b-f196-431c-b20a-34bea642114e"
   },
   {
@@ -1525,18 +1572,18 @@
     "name": "Anzahl Waschvorgänge",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 15,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
       "function": "count"
     },
+    "note": null,
+    "height": 5,
+    "width": 16,
+    "position_y": 15,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "4cc34d1c-cab1-4aa0-a4d2-c6be4a6facee"
   },
   {
@@ -1544,13 +1591,7 @@
     "name": "Anzahl Geräte: Browser",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 13,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1594,6 +1635,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 13,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "50961912-3ae9-47d0-9c36-6f38d3bd2279"
   },
   {
@@ -1601,13 +1648,7 @@
     "name": "Anzahl Geräte Marken",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 1,
-    "position_y": 24,
-    "width": 65,
-    "height": 43,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -1627,6 +1668,12 @@
       "sortField": "brand",
       "decimals": 0
     },
+    "note": null,
+    "height": 43,
+    "width": 65,
+    "position_y": 24,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "50c956d0-f1d2-4272-b295-a9fdf2183ff5"
   },
   {
@@ -1634,19 +1681,19 @@
     "name": "Summe Waschzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 15,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "sum",
       "suffix": "min"
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 15,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "51d4fab2-8ea5-400f-beef-767862e13fd5"
   },
   {
@@ -1654,19 +1701,19 @@
     "name": "Startzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 3,
-    "position_y": 24,
-    "width": 13,
-    "height": 6,
     "options": {
       "field": "CUSTOM_MAILS_DATE_START",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW(-31 day)"
     },
+    "note": null,
+    "height": 6,
+    "width": 13,
+    "position_y": 24,
+    "position_x": 3,
+    "show_header": true,
     "_syncId": "564f99a3-e32d-4ea2-a6f8-710279723a60"
   },
   {
@@ -1674,13 +1721,7 @@
     "name": "Waschmaschinen gestartet Monatgs",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 2,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -1699,6 +1740,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 2,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "582f4221-1ae5-41b5-a02f-8ad91dc8d35b"
   },
   {
@@ -1706,13 +1753,7 @@
     "name": "Am Häufigsten Bewertet",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "list",
-    "position_x": 42,
-    "position_y": 11,
-    "width": 26,
-    "height": 13,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -1728,6 +1769,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 13,
+    "width": 26,
+    "position_y": 11,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "5a227cab-b387-439f-9ecf-cffa7ea52299"
   },
   {
@@ -1735,13 +1782,7 @@
     "name": "Anzahl Speiseangebote Insgesamt (Monats-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 203,
-    "width": 61,
-    "height": 13,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -1750,6 +1791,12 @@
       "valueField": "id",
       "range": "auto"
     },
+    "note": null,
+    "height": 13,
+    "width": 61,
+    "position_y": 203,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "5b1dd6a4-9e55-4e7c-a160-86fefb23d01f"
   },
   {
@@ -1757,18 +1804,18 @@
     "name": "Anzahl Speise Bewertungen (alt + neu)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 42,
-    "position_y": 35,
-    "width": 24,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
       "function": "sum"
     },
+    "note": null,
+    "height": 4,
+    "width": 24,
+    "position_y": 35,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "5bc97abc-deb7-4b5a-bced-5598ed74a55f"
   },
   {
@@ -1776,13 +1823,7 @@
     "name": "Profil Aktualisierungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 63,
-    "width": 66,
-    "height": 14,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -1799,6 +1840,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 14,
+    "width": 66,
+    "position_y": 63,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "5e967127-45c6-4bec-8da1-53185ebb5173"
   },
   {
@@ -1806,13 +1853,7 @@
     "name": "Anzahl Speiseangebote der letzen 12 Monate (Wochen-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 177,
-    "width": 61,
-    "height": 13,
     "options": {
       "collection": "foodoffers",
       "precision": "week",
@@ -1821,6 +1862,12 @@
       "valueField": "id",
       "range": "12 month"
     },
+    "note": null,
+    "height": 13,
+    "width": 61,
+    "position_y": 177,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "5ecac9b4-a981-402e-b316-b222f98cf0a1"
   },
   {
@@ -1828,13 +1875,7 @@
     "name": "Anzahl Geräte Typen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 25,
-    "position_y": 8,
-    "width": 21,
-    "height": 11,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -1846,6 +1887,12 @@
       "yAxis": "id",
       "xAxis": "platform"
     },
+    "note": null,
+    "height": 11,
+    "width": 21,
+    "position_y": 8,
+    "position_x": 25,
+    "show_header": true,
     "_syncId": "5ff8fd06-4963-4114-89df-182d7d722eed"
   },
   {
@@ -1853,13 +1900,7 @@
     "name": "Anzahl Geräte: Handy",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 3,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1898,6 +1939,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 3,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "61f071fe-5665-4d86-85fc-0ec059bf8352"
   },
   {
@@ -1905,13 +1952,7 @@
     "name": "Mensa Rückmeldungen: Start Zeit (Standart: Heute)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 31,
-    "position_y": 49,
-    "width": 30,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END",
       "collection": "canteens_feedbacks_labels",
@@ -1920,6 +1961,12 @@
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
+    "height": 6,
+    "width": 30,
+    "position_y": 49,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "627b2065-a5c3-4062-890a-df853a67f0f6"
   },
   {
@@ -1927,13 +1974,7 @@
     "name": "Anzahl Guthaben: [5,10[ €",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 84,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -1967,6 +2008,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 13,
+    "position_y": 84,
+    "position_x": 14,
+    "show_header": true,
     "_syncId": "63184507-10c2-4b90-9cc7-0ee8c3079246"
   },
   {
@@ -1974,13 +2021,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 3 Monate (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 116,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -1989,6 +2030,12 @@
       "precision": "day",
       "range": "3 months"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 116,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "655289bc-9023-4d9f-aabf-1b9e48b6fc9c"
   },
   {
@@ -1996,13 +2043,7 @@
     "name": "Anzahl Bewertungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 35,
-    "position_y": 52,
-    "width": 32,
-    "height": 19,
     "options": {
       "collection": "foods_feedbacks",
       "xAxis": "date_updated",
@@ -2029,6 +2070,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 19,
+    "width": 32,
+    "position_y": 52,
+    "position_x": 35,
+    "show_header": true,
     "_syncId": "67a1103b-e6ee-4606-9b75-6be55ac42e29"
   },
   {
@@ -2036,13 +2083,7 @@
     "name": "Mensa Rückmeldung: Likes (false) vs Dislikes (true)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "line-chart",
-    "position_x": 1,
-    "position_y": 138,
-    "width": 60,
-    "height": 17,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "date",
@@ -2092,6 +2133,12 @@
       "curveType": "straight",
       "showLegend": true
     },
+    "note": null,
+    "height": 17,
+    "width": 60,
+    "position_y": 138,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "67bdb532-05ca-444c-9585-18380d85e3d1"
   },
   {
@@ -2099,13 +2146,7 @@
     "name": "Waschmaschinen gestartet Donnerstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 14,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -2124,6 +2165,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 14,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "6a774279-8c13-42d4-bb4d-b9d43d83141a"
   },
   {
@@ -2131,13 +2178,7 @@
     "name": "Präzision",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 29,
-    "position_y": 11,
-    "width": 13,
-    "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
       "type": "string",
@@ -2173,6 +2214,12 @@
         "allowOther": true
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 13,
+    "position_y": 11,
+    "position_x": 29,
+    "show_header": true,
     "_syncId": "6ad39cd0-2103-4469-ae1c-471d7ef525f7"
   },
   {
@@ -2180,19 +2227,19 @@
     "name": "Anzahl: App Feedbacks",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 2,
-    "position_y": 4,
-    "width": 16,
-    "height": 9,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
       "function": "countDistinct",
       "sortField": null
     },
+    "note": null,
+    "height": 9,
+    "width": 16,
+    "position_y": 4,
+    "position_x": 2,
+    "show_header": true,
     "_syncId": "6d3eeebe-7f47-414c-8a57-78f480a78bf6"
   },
   {
@@ -2200,13 +2247,7 @@
     "name": "Neue Profile in den letzen 31 Tagen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 18,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -2226,6 +2267,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 18,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "6da128de-e845-49e7-b2d6-a2e51a972087"
   },
   {
@@ -2233,13 +2280,7 @@
     "name": "Anzahl Profile",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 1,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -2247,6 +2288,12 @@
       "sortField": "id",
       "filter": null
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 1,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "6e7cce59-88a3-4ece-a3d3-c6b1b0f7ea4e"
   },
   {
@@ -2254,19 +2301,19 @@
     "name": "Startzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 1,
-    "position_y": 23,
-    "width": 13,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW(-1 day)"
     },
+    "note": null,
+    "height": 6,
+    "width": 13,
+    "position_y": 23,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "6f87c11a-0612-42fa-9a62-0c565d4a4b87"
   },
   {
@@ -2274,19 +2321,19 @@
     "name": "Mensa Rückmeldungen: Label",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "relational-variable",
-    "position_x": 1,
-    "position_y": 55,
-    "width": 38,
-    "height": 8,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID",
       "collection": "canteens_feedbacks_labels",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
+    "height": 8,
+    "width": 38,
+    "position_y": 55,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "74bea7a1-26fc-417d-8d1a-a7e0ed60b778"
   },
   {
@@ -2294,13 +2341,7 @@
     "name": "Häufigste Ungewollte Kennzeichnungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric-list",
-    "position_x": 1,
-    "position_y": 106,
-    "width": 31,
-    "height": 16,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -2317,6 +2358,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 16,
+    "width": 31,
+    "position_y": 106,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "75a638eb-d006-429f-9ec6-42181ba44e81"
   },
   {
@@ -2324,13 +2371,7 @@
     "name": "Profile mit Nicknamen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 123,
-    "width": 29,
-    "height": 6,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -2355,6 +2396,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 29,
+    "position_y": 123,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "7cf30283-cc2a-4de9-be54-781db630fd40"
   },
   {
@@ -2362,13 +2409,7 @@
     "name": "Kassentransaktionen der letzen 12 Monate (Monats-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 115,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -2396,6 +2437,12 @@
       "curveType": "straight",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 115,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "7eb0c329-2a4c-4bf7-a282-862e59235bfd"
   },
   {
@@ -2403,13 +2450,7 @@
     "name": "Aktivitäten der letzten 24 Stunden (Minuten-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 44,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -2422,6 +2463,12 @@
       "curveType": "stepline",
       "precision": "minute"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 44,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "82fb9eb8-1b59-48b7-92d3-db78c89df122"
   },
   {
@@ -2429,13 +2476,7 @@
     "name": "Startzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 1,
-    "position_y": 11,
-    "width": 14,
-    "height": 6,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
       "type": "dateTime",
@@ -2443,6 +2484,12 @@
       "defaultValue": "$NOW(-1 day)",
       "options": {}
     },
+    "note": null,
+    "height": 6,
+    "width": 14,
+    "position_y": 11,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "83aaceb2-405a-44cb-a216-c67c56e7f0cd"
   },
   {
@@ -2450,13 +2497,7 @@
     "name": "Anzahl Bewertungen Feedback Labels",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 52,
-    "width": 34,
-    "height": 19,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "xAxis": "date_updated",
@@ -2470,6 +2511,12 @@
       "min": 0,
       "max": 500
     },
+    "note": null,
+    "height": 19,
+    "width": 34,
+    "position_y": 52,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
   },
   {
@@ -2477,13 +2524,7 @@
     "name": "Geräte Bildschirm Breite Verteilung",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "line-chart",
-    "position_x": 1,
-    "position_y": 98,
-    "width": 65,
-    "height": 14,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -2491,6 +2532,12 @@
       "aggregation": "count",
       "grouping": null
     },
+    "note": null,
+    "height": 14,
+    "width": 65,
+    "position_y": 98,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "856b62e4-a569-488b-92a1-2d114da32caf"
   },
   {
@@ -2498,13 +2545,7 @@
     "name": "Waschmaschinen gestartet Freitags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 18,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -2523,6 +2564,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 18,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "8b44fc71-f7f0-4660-871e-c62b047f8aec"
   },
   {
@@ -2530,19 +2577,19 @@
     "name": "Kürzeste Waschzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 30,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "min",
       "suffix": "min"
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 30,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "8bc98a74-5cb9-4d3d-aa04-2442d143e4f9"
   },
   {
@@ -2550,19 +2597,19 @@
     "name": "Anzahl Geräte",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 25,
-    "position_y": 3,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "devices",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 3,
+    "position_x": 25,
+    "show_header": true,
     "_syncId": "8bf14f79-1baa-40f2-a5c1-aa5df34f8f16"
   },
   {
@@ -2570,13 +2617,7 @@
     "name": "Neue Nutzer Erstellungen mit Apple in den letzten 31 Tagen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 38,
-    "position_y": 18,
-    "width": 29,
-    "height": 5,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -2603,6 +2644,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 29,
+    "position_y": 18,
+    "position_x": 38,
+    "show_header": true,
     "_syncId": "8c27ad7c-a327-44a7-ad1f-2388966c7a21"
   },
   {
@@ -2610,18 +2657,18 @@
     "name": "Durchschnittliche Anzahl Speise Bewertungen (alt)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 38,
-    "position_y": 41,
-    "width": 29,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_amount_legacy",
       "function": "avg"
     },
+    "note": null,
+    "height": 4,
+    "width": 29,
+    "position_y": 41,
+    "position_x": 38,
+    "show_header": true,
     "_syncId": "8e1a3004-5d21-4405-b7fe-aa27fd45cefc"
   },
   {
@@ -2629,13 +2676,7 @@
     "name": "Mensa Rückmeldung: Anzahl Likes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 1,
-    "position_y": 96,
-    "width": 30,
-    "height": 18,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -2681,6 +2722,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 18,
+    "width": 30,
+    "position_y": 96,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "91148c24-97f4-4bb1-99e4-ab0e9b01c8e9"
   },
   {
@@ -2688,13 +2735,7 @@
     "name": "Präzision",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 27,
-    "position_y": 23,
-    "width": 14,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION",
       "type": "string",
@@ -2730,6 +2771,12 @@
         "allowOther": true
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 14,
+    "position_y": 23,
+    "position_x": 27,
+    "show_header": true,
     "_syncId": "916a4dc7-4816-4974-a827-a0e5edb8f2ac"
   },
   {
@@ -2737,19 +2784,19 @@
     "name": "Waschvorgänge Startzeiten der letzen 1 Woche (Stunden-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 80,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 80,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "92c7f736-3560-4c31-b580-530f21df584e"
   },
   {
@@ -2757,13 +2804,7 @@
     "name": "Likes: Sonntags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 92,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2811,6 +2852,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 92,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "9387d9c7-e5ff-4e15-98c8-84c9fb1b50be"
   },
   {
@@ -2818,13 +2865,7 @@
     "name": "Gesamt Guthaben",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 47,
-    "position_y": 79,
-    "width": 18,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -2842,6 +2883,12 @@
       "suffix": "€",
       "maximumFractionDigits": 2
     },
+    "note": null,
+    "height": 5,
+    "width": 20,
+    "position_y": 79,
+    "position_x": 47,
+    "show_header": true,
     "_syncId": "94a71a98-8dfa-4cd6-93b3-1e64b8267883"
   },
   {
@@ -2849,13 +2896,7 @@
     "name": "Anzahl Waschvorgänge pro Waschmaschine",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric-list",
-    "position_x": 1,
-    "position_y": 50,
-    "width": 37,
-    "height": 14,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "washingmachine",
@@ -2863,6 +2904,12 @@
       "aggregateField": "id",
       "aggregateFunction": "count"
     },
+    "note": null,
+    "height": 14,
+    "width": 37,
+    "position_y": 50,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "95b31311-bf5a-4e78-a988-cc02778f7975"
   },
   {
@@ -2870,13 +2917,7 @@
     "name": "Anzahl E-Mails pro Adresse",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric-list",
-    "position_x": 1,
-    "position_y": 1,
-    "width": 35,
-    "height": 21,
     "options": {
       "collection": "mails",
       "xAxis": "recipient",
@@ -2888,6 +2929,12 @@
       "groupByField": "recipient",
       "aggregateFunction": "count"
     },
+    "note": null,
+    "height": 21,
+    "width": 35,
+    "position_y": 1,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "95be62f7-c99c-4a0b-a6fe-e4331d4ddfb8"
   },
   {
@@ -2895,19 +2942,19 @@
     "name": "Anzahl: Push-Nachrichten",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 18,
-    "position_y": 24,
-    "width": 49,
-    "height": 9,
     "options": {
       "collection": "push_notifications",
       "function": "count",
       "dateField": "date_created",
       "valueField": "id"
     },
+    "note": null,
+    "height": 9,
+    "width": 49,
+    "position_y": 24,
+    "position_x": 18,
+    "show_header": true,
     "_syncId": "98c39a02-dc47-4b41-89da-c3694c6007c8"
   },
   {
@@ -2915,13 +2962,7 @@
     "name": "Letzte Guthaben Aktualisierungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 89,
-    "width": 66,
-    "height": 15,
     "options": {
       "collection": "profiles",
       "dateField": "credit_balance_date_updated",
@@ -2943,6 +2984,12 @@
       },
       "curveType": "stepline"
     },
+    "note": null,
+    "height": 11,
+    "width": 66,
+    "position_y": 93,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "9b4cc0ef-cfaf-47c1-a5c7-9d2a425f84c8"
   },
   {
@@ -2950,13 +2997,7 @@
     "name": "Mensa Rückmeldungen: Anzahl Likes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 63,
-    "width": 30,
-    "height": 5,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2999,6 +3040,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 5,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "9b8bd53c-5247-43ef-a662-49c46df250e3"
   },
   {
@@ -3006,13 +3053,7 @@
     "name": "Anzahl Bewertungen Speise Feedback (in neuer Version)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 35,
-    "position_y": 46,
-    "width": 32,
-    "height": 6,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -3028,6 +3069,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 32,
+    "position_y": 46,
+    "position_x": 35,
+    "show_header": true,
     "_syncId": "9c422335-e73b-401c-b89c-5519f3ba490e"
   },
   {
@@ -3035,19 +3082,19 @@
     "name": "Anzahl Kassentransaktionen (Insgesamt)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 41,
-    "position_y": 6,
-    "width": 25,
-    "height": 5,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 25,
+    "position_y": 6,
+    "position_x": 41,
+    "show_header": true,
     "_syncId": "9df430e2-ad90-467e-9216-05f617658693"
   },
   {
@@ -3055,19 +3102,19 @@
     "name": "Anzahl Kassen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 2,
-    "position_y": 6,
-    "width": 20,
-    "height": 5,
     "options": {
       "collection": "cashregisters",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 20,
+    "position_y": 6,
+    "position_x": 2,
+    "show_header": true,
     "_syncId": "9e5b18d2-6d30-4fa1-a77b-874d12481b54"
   },
   {
@@ -3075,13 +3122,7 @@
     "name": "Waschmaschinen gestartet Sonntags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 26,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -3100,23 +3141,65 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 26,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "9e76146b-23e2-46f0-bbce-0554bdf7ae28"
+  },
+  {
+    "dashboard": "116a8172-4d9a-4e62-adeb-24160389d016",
+    "name": "Anzahl Nutzer mit Guthaben Aktualisierungen in den letzten 31 Tagen",
+    "icon": null,
+    "color": null,
+    "type": "metric",
+    "options": {
+      "collection": "profiles",
+      "dateField": "credit_balance_date_updated",
+      "range": "auto",
+      "function": "count",
+      "valueField": "id",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "credit_balance_date_updated": {
+                  "_gte": "$NOW(-31 days)"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "curveType": "stepline",
+      "field": "credit_balance_date_updated"
+    },
+    "note": null,
+    "height": 4,
+    "width": 32,
+    "position_y": 89,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "9edef408-767d-4468-90b6-8e59bffec4d7"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
     "name": null,
     "icon": null,
     "color": null,
-    "show_header": false,
-    "note": null,
     "type": "label",
-    "position_x": 1,
-    "position_y": 45,
-    "width": 60,
-    "height": 4,
     "options": {
       "text": "Rückmeldungen Mensa"
     },
+    "note": null,
+    "height": 4,
+    "width": 60,
+    "position_y": 45,
+    "position_x": 1,
+    "show_header": false,
     "_syncId": "9f906dce-5b58-4b72-a237-bb6f2b1fcd94"
   },
   {
@@ -3124,13 +3207,7 @@
     "name": "Waschmaschienen Vorgänge Verteilung (in Minuten, gerundet)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 1,
-    "position_y": 37,
-    "width": 37,
-    "height": 13,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_calculated",
@@ -3138,6 +3215,12 @@
       "xAxis": "duration_in_minutes_rounded_10min_calculated",
       "yAxis": "id"
     },
+    "note": null,
+    "height": 13,
+    "width": 37,
+    "position_y": 37,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "a283da30-5245-4dbf-8dae-1f2254935b11"
   },
   {
@@ -3145,13 +3228,7 @@
     "name": "Anzahl: App Feedbacks",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 2,
-    "position_y": 13,
-    "width": 16,
-    "height": 9,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -3167,6 +3244,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 9,
+    "width": 16,
+    "position_y": 13,
+    "position_x": 2,
+    "show_header": true,
     "_syncId": "a36d923f-d148-43c7-849e-e633121dd44b"
   },
   {
@@ -3174,13 +3257,7 @@
     "name": "Mensa Rückmeldung: Anzahl Dislikes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 31,
-    "position_y": 96,
-    "width": 30,
-    "height": 18,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -3226,6 +3303,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 18,
+    "width": 30,
+    "position_y": 96,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "a54544e1-8c26-4c83-ab74-9856b052fc60"
   },
   {
@@ -3233,13 +3316,7 @@
     "name": "Aktivitäten der letzten 7 Tage (Stunden-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 68,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -3250,6 +3327,12 @@
       "filter": null,
       "curveType": "stepline"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 68,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "a549ef8d-025e-490a-a734-fc0a3c32d2e9"
   },
   {
@@ -3257,13 +3340,7 @@
     "name": "Mails: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 3,
-    "position_y": 30,
-    "width": 63,
-    "height": 12,
     "options": {
       "collection": "mails",
       "function": "countDistinct",
@@ -3290,6 +3367,12 @@
       "precision": "{{CUSTOM_MAILS_PRECISION}}",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 63,
+    "position_y": 30,
+    "position_x": 3,
+    "show_header": true,
     "_syncId": "a68efab1-5ff5-4184-805e-59b71b9025b2"
   },
   {
@@ -3297,13 +3380,7 @@
     "name": "Anzahl Kassentransaktionen: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 41,
-    "position_y": 23,
-    "width": 25,
-    "height": 6,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -3328,6 +3405,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 25,
+    "position_y": 23,
+    "position_x": 41,
+    "show_header": true,
     "_syncId": "a6dfabe0-e891-4347-b1a1-a5307d7686ac"
   },
   {
@@ -3335,13 +3418,7 @@
     "name": "Dislikes: Donnerstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 80,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3389,6 +3466,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 80,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "a905ecb4-8b03-46f2-9ea9-dfa813688946"
   },
   {
@@ -3396,13 +3479,7 @@
     "name": "Waschvorgänge Startzeiten Insgesamt (Jahres-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 176,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -3411,6 +3488,12 @@
       "precision": "year",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 176,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "a99204d8-c8f8-476c-8989-3d2a6f6a1bc9"
   },
   {
@@ -3418,13 +3501,7 @@
     "name": "Anzahl Profile mit ausgelesenem Guthaben",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 79,
-    "width": 23,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -3444,6 +3521,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 23,
+    "position_y": 79,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "ac2b9638-3eec-4404-b0c3-0c2874db0e5f"
   },
   {
@@ -3451,13 +3534,7 @@
     "name": "Kassentransaktionen der letzen 1 Monat (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 79,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -3468,6 +3545,12 @@
       "range": "1 month",
       "curveType": "stepline"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 79,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "ae41294b-9f15-4fdb-94c2-1ef7a01049f9"
   },
   {
@@ -3475,18 +3558,18 @@
     "name": "Summe aller Speise Durchschnitte (alt + neu)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 42,
-    "position_y": 31,
-    "width": 24,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_average",
       "function": "sum"
     },
+    "note": null,
+    "height": 4,
+    "width": 24,
+    "position_y": 31,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "ae86b069-3049-4f31-88fb-b95e489b0525"
   },
   {
@@ -3494,19 +3577,19 @@
     "name": "Anzahl Bewertungen Feedback Labels",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 46,
-    "width": 34,
-    "height": 6,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
+    "height": 6,
+    "width": 34,
+    "position_y": 46,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "b1d797c9-921c-4845-a342-e79fd85aef80"
   },
   {
@@ -3514,19 +3597,19 @@
     "name": "Anzahl Mails versendet",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 37,
-    "position_y": 1,
-    "width": 17,
-    "height": 5,
     "options": {
       "collection": "mails",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 17,
+    "position_y": 1,
+    "position_x": 37,
+    "show_header": true,
     "_syncId": "b2463e48-ebda-4268-acf8-0ce686b1dfed"
   },
   {
@@ -3534,13 +3617,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 1 Woche (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 92,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -3548,6 +3625,12 @@
       "valueField": "id",
       "precision": "day"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 92,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "b58ce19e-d32e-4011-b190-5a2fb591262b"
   },
   {
@@ -3555,13 +3638,7 @@
     "name": "Durschnittliche Waschzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 20,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -3569,6 +3646,12 @@
       "sortField": "id",
       "suffix": "min"
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 20,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "b6838b93-5c54-43d9-851d-8edfdfd27c09"
   },
   {
@@ -3576,13 +3659,7 @@
     "name": "Unbeliebteste Speisen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "list",
-    "position_x": 1,
-    "position_y": 24,
-    "width": 40,
-    "height": 13,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -3599,6 +3676,12 @@
       },
       "sortDirection": "asc"
     },
+    "note": null,
+    "height": 13,
+    "width": 40,
+    "position_y": 24,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "b832f73c-4f21-4039-874c-e59dd9f7a646"
   },
   {
@@ -3606,18 +3689,18 @@
     "name": "Anzahl Gefundener Speise Durschnitt Bewertungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 42,
-    "position_y": 27,
-    "width": 24,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_average",
       "function": "count"
     },
+    "note": null,
+    "height": 4,
+    "width": 24,
+    "position_y": 27,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "bc58867a-1382-47ec-a965-7c1fe4d7c61c"
   },
   {
@@ -3625,13 +3708,7 @@
     "name": "Kassentransaktionen der letzen 12 Monat (Wochen-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 103,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -3658,6 +3735,12 @@
       "precision": "week",
       "range": "auto"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 103,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "bc5e99aa-3c87-47ba-a371-2d920ea45d8f"
   },
   {
@@ -3665,13 +3748,7 @@
     "name": "Kassentransaktionen der letzen 1 Stunde (Minuten-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 43,
-    "width": 65,
-    "height": 12,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -3681,6 +3758,12 @@
       "range": "1 hour",
       "precision": "minute"
     },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 43,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "bffb93fe-9ffb-47b1-a59e-6eba69337454"
   },
   {
@@ -3688,13 +3771,7 @@
     "name": "Mensa Rückmeldungen: Start Zeit (Standart: Vor 31 Tagen)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 1,
-    "position_y": 49,
-    "width": 30,
-    "height": 6,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -3703,6 +3780,12 @@
       "inter": "datetime",
       "defaultValue": "$NOW(-31 days)"
     },
+    "note": null,
+    "height": 6,
+    "width": 30,
+    "position_y": 49,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "c2173f69-94e0-4d2c-bf38-115541c2f194"
   },
   {
@@ -3710,13 +3793,7 @@
     "name": "Likes: Donnerstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 80,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3764,6 +3841,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 80,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "c2a9c985-adb7-4c7f-96a9-fe0051be740c"
   },
   {
@@ -3771,19 +3854,19 @@
     "name": "Längste Waschzeit",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 17,
-    "position_y": 25,
-    "width": 21,
-    "height": 5,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "max",
       "suffix": "min"
     },
+    "note": null,
+    "height": 5,
+    "width": 21,
+    "position_y": 25,
+    "position_x": 17,
+    "show_header": true,
     "_syncId": "c2df9a8e-88a6-4b73-a338-6f3b78c4c3fb"
   },
   {
@@ -3791,13 +3874,7 @@
     "name": "Mensa Rückmeldung: Anzahl Likes",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 120,
-    "width": 30,
-    "height": 18,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -3840,6 +3917,12 @@
       "range": "auto",
       "color": "#2ECDA7"
     },
+    "note": null,
+    "height": 18,
+    "width": 30,
+    "position_y": 120,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "c35ae794-c1d0-4a2d-83fc-b3d063343b4b"
   },
   {
@@ -3847,13 +3930,7 @@
     "name": "Anzah gesetzter Benachrichtigungen für Speisen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 42,
-    "position_y": 2,
-    "width": 26,
-    "height": 5,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -3873,6 +3950,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 26,
+    "position_y": 2,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "c6fa058b-f8a9-4de7-9da9-f0390ff81058"
   },
   {
@@ -3880,13 +3963,7 @@
     "name": "Häufigste Gewollte Kennzeichnungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric-list",
-    "position_x": 32,
-    "position_y": 106,
-    "width": 31,
-    "height": 16,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -3903,6 +3980,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 16,
+    "width": 31,
+    "position_y": 106,
+    "position_x": 32,
+    "show_header": true,
     "_syncId": "c7dd7f74-84b1-433d-9911-b6b7fece5307"
   },
   {
@@ -3910,19 +3993,19 @@
     "name": "Verteilung der Nutzer auf die Mensen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "pie-chart",
-    "position_x": 1,
-    "position_y": 1,
-    "width": 25,
-    "height": 24,
     "options": {
       "collection": "profiles",
       "column": "canteen",
       "showLabels": true,
       "legend": "right"
     },
+    "note": null,
+    "height": 24,
+    "width": 25,
+    "position_y": 1,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "c92c8a5f-b171-4a63-ac8e-5d56b2bfe71d"
   },
   {
@@ -3930,13 +4013,7 @@
     "name": "Anzahl Waschmaschienen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 9,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -3944,6 +4021,12 @@
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
+    "height": 5,
+    "width": 16,
+    "position_y": 9,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "cfa01879-865a-4598-b635-0da14d5bbd50"
   },
   {
@@ -3951,13 +4034,7 @@
     "name": "Neue Profile",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 50,
-    "width": 66,
-    "height": 13,
     "options": {
       "collection": "profiles",
       "dateField": "date_created",
@@ -3965,6 +4042,12 @@
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
+    "height": 13,
+    "width": 66,
+    "position_y": 50,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "d0518aea-e3b8-4493-ac41-70357cfe0242"
   },
   {
@@ -3972,13 +4055,7 @@
     "name": "Likes: Freitags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 84,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4026,6 +4103,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 84,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "d132f5e6-0e93-481c-97fb-5532f0a694a8"
   },
   {
@@ -4033,13 +4116,7 @@
     "name": "Geräte Bildschirm Höhe Verteilung",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "line-chart",
-    "position_x": 1,
-    "position_y": 112,
-    "width": 65,
-    "height": 14,
     "options": {
       "collection": "devices",
       "xAxis": "display_height",
@@ -4047,6 +4124,12 @@
       "aggregation": "count",
       "grouping": null
     },
+    "note": null,
+    "height": 14,
+    "width": 65,
+    "position_y": 112,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "d31f445f-36f1-4e12-9e7a-fa02b55b5346"
   },
   {
@@ -4054,13 +4137,7 @@
     "name": "Waschmaschinen gestartet Mittwochs",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 10,
-    "width": 21,
-    "height": 4,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -4079,6 +4156,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 4,
+    "width": 21,
+    "position_y": 10,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "d4a410a4-4811-4150-8f0d-7e3e6cc862cf"
   },
   {
@@ -4086,13 +4169,7 @@
     "name": "Anzahl Guthaben: > 75 €",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 49,
-    "position_y": 84,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4121,6 +4198,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 12,
+    "position_y": 84,
+    "position_x": 55,
+    "show_header": true,
     "_syncId": "d71b1374-1846-4585-9aa9-7dc2a4fdec14"
   },
   {
@@ -4128,13 +4211,7 @@
     "name": "Android System Versionen Verteilung",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "line-chart",
-    "position_x": 1,
-    "position_y": 83,
-    "width": 65,
-    "height": 14,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -4152,6 +4229,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 14,
+    "width": 65,
+    "position_y": 83,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "dc0be0a4-5972-448e-b956-5b689bee1b06"
   },
   {
@@ -4159,13 +4242,7 @@
     "name": "Anzahl Aktivitäten: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 42,
-    "position_y": 11,
-    "width": 24,
-    "height": 6,
     "options": {
       "collection": "directus_activity",
       "field": "id",
@@ -4190,6 +4267,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 24,
+    "position_y": 11,
+    "position_x": 42,
+    "show_header": true,
     "_syncId": "dd226a90-36f5-453f-a68a-cfb0711210cb"
   },
   {
@@ -4197,13 +4280,7 @@
     "name": "Mensa Rückmeldungen: Anzahl Bewertungen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 39,
-    "position_y": 55,
-    "width": 22,
-    "height": 8,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4234,6 +4311,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 8,
+    "width": 22,
+    "position_y": 55,
+    "position_x": 39,
+    "show_header": true,
     "_syncId": "deecb988-5196-484f-8e80-5eed5d9b0f45"
   },
   {
@@ -4241,13 +4324,7 @@
     "name": "Verteilung gewählter Sprachen",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "bar-chart",
-    "position_x": 1,
-    "position_y": 7,
-    "width": 21,
-    "height": 10,
     "options": {
       "collection": "profiles",
       "column": "language",
@@ -4258,6 +4335,12 @@
       "yAxis": "language",
       "horizontal": true
     },
+    "note": null,
+    "height": 10,
+    "width": 21,
+    "position_y": 7,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "df2e0b13-5835-4a00-a7f4-23404e5975c6"
   },
   {
@@ -4265,13 +4348,7 @@
     "name": "Anzahl Speiseangebote der letzen 1 Monate (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 164,
-    "width": 61,
-    "height": 13,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -4280,6 +4357,12 @@
       "valueField": "id",
       "range": "1 month"
     },
+    "note": null,
+    "height": 13,
+    "width": 61,
+    "position_y": 164,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "e4e238eb-fcf2-4bc7-ab8c-12b436307330"
   },
   {
@@ -4287,19 +4370,19 @@
     "name": "Durchschnitt Speisebewertung (alt)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 41,
-    "width": 19,
-    "height": 4,
     "options": {
       "collection": "foods",
       "field": "rating_average_legacy",
       "function": "avg",
       "maximumFractionDigits": 2
     },
+    "note": null,
+    "height": 4,
+    "width": 19,
+    "position_y": 41,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "e75b9497-dca7-4048-a1ac-ba3cdbcc1620"
   },
   {
@@ -4307,13 +4390,7 @@
     "name": "Likes: Mittwochs",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 76,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4361,6 +4438,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 76,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "e99bbe32-5185-4ebc-af46-68065ab707cf"
   },
   {
@@ -4368,13 +4451,7 @@
     "name": "Likes: Dienstags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 72,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4422,6 +4499,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 72,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "eb659e53-9486-4576-92e1-aaee48715101"
   },
   {
@@ -4429,13 +4512,7 @@
     "name": "Anzahl Mails: (Nutzerspezifische Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 43,
-    "position_y": 24,
-    "width": 23,
-    "height": 6,
     "options": {
       "collection": "mails",
       "field": "id",
@@ -4460,6 +4537,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 23,
+    "position_y": 24,
+    "position_x": 43,
+    "show_header": true,
     "_syncId": "ecf8b5aa-aab6-45a6-9a29-d82cf6ad87f2"
   },
   {
@@ -4467,13 +4550,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 12 Monate (Monats-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 152,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -4482,6 +4559,12 @@
       "precision": "month",
       "range": "12 months"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 152,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "ee075b66-cbd7-483d-8936-066f89f591f4"
   },
   {
@@ -4489,13 +4572,7 @@
     "name": "Dislikes: Mittwochs",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 76,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4543,6 +4620,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 76,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "f0d0c3d3-551c-48c5-9b93-fc1073871509"
   },
   {
@@ -4550,13 +4633,7 @@
     "name": "Präzision",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "variable",
-    "position_x": 29,
-    "position_y": 24,
-    "width": 14,
-    "height": 6,
     "options": {
       "field": "CUSTOM_MAILS_PRECISION",
       "type": "string",
@@ -4592,6 +4669,12 @@
         "allowOther": true
       }
     },
+    "note": null,
+    "height": 6,
+    "width": 14,
+    "position_y": 24,
+    "position_x": 29,
+    "show_header": true,
     "_syncId": "f51ef2cb-66b6-4b25-a641-27790d582996"
   },
   {
@@ -4599,13 +4682,7 @@
     "name": "Waschvorgänge Startzeiten der letzen 12 Monate (Wochen-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 140,
-    "width": 61,
-    "height": 12,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -4614,6 +4691,12 @@
       "precision": "week",
       "range": "12 months"
     },
+    "note": null,
+    "height": 12,
+    "width": 61,
+    "position_y": 140,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "f5784795-036b-4130-b609-52eaf697b0b0"
   },
   {
@@ -4621,13 +4704,7 @@
     "name": "Dislikes: Montags",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 31,
-    "position_y": 68,
-    "width": 30,
-    "height": 4,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4675,6 +4752,12 @@
         }
       ]
     },
+    "note": null,
+    "height": 4,
+    "width": 30,
+    "position_y": 68,
+    "position_x": 31,
+    "show_header": true,
     "_syncId": "f74e0dba-e962-4ca5-878e-d6c1c100c5b2"
   },
   {
@@ -4682,13 +4765,7 @@
     "name": "Login Zeiten",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 36,
-    "width": 66,
-    "height": 14,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -4709,6 +4786,12 @@
       },
       "range": "1 day"
     },
+    "note": null,
+    "height": 14,
+    "width": 66,
+    "position_y": 36,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "f8a26906-3282-4bbb-aea9-88d569127084"
   },
   {
@@ -4716,13 +4799,7 @@
     "name": "Anzahl Speiseangebote der letzen 1 Woche (Tages-Präzision)",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "time-series",
-    "position_x": 1,
-    "position_y": 151,
-    "width": 61,
-    "height": 13,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -4730,6 +4807,12 @@
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
+    "height": 13,
+    "width": 61,
+    "position_y": 151,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "fbbe153c-df1f-486f-b94e-d5c4ccc8546e"
   },
   {
@@ -4737,13 +4820,7 @@
     "name": "Anzahl Guthaben: ]0,5[ €",
     "icon": null,
     "color": null,
-    "show_header": true,
-    "note": null,
     "type": "metric",
-    "position_x": 1,
-    "position_y": 84,
-    "width": 16,
-    "height": 5,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4777,6 +4854,12 @@
         ]
       }
     },
+    "note": null,
+    "height": 5,
+    "width": 13,
+    "position_y": 84,
+    "position_x": 1,
+    "show_header": true,
     "_syncId": "fd6b34ff-59c3-4ab2-96bb-67dc5afc5898"
   }
 ]

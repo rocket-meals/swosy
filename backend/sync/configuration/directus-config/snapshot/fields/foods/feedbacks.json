@@ -15,11 +15,16 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 17,
+    "sort": 18,
     "special": [
       "o2m"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Rückmeldungen"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"
