@@ -8,7 +8,7 @@ import {
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {FunctionComponent, useCallback, useEffect, useRef, useState} from "react";
 import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
@@ -17,7 +17,7 @@ import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/Synche
 import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
+import {useSortedMarkings, useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
@@ -107,10 +107,55 @@ export function useAdditionalCanteensFromLocalSearchParams() {
 	return additionalCanteens
 }
 
+
+const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({foodOffer, ...props}) => {
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
+
+	let renderedMarkings: any[] = [];
+	let foodoffersmarkingJoinElements = foodOffer.markings;
+	let unsortedMarkingsForFoodOffer: Markings[] = [];
+	if(!!markingsDict){
+		for(let i=0; i<foodoffersmarkingJoinElements.length; i++){
+			let joinElement = foodoffersmarkingJoinElements[i];
+			let markingId = joinElement?.markings_id;
+			let marking = markingsDict?.[markingId];
+			if(!!marking){
+				unsortedMarkingsForFoodOffer.push(marking)
+			}
+		}
+	}
+
+	const sortedMarkingsForFoodOffer = useSortedMarkings(unsortedMarkingsForFoodOffer);
+
+	for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
+		const marking = sortedMarkingsForFoodOffer[i];
+		renderedMarkings.push(<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
+	}
+	return <View style={{
+		flex: 1,
+		flexWrap: "wrap",
+		flexDirection: "row",
+	}}>
+		{renderedMarkings}
+	</View>;
+}
+
 export default function FoodDayPlanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
+	let unsortedMarkingList: Markings[] = [];
+	if(!!markingsDict){
+		let markingKeys = Object.keys(markingsDict);
+		for(let i=0; i<markingKeys.length; i++){
+			let key = markingKeys[i];
+			let marking = markingsDict[key];
+			if(marking){
+				unsortedMarkingList.push(marking);
+			}
+		}
+	}
+	const sortedMarkings = useSortedMarkings(unsortedMarkingList);
 
 	const isDebug = useIsDebug()
 
@@ -326,14 +371,6 @@ export default function FoodDayPlanScreen() {
 		}
 	}
 
-	const sortMarkingsByNameLength = (a: Markings, b: Markings) => {
-		const withoutExternalIdentifier = false;
-		const a_name = getMarkingName(a, languageCode, withoutExternalIdentifier);
-		const b_name = getMarkingName(b, languageCode, withoutExternalIdentifier);
-		return a_name.length - b_name.length;
-	}
-	let sortedMarkingsList = markingsList.sort(sortMarkingsByNameLength);
-
 
 	function renderMyGridList({ children, amountColumns, paddingColumns }: { children: JSX.Element[]; amountColumns: number; paddingColumns: number }) {
 		const columns = [];
@@ -387,33 +424,7 @@ export default function FoodDayPlanScreen() {
 		);
 	}
 
-	function renderMarkingsForFoodRow(foodOffer: Foodoffers){
-		let renderedMarkings: any[] = [];
-		let foodoffersmarkingJoinElements = foodOffer.markings;
-		let markingsForFoodOffer: Markings[] = [];
-		if(!!markingsDict){
-			for(let i=0; i<foodoffersmarkingJoinElements.length; i++){
-				let joinElement = foodoffersmarkingJoinElements[i];
-				let markingId = joinElement?.markings_id;
-				let marking = markingsDict?.[markingId];
-				if(!!marking){
-					markingsForFoodOffer.push(marking)
-				}
-			}
-		}
-		let sortedMarkingsForFoodOffer = markingsForFoodOffer.sort(sortMarkingsByNameLength);
-		for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
-			const marking = sortedMarkingsForFoodOffer[i];
-			renderedMarkings.push(<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
-		}
-		return <View style={{
-			flex: 1,
-			flexWrap: "wrap",
-			flexDirection: "row",
-		}}>
-			{renderedMarkings}
-		</View>;
-	}
+
 
 	const renderMarking = (marking: Markings, withTranslation: boolean = true) => {
 		const withoutExternalIdentifier = true;
@@ -634,7 +645,7 @@ export default function FoodDayPlanScreen() {
 					renderRowForFoodoffer({
 						textForCategoryColumn: category,
 						textForFoodnameColumn: foodName,
-						elementForMarkingsColumn: renderMarkingsForFoodRow(foodOffer),
+						elementForMarkingsColumn: <MarkingsRowForFood foodOffer={foodOffer} />,
 						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer),
 						textForFatAndSaturatedFatColumn: FoodInformationValueFormatter.formatFoodInformationValueFat(foodOffer) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(foodOffer),
 						textForCarbohydratesAndSugarColumn: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(foodOffer) + " / " + FoodInformationValueFormatter.formatFoodInformationValueSugar(foodOffer),
@@ -803,12 +814,23 @@ export default function FoodDayPlanScreen() {
 		)
 	}
 
-	function renderContent(){
+	function renderMarkingsBottom(){
 		const renderedMarkings = [];
-		for (let i = 0; i < sortedMarkingsList.length; i++) {
-			const marking = sortedMarkingsList[i];
+		for (let i = 0; i < sortedMarkings.length; i++) {
+			const marking = sortedMarkings[i];
 			renderedMarkings.push(renderMarking(marking, true));
 		}
+
+		return <>
+			{renderMyGridList({
+				children: renderedMarkings,
+				amountColumns: 8,
+				paddingColumns: 1,
+			})}
+		</>
+	}
+
+	function renderContent(){
 
 		return <View style={{
 			width: '100%',
@@ -868,11 +890,7 @@ export default function FoodDayPlanScreen() {
 				width: '100%',
 				padding: 10,
 			}}>
-				{renderMyGridList({
-					children: renderedMarkings,
-					amountColumns: 8,
-					paddingColumns: 1,
-				})}
+				{renderMarkingsBottom()}
 			</View>
 			<View style={{
 				width: '100%',

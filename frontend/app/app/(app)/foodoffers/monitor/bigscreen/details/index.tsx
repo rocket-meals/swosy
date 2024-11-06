@@ -11,7 +11,7 @@ import {
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import React, {useEffect, useState} from "react";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
@@ -27,7 +27,7 @@ import {getPriceForPriceGroup} from "@/components/pricing/useProfilePricing";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
-import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
+import {useSortedMarkings, useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
@@ -90,11 +90,23 @@ export function useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() {
 
 const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSizeType | undefined}> = ({markingIds, textSize}) => {
 
+	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict()
+	let markingsList: Markings[] = [];
+	for(let markingId of markingIds){
+		const marking = markingsDict?.[markingId];
+		if(marking){
+			markingsList.push(marking);
+		}
+	}
+
+	const sortedMarkings = useSortedMarkings(markingsList);
+
 	//return null;
 	//console.log("MarkingInformationList", markingIds)
 
 	let renderedMarkings: any[] = [];
-	for(let markingId of markingIds) {
+	for(let marking of sortedMarkings){
+		const markingId = marking.id;
 		renderedMarkings.push(
 			<MarkingIconOrShortCodeWithTextSize key={markingId+textSize} markingId={markingId} textSize={textSize} />
 		)
