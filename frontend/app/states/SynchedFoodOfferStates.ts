@@ -1,7 +1,7 @@
 import {useSyncState} from '@/helper/syncState/SyncState';
 import {NonPersistentStore} from '@/helper/syncState/NonPersistentStore';
 import {DateHelper} from '@/helper/date/DateHelper';
-import {Canteens, Foodoffers, Foods, FoodsFeedbacks} from '@/helper/database/databaseTypes/types';
+import {Canteens, Foodoffers, FoodoffersCategories, Foods, FoodsFeedbacks} from '@/helper/database/databaseTypes/types';
 import {getDemoFoods} from '@/states/SynchedFoods';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSearchParamSelectedFoodoffersDate} from "@/helper/searchParams/SearchParams";

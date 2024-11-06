@@ -11,8 +11,8 @@ import {
     CollectionsDatesLastUpdate,
     Devices,
     DirectusUsers,
-    Foodoffers,
-    Foods,
+    Foodoffers, FoodoffersCategories,
+    Foods, FoodsCategories,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
     FoodsFeedbacksLabelsEntries,
@@ -80,6 +80,10 @@ export class MyDatabaseHelper {
         return new ItemsServiceHelper<FoodsFeedbacksLabels>(this.apiContext, CollectionNames.FOODS_FEEDBACK_LABELS, this.eventContext);
     }
 
+    getFoodsCategoriesHelper() {
+        return new ItemsServiceHelper<FoodsCategories>(this.apiContext, CollectionNames.FOODS_CATEGORIES, this.eventContext);
+    }
+
     getFoodFeedbackLabelEntriesHelper() {
         return new ItemsServiceHelper<FoodsFeedbacksLabelsEntries>(this.apiContext, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES, this.eventContext);
     }
@@ -94,6 +98,10 @@ export class MyDatabaseHelper {
 
     getFoodoffersHelper() {
         return new ItemsServiceHelper<Foodoffers>(this.apiContext, CollectionNames.FOODOFFERS, this.eventContext);
+    }
+
+    getFoodofferCategoriesHelper() {
+        return new ItemsServiceHelper<FoodoffersCategories>(this.apiContext, CollectionNames.FOODOFFER_CATEGORIES, this.eventContext);
     }
 
     getDevicesHelper() {

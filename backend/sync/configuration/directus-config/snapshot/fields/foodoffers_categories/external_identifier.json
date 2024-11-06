@@ -1,37 +1,33 @@
 {
   "collection": "foodoffers_categories",
-  "field": "date_updated",
-  "type": "timestamp",
+  "field": "external_identifier",
+  "type": "string",
   "meta": {
     "collection": "foodoffers_categories",
     "conditions": null,
-    "display": "datetime",
-    "display_options": {
-      "relative": true
-    },
-    "field": "date_updated",
+    "display": null,
+    "display_options": null,
+    "field": "external_identifier",
     "group": null,
-    "hidden": true,
-    "interface": "datetime",
+    "hidden": false,
+    "interface": "input",
     "note": null,
     "options": null,
-    "readonly": true,
+    "readonly": false,
     "required": false,
-    "sort": 9,
-    "special": [
-      "date-updated"
-    ],
+    "sort": 5,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "date_updated",
+    "name": "external_identifier",
     "table": "foodoffers_categories",
-    "data_type": "timestamp with time zone",
+    "data_type": "character varying",
     "default_value": null,
-    "max_length": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

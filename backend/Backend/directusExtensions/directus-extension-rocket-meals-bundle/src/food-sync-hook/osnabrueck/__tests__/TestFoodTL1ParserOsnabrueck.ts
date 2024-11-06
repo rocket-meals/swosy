@@ -93,7 +93,7 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
         let foodOffersJson = await foodParser.getFoodoffersForParser();
         let foundCategory = false;
         for(let foodOffer of foodOffersJson){
-            if(!!foodOffer.basicFoodofferData.category){
+            if(!!foodOffer.category_external_identifier){
                 foundCategory = true;
                 break;
             }
@@ -104,7 +104,7 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
 
         expect(!!firstFoodOffer).toBe(true);
         if(firstFoodOffer){
-            expect(firstFoodOffer.basicFoodofferData.category).toBe("KM 1 + 2,20 €");
+            expect(firstFoodOffer.category_external_identifier).toBe("KM 1 + 2,20 €");
         }
 
     });
@@ -114,7 +114,7 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
         let foodsJson = await foodParser.getFoodsListForParser();
         let foundCategory = false;
         for(let food of foodsJson){
-            if(!!food.basicFoodData.category){
+            if(!!food.category_external_identifier){
                 foundCategory = true;
                 break;
             }
@@ -125,7 +125,7 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
 
         expect(!!firstFood).toBe(true);
         if(firstFood){
-            expect(firstFood.basicFoodData.category).toBe("Beilagen");
+            expect(firstFood.category_external_identifier).toBe("Beilagen");
         }
     })
 

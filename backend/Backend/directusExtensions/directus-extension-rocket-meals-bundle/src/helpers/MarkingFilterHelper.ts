@@ -1,4 +1,4 @@
-import {Markings, MarkingsExclusions} from "../databaseTypes/types";
+import {FoodsCategories, Markings, MarkingsExclusions} from "../databaseTypes/types";
 
 export type DictMarkingsExclusions = Record<string, MarkingsExclusions>;
 

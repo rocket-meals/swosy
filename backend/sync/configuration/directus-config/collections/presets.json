@@ -1,14 +1,14 @@
 [
   {
     "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
-    "bookmark": null,
-    "collection": "apartments",
+    "color": null,
+    "icon": "bookmark",
     "layout": "tabular",
     "search": null,
-    "icon": "bookmark",
-    "color": null,
-    "layout_options": null,
+    "collection": "apartments",
+    "bookmark": null,
     "filter": null,
+    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [

@@ -27,6 +27,8 @@ export class PersistentStore {
 
 	static foodoffers_cache = 'PersistentStore.foodoffers_cache'
 	static foods_cache = 'PersistentStore.foods_cache'
+	static foods_categories_cache = 'PersistentStore.foods_categories_cache'
+	static foodoffers_categories_cache = 'PersistentStore.foodoffers_categories_cache'
 
 	static businesshours = 'PersistentStore.businesshours'
 	static languages = 'PersistentStore.languages'

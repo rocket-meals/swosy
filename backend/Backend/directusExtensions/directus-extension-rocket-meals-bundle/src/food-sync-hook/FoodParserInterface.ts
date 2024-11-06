@@ -3,11 +3,12 @@ import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 
 
 // Remove all fields with relation to other tables
-export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings">;
+export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings" | "food_category" | "category">;
 export type FoodWithBasicDataWithoutIdType = Omit<FoodWithBasicData, "id">
 
 export type FoodsInformationTypeForParser = {
     basicFoodData: FoodWithBasicData,
+    category_external_identifier: string | null,
     marking_external_identifiers: string[],
     translations: TranslationsFromParsingType
 }
@@ -21,10 +22,11 @@ export type FoodofferDateType = {
     month: number, // 01-12
     day: number // 01-31
 }
-export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "date" | "environmental_impact" | "nutrition" | "prices">;
+export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "date" | "environmental_impact" | "nutrition" | "prices" | "foodoffer_category" | "category">;
 export type FoodoffersTypeForParser = {
     basicFoodofferData: FoodofferTypeWithBasicData,
     marking_external_identifiers: string[]
+    category_external_identifier: string | null,
     date: FoodofferDateType
     canteen_external_identifier: string,
     food_id: string

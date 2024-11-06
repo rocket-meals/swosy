@@ -51,6 +51,7 @@ export class CollectionNames{
     static BUILDINGS = "buildings"
     static FOODS = "foods"
     static FOODS_FEEDBACKS= "foods_feedbacks"
+    static FOODS_CATEGORIES = "foods_categories"
 
     static MAILS = "mails"
 
@@ -91,5 +92,6 @@ export class CollectionNames{
     static DEVICES = "devices"
 
     static FOODOFFERS = "foodoffers"
+    static FOODOFFER_CATEGORIES = "foodoffers_categories"
 
 }

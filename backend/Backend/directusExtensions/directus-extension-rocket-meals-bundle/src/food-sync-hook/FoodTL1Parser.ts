@@ -122,7 +122,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
             alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
-            category: this.getFoodCategoryFromRawFoodoffer(rawFoodoffer),
             ...foodNutritions,
             ...foodEnvironmentImpact
         }
@@ -130,6 +129,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         return {
             basicFoodData: basicFoodData,
             translations: translations,
+            category_external_identifier: this.getFoodCategoryFromRawFoodoffer(rawFoodoffer),
             marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer)
         };
     }
@@ -172,7 +172,6 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
             const basicFoodofferData: FoodofferTypeWithBasicData = {
                 alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
-                category: this.getFoodofferCategoryFromRawFoodoffer(rawFoodoffer),
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
                 price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
                 price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
@@ -183,6 +182,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodofferForParser: FoodoffersTypeForParser = {
                 date: rawFoodoffer.date,
                 basicFoodofferData: basicFoodofferData,
+                category_external_identifier: this.getFoodofferCategoryFromRawFoodoffer(rawFoodoffer),
                 marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
                 canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
                 food_id: rawFoodoffer.food_id

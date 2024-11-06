@@ -112,7 +112,7 @@ describe("FoodTL1ParserHannover Test", () => {
         let foodOffersJson = await foodParser.getFoodoffersForParser();
         let foundCategory = false;
         for(let foodOffer of foodOffersJson){
-            if(!!foodOffer.basicFoodofferData.category){
+            if(!!foodOffer.category_external_identifier){
                 foundCategory = true;
                 break;
             }
@@ -123,7 +123,7 @@ describe("FoodTL1ParserHannover Test", () => {
 
         expect(!!firstFoodOffer).toBe(true);
         if(firstFoodOffer){
-            expect(firstFoodOffer.basicFoodofferData.category).toBe("QUEERBEET");
+            expect(firstFoodOffer.category_external_identifier).toBe("QUEERBEET");
         }
 
     });
@@ -133,7 +133,7 @@ describe("FoodTL1ParserHannover Test", () => {
         let foodsJson = await foodParser.getFoodsListForParser();
         let foundCategory = false;
         for(let food of foodsJson){
-            if(!!food.basicFoodData.category){
+            if(!!food.category_external_identifier){
                 foundCategory = true;
                 break;
             }
@@ -144,7 +144,7 @@ describe("FoodTL1ParserHannover Test", () => {
 
         expect(!!firstFood).toBe(true);
         if(firstFood){
-            expect(firstFood.basicFoodData.category).toBe("QUEERBEET");
+            expect(firstFood.category_external_identifier).toBe("QUEERBEET");
         }
     })
 

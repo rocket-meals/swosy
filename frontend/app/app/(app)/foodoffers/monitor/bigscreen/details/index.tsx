@@ -11,7 +11,13 @@ import {
 } from "@/components/Themed";
 import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import React, {useEffect, useState} from "react";
-import {Foodoffers, Foods, Markings} from "@/helper/database/databaseTypes/types";
+import {
+	Foodoffers,
+	FoodoffersCategories,
+	Foods,
+	FoodsCategories,
+	Markings
+} from "@/helper/database/databaseTypes/types";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
@@ -33,24 +39,51 @@ import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 import {DateHelper} from "@/helper/date/DateHelper";
+import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
+import {HumanReadableTimeText} from "@/app/(app)/foodoffers/monitor/dayplan/details";
+import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 
-export const SEARCH_PARAM_CATEGORY = 'category';
+export const SEARCH_PARAM_CATEGORY_LEGACY = 'category';
+
+export const SEARCH_PARAM_FOODOFFERCATEGORYIDS = 'foodOfferCategoryIds';
+export const SEARCH_PARAM_SHOW_FOODOFFERCATEGORY_NAME = 'showFoodofferCategoryName';
+export const SEARCH_PARAM_FOODCATEGORYIDS = 'foodCategoryIds';
+export const SEARCH_PARAM_SHOW_FOODCATEGORY_NAME = 'showFoodCategoryName';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL = 'refreshFoodOffersIntervalInSeconds';
 
-export function getRouteToFoodBigScreen(canteen_id: string, category: string | null | undefined, nextFoodIntervalInSeconds: number | null | undefined, fullscreen: boolean): ExpoRouter.Href {
+export function getRouteToFoodBigScreen(canteen_id: string, foodofferCategoryIds: string[], showFoodofferCategoryName: boolean , foodCategoryIds: string[], showFoodCategoryName: boolean, nextFoodIntervalInSeconds: number | null | undefined, refreshFoodOffersIntervalInSeconds: number | null | undefined,	fullscreen: boolean): ExpoRouter.Href {
 	let paramsRaw = []
 	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
-	let paramForCategory = category ? SEARCH_PARAM_CATEGORY+"="+encodeURIComponent(category) : null;
+	let paramForCategory = SEARCH_PARAM_FOODOFFERCATEGORYIDS+"="+encodeURIComponent(foodofferCategoryIds.join(","))
 	if(paramForCategory){
 		paramsRaw.push(paramForCategory)
 	}
+	let paramForShowFoodofferCategoryName = SEARCH_PARAM_SHOW_FOODOFFERCATEGORY_NAME+"="+encodeURIComponent(showFoodofferCategoryName)
+	if(paramForShowFoodofferCategoryName){
+		paramsRaw.push(paramForShowFoodofferCategoryName)
+	}
+
+	let paramForFoodCategory = SEARCH_PARAM_FOODCATEGORYIDS+"="+encodeURIComponent(foodCategoryIds.join(","))
+	if(paramForFoodCategory){
+		paramsRaw.push(paramForFoodCategory)
+	}
+	let paramForShowFoodCategoryName = SEARCH_PARAM_SHOW_FOODCATEGORY_NAME+"="+encodeURIComponent(showFoodCategoryName)
+	if(paramForShowFoodCategoryName){
+		paramsRaw.push(paramForShowFoodCategoryName)
+	}
+
 	let paramForNextFoodInterval = nextFoodIntervalInSeconds ? SEARCH_PARAM_NEXT_FOOD_INTERVAL+"="+encodeURIComponent(nextFoodIntervalInSeconds) : null;
 	if(paramForNextFoodInterval){
 		paramsRaw.push(paramForNextFoodInterval)
+	}
+
+	let paramForRefreshFoodOffersInterval = refreshFoodOffersIntervalInSeconds ? SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL+"="+encodeURIComponent(refreshFoodOffersIntervalInSeconds) : null;
+	if(paramForRefreshFoodOffersInterval){
+		paramsRaw.push(paramForRefreshFoodOffersInterval)
 	}
 
 	let paramForFullScreen = fullscreen ? SEARCH_PARAM_FULLSCREEN+"="+encodeURIComponent(fullscreen) : null;
@@ -65,9 +98,63 @@ export function getRouteToFoodBigScreen(canteen_id: string, category: string | n
 	return `/(app)/foodoffers/monitor/bigscreen/details/?${params}` as ExpoRouter.Href;
 }
 
-export function useFoodCategoryFromLocalSearchParams() {
-	const params = useLocalSearchParams<{ [SEARCH_PARAM_CATEGORY]?: string }>();
-	return params[SEARCH_PARAM_CATEGORY];
+export function useFoodCategoryLegacyFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_CATEGORY_LEGACY]?: string }>();
+	return params[SEARCH_PARAM_CATEGORY_LEGACY];
+}
+
+export function useShowFoodofferCategoryNameFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_SHOW_FOODOFFERCATEGORY_NAME]?: string }>();
+	let showFoodofferCategoryName = params[SEARCH_PARAM_SHOW_FOODOFFERCATEGORY_NAME];
+	if(showFoodofferCategoryName){
+		return showFoodofferCategoryName === 'true';
+	}
+	return true; // default value is true
+}
+
+export function useFoodOfferCategoriesFromLocalSearchParams() {
+	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_FOODOFFERCATEGORYIDS]?: string }>();
+	let foodOfferCategoryIds = params[SEARCH_PARAM_FOODOFFERCATEGORYIDS];
+	let objects: FoodoffersCategories[] = [];
+	if(foodOfferCategoryIds){
+		let ids = foodOfferCategoryIds.split(",");
+		for(let i=0; i<ids.length; i++){
+			let id = ids[i];
+			let object = foodoffersCategoriesDict?.[id];
+			if(object){
+				objects.push(object);
+			}
+		}
+	}
+	return objects;
+}
+
+export function useShowFoodCategoryNameFromLocalSearchParams() {
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_SHOW_FOODCATEGORY_NAME]?: string }>();
+	let showFoodCategoryName = params[SEARCH_PARAM_SHOW_FOODCATEGORY_NAME];
+	if(showFoodCategoryName){
+		return showFoodCategoryName === 'true';
+	}
+	return false; // default value is false
+}
+
+export function useFoodCategoriesFromLocalSearchParams() {
+	const [foodCategoriesDict, setFoodCategoriesDict] = useSynchedFoodsCategoriesDict()
+	const params = useLocalSearchParams<{ [SEARCH_PARAM_FOODCATEGORYIDS]?: string }>();
+	let foodCategoryIds = params[SEARCH_PARAM_FOODCATEGORYIDS];
+	let objects: FoodsCategories[] = [];
+	if(foodCategoryIds){
+		let ids = foodCategoryIds.split(",");
+		for(let i=0; i<ids.length; i++){
+			let id = ids[i];
+			let object = foodCategoriesDict?.[id];
+			if(object){
+				objects.push(object);
+			}
+		}
+	}
+	return objects;
 }
 
 export function useNextFoodIntervalInSecondsFromLocalSearchParams() {
@@ -135,19 +222,25 @@ export default function FoodBigScreenScreen() {
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);
 
-	const timeHumanReadable = DateHelper.useCurrentTimeForDate();
-
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	//console.log(canteen)
 	const canteen_name = getCanteenName(canteen);
 
-	const category = useFoodCategoryFromLocalSearchParams();
+	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+	const categoryLegacy = useFoodCategoryLegacyFromLocalSearchParams();
+	const foodOfferCategoriesFromParams = useFoodOfferCategoriesFromLocalSearchParams();
+	const showFoodofferCategoryName = useShowFoodofferCategoryNameFromLocalSearchParams()
+
+	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
+	const foodCategoriesFromParams = useFoodCategoriesFromLocalSearchParams();
+	const showFoodCategoryName = useShowFoodCategoryNameFromLocalSearchParams()
 
 	const nextFoodIntervalInSeconds = useNextFoodIntervalInSecondsFromLocalSearchParams() || 10;
 	const refreshFoodOffersIntervalInSeconds = useRefreshFoodOffersIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 	const [layout, setLayout] = useState({width: 0, height: 0});
 	const [food_index, setFoodIndex] = useState(0);
-	const [foodofferReloadKey, setFoodofferReloadKey] = useState<string>("");
+
+	const [reloadNumberForData, setReloadNumberForData] = useState(0);
 
 
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
@@ -181,19 +274,57 @@ export default function FoodBigScreenScreen() {
 		setLoading(false);
 	}
 
-	function getFoodOffersForCategory(category: string | null | undefined, foodOffers: Foodoffers[]): Foodoffers[] {
-		if(!category){
+	function filterFoodOffersForFoodofferCategory(categoryLegacy: string | null | undefined, foodOfferCategories: FoodoffersCategories[], foodOffers: Foodoffers[]): Foodoffers[] {
+		console.log("filterFoodOffersForFoodofferCategory")
+		let filteredFoodOffers: Foodoffers[] = [];
+		if(!!categoryLegacy) {
+			console.log("categoryLegacy", categoryLegacy)
+			for (let offer of foodOffers) {
+				const food: Foods | undefined = offer?.food as Foods | undefined;
+				if (food?.category === categoryLegacy) {
+					filteredFoodOffers.push(offer);
+				}
+			}
+			return filteredFoodOffers
+		}
+
+		if(foodOfferCategories.length === 0){
+			return foodOffers;
+		}
+
+
+		let filteredFoodoffers: Foodoffers[] = [];
+		for(let offer of foodOffers){
+			let foodofferCategory = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(offer, foodoffersCategoriesDict);
+			if(foodofferCategory){
+				for(let selectedCategory of foodOfferCategories){
+					if(selectedCategory.id === foodofferCategory.id){
+						filteredFoodoffers.push(offer);
+					}
+				}
+			}
+		}
+
+		return filteredFoodoffers;
+	}
+
+	function filterFoodOffersForFoodCategory(foodCategories: FoodsCategories[], foodOffers: Foodoffers[]): Foodoffers[] {
+		if(foodCategories.length === 0){
 			return foodOffers;
 		}
 		let filteredFoodOffers: Foodoffers[] = [];
 		for(let offer of foodOffers){
-			const food: Foods | undefined = offer?.food as Foods | undefined;
-			if(food?.category === category){
-				filteredFoodOffers.push(offer);
+			let food = offer?.food as Foods | undefined;
+			let foodCategory = FoodsCategoriesHelper.getFoodsFoodsCategory(food, foodsCategoriesDict);
+			if(foodCategory){
+				for(let selectedCategory of foodCategories){
+					if(selectedCategory.id === foodCategory.id){
+						filteredFoodOffers.push(offer);
+					}
+				}
 			}
 		}
-
-		return filteredFoodOffers
+		return filteredFoodOffers;
 	}
 
 	//console.log("category", category)
@@ -202,8 +333,11 @@ export default function FoodBigScreenScreen() {
 
 
 	useEffect(() => {
-		setFoodOffersForCategory(getFoodOffersForCategory(category, foodOffers));
-	}, [category, foodOffers]);
+		console.log("useEffect filter foodoffers")
+		let filteredFoodOffersByFoodofferCategory = filterFoodOffersForFoodofferCategory(categoryLegacy, foodOfferCategoriesFromParams, foodOffers);
+		let filteredFoodOffersByFoodCategory = filterFoodOffersForFoodCategory(foodCategoriesFromParams, filteredFoodOffersByFoodofferCategory);
+		setFoodOffersForCategory(filteredFoodOffersByFoodCategory);
+	}, [categoryLegacy, JSON.stringify(foodCategoriesFromParams), JSON.stringify(foodsCategoriesDict), JSON.stringify(foodOfferCategoriesFromParams), JSON.stringify(foodoffersCategoriesDict), JSON.stringify(foodOffers)]);
 
 	// Load foodOffers and markings every 5 minutes
 	const INTERVAL = refreshFoodOffersIntervalInSeconds * 1000;
@@ -212,10 +346,10 @@ export default function FoodBigScreenScreen() {
 		const interval = setInterval(async () => {
 			await cacheHelperObjMarkings.updateFromServer();
 			await loadFoodOffers();
-			setFoodofferReloadKey(""+Date.toString());
+			setReloadNumberForData((prev) => prev + 1);
 		}, INTERVAL);
 		return () => clearInterval(interval);
-	}, [canteen, category, nextFoodIntervalInSeconds, refreshFoodOffersIntervalInSeconds]);
+	}, [JSON.stringify(canteen), categoryLegacy, nextFoodIntervalInSeconds, refreshFoodOffersIntervalInSeconds]);
 
 
 	// UseEffect to increase food_index every nextFoodIntervalInSeconds
@@ -289,6 +423,18 @@ export default function FoodBigScreenScreen() {
 
 		const foodPosition = foodOffersForCategory.length > 0 ? (food_index+1) : 0;
 
+		const foodofferCategory = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(currentFoodOfferForCategory, foodoffersCategoriesDict);
+		let foodofferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodofferCategory, languageCode);
+		if(!showFoodofferCategoryName){
+			foodofferCategoryName = "";
+		}
+
+		const foodCategory = FoodsCategoriesHelper.getFoodsFoodsCategory(food, foodsCategoriesDict);
+		let foodCategoryName = FoodsCategoriesHelper.getFoodCategoryName(foodCategory, languageCode);
+		if(!showFoodCategoryName){
+			foodCategoryName = "";
+		}
+
 
 		return <View style={{
 			width: '100%',
@@ -329,7 +475,7 @@ export default function FoodBigScreenScreen() {
 								}}>
 									<View>
 										<Text bold={true}>
-											{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
+											{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
 										</Text>
 									</View>
 									<View>
@@ -370,7 +516,13 @@ export default function FoodBigScreenScreen() {
 								width: '100%',
 								textAlign: 'right'
 							}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{category ? category+":" : ""}
+								{foodofferCategoryName}
+							</Text>
+							<Text style={{
+								width: '100%',
+								textAlign: 'right'
+							}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{foodCategoryName}
 							</Text>
 							<Text style={{
 								width: '100%',
@@ -435,7 +587,7 @@ export default function FoodBigScreenScreen() {
 					height: 2,
 					width: '100%',
 				}}>
-					<MyProgressbar duration={refreshFoodOffersIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={foodofferReloadKey+""}/>
+					<MyProgressbar duration={refreshFoodOffersIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={reloadNumberForData+""}/>
 				</View>
 			</View>
 			<View style={{

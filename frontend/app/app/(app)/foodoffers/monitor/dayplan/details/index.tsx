@@ -1,6 +1,7 @@
 import {ExpoRouter} from "@/.expo/types/router";
 import {useLocalSearchParams} from "expo-router";
 import {
+	MyTextProps,
 	Text,
 	TEXT_SIZE_2_EXTRA_SMALL,
 	TEXT_SIZE_3_EXTRA_LARGE,
@@ -13,7 +14,7 @@ import {Canteens, Foodoffers, Markings} from "@/helper/database/databaseTypes/ty
 import {useIsDemo} from "@/states/SynchedDemo";
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {MySafeAreaView} from "@/components/MySafeAreaView";
-import {useFoodImagePlaceholderAssetId, useFoodsAreaColor} from "@/states/SynchedAppSettings";
+import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {useProfileLanguageCode, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
@@ -32,6 +33,7 @@ import {FoodInformationValueFormatter} from "@/components/food/FoodDataList";
 import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useIsDebug} from "@/states/Debug";
+import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -140,8 +142,18 @@ const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({foodOff
 	</View>;
 }
 
+
+export function HumanReadableTimeText({...props}: MyTextProps) {
+	const timeHumanReadable = DateHelper.useCurrentTimeForDate();
+	return <Text {...props}>
+		{timeHumanReadable}
+	</Text>
+}
+
 export default function FoodDayPlanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
+	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 	let unsortedMarkingList: Markings[] = [];
@@ -191,7 +203,7 @@ export default function FoodDayPlanScreen() {
 	const refreshDataIntervalInSeconds = useRefreshDataIntervalInSecondsFromLocalSearchParams() || 5 * 60;
 
 	const [foodOfferDateHumanReadable, setFoodOfferDateHumanReadable] = useState<string | null>(null);
-	const timeHumanReadable = DateHelper.useCurrentTimeForDate();
+	//const timeHumanReadable = DateHelper.useCurrentTimeForDate();
 
 	// Main canteen
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
@@ -332,19 +344,22 @@ export default function FoodDayPlanScreen() {
 		if(!!canteen){
 			const date = new Date();
 			setFoodOfferDateHumanReadable(DateHelper.formatOfferDateToReadable(date, true));
-			let foodoffer = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			setFoodOffers(foodoffer);
+			let newUnsortedFoodoffers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
+			let newFoodoffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(newUnsortedFoodoffers, foodoffersCategoriesDict);
+			setFoodOffers(newFoodoffers);
 
-			let additionalFoodOffers = [];
+			let additionalUnsortedFoodOffers = [];
 			for(let i=0; i<additionalCanteens.length; i++){
 				let additionalCanteen = additionalCanteens[i];
 				let additionalFoodoffer = await getFoodOffersForSelectedDate(isDemo, date, additionalCanteen)
-				additionalFoodOffers.push(...additionalFoodoffer);
+				additionalUnsortedFoodOffers.push(...additionalFoodoffer);
 			}
-			setAdditionalFoodOffers(additionalFoodOffers);
+			const additionalSortedFoodOffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(additionalUnsortedFoodOffers, foodoffersCategoriesDict);
+			setAdditionalFoodOffers(additionalSortedFoodOffers);
 		}
 		setLoading(false);
 	}
+
 
 	// Load foodOffers and markings every 5 minutes
 	const INTERVAL = refreshDataIntervalInSeconds * 1000;
@@ -621,10 +636,10 @@ export default function FoodDayPlanScreen() {
 		let backgroundColor = isEven ? viewBackgroundColorLighter : viewBackgroundColor;
 		const textColor = isEven ? viewBackgroundColorLighterContrast : viewContrastColor;
 		const food = foodOffer.food;
-		let category: string | null | undefined = null;
-		if(!!food && typeof food !== "string"){
-			category = food.category;
-		}
+
+		let foodOfferCategory = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(foodOffer, foodoffersCategoriesDict);
+		let foodOfferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodOfferCategory, languageCode);
+
 		const priceText = formatPrice(foodOffer.price_student)+" / "+formatPrice(foodOffer.price_employee)+" / "+formatPrice(foodOffer.price_guest);
 		const foodName = getFoodName(food, languageCode);
 
@@ -643,7 +658,7 @@ export default function FoodDayPlanScreen() {
 			>
 				{
 					renderRowForFoodoffer({
-						textForCategoryColumn: category,
+						textForCategoryColumn: foodOfferCategoryName,
 						textForFoodnameColumn: foodName,
 						elementForMarkingsColumn: <MarkingsRowForFood foodOffer={foodOffer} />,
 						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer),
@@ -857,7 +872,7 @@ export default function FoodDayPlanScreen() {
 						{canteen_name}
 					</Text>
 					<Text bold={true}>
-						{foodOfferDateHumanReadable}{" - "}{timeHumanReadable}
+						{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
 					</Text>
 				</View>
 			</View>

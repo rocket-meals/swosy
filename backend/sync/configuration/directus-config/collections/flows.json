@@ -1,12 +1,12 @@
 [
   {
     "operation": "20fb7fd4-2daa-41d2-b9b0-e2d95e4efd38",
-    "name": "Food-Notify-Cron-18:00",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "Food-Notify-Cron-18:00",
     "options": {
       "cron": "5 0 18 * * *"
     },
@@ -15,12 +15,12 @@
   },
   {
     "operation": "998bc28d-0989-4004-81db-030acb7e9ced",
-    "name": "Cashregister-Sync-Cron-5min",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "Cashregister-Sync-Cron-5min",
     "options": {
       "cron": "0 */5 * * * *"
     },
@@ -29,12 +29,12 @@
   },
   {
     "operation": "5ffa1c3f-8417-47ee-99a6-265eedd2e628",
-    "name": "Washingmachines-Sync-Cron-10min",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "Washingmachines-Sync-Cron-10min",
     "options": {
       "cron": "30 */10 * * * *"
     },
@@ -43,12 +43,12 @@
   },
   {
     "operation": "b69818ed-f3ba-41ba-9822-75fb159d9342",
-    "name": "UtilizationParse-Cron-15min",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "UtilizationParse-Cron-15min",
     "options": {
       "cron": "25 */15 * * * *"
     },
@@ -57,12 +57,12 @@
   },
   {
     "operation": "0fe81b52-6bf8-4464-93a2-a99ba09e81b2",
-    "name": "Food-Sync-Cron-5min",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "Food-Sync-Cron-5min",
     "options": {
       "cron": "10 */5 * * * *"
     },
@@ -71,12 +71,12 @@
   },
   {
     "operation": "a2921f71-77e7-42d2-82a4-54968e7cdcb7",
-    "name": "Housing-Sync-Cron-4AM",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "Housing-Sync-Cron-4AM",
     "options": {
       "cron": "15 0 4 * * *"
     },
@@ -85,12 +85,12 @@
   },
   {
     "operation": "1d3d7604-b5bc-4e1a-a1d5-9b57b6092093",
-    "name": "News-Sync-Cron-4AM",
     "accountability": "all",
-    "icon": "bolt",
-    "color": null,
-    "status": "active",
     "trigger": "schedule",
+    "status": "active",
+    "color": null,
+    "icon": "bolt",
+    "name": "News-Sync-Cron-4AM",
     "options": {
       "cron": "20 0 4 * * *"
     },

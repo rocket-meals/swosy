@@ -25,6 +25,8 @@ import {useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict} from "@/states/S
 import {useSynchedMarkingsGroupsDict} from "@/states/SynchedMarkingsGroups";
 import {useSynchedPoliciesDict} from "@/states/SynchedPolicies";
 import {useSynchedCanteensFeedbacksLabelsDict} from "@/states/SynchedCanteensFeedbacksLabels";
+import {useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
+import {useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -60,6 +62,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [markingsGroupsDict, setMarkingsGroupsDict, cacheHelperObjMarkingsGroups] = useSynchedMarkingsGroupsDict()
 	const [buildingsDict, setBuildingsDict, cacheHelperObjBuildings] = useSynchedBuildingsDict()
 	const [foodsFeedbacksLabelsDict, setFoodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels] = useSynchedFoodsFeedbacksLabelsDict()
+	const [foodsCategoriesDict, setFoodsCategoriesDict, cacheHelperFoodsCategories] = useSynchedFoodsCategoriesDict()
+	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict, cacheHelperFoodoffersCategories] = useSynchedFoodoffersCategoriesDict()
 	const [canteensFeedbacksLabelsDict, setCanteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels] = useSynchedCanteensFeedbacksLabelsDict()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [ownFoodFeedbacksLabelsEntriesListDict, setOwnFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
@@ -116,6 +120,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('businesshours', businesshoursDict, cacheHelperObjBusinesshours)
 	addResourceToCheckForUpdates('buildings', buildingsDict, cacheHelperObjBuildings)
 	addResourceToCheckForUpdates('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels)
+	addResourceToCheckForUpdates('foodsCategories', foodsCategoriesDict, cacheHelperFoodsCategories)
+	addResourceToCheckForUpdates('foodoffersCategories', foodoffersCategoriesDict, cacheHelperFoodoffersCategories)
 	addResourceToCheckForUpdates('canteensFeedbacksLabels', canteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels	)
 	addResourceToCheckForUpdates('profile', profile, cacheHelperObjProfile);
 	addResourceToCheckForUpdates('wikis', wikisDict, cacheHelperObjWikis)
@@ -201,10 +207,13 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	}
 
 	function getAllUnsyncedResources(): SyncResourceType[] {
+		console.log("getAllUnsyncedResources")
 		let unsyncedResources: SyncResourceType[] = [];
 		for (let key in synchedResourcesToDownloadFirst) {
 			let resource = synchedResourcesToDownloadFirst[key];
 			if (!resource.is_version_up_to_date) {
+				console.log("key: "+key)
+				console.log("is_version_up_to_date: "+resource.is_version_up_to_date)
 				unsyncedResources.push(resource);
 			}
 		}

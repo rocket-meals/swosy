@@ -166,6 +166,13 @@ export class CollectionHelper<CollectionScheme> {
 		return await this.client.request(createItem(this.collection, data)) as CollectionScheme;
 	}
 
+	static convertDictToList<CollectionScheme>(dict: Record<string, CollectionScheme | undefined | null> | null | undefined) {
+		if (!dict) {
+			return [];
+		}
+		return Object.values(dict).filter((item) => item !== undefined && item !== null) as CollectionScheme[];
+	}
+
 	convertListToDict(list: CollectionScheme[], key: string) {
 		return CollectionHelper.convertListToDict(list, key);
 	}
