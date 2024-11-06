@@ -167,24 +167,15 @@ export class ParseSchedule {
             }
         }
 
-        let categoryService = await this.myDatabaseHelper.getFoodsCategoriesHelper();
-        const externalIdentifiersToFoodCategoriesDict = await this.getFoodCategoriesExternalIdentifiersToFoodCategoriesDict();
-        let categoriesToCreate: Partial<FoodsCategories>[] = [];
-
         for (let categoryExternalIdentifier of categoryExternalIdentifiers) {
-            if (!externalIdentifiersToFoodCategoriesDict[categoryExternalIdentifier]) {
-                let category = {
-                    alias: categoryExternalIdentifier,
-                    external_identifier: categoryExternalIdentifier
-                }
-                categoriesToCreate.push(category);
+            let searchJSON = {
+                external_identifier: categoryExternalIdentifier
             }
-        }
-
-        let categoriesToCreateAmount = categoriesToCreate.length;
-
-        for (let category of categoriesToCreate) {
-            await categoryService.createOne(category);
+            let createJSON = {
+                alias: categoryExternalIdentifier,
+                external_identifier: categoryExternalIdentifier
+            }
+            await this.myDatabaseHelper.getFoodsCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
         }
     }
 
@@ -209,24 +200,15 @@ export class ParseSchedule {
             }
         }
 
-        let categoryService = await this.myDatabaseHelper.getFoodofferCategoriesHelper();
-        const externalIdentifiersToFoodofferCategoriesDict = await this.getFoodofferCategoriesExternalIdentifiersToFoodofferCategoriesDict();
-        let categoriesToCreate: Partial<FoodoffersCategories>[] = [];
-
         for (let categoryExternalIdentifier of categoryExternalIdentifiers) {
-            if (!externalIdentifiersToFoodofferCategoriesDict[categoryExternalIdentifier]) {
-                let category = {
-                    alias: categoryExternalIdentifier,
-                    external_identifier: categoryExternalIdentifier
-                }
-                categoriesToCreate.push(category);
+            let searchJSON = {
+                external_identifier: categoryExternalIdentifier
             }
-        }
-
-        let categoriesToCreateAmount = categoriesToCreate.length;
-
-        for (let category of categoriesToCreate) {
-            await categoryService.createOne(category);
+            let createJSON = {
+                alias: categoryExternalIdentifier,
+                external_identifier: categoryExternalIdentifier
+            }
+            await this.myDatabaseHelper.getFoodofferCategoriesHelper().findOrCreateItem(searchJSON, createJSON);
         }
     }
 
