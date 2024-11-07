@@ -84,9 +84,15 @@ export default function FoodBigScreenSettings() {
 			})
 		}
 
-		const firstSelectedFoodofferCategory = selectedFoodofferCategoryIds[0]
-		const firstSelectedFoodofferCategoryObject = foodoffersCategoriesDict?.[firstSelectedFoodofferCategory]
-		const firstSelectedFoodofferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(firstSelectedFoodofferCategoryObject, languageCode)
+		let selectedOptionNames: string[] = [];
+		for(const selectedFoodofferCategoryId of selectedFoodofferCategoryIds){
+			let selectedFoodofferCategoryObject = foodoffersCategoriesDict?.[selectedFoodofferCategoryId]
+			let selectedFoodofferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(selectedFoodofferCategoryObject, languageCode)
+			if(selectedFoodofferCategoryName){
+				selectedOptionNames.push(selectedFoodofferCategoryName)
+			}
+		}
+		let labelRight = selectedOptionNames.join(", ")
 
 		return <>
 			<SettingsRowOptionWithCustomInput key={JSON.stringify(foodoffersCategoriesList)+JSON.stringify(selectedFoodofferCategoryIds)} options={{
@@ -97,10 +103,9 @@ export default function FoodBigScreenSettings() {
 						setSelectedFoodofferCategoryIds([])
 					}
 				},
-				currentValue: firstSelectedFoodofferCategoryName,
 				title: "Speiseangebot Kategorie Wählen",
 				items: options
-			}} labelLeft="Speiseangebot Kategorie (optional)" accessibilityLabel={"Speiseangebot Kategorie"} />
+			}} labelLeft="Speiseangebot Kategorie (optional)" labelRight={labelRight} accessibilityLabel={"Speiseangebot Kategorie"} />
 		</>
 	}
 
@@ -131,9 +136,15 @@ export default function FoodBigScreenSettings() {
 			})
 		}
 
-		const firstSelectedFoodCategoryId = selectedFoodCategoryIds[0]
-		const firstSelectedFoodCategoryObject = foodCategoriesDict?.[firstSelectedFoodCategoryId]
-		const firstSelectedFoodCategoryName = FoodsCategoriesHelper.getFoodCategoryName(firstSelectedFoodCategoryObject, languageCode)
+		let selectedOptionNames: string[] = [];
+		for(const selectedFoodCategoryId of selectedFoodCategoryIds){
+			let selectedFoodCategoryObject = foodCategoriesDict?.[selectedFoodCategoryId]
+			let selectedFoodCategoryName = FoodsCategoriesHelper.getFoodCategoryName(selectedFoodCategoryObject, languageCode)
+			if(selectedFoodCategoryName){
+				selectedOptionNames.push(selectedFoodCategoryName)
+			}
+		}
+		let labelRight = selectedOptionNames.join(", ")
 
 		return <>
 			<SettingsRowOptionWithCustomInput key={JSON.stringify(foodCategoriesList)+selectedFoodCategoryIds} options={{
@@ -144,10 +155,9 @@ export default function FoodBigScreenSettings() {
 						setSelectedFoodofferCategoryIds([])
 					}
 				},
-				currentValue: firstSelectedFoodCategoryName,
 				title: "Speise Kategorie Wählen",
 				items: options
-			}} labelLeft="Speise Kategorie (optional)" accessibilityLabel={"Speise Kategorie"} />
+			}} labelLeft="Speise Kategorie (optional)" labelRight={labelRight} accessibilityLabel={"Speise Kategorie"} />
 		</>
 	}
 

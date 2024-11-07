@@ -329,7 +329,7 @@ export default function FoodBigScreenScreen() {
 
 	//console.log("category", category)
 	//console.log("foodOffersForCategory", foodOffersForCategory)
-	const currentFoodOfferForCategory = foodOffersForCategory[food_index];
+	const currentFoodOfferForCategory: Foodoffers | undefined = foodOffersForCategory[food_index];
 
 
 	useEffect(() => {
@@ -375,53 +375,69 @@ export default function FoodBigScreenScreen() {
 		return () => clearInterval(interval);
 	}, [nextFoodIntervalInSeconds, foodOffersForCategory]);
 
-	function renderContent(currentFoodOfferForCategory: Foodoffers | undefined, food_index: number, foodOffersForCategory: Foodoffers[]) {
-		let {width, height} = layout;
-		if(!width || !height){
-			return <Text>Loading...</Text>
-		}
-		let flexDirection = width > height ? 'row' : 'column';
-		let minimalDimension = Math.min(width, height);
 
-		const food = currentFoodOfferForCategory?.food as Foods | undefined;
-
-		const markingsIds = MarkingHelper.getFoodOfferMarkingIds(currentFoodOfferForCategory);
-
-		const priceStudent: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Student));
-		const priceEmployee: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Employee));
-		const priceGuest: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Guest));
-
-		const assetId = food?.image;
-		const image_url = food?.image_remote_url;
-		const thumbHash = food?.image_thumb_hash;
-
-		const foodName = getFoodName(food, languageCode);
-		const accessibilityLabel = foodName || "Food Image";
-
-		let divider = <View style={{
-			width: '100%',
-			alignItems: 'center',
-			justifyContent: 'center',
-		}}>
-			<View style={{
-				height: 1,
-				borderRadius: 2,
-				width: '15%',
-				backgroundColor: lightContrastColor
-			}} />
-		</View>
-		divider = null;
-
-		// 16:9
-
-		// 425 height
-		// 150 logo
-
-		const designHeight = 425;
-		const designHeightLogo = 100;
-		const designHeightContent = designHeight - designHeightLogo;
-
+	function renderHeader(food_index: number, foodOffersForCategory: Foodoffers[]){
 		const foodPosition = foodOffersForCategory.length > 0 ? (food_index+1) : 0;
+		let foodPositionText = (foodPosition)+" / "+foodOffersForCategory.length+" "+translation_foods;
+		if(foodOffersForCategory.length === 0){
+			foodPositionText = "";
+		}
+
+		return(
+			<View style={{
+				width: '100%',
+			}}>
+				<View style={{
+					width: '100%',
+					flexDirection: "row",
+				}}>
+					<View style={{
+						width: 200,
+					}}>
+						<CompanyLogo style={{
+							height: '100%',
+							width: '100%',
+						}} />
+					</View>
+					<View style={{
+						flex: 1,
+						paddingHorizontal: 10,
+						paddingVertical: 10,
+					}}>
+						<View>
+							<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
+								{canteen_name}
+							</Text>
+							<View style={{
+								flexDirection: 'row',
+								justifyContent: 'space-between',
+								width: '100%',
+							}}>
+								<View>
+									<Text bold={true}>
+										{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
+									</Text>
+								</View>
+								<View>
+									<Text bold={true}>
+										{foodPositionText}
+									</Text>
+								</View>
+							</View>
+						</View>
+					</View>
+				</View>
+				<View style={{
+					width: '100%',
+					height: 2,
+				}}>
+					<MyProgressbar key={""+food_index} duration={nextFoodIntervalInSeconds} color={foodAreaColor} />
+				</View>
+			</View>
+		)
+	}
+
+	function renderFoodContent(currentFoodOfferForCategory: Foodoffers, food: Foods){
 
 		const foodofferCategory = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(currentFoodOfferForCategory, foodoffersCategoriesDict);
 		let foodofferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodofferCategory, languageCode);
@@ -429,11 +445,184 @@ export default function FoodBigScreenScreen() {
 			foodofferCategoryName = "";
 		}
 
+		const foodName = getFoodName(food, languageCode);
+
 		const foodCategory = FoodsCategoriesHelper.getFoodsFoodsCategory(food, foodsCategoriesDict);
 		let foodCategoryName = FoodsCategoriesHelper.getFoodCategoryName(foodCategory, languageCode);
 		if(!showFoodCategoryName){
 			foodCategoryName = "";
 		}
+
+		const designHeight = 425;
+		const designHeightLogo = 100;
+		const designHeightContent = designHeight - designHeightLogo;
+
+		const markingsIds = MarkingHelper.getFoodOfferMarkingIds(currentFoodOfferForCategory);
+
+		const priceStudent: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Student));
+		const priceEmployee: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Employee));
+		const priceGuest: string = formatPrice(getPriceForPriceGroup(currentFoodOfferForCategory, PriceGroups.Guest));
+
+		return(
+			<View style={{
+				flex: designHeightContent,
+				width: '100%',
+				justifyContent: 'center',
+				alignItems: 'center'
+			}}>
+				<View style={{
+					flex: 1,
+					width: '80%',
+					paddingTop: 20,
+					paddingBottom: 10
+				}}>
+					<View style={{
+						flex: 1,
+						width: '100%',
+						alignItems: 'flex-end'
+					}}>
+						<Text style={{
+							width: '100%',
+							textAlign: 'right'
+						}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+							{foodofferCategoryName}
+						</Text>
+						<Text style={{
+							width: '100%',
+							textAlign: 'right'
+						}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+							{foodCategoryName}
+						</Text>
+						<Text style={{
+							width: '100%',
+							textAlign: 'right'
+						}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
+							{foodName}
+						</Text>
+					</View>
+					<View style={{
+						flex: 1,
+						width: '100%',
+					}}>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_student+":"}
+							</Text>
+							<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
+								{priceStudent}
+							</Text>
+						</View>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_employee+": "+priceEmployee}
+							</Text>
+						</View>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_price_group_guest+": "+priceGuest}
+							</Text>
+						</View>
+
+					</View>
+					<View style={{
+						flex: 1,
+						alignItems: 'flex-end',
+						//backgroundColor: "blue"
+					}}>
+						<View style={{
+							width: '100%',
+							alignItems: 'flex-end',
+						}}>
+							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+								{translation_markings+":"}
+							</Text>
+						</View>
+						<MarkingInformationList  markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
+					</View>
+				</View>
+			</View>
+		)
+	}
+
+	function renderLayout(){
+		if(!currentFoodOfferForCategory){
+			return(
+				renderLayoutForNoFoodoffer()
+			)
+		} else {
+			return(
+				renderLayoutForFoodoffer(currentFoodOfferForCategory, food_index, foodOffersForCategory)
+			)
+		}
+	}
+
+	function renderLayoutForNoFoodoffer(){
+		return(
+			<View style={{
+				width: '100%',
+				height: '100%',
+				flexDirection: "column",
+			}}>
+				{renderHeader(food_index, foodOffersForCategory)}
+				<View style={{
+					flex: 1,
+					flexGrow: 1,
+					width: '100%',
+					height: '100%',
+					justifyContent: 'center',
+					alignItems: 'center'
+				}}>
+					<CompanyLogo style={{
+						height: '100%',
+						width: '100%',
+					}} />
+				</View>
+				{renderReloadDataProgress()}
+			</View>
+		)
+	}
+
+	function renderReloadDataProgress(){
+		return(
+			<View style={{
+				height: 2,
+				width: '100%',
+			}}>
+				<MyProgressbar duration={refreshFoodOffersIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={reloadNumberForData+""}/>
+			</View>
+		)
+	}
+
+	function renderLayoutForFoodoffer(currentFoodOfferForCategory: Foodoffers, food_index: number, foodOffersForCategory: Foodoffers[]) {
+		let {width, height} = layout;
+		if(!width || !height){
+			return <Text>Loading...</Text>
+		}
+		let flexDirection = width > height ? 'row' : 'column';
+		let minimalDimension = Math.min(width, height);
+
+		const food = currentFoodOfferForCategory?.food as Foods;
+
+		const assetId = food?.image;
+		const image_url = food?.image_remote_url;
+		const thumbHash = food?.image_thumb_hash;
+
+
+		const accessibilityLabel = "Food Image";
+
+		// 16:9
+
+		// 425 height
+		// 150 logo
 
 
 		return <View style={{
@@ -444,151 +633,9 @@ export default function FoodBigScreenScreen() {
 			<View style={{
 				flex: 1
 			}}>
-				<View style={{
-					width: '100%',
-				}}>
-					<View style={{
-						width: '100%',
-						flexDirection: "row",
-					}}>
-						<View style={{
-							width: 200,
-						}}>
-							<CompanyLogo style={{
-								height: '100%',
-								width: '100%',
-							}} />
-						</View>
-						<View style={{
-							flex: 1,
-							paddingHorizontal: 10,
-							paddingVertical: 10,
-						}}>
-							<View>
-								<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
-									{canteen_name}
-								</Text>
-								<View style={{
-									flexDirection: 'row',
-									justifyContent: 'space-between',
-									width: '100%',
-								}}>
-									<View>
-										<Text bold={true}>
-											{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
-										</Text>
-									</View>
-									<View>
-										<Text bold={true}>
-											{(foodPosition)+" / "+foodOffersForCategory.length+" "+translation_foods}
-										</Text>
-									</View>
-								</View>
-							</View>
-						</View>
-					</View>
-					<View style={{
-						width: '100%',
-						height: 2,
-					}}>
-						<MyProgressbar key={""+food_index} duration={nextFoodIntervalInSeconds} color={foodAreaColor} />
-					</View>
-				</View>
-				{divider}
-				<View style={{
-					flex: designHeightContent,
-					width: '100%',
-					justifyContent: 'center',
-					alignItems: 'center'
-				}}>
-					<View style={{
-						flex: 1,
-						width: '80%',
-						paddingTop: 20,
-						paddingBottom: 10
-					}}>
-						<View style={{
-							flex: 1,
-							width: '100%',
-							alignItems: 'flex-end'
-						}}>
-							<Text style={{
-								width: '100%',
-								textAlign: 'right'
-							}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{foodofferCategoryName}
-							</Text>
-							<Text style={{
-								width: '100%',
-								textAlign: 'right'
-							}} size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{foodCategoryName}
-							</Text>
-							<Text style={{
-								width: '100%',
-								textAlign: 'right'
-							}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
-								{foodName}
-							</Text>
-						</View>
-						{divider}
-						<View style={{
-							flex: 1,
-							width: '100%',
-						}}>
-							<View style={{
-								width: '100%',
-								alignItems: 'flex-end',
-							}}>
-								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-									{translation_price_group_student+":"}
-								</Text>
-								<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
-									{priceStudent}
-								</Text>
-							</View>
-							<View style={{
-								width: '100%',
-								alignItems: 'flex-end',
-							}}>
-								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-									{translation_price_group_employee+": "+priceEmployee}
-								</Text>
-							</View>
-							<View style={{
-								width: '100%',
-								alignItems: 'flex-end',
-							}}>
-								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-									{translation_price_group_guest+": "+priceGuest}
-								</Text>
-							</View>
-
-						</View>
-						{divider}
-						<View style={{
-							flex: 1,
-							alignItems: 'flex-end',
-							//backgroundColor: "blue"
-						}}>
-							<View style={{
-								width: '100%',
-								alignItems: 'flex-end',
-							}}>
-								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-									{translation_markings+":"}
-								</Text>
-							</View>
-							<MarkingInformationList  markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
-						</View>
-					</View>
-				</View>
-				<View style={{
-					height: 2,
-					width: '100%',
-				}}>
-					<MyProgressbar duration={refreshFoodOffersIntervalInSeconds} color={foodAreaColor} backgroundColor={foodAreaContrastColor} key={reloadNumberForData+""}/>
-				</View>
+				{renderHeader(food_index, foodOffersForCategory)}
+				{renderFoodContent(currentFoodOfferForCategory, food)}
+				{renderReloadDataProgress()}
 			</View>
 			<View style={{
 				width: minimalDimension,
@@ -616,7 +663,7 @@ export default function FoodBigScreenScreen() {
 			const {width, height} = event.nativeEvent.layout;
 			setLayout({width, height});
 		}}>
-			{renderContent(currentFoodOfferForCategory, food_index, foodOffersForCategory)}
+			{renderLayout()}
 		</View>
 	</MySafeAreaView>
 }
