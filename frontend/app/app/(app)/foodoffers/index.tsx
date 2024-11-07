@@ -9,7 +9,8 @@ import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {
 	DirectusFiles,
 	Foodoffers,
-	Foods,
+	FoodoffersCategories,
+	Foods, FoodsCategories,
 	FoodsFeedbacks,
 	ProfilesMarkings
 } from '@/helper/database/databaseTypes/types';
@@ -42,12 +43,13 @@ import {MarkingBadges} from "@/components/food/MarkingBadge";
 import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
 import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
 import {SEARCH_PARAM_FOODOFFER_ID} from "@/app/(app)/foodoffers/details";
-import {PopupEventsOverlay} from "@/compositions/popupEvents/PopupEventsOverlay";
 import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {CanteenFeedbacksLabelsComponent} from "@/compositions/canteens/CanteenFeedbacks";
+import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
+import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 
 
-function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
+export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
 	foodOffers.sort((a, b) => {
 		let nameA = getFoodName(a.food, languageCode);
 		let nameB = getFoodName(b.food, languageCode);
@@ -210,15 +212,34 @@ function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Recor
 
 }
 
-function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>, profileMarkingsDict: Record<string, ProfilesMarkings>, sortType: SortType, languageCode: string) {
+export function useSortedFoodOffers(foodOffers: Foodoffers[] | undefined | null, sortTypeOrder: SortType[]) {
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
+	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
+	const foodFeedbacksDict = ownFoodFeedbacksDict;
+	const profileMarkingsDict = profilesMarkingsDict;
+
+	if(!foodOffers){
+		return foodOffers;
+	}
+
+	let usedSortTypeOrder = sortTypeOrder;
+	if(!usedSortTypeOrder || usedSortTypeOrder.length === 0 || usedSortTypeOrder.includes(SortType.intelligent)){
+		usedSortTypeOrder = [SortType.alphabetical, SortType.foodoffersCategories, SortType.foodsCategories, SortType.favorite, SortType.eatingHabitsPreferences];
+	}
+
 	let copiedFoodOffers = [...foodOffers];
-	if(sortType === SortType.intelligent){
-		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.alphabetical, SortType.favorite, SortType.eatingHabitsPreferences];
-		for(const sortOrder of sortOrders){
-			copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode);
-		}
-	} else if(sortType === SortType.alphabetical){
+	for(const sortOrder of usedSortTypeOrder){
+		copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode, foodoffersCategoriesDict, foodsCategoriesDict);
+	}
+	return copiedFoodOffers;
+}
+
+function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>, profileMarkingsDict: Record<string, ProfilesMarkings>, sortType: SortType, languageCode: string, foodoffersCategoriesDict: Record<string, FoodoffersCategories>, foodsCategoriesDict: Record<string, FoodsCategories>) {
+	let copiedFoodOffers = [...foodOffers];
+	if(sortType === SortType.alphabetical){
 		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
 	} else if(sortType === SortType.favorite){
 		copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, foodFeedbacksDict);
@@ -226,6 +247,10 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
 	} else if(sortType === SortType.publicRating){
 		copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
+	} else if(sortType === SortType.foodoffersCategories){
+		copiedFoodOffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(copiedFoodOffers, foodoffersCategoriesDict, languageCode);
+	} else if(sortType === SortType.foodsCategories){
+		copiedFoodOffers = FoodsCategoriesHelper.sortFoodoffersByFoodsCategory(copiedFoodOffers, foodsCategoriesDict, languageCode);
 	}
 	return copiedFoodOffers;
 }
@@ -234,7 +259,7 @@ export default function FoodOfferScreen() {
 	const isDemo = useIsDemo();
 	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
 	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [foodOffersDownloaded, setFoodOffers] = useState<Foodoffers[] | undefined | null>(undefined);
+	const [unsortedFoodoffers, setUnsortedFoodoffers] = useState<Foodoffers[] | undefined | null>(undefined);
 	const isValidCanteenSelected = useIsValidProfileCanteenSelected();
 	const dislikeColor = useDislikeColor();
 	const [appSettings] = useSynchedAppSettings();
@@ -249,32 +274,22 @@ export default function FoodOfferScreen() {
 
 	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
 
-	let [foodOffersSorted, setFoodoffersSorted] = useState<Foodoffers[] | undefined | null>(undefined);
-
-	if (foodOffersDownloaded && !foodOffersSorted) {
-		foodOffersSorted = sortFoodOffers(foodOffersDownloaded, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode)
-		setFoodoffersSorted(foodOffersSorted)
-	}
-
+	const foodOffersSorted = useSortedFoodOffers(unsortedFoodoffers, [sortType]);
 
 	async function loadFoodOffers() {
 		//console.log('loadFoodOffers')
-		setFoodOffers(undefined)
-		setFoodoffersSorted(undefined)
+		setUnsortedFoodoffers(undefined)
 		if (isValidCanteenSelected && !!profileCanteen) {
 			try{
 				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
-				setFoodOffers(downloadedFoodOffers);
+				setUnsortedFoodoffers(downloadedFoodOffers);
 				// sort the food offers
-				setFoodoffersSorted(sortFoodOffers(downloadedFoodOffers, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
 			} catch (err){
 				console.error('loadFoodOffers error', err)
-				setFoodOffers(null);
-				setFoodoffersSorted(null);
+				setUnsortedFoodoffers(null);
 			}
 		} else {
 			console.log('No valid canteen selected')
@@ -284,18 +299,9 @@ export default function FoodOfferScreen() {
 	// wait half a second before loading the food offers but reset the timeout if any dependencies change
 	let depsReloadFood = [dateAsIsoString, profileCanteen?.id]
 	useEffect(() => {
-		setFoodOffers(undefined)
-		setFoodoffersSorted(undefined)
+		setUnsortedFoodoffers(undefined)
 		loadFoodOffers();
 	}, depsReloadFood);
-
-
-	// Call useEffect when the sortType changes and the screen gets mounted
-	useEffect(() => {
-		if (foodOffersDownloaded) {
-			setFoodoffersSorted(sortFoodOffers(foodOffersDownloaded, ownFoodFeedbacksDict, profilesMarkingsDict, sortType, languageCode))
-		}
-	}, [sortType])
 
   type DataItem = { key: string; data: Foodoffers }
 

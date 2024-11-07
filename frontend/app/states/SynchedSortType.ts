@@ -12,6 +12,8 @@ export enum SortType {
 	distance = 'distance',
 	freeRooms = 'freeRooms',
 	intelligent = 'intelligent',
+	foodoffersCategories = 'foodoffersCategories',
+	foodsCategories = 'foodsCategories',
 	eatingHabitsPreferences = 'eatingHabitsPreferences',
 }
 

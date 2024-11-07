@@ -34,6 +34,10 @@ import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useIsDebug} from "@/states/Debug";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
+import {useSortedFoodOffers} from "@/app/(app)/foodoffers";
+import {SortType} from "@/states/SynchedSortType";
+import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
+import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -154,6 +158,7 @@ export default function FoodDayPlanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 
 	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 	let unsortedMarkingList: Markings[] = [];
@@ -208,7 +213,8 @@ export default function FoodDayPlanScreen() {
 	// Main canteen
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const canteen_name = getCanteenName(canteen);
-	const [foodOffers, setFoodOffers] = useState<Foodoffers[]>([]);
+	const [unsortedFoodoffers, setUnsortedFoodOffers] = useState<Foodoffers[]>([]);
+	const foodOffers = useSortedFoodOffers(unsortedFoodoffers, [SortType.intelligent])
 	const [layoutMainCanteen, setLayoutMainCanteen] = useState({width: 0, height: 0});
 	const scrollViewRefMainCanteen = useRef(null);
 	const [currentIndexMainCanteen, setCurrentIndexMainCanteen] = useState(0);
@@ -217,7 +223,8 @@ export default function FoodDayPlanScreen() {
 
 	// Additional canteens
 	const additionalCanteens = useAdditionalCanteensFromLocalSearchParams();
-	const [additionalFoodOffers, setAdditionalFoodOffers] = useState<Foodoffers[]>([]);
+	const [additionalUnsortedFoodOffers, setAdditionalUnsortedFoodOffers] = useState<Foodoffers[]>([]);
+	const additionalFoodOffers = useSortedFoodOffers(additionalUnsortedFoodOffers, [SortType.intelligent])
 	const [layoutAdditionalCanteens, setLayoutAdditionalCanteens] = useState({width: 0, height: 0});
 	const scrollViewRefAdditionalCanteens = useRef(null);
 	const [currentIndexAdditionalCanteens, setCurrentIndexAdditionalCanteens] = useState(0);
@@ -345,8 +352,7 @@ export default function FoodDayPlanScreen() {
 			const date = new Date();
 			setFoodOfferDateHumanReadable(DateHelper.formatOfferDateToReadable(date, true));
 			let newUnsortedFoodoffers = await getFoodOffersForSelectedDate(isDemo, date, canteen)
-			let newFoodoffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(newUnsortedFoodoffers, foodoffersCategoriesDict);
-			setFoodOffers(newFoodoffers);
+			setUnsortedFoodOffers(newUnsortedFoodoffers);
 
 			let additionalUnsortedFoodOffers = [];
 			for(let i=0; i<additionalCanteens.length; i++){
@@ -354,8 +360,7 @@ export default function FoodDayPlanScreen() {
 				let additionalFoodoffer = await getFoodOffersForSelectedDate(isDemo, date, additionalCanteen)
 				additionalUnsortedFoodOffers.push(...additionalFoodoffer);
 			}
-			const additionalSortedFoodOffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(additionalUnsortedFoodOffers, foodoffersCategoriesDict);
-			setAdditionalFoodOffers(additionalSortedFoodOffers);
+			setAdditionalUnsortedFoodOffers(additionalUnsortedFoodOffers);
 		}
 		setLoading(false);
 	}
@@ -640,6 +645,11 @@ export default function FoodDayPlanScreen() {
 		let foodOfferCategory = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(foodOffer, foodoffersCategoriesDict);
 		let foodOfferCategoryName = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodOfferCategory, languageCode);
 
+		let foodCategory = FoodsCategoriesHelper.getFoodCategoryFromFoodoffer(foodOffer, foodsCategoriesDict);
+		let foodCategoryName = FoodsCategoriesHelper.getFoodCategoryName(foodCategory, languageCode);
+
+		let usedCategoryName = foodCategoryName || foodOfferCategoryName;
+
 		const priceText = formatPrice(foodOffer.price_student)+" / "+formatPrice(foodOffer.price_employee)+" / "+formatPrice(foodOffer.price_guest);
 		const foodName = getFoodName(food, languageCode);
 
@@ -658,7 +668,7 @@ export default function FoodDayPlanScreen() {
 			>
 				{
 					renderRowForFoodoffer({
-						textForCategoryColumn: foodOfferCategoryName,
+						textForCategoryColumn: usedCategoryName,
 						textForFoodnameColumn: foodName,
 						elementForMarkingsColumn: <MarkingsRowForFood foodOffer={foodOffer} />,
 						textForKcalColumn: FoodInformationValueFormatter.formatFoodInformationValueCalories(foodOffer),
@@ -851,31 +861,7 @@ export default function FoodDayPlanScreen() {
 			width: '100%',
 			height: '100%',
 		}}>
-			<View style={{
-				width: '100%',
-				flexDirection: "row",
-			}}>
-				<View style={{
-					width: 200,
-				}}>
-					<CompanyLogo style={{
-						height: '100%',
-						width: '100%',
-					}} />
-				</View>
-				<View style={{
-					flex: 1,
-					paddingHorizontal: 10,
-					paddingVertical: 10,
-				}}>
-					<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
-						{canteen_name}
-					</Text>
-					<Text bold={true}>
-						{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
-					</Text>
-				</View>
-			</View>
+			<MonitorHeader canteen={canteen} dateHumanReadable={foodOfferDateHumanReadable || ""} />
 			<View style={{
 				width: '100%',
 				height: 2,

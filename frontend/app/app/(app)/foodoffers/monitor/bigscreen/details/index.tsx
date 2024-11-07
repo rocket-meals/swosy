@@ -42,6 +42,7 @@ import {DateHelper} from "@/helper/date/DateHelper";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {HumanReadableTimeText} from "@/app/(app)/foodoffers/monitor/dayplan/details";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
+import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
 
 export const SEARCH_PARAM_CATEGORY_LEGACY = 'category';
 
@@ -387,46 +388,7 @@ export default function FoodBigScreenScreen() {
 			<View style={{
 				width: '100%',
 			}}>
-				<View style={{
-					width: '100%',
-					flexDirection: "row",
-				}}>
-					<View style={{
-						width: 200,
-					}}>
-						<CompanyLogo style={{
-							height: '100%',
-							width: '100%',
-						}} />
-					</View>
-					<View style={{
-						flex: 1,
-						paddingHorizontal: 10,
-						paddingVertical: 10,
-					}}>
-						<View>
-							<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
-								{canteen_name}
-							</Text>
-							<View style={{
-								flexDirection: 'row',
-								justifyContent: 'space-between',
-								width: '100%',
-							}}>
-								<View>
-									<Text bold={true}>
-										{foodOfferDateHumanReadable}{" - "}<HumanReadableTimeText bold={true} />
-									</Text>
-								</View>
-								<View>
-									<Text bold={true}>
-										{foodPositionText}
-									</Text>
-								</View>
-							</View>
-						</View>
-					</View>
-				</View>
+				<MonitorHeader canteen={canteen} dateHumanReadable={foodOfferDateHumanReadable || ""} rightContent={<Text bold={true}>{foodPositionText}</Text>} />
 				<View style={{
 					width: '100%',
 					height: 2,

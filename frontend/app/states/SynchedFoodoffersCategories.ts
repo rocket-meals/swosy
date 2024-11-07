@@ -116,7 +116,24 @@ export class FoodOfferCategoriesHelper {
 		return null;
 	}
 
-	static sortFoodoffersByFoodofferCategory(foodoffers: Foodoffers[], foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined){
+	static getFoodoffersFoodofferCategory(foodoffer: Foodoffers | undefined, foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined) {
+		const foodofferCategoryRaw = foodoffer?.foodoffer_category;
+		let foodofferCategoryId = undefined;
+		if(!!foodofferCategoryRaw){
+			if(typeof foodofferCategoryRaw === 'string') {
+				foodofferCategoryId = foodofferCategoryRaw;
+			} else {
+				foodofferCategoryId = foodofferCategoryRaw.id;
+			}
+		}
+		if(!!foodofferCategoryId){
+			return foodoffersCategoriesDict?.[foodofferCategoryId];
+		}
+		return null;
+	}
+
+
+	static sortFoodoffersByFoodofferCategory(foodoffers: Foodoffers[], foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined, languageCode: string) {
 		if(!foodoffersCategoriesDict){
 			return foodoffers;
 		}
@@ -127,7 +144,11 @@ export class FoodOfferCategoriesHelper {
 			sortedFoodoffers.push(foodoffer);
 		}
 		sortedFoodoffers.sort((foodofferA, foodofferB) => {
-			return FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategorySortOrder(foodofferA, foodofferB, foodoffersCategoriesDict);
+			let sort = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategorySortOrder(foodofferA, foodofferB, foodoffersCategoriesDict);
+			if(sort === 0){
+				sort = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategoryName(foodofferA, foodofferB, foodoffersCategoriesDict, languageCode);
+			}
+			return sort
 		});
 		return sortedFoodoffers;
 	}
@@ -151,20 +172,23 @@ export class FoodOfferCategoriesHelper {
 		return 0;
 	}
 
-	static getFoodoffersFoodofferCategory(foodoffer: Foodoffers | undefined, foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined) {
-		const foodofferCategoryRaw = foodoffer?.foodoffer_category;
-		let foodofferCategoryId = undefined;
-		if(!!foodofferCategoryRaw){
-			if(typeof foodofferCategoryRaw === 'string') {
-				foodofferCategoryId = foodofferCategoryRaw;
-			} else {
-				foodofferCategoryId = foodofferCategoryRaw.id;
-			}
+	static sortFoodoffersByFoodofferCategoryName(foodofferA: Foodoffers, foodofferB: Foodoffers, foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined, languageCode: string){
+		const foodofferCategoryA = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(foodofferA, foodoffersCategoriesDict);
+		const foodofferCategoryB = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(foodofferB, foodoffersCategoriesDict);
+		const nameA = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodofferCategoryA, languageCode);
+		const nameB = FoodOfferCategoriesHelper.getFoodofferCategoryName(foodofferCategoryB, languageCode);
+		if(nameA && nameB){
+			return nameA.localeCompare(nameB);
 		}
-		if(!!foodofferCategoryId){
-			return foodoffersCategoriesDict?.[foodofferCategoryId];
+		if(nameA){
+			// A should be before B
+			return -1;
 		}
-		return null;
+		if(nameB){
+			// B should be before A
+			return 1;
+		}
+		return 0;
 	}
 }
 
