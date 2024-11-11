@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rocket Meals Demo",
     "slug": "rocket-meals-dev",
-    "version": "20.0.2",
+    "version": "20.0.3",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "notification": {
@@ -113,11 +113,11 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "112"
+      "buildNumber": "114"
     },
     "android": {
       "package": "com.baumgartnersoftware.rocketmealsdev",
-      "versionCode": 113
+      "versionCode": 114
     },
     "web": {
       "bundler": "metro",
