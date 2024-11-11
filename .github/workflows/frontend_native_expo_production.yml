@@ -2,7 +2,8 @@ name: Expo Update Production
 on:
   push:
     branches:
-      - master
+      - 'master'
+      - 'master_*' # Match branches like 'master_1', 'master_2', etc. for specific legacy releases
     paths:
       - 'frontend/app/**'
       - ".github/workflows/frontend_native_expo_production.yml"
