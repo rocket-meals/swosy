@@ -311,6 +311,7 @@ export type CanteensFeedbacksLabelsEntries = {
   dislike?: boolean | null;
   id: string;
   label?: string | CanteensFeedbacksLabels | null;
+  like?: boolean | null;
   profile?: string | Profiles | null;
   sort?: number | null;
   status: string;
@@ -976,6 +977,7 @@ export type FoodsFeedbacksLabelsEntries = {
   foodoffer?: string | Foodoffers | null;
   id: string;
   label?: string | FoodsFeedbacksLabels | null;
+  like?: boolean | null;
   profile?: string | Profiles | null;
   sort?: number | null;
   status?: string | null;
@@ -1206,6 +1208,7 @@ export type ProfilesBuildingsLastOpened = {
 export type ProfilesMarkings = {
   dislike?: boolean | null;
   id: number;
+  like?: boolean | null;
   markings_id?: string | Markings | null;
   profiles_id?: string | Profiles | null;
 };

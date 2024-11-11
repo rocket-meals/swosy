@@ -38,7 +38,7 @@ export async function loadFoodFeedbacksLabelsEntriesRemoteByProfileId(id: string
 	return await resourceCollectionHelper.readItems(query);
 }
 
-async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacksLabelsEntries[] | null | undefined> | null | undefined, foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null, canteen_id: string | null | undefined, foodoffer_id: string | null | undefined) {
+async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: string, foodIdToFoodFeedbackDict: Record<string, FoodsFeedbacksLabelsEntries[] | null | undefined> | null | undefined, foodFeedbackLabel: FoodsFeedbacksLabels, like: boolean | null, canteen_id: string | null | undefined, foodoffer_id: string | null | undefined) {
 	const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS_LABELS_ENTRIES)
 
 	let foodFeedbackLabelEntries: FoodsFeedbacksLabelsEntries[] | null | undefined = foodIdToFoodFeedbackDict?.[foodId];
@@ -49,7 +49,7 @@ async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: st
 	let newFoodFeedbackLabelEntry: Partial<FoodsFeedbacksLabelsEntries> = {
 		food: foodId,
 		label: foodFeedbackLabelId,
-		dislike: dislike,
+		like: like,
 		profile: profile_id,
 		// @ts-ignore
 		id: undefined,
@@ -70,9 +70,9 @@ async function updateFoodFeedbackLabelEntryRemote(foodId: string, profile_id: st
 		return
 	}
 
-	existingFoodFeedbackLabelEntry.dislike = dislike;
+	existingFoodFeedbackLabelEntry.like = like;
 
-	const dislikeIsNotSet = existingFoodFeedbackLabelEntry.dislike === null || existingFoodFeedbackLabelEntry.dislike === undefined;
+	const dislikeIsNotSet = existingFoodFeedbackLabelEntry.like === null || existingFoodFeedbackLabelEntry.like === undefined;
 
 	const shouldDelete = dislikeIsNotSet
 	console.log('updateFoodFeedbackRemote: shouldDelete', shouldDelete)
@@ -150,13 +150,13 @@ function getDemoFoodsFeedbacksLabelsEntry(index: number, foodId: string): FoodsF
 	date_updated.setDate(date_updated.getDate() - index);
 	let date_updated_string = date_updated.toISOString();
 
-	let dislike = index % 2 === 0
+	let like = index % 2 === 0
 
 	return {
 		status: "published",
 		id: feedbacksLabelsId,
 		food: foodId,
-		dislike: dislike,
+		like: like,
 		label: labelKey,
 		date_updated: date_updated_string,
 		date_created: date_updated_string,
@@ -186,10 +186,15 @@ export async function loadFoodsFeedbacksLabelsCountsForFood(foodId: string, visi
 			aggregate: {
 				count: "*"
 			},
-			groupBy: ['dislike'], // Groups by the dislike field (true/false)
+			groupBy: ['like'], // Groups by the dislike field (true/false)
 			query: {
 				filter: {
 					_and: [
+						{
+							like: {
+								_nnull: true
+							}
+						},
 						{
 							food: {
 								_eq: foodId
@@ -219,7 +224,7 @@ export async function loadFoodsFeedbacksLabelsCountsForFood(foodId: string, visi
 		 */
 
 		type resultType = {
-			dislike: boolean,
+			like: boolean,
 			count: number,
 		}
 
@@ -227,9 +232,9 @@ export async function loadFoodsFeedbacksLabelsCountsForFood(foodId: string, visi
 		let amount_likes = 0;
 		let amount_dislikes = 0;
 		for(let resultItem of resultForLikes) {
-			if(!resultItem.dislike) {
+			if(resultItem.like) {
 				amount_likes = resultItem.count;
-			} else if(resultItem.dislike) {
+			} else if(!resultItem.like) {
 				amount_dislikes = resultItem.count;
 			}
 		}
@@ -264,8 +269,8 @@ export function useSynchedOwnFoodFeedbackLabelEntries(food_id: string, canteen_i
 	const resourceAsDict = CollectionHelper.convertListToDict(foodFeedbackLabelEntriesList, 'label')
 
 
-	const setOwnLabel = async (foodFeedbackLabel: FoodsFeedbacksLabels, dislike: boolean | null) => {
-		await updateFoodFeedbackLabelEntryRemote(food_id, usersProfileId as unknown as string, usedResources, foodFeedbackLabel, dislike, canteen_id, foodoffer_id)
+	const setOwnLabel = async (foodFeedbackLabel: FoodsFeedbacksLabels, like: boolean | null) => {
+		await updateFoodFeedbackLabelEntryRemote(food_id, usersProfileId as unknown as string, usedResources, foodFeedbackLabel, like, canteen_id, foodoffer_id)
 		await cacheHelperObj.updateFromServer()
 	}
 

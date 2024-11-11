@@ -24,7 +24,7 @@ import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 type CanteenFeedbackSettingsRowDataProps = {canteen: Canteens, dateAsIsoString: string, label: CanteensFeedbacksLabels, translation: string, canteen_id?: string, foodoffer_id?: string}
 type CanteenFeedbackSettingsRowProps = CanteenFeedbackSettingsRowDataProps
 const CanteenFeedbackSettingsRow = ({canteen, dateAsIsoString, label, translation}: CanteenFeedbackSettingsRowProps) => {
-	const [ownFeedbackLabelEntry, setDislike] = useSynchedOwnCanteenFeedbackLabelEntry(canteen, dateAsIsoString, label);
+	const [ownFeedbackLabelEntry, setLike] = useSynchedOwnCanteenFeedbackLabelEntry(canteen, dateAsIsoString, label);
 	const [reloadState, setReloadState] = React.useState(0);
 	const labelCounts = useLoadCanteensFeedbacksLabelsCountsForCanteen(canteen.id, label, dateAsIsoString, reloadState+"");
 
@@ -36,9 +36,9 @@ const CanteenFeedbackSettingsRow = ({canteen, dateAsIsoString, label, translatio
 
 	const translationSetRating = useTranslation(TranslationKeys.set_rating);
 
-	let dislikeRaw: boolean | undefined | null = ownFeedbackLabelEntry?.dislike
-	let statusSet = dislikeRaw === true || dislikeRaw === false;
-	const likes = statusSet ? !dislikeRaw : undefined;
+	let likeRaw: boolean | undefined | null = ownFeedbackLabelEntry?.like
+	let statusSet = likeRaw === true || likeRaw === false;
+	const likes = statusSet ? likeRaw : undefined;
 
 	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
@@ -53,9 +53,9 @@ const CanteenFeedbackSettingsRow = ({canteen, dateAsIsoString, label, translatio
 			onSetState={async (nextLike: boolean | undefined) => {
 				console.log("nextLike", nextLike)
 				if(nextLike === undefined){
-					await setDislike(null)
+					await setLike(null)
 				} else {
-					await setDislike(!nextLike)
+					await setLike(nextLike)
 				}
 				setReloadState(reloadState+1)
 			}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={labelCounts.amount_likes} amount_dislikes={labelCounts.amount_dislikes} />

@@ -44,7 +44,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 	const [status, setProfileMarking, removeProfileMarking] = useSynchedProfileMarking(markingId)
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	let statusSet = status === true || status === false;
-	const likes = statusSet ? !status : undefined;
+	const likes = statusSet ? status : undefined;
 	const translation_marking = useTranslation(TranslationKeys.markings);
 
 	const foodsAreaColor = useFoodsAreaColor();
@@ -68,8 +68,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			if(removeMarking){
 				removeProfileMarking()
 			} else {
-				const dislike = like === false;
-				setProfileMarking(dislike)
+				setProfileMarking(like===true);
 			}
 		}
 

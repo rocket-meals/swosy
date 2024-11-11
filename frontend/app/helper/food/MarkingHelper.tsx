@@ -8,8 +8,8 @@ export class MarkingHelper {
 		for(const marking_id of aMarkingsIds){
 			const profilesMarking: ProfilesMarkings = profileMarkingsDict[marking_id];
 			if(profilesMarking){
-				const dislike = profilesMarking.dislike;
-				if(dislike !== null && dislike !== undefined && dislike){
+				const like = profilesMarking.like;
+				if(like !== null && like !== undefined && like===false){
 					dislikedMarkingIds.push(marking_id);
 				}
 			}
@@ -23,8 +23,8 @@ export class MarkingHelper {
 		for(const marking_id of aMarkingsIds){
 			const profilesMarking: ProfilesMarkings = profileMarkingsDict[marking_id];
 			if(profilesMarking){
-				const dislike = profilesMarking.dislike;
-				if(dislike !== null && dislike !== undefined && !dislike){
+				const like = profilesMarking.like;
+				if(like !== null && like !== undefined && like===true){
 					likedMarkingIds.push(marking_id);
 				}
 			}

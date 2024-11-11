@@ -584,7 +584,7 @@ export function useAccountBalanceInformation(): [AccountBalanceInformationType, 
 	return [usedAccountBalanceInformation, setAccountBalance];
 }
 
-export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, dislike: boolean) => void, (marking_id: string) => void] {
+export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarkings>, (marking_id: string, like: boolean) => void, (marking_id: string) => void] {
 	//const markingsRaw = useSyncStateValue<Profiles, ProfilesMarkings[]>(PersistentStore.profile, (storedProfile) => {
 	//	return storedProfile?.markings;
 	//});
@@ -599,7 +599,7 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 	let markingsDictDep = "";
 	for (let i=0; i<profileMarkingsList.length; i++) {
 		const profilesMarking = profileMarkingsList[i];
-		markingsDictDep += ""+profilesMarking.dislike + profilesMarking.markings_id;
+		markingsDictDep += ""+profilesMarking.like + profilesMarking.markings_id;
 	}
 
 	const useProfilesMarkingsDict = useCallback(() => {
@@ -607,7 +607,7 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 		for (let i=0; i<profileMarkingsList.length; i++) {
 			const profilesMarking = profileMarkingsList[i];
 			const markings_key = profilesMarking.markings_id;
-			markingsDictDep += ""+profilesMarking.dislike + profilesMarking.markings_id;
+			markingsDictDep += ""+profilesMarking.like + profilesMarking.markings_id;
 			if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
 				profilesMarkingsDict[profilesMarking.markings_id] = profilesMarking;
 			}
@@ -617,14 +617,14 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 
 	const profilesMarkingsDict: Record<string, ProfilesMarkings> = useProfilesMarkingsDict();
 
-	const privateSetMarkings = useCallback((marking_id: string, dislike: boolean, remove: boolean) => {
+	const privateSetMarkings = useCallback((marking_id: string, like: boolean, remove: boolean) => {
 		//const markingsDictCopy = JSON.parse(JSON.stringify(profilesMarkingsDict));
 		setProfile((currentProfile) => {
 			if(currentProfile){
 				const newProfileMarking: Partial<ProfilesMarkings> = {
 					markings_id: marking_id,
 					profiles_id: currentProfile?.id,
-					dislike: dislike
+					like: like
 				};
 				let currentProfileMarkings = currentProfile?.markings || [];
 				currentProfileMarkings.push(newProfileMarking as ProfilesMarkings);
@@ -639,8 +639,8 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 		});
 	}, [setProfile]);
 
-	const setProfileMarking = useCallback((marking_id: string, dislike: boolean) => {
-		privateSetMarkings(marking_id, dislike, false);
+	const setProfileMarking = useCallback((marking_id: string, like: boolean) => {
+		privateSetMarkings(marking_id, like, false);
 	}, [privateSetMarkings]);
 
 	const removeProfileMarking = useCallback((marking_id: string) => {
@@ -651,20 +651,20 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 	return [profilesMarkingsDict, setProfileMarking, removeProfileMarking];
 }
 
-export function useSynchedProfileMarking(marking_id: string): [boolean | null | undefined, (dislike: boolean) => void, () => void] {
+export function useSynchedProfileMarking(marking_id: string): [boolean | null | undefined, (like: boolean) => void, () => void] {
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
 
-	const setMarking = useCallback((dislike: boolean) => {
-		setProfileMarking(marking_id, dislike);
+	const setMarking = useCallback((like: boolean) => {
+		setProfileMarking(marking_id, like);
 	}, [marking_id]);
 
 	const removeMarking = useCallback(() => {
 		removeProfileMarking(marking_id);
 	}, [marking_id]);
 
-	const dislike: ProfilesMarkings = profilesMarkingsDict[marking_id]?.dislike;
+	const like: ProfilesMarkings = profilesMarkingsDict[marking_id]?.like;
 
-	return [dislike, setMarking, removeMarking];
+	return [like, setMarking, removeMarking];
 }
 
 export function getEmptyProfile(): Partial<Profiles> {

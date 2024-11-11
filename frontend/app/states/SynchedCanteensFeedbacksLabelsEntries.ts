@@ -52,12 +52,12 @@ function getKeyForCanteenFeedbackLabelEntryFromObject(entry: CanteensFeedbacksLa
 	return getKeyForCanteenFeedbackLabelEntry(entry.canteen as string, entry.date as string, entry.label as string)
 }
 
-async function updateCanteenFeedbackLabelEntryRemote(profile_id: string, dictToCanteenFeedbackLabelEntries: Record<string, CanteensFeedbacksLabelsEntries | null | undefined> | null | undefined, canteenFeedbackLabel: CanteensFeedbacksLabels, dislike: boolean | null, canteen: Canteens, directus_date_only_string: string) {
+async function updateCanteenFeedbackLabelEntryRemote(profile_id: string, dictToCanteenFeedbackLabelEntries: Record<string, CanteensFeedbacksLabelsEntries | null | undefined> | null | undefined, canteenFeedbackLabel: CanteensFeedbacksLabels, like: boolean | null, canteen: Canteens, directus_date_only_string: string) {
 	const resourceCollectionHelper = new CollectionHelper<CanteensFeedbacksLabelsEntries>(TABLE_NAME_CANTEENS_FEEDBACKS_LABELS_ENTRIES)
 	console.log('updateFeedbackRemote: start')
 	console.log("profile_id", profile_id)
 	console.log("canteenFeedbackLabel", canteenFeedbackLabel)
-	console.log("dislike", dislike)
+	console.log("like", like)
 	console.log("canteen", canteen)
 	console.log("directus_date_only_string", directus_date_only_string)
 
@@ -71,7 +71,7 @@ async function updateCanteenFeedbackLabelEntryRemote(profile_id: string, dictToC
 		label: canteenFeedbackLabelId,
 		date: directus_date_only_string,
 		status: ItemStatus.PUBLISHED,
-		dislike: dislike,
+		like: like,
 		profile: profile_id,
 		// @ts-ignore
 		id: undefined,
@@ -93,11 +93,11 @@ async function updateCanteenFeedbackLabelEntryRemote(profile_id: string, dictToC
 		return
 	}
 
-	existingFeedbackLabelEntry.dislike = dislike;
+	existingFeedbackLabelEntry.like = like;
 
-	const dislikeIsNotSet = existingFeedbackLabelEntry.dislike === null || existingFeedbackLabelEntry.dislike === undefined;
+	const likeIsNotSet = existingFeedbackLabelEntry.like === null || existingFeedbackLabelEntry.like === undefined;
 
-	const shouldDelete = dislikeIsNotSet
+	const shouldDelete = likeIsNotSet
 	console.log('updateFeedbackRemote: shouldDelete', shouldDelete)
 
 	if(canteen) {
@@ -169,7 +169,7 @@ export function useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict(): [ Re
 export type CanteenFeedbacksLabelsCountsType = { amount_likes: number, amount_dislikes: number }
 export function useLoadCanteensFeedbacksLabelsCountsForCanteen(canteenId: string, label: CanteensFeedbacksLabels, directus_date_string: string, additional_dependency_key: string): CanteenFeedbacksLabelsCountsType {
 	type resultType = {
-		dislike: boolean,
+		like: boolean,
 		count: number,
 	}
 	const [result, setResult] = useState<CanteenFeedbacksLabelsCountsType>({ amount_likes: 0, amount_dislikes: 0 });
@@ -181,10 +181,15 @@ export function useLoadCanteensFeedbacksLabelsCountsForCanteen(canteenId: string
 			aggregate: {
 				count: "*"
 			},
-			groupBy: ['dislike'], // Groups by the dislike field (true/false)
+			groupBy: ['like'], // Groups by the dislike field (true/false)
 			query: {
 				filter: {
 					_and: [
+						{
+							like: {
+								_nnull: true
+							}
+						},
 						{
 							date: {
 								_eq: directus_date_string
@@ -211,9 +216,9 @@ export function useLoadCanteensFeedbacksLabelsCountsForCanteen(canteenId: string
 		let amount_likes = 0;
 		let amount_dislikes = 0;
 		for(let resultItem of resultForLikes) {
-			if(!resultItem.dislike) {
+			if(resultItem.like) {
 				amount_likes = resultItem.count;
-			} else if(resultItem.dislike) {
+			} else if(!resultItem.like) {
 				amount_dislikes = resultItem.count;
 			}
 		}
@@ -243,10 +248,10 @@ export function useSynchedOwnCanteenFeedbackLabelEntry(canteen: Canteens, dateAs
 	const key = getKeyForCanteenFeedbackLabelEntry(canteen.id, dateAsIsoString, feedbackLabel.id)
 	const resource = usedResources?.[key] || null
 
-	const setDislike = async (dislike: boolean | null) => {
-		await updateCanteenFeedbackLabelEntryRemote(usersProfileId as unknown as string, usedResources, feedbackLabel, dislike, canteen, dateAsIsoString)
+	const setLike = async (like: boolean | null) => {
+		await updateCanteenFeedbackLabelEntryRemote(usersProfileId as unknown as string, usedResources, feedbackLabel, like, canteen, dateAsIsoString)
 		await cacheHelperObj.updateFromServer()
 	}
 
-	return [resource, setDislike]
+	return [resource, setLike]
 }

@@ -97,9 +97,9 @@ const FoodFeedbackSettingsRow = ({food_id, canteen_id, foodoffer_id, label, tran
 	const translationSetRating = useTranslation(TranslationKeys.set_rating);
 
 	let ownFoodFeedbackLabel:  FoodsFeedbacksLabelsEntries | undefined |null = ownFoodFeedbackLabelIdToFoodFeedbackLabelEntriesDict?.[feedback_label_id];
-	let dislikeRaw: boolean | undefined | null = ownFoodFeedbackLabel?.dislike
-	let statusSet = dislikeRaw === true || dislikeRaw === false;
-	const likes = statusSet ? !dislikeRaw : undefined;
+	let likeRaw: boolean | undefined | null = ownFoodFeedbackLabel?.like
+	let statusSet = likeRaw === true || likeRaw === false;
+	const likes = statusSet ? likeRaw : undefined;
 
 	let iconLeftCustom = <DirectusImageOrIconComponent resource={foodFeedbackLabel} />
 
@@ -115,7 +115,7 @@ const FoodFeedbackSettingsRow = ({food_id, canteen_id, foodoffer_id, label, tran
 				if(nextLike === undefined){
 					await setFoodFeedbackLabel(label, null)
 				} else {
-					await setFoodFeedbackLabel(label, !nextLike)
+					await setFoodFeedbackLabel(label, nextLike)
 				}
 				await refresh()
 			}} value={likes} labelLeft={translation} accessibilityLabel={translation} amount_likes={amount_likes} amount_dislikes={amount_dislikes} />

@@ -128,12 +128,12 @@ function getDemoCanteensFeedbacksLabelsEntry(index: number): CanteensFeedbacksLa
 	date_updated.setDate(date_updated.getDate() - index);
 	let date_updated_string = date_updated.toISOString();
 
-	let dislike = index % 2 === 0
+	let like = index % 2 === 0
 
 	return {
 		status: "published",
 		id: feedbacksLabelsId,
-		dislike: dislike,
+		like: like,
 		label: labelKey,
 		date_updated: date_updated_string,
 		date_created: date_updated_string,

@@ -216,14 +216,14 @@ export class ReportGenerator {
         });
 
         const filterLikes = {
-            dislike: {
-                _eq: false
+            like: {
+                _eq: true
             }
         };
 
         const filterDislikes = {
-            dislike: {
-                _eq: true
+            like: {
+                _eq: false
             }
         };
 
@@ -459,14 +459,14 @@ export class ReportGenerator {
         const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
         const filterLikes = {
-            dislike: {
-                _eq: false
+            like: {
+                _eq: true
             }
         }
 
         const filterDislikes = {
-            dislike: {
-                _eq: true
+            like: {
+                _eq: false
             }
         }
 
