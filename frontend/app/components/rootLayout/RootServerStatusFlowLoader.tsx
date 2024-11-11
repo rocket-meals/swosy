@@ -34,12 +34,20 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	const translation_check_server_status = useRootTranslation(RootTranslationKey.CHECK_SERVER_STATUS)
 	const translation_server_is_offline = useRootTranslation(RootTranslationKey.SERVER_IS_OFFLINE)
 	const translation_continue_with_cache = useRootTranslation(RootTranslationKey.CONTINUE_WITH_CACHE)
+	const translation_retry_in_seconds = useRootTranslation(RootTranslationKey.RETRY_IN_SECONDS)
 
 	const [nowInMs, setNowInMs] = useState<number>(new Date().getTime());
 	const nowAsKey = nowInMs.toString();
 	const [continueWithCache, setContinueWithCache] = useState<boolean>(false);
+	const [amountOfRetries, setAmountOfRetries] = useState<number>(0);
+
+	const SECONDS_TILL_RELOAD = 10;
+	const [reloadTimer, setReloadTimer] = useState<number>(SECONDS_TILL_RELOAD);
+	const SECONDS_TILL_PROCEED_WITH_CACHED_DATA = 5;
+	const [proceedWithCachedDataTimer, setProceedWithCachedDataTimer] = useState<number>(SECONDS_TILL_PROCEED_WITH_CACHED_DATA);
 
 	const [serverInfo, setServerInfo, serverInfoRaw, setServerInfoRaw] = useServerInfoRaw();
+	let usedServerInfo = serverInfo;
 	const [authData, setAuthData] = useSyncState<AuthenticationData, AuthenticationData>(PersistentSecureStore.authentificationData)
 
 	// TODO: move this to a helper function
@@ -65,7 +73,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 
 		if (remote_server_info.status === 'offline') {
 			console.log("Server is offline at fetching remote")
-			let cachedServerInfo = serverInfo
+			let cachedServerInfo = usedServerInfo
 			console.log('cachedServerInfo', cachedServerInfo)
 			if (cachedServerInfo) {
 				console.log("Server is offline at fetching remote, but we have local data")
@@ -78,8 +86,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	}
 
 	async function checkIfProcessWithCachedDataPossible(){
-		const cachedServerInfo = serverInfo;
+		const cachedServerInfo = usedServerInfo;
 		if (cachedServerInfo) {
+			console.log("We have cached data available");
 			cachedServerInfo.status = 'cached';
 			setServerInfo((currentServerInfo) => {
 				return cachedServerInfo;
@@ -95,7 +104,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 	}
 
 	async function loadInformation() {
-		const TIMEOUT_IN_SECONDS = 3;
+		console.log('RootServerStatusFlowLoader: loadInformation')
+
+		const TIMEOUT_IN_SECONDS = 5;
 		const timeoutInMillis = 1000 * TIMEOUT_IN_SECONDS;
 		const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject("timedout"), timeoutInMillis));
 
@@ -111,6 +122,7 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 			}, nowAsKey);
 		} catch (error) {
 			// If we get here, it means timeout occurred or loadServerInfo rejected
+			console.log("Error: ", error);
 			checkIfProcessWithCachedDataPossible();
 		}
 	}
@@ -119,17 +131,54 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		loadInformation();
 	}, []);
 
+	let serverInfoNotUpdated = (!serverInfoRaw?.sync_cache_composed_key_local || serverInfoRaw?.sync_cache_composed_key_local !== nowAsKey)
+	const isLoading = serverInfoNotUpdated || (usedServerInfo===undefined)
+	const isOffline = usedServerInfo===null || usedServerInfo?.status === 'offline'
+	const isCached = usedServerInfo?.status === "cached" && !continueWithCache
+
+	// Use Effect when server is offline and no cached data is available
+	useEffect(() => {
+		if(isOffline && !isCached) {
+			// then we want to show set a timer which starts the download again after 5 seconds
+			if(reloadTimer > 0) {
+				const timer = setTimeout(() => {
+					setReloadTimer(reloadTimer-1)
+				}, 1000);
+				return () => clearTimeout(timer);
+			} else {
+				loadInformation();
+				setReloadTimer(10);
+				setAmountOfRetries((currentAmountOfRetries) => {
+					return currentAmountOfRetries + 1
+				})
+			}
+		}
+	}, [isOffline, reloadTimer])
+
+	// Use Effect when server is offline and cached data is available
+	useEffect(() => {
+		if(isCached) {
+			if(proceedWithCachedDataTimer > 0) {
+				const timer = setTimeout(() => {
+					setProceedWithCachedDataTimer(proceedWithCachedDataTimer-1)
+				}, 1000);
+				return () => clearTimeout(timer);
+			} else {
+				setContinueWithCache(true)
+				setProceedWithCachedDataTimer(SECONDS_TILL_PROCEED_WITH_CACHED_DATA)
+			}
+		}
+	}, [isCached, proceedWithCachedDataTimer])
+
+
 	const debugInformation = <>
 		<Text>{'serverInfoRaw?.sync_cache_composed_key_local - '+serverInfoRaw?.sync_cache_composed_key_local}</Text>
 		<Text>{'nowAsKey: '+nowAsKey}</Text>
-		<Text>{JSON.stringify(serverInfo, null, 2)}</Text>
+		<Text>{JSON.stringify(usedServerInfo, null, 2)}</Text>
 	</>
 
 	// 1. load server information
-	let serverInfoNotUpdated = (!serverInfoRaw?.sync_cache_composed_key_local || serverInfoRaw?.sync_cache_composed_key_local !== nowAsKey)
-	if (serverInfoNotUpdated || (serverInfo===undefined)) {
-
-
+	if (isLoading) {
 		return (
 			<LoadingScreen>
 			<LoadingScreenTextInformationWrapper>
@@ -140,17 +189,24 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 		)
 	}
 
-	if (serverInfo===null || serverInfo.status === 'offline') {
+	if (isOffline) {
 		return (
 			<LoadingScreen>
 				<LoadingScreenFullScreenOverlay>
-					<PleaseConnectLaterServerIsOffline />
+					<PleaseConnectLaterServerIsOffline>
+						<Text>
+							{translation_retry_in_seconds+": "+reloadTimer+"s"}
+						</Text>
+						<Text>
+							{"Amount of retries: "+amountOfRetries}
+						</Text>
+					</PleaseConnectLaterServerIsOffline>
 				</LoadingScreenFullScreenOverlay>
 			</LoadingScreen>
 		)
 	}
 
-	if(serverInfo.status === "cached" && !continueWithCache) {
+	if(isCached) {
 		return (
 			<LoadingScreen>
 			<LoadingScreenTextInformationWrapper>
@@ -158,9 +214,9 @@ export const RootServerStatusFlowLoader = (props: ServerStatusFlowLoaderProps) =
 				<View style={{
 					marginTop: 20,
 				}}>
-					<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_continue_with_cache} onPress={() => {
+					<MyButton useOnlyNecessarySpace={true} accessibilityLabel={translation_continue_with_cache+": "+(proceedWithCachedDataTimer)+"s"} onPress={() => {
 						setContinueWithCache(true)
-					}} text={translation_continue_with_cache} rightIcon={IconNames.chevron_right_icon} />
+					}} text={translation_continue_with_cache+": "+(proceedWithCachedDataTimer)+"s"} rightIcon={IconNames.chevron_right_icon} />
 				</View>
 			</LoadingScreenTextInformationWrapper>
 			</LoadingScreen>

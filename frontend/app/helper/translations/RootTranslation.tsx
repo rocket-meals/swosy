@@ -10,6 +10,7 @@ export enum RootTranslationKey {
 	CHECK_SERVER_STATUS = 'CHECK_SERVER_STATUS',
 	SERVER_IS_OFFLINE = 'SERVER_IS_OFFLINE',
 	CONTINUE_WITH_CACHE = 'CONTINUE_WITH_CACHE',
+	RETRY_IN_SECONDS = 'RETRY_IN_SECONDS',
 }
 
 type RootTranslationForLanguage = {
@@ -54,9 +55,29 @@ function getRootTranslation(key: RootTranslationKey): RootTranslationForLanguage
 		case RootTranslationKey.SYNC_SERVER_SETTINGS: return getSyncServerSettingsTranslation(); break;
 		case RootTranslationKey.SYNC_DATABASE: return getSyncDatabaseTranslation(); break;
 		case RootTranslationKey.SYNC_USER_SETTINGS: return getSyncUserSettingsTranslation(); break;
+		case RootTranslationKey.RETRY_IN_SECONDS: return getSyncRetryInSecondsTranslation(); break;
 
 	}
 	return getRootTranslationServerIsOffline()
+}
+
+function getSyncRetryInSecondsTranslation(): RootTranslationForLanguage {
+	return {
+		"de": 'Neuer Versuch in',
+		"en": 'Retry in',
+		"fr": 'Réessayer dans',
+		"it": 'Riprova in',
+		"es": 'Reintentar en',
+		"pt": 'Tentar novamente em',
+		"nl": 'Opnieuw proberen in',
+		"pl": 'Ponów próbę za',
+		"ru": 'Повторить через',
+		"tr": 'Yeniden dene',
+		"zh": '重试',
+		"ja": '再試行',
+		"ko": '다시 시도',
+		"ar": 'إعادة المحاولة في'
+	}
 }
 
 function getSyncServerSettingsTranslation(): RootTranslationForLanguage {

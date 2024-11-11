@@ -10,9 +10,9 @@ import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {RootTranslationKey, useRootTranslation} from "@/helper/translations/RootTranslation";
 
 interface AppState {
-
+	children?: React.ReactNode;
 }
-export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({ ...props}) => {
+export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({ children, ...props}) => {
 	const useText = useRootTranslation(RootTranslationKey.SERVER_IS_OFFLINE)
 
 	const accessibilityLabel = useText
@@ -49,6 +49,7 @@ export const PleaseConnectLaterServerIsOffline: FunctionComponent<AppState> = ({
 														 source={noInternetConnectionSource}
 						/>
 					</RectangleWithLayoutCharactersWide>
+					{children}
 				</View>
 				</View>
 			</View>
