@@ -63,6 +63,7 @@ export class IconNames {
     static businesshours_icon = 'clock-time-eight'
 
     static support_icon = IconFamily.MaterialIcons+IconParseDelimeter+"support-agent"
+    static license_information_icon = 'license'
 
     static data_access_icon = 'database-eye'
     static privacy_policy_icon = 'shield-account'

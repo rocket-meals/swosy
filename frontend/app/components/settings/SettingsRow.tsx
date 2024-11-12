@@ -47,12 +47,26 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const activeColorContrast = useMyContrastColor(activeColor)
 	const isActive = props.active || false;
 
+	const [internalExpanded, setInternalExpanded] = useState(props.expanded || false);
+
+	function getOnSelect() {
+		if(props.onPress){
+			return props.onPress;
+		}
+		if(props.expandable){
+			return () => {
+				setInternalExpanded(!internalExpanded);
+			}
+		}
+		return null;
+	}
+
 	const item = {
 		key: props?.key,
 		icon: props.leftIcon,
 		label: props.labelLeft,
 		accessibilityLabel: props.accessibilityLabel,
-		onSelect: props.onPress,
+		onSelect: getOnSelect(),
 		leftIcon: props.leftIcon,
 	}
 
@@ -96,7 +110,7 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 	const children = props.children;
 
 	let renderedChildren = null;
-	if (expanded) {
+	if (expanded || internalExpanded) {
 		renderedChildren = children;
 	}
 

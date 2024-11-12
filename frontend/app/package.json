@@ -16,7 +16,8 @@
     "export:web:dev": "expo export --platform web",
     "test": "jest --watchAll",
     "lint": "eslint . --ext .ts,.tsx --fix",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && npm run licenseSummary",
+    "licenseSummary": "npx license-checker --production --json --summary --direct --out thirdpartyLicense.json"
   },
   "jest": {
     "preset": "jest-expo"

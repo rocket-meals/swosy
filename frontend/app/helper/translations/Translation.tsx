@@ -356,6 +356,8 @@ export enum TranslationKeys {
 	cookies = "cookies",
 	feedback = "feedback",
 	feedback_support_faq = "feedback_support_faq",
+	// rechtliche hinweise
+	license_information = "license_information",
 	optional = "optional",
 	date_created = "date_created",
 	date_updated = "date_updated"
@@ -2170,6 +2172,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Лицензия',
 		[LanguageKeys.tr_TR]: 'Lisans',
 		[LanguageKeys.zh_CN]: '许可证'
+	},
+	license_information: {
+		[LanguageKeys.de_DE]: 'Lizenzhinweise',
+		[LanguageKeys.en_US]: 'License Information',
+		[LanguageKeys.ar_SA]: 'معلومات الترخيص',
+		[LanguageKeys.es_ES]: 'Información de licencia',
+		[LanguageKeys.fr_FR]: 'Informations de licence',
+		[LanguageKeys.ru_RU]: 'Информация о лицензии',
+		[LanguageKeys.tr_TR]: 'Lisans Bilgileri',
+		[LanguageKeys.zh_CN]: '许可信息'
 	},
 	accessibility: {
 		[LanguageKeys.de_DE]: 'Barrierefreiheit',

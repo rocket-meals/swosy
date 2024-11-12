@@ -109,6 +109,7 @@ export default function SettingsScreen() {
 				</SettingsRowGroup>
 				<SettingsRowGroup>
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.feedback_support_faq} leftIcon={IconNames.support_icon} route={"/(app)/support"} />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.license_information} leftIcon={IconNames.license_information_icon} route={"/(app)/settings/license"} />
 				</SettingsRowGroup>
 				<ProjectVersionInformation />
 				{renderedDeveloperModeSettings}

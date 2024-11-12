@@ -58,6 +58,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 	const translation_eating_habits = useTranslation(TranslationKeys.eating_habits)
 	const translation_notification = useTranslation(TranslationKeys.notification)
 	const translation_my_support_tickets = useTranslation(TranslationKeys.my_support_tickets)
+	const translation_license_information = useTranslation(TranslationKeys.license_information)
 
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 
@@ -179,6 +180,13 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_settings,
 				title: translation_settings,
 				icon: IconNames.settings_icon,
+			})}
+			{useRenderMyDrawerScreen({
+				routeName: 'settings/license/index',
+				label: translation_license_information,
+				title: translation_license_information,
+				icon: IconNames.license_information_icon,
+				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
 				routeName: 'support/index',
