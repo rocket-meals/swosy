@@ -185,6 +185,7 @@ export const MyDrawerAuthenticated = (props: any) => {
 				routeName: 'settings/license/index',
 				label: translation_license_information,
 				title: translation_license_information,
+				showBackButton: true,
 				icon: IconNames.license_information_icon,
 				visibleInDrawer: false
 			})}
