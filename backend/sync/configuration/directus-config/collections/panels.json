@@ -83,7 +83,7 @@
     "note": null,
     "height": 5,
     "width": 30,
-    "position_y": 63,
+    "position_y": 74,
     "position_x": 31,
     "show_header": true,
     "_syncId": "0255e43c-e8b0-42de-9d1c-7fffd9a017e9"
@@ -234,6 +234,29 @@
     "_syncId": "05a1c237-a632-4d8c-a005-f1d4ad1628d6"
   },
   {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "type": "metric",
+    "color": null,
+    "icon": null,
+    "name": "Geräte Bildschirm Breite (Durchschnitt)",
+    "options": {
+      "collection": "devices",
+      "xAxis": "display_width",
+      "yAxis": "display_width",
+      "aggregation": "count",
+      "grouping": null,
+      "field": "display_width",
+      "function": "avg"
+    },
+    "note": null,
+    "height": 5,
+    "width": 65,
+    "position_y": 99,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "0621281a-6b2a-4a13-b2ef-ab0e38a6806e"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "type": "time-series",
     "color": null,
@@ -322,6 +345,29 @@
     "position_x": 1,
     "show_header": true,
     "_syncId": "11c2d375-988d-45d6-b27e-53cba2243945"
+  },
+  {
+    "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
+    "type": "metric",
+    "color": null,
+    "icon": null,
+    "name": "Geräte Bildschirm Breite (Durchschnitt)",
+    "options": {
+      "collection": "devices",
+      "xAxis": "display_width",
+      "yAxis": "display_width",
+      "aggregation": "count",
+      "grouping": null,
+      "field": "display_height",
+      "function": "avg"
+    },
+    "note": null,
+    "height": 5,
+    "width": 65,
+    "position_y": 119,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "11ff223c-28f4-49de-a3d7-32ec6c2ac2cb"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -440,7 +486,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 88,
+    "position_y": 99,
     "position_x": 31,
     "show_header": true,
     "_syncId": "17968fbd-6eb7-491a-8c22-f763fd5e04ae"
@@ -494,7 +540,7 @@
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
-      "displayTemplate": "{{comment}}",
+      "displayTemplate": "{{comment}} (für {{food.alias}}) (am {{date_updated}}) (Mensa: {{canteen.alias}})",
       "filter": {
         "_and": [
           {
@@ -513,8 +559,8 @@
     },
     "note": null,
     "height": 16,
-    "width": 67,
-    "position_y": 73,
+    "width": 66,
+    "position_y": 88,
     "position_x": 1,
     "show_header": true,
     "_syncId": "1a89a1bd-ce89-49e8-832e-947100552f02"
@@ -575,7 +621,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 88,
+    "position_y": 99,
     "position_x": 1,
     "show_header": true,
     "_syncId": "1aeb553e-41b9-4ac3-b42a-dcaa0b53e7c0"
@@ -634,9 +680,9 @@
       }
     },
     "note": null,
-    "height": 6,
+    "height": 7,
     "width": 60,
-    "position_y": 114,
+    "position_y": 126,
     "position_x": 1,
     "show_header": true,
     "_syncId": "204a7cad-d54d-474d-a09e-37573e03383a"
@@ -729,7 +775,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 72,
+    "position_y": 83,
     "position_x": 31,
     "show_header": true,
     "_syncId": "234a2594-c578-403e-a4c5-b983130435ad"
@@ -837,7 +883,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 92,
+    "position_y": 103,
     "position_x": 31,
     "show_header": true,
     "_syncId": "2465589c-fd5a-42fc-8dc9-7b40e812d651"
@@ -912,6 +958,32 @@
     "position_x": 38,
     "show_header": true,
     "_syncId": "26d34d74-5ffa-403a-8868-62f6140fb105"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "type": "time-series",
+    "color": null,
+    "icon": null,
+    "name": "Aktivitäten der letzten 3 Monate (Wochen-Präzision)",
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "curveType": "stepline",
+      "precision": "week",
+      "range": "3 months"
+    },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 104,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "2b47d9c5-e270-4a40-a88a-5830ebfd0b51"
   },
   {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
@@ -1142,7 +1214,7 @@
     "note": null,
     "height": 18,
     "width": 30,
-    "position_y": 120,
+    "position_y": 133,
     "position_x": 31,
     "show_header": true,
     "_syncId": "3db93980-d807-42ce-89de-1a8d5cbe66fd"
@@ -1327,7 +1399,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 68,
+    "position_y": 79,
     "position_x": 1,
     "show_header": true,
     "_syncId": "3f55a030-4ba0-4a38-ba8d-4b01c5eedfa0"
@@ -1407,6 +1479,46 @@
     "_syncId": "4216a7d3-b287-4c57-8ade-abf3c65d81e5"
   },
   {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "type": "time-series",
+    "color": null,
+    "icon": null,
+    "name": "Anzahl Speise Kommentare über die letzten 31 Tage (Tages Präzision)",
+    "options": {
+      "linkToItem": true,
+      "collection": "foods_feedbacks",
+      "displayTemplate": "{{comment}} (für {{food.alias}}) (am {{date_updated}}) (Mensa: {{canteen.alias}})",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "comment": {
+                  "_nempty": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "sortField": "date_updated",
+      "limit": 10,
+      "dateField": "date_updated",
+      "function": "countDistinct",
+      "valueField": "id",
+      "range": "1 month",
+      "precision": "day",
+      "curveType": "stepline"
+    },
+    "note": null,
+    "height": 16,
+    "width": 66,
+    "position_y": 72,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "4290d517-f505-43ed-9c72-6bf0a69cc884"
+  },
+  {
     "dashboard": "b46df209-45f2-4a9e-ba1b-dfbc7d78602d",
     "type": "variable",
     "color": null,
@@ -1435,14 +1547,23 @@
     "options": {
       "collection": "foods",
       "limit": 10,
-      "sortField": "rating_average",
+      "sortField": "rating_amount",
       "displayTemplate": "{{rating_average}}⭐ ({{rating_amount}}) {{alias}} (id:{{id}})",
       "filter": {
         "_and": [
           {
-            "rating_average": {
-              "_nnull": true
-            }
+            "_and": [
+              {
+                "rating_average": {
+                  "_nnull": true
+                }
+              },
+              {
+                "rating_average": {
+                  "_gte": "4.5"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1530,7 +1651,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 84,
+    "position_y": 95,
     "position_x": 31,
     "show_header": true,
     "_syncId": "4626573e-7dfe-4e9f-90c4-d1af8ad03ff3"
@@ -1875,7 +1996,7 @@
     "type": "bar-chart",
     "color": null,
     "icon": null,
-    "name": "Anzahl Geräte Typen",
+    "name": "Anzahl Geräte Typen (von Profilen)",
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -2136,7 +2257,7 @@
     "note": null,
     "height": 17,
     "width": 60,
-    "position_y": 138,
+    "position_y": 151,
     "position_x": 1,
     "show_header": true,
     "_syncId": "67bdb532-05ca-444c-9585-18380d85e3d1"
@@ -2330,7 +2451,7 @@
     },
     "note": null,
     "height": 8,
-    "width": 38,
+    "width": 60,
     "position_y": 55,
     "position_x": 1,
     "show_header": true,
@@ -2557,6 +2678,28 @@
     "_syncId": "84d81a60-eb21-49b4-9314-0ec6d2b26055"
   },
   {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "type": "list",
+    "color": null,
+    "icon": null,
+    "name": "Letzte Aktivitäten",
+    "options": {
+      "collection": "directus_activity",
+      "groupByField": "id",
+      "aggregateField": "timestamp",
+      "aggregateFunction": "count",
+      "sortField": "timestamp",
+      "displayTemplate": "{{timestamp}} - {{action}} - Profil: {{user.profile.id}}"
+    },
+    "note": null,
+    "height": 10,
+    "width": 60,
+    "position_y": 1,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "855f9109-4666-47aa-a111-e03e36eff123"
+  },
+  {
     "dashboard": "7d491bcd-3b15-4cc7-bb1b-26b8a4cf9c25",
     "type": "line-chart",
     "color": null,
@@ -2572,7 +2715,7 @@
     "note": null,
     "height": 14,
     "width": 65,
-    "position_y": 98,
+    "position_y": 104,
     "position_x": 1,
     "show_header": true,
     "_syncId": "856b62e4-a569-488b-92a1-2d114da32caf"
@@ -2634,7 +2777,7 @@
     "type": "metric",
     "color": null,
     "icon": null,
-    "name": "Anzahl Geräte",
+    "name": "Anzahl Geräte (von Profilen)",
     "options": {
       "collection": "devices",
       "field": "id",
@@ -2762,7 +2905,7 @@
     "note": null,
     "height": 18,
     "width": 30,
-    "position_y": 96,
+    "position_y": 107,
     "position_x": 1,
     "show_header": true,
     "_syncId": "91148c24-97f4-4bb1-99e4-ab0e9b01c8e9"
@@ -2892,7 +3035,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 92,
+    "position_y": 103,
     "position_x": 1,
     "show_header": true,
     "_syncId": "9387d9c7-e5ff-4e15-98c8-84c9fb1b50be"
@@ -3080,8 +3223,8 @@
     "note": null,
     "height": 5,
     "width": 30,
-    "position_y": 63,
-    "position_x": 1,
+    "position_y": 69,
+    "position_x": 31,
     "show_header": true,
     "_syncId": "9b8bd53c-5247-43ef-a662-49c46df250e3"
   },
@@ -3240,6 +3383,60 @@
     "_syncId": "9f906dce-5b58-4b72-a237-bb6f2b1fcd94"
   },
   {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "type": "pie-chart",
+    "color": null,
+    "icon": null,
+    "name": "Mensa Rückmeldungen",
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "label": {
+                  "id": {
+                    "_eq": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID}}"
+                  }
+                }
+              },
+              {
+                "date": {
+                  "_gte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START}}"
+                }
+              },
+              {
+                "date": {
+                  "_lte": "{{CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END}}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ],
+      "column": "dislike",
+      "legend": "right",
+      "showLabels": true
+    },
+    "note": null,
+    "height": 16,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "a1bfc777-ceb3-4d10-9a67-d736cfb1db55"
+  },
+  {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
     "type": "bar-chart",
     "color": null,
@@ -3343,7 +3540,7 @@
     "note": null,
     "height": 18,
     "width": 30,
-    "position_y": 96,
+    "position_y": 107,
     "position_x": 31,
     "show_header": true,
     "_syncId": "a54544e1-8c26-4c83-ab74-9856b052fc60"
@@ -3506,7 +3703,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 80,
+    "position_y": 91,
     "position_x": 31,
     "show_header": true,
     "_syncId": "a905ecb4-8b03-46f2-9ea9-dfa813688946"
@@ -3623,7 +3820,7 @@
     },
     "note": null,
     "height": 6,
-    "width": 34,
+    "width": 20,
     "position_y": 46,
     "position_x": 1,
     "show_header": true,
@@ -3700,18 +3897,26 @@
     "options": {
       "collection": "foods",
       "limit": 10,
-      "sortField": "rating_average",
+      "sortField": "rating_amount",
       "displayTemplate": "{{rating_average}}⭐ ({{rating_amount}}) {{alias}} (id:{{id}})",
       "filter": {
         "_and": [
           {
-            "rating_average": {
-              "_nnull": true
-            }
+            "_and": [
+              {
+                "rating_average": {
+                  "_nnull": true
+                }
+              },
+              {
+                "rating_average": {
+                  "_lt": "2.5"
+                }
+              }
+            ]
           }
         ]
-      },
-      "sortDirection": "asc"
+      }
     },
     "note": null,
     "height": 13,
@@ -3779,6 +3984,70 @@
     "position_x": 1,
     "show_header": true,
     "_syncId": "bc5e99aa-3c87-47ba-a371-2d920ea45d8f"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "type": "bar-chart",
+    "color": null,
+    "icon": null,
+    "name": "Durchschnittliche Zufriedenheit aller Speisen",
+    "options": {
+      "collection": "foods_feedbacks",
+      "column": "rating",
+      "field": "rating",
+      "fn": "avg",
+      "max": 5,
+      "strokeWidth": 8,
+      "decimals": 0,
+      "xAxis": "rating",
+      "yAxis": "rating",
+      "function": "count",
+      "conditionalFill": [
+        {
+          "axis": "X",
+          "operator": ">=",
+          "value": "4",
+          "color": "#2ECDA7"
+        },
+        {
+          "axis": "X",
+          "operator": "<",
+          "value": "3",
+          "color": "#E35169"
+        }
+      ]
+    },
+    "note": null,
+    "height": 6,
+    "width": 32,
+    "position_y": 1,
+    "position_x": 34,
+    "show_header": true,
+    "_syncId": "bda1a89a-8a7a-4cfd-9655-529519d4346a"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "type": "metric-list",
+    "color": null,
+    "icon": null,
+    "name": "Anzahl Bewertungen Feedback Labels",
+    "options": {
+      "collection": "foods_feedbacks_labels_entries",
+      "field": "date_created",
+      "function": "countDistinct",
+      "sortField": "id",
+      "limit": 1,
+      "groupByField": "date_created",
+      "aggregateField": "id",
+      "aggregateFunction": "count"
+    },
+    "note": null,
+    "height": 6,
+    "width": 14,
+    "position_y": 46,
+    "position_x": 21,
+    "show_header": true,
+    "_syncId": "beff580b-454b-4d3c-8830-af672dd03366"
   },
   {
     "dashboard": "7026c43d-e7ca-41e8-aaab-aeb7dacf17ab",
@@ -3881,7 +4150,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 80,
+    "position_y": 91,
     "position_x": 1,
     "show_header": true,
     "_syncId": "c2a9c985-adb7-4c7f-96a9-fe0051be740c"
@@ -3957,10 +4226,36 @@
     "note": null,
     "height": 18,
     "width": 30,
-    "position_y": 120,
+    "position_y": 133,
     "position_x": 1,
     "show_header": true,
     "_syncId": "c35ae794-c1d0-4a2d-83fc-b3d063343b4b"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "type": "time-series",
+    "color": null,
+    "icon": null,
+    "name": "Aktivitäten der letzten 31 Tage (Tages-Präzision)",
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "curveType": "stepline",
+      "precision": "day",
+      "range": "1 month"
+    },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 80,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "c425a49b-ab97-4db4-8bd2-516bca633547"
   },
   {
     "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
@@ -3990,7 +4285,7 @@
     "note": null,
     "height": 5,
     "width": 26,
-    "position_y": 2,
+    "position_y": 7,
     "position_x": 42,
     "show_header": true,
     "_syncId": "c6fa058b-f8a9-4de7-9da9-f0390ff81058"
@@ -4024,6 +4319,32 @@
     "position_x": 32,
     "show_header": true,
     "_syncId": "c7dd7f74-84b1-433d-9911-b6b7fece5307"
+  },
+  {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "type": "time-series",
+    "color": null,
+    "icon": null,
+    "name": "Aktivitäten der letzten 3 Monate (Tages-Präzision)",
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "curveType": "stepline",
+      "precision": "day",
+      "range": "3 months"
+    },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 92,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "c8284bcd-5818-499b-a754-f71eaa9ae139"
   },
   {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
@@ -4143,7 +4464,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 84,
+    "position_y": 95,
     "position_x": 1,
     "show_header": true,
     "_syncId": "d132f5e6-0e93-481c-97fb-5532f0a694a8"
@@ -4164,10 +4485,52 @@
     "note": null,
     "height": 14,
     "width": 65,
-    "position_y": 112,
+    "position_y": 124,
     "position_x": 1,
     "show_header": true,
     "_syncId": "d31f445f-36f1-4e12-9e7a-fa02b55b5346"
+  },
+  {
+    "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
+    "type": "pie-chart",
+    "color": null,
+    "icon": null,
+    "name": "Alle Mensa Rückmeldungen",
+    "options": {
+      "collection": "canteens_feedbacks_labels_entries",
+      "field": "id",
+      "function": "count",
+      "filter": {
+        "_and": [
+          {
+            "_and": [
+              {
+                "status": {
+                  "_eq": "published"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "conditionalFormatting": [
+        {
+          "operator": ">=",
+          "value": 0,
+          "color": "#E35169"
+        }
+      ],
+      "column": "dislike",
+      "legend": "right",
+      "showLabels": true
+    },
+    "note": null,
+    "height": 16,
+    "width": 30,
+    "position_y": 28,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "d496d133-7568-4deb-b663-fa603ce701b9"
   },
   {
     "dashboard": "e337cf40-e1f1-4381-9e20-6f50a19aebc4",
@@ -4349,10 +4712,10 @@
       }
     },
     "note": null,
-    "height": 8,
-    "width": 22,
-    "position_y": 55,
-    "position_x": 39,
+    "height": 6,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 31,
     "show_header": true,
     "_syncId": "deecb988-5196-484f-8e80-5eed5d9b0f45"
   },
@@ -4423,6 +4786,32 @@
     "_syncId": "e75b9497-dca7-4048-a1ac-ba3cdbcc1620"
   },
   {
+    "dashboard": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62",
+    "type": "time-series",
+    "color": null,
+    "icon": null,
+    "name": "Aktivitäten der letzten 12 Monate (Wochen-Präzision)",
+    "options": {
+      "collection": "directus_activity",
+      "xAxis": "timestamp",
+      "yAxis": null,
+      "function": "count",
+      "dateField": "timestamp",
+      "valueField": "id",
+      "filter": null,
+      "curveType": "stepline",
+      "precision": "week",
+      "range": "12 months"
+    },
+    "note": null,
+    "height": 12,
+    "width": 65,
+    "position_y": 116,
+    "position_x": 1,
+    "show_header": true,
+    "_syncId": "e89beb42-3d57-43e8-abb4-0598bc98e16c"
+  },
+  {
     "dashboard": "09b59cc1-13e5-4210-84b8-ad6704b867e4",
     "type": "metric",
     "color": null,
@@ -4478,7 +4867,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 76,
+    "position_y": 87,
     "position_x": 1,
     "show_header": true,
     "_syncId": "e99bbe32-5185-4ebc-af46-68065ab707cf"
@@ -4539,7 +4928,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 72,
+    "position_y": 83,
     "position_x": 1,
     "show_header": true,
     "_syncId": "eb659e53-9486-4576-92e1-aaee48715101"
@@ -4660,7 +5049,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 76,
+    "position_y": 87,
     "position_x": 31,
     "show_header": true,
     "_syncId": "f0d0c3d3-551c-48c5-9b93-fc1073871509"
@@ -4792,7 +5181,7 @@
     "note": null,
     "height": 4,
     "width": 30,
-    "position_y": 68,
+    "position_y": 79,
     "position_x": 31,
     "show_header": true,
     "_syncId": "f74e0dba-e962-4ca5-878e-d6c1c100c5b2"
@@ -4898,5 +5287,27 @@
     "position_x": 1,
     "show_header": true,
     "_syncId": "fd6b34ff-59c3-4ab2-96bb-67dc5afc5898"
+  },
+  {
+    "dashboard": "e64e5e4c-7a81-43ce-aa89-85ae27971add",
+    "type": "meter",
+    "color": null,
+    "icon": null,
+    "name": "Durchschnittliche Zufriedenheit aller Speisen",
+    "options": {
+      "collection": "foods_feedbacks",
+      "column": "rating",
+      "field": "rating",
+      "fn": "avg",
+      "max": 5,
+      "strokeWidth": 8
+    },
+    "note": null,
+    "height": 6,
+    "width": 32,
+    "position_y": 1,
+    "position_x": 2,
+    "show_header": true,
+    "_syncId": "fddaa55a-8dce-4ad1-b969-5cfffefe3d26"
   }
 ]

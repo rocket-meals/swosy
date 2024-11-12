@@ -1,13 +1,13 @@
 {
-  "collection": "canteens_feedbacks_labels_entries",
-  "field": "dislike",
+  "collection": "foods_feedbacks_labels_entries",
+  "field": "like",
   "type": "boolean",
   "meta": {
-    "collection": "canteens_feedbacks_labels_entries",
+    "collection": "foods_feedbacks_labels_entries",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "dislike",
+    "field": "like",
     "group": null,
     "hidden": false,
     "interface": "boolean",
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 14,
     "special": [
       "cast-boolean"
     ],
@@ -25,8 +25,8 @@
     "width": "full"
   },
   "schema": {
-    "name": "dislike",
-    "table": "canteens_feedbacks_labels_entries",
+    "name": "like",
+    "table": "foods_feedbacks_labels_entries",
     "data_type": "boolean",
     "default_value": null,
     "max_length": null,

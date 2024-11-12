@@ -28,7 +28,7 @@
     "name": "dislike",
     "table": "foods_feedbacks_labels_entries",
     "data_type": "boolean",
-    "default_value": true,
+    "default_value": null,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
