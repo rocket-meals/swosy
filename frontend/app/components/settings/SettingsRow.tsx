@@ -80,8 +80,13 @@ export const SettingsRow: FunctionComponent<SettingsRowProps> = (props) => {
 		let content:any = null;
 
 		if (showPress && !rightIcon) {
-			content = <Icon style={{color: usedTextColor}} name={IconNames.chevron_right_icon} />;
+			let usedIcon = IconNames.chevron_right_icon;
+			if(props.expandable){
+				usedIcon = internalExpanded ? IconNames.chevron_up_icon : IconNames.chevron_down_icon;
+			}
+			content = <Icon style={{color: usedTextColor}} name={usedIcon} />;
 		}
+
 		if (rightIcon) {
 			content = <Icon style={{color: usedTextColor}} name={rightIcon} />
 		}

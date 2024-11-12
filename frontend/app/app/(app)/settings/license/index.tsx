@@ -2,11 +2,11 @@ import React from 'react';
 import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {ScrollViewWithGradient} from '@/components/scrollview/ScrollViewWithGradient';
 // import package-lock.json
-import currentpackageJson from "../../../../package.json";
-import currentpackageJsonLock from '../../../../package-lock.json';
-import thirdpartyLicense from '../../../../thirdpartyLicense.json';
-import {SettingsRow} from "@/components/settings/SettingsRow";
+import thirdpartyLicenses from '../../../../licenses.json';
+import {SettingsRow, SettingsRowExpandable} from "@/components/settings/SettingsRow";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
+import {SettingsRowNavigate, SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 
 export default function SettingsLicenseScreen() {
 
@@ -16,63 +16,69 @@ export default function SettingsLicenseScreen() {
 
 	function renderAllPackages(){
 		let output = [];
-		let dependencies = currentpackageJson?.dependencies || {};
-		let lockPackageDependencies = currentpackageJsonLock?.packages || {};
+		let dependencies = thirdpartyLicenses || {};
 
 		let dependencyKeys = Object.keys(dependencies);
 		for(let dependencyKey of dependencyKeys){
-			let upperVersion = dependencies[dependencyKey];
+			let licenseInformation = dependencies?.[dependencyKey];
 
-			let keyInPackageLockDependency = "node_modules/"+dependencyKey;
-			let packageLockDependency = lockPackageDependencies[keyInPackageLockDependency] || {};
-			let currentVersion = packageLockDependency?.version;
+			/**
+			 * "react-secure-storage@1.3.2": {
+			 *         "licenses": "MIT",
+			 *         "repository": "https://github.com/sushinpv/react-secure-storage",
+			 *         "licenseUrl": "https://github.com/sushinpv/react-secure-storage",
+			 *         "parents": "rocket-meals-dev"
+			 *     },
+			 */
 
-			let thirdpartyDependency = thirdpartyLicense[dependencyKey+"@"+currentVersion];
+			// @directus/sdk@17.0.1
 
-			output.push(renderPackage(dependencyKey, upperVersion, currentVersion, thirdpartyDependency));
+			// get position of last @
+			let lastAt = dependencyKey.lastIndexOf("@");
+			let packageName = dependencyKey.substring(0, lastAt);
+			let currentVersion = dependencyKey.substring(lastAt+1);
+
+			let license = licenseInformation?.licenses;
+			let repositoryUrl = licenseInformation?.repository;
+			let licenseUrl = licenseInformation?.licenseUrl;
+
+			output.push(renderPackage(dependencyKey, packageName, currentVersion, license, repositoryUrl, licenseUrl));
 		}
 		return output;
 	}
 
-	function renderPackage(dependencyKey, upperVersion, currentVersion, thirdpartyDependency){
-		let label = dependencyKey;
-		let key = dependencyKey;
-
-		let repositoryUrl = thirdpartyDependency?.repository;
-		let url = thirdpartyDependency?.url;
-		let backupUrl = url || repositoryUrl;
-
-		let packageUrl = getUrlToPackageInformation(dependencyKey);
-		let license = thirdpartyDependency?.licenses
-		let publisher = thirdpartyDependency?.publisher
-		let email = thirdpartyDependency?.email
+	function renderPackage(dependencyKey: string, packageName: string, currentVersion: string, license: string, repositoryUrl: string, licenseUrl: string){
+		let label = packageName;
 
 		let contents = [];
+		if(!!packageName){
+			contents.push(<SettingsRow labelLeft={"Package"} labelRight={packageName} accessibilityLabel={packageName} />)
+		}
 		if(!!currentVersion){
 			contents.push(<SettingsRow labelLeft={"Version"} labelRight={currentVersion} accessibilityLabel={currentVersion} />)
-		}
-		if(!!upperVersion){
-			contents.push(<SettingsRow labelLeft={"Upper Version"} labelRight={upperVersion} accessibilityLabel={upperVersion} />)
 		}
 		if(!!license){
 			contents.push(<SettingsRow labelLeft={"License"} labelRight={license} accessibilityLabel={license} />)
 		}
-		if(!!publisher){
-			contents.push(<SettingsRow labelLeft={"Publisher"} labelRight={publisher} accessibilityLabel={publisher} />)
+		if(!!repositoryUrl){
+			contents.push(<SettingsRowNavigate labelLeft={"Repository"} labelRight={repositoryUrl} accessibilityLabel={repositoryUrl} onPress={() => {
+				CommonSystemActionHelper.openExternalURL(repositoryUrl, true)
+			}} />)
 		}
-		if(!!email){
-			contents.push(<SettingsRow labelLeft={"Email"} labelRight={email} accessibilityLabel={email} />)
-		}
-		if(!!backupUrl){
-			contents.push(<SettingsRow labelLeft={"Repository"} labelRight={backupUrl} accessibilityLabel={backupUrl} />)
+		if(!!licenseUrl){
+			contents.push(<SettingsRowNavigate labelLeft={"License URL"} labelRight={licenseUrl} accessibilityLabel={licenseUrl} onPress={() => {
+				CommonSystemActionHelper.openExternalURL(licenseUrl, true)
+			}} />)
 		}
 
 		return (
-			<SettingsRow key={dependencyKey} accessibilityLabel={label} labelLeft={label} expandable={true}>
-				<SettingsRowGroup>
-					{contents}
-				</SettingsRowGroup>
-			</SettingsRow>
+			<>
+				<SettingsRow key={dependencyKey} accessibilityLabel={label} labelLeft={label} labelRight={currentVersion} expandable={true}>
+					<SettingsRowGroup>
+						{contents}
+					</SettingsRowGroup>
+				</SettingsRow>
+			</>
 		);
 	}
 

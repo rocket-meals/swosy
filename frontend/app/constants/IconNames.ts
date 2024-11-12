@@ -73,6 +73,8 @@ export class IconNames {
     static select_option_inactive_icon = 'checkbox-blank-circle-outline'
     static chevron_right_icon = 'chevron-right'
     static chevron_left_icon = 'chevron-left'
+    static chevron_down_icon = 'chevron-down'
+    static chevron_up_icon = 'chevron-up'
     static color_edit_icon = 'palette'
     static news_open_external_icon = 'open-in-new'
 
