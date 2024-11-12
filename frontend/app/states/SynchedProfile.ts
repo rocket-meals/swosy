@@ -606,6 +606,13 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 		const profilesMarkingsDict: Record<string, ProfilesMarkings> = {};
 		for (let i=0; i<profileMarkingsList.length; i++) {
 			const profilesMarking = profileMarkingsList[i];
+
+			// Legacy support for old markings
+			if(profilesMarking.dislike !== undefined){ // if dislike is set, we need to convert it to like
+				profilesMarking.like = !profilesMarking.dislike;
+				delete profilesMarking.dislike;
+			}
+
 			const markings_key = profilesMarking.markings_id;
 			markingsDictDep += ""+profilesMarking.like + profilesMarking.markings_id;
 			if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
