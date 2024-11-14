@@ -49,49 +49,57 @@ export function useColorForSelectionWithOption(color: string | undefined, lighte
 	return getLighterOrDarkerColorByContrastWithOptions(color, ContrastThresholdSelectedItems.MaternaLandNiedersachsen, lightenUpColor);
 }
 
-function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined, contrastRatio: number, lightenUpColor: boolean): string {
-	const start = performance.now();
+class ColorContrastCache {
+	private static cache: Map<string, string> = new Map<string, string>();
 
-	const dependencyKey = ""+color + contrastRatio;
-	let steps = 0;
-
-	let result = useMemo(() => {
-		if (!color) {
-			return 'transparent';
+	static getColorContrast(color: string, contrastRatio: number, lightenUpColor: boolean): string {
+		const key = `${color}-${contrastRatio}-${lightenUpColor}`;
+		if (!this.cache.has(key)) {
+			// Compute the contrast-adjusted color and store it in the cache
+			this.cache.set(key, this.computeContrastColor(color, contrastRatio, lightenUpColor));
 		}
+		return this.cache.get(key) as string;
+	}
 
-		const backgroundColor = Color(color);
-		const isDark = backgroundColor.isDark();
-		let modifiedColor = backgroundColor.clone();
-		const step = 1; // Adjust step to be more precise
+	private static computeContrastColor(color: string, contrastRatio: number, lightenUpColor: boolean): string {
+		let steps = 0;
+		let modifiedColor = Color(color).clone();
+		const step = 10;
 		let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
 
-		// Loop until the contrast ratio is met or improved
-		while (currentContrastRatio < contrastRatio) {
-			if(steps>100) {
-				console.warn("getLighterOrDarkerColorByContrast: color: ", color, "contrastRatio: ", contrastRatio, "steps: ", steps)
-				break;
-			}
-			if (lightenUpColor) {
-				modifiedColor = modifiedColor.lighten(step);
-			} else {
-				modifiedColor = modifiedColor.darken(step);
-			}
-			currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+		while (currentContrastRatio < contrastRatio && steps < 100) {
+			modifiedColor = lightenUpColor ? modifiedColor.lighten(step) : modifiedColor.darken(step);
+			const newContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+
+			// Avoid infinite loop by breaking if contrast ratio improves minimally
+			if (Math.abs(newContrastRatio - currentContrastRatio) < 0.01) break;
+
+			currentContrastRatio = newContrastRatio;
 			steps++;
 		}
 
 		return modifiedColor.toHexString();
-	}, [dependencyKey]); // Only recompute if color or contrastRatio changes
+	}
+}
+
+
+
+function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined, contrastRatio: number, lightenUpColor: boolean): string {
+	const start = performance.now();
+
+	// Exit early if color is undefined
+	if (!color) return 'transparent';
+
+	// Use cached result from the static ColorContrastCache
+	const result = ColorContrastCache.getColorContrast(color, contrastRatio, lightenUpColor);
 
 	const end = performance.now();
-	let duration = end - start;
-	if(duration>5) {
-		console.log("WARNING - getLighterOrDarkerColorByContrast: color: ", color, "duration: ", duration, "ms", "contrastRatio: ", contrastRatio, "result: ", result, "steps: ", steps)
+	const duration = end - start;
+	if (duration > 5) {
+		console.log("WARNING - getLighterOrDarkerColorByContrast:", { color, duration, contrastRatio, result });
 	}
 
 	return result;
-
 }
 
 export enum ContrastThresholdSelectedItems {
