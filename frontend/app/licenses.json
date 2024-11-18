@@ -1,41 +1,41 @@
 {
-    "@directus/sdk@17.0.1": {
+    "@directus/sdk@17.0.2": {
         "licenses": "MIT",
         "repository": "https://github.com/directus/directus",
         "licenseUrl": "https://github.com/directus/directus/raw/master/license",
         "parents": "rocket-meals-dev"
     },
-    "@dotlottie/react-player@1.6.17": {
+    "@dotlottie/react-player@1.6.19": {
         "licenses": "MIT",
         "repository": "https://github.com/dotlottie/player-component",
         "licenseUrl": "https://github.com/dotlottie/player-component/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "@expo/vector-icons@14.0.2": {
+    "@expo/vector-icons@14.0.4": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/vector-icons",
         "licenseUrl": "https://github.com/expo/vector-icons/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "@gluestack-style/react@1.0.56": {
+    "@gluestack-style/react@1.0.57": {
         "licenses": "UNKNOWN",
         "repository": "https://github.com/gluestack/gluestack-ui",
         "licenseUrl": "https://github.com/gluestack/gluestack-ui",
         "parents": "rocket-meals-dev"
     },
-    "@gluestack-ui/config@1.1.18": {
+    "@gluestack-ui/config@1.1.20": {
         "licenses": "ISC",
         "repository": "https://github.com/gluestack/gluestack-ui",
         "licenseUrl": "https://github.com/gluestack/gluestack-ui",
         "parents": "rocket-meals-dev"
     },
-    "@gluestack-ui/themed@1.1.25": {
+    "@gluestack-ui/themed@1.1.61": {
         "licenses": "ISC",
         "repository": "https://github.com/gluestack/gluestack-ui",
         "licenseUrl": "https://github.com/gluestack/gluestack-ui",
         "parents": "rocket-meals-dev"
     },
-    "@lottiefiles/react-lottie-player@3.5.3": {
+    "@lottiefiles/react-lottie-player@3.5.4": {
         "licenses": "MIT",
         "repository": "https://github.com/LottieFiles/lottie-react",
         "licenseUrl": "https://github.com/LottieFiles/lottie-react/raw/master/LICENSE",
@@ -47,31 +47,29 @@
         "licenseUrl": "https://github.com/react-native-async-storage/async-storage/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "@react-navigation/drawer@6.6.6": {
+    "@react-navigation/drawer@6.7.2": {
         "licenses": "MIT",
         "repository": "https://github.com/react-navigation/react-navigation",
         "licenseUrl": "https://github.com/react-navigation/react-navigation/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "@react-navigation/native@6.1.9": {
+    "@react-navigation/native@6.1.18": {
         "licenses": "MIT",
         "repository": "https://github.com/react-navigation/react-navigation",
         "licenseUrl": "https://github.com/react-navigation/react-navigation/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "@types/axios@0.14.0": {
+    "@types/axios@0.14.4": {
         "licenses": "MIT",
-        "repository": "https://github.com/mzabriskie/axios",
-        "licenseUrl": "https://github.com/mzabriskie/axios",
         "parents": "rocket-meals-dev"
     },
-    "axios@1.6.7": {
+    "axios@1.7.7": {
         "licenses": "MIT",
         "repository": "https://github.com/axios/axios",
         "licenseUrl": "https://github.com/axios/axios/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "easy-peasy@6.0.4": {
+    "easy-peasy@6.0.5": {
         "licenses": "MIT",
         "repository": "https://github.com/ctrlplusb/easy-peasy",
         "licenseUrl": "https://github.com/ctrlplusb/easy-peasy/raw/master/LICENSE",
@@ -161,13 +159,13 @@
         "licenseUrl": "https://github.com/expo/expo",
         "parents": "rocket-meals-dev"
     },
-    "expo-notifications@0.28.16": {
+    "expo-notifications@0.28.19": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/expo",
         "licenseUrl": "https://github.com/expo/expo",
         "parents": "rocket-meals-dev"
     },
-    "expo-router@3.5.23": {
+    "expo-router@3.5.24": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/expo",
         "licenseUrl": "https://github.com/expo/expo",
@@ -185,7 +183,7 @@
         "licenseUrl": "https://github.com/expo/expo",
         "parents": "rocket-meals-dev"
     },
-    "expo-splash-screen@0.27.5": {
+    "expo-splash-screen@0.27.7": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/expo",
         "licenseUrl": "https://github.com/expo/expo",
@@ -209,7 +207,7 @@
         "licenseUrl": "https://github.com/expo/expo",
         "parents": "rocket-meals-dev"
     },
-    "expo-updates@0.25.24": {
+    "expo-updates@0.25.27": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/expo",
         "licenseUrl": "https://github.com/expo/expo",
@@ -221,7 +219,7 @@
         "licenseUrl": "https://github.com/expo/expo",
         "parents": "rocket-meals-dev"
     },
-    "expo@51.0.32": {
+    "expo@51.0.39": {
         "licenses": "MIT",
         "repository": "https://github.com/expo/expo",
         "licenseUrl": "https://github.com/expo/expo",
@@ -233,7 +231,7 @@
         "licenseUrl": "https://github.com/Leaflet/Leaflet/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "lightningcss@1.26.0": {
+    "lightningcss@1.28.1": {
         "licenses": "MPL-2.0",
         "repository": "https://github.com/parcel-bundler/lightningcss",
         "licenseUrl": "https://github.com/parcel-bundler/lightningcss/raw/master/LICENSE",
@@ -251,7 +249,7 @@
         "licenseUrl": "https://github.com/react-native-community/lottie-react-native",
         "parents": "rocket-meals-dev"
     },
-    "markdown-it@14.0.0": {
+    "markdown-it@14.1.0": {
         "licenses": "MIT",
         "repository": "https://github.com/markdown-it/markdown-it",
         "licenseUrl": "https://github.com/markdown-it/markdown-it/raw/master/LICENSE",
@@ -287,7 +285,7 @@
         "licenseUrl": "https://github.com/souporserious/react-measure/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "react-native-calendar-timetable@1.0.6": {
+    "react-native-calendar-timetable@1.0.7": {
         "licenses": "MIT",
         "repository": "https://github.com/dorkyboi/react-native-calendar-timetable",
         "licenseUrl": "https://github.com/dorkyboi/react-native-calendar-timetable/raw/master/LICENSE",
@@ -305,7 +303,7 @@
         "licenseUrl": "https://github.com/software-mansion/react-native-gesture-handler/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "react-native-nfc-manager@3.14.14": {
+    "react-native-nfc-manager@3.16.0": {
         "licenses": "MIT",
         "repository": "https://github.com/whitedogg13/react-native-nfc-manager",
         "licenseUrl": "https://github.com/whitedogg13/react-native-nfc-manager/raw/master/LICENSE",
@@ -347,7 +345,7 @@
         "licenseUrl": "https://github.com/gre/react-native-view-shot/raw/master/LICENSE",
         "parents": "rocket-meals-dev"
     },
-    "react-native-web@0.19.10": {
+    "react-native-web@0.19.13": {
         "licenses": "MIT",
         "repository": "https://github.com/necolas/react-native-web",
         "licenseUrl": "https://github.com/necolas/react-native-web/raw/master/LICENSE",
