@@ -74,6 +74,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 
 		renderedOptions.push(
 			<MyButton
+				key={foods_ratings_type+'_'+MAX_RATING}
 				backgroundColor={color}
 				borderRadius={borderRadius} isActive={rating === MAX_RATING} onPress={() => {
 				if(isActive){
@@ -97,6 +98,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 		if(!showQuickAction){
 			renderedOptions.push(
 				<MyButton
+					key={foods_ratings_type+'_'+MIN_RATING}
 					backgroundColor={color}
 					useOnlyNecessarySpace={true}
 					borderRightRadius={0}
@@ -111,6 +113,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 
 			renderedOptions.push(
 				<MyButton
+					key={foods_ratings_type+'_'+MAX_RATING}
 					backgroundColor={color}
 					useOnlyNecessarySpace={true}
 					borderLeftRadius={0}
@@ -126,6 +129,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 			if(isDislikeActive){
 				renderedOptions.push(
 					<MyButton
+						key={foods_ratings_type+'_'+MIN_RATING}
 						backgroundColor={color}
 						useOnlyNecessarySpace={true}
 						borderRadius={borderRadius} isActive={isDislikeActive} onPress={() => {
@@ -139,6 +143,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 			} else {
 				renderedOptions.push(
 					<MyButton
+						key={foods_ratings_type+'_'+MAX_RATING}
 						backgroundColor={color}
 						useOnlyNecessarySpace={true}
 						borderRadius={borderRadius} isActive={isLikeActive} onPress={() => {
@@ -192,6 +197,7 @@ export const MyRatingButton = ({color, rating, showQuickAction, ratingType, setR
 				let icon = isRatingEqualOrHigher ? IconNames.star_active_icon : IconNames.star_inactive_icon
 				renderedOptions.push(
 					<MyButton
+						key={foods_ratings_type+'_'+i}
 						backgroundColor={color}
 						useOnlyNecessarySpace={true}
 						borderLeftRadius={borderLeftRadius}

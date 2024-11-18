@@ -14,14 +14,30 @@ import {useViewBackgroundColor} from '@/components/Themed';
  * @param {string} background - The background color in any CSS color format.
  * @returns {number} - The contrast ratio between the foreground and background colors.
  */
+class ContrastRatioCache{
+	private static cache: Map<string, number> = new Map<string, number>();
+
+	static getContrastRatio(foreground: string | undefined, background: string): number {
+		const key = `${foreground}-${background}`;
+		if (!this.cache.has(key)) {
+			// Compute the contrast ratio and store it in the cache
+			this.cache.set(key, this.computeContrastRatio(foreground, background));
+		}
+		return this.cache.get(key) as number;
+	}
+
+	private static computeContrastRatio(foreground: string | undefined, background: string): number {
+		const lumA = Color(foreground).getLuminance();
+		const lumB = Color(background).getLuminance();
+		return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+	}
+}
+
 export function getContrastRatio(foreground: string | undefined | null, background: string): number {
 	const start = performance.now();
 
 	let usedForeground = !!foreground ? foreground : undefined
-
-	const lumA = Color(usedForeground).getLuminance();
-	const lumB = Color(background).getLuminance();
-	let contrastRation = (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
+	let contrastRation = ContrastRatioCache.getContrastRatio(usedForeground, background);
 
 	const end = performance.now();
 	let duration = end - start;
