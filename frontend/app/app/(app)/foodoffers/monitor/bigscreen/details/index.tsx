@@ -434,12 +434,13 @@ export default function FoodBigScreenScreen() {
 			}}>
 				<View style={{
 					flex: 1,
+					justifyContent: "space-between",
 					width: '80%',
 					paddingTop: 20,
 					paddingBottom: 10
 				}}>
 					<View style={{
-						flex: 1,
+						flex: 3,
 						width: '100%',
 						alignItems: 'flex-end'
 					}}>
@@ -458,57 +459,61 @@ export default function FoodBigScreenScreen() {
 						<Text style={{
 							width: '100%',
 							textAlign: 'right'
-						}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={3} bold={true}>
+						}} size={TEXT_SIZE_3_EXTRA_LARGE} numberOfLines={6} ellipsizeMode={"tail"} bold={true}>
 							{foodName}
 						</Text>
 					</View>
 					<View style={{
-						flex: 1,
-						width: '100%',
-					}}>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_student+":"}
-							</Text>
-							<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
-								{priceStudent}
-							</Text>
-						</View>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_employee+": "+priceEmployee}
-							</Text>
-						</View>
-						<View style={{
-							width: '100%',
-							alignItems: 'flex-end',
-						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_price_group_guest+": "+priceGuest}
-							</Text>
-						</View>
-
-					</View>
-					<View style={{
-						flex: 1,
 						alignItems: 'flex-end',
-						//backgroundColor: "blue"
+						paddingBottom: 20,
 					}}>
 						<View style={{
 							width: '100%',
-							alignItems: 'flex-end',
+							paddingBottom: 20,
 						}}>
-							<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
-								{translation_markings+":"}
-							</Text>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_student+":"}
+								</Text>
+								<Text size={TEXT_SIZE_5_EXTRA_LARGE} bold={true}>
+									{priceStudent}
+								</Text>
+							</View>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_employee+": "+priceEmployee}
+								</Text>
+							</View>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_price_group_guest+": "+priceGuest}
+								</Text>
+							</View>
+
 						</View>
-						<MarkingInformationList  markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
+						<View style={{
+							alignItems: 'flex-end',
+							//backgroundColor: "blue"
+						}}>
+							<View style={{
+								width: '100%',
+								alignItems: 'flex-end',
+							}}>
+								<Text size={TEXT_SIZE_EXTRA_LARGE} bold={true}>
+									{translation_markings+":"}
+								</Text>
+							</View>
+							<MarkingInformationList  markingIds={markingsIds} textSize={TEXT_SIZE_EXTRA_LARGE} />
+						</View>
 					</View>
 				</View>
 			</View>
