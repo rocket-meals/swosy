@@ -22,7 +22,7 @@ import {SettingsRowAppUpdate} from "@/compositions/settings/SettingsRowAppUpdate
 import {SettingsRowAccountBalance} from "@/compositions/settings/SettingsRowAccountBalance";
 import {SettingsRowDataAccess} from "@/compositions/settings/SettingsRowDataAccess";
 import {ProjectBanner} from "@/components/project/ProjectBanner";
-import {View} from "@/components/Themed";
+import {View, Text} from "@/components/Themed";
 import {useDeveloperModeRaw, useIsDeveloperModeActive} from "@/states/Develop";
 import {MyTouchableOpacity} from "@/components/buttons/MyTouchableOpacity";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -67,6 +67,9 @@ export default function SettingsScreen() {
 	if(isDevelopModeActive){
 		renderedDeveloperModeSettings = (
 			<SettingsRowGroup>
+				<Text>
+					{"Developer Mode Settings"}
+				</Text>
 				<SettingsRowSyncBooleanSwitch labelLeft={'Debug'} leftIcon={IconNames.debug_icon} accessibilityLabel={'Debug'} variable={PersistentStore.debug} />
 				<SettingsRowSyncBooleanSwitch labelLeft={'Demo'} leftIconOn={IconNames.demo_icon_on} leftIconOff={IconNames.demo_icon_off} accessibilityLabel={'Demo'} variable={PersistentStore.demo} />
 				<SettingsRowSyncBooleanSwitch labelLeft={'Animation Auto Play Off'} leftIconOn={IconNames.performance_icon_on} leftIconOff={IconNames.performance_icon_off} accessibilityLabel={'Performance'} variable={PersistentStore.animations_auto_play_disabled} />

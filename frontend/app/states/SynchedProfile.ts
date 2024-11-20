@@ -648,7 +648,6 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 					nextProfileMarkings = nextProfileMarkings.filter((x) => x.markings_id !== marking_id);
 				}
 
-				currentProfile.markings = currentProfileMarkings;
 				currentProfile.markings = nextProfileMarkings;
 			}
 			return currentProfile;
