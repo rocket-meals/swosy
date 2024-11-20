@@ -607,12 +607,6 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 		for (let i=0; i<profileMarkingsList.length; i++) {
 			const profilesMarking = profileMarkingsList[i];
 
-			// Legacy support for old markings
-			if(profilesMarking.dislike !== undefined){ // if dislike is set, we need to convert it to like
-				profilesMarking.like = !profilesMarking.dislike;
-				delete profilesMarking.dislike;
-			}
-
 			const markings_key = profilesMarking.markings_id;
 			markingsDictDep += ""+profilesMarking.like + profilesMarking.markings_id;
 			if (!!markings_key && typeof profilesMarking.markings_id === 'string') {
@@ -634,13 +628,28 @@ export function useSynchedProfileMarkingsDict(): [Record<string, ProfilesMarking
 					like: like
 				};
 				let currentProfileMarkings = currentProfile?.markings || [];
-				currentProfileMarkings.push(newProfileMarking as ProfilesMarkings);
+				let nextProfileMarkings = [];
+
+				let found = false;
+				for(let i=0; i<currentProfileMarkings.length; i++){
+					const currentProfileMarking = currentProfileMarkings[i];
+					if(currentProfileMarking.markings_id === marking_id){
+						currentProfileMarking.like = like;
+						found = true;
+					}
+					nextProfileMarkings.push(currentProfileMarking);
+				}
+
+				if(!found){
+					nextProfileMarkings.push(newProfileMarking as ProfilesMarkings);
+				}
 
 				if (remove) {
-					currentProfileMarkings = currentProfileMarkings.filter((x) => x.markings_id !== marking_id);
+					nextProfileMarkings = nextProfileMarkings.filter((x) => x.markings_id !== marking_id);
 				}
 
 				currentProfile.markings = currentProfileMarkings;
+				currentProfile.markings = nextProfileMarkings;
 			}
 			return currentProfile;
 		});
