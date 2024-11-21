@@ -2034,14 +2034,14 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.zh_CN]: '环境影响'
 	},
 	food_information_disclaimer: {
-		[LanguageKeys.de_DE]: 'Die Angaben zu den Daten basieren auf den Informationen, die uns zur Verfügung stehen und können von den tatsächlichen Werten abweichen. Änderungen vorbehalten. Weitere Informationen zu den Daten können hier entnommen werden:',
-		[LanguageKeys.en_US]: 'The data is based on the information available to us and may differ from the actual values. Subject to change. Further information on the data can be found here:',
-		[LanguageKeys.ar_SA]: 'تعتمد البيانات على المعلومات المتاحة لدينا وقد تختلف عن القيم الفعلية. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول البيانات هنا:',
-		[LanguageKeys.es_ES]: 'Los datos se basan en la información disponible para nosotros y pueden diferir de los valores reales. Sujeto a cambios. Puede encontrar más información sobre los datos aquí:',
-		[LanguageKeys.fr_FR]: 'Les données sont basées sur les informations dont nous disposons et peuvent différer des valeurs réelles. Sous réserve de modifications. Vous trouverez plus d\'informations sur les données ici:',
-		[LanguageKeys.ru_RU]: 'Данные основаны на информации, доступной нам, и могут отличаться от фактических значений. Подлежит изменению. Дополнительную информацию о данных можно найти здесь:',
-		[LanguageKeys.tr_TR]: 'Veriler, bize sunulan bilgilere dayanmaktadır ve gerçek değerlerden farklı olabilir. Değişikliklere tabidir. Verilerle ilgili daha fazla bilgi burada bulunabilir:',
-		[LanguageKeys.zh_CN]: '数据基于我们掌握的信息，可能与实际值有所不同。如有更改。有关数据的更多信息，请参见此处：'
+		[LanguageKeys.de_DE]: 'Die Speise-Kennzeichnungsdaten basieren auf verfügbaren Informationen und können abweichen. Wir bemühen uns um einen korrekten Filter in der App, schließen technische Probleme jedoch nicht aus. Es gilt die Auszeichnungen vor Ort. Weitere Informationen zu den Daten können hier entnommen werden:',
+		[LanguageKeys.en_US]: 'The food labeling data is based on available information and may vary. We strive for a correct filter in the app, but technical problems cannot be ruled out. The awards on site apply. Further information on the data can be found here:',
+		[LanguageKeys.ar_SA]: 'تعتمد بيانات تصنيف الطعام على المعلومات المتاحة وقد تختلف. نحن نسعى لتصفية صحيحة في التطبيق ، ولكن لا يمكن استبعاد المشاكل التقنية. تنطبق الجوائز في الموقع. يمكن العثور على مزيد من المعلومات حول البيانات هنا:',
+		[LanguageKeys.es_ES]: 'Los datos de etiquetado de alimentos se basan en la información disponible y pueden variar. Nos esforzamos por un filtro correcto en la aplicación, pero no se pueden descartar problemas técnicos. Los premios en el lugar son aplicables. Puede encontrar más información sobre los datos aquí:',
+		[LanguageKeys.fr_FR]: 'Les données d\'étiquetage des aliments sont basées sur les informations disponibles et peuvent varier. Nous nous efforçons d\'avoir un filtre correct dans l\'application, mais des problèmes techniques ne peuvent pas être exclus. Les récompenses sur place s\'appliquent. Vous trouverez plus d\'informations sur les données ici:',
+		[LanguageKeys.ru_RU]: 'Данные о маркировке продуктов основаны на доступной информации и могут отличаться. Мы стремимся к правильному фильтру в приложении, но технические проблемы не исключены. Награды на месте применяются. Дополнительную информацию о данных можно найти здесь:',
+		[LanguageKeys.tr_TR]: 'Yiyecek et iketleme verileri mevcut bilgilere dayanmaktadır ve değişebilir. Uygulamada doğru bir filtre için çaba sarf ediyoruz, ancak teknik sorunlar göz ardı edilemez. Yerindeki ödüller geçerlidir. Verilerle ilgili daha fazla bilgiye buradan ulaşabilirsiniz:',
+		[LanguageKeys.zh_CN]: '食品标签数据基于可用信息，可能会有所不同。我们努力在应用程序中使用正确的过滤器，但不能排除技术问题。现场的奖项适用。您可以在此处找到有关数据的更多信息：'
 	},
 	nutrition_calories: {
 		[LanguageKeys.de_DE]: 'Energie',

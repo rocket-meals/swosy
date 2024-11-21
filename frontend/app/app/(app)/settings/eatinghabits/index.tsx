@@ -4,6 +4,7 @@ import {MarkingList} from "@/components/food/MarkingList";
 import {AnimationAllergene} from "@/compositions/animations/AnimationAllergene";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {View, Text} from "@/components/Themed";
+import {FoodInformationDisclaimer} from "@/compositions/fooddetails/FoodDetails";
 
 export default function EatingHabitsScreen() {
 
@@ -16,6 +17,7 @@ export default function EatingHabitsScreen() {
 			paddingHorizontal: 20,
 		}}>
 			<Text>{translation_eatinghabits_introduction}</Text>
+			<FoodInformationDisclaimer />
 		</View>
 	</>
 
