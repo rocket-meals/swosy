@@ -27,6 +27,7 @@ import {useSynchedPoliciesDict} from "@/states/SynchedPolicies";
 import {useSynchedCanteensFeedbacksLabelsDict} from "@/states/SynchedCanteensFeedbacksLabels";
 import {useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
+import {useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict} from "@/states/SynchedCanteensFeedbacksLabelsEntries";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -67,7 +68,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [canteensFeedbacksLabelsDict, setCanteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels] = useSynchedCanteensFeedbacksLabelsDict()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [ownFoodFeedbacksLabelsEntriesListDict, setOwnFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
-	const [ownCanteenFeedbacksLabelsEntriesDict, setOwnCanteenFeedbacksLabelsEntriesDict, cacheHelperObjOwnCanteenFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
+	const [ownCanteenFeedbacksLabelsEntriesDict, setOwnCanteenFeedbacksLabelsEntriesDict, cacheHelperObjOwnCanteenFeedbacksLabelEntries] = useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict();
 	const [languagesDict, setLanguagesDict, cacheHelperObjLanguages] = useSynchedLanguagesDict()
 	const [apartmentsDict, setApartmentsDict, cacheHelperObjApartments] = useSynchedApartmentsDict()
 	const [wikisDict, setWikisDict, cacheHelperObjWikis] = useSynchedWikisDict()
