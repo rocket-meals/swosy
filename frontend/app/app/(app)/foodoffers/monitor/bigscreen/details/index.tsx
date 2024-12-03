@@ -1,4 +1,4 @@
-import {ExpoRouter} from "@/.expo/types/router";
+import {ExpoRouter} from "expo-router/types/expo-router";
 import {useLocalSearchParams} from "expo-router";
 import {
 	Text,
@@ -40,7 +40,6 @@ import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
-import {HumanReadableTimeText} from "@/app/(app)/foodoffers/monitor/dayplan/details";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
 
@@ -53,9 +52,17 @@ export const SEARCH_PARAM_SHOW_FOODCATEGORY_NAME = 'showFoodCategoryName';
 export const SEARCH_PARAM_NEXT_FOOD_INTERVAL = 'nextFoodIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_FOOD_OFFERS_INTERVAL = 'refreshFoodOffersIntervalInSeconds';
 
+export function getCanteenParam(canteen_id: string | null | undefined): string | null {
+	if(canteen_id){
+		return SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id);
+	}
+	return null
+
+}
+
 export function getRouteToFoodBigScreen(canteen_id: string, foodofferCategoryIds: string[], showFoodofferCategoryName: boolean , foodCategoryIds: string[], showFoodCategoryName: boolean, nextFoodIntervalInSeconds: number | null | undefined, refreshFoodOffersIntervalInSeconds: number | null | undefined,	fullscreen: boolean): ExpoRouter.Href {
 	let paramsRaw = []
-	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+encodeURIComponent(canteen_id) : null;
+	let paramForCanteen = getCanteenParam(canteen_id)
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}

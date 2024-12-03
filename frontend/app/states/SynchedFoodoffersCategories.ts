@@ -132,6 +132,33 @@ export class FoodOfferCategoriesHelper {
 		return null;
 	}
 
+	static useSortedFoodofferCategories() {
+		const [foodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict();
+		let sortedFoodofferCategories = [];
+		for (let foodofferCategoryId in foodoffersCategoriesDict) {
+			let foodofferCategory = foodoffersCategoriesDict[foodofferCategoryId];
+			if (foodofferCategory) {
+				sortedFoodofferCategories.push(foodofferCategory);
+			}
+		}
+		sortedFoodofferCategories.sort((foodofferCategoryA, foodofferCategoryB) => {
+			let sortA = foodofferCategoryA.sort
+			let sortB = foodofferCategoryB.sort
+			if(sortA && sortB){
+				return sortA - sortB;
+			}
+			if(sortA){
+				// A should be before B
+				return -1;
+			}
+			if(sortB){
+				// B should be before A
+				return 1;
+			}
+			return 0;
+		});
+		return sortedFoodofferCategories;
+	}
 
 	static sortFoodoffersByFoodofferCategory(foodoffers: Foodoffers[], foodoffersCategoriesDict: Record<string, FoodoffersCategories | null | undefined> | null | undefined, languageCode: string) {
 		if(!foodoffersCategoriesDict){

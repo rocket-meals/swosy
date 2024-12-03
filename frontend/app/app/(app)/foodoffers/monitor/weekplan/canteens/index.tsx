@@ -11,6 +11,19 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {formatDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
 import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
+import {getCanteenParam} from "@/app/(app)/foodoffers/monitor/bigscreen/details";
+import {ExpoRouter} from "expo-router/types/expo-router";
+
+export function getRouteToWeekplanCanteen(canteen_id: string){
+	let paramsRaw: any[] = []
+	let paramForCanteen = getCanteenParam(canteen_id)
+	if(paramForCanteen){
+		paramsRaw.push(paramForCanteen)
+	}
+	let params = paramsRaw.join("&")
+
+	return `/foodoffers/monitor/weekplan/canteens/?${params}` as ExpoRouter.Href;
+}
 
 export default function FoodOfferDetails() {
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
