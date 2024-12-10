@@ -6,6 +6,7 @@ import {TranslationKeys} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
 import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
+import {getRouteToMarkingsListScreen} from "@/app/(app)/foodoffers/monitor/markings";
 
 export default function ManagementScreen() {
 	return (
@@ -18,6 +19,7 @@ export default function ManagementScreen() {
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={getRouteToWeekplan()} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodBigScreen} leftIcon={IconNames.gallery_icon} route={"/(app)/foodoffers/monitor/bigscreen"} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.monitorDayPlan} leftIcon={IconNames.monitorDayPlan_icon} route={"/(app)/foodoffers/monitor/dayplan"} />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.markings} leftIcon={IconNames.eating_habit_icon} route={getRouteToMarkingsListScreen()} />
 				</SettingsRowGroup>
 			</MyScrollView>
 		</MySafeAreaView>

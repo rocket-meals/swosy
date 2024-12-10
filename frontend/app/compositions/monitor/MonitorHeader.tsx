@@ -5,10 +5,9 @@ import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 import {HumanReadableTimeText} from "@/app/(app)/foodoffers/monitor/dayplan/details";
 
-export const MonitorHeader = ({canteen, dateHumanReadable, rightContent}: {canteen: Canteens | null | undefined, dateHumanReadable: string, rightContent?: React.ReactNode}) => {
+export const MonitorHeader = ({canteen, headerText, dateHumanReadable, rightContent}: {canteen?: Canteens | null | undefined, headerText: string, dateHumanReadable: string, rightContent?: React.ReactNode}) => {
 	//console.log(canteen)
 	const canteen_name = getCanteenName(canteen);
-
 
 	return(
 		<View style={{
@@ -33,7 +32,7 @@ export const MonitorHeader = ({canteen, dateHumanReadable, rightContent}: {cante
 				}}>
 					<View>
 						<Text bold={true} size={TEXT_SIZE_3_EXTRA_LARGE}>
-							{canteen_name}
+							{headerText || canteen_name}
 						</Text>
 						<View style={{
 							flexDirection: 'row',

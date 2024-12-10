@@ -265,6 +265,15 @@ export const MyDrawerAuthenticated = (props: any) => {
 				visibleInDrawer: false
 			})}
 			{useRenderMyDrawerScreen({
+				routeName: 'foodoffers/monitor/markings/index',
+				title: "",
+				label: "",
+				getHeader: null,
+				showBackButton: true,
+				icon: IconNames.foodweekplan_icon,
+				visibleInDrawer: false
+			})}
+			{useRenderMyDrawerScreen({
 				routeName: 'settings/price-group/index',
 				label: translation_price_group,
 				title: translation_price_group,
