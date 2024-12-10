@@ -160,6 +160,7 @@ export default function FoodDayPlanScreen() {
 	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
 	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
 
+
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 	let unsortedMarkingList: Markings[] = [];
 	if(!!markingsDict){

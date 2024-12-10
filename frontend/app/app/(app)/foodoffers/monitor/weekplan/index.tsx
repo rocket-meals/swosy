@@ -8,6 +8,10 @@ import {SettingsRowNavigateWithText} from "@/components/settings/SettingsRowNavi
 import {ExpoRouter} from "expo-router/types/expo-router";
 import {getRouteToWeekplanCanteen} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 
+export function getRouteToWeekplan(){
+	return "/(app)/foodoffers/monitor/weekplan" as ExpoRouter.Href;
+}
+
 export default function FoodOfferScreen() {
 
 	const [selectedCanteen, setSelectedCanteen] = React.useState<Canteens | null>(null);

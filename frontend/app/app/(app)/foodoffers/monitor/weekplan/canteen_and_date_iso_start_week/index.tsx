@@ -11,7 +11,7 @@ import {
 import {router, useGlobalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, Foods, FoodsCategories} from "@/helper/database/databaseTypes/types";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -32,6 +32,8 @@ import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {getRouteToWeekplanCanteen} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
+import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
+import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -74,8 +76,12 @@ export default function FoodplanScreen() {
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
 	const [printCallback, setPrintCallback] = useState<() => void>();
 
-	const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
-	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
+	//const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
+
+	const sortedFoodCategories = FoodsCategoriesHelper.useSortedFoodCategories();
+	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
+
 
 	const foodsAreaColor = useFoodsAreaColor();
 
@@ -188,20 +194,31 @@ export default function FoodplanScreen() {
 	const FLEX_WEEKDAY = 1;
 	const FLEX_CATEGORIES = 10;
 
-	function renderHeaderRow(){
+	function getSortedHeaderCategories(allOffers: Foodoffers[] | undefined){
+		let foodOffersInCategories = getFoodofferInCategories(allOffers);
+		let sortedCategories = [];
+		for(let category of sortedFoodCategories){
+			let foodOffersInCategory = foodOffersInCategories[category.id];
+			if(foodOffersInCategory && foodOffersInCategory.length>0){
+				sortedCategories.push(category);
+			}
+		}
+		if(doesFoodofferWithoutCategoryExist){
+			sortedCategories.push({id: CATEGORY_UNKNOWN, alias: CATEGORY_UNKNOWN})
+		}
+		return sortedCategories;
+
+	}
+
+	function renderHeaderRow(sortedHeaderCategories: (FoodsCategories | { id: string, alias: string })[]){
 		let renderedCategories = [];
-		for(let category of sortedFoodofferCategories){
+		//for(let category of sortedFoodofferCategories){
+
+
+		for(let category of sortedHeaderCategories){
 			renderedCategories.push(
 				<View style={{flex: 1, padding: DEFAULT_PADDING}}>
 					<Text style={{color: projectContrastColor}}>{category.alias}</Text>
-				</View>
-			)
-		}
-		// add CATEGORY_UNKNOWN
-		if(doesFoodofferWithoutCategoryExist){
-			renderedCategories.push(
-				<View style={{flex: 1, padding: DEFAULT_PADDING}}>
-					<Text style={{color: projectContrastColor}}>{CATEGORY_UNKNOWN}</Text>
 				</View>
 			)
 		}
@@ -255,17 +272,15 @@ export default function FoodplanScreen() {
 		</View>
 	}
 
-	function renderFoodoffersForRow(offers: Foodoffers[] | undefined){
+	function getFoodofferInCategories(offers: Foodoffers[] | undefined){
+		let foodOffersInCategories: {[key: string]: Foodoffers[]} = {};
 		if(!offers){
-			return null;
+			return foodOffersInCategories;
 		}
 
-		let output = [];
-
-		let foodOffersInCategories: {[key: string]: Foodoffers[]} = {};
-
 		for(let offer of offers){
-			let category = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(offer, foodoffersCategoriesDict);
+			//let category = FoodOfferCategoriesHelper.getFoodoffersFoodofferCategory(offer, foodoffersCategoriesDict);
+			let category = FoodsCategoriesHelper.getFoodsFoodsCategory(offer?.food, foodsCategoriesDict);
 			let categoryId = category?.id || CATEGORY_UNKNOWN;
 			if(!foodOffersInCategories[categoryId]){
 				foodOffersInCategories[categoryId] = [];
@@ -276,14 +291,22 @@ export default function FoodplanScreen() {
 			}
 			foodOffersInCategories[categoryId].push(offer);
 		}
-		console.log("foodOffersInCategories")
-		console.log(foodOffersInCategories)
 
-		for(let category of sortedFoodofferCategories){
-			let foodOffers = foodOffersInCategories[category.id];
-			if(!foodOffers){
-				foodOffers = [];
-			}
+		return foodOffersInCategories;
+	}
+
+	function renderFoodoffersForRow(offers: Foodoffers[] | undefined, sortedHeaderCategories: (FoodsCategories | { id: string, alias: string })[]){
+		if(!offers){
+			return null;
+		}
+
+		let output = [];
+
+		let foodOffersInCategories = getFoodofferInCategories(offers);
+
+		//for(let category of sortedFoodofferCategories){
+		for(let category of sortedHeaderCategories){
+			let foodOffers = foodOffersInCategories[category.id] || [];
 			let renderedOffers = [];
 			for(let offer of foodOffers){
 				renderedOffers.push(renderFoodoffer(offer));
@@ -298,34 +321,13 @@ export default function FoodplanScreen() {
 				</View>
 			)
 		}
-		// add offers with CATEGORY_UNKNOWN
-		if(doesFoodofferWithoutCategoryExist){
-			console.log("Render offers with CATEGORY_UNKNOWN")
-			let foodOffers = foodOffersInCategories[CATEGORY_UNKNOWN] || [];
-			let renderedOffers = [];
-			for(let offer of foodOffers){
-				renderedOffers.push(renderFoodoffer(offer));
-				console.log("Rendered offer with CATEGORY_UNKNOWN")
-				console.log(offer)
-			}
-			output.push(
-				<View style={{
-					flex: 1,
-					flexDirection: "column",
-					paddingHorizontal: DEFAULT_PADDING
-				}}>
-					{renderedOffers}
-				</View>
-			)
-		}
-
 
 		return (
 			output
 		)
 	}
 
-	function renderOffersForDayRow(iso_date: string, offers: Foodoffers[] | undefined){
+	function renderOffersForDayRow(iso_date: string, offers: Foodoffers[] | undefined, sortedHeaderCategories: (FoodsCategories | { id: string, alias: string })[]){
 		const date = new Date(iso_date);
 		let weekdayName = DateHelper.getWeekdayNameByDate(date, localeForJsDate, true)
 		let weekdayDate = DateHelper.formatOfferDateToReadable(date, false, false);
@@ -340,7 +342,7 @@ export default function FoodplanScreen() {
 				</View>
 			</View>
 			<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
-				{renderFoodoffersForRow(offers)}
+				{renderFoodoffersForRow(offers, sortedHeaderCategories)}
 			</View>
 		</View>
 	}
@@ -348,12 +350,24 @@ export default function FoodplanScreen() {
 	function renderWeekOffers(){
 		let output = [];
 
-		output.push(renderHeaderRow());
+
+		let allOffers = [];
+		if(!!weekOffers){
+			for(let i=0; i<weekOffers.length; i++){
+				let dayItem = weekOffers[i];
+				if(!!dayItem.offers){
+					allOffers.push(...dayItem.offers);
+				}
+			}
+		}
+		let sortedHeaderCategories = getSortedHeaderCategories(allOffers);
+
+		output.push(renderHeaderRow(sortedHeaderCategories));
 		if(!!weekOffers){
 			for(let i=0; i<weekOffers.length; i++){
 				let dayItem = weekOffers[i];
 				const iso_date = dayItem.date_iso;
-				output.push(renderOffersForDayRow(iso_date, dayItem.offers));
+				output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
 			}
 		}
 		if(weekOffers===undefined){
@@ -391,6 +405,12 @@ export default function FoodplanScreen() {
 		}} />
 	}
 
+	function renderCanteenSelection(){
+		return <MyButton useOnlyNecessarySpace={true} tooltip={"Kantinen Auswahl"} accessibilityLabel={"Kantinen Auswahl"} useTransparentBorderColor={true} leftIcon={IconNames.canteen_icon} onPress={() => {
+			router.push(getRouteToWeekplan())
+		}} />
+	}
+
 	function renderWeekSelection(){
 		if(!!canteen){
 			let route = getRouteToWeekplanCanteen(canteen.id);
@@ -409,6 +429,7 @@ export default function FoodplanScreen() {
 	function renderSecondaryHeader(){
 		return <View style={{flexDirection: "row"}}>
 			{renderLoadingStatus()}
+			{renderCanteenSelection()}
 			{renderWeekSelection()}
 			{renderScreenshotButton()}
 			{renderFullScreenButton()}

@@ -5,6 +5,7 @@ import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {TranslationKeys} from "@/helper/translations/Translation";
 import {IconNames} from "@/constants/IconNames";
 import {SettingsRowNavigateSimple} from "@/components/settings/SettingsRowNavigate";
+import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
 
 export default function ManagementScreen() {
 	return (
@@ -14,7 +15,7 @@ export default function ManagementScreen() {
 					<SettingsRowNavigateSimple title={"Test Statistik"} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/statistics"} />
 				</SettingsRowGroup>
 				<SettingsRowGroup label={"Monitore"}>
-					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={"/(app)/foodoffers/monitor/weekplan"} />
+					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodweekplan} leftIcon={IconNames.foodweekplan_icon} route={getRouteToWeekplan()} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.foodBigScreen} leftIcon={IconNames.gallery_icon} route={"/(app)/foodoffers/monitor/bigscreen"} />
 					<SettingsRowNavigateSimple translation_key={TranslationKeys.monitorDayPlan} leftIcon={IconNames.monitorDayPlan_icon} route={"/(app)/foodoffers/monitor/dayplan"} />
 				</SettingsRowGroup>

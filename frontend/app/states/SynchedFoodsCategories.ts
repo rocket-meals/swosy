@@ -129,7 +129,10 @@ export class FoodsCategoriesHelper {
 	}
 
 
-	static getFoodsFoodsCategory(food: Foods | undefined, foodsCategoriesDict: Record<string, FoodsCategories | null | undefined> | null | undefined) {
+	static getFoodsFoodsCategory(food: Foods | undefined | null | string, foodsCategoriesDict: Record<string, FoodsCategories | null | undefined> | null | undefined) {
+		if(!food || typeof food === 'string'){
+			return null;
+		}
 		const foodofferCategoryRaw = food?.food_category;
 		let foodofferCategoryId = undefined;
 		if(!!foodofferCategoryRaw){
@@ -178,6 +181,34 @@ export class FoodsCategoriesHelper {
 			return sort
 		});
 		return sortedFoodoffers;
+	}
+
+	static useSortedFoodCategories(){
+		const [foodoffersCategoriesDict] = useSynchedFoodsCategoriesDict();
+		let sortedFoodCategories: FoodsCategories[] = [];
+		for (let foodCategoryId in foodoffersCategoriesDict) {
+			let foodCategory = foodoffersCategoriesDict[foodCategoryId];
+			if (foodCategory) {
+				sortedFoodCategories.push(foodCategory);
+			}
+		}
+		sortedFoodCategories.sort((foodCategoryA, foodCategoryB) => {
+			let sortA = foodCategoryA.sort
+			let sortB = foodCategoryB.sort
+			if(sortA && sortB){
+				return sortA - sortB;
+			}
+			if(sortA){
+				// A should be before B
+				return -1;
+			}
+			if(sortB){
+				// B should be before A
+				return 1;
+			}
+			return 0;
+		});
+		return sortedFoodCategories;
 	}
 
 	static sortFoodoffersByFoodofferCategorySortOrder(foodA: Foods, foodB: Foods, foodoffersCategoriesDict: Record<string, FoodsCategories | null | undefined> | null | undefined){
