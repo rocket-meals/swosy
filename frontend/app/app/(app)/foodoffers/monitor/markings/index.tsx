@@ -17,6 +17,7 @@ import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
 import {useRefreshDataIntervalInSecondsFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/dayplan/details";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -226,11 +227,14 @@ export default function FoodDayPlanScreen() {
 	}
 
 	return <MySafeAreaView>
-		<View style={{
-			width: '100%',
-			height: '100%',
-		}} >
-			{renderContent()}
-		</View>
+		<MyScrollView>
+			<View style={{
+				width: '100%',
+				height: '100%',
+			}} >
+				{renderContent()}
+			</View>
+		</MyScrollView>
+
 	</MySafeAreaView>
 }
