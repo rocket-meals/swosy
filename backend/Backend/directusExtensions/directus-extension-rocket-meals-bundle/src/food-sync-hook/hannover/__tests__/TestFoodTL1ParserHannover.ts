@@ -6,6 +6,19 @@ import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawRep
 import {FoodoffersTypeForParser, FoodsInformationTypeForParser} from "../../FoodParserInterface";
 import {FoodTL1Parser} from "../../FoodTL1Parser";
 
+function generateFoodId(foodIds: number[]): string {
+    return foodIds.sort(
+        (a,b) => a - b
+    ).join("-");
+}
+
+async function getFoodJson(reportToReturn?: string | undefined){
+    let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
+    let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
+    await foodParser.createNeededData();
+    return await foodParser.getFoodoffersForParser();
+}
+
 describe("FoodTL1ParserHannover Test", () => {
 
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover();
@@ -62,13 +75,39 @@ describe("FoodTL1ParserHannover Test", () => {
         expect(foundFiber).toBe(false);
     });
 
+    function checkIfFoodHasMarking(foodId: string, expectedMarkingExternalIdentifiersToBeIncluded: string[], foodOffersJson: FoodoffersTypeForParser[]){
+        let foodOffersWithSpecialMarking = foodOffersJson.filter((foodOffer) => {
+            return foodOffer.food_id === foodId;
+        });
+
+        expect(foodOffersWithSpecialMarking.length).toBeGreaterThan(0);
+        for(let foodOffer of foodOffersWithSpecialMarking){
+            // check if foodOffer.marking_external_identifiers contains 'v'
+            expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiersToBeIncluded));
+        }
+    }
+
+    it("Markings use correctly addition field for vegetarian (v)", async () => {
+        let findFoodId = generateFoodId([801346, 802285])
+        let foodOfferJson = await getFoodJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
+        const expectedMarkingExternalIdentifiersToBeIncluded = [ 'v' ];
+        checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
+    })
+
+    it("Markings use correctly additional field for vegan (x)", async () => {
+        let findFoodId = generateFoodId([800562,802726,801834, 801454])
+        let foodOfferJson = await getFoodJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+        const expectedMarkingExternalIdentifiersToBeIncluded = [ 'x' ];
+        checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
+    });
+
 
     it("Markings correctly used the ZS_NUMMERN Field", async () => {
         await foodParser.createNeededData();
         let foodsJson = await foodParser.getFoodsListForParser();
         // search for "Veganes Schnitzel" in the foodoffers
         let foundVeganesSchnitzel = false;
-        const findFoodId = "802336-802338-802777"
+        const findFoodId = generateFoodId([802336, 802338, 802777]);
         const expectedMarkingExternalIdentifiers = [ '3', '15', '20', '20A', '20D', '99' ];
         let foodWithSpecialMarking: FoodsInformationTypeForParser | null = null;
 
@@ -123,7 +162,7 @@ describe("FoodTL1ParserHannover Test", () => {
 
         expect(!!firstFoodOffer).toBe(true);
         if(firstFoodOffer){
-            expect(firstFoodOffer.category_external_identifier).toBe("QUEERBEET");
+            expect(firstFoodOffer.category_external_identifier).toBe("FLEISCH & MEER");
         }
 
     });

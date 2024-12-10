@@ -5,6 +5,8 @@ import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
 
+    static MENUEKENNZEICHEN_FIELD = "MENUEKENNZEICHEN";
+
     constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
         super(rawFoodofferReader);
     }
@@ -29,15 +31,23 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         //return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
 
         let tl1_zusatz_nummern_string = rawFoodoffer.raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
-        // for example: " 3, 15, 20, 20A, 20D, 99"
+        let tl1_menuekennzeichen_string = rawFoodoffer.raw_tl1_foodoffer_json[FoodTL1ParserHannover.MENUEKENNZEICHEN_FIELD];
+
+        let combinedMarkings: string[] = [];
         if(!!tl1_zusatz_nummern_string){
             let markings = tl1_zusatz_nummern_string.split(",").map((nummernString) => {
                 return nummernString.trim();
             });
-            return markings;
+            combinedMarkings = combinedMarkings.concat(markings);
         }
-        return [];
+        if(!!tl1_menuekennzeichen_string){
+            let markings = tl1_menuekennzeichen_string.split(",").map((nummernString) => {
+                return nummernString.trim();
+            });
+            combinedMarkings = combinedMarkings.concat(markings);
+        }
 
+        return combinedMarkings;
     }
 
     override getFoodCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
