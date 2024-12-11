@@ -35,7 +35,7 @@ describe("Food Feedback E-Mail Template", () => {
             let amount_positive = 0;
             let status_total = "";
             let status_new = "";
-            switch(index % 3){
+            switch(index % 4){
                 case 0:
                     amount_positive_new = 90;
                     amount_negative_new = 10;
@@ -63,6 +63,15 @@ describe("Food Feedback E-Mail Template", () => {
                     status_total = "mixed";
                     status_new = "mixed";
                     break;
+                case 3:
+                    amount_positive_new = 0;
+                    amount_negative_new = 0;
+                    amount_total = 0;
+                    amount_negative = 0;
+                    amount_positive = 0;
+                    status_total = "empty";
+                    status_new = "empty";
+                    break;
             }
             return {
                 amount_positive_new: amount_positive_new,
@@ -81,7 +90,7 @@ describe("Food Feedback E-Mail Template", () => {
 
             let labelEntries:  ReportFoodEntryLabelType[] = [];
             for(let j=0; j<foodFeedbackLabels.length; j++) {
-                let ratingValues = getRatingValues(j);
+                let ratingValues = foodRatingValues
 
                 const label: ReportFoodEntryLabelType = {
                     id: foodFeedbackLabels[j] || "label_alias"+j,
@@ -140,16 +149,16 @@ describe("Food Feedback E-Mail Template", () => {
             let ratingSum = 0;
             let ratingCount = 0;
             foods.forEach(food => {
-                ratingSum += food.rating_average;
+                if(food.rating_average){
+                    ratingSum += food.rating_average;
+                }
                 ratingCount += 1;
             });
             return ratingSum / ratingCount;
         }
 
         const food_rating_average = calculateRatingAverage(foods);
-        console.log("food_rating_average: "+food_rating_average);
         const foodAverageRatingThresholds = ReportGenerator.getFoodRatingBadAndGoodThresholds(food_rating_average);
-        console.log("foodAverageRatingThresholds: "+JSON.stringify(foodAverageRatingThresholds));
 
         let report: ReportType = {
             canteen_alias: canteenNames.join(", "),
@@ -176,7 +185,6 @@ describe("Food Feedback E-Mail Template", () => {
         let hmtl = await EmailTemplates.renderTemplate(EmailTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT, report);
 
         let savePath = TestArtifacts.saveTestArtifact("food-feedback-report.html", hmtl);
-        console.log("Saved to: "+savePath);
 
         expect(true).toBe(true);
     });

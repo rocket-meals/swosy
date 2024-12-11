@@ -20,8 +20,6 @@ export class EmailTemplates {
     }
 
     public static async renderTemplate(template: EmailTemplatesEnum, data: any): Promise<any> {
-        console.log("renderTemplate: "+template);
-
         const pathToTemplatesString = ["templates"];
 
         const rootPath = path.resolve(process.cwd(), "..", 'templates');

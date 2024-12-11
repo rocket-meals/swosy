@@ -33,23 +33,27 @@
                             {% for label in canteen.labels %}
                                 {% assign amount_total = label.amount_total | default: 0 %}
                                 {% assign amount_positive = label.amount_positive | default: 0 %}
+
                                 {% if amount_total > 0 %}
                                     {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
-                                {% else %}
-                                    {% assign positive_percentage = 0 %}
-                                {% endif %}
-                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
-                                    {{ positive_percentage }}%
-                                    <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
-                                        <div style="width: {{ positive_percentage }}%; height: 100%;
-                                                background-color:
-                                                {% if positive_percentage < 40 %}#E25241
-                                                {% elsif positive_percentage <= 60 %}#F7CD55
-                                                {% else %}#88B153
-                                        {% endif %};">
+
+                                    <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
+                                        {{ positive_percentage }}%
+                                        <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
+                                            <div style="width: {{ positive_percentage }}%; height: 100%;
+                                                    background-color:
+                                                    {% if positive_percentage < 40 %}#E25241
+                                                    {% elsif positive_percentage <= 60 %}#F7CD55
+                                                    {% else %}#88B153
+                                            {% endif %};">
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
+                                {% else %}
+                                    <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
+                                        Keine Daten
+                                    </td>
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}
@@ -90,23 +94,29 @@
                     {% for label in food.labels %}
                         {% assign amount_total = label.amount_total | default: 0 %}
                         {% assign amount_positive = label.amount_positive | default: 0 %}
+
                         {% if amount_total > 0 %}
                             {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
-                        {% else %}
-                            {% assign positive_percentage = 0 %}
-                        {% endif %}
-                        <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
-                            {{ positive_percentage }}%
-                            <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
-                                <div style="width: {{ positive_percentage }}%; height: 100%;
-                                        background-color:
-                                        {% if positive_percentage < 40 %}#E25241
-                                        {% elsif positive_percentage <= 60 %}#F7CD55
-                                        {% else %}#88B153
-                                {% endif %};">
+
+                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
+                                {{ positive_percentage }}%
+                                <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
+                                    <div style="width: {{ positive_percentage }}%; height: 100%;
+                                            background-color:
+                                            {% if positive_percentage < 40 %}#E25241
+                                            {% elsif positive_percentage <= 60 %}#F7CD55
+                                            {% else %}#88B153
+                                    {% endif %};">
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+
+                        {% else %}
+                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
+                                Keine Daten
+                            </td>
+                        {% endif %}
+
                     {% endfor %}
 
                 </tr>
