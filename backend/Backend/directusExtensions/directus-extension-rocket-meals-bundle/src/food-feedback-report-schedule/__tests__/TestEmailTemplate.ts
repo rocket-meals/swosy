@@ -104,7 +104,7 @@ describe("Food Feedback E-Mail Template", () => {
                 image_url: "image_url",
                 rating_average: 5 * (foodRatingValues.amount_positive / foodRatingValues.amount_total),
                 rating_amount: foodRatingValues.amount_total,
-                comments: foodComments,
+                comments: i%2==0 ? foodComments : [],
                 labels: labelEntries,
                 status_rating: "status_rating"
             };
@@ -180,7 +180,6 @@ describe("Food Feedback E-Mail Template", () => {
 
         expect(true).toBe(true);
     });
-
 
 
 });

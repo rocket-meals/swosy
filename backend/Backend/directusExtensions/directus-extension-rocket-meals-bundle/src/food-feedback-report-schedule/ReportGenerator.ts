@@ -328,6 +328,15 @@ export class ReportGenerator {
             }
         }
 
+        canteens_feedbacks.push(canteen_feedback_all);
+        let canteenFeedbackKeys = Object.keys(canteen_feedback_dict);
+        for(let canteenFeedbackKey of canteenFeedbackKeys){
+            let canteenFeedback = canteen_feedback_dict[canteenFeedbackKey];
+            if(!!canteenFeedback) {
+                canteens_feedbacks.push(canteenFeedback);
+            }
+        }
+
         return canteens_feedbacks;
     }
 

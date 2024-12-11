@@ -27,25 +27,32 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for canteen in canteen_feedbacks %}
-                    <tr style="border-bottom: 1px solid #aaa;">
-                        <td style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa;">{{ canteen.canteen_alias }}</td>
-                        {% for label in canteen.labels %}
-                            {% assign positive_percentage = label.amount_positive | divided_by: label.amount_total | times: 100 | round %}
-                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
-                                {{ positive_percentage }}%
-                                <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
-                                    <div style="width: {{ positive_percentage }}%; height: 100%;
-                                            background-color:
-                                            {% if positive_percentage < 40 %}#E25241
-                                            {% elsif positive_percentage <= 60 %}#F7CD55
-                                            {% else %}#88B153
-                                    {% endif %};"></div>
-                                </div>
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
+                    {% for canteen in canteen_feedbacks %}
+                        <tr style="border-bottom: 1px solid #aaa;">
+                            <td style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa;">{{ canteen.canteen_alias }}</td>
+                            {% for label in canteen.labels %}
+                                {% assign amount_total = label.amount_total | default: 0 %}
+                                {% assign amount_positive = label.amount_positive | default: 0 %}
+                                {% if amount_total > 0 %}
+                                    {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
+                                {% else %}
+                                    {% assign positive_percentage = 0 %}
+                                {% endif %}
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
+                                    {{ positive_percentage }}%
+                                    <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
+                                        <div style="width: {{ positive_percentage }}%; height: 100%;
+                                                background-color:
+                                                {% if positive_percentage < 40 %}#E25241
+                                                {% elsif positive_percentage <= 60 %}#F7CD55
+                                                {% else %}#88B153
+                                        {% endif %};">
+                                        </div>
+                                    </div>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -69,18 +76,25 @@
             {% for food in foods %}
                 <tr style="border-bottom: 1px solid #aaa;">
                     <td style="padding: 12px; text-align: left; width: 16.5%; border-right: 1px solid #aaa;">
-                        {{ food.alias }} ({{ food.rating_average }}
-                            {% if food.rating_average <= food_rating_threshold_bad %}
-                                {{ icon_traffic_light_red }}
-                            {% elsif food.rating_average >= food_rating_threshold_good %}
-                                {{ icon_traffic_light_green }}
-                            {% else %}
-                                {{ icon_traffic_light_yellow }}
-                            {% endif %}
+                        {{ food.alias }}<br/>
+                        ({{ food.rating_average | round: 2 }}
+                        {% if food.rating_average <= food_rating_threshold_bad %}
+                            {{ icon_traffic_light_red }}
+                        {% elsif food.rating_average >= food_rating_threshold_good %}
+                            {{ icon_traffic_light_green }}
+                        {% else %}
+                            {{ icon_traffic_light_yellow }}
+                        {% endif %}
                         )
                     </td>
                     {% for label in food.labels %}
-                        {% assign positive_percentage = label.amount_positive | divided_by: label.amount_total | times: 100 | round %}
+                        {% assign amount_total = label.amount_total | default: 0 %}
+                        {% assign amount_positive = label.amount_positive | default: 0 %}
+                        {% if amount_total > 0 %}
+                            {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
+                        {% else %}
+                            {% assign positive_percentage = 0 %}
+                        {% endif %}
                         <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
                             {{ positive_percentage }}%
                             <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
@@ -89,10 +103,12 @@
                                         {% if positive_percentage < 40 %}#E25241
                                         {% elsif positive_percentage <= 60 %}#F7CD55
                                         {% else %}#88B153
-                                {% endif %};"></div>
+                                {% endif %};">
+                                </div>
                             </div>
                         </td>
                     {% endfor %}
+
                 </tr>
             {% endfor %}
             </tbody>
@@ -117,24 +133,34 @@
             </tr>
             </thead>
             <tbody>
-                {% for food in foods %}
+            {% for food in foods %}
+                {% if food.comments.size > 0 %}
                     <tr style="border-bottom: 1px solid #aaa;">
                         <td style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa;">{{ food.alias }}</td>
                         <td style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa;">
                             <div>
                                 <ul>
-                                    {% if food.comments.size > 0 %}
-                                        {% for comment in food.comments %}
-                                            <li>{{ comment }}</li>
-                                        {% endfor %}
-                                    {% else %}
-                                        <li>Keine</li>
-                                    {% endif %}
+                                    {% for comment in food.comments %}
+                                        <li>{{ comment }}</li>
+                                    {% endfor %}
                                 </ul>
                             </div>
                         </td>
                     </tr>
-                {% endfor %}
+                {% endif %}
+            {% endfor %}
+            {% for food in foods %}
+                {% if food.comments.size == 0 %}
+                    <tr style="border-bottom: 1px solid #aaa;">
+                        <td style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa;">{{ food.alias }}</td>
+                        <td style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa;">
+                            <div>
+                                Keine Kommentare vorhanden.
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
             </tbody>
         </table>
     {% endif %}
