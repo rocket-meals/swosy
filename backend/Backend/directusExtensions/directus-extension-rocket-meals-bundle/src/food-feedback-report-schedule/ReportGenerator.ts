@@ -15,7 +15,7 @@ import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {FoodRatingCalculator} from "../food-feedback-rating-calculate-hook/FoodRatingCalculator";
 import {EmojiHelper} from "../helpers/EmojiHelper";
 
-class ReportStatusTrafficLightValues {
+export class ReportStatusTrafficLightValues {
     static RED = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.RED_CIRCLE);
     static YELLOW = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.YELLOW_CIRCLE);
     static GREEN = EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.GREEN_CIRCLE);
@@ -42,17 +42,15 @@ export type ReportFoodEntryType = {
     id: string,
     alias: string | null | undefined,
     image_url: string | null | undefined,
-    rating_average: string | null | undefined,
-    rating_amount: string | null | undefined,
+    rating_average: number,
+    rating_amount: number,
     comments: string[],
     labels: ReportFoodEntryLabelType[],
     status_rating: ReportStatusTrafficLightType
 }
 
-export type ReportCanteenEntryType = {
-    id: string,
-    canteen_alias: string | null | undefined,
-    label_alias: string | null | undefined,
+export type ReportCanteenEntryLabelsType = {
+    label_alias: string,
     amount_positive_new: number,
     amount_negative_new: number,
     amount_positive: number,
@@ -60,6 +58,12 @@ export type ReportCanteenEntryType = {
     amount_total: number,
     status_total: ReportStatusTrafficLightType,
     status_new: ReportStatusTrafficLightType
+}
+
+export type ReportCanteenEntryType = {
+    id: string,
+    canteen_alias: string | null | undefined,
+    labels: ReportCanteenEntryLabelsType[]
 }
 
 export type ReportType = {
@@ -70,13 +74,17 @@ export type ReportType = {
     show_food_feedback_labels: boolean,
     show_food_comments: boolean,
     show_canteen_feedbacks: boolean,
-    status_explanation: string,
-    food_rating_average: string,
+    food_rating_average: number,
+    food_rating_threshold_bad: number,
+    food_rating_threshold_good: number,
     foods: ReportFoodEntryType[],
-    canteen_labels: ReportCanteenEntryType[],
+    canteen_feedbacks: ReportCanteenEntryType[],
     icon_thumbs_up: string,
     icon_thumbs_down: string,
     icon_comment: string,
+    icon_traffic_light_red: string,
+    icon_traffic_light_yellow: string,
+    icon_traffic_light_green: string,
     icon_star: string
 }
 
@@ -99,6 +107,21 @@ export class ReportGenerator {
 
     async getAverageRatingForAllFoods(){
         return await this.myDatabaseHelper.getFoodsHelper().calculateAverage("rating_average");
+    }
+
+    static getFoodRatingBadAndGoodThresholds(foodAverageRating: number){
+        if(foodAverageRating == 0 || foodAverageRating == null || foodAverageRating == undefined){
+            return {
+                threshold_bad: 0,
+                threshold_good: 0
+            }
+        }
+        let threshold_bad = foodAverageRating-(FoodRatingCalculator.MAX_RATING_VALUE*ReportGenerator.THRESHOLD_PERCENTAGE);
+        let threshold_good = foodAverageRating+(FoodRatingCalculator.MAX_RATING_VALUE*ReportGenerator.THRESHOLD_PERCENTAGE);
+        return {
+            threshold_bad: threshold_bad,
+            threshold_good: threshold_good
+        }
     }
 
     /**
@@ -140,32 +163,37 @@ export class ReportGenerator {
             show_food = true;
         }
 
-        const foodAverageRating = await this.getAverageRatingForAllFoods();
-        const foodAverageRatingString = foodAverageRating ? foodAverageRating.toFixed(2) : VALUE_NOT_AVAILABLE;
+        const food_rating_average = await this.getAverageRatingForAllFoods() || 0;
+        const foodAverageRatingThresholds = ReportGenerator.getFoodRatingBadAndGoodThresholds(food_rating_average);
 
         let report: ReportType = {
             canteen_alias: canteen_alias,
             dateHumanReadable: dateHumanReadable,
-            status_explanation: "Der Status zeigt "+ReportStatusTrafficLightValues.GREEN+" (Positiv), "+ReportStatusTrafficLightValues.RED+" (Negativ) und "+ReportStatusTrafficLightValues.YELLOW+" (Neutral) an. Der Status ändert bei einer Abweichung von mehr als "+(ReportGenerator.THRESHOLD_PERCENTAGE*100)+"%. Bei den Rückmeldungen mit Labels zeigt der Status in Klammern die Änderung in diesem Zeitraum an. Bei den Bewertungen der Speisen werden diese Verglichen mit der Durchschnittlichen Bewertung von "+foodAverageRatingString+".",
+            //status_explanation: "Der Status zeigt "+ReportStatusTrafficLightValues.GREEN+" (Positiv), "+ReportStatusTrafficLightValues.RED+" (Negativ) und "+ReportStatusTrafficLightValues.YELLOW+" (Neutral) an. Der Status ändert bei einer Abweichung von mehr als "+(ReportGenerator.THRESHOLD_PERCENTAGE*100)+"%. Bei den Rückmeldungen mit Labels zeigt der Status in Klammern die Änderung in diesem Zeitraum an. Bei den Bewertungen der Speisen werden diese Verglichen mit der Durchschnittlichen Bewertung von "+foodAverageRatingString+".",
             show_images: show_images,
             show_food: show_food,
             show_food_feedback_labels: show_food_feedback_labels,
             show_food_comments: show_food_comments,
             show_canteen_feedbacks: show_canteen_feedbacks,
-            food_rating_average: foodAverageRatingString,
+            food_rating_average: food_rating_average,
+            food_rating_threshold_bad: foodAverageRatingThresholds.threshold_bad,
+            food_rating_threshold_good: foodAverageRatingThresholds.threshold_good,
             foods: [],
-            canteen_labels: [],
+            canteen_feedbacks: [],
             icon_thumbs_up: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_UP, EmojiHelper.DivTextSize.MEDIUM),
             icon_thumbs_down: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.THUMBS_DOWN, EmojiHelper.DivTextSize.MEDIUM),
             icon_comment: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.SPEECH_BUBBLE, EmojiHelper.DivTextSize.SMALL),
+            icon_traffic_light_red: ReportStatusTrafficLightValues.RED,
+            icon_traffic_light_yellow: ReportStatusTrafficLightValues.YELLOW,
+            icon_traffic_light_green: ReportStatusTrafficLightValues.GREEN,
             icon_star: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.STAR, EmojiHelper.DivTextSize.SMALL)
         }
 
         if(show_food){
-            report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries, show_food_feedback_labels, show_food_comments, foodAverageRating);
+            report.foods = await this.getReportForFoodFeedbacks(reportSchedule, startDate, endDate, canteenEntries, show_food_feedback_labels, show_food_comments, food_rating_average);
         }
         if(show_canteen_feedbacks){
-            report.canteen_labels = await this.getReportForCanteenFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
+            report.canteen_feedbacks = await this.getReportForCanteenFeedbacks(reportSchedule, startDate, endDate, canteenEntries);
         }
 
 
@@ -195,7 +223,7 @@ export class ReportGenerator {
     }
 
     async getReportForCanteenFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Canteens[]) {
-        let canteens: ReportCanteenEntryType[] = [];
+        let canteens_feedbacks: ReportCanteenEntryType[] = [];
 
         let canteenFeedbackLabelsWithTranslations = await this.myDatabaseHelper.getCanteenFeedbackLabelsHelper().readByQuery({
             limit: -1,
@@ -225,6 +253,26 @@ export class ReportGenerator {
 
         const filterDateUpdatedFeedbackLabelEntries: Filter[] = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
 
+        let canteen_feedback_all: ReportCanteenEntryType = {
+            id: "all",
+            canteen_alias: "Alle",
+            labels: []
+        };
+
+        const canteen_feedback_dict: {[key: string]: ReportCanteenEntryType} = {};
+
+        // If per-canteen feedbacks are to be shown
+        if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
+            for (let canteen of canteenEntries) {
+                let canteenSummary: ReportCanteenEntryType = {
+                    id: canteen?.id,
+                    canteen_alias: canteen.alias,
+                    labels: []
+                };
+                canteen_feedback_dict[canteen.id] = canteenSummary;
+            }
+        }
+
         for (let canteenFeedbackLabelsWithTranslation of canteenFeedbackLabelsWithTranslations) {
             let alias = this.getTranslationOfFeedbackLabel(canteenFeedbackLabelsWithTranslation);
 
@@ -243,12 +291,8 @@ export class ReportGenerator {
                 null
             );
 
-
-
-            let allCanteensSummary: ReportCanteenEntryType = {
-                id: canteenFeedbackLabelsWithTranslation?.id,
+            canteen_feedback_all.labels.push({
                 label_alias: alias,
-                canteen_alias: "Alle",
                 amount_positive_new: countsAllCanteens.amount_positive_new,
                 amount_negative_new: countsAllCanteens.amount_negative_new,
                 amount_positive: countsAllCanteens.amount_positive,
@@ -256,9 +300,7 @@ export class ReportGenerator {
                 amount_total: countsAllCanteens.amount_total,
                 status_total: this.calculateTrafficLightStatus(countsAllCanteens.amount_positive, countsAllCanteens.amount_negative),
                 status_new: this.calculateTrafficLightStatus(countsAllCanteens.amount_positive_new, countsAllCanteens.amount_negative_new)
-            };
-
-            canteens.push(allCanteensSummary);
+            })
 
             // If per-canteen feedbacks are to be shown
             if (reportSchedule.show_canteen_feedbacks_also_per_canteen) {
@@ -271,10 +313,8 @@ export class ReportGenerator {
                         canteen
                     );
 
-                    let canteenSummary: ReportCanteenEntryType = {
-                        id: canteenFeedbackLabelsWithTranslation?.id,
-                        label_alias: "↳ davon", // indicates that the label is the same as the one above
-                        canteen_alias: canteen.alias,
+                    canteen_feedback_dict[canteen.id]?.labels.push({
+                        label_alias: alias,
                         amount_positive_new: countsForCanteen.amount_positive_new,
                         amount_negative_new: countsForCanteen.amount_negative_new,
                         amount_positive: countsForCanteen.amount_positive,
@@ -282,14 +322,13 @@ export class ReportGenerator {
                         amount_total: countsForCanteen.amount_total,
                         status_total: this.calculateTrafficLightStatus(countsForCanteen.amount_positive, countsForCanteen.amount_negative),
                         status_new: this.calculateTrafficLightStatus(countsForCanteen.amount_positive_new, countsForCanteen.amount_negative_new)
-                    };
+                    });
 
-                    canteens.push(canteenSummary);
                 }
             }
         }
 
-        return canteens;
+        return canteens_feedbacks;
     }
 
     async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: Canteens | null = null) {
@@ -408,15 +447,15 @@ export class ReportGenerator {
                 image_url = food?.image_remote_url;
             }
 
-            let usedRatingAverage = VALUE_NOT_AVAILABLE;
+            let usedRatingAverage = 0;
             if(food?.rating_average){
                 // to fixed 2 decimal places
-                usedRatingAverage = food?.rating_average.toFixed(2);
+                usedRatingAverage = food?.rating_average;
             }
 
-            let usedRatingAmount = "0";
+            let usedRatingAmount = 0;
             if(food?.rating_amount){
-                usedRatingAmount = food?.rating_amount+"";
+                usedRatingAmount = food?.rating_amount
             }
 
             let status_rating = ReportStatusTrafficLightValues.YELLOW;
