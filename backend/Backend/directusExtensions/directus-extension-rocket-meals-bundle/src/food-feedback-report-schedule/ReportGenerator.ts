@@ -29,8 +29,8 @@ export type ReportStatusTrafficLightType = string;
 export type ReportFoodEntryLabelType = {
     id: string,
     alias: string,
-    amount_positive_new: string,
-    amount_negative_new: string,
+    amount_positive_new: number,
+    amount_negative_new: number,
     amount_positive: number,
     amount_negative: number,
     amount_total: number,
@@ -53,8 +53,8 @@ export type ReportCanteenEntryType = {
     id: string,
     canteen_alias: string | null | undefined,
     label_alias: string | null | undefined,
-    amount_positive_new: string,
-    amount_negative_new: string,
+    amount_positive_new: number,
+    amount_negative_new: number,
     amount_positive: number,
     amount_negative: number,
     amount_total: number,
@@ -172,10 +172,6 @@ export class ReportGenerator {
         return report
     }
 
-    formatAmountNewToReportString(amount: number): string {
-        return "+"+amount;
-    }
-
     static THRESHOLD_PERCENTAGE = 0.1;
 
     calculateTrafficLightStatus(amount_positive: number, amount_negative: number): ReportStatusTrafficLightType {
@@ -253,8 +249,8 @@ export class ReportGenerator {
                 id: canteenFeedbackLabelsWithTranslation?.id,
                 label_alias: alias,
                 canteen_alias: "Alle",
-                amount_positive_new: this.formatAmountNewToReportString(countsAllCanteens.amount_positive_new),
-                amount_negative_new: this.formatAmountNewToReportString(countsAllCanteens.amount_negative_new),
+                amount_positive_new: countsAllCanteens.amount_positive_new,
+                amount_negative_new: countsAllCanteens.amount_negative_new,
                 amount_positive: countsAllCanteens.amount_positive,
                 amount_negative: countsAllCanteens.amount_negative,
                 amount_total: countsAllCanteens.amount_total,
@@ -279,8 +275,8 @@ export class ReportGenerator {
                         id: canteenFeedbackLabelsWithTranslation?.id,
                         label_alias: "↳ davon", // indicates that the label is the same as the one above
                         canteen_alias: canteen.alias,
-                        amount_positive_new: this.formatAmountNewToReportString(countsForCanteen.amount_positive_new),
-                        amount_negative_new: this.formatAmountNewToReportString(countsForCanteen.amount_negative_new),
+                        amount_positive_new: countsForCanteen.amount_positive_new,
+                        amount_negative_new: countsForCanteen.amount_negative_new,
                         amount_positive: countsForCanteen.amount_positive,
                         amount_negative: countsForCanteen.amount_negative,
                         amount_total: countsForCanteen.amount_total,
@@ -542,8 +538,8 @@ export class ReportGenerator {
                 let labelEntry: ReportFoodEntryLabelType = {
                     id: feedbackLabelId,
                     alias: alias,
-                    amount_positive_new: this.formatAmountNewToReportString(amount_positive_new),
-                    amount_negative_new: this.formatAmountNewToReportString(amount_negative_new),
+                    amount_positive_new: amount_positive_new,
+                    amount_negative_new: amount_negative_new,
                     amount_positive: amount_positive,
                     amount_negative: amount_negative,
                     amount_total: amount_total,

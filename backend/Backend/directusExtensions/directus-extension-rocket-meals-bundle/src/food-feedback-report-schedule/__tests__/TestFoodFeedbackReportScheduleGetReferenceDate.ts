@@ -96,7 +96,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         //console.log("expectedGenerateForDateOnly", expectedGenerateForDateOnly);
 
         // we simulate as if the report is due now
-        const generateForDate = ReportSchedule.getReferenceDate(recipientEntry, now_simulated);
+        const generateForDate = ReportSchedule.getReferenceDate(recipientEntry, now_simulated)
         const generateForDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(generateForDate);
         //console.log("generateForDateOnly", generateForDateOnly);
 
