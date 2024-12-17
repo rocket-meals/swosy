@@ -34,7 +34,7 @@
         }
       ]
     },
-    "readonly": true,
+    "readonly": false,
     "required": false,
     "sort": 3,
     "special": null,

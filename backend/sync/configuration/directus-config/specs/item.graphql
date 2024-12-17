@@ -103,10 +103,6 @@ type Query {
   news_translations_by_id(id: ID!, version: String): news_translations
   news_translations_aggregated(groupBy: [String], filter: news_translations_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [news_translations_aggregated!]!
   news_translations_by_version(version: String!, id: ID!): version_news_translations
-  popup_events(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events!]!
-  popup_events_by_id(id: ID!, version: String): popup_events
-  popup_events_aggregated(groupBy: [String], filter: popup_events_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [popup_events_aggregated!]!
-  popup_events_by_version(version: String!, id: ID!): version_popup_events
   popup_events_canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens!]!
   popup_events_canteens_by_id(id: ID!, version: String): popup_events_canteens
   popup_events_canteens_aggregated(groupBy: [String], filter: popup_events_canteens_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [popup_events_canteens_aggregated!]!
@@ -167,6 +163,10 @@ type Query {
   markings_by_id(id: ID!, version: String): markings
   markings_aggregated(groupBy: [String], filter: markings_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [markings_aggregated!]!
   markings_by_version(version: String!, id: ID!): version_markings
+  popup_events(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events!]!
+  popup_events_by_id(id: ID!, version: String): popup_events
+  popup_events_aggregated(groupBy: [String], filter: popup_events_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [popup_events_aggregated!]!
+  popup_events_by_version(version: String!, id: ID!): version_popup_events
   foods(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods!]!
   foods_by_id(id: ID!, version: String): foods
   foods_aggregated(groupBy: [String], filter: foods_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [foods_aggregated!]!
@@ -296,8 +296,6 @@ type Mutation {
   create_news_item(data: create_news_input!): news
   create_news_translations_items(filter: news_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_news_translations_input!]): [news_translations!]!
   create_news_translations_item(data: create_news_translations_input!): news_translations
-  create_popup_events_items(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_popup_events_input!]): [popup_events!]!
-  create_popup_events_item(data: create_popup_events_input!): popup_events
   create_popup_events_canteens_items(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_popup_events_canteens_input!]): [popup_events_canteens!]!
   create_popup_events_canteens_item(data: create_popup_events_canteens_input!): popup_events_canteens
   create_popup_events_translations_items(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_popup_events_translations_input!]): [popup_events_translations!]!
@@ -328,6 +326,8 @@ type Mutation {
   create_cashregisters_transactions_item(data: create_cashregisters_transactions_input!): cashregisters_transactions
   create_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_markings_input!]): [markings!]!
   create_markings_item(data: create_markings_input!): markings
+  create_popup_events_items(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_popup_events_input!]): [popup_events!]!
+  create_popup_events_item(data: create_popup_events_input!): popup_events
   create_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_input!]): [foods!]!
   create_foods_item(data: create_foods_input!): foods
   create_foods_feedbacks_labels_entries_items(filter: foods_feedbacks_labels_entries_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [create_foods_feedbacks_labels_entries_input!]): [foods_feedbacks_labels_entries!]!
@@ -443,9 +443,6 @@ type Mutation {
   update_news_translations_items(filter: news_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_news_translations_input!): [news_translations!]!
   update_news_translations_batch(filter: news_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_news_translations_input!]): [news_translations!]!
   update_news_translations_item(id: ID!, data: update_news_translations_input!): news_translations
-  update_popup_events_items(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_popup_events_input!): [popup_events!]!
-  update_popup_events_batch(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_popup_events_input!]): [popup_events!]!
-  update_popup_events_item(id: ID!, data: update_popup_events_input!): popup_events
   update_popup_events_canteens_items(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_popup_events_canteens_input!): [popup_events_canteens!]!
   update_popup_events_canteens_batch(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_popup_events_canteens_input!]): [popup_events_canteens!]!
   update_popup_events_canteens_item(id: ID!, data: update_popup_events_canteens_input!): popup_events_canteens
@@ -491,6 +488,9 @@ type Mutation {
   update_markings_items(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_markings_input!): [markings!]!
   update_markings_batch(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_markings_input!]): [markings!]!
   update_markings_item(id: ID!, data: update_markings_input!): markings
+  update_popup_events_items(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_popup_events_input!): [popup_events!]!
+  update_popup_events_batch(filter: popup_events_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_popup_events_input!]): [popup_events!]!
+  update_popup_events_item(id: ID!, data: update_popup_events_input!): popup_events
   update_foods_items(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, ids: [ID]!, data: update_foods_input!): [foods!]!
   update_foods_batch(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String, data: [update_foods_input!]): [foods!]!
   update_foods_item(id: ID!, data: update_foods_input!): foods
@@ -598,8 +598,6 @@ type Mutation {
   delete_news_item(id: ID!): delete_one
   delete_news_translations_items(ids: [ID]!): delete_many
   delete_news_translations_item(id: ID!): delete_one
-  delete_popup_events_items(ids: [ID]!): delete_many
-  delete_popup_events_item(id: ID!): delete_one
   delete_popup_events_canteens_items(ids: [ID]!): delete_many
   delete_popup_events_canteens_item(id: ID!): delete_one
   delete_popup_events_translations_items(ids: [ID]!): delete_many
@@ -630,6 +628,8 @@ type Mutation {
   delete_cashregisters_transactions_item(id: ID!): delete_one
   delete_markings_items(ids: [ID]!): delete_many
   delete_markings_item(id: ID!): delete_one
+  delete_popup_events_items(ids: [ID]!): delete_many
+  delete_popup_events_item(id: ID!): delete_one
   delete_foods_items(ids: [ID]!): delete_many
   delete_foods_item(id: ID!): delete_one
   delete_foods_feedbacks_labels_entries_items(ids: [ID]!): delete_many
@@ -716,7 +716,6 @@ type Subscription {
   foods_translations_mutated(event: EventEnum): foods_translations_mutated
   news_mutated(event: EventEnum): news_mutated
   news_translations_mutated(event: EventEnum): news_translations_mutated
-  popup_events_mutated(event: EventEnum): popup_events_mutated
   popup_events_canteens_mutated(event: EventEnum): popup_events_canteens_mutated
   popup_events_translations_mutated(event: EventEnum): popup_events_translations_mutated
   profiles_buildings_favorites_mutated(event: EventEnum): profiles_buildings_favorites_mutated
@@ -732,6 +731,7 @@ type Subscription {
   markings_translations_mutated(event: EventEnum): markings_translations_mutated
   cashregisters_transactions_mutated(event: EventEnum): cashregisters_transactions_mutated
   markings_mutated(event: EventEnum): markings_mutated
+  popup_events_mutated(event: EventEnum): popup_events_mutated
   foods_mutated(event: EventEnum): foods_mutated
   foods_feedbacks_labels_entries_mutated(event: EventEnum): foods_feedbacks_labels_entries_mutated
   markings_exclusions_mutated(event: EventEnum): markings_exclusions_mutated
@@ -877,17 +877,17 @@ type app_feedbacks {
   device_platform: String
   device_brand: String
   contact_email: String
-  content: String
   response: String
+  content: String
   display_width: Int
-  sort: Int
   display_scale: Int
-  priority: Int
-  display_fontscale: Int
   display_pixelratio: Int
   display_height: Int
-  feedback_read_by_support: Boolean
+  display_fontscale: Int
+  sort: Int
+  priority: Int
   response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
   positive: Boolean
 }
 
@@ -917,28 +917,28 @@ type app_feedbacks_aggregated_count {
   device_platform: Int
   device_brand: Int
   contact_email: Int
-  content: Int
   response: Int
+  content: Int
   display_width: Int
-  sort: Int
   display_scale: Int
-  priority: Int
-  display_fontscale: Int
   display_pixelratio: Int
   display_height: Int
-  feedback_read_by_support: Int
+  display_fontscale: Int
+  sort: Int
+  priority: Int
   response_read_by_user: Int
+  feedback_read_by_support: Int
   positive: Int
 }
 
 type app_feedbacks_aggregated_fields {
   display_width: Float
-  sort: Float
   display_scale: Float
-  priority: Float
-  display_fontscale: Float
   display_pixelratio: Float
   display_height: Float
+  display_fontscale: Float
+  sort: Float
+  priority: Float
 }
 
 type app_feedbacks_mutated {
@@ -955,10 +955,6 @@ type app_settings {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  washingmachine_parsing_last_date: Date
-  washingmachine_parsing_last_date_func: datetime_functions
-  foods_parsing_last_date: Date
-  foods_parsing_last_date_func: datetime_functions
   campus_parsing_last_date: Date
   campus_parsing_last_date_func: datetime_functions
   housing_parsing_last_date: Date
@@ -973,10 +969,14 @@ type app_settings {
   notifications_foods_last_date_func: datetime_functions
   cashregisters_parsing_last_date: Date
   cashregisters_parsing_last_date_func: datetime_functions
-  utilization_forecast_calculation_last_date: Date
-  utilization_forecast_calculation_last_date_func: datetime_functions
+  washingmachine_parsing_last_date: Date
+  washingmachine_parsing_last_date_func: datetime_functions
   date_privacy_policy_updated: Date
   date_privacy_policy_updated_func: datetime_functions
+  utilization_forecast_calculation_last_date: Date
+  utilization_forecast_calculation_last_date_func: datetime_functions
+  foods_parsing_last_date: Date
+  foods_parsing_last_date_func: datetime_functions
   washingmachine_parsing_status: String
   campus_parsing_status: String
   utilization_forecast_calculation_status: String
@@ -1014,45 +1014,45 @@ type app_settings {
   redirect_whitelist: JSON
   redirect_whitelist_func: count_functions
   id: ID!
-  balance_enabled: Boolean
+  campus_parsing_enabled: Boolean
 
-  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
-  canteen_reports_enabled: Boolean
-  cashregisters_parsing_enabled: Boolean
-  course_timetable_enabled: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
-  foods_parsing_enabled: Boolean
-
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
-
-  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
-  foods_ratings_average_display: Boolean
-
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
-  housing_parsing_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-  news_parsing_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  notifications_ios_enabled: Boolean
+  """Zeige in der App den Bereich Campus an"""
+  campus_enabled: Boolean
+  washingmachine_parsing_enabled: Boolean
   utilization_forecast_calculation_enabled: Boolean
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
+  notifications_ios_enabled: Boolean
+  notifications_email_enabled: Boolean
+  notifications_android_enabled: Boolean
+  news_parsing_enabled: Boolean
 
-  """Zeige in der App den Bereich Campus an"""
-  campus_enabled: Boolean
-  campus_parsing_enabled: Boolean
-  washingmachine_parsing_enabled: Boolean
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  housing_parsing_enabled: Boolean
+
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
+  foods_ratings_average_display: Boolean
+
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
+  foods_parsing_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+  course_timetable_enabled: Boolean
+  cashregisters_parsing_enabled: Boolean
+
+  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
+  canteen_reports_enabled: Boolean
+  balance_enabled: Boolean
   balance_translations(filter: app_settings_balance_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_balance_translations]
   balance_translations_func: count_functions
   housing_translations(filter: app_settings_housing_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [app_settings_housing_translations]
@@ -1064,8 +1064,8 @@ type app_settings_balance_translations {
   content: String
   app_settings_id(filter: app_settings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_settings
   id: ID!
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 type app_settings_balance_translations_aggregated {
@@ -1086,8 +1086,8 @@ type app_settings_balance_translations_aggregated_count {
   content: Int
   app_settings_id: Int
   id: Int
-  let_be_translated: Int
   be_source_for_translations: Int
+  let_be_translated: Int
 }
 
 type app_settings_balance_translations_aggregated_fields {
@@ -1156,10 +1156,10 @@ type auto_translation_settings {
   auth_key: String
 
   """Informations about errors will be shown here."""
-  extra: String
+  informations: String
 
   """Informations about errors will be shown here."""
-  informations: String
+  extra: String
   used: Int
   percentage: Int
   limit: Int
@@ -1336,12 +1336,12 @@ type businesshours {
   time_end_func: time_functions
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_till: Date
-  date_valid_till_func: date_functions
-
-  """Leave empty to use default; overridden by other defined ranges."""
   date_valid_from: Date
   date_valid_from_func: date_functions
+
+  """Leave empty to use default; overridden by other defined ranges."""
+  date_valid_till: Date
+  date_valid_till_func: date_functions
   status: String
   sort: Int
   wednesday: Boolean
@@ -1376,10 +1376,10 @@ type businesshours_aggregated_count {
   time_end: Int
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_till: Int
+  date_valid_from: Int
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_from: Int
+  date_valid_till: Int
   status: Int
   sort: Int
   wednesday: Int
@@ -1405,10 +1405,10 @@ type canteen_food_feedback_report_schedules {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   date_next_report_is_due: Date
   date_next_report_is_due_func: datetime_functions
   send_report_at_hh_mm: Date
@@ -1420,44 +1420,44 @@ type canteen_food_feedback_report_schedules {
   alias: String
   status: String
   report_status_log: String
+  sort: Int
+
+  """
+  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
+  """
+  foodoffers_days_limit: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
   foodoffers_days_offset: Int
 
-  """
-  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
-  """
-  foodoffers_days_limit: Int
-  sort: Int
-
-  """Zeige Bilder der Speisen"""
-  show_images: Boolean
-
-  """Zeige Rückmeldungen zu den Speisen: Labels"""
-  show_food_feedback_labels: Boolean
-
   """Zeige Rückmeldungen zu den Speisen"""
   show_food: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
+  show_canteen_feedbacks_also_per_canteen: Boolean
+  report_send_successfully: Boolean
+  enabled: Boolean
+  send_on_thursdays: Boolean
+  send_on_sundays: Boolean
+  send_on_tuesdays: Boolean
+  send_on_wednesdays: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen: Labels"""
+  show_canteen_feedbacks: Boolean
 
   """Zeige Rückmeldungen zu den Speisen: Kommentare"""
   show_food_comments: Boolean
 
-  """Zeige Rückmeldungen zu den Mensen: Labels"""
-  show_canteen_feedbacks: Boolean
-  send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
-  enabled: Boolean
-
-  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
-  show_canteen_feedbacks_also_per_canteen: Boolean
-  send_on_thursdays: Boolean
-  send_on_sundays: Boolean
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food_feedback_labels: Boolean
   send_on_saturdays: Boolean
+
+  """Zeige Bilder der Speisen"""
+  show_images: Boolean
   send_on_mondays: Boolean
   send_on_fridays: Boolean
-  report_send_successfully: Boolean
   recipients(filter: canteen_food_feedback_report_schedules_report_recipients_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_report_recipients]
   recipients_func: count_functions
   canteens(filter: canteen_food_feedback_report_schedules_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [canteen_food_feedback_report_schedules_canteens]
@@ -1481,8 +1481,8 @@ type canteen_food_feedback_report_schedules_aggregated_count {
   user_updated: Int
   user_created: Int
   id: Int
-  date_created: Int
   date_updated: Int
+  date_created: Int
   date_next_report_is_due: Int
   send_report_at_hh_mm: Int
 
@@ -1491,44 +1491,44 @@ type canteen_food_feedback_report_schedules_aggregated_count {
   alias: Int
   status: Int
   report_status_log: Int
+  sort: Int
+
+  """
+  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
+  """
+  foodoffers_days_limit: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
   foodoffers_days_offset: Int
 
-  """
-  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
-  """
-  foodoffers_days_limit: Int
-  sort: Int
-
-  """Zeige Bilder der Speisen"""
-  show_images: Int
-
-  """Zeige Rückmeldungen zu den Speisen: Labels"""
-  show_food_feedback_labels: Int
-
   """Zeige Rückmeldungen zu den Speisen"""
   show_food: Int
+
+  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
+  show_canteen_feedbacks_also_per_canteen: Int
+  report_send_successfully: Int
+  enabled: Int
+  send_on_thursdays: Int
+  send_on_sundays: Int
+  send_on_tuesdays: Int
+  send_on_wednesdays: Int
+
+  """Zeige Rückmeldungen zu den Mensen: Labels"""
+  show_canteen_feedbacks: Int
 
   """Zeige Rückmeldungen zu den Speisen: Kommentare"""
   show_food_comments: Int
 
-  """Zeige Rückmeldungen zu den Mensen: Labels"""
-  show_canteen_feedbacks: Int
-  send_on_wednesdays: Int
-  send_on_tuesdays: Int
-  enabled: Int
-
-  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
-  show_canteen_feedbacks_also_per_canteen: Int
-  send_on_thursdays: Int
-  send_on_sundays: Int
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food_feedback_labels: Int
   send_on_saturdays: Int
+
+  """Zeige Bilder der Speisen"""
+  show_images: Int
   send_on_mondays: Int
   send_on_fridays: Int
-  report_send_successfully: Int
 
   """Report Empfänger"""
   recipients: Int
@@ -1540,16 +1540,17 @@ type canteen_food_feedback_report_schedules_aggregated_count {
 }
 
 type canteen_food_feedback_report_schedules_aggregated_fields {
-  """
-  Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
-  """
-  foodoffers_days_offset: Float
+  sort: Float
 
   """
   Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
   """
   foodoffers_days_limit: Float
-  sort: Float
+
+  """
+  Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
+  """
+  foodoffers_days_offset: Float
 }
 
 type canteen_food_feedback_report_schedules_canteens {
@@ -1772,8 +1773,8 @@ type canteens_feedbacks_labels_entries {
   date_func: date_functions
   status: String
   sort: Int
-  dislike: Boolean
   like: Boolean
+  dislike: Boolean
 }
 
 type canteens_feedbacks_labels_entries_aggregated {
@@ -1801,8 +1802,8 @@ type canteens_feedbacks_labels_entries_aggregated_count {
   date: Int
   status: Int
   sort: Int
-  dislike: Int
   like: Int
+  dislike: Int
 }
 
 type canteens_feedbacks_labels_entries_aggregated_fields {
@@ -2131,19 +2132,19 @@ type devices {
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
   system_version: String
   status: String
   platform: String
   brand: String
   alias: String
   display_width: Float
-  display_scale: Float
-  display_pixelratio: Float
   display_height: Float
+  display_pixelratio: Float
+  display_scale: Float
   display_fontscale: Float
   pushTokenObj: JSON
   pushTokenObj_func: count_functions
@@ -2174,17 +2175,17 @@ type devices_aggregated_count {
   profile: Int
   user_created: Int
   user_updated: Int
-  date_updated: Int
   date_created: Int
+  date_updated: Int
   system_version: Int
   status: Int
   platform: Int
   brand: Int
   alias: Int
   display_width: Int
-  display_scale: Int
-  display_pixelratio: Int
   display_height: Int
+  display_pixelratio: Int
+  display_scale: Int
   display_fontscale: Int
   pushTokenObj: Int
   sort: Int
@@ -2198,9 +2199,9 @@ type devices_aggregated_count {
 
 type devices_aggregated_fields {
   display_width: Float
-  display_scale: Float
-  display_pixelratio: Float
   display_height: Float
+  display_pixelratio: Float
+  display_scale: Float
   display_fontscale: Float
   sort: Float
 }
@@ -2234,8 +2235,8 @@ type directus_activity {
   collection: String!
   ip: String
   action: String!
-  user_agent: String
   comment: String
+  user_agent: String
   id: ID!
   revisions(filter: directus_revisions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_revisions]
   revisions_func: count_functions
@@ -2289,10 +2290,10 @@ type directus_files {
   tus_data_func: count_functions
   metadata: JSON
   metadata_func: count_functions
+  description: String
+  location: String
   tags: JSON
   tags_func: count_functions
-  location: String
-  description: String
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
@@ -2486,10 +2487,10 @@ type directus_revisions {
   version(filter: directus_versions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_versions
   item: String!
   collection: String!
-  delta: JSON
-  delta_func: count_functions
   data: JSON
   data_func: count_functions
+  delta: JSON
+  delta_func: count_functions
   parent(filter: directus_revisions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_revisions
   activity(filter: directus_activity_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_activity
   id: ID!
@@ -2686,14 +2687,14 @@ type directus_users {
   email: String
   last_name: String
   first_name: String
+  tags: JSON
+  tags_func: count_functions
   theme_dark_overrides: JSON
   theme_dark_overrides_func: count_functions
   theme_light_overrides: JSON
   theme_light_overrides_func: count_functions
   auth_data: JSON
   auth_data_func: count_functions
-  tags: JSON
-  tags_func: count_functions
   description: String
   email_notifications: Boolean
   policies(filter: directus_access_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [directus_access]
@@ -2707,9 +2708,9 @@ type directus_users_mutated {
 }
 
 type directus_versions {
+  id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  id: ID!
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
@@ -2738,8 +2739,8 @@ type directus_webhooks {
   headers: JSON
   headers_func: count_functions
   id: ID!
-  data: Boolean
   was_active_before_deprecation: Boolean!
+  data: Boolean
 }
 
 type directus_webhooks_mutated {
@@ -2766,18 +2767,18 @@ type foodoffers {
   food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
   alias: String
   sugar_g: Float
+  co2_saving_percentage: Float
+  carbohydrate_g: Float
+  calories_kcal: Float
   saturated_fat_g: Float
   protein_g: Float
   price_student: Float
+  salt_g: Float
   price_guest: Float
   price_employee: Float
   fiber_g: Float
-  fat_g: Float
-  salt_g: Float
-  carbohydrate_g: Float
-  calories_kcal: Float
-  co2_saving_percentage: Float
   co2_g: Float
+  fat_g: Float
   sort: Int
   markings(filter: foodoffers_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foodoffers_markings]
   markings_func: count_functions
@@ -2811,36 +2812,36 @@ type foodoffers_aggregated_count {
   food: Int
   alias: Int
   sugar_g: Int
+  co2_saving_percentage: Int
+  carbohydrate_g: Int
+  calories_kcal: Int
   saturated_fat_g: Int
   protein_g: Int
   price_student: Int
+  salt_g: Int
   price_guest: Int
   price_employee: Int
   fiber_g: Int
-  fat_g: Int
-  salt_g: Int
-  carbohydrate_g: Int
-  calories_kcal: Int
-  co2_saving_percentage: Int
   co2_g: Int
+  fat_g: Int
   sort: Int
   markings: Int
 }
 
 type foodoffers_aggregated_fields {
   sugar_g: Float
+  co2_saving_percentage: Float
+  carbohydrate_g: Float
+  calories_kcal: Float
   saturated_fat_g: Float
   protein_g: Float
   price_student: Float
+  salt_g: Float
   price_guest: Float
   price_employee: Float
   fiber_g: Float
-  fat_g: Float
-  salt_g: Float
-  carbohydrate_g: Float
-  calories_kcal: Float
-  co2_saving_percentage: Float
   co2_g: Float
+  fat_g: Float
   sort: Float
 }
 
@@ -2848,10 +2849,10 @@ type foodoffers_categories {
   id: ID!
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
   alias: String
   status: String
   external_identifier: String
@@ -2877,8 +2878,8 @@ type foodoffers_categories_aggregated_count {
   id: Int
   user_updated: Int
   user_created: Int
-  date_updated: Int
   date_created: Int
+  date_updated: Int
   alias: Int
   status: Int
   external_identifier: Int
@@ -2996,20 +2997,20 @@ type foods {
   category: String
   alias: String
   salt_g: Float
+  protein_g: Float
+  fiber_g: Float
   co2_saving_percentage: Float
+  fat_g: Float
+  co2_g: Float
+  rating_average_legacy: Float
+  carbohydrate_g: Float
   rating_average: Float
   saturated_fat_g: Float
-  co2_g: Float
-  sugar_g: Float
-  rating_average_legacy: Float
   calories_kcal: Float
-  carbohydrate_g: Float
-  fat_g: Float
-  fiber_g: Float
-  protein_g: Float
+  sugar_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   sort: Int
+  rating_amount_legacy: Int
   markings(filter: foods_markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_markings]
   markings_func: count_functions
   translations(filter: foods_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [foods_translations]
@@ -3047,20 +3048,20 @@ type foods_aggregated_count {
   category: Int
   alias: Int
   salt_g: Int
+  protein_g: Int
+  fiber_g: Int
   co2_saving_percentage: Int
+  fat_g: Int
+  co2_g: Int
+  rating_average_legacy: Int
+  carbohydrate_g: Int
   rating_average: Int
   saturated_fat_g: Int
-  co2_g: Int
-  sugar_g: Int
-  rating_average_legacy: Int
   calories_kcal: Int
-  carbohydrate_g: Int
-  fat_g: Int
-  fiber_g: Int
-  protein_g: Int
+  sugar_g: Int
   rating_amount: Int
-  rating_amount_legacy: Int
   sort: Int
+  rating_amount_legacy: Int
   markings: Int
   translations: Int
   feedbacks: Int
@@ -3068,20 +3069,20 @@ type foods_aggregated_count {
 
 type foods_aggregated_fields {
   salt_g: Float
+  protein_g: Float
+  fiber_g: Float
   co2_saving_percentage: Float
+  fat_g: Float
+  co2_g: Float
+  rating_average_legacy: Float
+  carbohydrate_g: Float
   rating_average: Float
   saturated_fat_g: Float
-  co2_g: Float
-  sugar_g: Float
-  rating_average_legacy: Float
   calories_kcal: Float
-  carbohydrate_g: Float
-  fat_g: Float
-  fiber_g: Float
-  protein_g: Float
+  sugar_g: Float
   rating_amount: Float
-  rating_amount_legacy: Float
   sort: Float
+  rating_amount_legacy: Float
 }
 
 type foods_categories {
@@ -3141,8 +3142,8 @@ type foods_categories_translations {
   name: String
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   id: ID!
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 type foods_categories_translations_aggregated {
@@ -3163,8 +3164,8 @@ type foods_categories_translations_aggregated_count {
   name: Int
   languages_code: Int
   id: Int
-  let_be_translated: Int
   be_source_for_translations: Int
+  let_be_translated: Int
 }
 
 type foods_categories_translations_aggregated_fields {
@@ -3178,21 +3179,21 @@ type foods_categories_translations_mutated {
 }
 
 type foods_feedbacks {
+  id: ID!
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
   foodoffer(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foodoffers
-  id: ID!
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
   status: String
   food(filter: foods_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods
   comment: String
-  rating: Int
   sort: Int
+  rating: Int
   notify: Boolean
 }
 
@@ -3210,25 +3211,25 @@ type foods_feedbacks_aggregated {
 }
 
 type foods_feedbacks_aggregated_count {
+  id: Int
   canteen: Int
   foodoffer: Int
-  id: Int
   profile: Int
   user_created: Int
   user_updated: Int
-  date_updated: Int
   date_created: Int
+  date_updated: Int
   status: Int
   food: Int
   comment: Int
-  rating: Int
   sort: Int
+  rating: Int
   notify: Int
 }
 
 type foods_feedbacks_aggregated_fields {
-  rating: Float
   sort: Float
+  rating: Float
 }
 
 type foods_feedbacks_labels {
@@ -3291,10 +3292,10 @@ type foods_feedbacks_labels_entries {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
-  label(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
   id: ID!
   foodoffer(filter: foodoffers_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foodoffers
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
+  label(filter: foods_feedbacks_labels_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): foods_feedbacks_labels
   date_updated: Date
   date_updated_func: datetime_functions
   date_created: Date
@@ -3323,10 +3324,10 @@ type foods_feedbacks_labels_entries_aggregated_count {
   user_updated: Int
   user_created: Int
   profile: Int
-  label: Int
   id: Int
   foodoffer: Int
   canteen: Int
+  label: Int
   date_updated: Int
   date_created: Int
   status: Int
@@ -3602,10 +3603,10 @@ type markings {
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+  show_on_card: Boolean
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
-  show_on_card: Boolean
   excluded_by_markings(filter: markings_exclusions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_exclusions]
   excluded_by_markings_func: count_functions
   translations(filter: markings_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [markings_translations]
@@ -3659,10 +3660,10 @@ type markings_aggregated_count {
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Int
+  show_on_card: Int
 
   """Keinen Rand verwenden"""
   hide_border: Int
-  show_on_card: Int
 
   """
   Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein
@@ -3818,8 +3819,8 @@ type markings_translations {
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   description: String
   id: ID!
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 type markings_translations_aggregated {
@@ -3841,8 +3842,8 @@ type markings_translations_aggregated_count {
   languages_code: Int
   description: Int
   id: Int
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
 }
 
 type markings_translations_aggregated_fields {
@@ -3988,7 +3989,10 @@ type popup_events {
   image_remote_url: String
   alias: String
   sort: Int
+  show_on_ios: Boolean
   send_notification: Boolean
+  show_on_web: Boolean
+  show_on_android: Boolean
   translations(filter: popup_events_translations_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_translations]
   translations_func: count_functions
   canteens(filter: popup_events_canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [popup_events_canteens]
@@ -4028,7 +4032,10 @@ type popup_events_aggregated_count {
   image_remote_url: Int
   alias: Int
   sort: Int
+  show_on_ios: Int
   send_notification: Int
+  show_on_web: Int
+  show_on_android: Int
   translations: Int
 
   """Falls keine Mensa ausgewählt ist, wird es für alle angezeigt."""
@@ -4342,9 +4349,9 @@ type push_notifications {
   expo_push_tokens: JSON
   expo_push_tokens_func: count_functions
   status_log: String
-  sort: Int
-  message_ttl: Int
   ios_badge_count: Int
+  message_ttl: Int
+  sort: Int
   ios_play_sound: Boolean
 }
 
@@ -4380,16 +4387,16 @@ type push_notifications_aggregated_count {
   """
   expo_push_tokens: Int
   status_log: Int
-  sort: Int
-  message_ttl: Int
   ios_badge_count: Int
+  message_ttl: Int
+  sort: Int
   ios_play_sound: Int
 }
 
 type push_notifications_aggregated_fields {
-  sort: Float
-  message_ttl: Float
   ios_badge_count: Float
+  message_ttl: Float
+  sort: Float
 }
 
 type push_notifications_mutated {
@@ -4467,9 +4474,9 @@ type utilizations_entries {
   date_end: Date
   date_end_func: datetime_functions
   status: String
-  value_real: Int
   sort: Int
   value_forecast_current: Int
+  value_real: Int
 }
 
 type utilizations_entries_aggregated {
@@ -4495,15 +4502,15 @@ type utilizations_entries_aggregated_count {
   date_start: Int
   date_end: Int
   status: Int
-  value_real: Int
   sort: Int
   value_forecast_current: Int
+  value_real: Int
 }
 
 type utilizations_entries_aggregated_fields {
-  value_real: Float
   sort: Float
   value_forecast_current: Float
+  value_real: Float
 }
 
 type utilizations_entries_mutated {
@@ -4609,17 +4616,17 @@ type version_app_feedbacks {
   device_platform: String
   device_brand: String
   contact_email: String
-  content: String
   response: String
+  content: String
   display_width: Int
-  sort: Int
   display_scale: Int
-  priority: Int
-  display_fontscale: Int
   display_pixelratio: Int
   display_height: Int
-  feedback_read_by_support: Boolean
+  display_fontscale: Int
+  sort: Int
+  priority: Int
   response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
   positive: Boolean
 }
 
@@ -4630,8 +4637,6 @@ type version_app_settings {
   user_updated: JSON
   date_created: Date
   date_updated: Date
-  washingmachine_parsing_last_date: Date
-  foods_parsing_last_date: Date
   campus_parsing_last_date: Date
   housing_parsing_last_date: Date
   maintenance_end: Date
@@ -4639,8 +4644,10 @@ type version_app_settings {
   news_parsing_last_date: Date
   notifications_foods_last_date: Date
   cashregisters_parsing_last_date: Date
-  utilization_forecast_calculation_last_date: Date
+  washingmachine_parsing_last_date: Date
   date_privacy_policy_updated: Date
+  utilization_forecast_calculation_last_date: Date
+  foods_parsing_last_date: Date
   washingmachine_parsing_status: String
   campus_parsing_status: String
   utilization_forecast_calculation_status: String
@@ -4677,45 +4684,45 @@ type version_app_settings {
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
   id: ID
-  balance_enabled: Boolean
+  campus_parsing_enabled: Boolean
 
-  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
-  canteen_reports_enabled: Boolean
-  cashregisters_parsing_enabled: Boolean
-  course_timetable_enabled: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
-  foods_parsing_enabled: Boolean
-
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
-
-  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
-  foods_ratings_average_display: Boolean
-
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
-  housing_parsing_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-  news_parsing_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  notifications_ios_enabled: Boolean
+  """Zeige in der App den Bereich Campus an"""
+  campus_enabled: Boolean
+  washingmachine_parsing_enabled: Boolean
   utilization_forecast_calculation_enabled: Boolean
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
+  notifications_ios_enabled: Boolean
+  notifications_email_enabled: Boolean
+  notifications_android_enabled: Boolean
+  news_parsing_enabled: Boolean
 
-  """Zeige in der App den Bereich Campus an"""
-  campus_enabled: Boolean
-  campus_parsing_enabled: Boolean
-  washingmachine_parsing_enabled: Boolean
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  housing_parsing_enabled: Boolean
+
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
+  foods_ratings_average_display: Boolean
+
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
+  foods_parsing_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+  course_timetable_enabled: Boolean
+  cashregisters_parsing_enabled: Boolean
+
+  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
+  canteen_reports_enabled: Boolean
+  balance_enabled: Boolean
   balance_translations: JSON
   housing_translations: JSON
 }
@@ -4726,8 +4733,8 @@ type version_app_settings_balance_translations {
   content: String
   app_settings_id: JSON
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 """"""
@@ -4748,10 +4755,10 @@ type version_auto_translation_settings {
   auth_key: String
 
   """Informations about errors will be shown here."""
-  extra: String
+  informations: String
 
   """Informations about errors will be shown here."""
-  informations: String
+  extra: String
   used: Int
   percentage: Int
   limit: Int
@@ -4810,10 +4817,10 @@ type version_businesshours {
   time_end: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_till: Date
+  date_valid_from: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_from: Date
+  date_valid_till: Date
   status: String
   sort: Int
   wednesday: Boolean
@@ -4830,8 +4837,8 @@ type version_canteen_food_feedback_report_schedules {
   user_updated: JSON
   user_created: JSON
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_next_report_is_due: Date
   send_report_at_hh_mm: Date
 
@@ -4840,44 +4847,44 @@ type version_canteen_food_feedback_report_schedules {
   alias: String
   status: String
   report_status_log: String
+  sort: Int
+
+  """
+  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
+  """
+  foodoffers_days_limit: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
   foodoffers_days_offset: Int
 
-  """
-  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
-  """
-  foodoffers_days_limit: Int
-  sort: Int
-
-  """Zeige Bilder der Speisen"""
-  show_images: Boolean
-
-  """Zeige Rückmeldungen zu den Speisen: Labels"""
-  show_food_feedback_labels: Boolean
-
   """Zeige Rückmeldungen zu den Speisen"""
   show_food: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
+  show_canteen_feedbacks_also_per_canteen: Boolean
+  report_send_successfully: Boolean
+  enabled: Boolean
+  send_on_thursdays: Boolean
+  send_on_sundays: Boolean
+  send_on_tuesdays: Boolean
+  send_on_wednesdays: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen: Labels"""
+  show_canteen_feedbacks: Boolean
 
   """Zeige Rückmeldungen zu den Speisen: Kommentare"""
   show_food_comments: Boolean
 
-  """Zeige Rückmeldungen zu den Mensen: Labels"""
-  show_canteen_feedbacks: Boolean
-  send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
-  enabled: Boolean
-
-  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
-  show_canteen_feedbacks_also_per_canteen: Boolean
-  send_on_thursdays: Boolean
-  send_on_sundays: Boolean
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food_feedback_labels: Boolean
   send_on_saturdays: Boolean
+
+  """Zeige Bilder der Speisen"""
+  show_images: Boolean
   send_on_mondays: Boolean
   send_on_fridays: Boolean
-  report_send_successfully: Boolean
   recipients: JSON
   canteens: JSON
 }
@@ -4955,8 +4962,8 @@ type version_canteens_feedbacks_labels_entries {
   date: Date
   status: String
   sort: Int
-  dislike: Boolean
   like: Boolean
+  dislike: Boolean
 }
 
 """"""
@@ -5031,17 +5038,17 @@ type version_devices {
   profile: JSON
   user_created: JSON
   user_updated: JSON
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   system_version: String
   status: String
   platform: String
   brand: String
   alias: String
   display_width: Float
-  display_scale: Float
-  display_pixelratio: Float
   display_height: Float
+  display_pixelratio: Float
+  display_scale: Float
   display_fontscale: Float
   pushTokenObj: JSON
   sort: Int
@@ -5078,18 +5085,18 @@ type version_foodoffers {
   food: JSON
   alias: String
   sugar_g: Float
+  co2_saving_percentage: Float
+  carbohydrate_g: Float
+  calories_kcal: Float
   saturated_fat_g: Float
   protein_g: Float
   price_student: Float
+  salt_g: Float
   price_guest: Float
   price_employee: Float
   fiber_g: Float
-  fat_g: Float
-  salt_g: Float
-  carbohydrate_g: Float
-  calories_kcal: Float
-  co2_saving_percentage: Float
   co2_g: Float
+  fat_g: Float
   sort: Int
   markings: JSON
 }
@@ -5099,8 +5106,8 @@ type version_foodoffers_categories {
   id: ID
   user_updated: JSON
   user_created: JSON
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   alias: String
   status: String
   external_identifier: String
@@ -5142,20 +5149,20 @@ type version_foods {
   category: String
   alias: String
   salt_g: Float
+  protein_g: Float
+  fiber_g: Float
   co2_saving_percentage: Float
+  fat_g: Float
+  co2_g: Float
+  rating_average_legacy: Float
+  carbohydrate_g: Float
   rating_average: Float
   saturated_fat_g: Float
-  co2_g: Float
-  sugar_g: Float
-  rating_average_legacy: Float
   calories_kcal: Float
-  carbohydrate_g: Float
-  fat_g: Float
-  fiber_g: Float
-  protein_g: Float
+  sugar_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   sort: Int
+  rating_amount_legacy: Int
   markings: JSON
   translations: JSON
   feedbacks: JSON
@@ -5181,25 +5188,25 @@ type version_foods_categories_translations {
   name: String
   languages_code: JSON
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 """"""
 type version_foods_feedbacks {
+  id: ID
   canteen: JSON
   foodoffer: JSON
-  id: ID
   profile: JSON
   user_created: JSON
   user_updated: JSON
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   status: String
   food: JSON
   comment: String
-  rating: Int
   sort: Int
+  rating: Int
   notify: Boolean
 }
 
@@ -5227,10 +5234,10 @@ type version_foods_feedbacks_labels_entries {
   user_updated: JSON
   user_created: JSON
   profile: JSON
-  label: JSON
   id: ID
   foodoffer: JSON
   canteen: JSON
+  label: JSON
   date_updated: Date
   date_created: Date
   status: String
@@ -5327,10 +5334,10 @@ type version_markings {
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+  show_on_card: Boolean
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
-  show_on_card: Boolean
   excluded_by_markings: JSON
   translations: JSON
 }
@@ -5374,8 +5381,8 @@ type version_markings_translations {
   languages_code: JSON
   description: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 """"""
@@ -5430,7 +5437,10 @@ type version_popup_events {
   image_remote_url: String
   alias: String
   sort: Int
+  show_on_ios: Boolean
   send_notification: Boolean
+  show_on_web: Boolean
+  show_on_android: Boolean
   translations: JSON
   canteens: JSON
 }
@@ -5523,9 +5533,9 @@ type version_push_notifications {
   """
   expo_push_tokens: JSON
   status_log: String
-  sort: Int
-  message_ttl: Int
   ios_badge_count: Int
+  message_ttl: Int
+  sort: Int
   ios_play_sound: Boolean
 }
 
@@ -5553,9 +5563,9 @@ type version_utilizations_entries {
   date_start: Date
   date_end: Date
   status: String
-  value_real: Int
   sort: Int
   value_forecast_current: Int
+  value_real: Int
 }
 
 """"""
@@ -5584,8 +5594,8 @@ type version_washingmachines {
   apartment: JSON
   date_updated: Date
   date_created: Date
-  date_finished: Date
   date_stated: Date
+  date_finished: Date
   status: String
   external_identifier: String
   alias: String
@@ -5599,8 +5609,8 @@ type version_washingmachines_jobs {
   user_updated: JSON
   user_created: JSON
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_end: Date
   date_start: Date
   duration_calculated: Date
@@ -5625,8 +5635,8 @@ type version_wikis {
   icon: String
   custom_id: String
   alias: String
-  sort: Int
   position: Int
+  sort: Int
   public: Boolean
   show_in_drawer: Boolean
   show_in_drawer_as_bottom_item: Boolean
@@ -5649,8 +5659,8 @@ type version_wikis_translations {
   languages_code: JSON
   content: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 type washingmachines {
@@ -5662,10 +5672,10 @@ type washingmachines {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  date_finished: Date
-  date_finished_func: datetime_functions
   date_stated: Date
   date_stated_func: datetime_functions
+  date_finished: Date
+  date_finished_func: datetime_functions
   status: String
   external_identifier: String
   alias: String
@@ -5692,8 +5702,8 @@ type washingmachines_aggregated_count {
   apartment: Int
   date_updated: Int
   date_created: Int
-  date_finished: Int
   date_stated: Int
+  date_finished: Int
   status: Int
   external_identifier: Int
   alias: Int
@@ -5710,10 +5720,10 @@ type washingmachines_jobs {
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
-  date_created: Date
-  date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   date_end: Date
   date_end_func: datetime_functions
   date_start: Date
@@ -5745,8 +5755,8 @@ type washingmachines_jobs_aggregated_count {
   user_updated: Int
   user_created: Int
   id: Int
-  date_created: Int
   date_updated: Int
+  date_created: Int
   date_end: Int
   date_start: Int
   duration_calculated: Int
@@ -5790,8 +5800,8 @@ type wikis {
   icon: String
   custom_id: String
   alias: String
-  sort: Int
   position: Int
+  sort: Int
   public: Boolean
   show_in_drawer: Boolean
   show_in_drawer_as_bottom_item: Boolean
@@ -5830,8 +5840,8 @@ type wikis_aggregated_count {
   icon: Int
   custom_id: Int
   alias: Int
-  sort: Int
   position: Int
+  sort: Int
   public: Int
   show_in_drawer: Int
   show_in_drawer_as_bottom_item: Int
@@ -5841,8 +5851,8 @@ type wikis_aggregated_count {
 }
 
 type wikis_aggregated_fields {
-  sort: Float
   position: Float
+  sort: Float
 }
 
 type wikis_directus_roles {
@@ -5892,8 +5902,8 @@ type wikis_translations {
   languages_code(filter: languages_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): languages
   content: String
   id: ID!
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 type wikis_translations_aggregated {
@@ -5915,8 +5925,8 @@ type wikis_translations_aggregated_count {
   languages_code: Int
   content: Int
   id: Int
-  be_source_for_translations: Int
   let_be_translated: Int
+  be_source_for_translations: Int
 }
 
 type wikis_translations_aggregated_fields {
@@ -5967,17 +5977,17 @@ input app_feedbacks_filter {
   device_platform: string_filter_operators
   device_brand: string_filter_operators
   contact_email: string_filter_operators
-  content: string_filter_operators
   response: string_filter_operators
+  content: string_filter_operators
   display_width: number_filter_operators
-  sort: number_filter_operators
   display_scale: number_filter_operators
-  priority: number_filter_operators
-  display_fontscale: number_filter_operators
   display_pixelratio: number_filter_operators
   display_height: number_filter_operators
-  feedback_read_by_support: boolean_filter_operators
+  display_fontscale: number_filter_operators
+  sort: number_filter_operators
+  priority: number_filter_operators
   response_read_by_user: boolean_filter_operators
+  feedback_read_by_support: boolean_filter_operators
   positive: boolean_filter_operators
   _and: [app_feedbacks_filter]
   _or: [app_feedbacks_filter]
@@ -5988,8 +5998,8 @@ input app_settings_balance_translations_filter {
   content: string_filter_operators
   app_settings_id: app_settings_filter
   id: number_filter_operators
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   _and: [app_settings_balance_translations_filter]
   _or: [app_settings_balance_translations_filter]
 }
@@ -6002,10 +6012,6 @@ input app_settings_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  washingmachine_parsing_last_date: date_filter_operators
-  washingmachine_parsing_last_date_func: datetime_function_filter_operators
-  foods_parsing_last_date: date_filter_operators
-  foods_parsing_last_date_func: datetime_function_filter_operators
   campus_parsing_last_date: date_filter_operators
   campus_parsing_last_date_func: datetime_function_filter_operators
   housing_parsing_last_date: date_filter_operators
@@ -6020,10 +6026,14 @@ input app_settings_filter {
   notifications_foods_last_date_func: datetime_function_filter_operators
   cashregisters_parsing_last_date: date_filter_operators
   cashregisters_parsing_last_date_func: datetime_function_filter_operators
-  utilization_forecast_calculation_last_date: date_filter_operators
-  utilization_forecast_calculation_last_date_func: datetime_function_filter_operators
+  washingmachine_parsing_last_date: date_filter_operators
+  washingmachine_parsing_last_date_func: datetime_function_filter_operators
   date_privacy_policy_updated: date_filter_operators
   date_privacy_policy_updated_func: datetime_function_filter_operators
+  utilization_forecast_calculation_last_date: date_filter_operators
+  utilization_forecast_calculation_last_date_func: datetime_function_filter_operators
+  foods_parsing_last_date: date_filter_operators
+  foods_parsing_last_date_func: datetime_function_filter_operators
   washingmachine_parsing_status: string_filter_operators
   campus_parsing_status: string_filter_operators
   utilization_forecast_calculation_status: string_filter_operators
@@ -6047,27 +6057,27 @@ input app_settings_filter {
   redirect_whitelist: string_filter_operators
   redirect_whitelist_func: count_function_filter_operators
   id: number_filter_operators
-  balance_enabled: boolean_filter_operators
-  canteen_reports_enabled: boolean_filter_operators
-  cashregisters_parsing_enabled: boolean_filter_operators
-  course_timetable_enabled: boolean_filter_operators
-  foods_enabled: boolean_filter_operators
-  foods_parsing_enabled: boolean_filter_operators
-  foods_ratings_amount_display: boolean_filter_operators
-  foods_ratings_average_display: boolean_filter_operators
-  housing_enabled: boolean_filter_operators
-  housing_parsing_enabled: boolean_filter_operators
-  map_enabled: boolean_filter_operators
-  news_enabled: boolean_filter_operators
-  news_parsing_enabled: boolean_filter_operators
-  notifications_android_enabled: boolean_filter_operators
-  notifications_email_enabled: boolean_filter_operators
-  notifications_ios_enabled: boolean_filter_operators
+  campus_parsing_enabled: boolean_filter_operators
+  campus_enabled: boolean_filter_operators
+  washingmachine_parsing_enabled: boolean_filter_operators
   utilization_forecast_calculation_enabled: boolean_filter_operators
   utilization_display_enabled: boolean_filter_operators
-  campus_enabled: boolean_filter_operators
-  campus_parsing_enabled: boolean_filter_operators
-  washingmachine_parsing_enabled: boolean_filter_operators
+  notifications_ios_enabled: boolean_filter_operators
+  notifications_email_enabled: boolean_filter_operators
+  notifications_android_enabled: boolean_filter_operators
+  news_parsing_enabled: boolean_filter_operators
+  news_enabled: boolean_filter_operators
+  map_enabled: boolean_filter_operators
+  housing_parsing_enabled: boolean_filter_operators
+  housing_enabled: boolean_filter_operators
+  foods_ratings_average_display: boolean_filter_operators
+  foods_ratings_amount_display: boolean_filter_operators
+  foods_parsing_enabled: boolean_filter_operators
+  foods_enabled: boolean_filter_operators
+  course_timetable_enabled: boolean_filter_operators
+  cashregisters_parsing_enabled: boolean_filter_operators
+  canteen_reports_enabled: boolean_filter_operators
+  balance_enabled: boolean_filter_operators
   balance_translations: app_settings_balance_translations_filter
   balance_translations_func: count_function_filter_operators
   housing_translations: app_settings_housing_translations_filter
@@ -6170,10 +6180,10 @@ input businesshours_filter {
   time_start_func: time_function_filter_operators
   time_end: date_filter_operators
   time_end_func: time_function_filter_operators
-  date_valid_till: date_filter_operators
-  date_valid_till_func: date_function_filter_operators
   date_valid_from: date_filter_operators
   date_valid_from_func: date_function_filter_operators
+  date_valid_till: date_filter_operators
+  date_valid_till_func: date_function_filter_operators
   status: string_filter_operators
   sort: number_filter_operators
   wednesday: boolean_filter_operators
@@ -6199,10 +6209,10 @@ input canteen_food_feedback_report_schedules_filter {
   user_updated: directus_users_filter
   user_created: directus_users_filter
   id: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   date_next_report_is_due: date_filter_operators
   date_next_report_is_due_func: datetime_function_filter_operators
   send_report_at_hh_mm: date_filter_operators
@@ -6212,24 +6222,24 @@ input canteen_food_feedback_report_schedules_filter {
   alias: string_filter_operators
   status: string_filter_operators
   report_status_log: string_filter_operators
-  foodoffers_days_offset: number_filter_operators
-  foodoffers_days_limit: number_filter_operators
   sort: number_filter_operators
-  show_images: boolean_filter_operators
-  show_food_feedback_labels: boolean_filter_operators
+  foodoffers_days_limit: number_filter_operators
+  foodoffers_days_offset: number_filter_operators
   show_food: boolean_filter_operators
-  show_food_comments: boolean_filter_operators
-  show_canteen_feedbacks: boolean_filter_operators
-  send_on_wednesdays: boolean_filter_operators
-  send_on_tuesdays: boolean_filter_operators
-  enabled: boolean_filter_operators
   show_canteen_feedbacks_also_per_canteen: boolean_filter_operators
+  report_send_successfully: boolean_filter_operators
+  enabled: boolean_filter_operators
   send_on_thursdays: boolean_filter_operators
   send_on_sundays: boolean_filter_operators
+  send_on_tuesdays: boolean_filter_operators
+  send_on_wednesdays: boolean_filter_operators
+  show_canteen_feedbacks: boolean_filter_operators
+  show_food_comments: boolean_filter_operators
+  show_food_feedback_labels: boolean_filter_operators
   send_on_saturdays: boolean_filter_operators
+  show_images: boolean_filter_operators
   send_on_mondays: boolean_filter_operators
   send_on_fridays: boolean_filter_operators
-  report_send_successfully: boolean_filter_operators
   recipients: canteen_food_feedback_report_schedules_report_recipients_filter
   recipients_func: count_function_filter_operators
   canteens: canteen_food_feedback_report_schedules_canteens_filter
@@ -6261,8 +6271,8 @@ input canteens_feedbacks_labels_entries_filter {
   date_func: date_function_filter_operators
   status: string_filter_operators
   sort: number_filter_operators
-  dislike: boolean_filter_operators
   like: boolean_filter_operators
+  dislike: boolean_filter_operators
   _and: [canteens_feedbacks_labels_entries_filter]
   _or: [canteens_feedbacks_labels_entries_filter]
 }
@@ -6426,17 +6436,17 @@ input create_app_feedbacks_input {
   device_platform: String
   device_brand: String
   contact_email: String
-  content: String
   response: String
+  content: String
   display_width: Int
-  sort: Int
   display_scale: Int
-  priority: Int
-  display_fontscale: Int
   display_pixelratio: Int
   display_height: Int
-  feedback_read_by_support: Boolean
+  display_fontscale: Int
+  sort: Int
+  priority: Int
   response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
   positive: Boolean
 }
 
@@ -6445,8 +6455,8 @@ input create_app_settings_balance_translations_input {
   content: String
   app_settings_id: create_app_settings_input
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input create_app_settings_housing_translations_input {
@@ -6464,8 +6474,6 @@ input create_app_settings_input {
   user_updated: create_directus_users_input
   date_created: Date
   date_updated: Date
-  washingmachine_parsing_last_date: Date
-  foods_parsing_last_date: Date
   campus_parsing_last_date: Date
   housing_parsing_last_date: Date
   maintenance_end: Date
@@ -6473,8 +6481,10 @@ input create_app_settings_input {
   news_parsing_last_date: Date
   notifications_foods_last_date: Date
   cashregisters_parsing_last_date: Date
-  utilization_forecast_calculation_last_date: Date
+  washingmachine_parsing_last_date: Date
   date_privacy_policy_updated: Date
+  utilization_forecast_calculation_last_date: Date
+  foods_parsing_last_date: Date
   washingmachine_parsing_status: String
   campus_parsing_status: String
   utilization_forecast_calculation_status: String
@@ -6511,45 +6521,45 @@ input create_app_settings_input {
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
   id: ID
-  balance_enabled: Boolean
+  campus_parsing_enabled: Boolean
 
-  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
-  canteen_reports_enabled: Boolean
-  cashregisters_parsing_enabled: Boolean
-  course_timetable_enabled: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
-  foods_parsing_enabled: Boolean
-
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
-
-  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
-  foods_ratings_average_display: Boolean
-
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
-  housing_parsing_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-  news_parsing_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  notifications_ios_enabled: Boolean
+  """Zeige in der App den Bereich Campus an"""
+  campus_enabled: Boolean
+  washingmachine_parsing_enabled: Boolean
   utilization_forecast_calculation_enabled: Boolean
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
+  notifications_ios_enabled: Boolean
+  notifications_email_enabled: Boolean
+  notifications_android_enabled: Boolean
+  news_parsing_enabled: Boolean
 
-  """Zeige in der App den Bereich Campus an"""
-  campus_enabled: Boolean
-  campus_parsing_enabled: Boolean
-  washingmachine_parsing_enabled: Boolean
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  housing_parsing_enabled: Boolean
+
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
+  foods_ratings_average_display: Boolean
+
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
+  foods_parsing_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+  course_timetable_enabled: Boolean
+  cashregisters_parsing_enabled: Boolean
+
+  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
+  canteen_reports_enabled: Boolean
+  balance_enabled: Boolean
   balance_translations: [create_app_settings_balance_translations_input]
   housing_translations: [create_app_settings_housing_translations_input]
 }
@@ -6600,10 +6610,10 @@ input create_businesshours_input {
   time_end: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_till: Date
+  date_valid_from: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_from: Date
+  date_valid_till: Date
   status: String
   sort: Int
   wednesday: Boolean
@@ -6625,8 +6635,8 @@ input create_canteen_food_feedback_report_schedules_input {
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_next_report_is_due: Date
   send_report_at_hh_mm: Date
 
@@ -6635,44 +6645,44 @@ input create_canteen_food_feedback_report_schedules_input {
   alias: String
   status: String
   report_status_log: String
+  sort: Int
+
+  """
+  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
+  """
+  foodoffers_days_limit: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
   foodoffers_days_offset: Int
 
-  """
-  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
-  """
-  foodoffers_days_limit: Int
-  sort: Int
-
-  """Zeige Bilder der Speisen"""
-  show_images: Boolean
-
-  """Zeige Rückmeldungen zu den Speisen: Labels"""
-  show_food_feedback_labels: Boolean
-
   """Zeige Rückmeldungen zu den Speisen"""
   show_food: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
+  show_canteen_feedbacks_also_per_canteen: Boolean
+  report_send_successfully: Boolean
+  enabled: Boolean
+  send_on_thursdays: Boolean
+  send_on_sundays: Boolean
+  send_on_tuesdays: Boolean
+  send_on_wednesdays: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen: Labels"""
+  show_canteen_feedbacks: Boolean
 
   """Zeige Rückmeldungen zu den Speisen: Kommentare"""
   show_food_comments: Boolean
 
-  """Zeige Rückmeldungen zu den Mensen: Labels"""
-  show_canteen_feedbacks: Boolean
-  send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
-  enabled: Boolean
-
-  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
-  show_canteen_feedbacks_also_per_canteen: Boolean
-  send_on_thursdays: Boolean
-  send_on_sundays: Boolean
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food_feedback_labels: Boolean
   send_on_saturdays: Boolean
+
+  """Zeige Bilder der Speisen"""
+  show_images: Boolean
   send_on_mondays: Boolean
   send_on_fridays: Boolean
-  report_send_successfully: Boolean
   recipients: [create_canteen_food_feedback_report_schedules_report_recipients_input]
   canteens: [create_canteen_food_feedback_report_schedules_canteens_input]
 }
@@ -6695,8 +6705,8 @@ input create_canteens_feedbacks_labels_entries_input {
   date: Date
   status: String
   sort: Int
-  dislike: Boolean
   like: Boolean
+  dislike: Boolean
 }
 
 input create_canteens_feedbacks_labels_input {
@@ -6808,17 +6818,17 @@ input create_devices_input {
   profile: create_profiles_input
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   system_version: String
   status: String
   platform: String
   brand: String
   alias: String
   display_width: Float
-  display_scale: Float
-  display_pixelratio: Float
   display_height: Float
+  display_pixelratio: Float
+  display_scale: Float
   display_fontscale: Float
   pushTokenObj: JSON
   sort: Int
@@ -6856,9 +6866,9 @@ input create_directus_files_input {
   storage: String!
   tus_data: JSON
   metadata: JSON
-  tags: JSON
-  location: String
   description: String
+  location: String
+  tags: JSON
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
@@ -6941,10 +6951,10 @@ input create_directus_users_input {
   email: String
   last_name: String
   first_name: String
+  tags: JSON
   theme_dark_overrides: JSON
   theme_light_overrides: JSON
   auth_data: JSON
-  tags: JSON
   description: String
   email_notifications: Boolean
   policies: [create_directus_access_input]
@@ -6954,8 +6964,8 @@ input create_foodoffers_categories_input {
   id: ID
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   alias: String
   status: String
   external_identifier: String
@@ -6987,18 +6997,18 @@ input create_foodoffers_input {
   food: create_foods_input
   alias: String
   sugar_g: Float
+  co2_saving_percentage: Float
+  carbohydrate_g: Float
+  calories_kcal: Float
   saturated_fat_g: Float
   protein_g: Float
   price_student: Float
+  salt_g: Float
   price_guest: Float
   price_employee: Float
   fiber_g: Float
-  fat_g: Float
-  salt_g: Float
-  carbohydrate_g: Float
-  calories_kcal: Float
-  co2_saving_percentage: Float
   co2_g: Float
+  fat_g: Float
   sort: Int
   markings: [create_foodoffers_markings_input]
 }
@@ -7027,24 +7037,24 @@ input create_foods_categories_translations_input {
   name: String
   languages_code: create_languages_input
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input create_foods_feedbacks_input {
+  id: ID
   canteen: create_canteens_input
   foodoffer: create_foodoffers_input
-  id: ID
   profile: create_profiles_input
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   status: String
   food: create_foods_input
   comment: String
-  rating: Int
   sort: Int
+  rating: Int
   notify: Boolean
 }
 
@@ -7052,10 +7062,10 @@ input create_foods_feedbacks_labels_entries_input {
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
   profile: create_profiles_input
-  label: create_foods_feedbacks_labels_input
   id: ID
   foodoffer: create_foodoffers_input
   canteen: create_canteens_input
+  label: create_foods_feedbacks_labels_input
   date_updated: Date
   date_created: Date
   status: String
@@ -7108,20 +7118,20 @@ input create_foods_input {
   category: String
   alias: String
   salt_g: Float
+  protein_g: Float
+  fiber_g: Float
   co2_saving_percentage: Float
+  fat_g: Float
+  co2_g: Float
+  rating_average_legacy: Float
+  carbohydrate_g: Float
   rating_average: Float
   saturated_fat_g: Float
-  co2_g: Float
-  sugar_g: Float
-  rating_average_legacy: Float
   calories_kcal: Float
-  carbohydrate_g: Float
-  fat_g: Float
-  fiber_g: Float
-  protein_g: Float
+  sugar_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   sort: Int
+  rating_amount_legacy: Int
   markings: [create_foods_markings_input]
   translations: [create_foods_translations_input]
   feedbacks: [create_foods_feedbacks_input]
@@ -7228,10 +7238,10 @@ input create_markings_input {
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+  show_on_card: Boolean
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
-  show_on_card: Boolean
   excluded_by_markings: [create_markings_exclusions_input]
   translations: [create_markings_translations_input]
 }
@@ -7242,8 +7252,8 @@ input create_markings_translations_input {
   languages_code: create_languages_input
   description: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 input create_news_input {
@@ -7301,7 +7311,10 @@ input create_popup_events_input {
   image_remote_url: String
   alias: String
   sort: Int
+  show_on_ios: Boolean
   send_notification: Boolean
+  show_on_web: Boolean
+  show_on_android: Boolean
   translations: [create_popup_events_translations_input]
   canteens: [create_popup_events_canteens_input]
 }
@@ -7381,9 +7394,9 @@ input create_push_notifications_input {
   """
   expo_push_tokens: JSON
   status_log: String
-  sort: Int
-  message_ttl: Int
   ios_badge_count: Int
+  message_ttl: Int
+  sort: Int
   ios_play_sound: Boolean
 }
 
@@ -7409,9 +7422,9 @@ input create_utilizations_entries_input {
   date_start: Date
   date_end: Date
   status: String
-  value_real: Int
   sort: Int
   value_forecast_current: Int
+  value_real: Int
 }
 
 input create_utilizations_groups_input {
@@ -7438,8 +7451,8 @@ input create_washingmachines_input {
   apartment: create_apartments_input
   date_updated: Date
   date_created: Date
-  date_finished: Date
   date_stated: Date
+  date_finished: Date
   status: String
   external_identifier: String
   alias: String
@@ -7452,8 +7465,8 @@ input create_washingmachines_jobs_input {
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_end: Date
   date_start: Date
   duration_calculated: Date
@@ -7483,8 +7496,8 @@ input create_wikis_input {
   icon: String
   custom_id: String
   alias: String
-  sort: Int
   position: Int
+  sort: Int
   public: Boolean
   show_in_drawer: Boolean
   show_in_drawer_as_bottom_item: Boolean
@@ -7499,8 +7512,8 @@ input create_wikis_translations_input {
   languages_code: create_languages_input
   content: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 input date_filter_operators {
@@ -7542,19 +7555,19 @@ input devices_filter {
   profile: profiles_filter
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   system_version: string_filter_operators
   status: string_filter_operators
   platform: string_filter_operators
   brand: string_filter_operators
   alias: string_filter_operators
   display_width: number_filter_operators
-  display_scale: number_filter_operators
-  display_pixelratio: number_filter_operators
   display_height: number_filter_operators
+  display_pixelratio: number_filter_operators
+  display_scale: number_filter_operators
   display_fontscale: number_filter_operators
   pushTokenObj: string_filter_operators
   pushTokenObj_func: count_function_filter_operators
@@ -7588,8 +7601,8 @@ input directus_activity_filter {
   collection: string_filter_operators
   ip: string_filter_operators
   action: string_filter_operators
-  user_agent: string_filter_operators
   comment: string_filter_operators
+  user_agent: string_filter_operators
   id: number_filter_operators
   revisions: directus_revisions_filter
   revisions_func: count_function_filter_operators
@@ -7635,10 +7648,10 @@ input directus_files_filter {
   tus_data_func: count_function_filter_operators
   metadata: string_filter_operators
   metadata_func: count_function_filter_operators
+  description: string_filter_operators
+  location: string_filter_operators
   tags: string_filter_operators
   tags_func: count_function_filter_operators
-  location: string_filter_operators
-  description: string_filter_operators
   focal_point_y: number_filter_operators
   focal_point_x: number_filter_operators
   duration: number_filter_operators
@@ -7758,10 +7771,10 @@ input directus_revisions_filter {
   version: directus_versions_filter
   item: string_filter_operators
   collection: string_filter_operators
-  delta: string_filter_operators
-  delta_func: count_function_filter_operators
   data: string_filter_operators
   data_func: count_function_filter_operators
+  delta: string_filter_operators
+  delta_func: count_function_filter_operators
   parent: directus_revisions_filter
   activity: directus_activity_filter
   id: number_filter_operators
@@ -7819,14 +7832,14 @@ input directus_users_filter {
   email: string_filter_operators
   last_name: string_filter_operators
   first_name: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
   theme_dark_overrides: string_filter_operators
   theme_dark_overrides_func: count_function_filter_operators
   theme_light_overrides: string_filter_operators
   theme_light_overrides_func: count_function_filter_operators
   auth_data: string_filter_operators
   auth_data_func: count_function_filter_operators
-  tags: string_filter_operators
-  tags_func: count_function_filter_operators
   description: string_filter_operators
   email_notifications: boolean_filter_operators
   policies: directus_access_filter
@@ -7836,9 +7849,9 @@ input directus_users_filter {
 }
 
 input directus_versions_filter {
+  id: string_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  id: string_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
@@ -7856,10 +7869,10 @@ input foodoffers_categories_filter {
   id: string_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   alias: string_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
@@ -7899,18 +7912,18 @@ input foodoffers_filter {
   food: foods_filter
   alias: string_filter_operators
   sugar_g: number_filter_operators
+  co2_saving_percentage: number_filter_operators
+  carbohydrate_g: number_filter_operators
+  calories_kcal: number_filter_operators
   saturated_fat_g: number_filter_operators
   protein_g: number_filter_operators
   price_student: number_filter_operators
+  salt_g: number_filter_operators
   price_guest: number_filter_operators
   price_employee: number_filter_operators
   fiber_g: number_filter_operators
-  fat_g: number_filter_operators
-  salt_g: number_filter_operators
-  carbohydrate_g: number_filter_operators
-  calories_kcal: number_filter_operators
-  co2_saving_percentage: number_filter_operators
   co2_g: number_filter_operators
+  fat_g: number_filter_operators
   sort: number_filter_operators
   markings: foodoffers_markings_filter
   markings_func: count_function_filter_operators
@@ -7949,28 +7962,28 @@ input foods_categories_translations_filter {
   name: string_filter_operators
   languages_code: languages_filter
   id: number_filter_operators
-  let_be_translated: boolean_filter_operators
   be_source_for_translations: boolean_filter_operators
+  let_be_translated: boolean_filter_operators
   _and: [foods_categories_translations_filter]
   _or: [foods_categories_translations_filter]
 }
 
 input foods_feedbacks_filter {
+  id: string_filter_operators
   canteen: canteens_filter
   foodoffer: foodoffers_filter
-  id: string_filter_operators
   profile: profiles_filter
   user_created: directus_users_filter
   user_updated: directus_users_filter
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   status: string_filter_operators
   food: foods_filter
   comment: string_filter_operators
-  rating: number_filter_operators
   sort: number_filter_operators
+  rating: number_filter_operators
   notify: boolean_filter_operators
   _and: [foods_feedbacks_filter]
   _or: [foods_feedbacks_filter]
@@ -7980,10 +7993,10 @@ input foods_feedbacks_labels_entries_filter {
   user_updated: directus_users_filter
   user_created: directus_users_filter
   profile: profiles_filter
-  label: foods_feedbacks_labels_filter
   id: string_filter_operators
   foodoffer: foodoffers_filter
   canteen: canteens_filter
+  label: foods_feedbacks_labels_filter
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
@@ -8047,20 +8060,20 @@ input foods_filter {
   category: string_filter_operators
   alias: string_filter_operators
   salt_g: number_filter_operators
+  protein_g: number_filter_operators
+  fiber_g: number_filter_operators
   co2_saving_percentage: number_filter_operators
+  fat_g: number_filter_operators
+  co2_g: number_filter_operators
+  rating_average_legacy: number_filter_operators
+  carbohydrate_g: number_filter_operators
   rating_average: number_filter_operators
   saturated_fat_g: number_filter_operators
-  co2_g: number_filter_operators
-  sugar_g: number_filter_operators
-  rating_average_legacy: number_filter_operators
   calories_kcal: number_filter_operators
-  carbohydrate_g: number_filter_operators
-  fat_g: number_filter_operators
-  fiber_g: number_filter_operators
-  protein_g: number_filter_operators
+  sugar_g: number_filter_operators
   rating_amount: number_filter_operators
-  rating_amount_legacy: number_filter_operators
   sort: number_filter_operators
+  rating_amount_legacy: number_filter_operators
   markings: foods_markings_filter
   markings_func: count_function_filter_operators
   translations: foods_translations_filter
@@ -8155,8 +8168,8 @@ input markings_filter {
   alias: string_filter_operators
   sort: number_filter_operators
   invert_background_color: boolean_filter_operators
-  hide_border: boolean_filter_operators
   show_on_card: boolean_filter_operators
+  hide_border: boolean_filter_operators
   excluded_by_markings: markings_exclusions_filter
   excluded_by_markings_func: count_function_filter_operators
   translations: markings_translations_filter
@@ -8202,8 +8215,8 @@ input markings_translations_filter {
   languages_code: languages_filter
   description: string_filter_operators
   id: number_filter_operators
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   _and: [markings_translations_filter]
   _or: [markings_translations_filter]
 }
@@ -8287,7 +8300,10 @@ input popup_events_filter {
   image_remote_url: string_filter_operators
   alias: string_filter_operators
   sort: number_filter_operators
+  show_on_ios: boolean_filter_operators
   send_notification: boolean_filter_operators
+  show_on_web: boolean_filter_operators
+  show_on_android: boolean_filter_operators
   translations: popup_events_translations_filter
   translations_func: count_function_filter_operators
   canteens: popup_events_canteens_filter
@@ -8391,9 +8407,9 @@ input push_notifications_filter {
   expo_push_tokens: string_filter_operators
   expo_push_tokens_func: count_function_filter_operators
   status_log: string_filter_operators
-  sort: number_filter_operators
-  message_ttl: number_filter_operators
   ios_badge_count: number_filter_operators
+  message_ttl: number_filter_operators
+  sort: number_filter_operators
   ios_play_sound: boolean_filter_operators
   _and: [push_notifications_filter]
   _or: [push_notifications_filter]
@@ -8473,17 +8489,17 @@ input update_app_feedbacks_input {
   device_platform: String
   device_brand: String
   contact_email: String
-  content: String
   response: String
+  content: String
   display_width: Int
-  sort: Int
   display_scale: Int
-  priority: Int
-  display_fontscale: Int
   display_pixelratio: Int
   display_height: Int
-  feedback_read_by_support: Boolean
+  display_fontscale: Int
+  sort: Int
+  priority: Int
   response_read_by_user: Boolean
+  feedback_read_by_support: Boolean
   positive: Boolean
 }
 
@@ -8492,8 +8508,8 @@ input update_app_settings_balance_translations_input {
   content: String
   app_settings_id: update_app_settings_input
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input update_app_settings_housing_translations_input {
@@ -8511,8 +8527,6 @@ input update_app_settings_input {
   user_updated: update_directus_users_input
   date_created: Date
   date_updated: Date
-  washingmachine_parsing_last_date: Date
-  foods_parsing_last_date: Date
   campus_parsing_last_date: Date
   housing_parsing_last_date: Date
   maintenance_end: Date
@@ -8520,8 +8534,10 @@ input update_app_settings_input {
   news_parsing_last_date: Date
   notifications_foods_last_date: Date
   cashregisters_parsing_last_date: Date
-  utilization_forecast_calculation_last_date: Date
+  washingmachine_parsing_last_date: Date
   date_privacy_policy_updated: Date
+  utilization_forecast_calculation_last_date: Date
+  foods_parsing_last_date: Date
   washingmachine_parsing_status: String
   campus_parsing_status: String
   utilization_forecast_calculation_status: String
@@ -8558,45 +8574,45 @@ input update_app_settings_input {
   """Liste erlaubter Seiten die sich bei der App Anmelden dürfen"""
   redirect_whitelist: JSON
   id: ID
-  balance_enabled: Boolean
+  campus_parsing_enabled: Boolean
 
-  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
-  canteen_reports_enabled: Boolean
-  cashregisters_parsing_enabled: Boolean
-  course_timetable_enabled: Boolean
-
-  """Bereich "Mensa" in der App aktivieren?"""
-  foods_enabled: Boolean
-  foods_parsing_enabled: Boolean
-
-  """Soll die Anzahl der Bewertungen angezeigt werden?"""
-  foods_ratings_amount_display: Boolean
-
-  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
-  foods_ratings_average_display: Boolean
-
-  """Zeigt den Bereich Wohnen in der App an"""
-  housing_enabled: Boolean
-  housing_parsing_enabled: Boolean
-
-  """Zeige den Lageplan in der App an"""
-  map_enabled: Boolean
-
-  """Zeigt in der App den Bereich News an"""
-  news_enabled: Boolean
-  news_parsing_enabled: Boolean
-  notifications_android_enabled: Boolean
-  notifications_email_enabled: Boolean
-  notifications_ios_enabled: Boolean
+  """Zeige in der App den Bereich Campus an"""
+  campus_enabled: Boolean
+  washingmachine_parsing_enabled: Boolean
   utilization_forecast_calculation_enabled: Boolean
 
   """Zeige die Auslastungsprognose in der App"""
   utilization_display_enabled: Boolean
+  notifications_ios_enabled: Boolean
+  notifications_email_enabled: Boolean
+  notifications_android_enabled: Boolean
+  news_parsing_enabled: Boolean
 
-  """Zeige in der App den Bereich Campus an"""
-  campus_enabled: Boolean
-  campus_parsing_enabled: Boolean
-  washingmachine_parsing_enabled: Boolean
+  """Zeigt in der App den Bereich News an"""
+  news_enabled: Boolean
+
+  """Zeige den Lageplan in der App an"""
+  map_enabled: Boolean
+  housing_parsing_enabled: Boolean
+
+  """Zeigt den Bereich Wohnen in der App an"""
+  housing_enabled: Boolean
+
+  """Soll die durschnittliche Bewertung der Speisen angezeigt werden?"""
+  foods_ratings_average_display: Boolean
+
+  """Soll die Anzahl der Bewertungen angezeigt werden?"""
+  foods_ratings_amount_display: Boolean
+  foods_parsing_enabled: Boolean
+
+  """Bereich "Mensa" in der App aktivieren?"""
+  foods_enabled: Boolean
+  course_timetable_enabled: Boolean
+  cashregisters_parsing_enabled: Boolean
+
+  """Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle"""
+  canteen_reports_enabled: Boolean
+  balance_enabled: Boolean
   balance_translations: [update_app_settings_balance_translations_input]
   housing_translations: [update_app_settings_housing_translations_input]
 }
@@ -8608,10 +8624,10 @@ input update_auto_translation_settings_input {
   auth_key: String
 
   """Informations about errors will be shown here."""
-  extra: String
+  informations: String
 
   """Informations about errors will be shown here."""
-  informations: String
+  extra: String
   used: Int
   percentage: Int
   limit: Int
@@ -8666,10 +8682,10 @@ input update_businesshours_input {
   time_end: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_till: Date
+  date_valid_from: Date
 
   """Leave empty to use default; overridden by other defined ranges."""
-  date_valid_from: Date
+  date_valid_till: Date
   status: String
   sort: Int
   wednesday: Boolean
@@ -8691,8 +8707,8 @@ input update_canteen_food_feedback_report_schedules_input {
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_next_report_is_due: Date
   send_report_at_hh_mm: Date
 
@@ -8701,44 +8717,44 @@ input update_canteen_food_feedback_report_schedules_input {
   alias: String
   status: String
   report_status_log: String
+  sort: Int
+
+  """
+  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
+  """
+  foodoffers_days_limit: Int
 
   """
   Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.
   """
   foodoffers_days_offset: Int
 
-  """
-  Anzahl der vorherigen Tage fest, die im Bericht enthalten sein sollen, einschließlich des Referenztags. Wenn 1 gesetzt ist, wird nur der Referenztag im Bericht berücksichtigt. Der Referenztag kann durch den Offset verschoben werden.
-  """
-  foodoffers_days_limit: Int
-  sort: Int
-
-  """Zeige Bilder der Speisen"""
-  show_images: Boolean
-
-  """Zeige Rückmeldungen zu den Speisen: Labels"""
-  show_food_feedback_labels: Boolean
-
   """Zeige Rückmeldungen zu den Speisen"""
   show_food: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
+  show_canteen_feedbacks_also_per_canteen: Boolean
+  report_send_successfully: Boolean
+  enabled: Boolean
+  send_on_thursdays: Boolean
+  send_on_sundays: Boolean
+  send_on_tuesdays: Boolean
+  send_on_wednesdays: Boolean
+
+  """Zeige Rückmeldungen zu den Mensen: Labels"""
+  show_canteen_feedbacks: Boolean
 
   """Zeige Rückmeldungen zu den Speisen: Kommentare"""
   show_food_comments: Boolean
 
-  """Zeige Rückmeldungen zu den Mensen: Labels"""
-  show_canteen_feedbacks: Boolean
-  send_on_wednesdays: Boolean
-  send_on_tuesdays: Boolean
-  enabled: Boolean
-
-  """Zeige Rückmeldungen zu den Mensen pro Mensa: Labels"""
-  show_canteen_feedbacks_also_per_canteen: Boolean
-  send_on_thursdays: Boolean
-  send_on_sundays: Boolean
+  """Zeige Rückmeldungen zu den Speisen: Labels"""
+  show_food_feedback_labels: Boolean
   send_on_saturdays: Boolean
+
+  """Zeige Bilder der Speisen"""
+  show_images: Boolean
   send_on_mondays: Boolean
   send_on_fridays: Boolean
-  report_send_successfully: Boolean
   recipients: [update_canteen_food_feedback_report_schedules_report_recipients_input]
   canteens: [update_canteen_food_feedback_report_schedules_canteens_input]
 }
@@ -8761,8 +8777,8 @@ input update_canteens_feedbacks_labels_entries_input {
   date: Date
   status: String
   sort: Int
-  dislike: Boolean
   like: Boolean
+  dislike: Boolean
 }
 
 input update_canteens_feedbacks_labels_input {
@@ -8874,17 +8890,17 @@ input update_devices_input {
   profile: update_profiles_input
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   system_version: String
   status: String
   platform: String
   brand: String
   alias: String
   display_width: Float
-  display_scale: Float
-  display_pixelratio: Float
   display_height: Float
+  display_pixelratio: Float
+  display_scale: Float
   display_fontscale: Float
   pushTokenObj: JSON
   sort: Int
@@ -8922,9 +8938,9 @@ input update_directus_files_input {
   storage: String
   tus_data: JSON
   metadata: JSON
-  tags: JSON
-  location: String
   description: String
+  location: String
+  tags: JSON
   focal_point_y: Int
   focal_point_x: Int
   duration: Int
@@ -9007,10 +9023,10 @@ input update_directus_users_input {
   email: String
   last_name: String
   first_name: String
+  tags: JSON
   theme_dark_overrides: JSON
   theme_light_overrides: JSON
   auth_data: JSON
-  tags: JSON
   description: String
   email_notifications: Boolean
   policies: [update_directus_access_input]
@@ -9020,8 +9036,8 @@ input update_foodoffers_categories_input {
   id: ID
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   alias: String
   status: String
   external_identifier: String
@@ -9053,18 +9069,18 @@ input update_foodoffers_input {
   food: update_foods_input
   alias: String
   sugar_g: Float
+  co2_saving_percentage: Float
+  carbohydrate_g: Float
+  calories_kcal: Float
   saturated_fat_g: Float
   protein_g: Float
   price_student: Float
+  salt_g: Float
   price_guest: Float
   price_employee: Float
   fiber_g: Float
-  fat_g: Float
-  salt_g: Float
-  carbohydrate_g: Float
-  calories_kcal: Float
-  co2_saving_percentage: Float
   co2_g: Float
+  fat_g: Float
   sort: Int
   markings: [update_foodoffers_markings_input]
 }
@@ -9093,24 +9109,24 @@ input update_foods_categories_translations_input {
   name: String
   languages_code: update_languages_input
   id: ID
-  let_be_translated: Boolean
   be_source_for_translations: Boolean
+  let_be_translated: Boolean
 }
 
 input update_foods_feedbacks_input {
+  id: ID
   canteen: update_canteens_input
   foodoffer: update_foodoffers_input
-  id: ID
   profile: update_profiles_input
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   status: String
   food: update_foods_input
   comment: String
-  rating: Int
   sort: Int
+  rating: Int
   notify: Boolean
 }
 
@@ -9118,10 +9134,10 @@ input update_foods_feedbacks_labels_entries_input {
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
   profile: update_profiles_input
-  label: update_foods_feedbacks_labels_input
   id: ID
   foodoffer: update_foodoffers_input
   canteen: update_canteens_input
+  label: update_foods_feedbacks_labels_input
   date_updated: Date
   date_created: Date
   status: String
@@ -9174,20 +9190,20 @@ input update_foods_input {
   category: String
   alias: String
   salt_g: Float
+  protein_g: Float
+  fiber_g: Float
   co2_saving_percentage: Float
+  fat_g: Float
+  co2_g: Float
+  rating_average_legacy: Float
+  carbohydrate_g: Float
   rating_average: Float
   saturated_fat_g: Float
-  co2_g: Float
-  sugar_g: Float
-  rating_average_legacy: Float
   calories_kcal: Float
-  carbohydrate_g: Float
-  fat_g: Float
-  fiber_g: Float
-  protein_g: Float
+  sugar_g: Float
   rating_amount: Int
-  rating_amount_legacy: Int
   sort: Int
+  rating_amount_legacy: Int
   markings: [update_foods_markings_input]
   translations: [update_foods_translations_input]
   feedbacks: [update_foods_feedbacks_input]
@@ -9294,10 +9310,10 @@ input update_markings_input {
 
   """Invertiere die Hintergrundfarbe, wenn kein Bild vorhanden ist."""
   invert_background_color: Boolean
+  show_on_card: Boolean
 
   """Keinen Rand verwenden"""
   hide_border: Boolean
-  show_on_card: Boolean
   excluded_by_markings: [update_markings_exclusions_input]
   translations: [update_markings_translations_input]
 }
@@ -9308,8 +9324,8 @@ input update_markings_translations_input {
   languages_code: update_languages_input
   description: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 input update_news_input {
@@ -9367,7 +9383,10 @@ input update_popup_events_input {
   image_remote_url: String
   alias: String
   sort: Int
+  show_on_ios: Boolean
   send_notification: Boolean
+  show_on_web: Boolean
+  show_on_android: Boolean
   translations: [update_popup_events_translations_input]
   canteens: [update_popup_events_canteens_input]
 }
@@ -9447,9 +9466,9 @@ input update_push_notifications_input {
   """
   expo_push_tokens: JSON
   status_log: String
-  sort: Int
-  message_ttl: Int
   ios_badge_count: Int
+  message_ttl: Int
+  sort: Int
   ios_play_sound: Boolean
 }
 
@@ -9475,9 +9494,9 @@ input update_utilizations_entries_input {
   date_start: Date
   date_end: Date
   status: String
-  value_real: Int
   sort: Int
   value_forecast_current: Int
+  value_real: Int
 }
 
 input update_utilizations_groups_input {
@@ -9504,8 +9523,8 @@ input update_washingmachines_input {
   apartment: update_apartments_input
   date_updated: Date
   date_created: Date
-  date_finished: Date
   date_stated: Date
+  date_finished: Date
   status: String
   external_identifier: String
   alias: String
@@ -9518,8 +9537,8 @@ input update_washingmachines_jobs_input {
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
   id: ID
-  date_created: Date
   date_updated: Date
+  date_created: Date
   date_end: Date
   date_start: Date
   duration_calculated: Date
@@ -9549,8 +9568,8 @@ input update_wikis_input {
   icon: String
   custom_id: String
   alias: String
-  sort: Int
   position: Int
+  sort: Int
   public: Boolean
   show_in_drawer: Boolean
   show_in_drawer_as_bottom_item: Boolean
@@ -9565,8 +9584,8 @@ input update_wikis_translations_input {
   languages_code: update_languages_input
   content: String
   id: ID
-  be_source_for_translations: Boolean
   let_be_translated: Boolean
+  be_source_for_translations: Boolean
 }
 
 input utilizations_entries_filter {
@@ -9583,9 +9602,9 @@ input utilizations_entries_filter {
   date_end: date_filter_operators
   date_end_func: datetime_function_filter_operators
   status: string_filter_operators
-  value_real: number_filter_operators
   sort: number_filter_operators
   value_forecast_current: number_filter_operators
+  value_real: number_filter_operators
   _and: [utilizations_entries_filter]
   _or: [utilizations_entries_filter]
 }
@@ -9621,10 +9640,10 @@ input washingmachines_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  date_finished: date_filter_operators
-  date_finished_func: datetime_function_filter_operators
   date_stated: date_filter_operators
   date_stated_func: datetime_function_filter_operators
+  date_finished: date_filter_operators
+  date_finished_func: datetime_function_filter_operators
   status: string_filter_operators
   external_identifier: string_filter_operators
   alias: string_filter_operators
@@ -9639,10 +9658,10 @@ input washingmachines_jobs_filter {
   user_updated: directus_users_filter
   user_created: directus_users_filter
   id: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   date_end: date_filter_operators
   date_end_func: datetime_function_filter_operators
   date_start: date_filter_operators
@@ -9679,8 +9698,8 @@ input wikis_filter {
   icon: string_filter_operators
   custom_id: string_filter_operators
   alias: string_filter_operators
-  sort: number_filter_operators
   position: number_filter_operators
+  sort: number_filter_operators
   public: boolean_filter_operators
   show_in_drawer: boolean_filter_operators
   show_in_drawer_as_bottom_item: boolean_filter_operators
@@ -9700,8 +9719,8 @@ input wikis_translations_filter {
   languages_code: languages_filter
   content: string_filter_operators
   id: number_filter_operators
-  be_source_for_translations: boolean_filter_operators
   let_be_translated: boolean_filter_operators
+  be_source_for_translations: boolean_filter_operators
   _and: [wikis_translations_filter]
   _or: [wikis_translations_filter]
 }

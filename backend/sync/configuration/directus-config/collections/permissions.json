@@ -1778,7 +1778,11 @@
     },
     "presets": null,
     "fields": [
-      "*"
+      "id",
+      "profiles_id",
+      "markings_id",
+      "dislike",
+      "like"
     ],
     "_syncId": "8ffd7533-ff67-44db-987e-0a61adc702c8"
   },

@@ -16,6 +16,13 @@
   {
     "color": null,
     "icon": "space_dashboard",
+    "name": "Speise Feedback Labels",
+    "note": null,
+    "_syncId": "11c0294b-0d31-4145-81e4-5a52b9180af1"
+  },
+  {
+    "color": null,
+    "icon": "space_dashboard",
     "name": "Server",
     "note": null,
     "_syncId": "1cb996b1-a7d4-4f7c-b0ee-651f31b4db62"
@@ -26,6 +33,13 @@
     "name": "App",
     "note": null,
     "_syncId": "2b4f29a0-8fb8-4ed2-8a6c-6244b788c9cd"
+  },
+  {
+    "color": null,
+    "icon": "space_dashboard",
+    "name": "Mensa Auslatungen",
+    "note": null,
+    "_syncId": "43d488cb-5723-455c-a1f0-db366bf32512"
   },
   {
     "color": null,
