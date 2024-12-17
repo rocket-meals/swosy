@@ -7,10 +7,16 @@ import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUs
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
 import {deleteProfileRemote, useSynchedProfile} from "@/states/SynchedProfile";
 import {ServerAPI} from "@/helper/database/server/ServerAPI";
-import {useLogoutCallback} from '@/states/User';
+import {useIsCurrentUserAnonymous, useLogoutCallback} from '@/states/User';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {SettingsRow} from "@/components/settings/SettingsRow";
+import {useProjectName} from "@/states/ProjectInfo";
+import {DeveloperInformation} from "@/constants/DeveloperInformation";
+import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
+import {SettingsRowUser} from "@/compositions/settings/SettingsRowUser";
+import {MyLinkCustom} from "@/components/link/MyLinkCustom";
+import {useRenderDeveloperSettingsRows} from "@/app/(app)/support";
 
 
 export default function DeleteAccountScreen() {
@@ -20,11 +26,18 @@ export default function DeleteAccountScreen() {
 	const translation_delete = useTranslation(TranslationKeys.delete)
 	const translation_are_you_sure_to_delete_your_account = useTranslation(TranslationKeys.are_you_sure_to_delete_your_account)
 
+	const translation_delete_account_intro_text = useTranslation(TranslationKeys.delete_account_intro_text);
+	const translation_without_account= useTranslation(TranslationKeys.without_account);
+	
+	const isCurrentUserAnonymous = useIsCurrentUserAnonymous();
+
 	const logout = useLogoutCallback()
 
 	const [profile, setProfile] = useSynchedProfile()
 
 	function renderAnonymousAttention() {
+		let textToShow = isCurrentUserAnonymous ? translation_without_account : translation_are_you_sure_to_delete_your_account;
+
 		return(
 			<View style={{width: "100%"}}>
 				<AnimationAstronautComputer />
@@ -36,7 +49,7 @@ export default function DeleteAccountScreen() {
 						width: "100%",
 						paddingBottom: 20,
 					}}>
-						<Text>{translation_are_you_sure_to_delete_your_account}</Text>
+						<Text>{textToShow}</Text>
 					</View>
 				</View>
 			</View>
@@ -73,19 +86,37 @@ export default function DeleteAccountScreen() {
 	}
 
 	const askForConfirmation = useMyModalConfirmer({
-		onConfirm: handleDelete,
-		confirmLabel: translation_delete,
+		onConfirm: isCurrentUserAnonymous ? () => {}: handleDelete,
+		confirmLabel: isCurrentUserAnonymous ? translation_without_account: translation_delete,
 		renderAsContentPreItems: (key: string, hide: () => void) => {
 			return renderAnonymousAttention();
 		}
 	})
 
 
+
 	return (
 		<MySafeAreaView>
 			<MyScrollView>
 				<AnimationAstronautComputer />
-				<SettingsRow onPress={askForConfirmation} leftIcon={IconNames.user_account_delete_icon} labelLeft={translation_title} accessibilityLabel={translation_title}  />
+				<View style={{
+					width: '100%',
+					paddingHorizontal: 20,
+				}}>
+					<Text>
+						{translation_delete_account_intro_text}
+					</Text>
+				</View>
+				<SettingsRowGroup>
+					<SettingsRowUser />
+				</SettingsRowGroup>
+
+				<SettingsRowGroup>
+					<SettingsRow onPress={askForConfirmation} leftIcon={IconNames.user_account_delete_icon} labelLeft={translation_title} accessibilityLabel={translation_title}  />
+				</SettingsRowGroup>
+				<SettingsRowGroup>
+					{useRenderDeveloperSettingsRows()}
+				</SettingsRowGroup>
 			</MyScrollView>
 		</MySafeAreaView>
 	)

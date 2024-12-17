@@ -8,7 +8,7 @@ import {IconNames} from "@/constants/IconNames";
 
 export const useNavigateToDeleteUser = () => {
 	const onPress = () => {
-		router.push('/(app)/settings/delete-user/');
+		router.push('/(app)/delete-user/');
 	}
 
 	return onPress

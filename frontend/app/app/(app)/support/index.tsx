@@ -20,8 +20,39 @@ import {DeveloperInformation} from "@/constants/DeveloperInformation";
 import {HrefHelper} from "@/helper/device/CommonSystemActionHelper";
 import {AccountRequiredTouchableOpacity} from "@/components/buttons/AccountRequiredTouchableOpacity";
 import {getRouteForAppfeedbackDetails} from "@/app/(app)/support/app_feedbacks/detail";
+import {useProjectName} from "@/states/ProjectInfo";
 
 export const TABLE_NAME_APP_FEEDBACKS = 'app_feedbacks';
+
+export function useRenderDeveloperSettingsRows(){
+	const translation_developer = useTranslation(TranslationKeys.developer)
+	const translation_developer_homepage = useTranslation(TranslationKeys.developer_homepage)
+	const translation_software_homepage = useTranslation(TranslationKeys.software_homepage)
+	const translation_software_name = useTranslation(TranslationKeys.software_name)
+	const translation_navigate_to = useTranslation(TranslationKeys.navigate_to)
+	const translation_project_name = useTranslation(TranslationKeys.project_name)
+
+	const projectName = useProjectName();
+
+	let accessibilityLabelDeveloperWebsite = translation_navigate_to+": "+translation_developer_homepage+" "+DeveloperInformation.companyWebsite;
+	let accessibilityLabelSoftwareWebsite = translation_navigate_to+": "+translation_software_homepage+" "+DeveloperInformation.softwareWebsite;
+
+	return (
+		<View style={{
+			width: "100%",
+		}}>
+			<SettingsRow leftIcon={IconNames.software_icon} labelLeft={translation_project_name} labelRight={projectName} accessibilityLabel={translation_project_name+": "+projectName} />
+			<SettingsRow leftIcon={IconNames.developer_icon} labelLeft={translation_developer} labelRight={DeveloperInformation.companyName} accessibilityLabel={translation_developer+": "+DeveloperInformation.companyName} />
+			<MyLinkCustom hrefExternal={DeveloperInformation.companyWebsite} accessibilityLabel={accessibilityLabelDeveloperWebsite}>
+				<SettingsRow leftIcon={IconNames.mail_icon} labelLeft={translation_developer_homepage} labelRight={DeveloperInformation.companyWebsite} accessibilityLabel={DeveloperInformation.companyWebsite} rightIcon={IconNames.open_link_icon} />
+			</MyLinkCustom>
+			<SettingsRow leftIcon={IconNames.software_icon} labelLeft={translation_software_name} labelRight={DeveloperInformation.softwareName} accessibilityLabel={translation_software_name+": "+DeveloperInformation.softwareName} />
+			<MyLinkCustom hrefExternal={DeveloperInformation.softwareWebsite} accessibilityLabel={accessibilityLabelSoftwareWebsite}>
+				<SettingsRow leftIcon={IconNames.mail_icon} labelRight={DeveloperInformation.softwareWebsite} labelLeft={translation_software_homepage} accessibilityLabel={accessibilityLabelSoftwareWebsite} rightIcon={IconNames.open_link_icon} />
+			</MyLinkCustom>
+		</View>
+	)
+}
 
 export default function AppfeedbackScreen() {
 	const translation_support_and_feedback = useTranslationSupportAndFeedback()
@@ -30,10 +61,6 @@ export default function AppfeedbackScreen() {
 	const translation_my_support_tickets = useTranslation(TranslationKeys.my_support_tickets)
 
 	const translation_email = useTranslation(TranslationKeys.email)
-	const translation_developer = useTranslation(TranslationKeys.developer)
-	const translation_developer_homepage = useTranslation(TranslationKeys.developer_homepage)
-	const translation_software_homepage = useTranslation(TranslationKeys.software_homepage)
-	const translation_software_name = useTranslation(TranslationKeys.software_name)
 
 	const [appSettings, setAppSettings] = useSynchedAppSettings();
 	const app_url_to_apple_store = appSettings?.app_stores_url_to_apple
@@ -74,24 +101,8 @@ export default function AppfeedbackScreen() {
 		return Bdate.getTime() - Adate.getTime();
 	});
 
-	let accessibilityLabelDeveloperWebsite = translation_navigate_to+": "+translation_developer_homepage+" "+DeveloperInformation.companyWebsite;
-	let accessibilityLabelSoftwareWebsite = translation_navigate_to+": "+translation_software_homepage+" "+DeveloperInformation.softwareWebsite;
 
-	let renderedDeveloperInformation = <>
-		<View style={{
-			width: "100%",
-		}}>
-			<SettingsRow leftIcon={IconNames.developer_icon} labelLeft={translation_developer} labelRight={DeveloperInformation.companyName} accessibilityLabel={translation_developer+": "+DeveloperInformation.companyName} />
-			<MyLinkCustom hrefExternal={DeveloperInformation.companyWebsite} accessibilityLabel={accessibilityLabelDeveloperWebsite}>
-				<SettingsRow leftIcon={IconNames.mail_icon} labelLeft={translation_developer_homepage} labelRight={DeveloperInformation.companyWebsite} accessibilityLabel={DeveloperInformation.companyWebsite} rightIcon={IconNames.open_link_icon} />
-			</MyLinkCustom>
-			<SettingsRow leftIcon={IconNames.software_icon} labelLeft={translation_software_name} labelRight={DeveloperInformation.softwareName} accessibilityLabel={translation_software_name+": "+DeveloperInformation.softwareName} />
-			<MyLinkCustom hrefExternal={DeveloperInformation.softwareWebsite} accessibilityLabel={accessibilityLabelSoftwareWebsite}>
-				<SettingsRow leftIcon={IconNames.mail_icon} labelRight={DeveloperInformation.softwareWebsite} labelLeft={translation_software_homepage} accessibilityLabel={accessibilityLabelSoftwareWebsite} rightIcon={IconNames.open_link_icon} />
-			</MyLinkCustom>
-		</View>
-	</>
-
+	let renderedDeveloperInformation = useRenderDeveloperSettingsRows();
 
 	let renderedIosAppStoreLink: any = null;
 	if(app_url_to_apple_store){

@@ -121,6 +121,7 @@ export enum TranslationKeys {
 	download_or_open_the_app = "download_or_open_the_app",
 	software_homepage = "software_homepage",
 	software_name = "software_name",
+	project_name = "project_name",
 	profile = "profile",
 	nickname = "nickname",
 	account = "account",
@@ -128,6 +129,10 @@ export enum TranslationKeys {
 	reset = "reset",
 	confirm = "confirm",
 	are_you_sure_to_delete_your_account = "are_you_sure_to_delete_your_account",
+	delete_account_intro_text = "delete_account_intro_text",
+	company_name = "company_name",
+	company_website = "company_website",
+	company_email = "company_email",
 	dataAccess = "dataAccess", // Datenauskunft in english is data access
 	your_comment = "your_comment",
 	others_comments = "others_comments",
@@ -535,6 +540,16 @@ const Translations: Record<TranslationKeys, TranslationEntry> = {
 		[LanguageKeys.ru_RU]: 'Домашняя страница программного обеспечения',
 		[LanguageKeys.tr_TR]: 'Yazılım Ana Sayfası',
 		[LanguageKeys.zh_CN]: '软件主页'
+	},
+	project_name: {
+		[LanguageKeys.de_DE]: 'Projektname',
+		[LanguageKeys.en_US]: 'Project Name',
+		[LanguageKeys.ar_SA]: 'اسم المشروع',
+		[LanguageKeys.es_ES]: 'Nombre del proyecto',
+		[LanguageKeys.fr_FR]: 'Nom du projet',
+		[LanguageKeys.ru_RU]: 'Название проекта',
+		[LanguageKeys.tr_TR]: 'Proje Adı',
+		[LanguageKeys.zh_CN]: '项目名称'
 	},
 	software_name: {
 		[LanguageKeys.de_DE]: 'Software-Name',
@@ -1642,6 +1657,46 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'Стиральная машина неизвестна',
 		[LanguageKeys.tr_TR]: 'Çamaşır makinesi bilinmiyor',
 		[LanguageKeys.zh_CN]: '洗衣机未知'
+	},
+	delete_account_intro_text: {
+		[LanguageKeys.de_DE]: 'Wir respektieren Ihren Wunsch, Ihr Konto und alle zugehörigen Daten aus der App zu löschen. Sofern Sie ein Konto besitzen, können Sie die Löschung Ihres Kontos mit dem nachfolgenden Button selbst vornehmen. Alternativ schreiben Sie uns eine Mail mit Ihrer Nutzer-ID, sodass wir Ihr Konto mit Ihnen verifizieren und anschließend löschen können. Sollten Sie kein Konto angelegt haben, so können Sie die App einfach deinstallieren und alle Daten werden gelöscht.',
+		[LanguageKeys.en_US]: 'We respect your wish to delete your account and all associated data from the app. If you have an account, you can delete it yourself using the button below. Alternatively, send us an email with your user ID so we can verify your account with you and then delete it. If you have not created an account, you can simply uninstall the app, and all data will be deleted.',
+		[LanguageKeys.ar_SA]: 'نحن نحترم رغبتك في حذف حسابك وجميع البيانات المرتبطة بالتطبيق. إذا كان لديك حساب، يمكنك حذفه بنفسك باستخدام الزر أدناه. بدلاً من ذلك، أرسل إلينا رسالة بريد إلكتروني تحتوي على معرف المستخدم الخاص بك حتى نتحقق من حسابك ونقوم بحذفه. إذا لم تقم بإنشاء حساب، يمكنك ببساطة إلغاء تثبيت التطبيق وسيتم حذف جميع البيانات.',
+		[LanguageKeys.es_ES]: 'Respetamos su deseo de eliminar su cuenta y todos los datos asociados de la aplicación. Si tiene una cuenta, puede eliminarla usted mismo con el botón que aparece a continuación. Alternativamente, envíenos un correo electrónico con su ID de usuario para que podamos verificar su cuenta con usted y proceder a eliminarla. Si no ha creado una cuenta, simplemente desinstale la aplicación y todos los datos se eliminarán.',
+		[LanguageKeys.fr_FR]: 'Nous respectons votre souhait de supprimer votre compte ainsi que toutes les données associées à l’application. Si vous avez un compte, vous pouvez le supprimer vous-même en utilisant le bouton ci-dessous. Sinon, envoyez-nous un e-mail avec votre identifiant utilisateur afin que nous puissions vérifier votre compte avec vous et procéder à sa suppression. Si vous n’avez pas créé de compte, il vous suffit de désinstaller l’application pour que toutes les données soient supprimées.',
+		[LanguageKeys.ru_RU]: 'Мы уважаем ваше желание удалить аккаунт и все связанные данные из приложения. Если у вас есть аккаунт, вы можете удалить его самостоятельно с помощью кнопки ниже. В качестве альтернативы отправьте нам электронное письмо с вашим идентификатором пользователя, чтобы мы могли подтвердить ваш аккаунт и затем удалить его. Если аккаунт не был создан, просто удалите приложение, и все данные будут удалены.',
+		[LanguageKeys.tr_TR]: 'Hesabınızı ve uygulamadaki ilgili tüm verilerinizi silme isteğinize saygı duyuyoruz. Bir hesabınız varsa, aşağıdaki düğmeyi kullanarak hesabınızı kendiniz silebilirsiniz. Alternatif olarak, kullanıcı kimliğinizle bize bir e-posta gönderin, böylece hesabınızı doğrulayıp silebiliriz. Eğer bir hesap oluşturmadıysanız, uygulamayı kaldırmanız yeterlidir; tüm veriler silinecektir.',
+		[LanguageKeys.zh_CN]: '我们尊重您删除账户及其所有相关应用数据的意愿。如果您有账户，可以通过下方的按钮自行删除。或者，您可以发送带有您的用户 ID 的电子邮件给我们，以便我们与您核实账户并进行删除。如果您没有创建账户，只需卸载应用程序，所有数据都会被删除。'
+	},
+	company_name: {
+		[LanguageKeys.de_DE]: 'Firmenname',
+		[LanguageKeys.en_US]: 'Company Name',
+		[LanguageKeys.ar_SA]: 'اسم الشركة',
+		[LanguageKeys.es_ES]: 'Nombre de la empresa',
+		[LanguageKeys.fr_FR]: 'Nom de la société',
+		[LanguageKeys.ru_RU]: 'Название компании',
+		[LanguageKeys.tr_TR]: 'Şirket Adı',
+		[LanguageKeys.zh_CN]: '公司名称'
+	},
+	company_website: {
+		[LanguageKeys.de_DE]: 'Firmenwebsite',
+		[LanguageKeys.en_US]: 'Company Website',
+		[LanguageKeys.ar_SA]: 'موقع الشركة',
+		[LanguageKeys.es_ES]: 'Sitio web de la empresa',
+		[LanguageKeys.fr_FR]: 'Site Web de l\'entreprise',
+		[LanguageKeys.ru_RU]: 'Сайт компании',
+		[LanguageKeys.tr_TR]: 'Şirket Web Sitesi',
+		[LanguageKeys.zh_CN]: '公司网站'
+	},
+	company_email: {
+		[LanguageKeys.de_DE]: 'Firmen-E-Mail',
+		[LanguageKeys.en_US]: 'Company Email',
+		[LanguageKeys.ar_SA]: 'بريد الشركة',
+		[LanguageKeys.es_ES]: 'Correo electrónico de la empresa',
+		[LanguageKeys.fr_FR]: 'E-mail de l\'entreprise',
+		[LanguageKeys.ru_RU]: 'Электронная почта компании',
+		[LanguageKeys.tr_TR]: 'Şirket E-Postası',
+		[LanguageKeys.zh_CN]: '公司电子邮件'
 	},
 	current: {
 		[LanguageKeys.de_DE]: 'Aktuell',

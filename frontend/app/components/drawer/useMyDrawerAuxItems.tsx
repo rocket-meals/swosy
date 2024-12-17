@@ -6,10 +6,13 @@ import {
 	useRenderMyDrawerScreen
 } from "@/components/drawer/MyDrawer";
 import {PlatformHelper} from "@/helper/PlatformHelper";
+import {IconNames} from "@/constants/IconNames";
+import {useTranslationAccountDelete} from "@/compositions/settings/SettingsRowUserDelete";
 
 export function useRenderedMyDrawerAuxScreens() {
 	const renderedMyDrawerWikiItems = useRenderedMyDrawerWikiScreens()
 	const drawerActiveBackgroundColor = useDrawerActiveBackgroundColor()
+	const translation_delete_account = useTranslationAccountDelete();
 
 	const renderedMyDrawerAuxScreens: React.ReactNode[] = []
 	renderedMyDrawerAuxScreens.push(...renderedMyDrawerWikiItems)
@@ -24,6 +27,17 @@ export function useRenderedMyDrawerAuxScreens() {
 				getHeader: null,
 				hideDrawer: true
 			}, drawerActiveBackgroundColor)
+	)
+
+	renderedMyDrawerAuxScreens.push(
+		renderMyDrawerScreen({
+			routeName: 'delete-user/index',
+			label: translation_delete_account,
+			title: translation_delete_account,
+			icon: IconNames.user_account_delete_icon,
+			showBackButton: true,
+			visibleInDrawer: false
+		}, drawerActiveBackgroundColor)
 	)
 
 	return renderedMyDrawerAuxScreens;

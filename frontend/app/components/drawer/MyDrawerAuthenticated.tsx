@@ -64,7 +64,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 
 	const translation_role_management = useTranslation(TranslationKeys.role_management)
 
-	const translation_delete_account = useTranslationAccountDelete();
 
 	const customDrawerAuxItems = useMyDrawerAuxItems()
 	const renderedMyDrawerAuxItems = useRenderedMyDrawerAuxScreens()
@@ -278,14 +277,6 @@ export const MyDrawerAuthenticated = (props: any) => {
 				label: translation_price_group,
 				title: translation_price_group,
 				icon: IconNames.price_group_icon,
-				showBackButton: true,
-				visibleInDrawer: false
-			})}
-			{useRenderMyDrawerScreen({
-				routeName: 'settings/delete-user/index',
-				label: translation_delete_account,
-				title: translation_delete_account,
-				icon: IconNames.user_account_delete_icon,
 				showBackButton: true,
 				visibleInDrawer: false
 			})}
