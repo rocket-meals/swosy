@@ -104,11 +104,11 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "de.baumgartner-software.rocket-meals-demo",
-      "buildNumber": "117"
+      "buildNumber": "118"
     },
     "android": {
       "package": "com.baumgartnersoftware.rocketmealsdev",
-      "versionCode": 117
+      "versionCode": 118
     },
     "web": {
       "bundler": "metro",
