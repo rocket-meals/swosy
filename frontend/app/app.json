@@ -26,6 +26,9 @@
       "config": {
         "usesNonExemptEncryption": false
       },
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
+      },
       "privacyManifests": {
         "NSPrivacyCollectedDataTypes": [
           {
