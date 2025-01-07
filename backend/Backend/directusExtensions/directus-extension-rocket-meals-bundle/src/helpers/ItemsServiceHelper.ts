@@ -129,11 +129,15 @@ export class ItemsServiceHelper<T>{
         return await itemsService.createOne(create);
     }
 
-    async createManyItems(create: Partial<T>[]): Promise<PrimaryKey[]>{
+    async createManyItems(create: Partial<T>[], optsCustom?: {disableEventEmit?: boolean}): Promise<PrimaryKey[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
         create = create.map(ItemsServiceHelper.setStatusPublished);
-        return await itemsService.createMany(create);
+        let opts: QueryOptions = {};
+        if(optsCustom?.disableEventEmit){
+            opts.emitEvents = false;
+        }
+        return await itemsService.createMany(create, opts);
     }
 
     async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T>{

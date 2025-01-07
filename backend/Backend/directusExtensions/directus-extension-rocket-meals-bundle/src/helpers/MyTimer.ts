@@ -1,7 +1,49 @@
+type TimerAlias<T extends string> = {
+    [K in T]: MyTimer;
+};
+
+export class MyTimers<T extends string> {
+    public timers: TimerAlias<T>;
+
+    constructor(...aliases: T[]) {
+        this.timers = aliases.reduce((acc, alias) => {
+            acc[alias] = new MyTimer(alias);
+            return acc;
+        }, {} as TimerAlias<T>);
+    }
+
+    public printStatistics() {
+        console.log("Timer Statistics:");
+        for (const alias in this.timers) {
+            const timer = this.timers[alias];
+            const totalTimeStr = timer.formatTimeToString(timer.totalTime);
+            console.log(
+                `${alias}: totalTime: ${totalTimeStr}, Rounds: ${timer.rounds}, Average: ${timer.formatTimeToString(timer.totalTime / timer.rounds)}`
+            );
+        }
+    }
+
+    public findBottleneck() {
+        let maxTime = 0;
+        let maxTimeAlias = "";
+        for (const alias in this.timers) {
+            const timer = this.timers[alias];
+            if(timer.totalTime > maxTime) {
+                maxTime = timer.totalTime;
+                maxTimeAlias = alias;
+            }
+        }
+        console.log(`Bottleneck: ${maxTimeAlias}: ${maxTime}`);
+    }
+
+}
+
 export class MyTimer {
 
     public startTime: number = 0;
     public endTime: number = 0;
+    public totalTime: number = 0;
+    public rounds: number = 0;
     public alias: string;
 
     constructor(alias?: string) {
@@ -13,6 +55,8 @@ export class MyTimer {
     public resetTimer() {
         this.startTime = 0;
         this.endTime = 0;
+        this.totalTime = 0;
+        this.rounds = 0;
     }
 
     public start() {
@@ -21,6 +65,17 @@ export class MyTimer {
 
     public stop() {
         this.endTime = new Date().getTime()
+    }
+
+    public startRound() {
+        this.start();
+    }
+
+    public stopRound() {
+        this.stop();
+        const elapsed = this.getElapsedTime();
+        this.totalTime += elapsed;
+        this.rounds += 1;
     }
 
     public getElapsedTime() {

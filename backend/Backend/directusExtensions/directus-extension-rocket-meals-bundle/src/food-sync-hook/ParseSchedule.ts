@@ -31,7 +31,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 import PQueue from "p-queue";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
-import {MyTimer} from "../helpers/MyTimer";
+import {MyTimer, MyTimers} from "../helpers/MyTimer";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -527,6 +527,30 @@ export class ParseSchedule {
         await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext, this.eventContext);
     }
 
+    async getOrCreateFoodsOnly(foodsInformationForParserList: FoodsInformationTypeForParser[]){
+        const myTimer = new MyTimer(SCHEDULE_NAME+ " - getOrCreateFoodsOnly");
+        const foodsHelper = this.myDatabaseHelper.getFoodsHelper();
+        const foodsDict: Record<string, Foods> = {};
+
+        let index = 1;
+        let amount = foodsInformationForParserList.length;
+        for (const foodInfo of foodsInformationForParserList) {
+            const foodId = foodInfo.basicFoodData.id;
+            const searchJSON = { id: foodId };
+
+            // Use findOrCreateItem to either find or create the food
+            const food = await foodsHelper.findOrCreateItem(searchJSON, searchJSON);
+            if(!!food){
+                foodsDict[foodId] = food;
+            }
+            myTimer.printElapsedTimeAndEstimatedTimeRemaining(index, amount)
+        }
+
+        myTimer.printElapsedTime();
+        console.log(`[Step 1] - Found or created ${Object.keys(foodsDict).length} foods.`);
+        return foodsDict;
+    }
+
     async updateFoods(foodsInformationForParserList: FoodsInformationTypeForParser[], helperObject: FoodCreationHelperObject) {
         //let amountOfMeals = foodsInformationForParserList.length;
         let currentFoodIndex = 0;
@@ -556,49 +580,54 @@ export class ParseSchedule {
             }
         }
 
-        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update Food");
 
-        // Initialize the queue with a concurrency of 100
-        const queue = new PQueue({ concurrency: 100 });
+
+        let foundFoodsDict = await this.getOrCreateFoodsOnly(foodsInformationForParserList);
+
+        const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update foods");
+
+        const timers = new MyTimers("FoodMarkingAssigning", "FoodAssignCategory", "FoodUpdateAttributes", "FoodUpdateTranslations");
 
         let amountCompleted = 0;
-
-        const tasks = foodsInformationForParserList.map((foodsInformationForParser, index) => {
-            return queue.add(async () => {
-                //console.log("["+SCHEDULE_NAME+"]"+" - Start Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+        for (const foodsInformationForParser of foodsInformationForParserList) {
+            let foundFood = foundFoodsDict[foodsInformationForParser.basicFoodData.id];
+            if (!!foundFood && foundFood.id && this.foodParser) {
                 const basicFoodData = foodsInformationForParser.basicFoodData;
-                let searchJSON = {
-                    id: basicFoodData.id,
-                }
-                let foundFood = await this.myDatabaseHelper.getFoodsHelper().findOrCreateItem(searchJSON, searchJSON);
-                if (!!foundFood && foundFood.id && this.foodParser) {
 
-                    let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
-                    let markings: Markings[] = [];
-                    for (let marking_external_identifier of marking_external_identifier_list) {
-                        let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
-                        if(!!marking){
-                            markings.push(marking);
-                        }
+                let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
+                let markings: Markings[] = [];
+                for (let marking_external_identifier of marking_external_identifier_list) {
+                    let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
+                    if(!!marking){
+                        markings.push(marking);
                     }
-                    await this.assignMarkingsToFood(markings, foundFood, helperObject.dictMarkingsExclusions);
-
-                    await this.assignFoodCategoryToFood(foundFood, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
-
-                    await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
-                    foundFood = await this.updateFoodsAttributesValues(foundFood, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
-
-                    await this.updateFoodTranslations(foundFood, foodsInformationForParser);
-
-                    //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
-                    amountCompleted++;
-                    myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
                 }
-            });
-        });
 
-        // Wait for all tasks in the queue to be processed
-        await queue.onIdle();
+                timers.timers.FoodMarkingAssigning.startRound();
+                await this.assignMarkingsToFood(markings, foundFood, helperObject.dictMarkingsExclusions);
+                timers.timers.FoodMarkingAssigning.stopRound();
+
+                timers.timers.FoodAssignCategory.startRound();
+                await this.assignFoodCategoryToFood(foundFood, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
+                timers.timers.FoodAssignCategory.stopRound();
+
+                await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
+                timers.timers.FoodUpdateAttributes.startRound();
+                foundFood = await this.updateFoodsAttributesValues(foundFood, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
+                timers.timers.FoodUpdateAttributes.stopRound();
+
+                timers.timers.FoodUpdateTranslations.startRound();
+                await this.updateFoodTranslations(foundFood, foodsInformationForParser);
+                timers.timers.FoodUpdateTranslations.stopRound();
+
+                //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
+                amountCompleted++;
+                myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
+            }
+        }
+
+        timers.printStatistics();
+        timers.findBottleneck();
 
         console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Foods");
     }
@@ -759,7 +788,7 @@ export class ParseSchedule {
             }
         });
 
-        const batchSize = 100;
+        const batchSize = 10;
 
         const myFoodOffersService = await this.myDatabaseHelper.getFoodoffersHelper();
 
@@ -770,8 +799,10 @@ export class ParseSchedule {
         for (let i = 0; i < foodoffersToCreate.length; i += batchSize) {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
-            await myFoodOffersService.createManyItems(batch);
-            myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches);
+            await myFoodOffersService.createManyItems(batch, {
+                disableEventEmit: true
+            });
+            myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches, null, "Total amount of food offers: " + foodoffersToCreate.length);
             batchIndex++;
         }
     }
