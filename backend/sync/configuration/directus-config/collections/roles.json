@@ -1,30 +1,30 @@
 [
   {
-    "parent": null,
-    "icon": "verified",
-    "name": "Administrator",
     "description": "$t:admin_description",
+    "name": "Administrator",
+    "icon": "verified",
+    "parent": null,
     "_syncId": "_sync_default_admin_role"
   },
   {
-    "parent": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
-    "icon": "supervised_user_circle",
-    "name": "Gebäudemanager",
     "description": null,
+    "name": "Gebäudemanager",
+    "icon": "supervised_user_circle",
+    "parent": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
     "_syncId": "9aaa0300-e0ee-4874-b32f-2d165607867d"
   },
   {
-    "parent": null,
-    "icon": "supervised_user_circle",
-    "name": "User",
     "description": null,
+    "name": "User",
+    "icon": "supervised_user_circle",
+    "parent": null,
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   },
   {
-    "parent": "9aaa0300-e0ee-4874-b32f-2d165607867d",
-    "icon": "supervised_user_circle",
-    "name": "Abteilung Wohnen",
     "description": null,
+    "name": "Abteilung Wohnen",
+    "icon": "supervised_user_circle",
+    "parent": "9aaa0300-e0ee-4874-b32f-2d165607867d",
     "_syncId": "e0d3b51c-8f50-4844-a788-b5152180bf43"
   }
 ]

@@ -96,6 +96,8 @@ export class TranslationHelper {
         return false;
     }
 
+
+
     static async updateItemTranslations<
         T extends ItemWithExistingTranslations, // T must have an id and translations field
         E extends ExistingTranslation // the collection of the related translations

@@ -1,13 +1,20 @@
-import {Canteens, Foodoffers, Foods} from "../databaseTypes/types";
+import {Canteens, Foodoffers, Foods, FoodsAttributesValues} from "../databaseTypes/types";
 import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
+
+export type FoodParseFoodAttributeValueType = {
+    external_identifier: string,
+    attribute_value: Omit<FoodsAttributesValues, "id" | "food_attribute">
+}
+export type FoodParseFoodAttributesType = FoodParseFoodAttributeValueType[];
 
 
 // Remove all fields with relation to other tables
-export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings" | "food_category" | "category">;
+export type FoodWithBasicData = Omit<Foods, "user_created" | "user_updated" | "markings" | "image" | "feedbacks" | "translations" | "environmental_impact" | "nutrition" | "rating_legacy_settings" | "rating_settings" | "food_category" | "category" | "attribute_values">;
 export type FoodWithBasicDataWithoutIdType = Omit<FoodWithBasicData, "id">
 
 export type FoodsInformationTypeForParser = {
     basicFoodData: FoodWithBasicData,
+    attribute_values: FoodParseFoodAttributesType,
     category_external_identifier: string | null,
     marking_external_identifiers: string[],
     translations: TranslationsFromParsingType
@@ -22,9 +29,10 @@ export type FoodofferDateType = {
     month: number, // 01-12
     day: number // 01-31
 }
-export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "date" | "environmental_impact" | "nutrition" | "prices" | "foodoffer_category" | "category">;
+export type FoodofferTypeWithBasicData = Omit<Foodoffers, "id" | "user_created" | "user_updated" | "canteen" | "food" | "markings" | "date" | "environmental_impact" | "nutrition" | "prices" | "foodoffer_category" | "category" | "attribute_values">;
 export type FoodoffersTypeForParser = {
     basicFoodofferData: FoodofferTypeWithBasicData,
+    attribute_values: FoodParseFoodAttributesType,
     marking_external_identifiers: string[]
     category_external_identifier: string | null,
     date: FoodofferDateType

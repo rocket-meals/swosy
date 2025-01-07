@@ -26,6 +26,11 @@ export class ItemsServiceHelper<T>{
         return await itemsService.updateOne(primary_key, update);
     }
 
+    async updateOneAndGet(primary_key: PrimaryKey, update: Partial<T>): Promise<T>{
+        await this.updateOne(primary_key, update);
+        return await this.readOne(primary_key);
+    }
+
 
 
     // Function to calculate the average of a number field

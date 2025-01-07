@@ -12,7 +12,7 @@ import {
     Devices,
     DirectusUsers,
     Foodoffers, FoodoffersCategories,
-    Foods, FoodsCategories,
+    Foods, FoodsAttributes, FoodsCategories,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
     FoodsFeedbacksLabelsEntries,
@@ -82,6 +82,10 @@ export class MyDatabaseHelper {
 
     getFoodsCategoriesHelper() {
         return new ItemsServiceHelper<FoodsCategories>(this.apiContext, CollectionNames.FOODS_CATEGORIES, this.eventContext);
+    }
+
+    getFoodsAttributesHelper() {
+        return new ItemsServiceHelper<FoodsAttributes>(this.apiContext, CollectionNames.FOODS_ATTRIBUTES, this.eventContext);
     }
 
     getFoodFeedbackLabelEntriesHelper() {

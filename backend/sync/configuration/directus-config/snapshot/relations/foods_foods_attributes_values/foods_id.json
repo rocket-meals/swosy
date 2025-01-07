@@ -1,0 +1,25 @@
+{
+  "collection": "foods_foods_attributes_values",
+  "field": "foods_id",
+  "related_collection": "foods",
+  "meta": {
+    "junction_field": "foods_attributes_values_id",
+    "many_collection": "foods_foods_attributes_values",
+    "many_field": "foods_id",
+    "one_allowed_collections": null,
+    "one_collection": "foods",
+    "one_collection_field": null,
+    "one_deselect_action": "delete",
+    "one_field": "attribute_values",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "foods_foods_attributes_values",
+    "column": "foods_id",
+    "foreign_key_table": "foods",
+    "foreign_key_column": "id",
+    "constraint_name": "foods_foods_attributes_values_foods_id_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  }
+}

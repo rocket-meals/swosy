@@ -13,6 +13,7 @@
     "interface": "select-color",
     "note": "Falls das Bild transparenten Hintergrund hat, kann hier die Hintergrundfarbe gesetzt werden.",
     "options": {
+      "opacity": true,
       "presets": [
         {
           "name": "Weiß",

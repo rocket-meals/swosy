@@ -1,0 +1,27 @@
+{
+  "collection": "foods",
+  "field": "attribute_values",
+  "type": "alias",
+  "meta": {
+    "collection": "foods",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "attribute_values",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 21,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

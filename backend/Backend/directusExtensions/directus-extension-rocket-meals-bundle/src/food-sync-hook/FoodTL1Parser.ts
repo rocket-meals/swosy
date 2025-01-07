@@ -4,7 +4,7 @@ import {
     CanteensTypeForParser,
     FoodofferDateType,
     FoodoffersTypeForParser,
-    FoodofferTypeWithBasicData,
+    FoodofferTypeWithBasicData, FoodParseFoodAttributesType,
     FoodParserInterface,
     FoodsInformationTypeForParser,
     FoodWithBasicData,
@@ -35,6 +35,15 @@ export class FoodTL1Parser implements FoodParserInterface {
     static DEFAULT_TEXT_FIELD = "TEXT";
     static DEFAULT_RECIPE_ID_FIELD = "REZEPTUR_ID";
     static DEFAULT_NUTRITIONS_FIELD = "NAEHRWERTEJEPORT";
+    static DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER = "calories_kcal";
+    static DEFAULT_NUTRITION_FIELD_FAT_EXTERNAL_IDENTIFIER = "fat_g";
+    static DEFAULT_NUTRITION_FIELD_SATURATED_FAT_EXTERNAL_IDENTIFIER = "saturated_fat_g";
+    static DEFAULT_NUTRITION_FIELD_CARBOHYDRATE_EXTERNAL_IDENTIFIER = "carbohydrate_g";
+    static DEFAULT_NUTRITION_FIELD_SUGAR_EXTERNAL_IDENTIFIER = "sugar_g";
+    static DEFAULT_NUTRITION_FIELD_FIBER_EXTERNAL_IDENTIFIER = "fiber_g";
+    static DEFAULT_NUTRITION_FIELD_PROTEIN_EXTERNAL_IDENTIFIER = "protein_g";
+    static DEFAULT_NUTRITION_FIELD_SALT_EXTERNAL_IDENTIFIER = "salt_g";
+
     static DEFAULT_CATEGORY_FIELD = "SPEISE_BEZEICHNUNG";
     static DEFAULT_FOODOFFER_CATEGORY_FIELD = "SPEISE";
 
@@ -119,6 +128,9 @@ export class FoodTL1Parser implements FoodParserInterface {
 
         const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
         const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
+
+        let foodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
+
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
             alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
@@ -128,6 +140,7 @@ export class FoodTL1Parser implements FoodParserInterface {
 
         return {
             basicFoodData: basicFoodData,
+            attribute_values: foodAttributes,
             translations: translations,
             category_external_identifier: this.getFoodCategoryFromRawFoodoffer(rawFoodoffer),
             marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer)
@@ -170,6 +183,9 @@ export class FoodTL1Parser implements FoodParserInterface {
 
             const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
             const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
+
+            let foodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
+
             const basicFoodofferData: FoodofferTypeWithBasicData = {
                 alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
@@ -182,6 +198,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodofferForParser: FoodoffersTypeForParser = {
                 date: rawFoodoffer.date,
                 basicFoodofferData: basicFoodofferData,
+                attribute_values: foodAttributes,
                 category_external_identifier: this.getFoodofferCategoryFromRawFoodoffer(rawFoodoffer),
                 marking_external_identifiers: this.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer),
                 canteen_external_identifier: rawFoodoffer.canteen_external_identifier,
@@ -439,6 +456,102 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
         return null;
 
+    }
+
+    static getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
+        let foodAttributes: FoodParseFoodAttributesType = [];
+        let nutritionAttributes = FoodTL1Parser.getFoodNutritionAttributeValuesFromRawTL1Foodoffer(parsedReportItem);
+        foodAttributes = foodAttributes.concat(nutritionAttributes);
+
+        let foodEnvironmentImpactAttributes = FoodTL1Parser.getFoodEnvironmentImpactAttributeValuesFromRawTL1Foodoffer(parsedReportItem);
+        foodAttributes = foodAttributes.concat(foodEnvironmentImpactAttributes);
+
+        return foodAttributes;
+    }
+
+
+
+    static getFoodNutritionAttributeValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
+        let attributeValues: FoodParseFoodAttributesType = [];
+
+        /**
+         * e. G.
+         * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
+         */
+        let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
+        if(!!nutritionValuesString){
+            let kcalEndString = " kcal)";
+            let match = nutritionValuesString.match(/\(.* kcal/gm);
+            // e. G. (XXXXXXX kcal)
+            if(!!match){
+                let kcal = match[0].slice(1,kcalEndString.length); //remove starting bracket "(" and kcal)
+                attributeValues.push({
+                    external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER,
+                    attribute_value: {number_value: parseInt(kcal)}
+                });
+            }
+
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FAT_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fett")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SATURATED_FAT_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fettsäuren")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_CARBOHYDRATE_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Kohlenhydrate")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SUGAR_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Zucker")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FIBER_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Ballaststoffe")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_PROTEIN_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Eiweiß")}
+            });
+            attributeValues.push({
+                external_identifier: FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SALT_EXTERNAL_IDENTIFIER,
+                attribute_value: {number_value: FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Salz")}
+            });
+        }
+        return attributeValues;
+
+    }
+
+    static getFoodEnvironmentImpactAttributeValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
+        let attributeValues: FoodParseFoodAttributesType = [];
+
+        let co2_g = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_GRAMM_FIELD];
+        if(!!co2_g){
+            attributeValues.push({
+                external_identifier: "co2_g",
+                attribute_value: {number_value: parseFloat(co2_g)}
+            });
+        }
+
+        let co2_saving_percentage = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_SAVING_PERCENTAGE_FIELD];
+        if(!!co2_saving_percentage){
+            attributeValues.push({
+                external_identifier: "co2_saving_percentage",
+                attribute_value: {number_value: parseFloat(co2_saving_percentage)}
+            });
+        }
+
+        let co2_rating = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_RATING_FIELD];
+        if(!!co2_rating){
+            attributeValues.push({
+                external_identifier: "co2_rating",
+                attribute_value: {string_value: co2_rating}
+            });
+        }
+
+        return attributeValues;
     }
 
     static getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodWithBasicDataWithoutIdType {

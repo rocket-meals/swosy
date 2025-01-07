@@ -43,6 +43,63 @@ describe("FoodTL1Parser Test", () => {
         expect(parsedNutritionValues?.fiber_g).toBe(0);
         expect(parsedNutritionValues?.protein_g).toBe(12.8);
         expect(parsedNutritionValues?.salt_g).toBe(0.1);
+    });
+
+    // Food attributes
+    it("Food attributes parsing", async () => {
+        const exampleParsedReportItem: RawTL1FoodofferType = {
+            [FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD] : "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
+        }
+
+        const parsedFoodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(exampleParsedReportItem);
+        expect(parsedFoodAttributes).not.toBeNull();
+        expect(parsedFoodAttributes).not.toBeUndefined();
+        // check parsedFoodAttributes.length > 0
+        expect(parsedFoodAttributes.length).toBeGreaterThan(0);
+        let expectedExternalIdentifiersAndValues = {
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_BRENNWERT_EXTERNAL_IDENTIFIER]: {
+                number_value: 146
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FIBER_EXTERNAL_IDENTIFIER]: {
+                number_value: 0
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_CARBOHYDRATE_EXTERNAL_IDENTIFIER]: {
+                number_value: 19.8
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_FAT_EXTERNAL_IDENTIFIER]: {
+                number_value: 1.1
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SALT_EXTERNAL_IDENTIFIER]: {
+                number_value: 0.1
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SUGAR_EXTERNAL_IDENTIFIER]: {
+                number_value: 18.8
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_PROTEIN_EXTERNAL_IDENTIFIER]: {
+                number_value: 12.8
+            },
+            [FoodTL1Parser.DEFAULT_NUTRITION_FIELD_SATURATED_FAT_EXTERNAL_IDENTIFIER]: {
+                number_value: 0.6
+            }
+    }
+        let dictOfFoundExternalIdentifiers: { [key: string]: boolean } = {};
+        for (let parsedFoodAttribute of parsedFoodAttributes) {
+            expect(parsedFoodAttribute.external_identifier).not.toBeNull();
+            expect(parsedFoodAttribute.attribute_value).not.toBeNull();
+            dictOfFoundExternalIdentifiers[parsedFoodAttribute.external_identifier] = true;
+            let expectedAttributeValue = expectedExternalIdentifiersAndValues[parsedFoodAttribute.external_identifier];
+            expect(expectedAttributeValue).not.toBeNull();
+            expect(expectedAttributeValue).not.toBeUndefined();
+            expect(parsedFoodAttribute.attribute_value).toStrictEqual(expectedAttributeValue);
+        }
+        let allExternalIdentifiersFound = true;
+        for (let expectedExternalIdentifier of Object.keys(expectedExternalIdentifiersAndValues)) {
+            if (!dictOfFoundExternalIdentifiers[expectedExternalIdentifier]) {
+                allExternalIdentifiersFound = false;
+                break;
+            }
+        }
+        expect(allExternalIdentifiersFound).toBe(true);
 
     });
 
