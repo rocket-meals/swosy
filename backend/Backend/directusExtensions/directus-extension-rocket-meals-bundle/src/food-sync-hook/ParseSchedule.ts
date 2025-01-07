@@ -804,7 +804,7 @@ export class ParseSchedule {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
 
-            let disableEventEmit = i % 2 === 0; // every second batch emit events
+            let disableEventEmit = batchIndex % 2 === 0; // every second batch emit events
             if(disableEventEmit){
                 myTimersEmitEvents.timers.disableEventEmit_TRUE.startRound();
             } else {

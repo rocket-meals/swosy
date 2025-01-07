@@ -3,6 +3,7 @@ import {Languages} from "../databaseTypes/types";
 import {ApiContext} from "./ApiContext";
 import {ItemsServiceCreator} from "./ItemsServiceCreator";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {MyTimers} from "./MyTimer";
 
 const FIELD_TRANSLATION_LANGUAGE_CODE = "languages_code"; // TODO Import from directus-extension-auto-translation package the field name
 const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-translation package the field name
@@ -109,10 +110,16 @@ export class TranslationHelper {
         apiContext: ApiContext,
         eventContext?: EventContext
     ) {
-        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
-        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+        let myTimers = new MyTimers("TranslationHelper_getItemsService", "TranslationHelper_readOne", "TranslationHelper_updateOne");
 
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
+        myTimers.timers.TranslationHelper_getItemsService.startRound();
+        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+        myTimers.timers.TranslationHelper_getItemsService.stopRound();
+
+        myTimers.timers.TranslationHelper_readOne.startRound();
         let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {"fields": ["*", "translations.*"]});
+        myTimers.timers.TranslationHelper_readOne.stopRound();
         if (!!itemWithTranslations) {
             const {
                 updateObject: updateObject,
@@ -131,10 +138,14 @@ export class TranslationHelper {
                 //console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
                 //console.log(JSON.stringify(updateObject, null, 2));
 
+                myTimers.timers.TranslationHelper_updateOne.startRound();
                 // @ts-ignore
                 await specificItemServiceReader.updateOne(item?.id, {id: item?.id, ...updateObject});
+                myTimers.timers.TranslationHelper_updateOne.stopRound();
             }
         }
+        myTimers.printStatistics()
+        myTimers.findBottleneck()
     }
 
     static async _getUpdateInformationForTranslations<
