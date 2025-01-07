@@ -478,7 +478,7 @@ export class ParseSchedule {
 
     async updateFoodsAttributesValues(food: Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
         let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes);
-        return await this.myDatabaseHelper.getFoodsHelper().updateOneAndGet(food.id, foodWithOnlySetAttributesFields);
+        await this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields);
     }
 
     getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<Foods | Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
@@ -532,7 +532,7 @@ export class ParseSchedule {
         const foodsHelper = this.myDatabaseHelper.getFoodsHelper();
         const foodsDict: Record<string, Foods> = {};
 
-        let index = 1;
+        let index = 0;
         let amount = foodsInformationForParserList.length;
         for (const foodInfo of foodsInformationForParserList) {
             const foodId = foodInfo.basicFoodData.id;
@@ -543,6 +543,7 @@ export class ParseSchedule {
             if(!!food){
                 foodsDict[foodId] = food;
             }
+            index++;
             myTimer.printElapsedTimeAndEstimatedTimeRemaining(index, amount)
         }
 
@@ -613,7 +614,7 @@ export class ParseSchedule {
 
                 await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
                 timers.timers.FoodUpdateAttributes.startRound();
-                foundFood = await this.updateFoodsAttributesValues(foundFood, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
+                await this.updateFoodsAttributesValues(foundFood, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
                 timers.timers.FoodUpdateAttributes.stopRound();
 
                 timers.timers.FoodUpdateTranslations.startRound();
@@ -623,11 +624,13 @@ export class ParseSchedule {
                 //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                 amountCompleted++;
                 myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
+
+                timers.printStatistics();
+                timers.findBottleneck();
             }
         }
 
-        timers.printStatistics();
-        timers.findBottleneck();
+
 
         console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Foods");
     }
@@ -793,17 +796,33 @@ export class ParseSchedule {
         const myFoodOffersService = await this.myDatabaseHelper.getFoodoffersHelper();
 
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - Create Food Offers");
+        const myTimersEmitEvents = new MyTimers("disableEventEmit_TRUE", "disableEventEmit_FALSE");
 
         let batchIndex = 1;
         const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
         for (let i = 0; i < foodoffersToCreate.length; i += batchSize) {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
+
+            let disableEventEmit = i % 2 === 0; // every second batch emit events
+            if(disableEventEmit){
+                myTimersEmitEvents.timers.disableEventEmit_TRUE.startRound();
+            } else {
+                myTimersEmitEvents.timers.disableEventEmit_FALSE.startRound();
+            }
             await myFoodOffersService.createManyItems(batch, {
-                disableEventEmit: true
+                disableEventEmit: disableEventEmit
             });
+            if(disableEventEmit){
+                myTimersEmitEvents.timers.disableEventEmit_TRUE.stopRound();
+            } else {
+                myTimersEmitEvents.timers.disableEventEmit_FALSE.stopRound();
+            }
             myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches, null, "Total amount of food offers: " + foodoffersToCreate.length);
             batchIndex++;
+
+            myTimersEmitEvents.printStatistics();
+            myTimersEmitEvents.findBottleneck();
         }
     }
 

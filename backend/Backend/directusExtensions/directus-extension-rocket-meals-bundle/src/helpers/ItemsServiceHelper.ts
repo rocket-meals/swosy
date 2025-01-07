@@ -4,6 +4,10 @@ import {ApiContext} from "./ApiContext";
 import {PrimaryKey, Query} from "@directus/types";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
+export type OptsCustomType = {
+    disableEventEmit: boolean
+}
+
 export class ItemsServiceHelper<T>{
 
     private apiContext: ApiContext;
@@ -19,16 +23,20 @@ export class ItemsServiceHelper<T>{
         this.eventContext = eventContext;
     }
 
-    async updateOne(primary_key: PrimaryKey, update: Partial<T>): Promise<PrimaryKey>{
+    async updateOne(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
         // DO not update status. It should be only set on creation
-        return await itemsService.updateOne(primary_key, update);
+        let opts = this.getOptsCustom(optsCustom);
+        return await itemsService.updateOne(primary_key, update, opts);
     }
 
-    async updateOneAndGet(primary_key: PrimaryKey, update: Partial<T>): Promise<T>{
-        await this.updateOne(primary_key, update);
-        return await this.readOne(primary_key);
+    private getOptsCustom(optsCustom?: OptsCustomType): QueryOptions {
+        let opts: QueryOptions = {};
+        if(optsCustom?.disableEventEmit){
+            opts.emitEvents = false;
+        }
+        return opts;
     }
 
 
@@ -129,14 +137,11 @@ export class ItemsServiceHelper<T>{
         return await itemsService.createOne(create);
     }
 
-    async createManyItems(create: Partial<T>[], optsCustom?: {disableEventEmit?: boolean}): Promise<PrimaryKey[]>{
+    async createManyItems(create: Partial<T>[], optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
         create = create.map(ItemsServiceHelper.setStatusPublished);
-        let opts: QueryOptions = {};
-        if(optsCustom?.disableEventEmit){
-            opts.emitEvents = false;
-        }
+        let opts = this.getOptsCustom(optsCustom);
         return await itemsService.createMany(create, opts);
     }
 

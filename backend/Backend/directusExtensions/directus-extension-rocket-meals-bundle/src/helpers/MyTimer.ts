@@ -33,7 +33,7 @@ export class MyTimers<T extends string> {
                 maxTimeAlias = alias;
             }
         }
-        console.log(`Bottleneck: ${maxTimeAlias}: ${maxTime}`);
+        console.log(`Bottleneck: ${maxTimeAlias}: ${MyTimer.formatTimeToString(maxTime)}`);
     }
 
 }
@@ -131,6 +131,10 @@ export class MyTimer {
     }
 
     public formatTimeToString(duration: number) {
+        return MyTimer.formatTimeToString(duration);
+    }
+
+    public static formatTimeToString(duration: number) {
         // print in format: HH:MM:SS.mmm
         let milliseconds = Math.floor(duration % 1000);
         let seconds = Math.floor((duration / 1000) % 60);
