@@ -3,7 +3,7 @@ import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 
 export type FoodParseFoodAttributeValueType = {
     external_identifier: string,
-    attribute_value: Omit<FoodsAttributesValues, "id" | "food_attribute">
+    attribute_value: Omit<FoodsAttributesValues, "id" | "food_attribute" | "food_id" | "foodoffer_id">
 }
 export type FoodParseFoodAttributesType = FoodParseFoodAttributeValueType[];
 

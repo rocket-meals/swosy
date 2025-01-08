@@ -1,13 +1,13 @@
 {
-  "collection": "foodoffers_foods_attributes_values",
-  "field": "foods_attributes_values_id",
+  "collection": "foods_feedbacks_foods_feedbacks_labels",
+  "field": "foods_feedbacks_id",
   "type": "uuid",
   "meta": {
-    "collection": "foodoffers_foods_attributes_values",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_attributes_values_id",
+    "field": "foods_feedbacks_id",
     "group": null,
     "hidden": true,
     "interface": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 3,
+    "sort": 2,
     "special": null,
     "translations": null,
     "validation": null,
@@ -23,8 +23,8 @@
     "width": "full"
   },
   "schema": {
-    "name": "foods_attributes_values_id",
-    "table": "foodoffers_foods_attributes_values",
+    "name": "foods_feedbacks_id",
+    "table": "foods_feedbacks_foods_feedbacks_labels",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -36,7 +36,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_attributes_values",
+    "foreign_key_table": "foods_feedbacks",
     "foreign_key_column": "id"
   }
 }

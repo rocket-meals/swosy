@@ -10,14 +10,21 @@
     "field": "attribute_values",
     "group": null,
     "hidden": false,
-    "interface": "list-m2m",
+    "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "fields": [
+        "food_attribute.alias",
+        "number_value",
+        "string_value"
+      ],
+      "layout": "table"
+    },
     "readonly": false,
     "required": false,
     "sort": 18,
     "special": [
-      "m2m"
+      "o2m"
     ],
     "translations": null,
     "validation": null,

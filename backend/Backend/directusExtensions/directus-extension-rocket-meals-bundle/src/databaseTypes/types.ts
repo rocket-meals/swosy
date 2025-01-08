@@ -812,7 +812,7 @@ export type DirectusWebhooks = {
 
 export type Foodoffers = {
   alias?: string | null;
-  attribute_values: any[] | FoodoffersFoodsAttributesValues[];
+  attribute_values: any[] | FoodsAttributesValues[];
   calories_kcal?: number | null;
   canteen?: string | Canteens | null;
   carbohydrate_g?: number | null;
@@ -868,12 +868,6 @@ export type FoodoffersCategoriesTranslations = {
   translation_settings: string;
 };
 
-export type FoodoffersFoodsAttributesValues = {
-  foodoffers_id?: string | Foodoffers | null;
-  foods_attributes_values_id?: string | FoodsAttributesValues | null;
-  id: number;
-};
-
 export type FoodoffersMarkings = {
   foodoffers_id?: string | Foodoffers | null;
   id: number;
@@ -882,7 +876,7 @@ export type FoodoffersMarkings = {
 
 export type Foods = {
   alias?: string | null;
-  attribute_values: any[] | FoodsFoodsAttributesValues[];
+  attribute_values: any[] | FoodsAttributesValues[];
   calories_kcal?: number | null;
   carbohydrate_g?: number | null;
   category?: string | null;
@@ -933,8 +927,10 @@ export type FoodsAttributes = {
   image?: string | DirectusFiles | null;
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
+  prefix?: string | null;
   sort?: number | null;
   status: string;
+  suffix?: string | null;
   translations: any[] | FoodsAttributesTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
@@ -976,6 +972,8 @@ export type FoodsAttributesValues = {
   boolean_value?: boolean | null;
   color_value?: string | null;
   food_attribute?: string | FoodsAttributes | null;
+  food_id?: string | Foods | null;
+  foodoffer_id?: string | Foodoffers | null;
   icon_value?: string | null;
   id: string;
   number_value?: number | null;
@@ -1022,6 +1020,13 @@ export type FoodsFeedbacks = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type FoodsFeedbacksFoodsFeedbacksLabels = {
+  dislike?: boolean | null;
+  foods_feedbacks_id?: string | FoodsFeedbacks | null;
+  foods_feedbacks_labels_id?: string | FoodsFeedbacksLabels | null;
+  id: number;
+};
+
 export type FoodsFeedbacksLabels = {
   alias?: string | null;
   date_created?: string | null;
@@ -1063,12 +1068,6 @@ export type FoodsFeedbacksLabelsTranslations = {
   let_be_translated?: boolean | null;
   text?: string | null;
   translation_settings: string;
-};
-
-export type FoodsFoodsAttributesValues = {
-  foods_attributes_values_id?: string | FoodsAttributesValues | null;
-  foods_id?: string | Foods | null;
-  id: number;
 };
 
 export type FoodsMarkings = {
@@ -1486,7 +1485,6 @@ export type CustomDirectusTypes = {
   foodoffers: Foodoffers[];
   foodoffers_categories: FoodoffersCategories[];
   foodoffers_categories_translations: FoodoffersCategoriesTranslations[];
-  foodoffers_foods_attributes_values: FoodoffersFoodsAttributesValues[];
   foodoffers_markings: FoodoffersMarkings[];
   foods: Foods[];
   foods_attributes: FoodsAttributes[];
@@ -1497,10 +1495,10 @@ export type CustomDirectusTypes = {
   foods_categories: FoodsCategories[];
   foods_categories_translations: FoodsCategoriesTranslations[];
   foods_feedbacks: FoodsFeedbacks[];
+  foods_feedbacks_foods_feedbacks_labels: FoodsFeedbacksFoodsFeedbacksLabels[];
   foods_feedbacks_labels: FoodsFeedbacksLabels[];
   foods_feedbacks_labels_entries: FoodsFeedbacksLabelsEntries[];
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
-  foods_foods_attributes_values: FoodsFoodsAttributesValues[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];
   languages: Languages[];

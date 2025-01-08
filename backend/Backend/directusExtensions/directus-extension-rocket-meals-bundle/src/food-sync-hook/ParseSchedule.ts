@@ -19,7 +19,7 @@ import {
     FoodoffersCategories,
     FoodoffersMarkings,
     Foods, FoodsAttributes, FoodsAttributesValues,
-    FoodsCategories, FoodsFoodsAttributesValues,
+    FoodsCategories,
     FoodsMarkings,
     FoodsTranslations,
     Markings,
@@ -477,11 +477,11 @@ export class ParseSchedule {
     }
 
     async updateFoodsAttributesValues(food: Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
-        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes);
+        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes, {isFood: true, isFoodoffer: false});
         await this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields, {disableEventEmit: true});
     }
 
-    getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<Foods | Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
+    getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<Foods | Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: {isFood: boolean, isFoodoffer: boolean}): T {
         let delteAttributeValuesRaw = foodOrFoodoffer.attribute_values;
         let deleteAttributeValuesIds: any[] = [];
         if(!!delteAttributeValuesRaw){
@@ -499,14 +499,21 @@ export class ParseSchedule {
             let external_identifier = new_attribute.external_identifier;
             let foodAttribute = dictExternalIdentifierToFoodAttributes[external_identifier];
             if(!!foodAttribute){
-                let createFoodAttributesValue: Omit<FoodsAttributesValues, "id"> = {
-                    ...new_attribute.attribute_value,
-                    food_attribute: foodAttribute.id,
+
+                let food_id = null;
+                let foodoffer_id = null;
+                if(typeHelper.isFood){
+                    food_id = foodOrFoodoffer.id;
+                }
+                if(typeHelper.isFoodoffer){
+                    foodoffer_id = foodOrFoodoffer.id;
                 }
 
-                let createJSON: Omit<FoodsFoodsAttributesValues, "id"> = {
-                    foods_id: foodOrFoodoffer.id,
-                    foods_attributes_values_id: createFoodAttributesValue as FoodsAttributesValues
+                let createJSON: Omit<FoodsAttributesValues, "id"> = {
+                    food_id: food_id,
+                    foodoffer_id: foodoffer_id,
+                    food_attribute: foodAttribute.id,
+                    ...new_attribute.attribute_value,
                 }
                 createAttributeValues.push(createJSON);
             }
@@ -683,7 +690,7 @@ export class ParseSchedule {
             }
         });
 
-        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as Foodoffers, foodofferForParser.attribute_values,helperObject.dictExternalIdentifierToFoodAttributes);
+        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as Foodoffers, foodofferForParser.attribute_values,helperObject.dictExternalIdentifierToFoodAttributes, {isFood: false, isFoodoffer: true});
 
         let foodOfferToCreate: Partial<Foodoffers> = {
             ...foodofferForParser.basicFoodofferData,
@@ -804,7 +811,7 @@ export class ParseSchedule {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
 
-            let disableEventEmit = true
+            let disableEventEmit = false
             if(disableEventEmit){
                 myTimersEmitEvents.timers.disableEventEmit_TRUE.startRound();
             } else {

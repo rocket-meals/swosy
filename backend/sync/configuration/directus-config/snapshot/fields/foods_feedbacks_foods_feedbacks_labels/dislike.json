@@ -1,25 +1,23 @@
 {
-  "collection": "foods_attributes_values",
-  "field": "food_attribute",
-  "type": "uuid",
+  "collection": "foods_feedbacks_foods_feedbacks_labels",
+  "field": "dislike",
+  "type": "boolean",
   "meta": {
-    "collection": "foods_attributes_values",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "food_attribute",
+    "field": "dislike",
     "group": null,
     "hidden": false,
-    "interface": "select-dropdown-m2o",
+    "interface": "boolean",
     "note": null,
-    "options": {
-      "template": "{{alias}} ({{id}})"
-    },
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 2,
+    "sort": 4,
     "special": [
-      "m2o"
+      "cast-boolean"
     ],
     "translations": null,
     "validation": null,
@@ -27,10 +25,10 @@
     "width": "full"
   },
   "schema": {
-    "name": "food_attribute",
-    "table": "foods_attributes_values",
-    "data_type": "uuid",
-    "default_value": null,
+    "name": "dislike",
+    "table": "foods_feedbacks_foods_feedbacks_labels",
+    "data_type": "boolean",
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
@@ -40,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_attributes",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

@@ -1,9 +1,9 @@
 {
-  "collection": "foodoffers_foods_attributes_values",
+  "collection": "foods_feedbacks_foods_feedbacks_labels",
   "field": "id",
   "type": "integer",
   "meta": {
-    "collection": "foodoffers_foods_attributes_values",
+    "collection": "foods_feedbacks_foods_feedbacks_labels",
     "conditions": null,
     "display": null,
     "display_options": null,
@@ -24,9 +24,9 @@
   },
   "schema": {
     "name": "id",
-    "table": "foodoffers_foods_attributes_values",
+    "table": "foods_feedbacks_foods_feedbacks_labels",
     "data_type": "integer",
-    "default_value": "nextval('foodoffers_foods_attributes_values_id_seq'::regclass)",
+    "default_value": "nextval('foods_feedbacks_foods_feedbacks_labels_id_seq'::regclass)",
     "max_length": null,
     "numeric_precision": 32,
     "numeric_scale": 0,

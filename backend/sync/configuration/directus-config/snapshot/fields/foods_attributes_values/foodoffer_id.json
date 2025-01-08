@@ -1,30 +1,32 @@
 {
-  "collection": "foods_foods_attributes_values",
-  "field": "foods_attributes_values_id",
+  "collection": "foods_attributes_values",
+  "field": "foodoffer_id",
   "type": "uuid",
   "meta": {
-    "collection": "foods_foods_attributes_values",
+    "collection": "foods_attributes_values",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_attributes_values_id",
+    "field": "foodoffer_id",
     "group": null,
-    "hidden": true,
-    "interface": null,
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 3,
-    "special": null,
+    "sort": 9,
+    "special": [
+      "m2o"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "foods_attributes_values_id",
-    "table": "foods_foods_attributes_values",
+    "name": "foodoffer_id",
+    "table": "foods_attributes_values",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -36,7 +38,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "foods_attributes_values",
+    "foreign_key_table": "foodoffers",
     "foreign_key_column": "id"
   }
 }
