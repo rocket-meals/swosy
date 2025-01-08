@@ -97,34 +97,24 @@ export class TranslationHelper {
         return false;
     }
 
-
-
-    static async updateItemTranslations<
+    static async updateItemTranslationsForItemWithTranslationsFetched<
         T extends ItemWithExistingTranslations, // T must have an id and translations field
         E extends ExistingTranslation // the collection of the related translations
     >(
-        item: T, // the item we want to update the translations for
+        itemWithTranslations: T, // the item we want to update the translations for
         translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
         items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
         itemsTablename: string, // the name of the table of our item
         apiContext: ApiContext,
         eventContext?: EventContext
     ) {
-        let myTimers = new MyTimers("TranslationHelper_getItemsService", "TranslationHelper_readOne", "TranslationHelper_updateOne");
-
         const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
-        myTimers.timers.TranslationHelper_getItemsService.startRound();
         const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
-        myTimers.timers.TranslationHelper_getItemsService.stopRound();
-
-        myTimers.timers.TranslationHelper_readOne.startRound();
-        let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {"fields": ["*", "translations.*"]});
-        myTimers.timers.TranslationHelper_readOne.stopRound();
         if (!!itemWithTranslations) {
             const {
                 updateObject: updateObject,
                 updateNeeded: updateNeeded
-            } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, item, translationsFromParsing, items_primary_field_in_translation_table);
+            } = await TranslationHelper._getUpdateInformationForTranslations(itemWithTranslations, itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table);
 
             if(updateNeeded){
                 //const createTranslations = updateObject.translations.create;
@@ -138,14 +128,46 @@ export class TranslationHelper {
                 //console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
                 //console.log(JSON.stringify(updateObject, null, 2));
 
-                myTimers.timers.TranslationHelper_updateOne.startRound();
                 // @ts-ignore
                 await specificItemServiceReader.updateOne(item?.id, {id: item?.id, ...updateObject});
-                myTimers.timers.TranslationHelper_updateOne.stopRound();
             }
         }
-        myTimers.printStatistics()
-        myTimers.findBottleneck()
+    }
+
+    static FIELD_FOR_TRANSLATION_FETCHING = "translations.*";
+    static QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING = {
+        "fields": ["*", TranslationHelper.FIELD_FOR_TRANSLATION_FETCHING]
+    };
+
+    /**
+     * Updates the translations for a specific item.
+     *
+     * **Warning:** This function is resource-intensive and includes a bottleneck
+     * during the item fetching phase. It takes approximately 1 second on average.
+     * Consider using alternative methods if possible for better performance.
+     * Prefer using `updateItemTranslationsForItemWithTranslationsFetched`
+     * if you already have the item's data with translations fetched, as it avoids the
+     * performance bottleneck.
+     *
+     * @deprecated This function has a known bottleneck and is slow. Avoid using it unless necessary.
+     */
+    static async updateItemTranslations<
+        T extends ItemWithExistingTranslations, // T must have an id and translations field
+        E extends ExistingTranslation // the collection of the related translations
+    >(
+        item: T, // the item we want to update the translations for
+        translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
+        items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
+        itemsTablename: string, // the name of the table of our item
+        apiContext: ApiContext,
+        eventContext?: EventContext
+    ) {
+        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
+        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+        let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {
+            ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+        }); // Bottleneck HERE. Takes on average 1.0s
+        return TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, apiContext, eventContext);
     }
 
     static async _getUpdateInformationForTranslations<

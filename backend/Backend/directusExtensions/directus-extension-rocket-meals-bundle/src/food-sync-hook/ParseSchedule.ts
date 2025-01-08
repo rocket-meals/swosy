@@ -478,7 +478,7 @@ export class ParseSchedule {
 
     async updateFoodsAttributesValues(food: Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
         let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes);
-        await this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields);
+        await this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields, {disableEventEmit: true});
     }
 
     getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<Foods | Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
@@ -523,11 +523,11 @@ export class ParseSchedule {
         return foodOrFoodofferCopy;
     }
 
-    async updateFoodTranslations(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Foods, FoodsTranslations>(food, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext, this.eventContext);
+    async updateFoodTranslations(foundFoodWithTranslations: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
+        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext, this.eventContext);
     }
 
-    async getOrCreateFoodsOnly(foodsInformationForParserList: FoodsInformationTypeForParser[]){
+    async getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList: FoodsInformationTypeForParser[]){
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - getOrCreateFoodsOnly");
         const foodsHelper = this.myDatabaseHelper.getFoodsHelper();
         const foodsDict: Record<string, Foods> = {};
@@ -539,9 +539,9 @@ export class ParseSchedule {
             const searchJSON = { id: foodId };
 
             // Use findOrCreateItem to either find or create the food
-            const food = await foodsHelper.findOrCreateItem(searchJSON, searchJSON);
-            if(!!food){
-                foodsDict[foodId] = food;
+            const foodWithTranslations = await foodsHelper.findOrCreateItem(searchJSON, searchJSON, { withTranslations: true });
+            if(!!foodWithTranslations){
+                foodsDict[foodId] = foodWithTranslations;
             }
             index++;
             myTimer.printElapsedTimeAndEstimatedTimeRemaining(index, amount)
@@ -583,7 +583,7 @@ export class ParseSchedule {
 
 
 
-        let foundFoodsDict = await this.getOrCreateFoodsOnly(foodsInformationForParserList);
+        let foundFoodsWithTranslationsDict = await this.getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList);
 
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update foods");
 
@@ -591,8 +591,8 @@ export class ParseSchedule {
 
         let amountCompleted = 0;
         for (const foodsInformationForParser of foodsInformationForParserList) {
-            let foundFood = foundFoodsDict[foodsInformationForParser.basicFoodData.id];
-            if (!!foundFood && foundFood.id && this.foodParser) {
+            let foundFoodWithTranslations = foundFoodsWithTranslationsDict[foodsInformationForParser.basicFoodData.id];
+            if (!!foundFoodWithTranslations && foundFoodWithTranslations.id && this.foodParser) {
                 const basicFoodData = foodsInformationForParser.basicFoodData;
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
@@ -605,20 +605,20 @@ export class ParseSchedule {
                 }
 
                 timers.timers.FoodMarkingAssigning.startRound();
-                await this.assignMarkingsToFood(markings, foundFood, helperObject.dictMarkingsExclusions);
+                await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
                 timers.timers.FoodMarkingAssigning.stopRound();
 
                 timers.timers.FoodAssignCategory.startRound();
-                await this.assignFoodCategoryToFood(foundFood, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
+                await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
                 timers.timers.FoodAssignCategory.stopRound();
 
                 await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
                 timers.timers.FoodUpdateAttributes.startRound();
-                await this.updateFoodsAttributesValues(foundFood, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
+                await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
                 timers.timers.FoodUpdateAttributes.stopRound();
 
                 timers.timers.FoodUpdateTranslations.startRound();
-                await this.updateFoodTranslations(foundFood, foodsInformationForParser);
+                await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
                 timers.timers.FoodUpdateTranslations.stopRound();
 
                 //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
@@ -804,7 +804,7 @@ export class ParseSchedule {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
 
-            let disableEventEmit = batchIndex % 2 === 0; // every second batch emit events
+            let disableEventEmit = true
             if(disableEventEmit){
                 myTimersEmitEvents.timers.disableEventEmit_TRUE.startRound();
             } else {

@@ -3,6 +3,7 @@ import type {Filter} from "@directus/types/dist/filter";
 import {ApiContext} from "./ApiContext";
 import {PrimaryKey, Query} from "@directus/types";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {TranslationHelper} from "./TranslationHelper";
 
 export type OptsCustomType = {
     disableEventEmit: boolean
@@ -99,7 +100,9 @@ export class ItemsServiceHelper<T>{
         }
     }
 
-    async findOrCreateItem(search: Partial<T>, create: Partial<T>): Promise<T | undefined>{
+    async findOrCreateItem(search: Partial<T>, create: Partial<T>, customOptions?: {
+        withTranslations?: boolean
+    }): Promise<T | undefined>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
 
@@ -114,7 +117,13 @@ export class ItemsServiceHelper<T>{
         }
 
         let queryFilter: Filter = {_and: andFilter};
-        const query = {filter: queryFilter};
+        let query = {filter: queryFilter};
+        if(customOptions?.withTranslations){
+            query = {
+                ...query,
+                ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING
+            }
+        }
 
         let queriedItems = await itemsService.readByQuery(query);
         let foundItem = queriedItems[0]
