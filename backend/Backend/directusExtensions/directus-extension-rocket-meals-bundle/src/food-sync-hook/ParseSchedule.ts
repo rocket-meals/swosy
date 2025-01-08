@@ -594,8 +594,6 @@ export class ParseSchedule {
 
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - Update foods");
 
-        const timers = new MyTimers("FoodMarkingAssigning", "FoodAssignCategory", "FoodUpdateAttributes", "FoodUpdateTranslations");
-
         let amountCompleted = 0;
         for (const foodsInformationForParser of foodsInformationForParserList) {
             let foundFoodWithTranslations = foundFoodsWithTranslationsDict[foodsInformationForParser.basicFoodData.id];
@@ -611,29 +609,17 @@ export class ParseSchedule {
                     }
                 }
 
-                timers.timers.FoodMarkingAssigning.startRound();
                 await this.assignMarkingsToFood(markings, foundFoodWithTranslations, helperObject.dictMarkingsExclusions);
-                timers.timers.FoodMarkingAssigning.stopRound();
-
-                timers.timers.FoodAssignCategory.startRound();
                 await this.assignFoodCategoryToFood(foundFoodWithTranslations, foodsInformationForParser, helperObject.foodCategoryExternalIdentifiersToFoodCategoriesDict);
-                timers.timers.FoodAssignCategory.stopRound();
 
                 await this.updateFoodBasicFields(basicFoodData); // TODO: Remove in the future
-                timers.timers.FoodUpdateAttributes.startRound();
                 await this.updateFoodsAttributesValues(foundFoodWithTranslations, foodsInformationForParser.attribute_values, helperObject.dictExternalIdentifierToFoodAttributes);
-                timers.timers.FoodUpdateAttributes.stopRound();
 
-                timers.timers.FoodUpdateTranslations.startRound();
                 await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
-                timers.timers.FoodUpdateTranslations.stopRound();
 
                 //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                 amountCompleted++;
                 myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
-
-                timers.printStatistics();
-                timers.findBottleneck();
             }
         }
 
@@ -812,24 +798,11 @@ export class ParseSchedule {
             console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
 
             let disableEventEmit = true
-            if(disableEventEmit){
-                myTimersEmitEvents.timers.disableEventEmit_TRUE.startRound();
-            } else {
-                myTimersEmitEvents.timers.disableEventEmit_FALSE.startRound();
-            }
             await myFoodOffersService.createManyItems(batch, {
                 disableEventEmit: disableEventEmit
             });
-            if(disableEventEmit){
-                myTimersEmitEvents.timers.disableEventEmit_TRUE.stopRound();
-            } else {
-                myTimersEmitEvents.timers.disableEventEmit_FALSE.stopRound();
-            }
             myTimer.printElapsedTimeAndEstimatedTimeRemaining(batchIndex, amountOfBatches, null, "Total amount of food offers: " + foodoffersToCreate.length);
             batchIndex++;
-
-            myTimersEmitEvents.printStatistics();
-            myTimersEmitEvents.findBottleneck();
         }
     }
 
