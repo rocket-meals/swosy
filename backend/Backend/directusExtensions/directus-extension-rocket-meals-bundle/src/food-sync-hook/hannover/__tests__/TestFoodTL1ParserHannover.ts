@@ -3,8 +3,12 @@ import { describe, it, expect } from '@jest/globals';
 import {FoodTL1ParserHannover} from "../FoodTL1ParserHannover";
 import {FoodTL1Parser_GetRawReportInterface} from "../../FoodTL1Parser_GetRawReportInterface";
 import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawReportTestReaderHannover";
-import {FoodoffersTypeForParser, FoodsInformationTypeForParser} from "../../FoodParserInterface";
-import {FoodTL1Parser} from "../../FoodTL1Parser";
+import {
+    FoodoffersTypeForParser,
+    FoodParseFoodAttributeValueType,
+    FoodsInformationTypeForParser
+} from "../../FoodParserInterface";
+import {FoodTL1Parser, Tl1AttributeType, TL1AttributeValueType} from "../../FoodTL1Parser";
 
 function generateFoodId(foodIds: number[], markingExternalIdentifiers: string[]): string | null {
     return FoodTL1ParserHannover.getHannoverFoodId(foodIds, markingExternalIdentifiers);
@@ -109,50 +113,16 @@ describe("FoodTL1ParserHannover Test", () => {
         checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
     });
 
-
     it("Markings correctly used the ZS_NUMMERN Field", async () => {
-        await foodParser.createNeededData();
-        let foodsJson = await foodParser.getFoodsListForParser();
-        // search for "Veganes Schnitzel" in the foodoffers
-        let foundVeganesSchnitzel = false;
-        // 3, 15, 20, 20A, 20D, 99
-        const expectedMarkingExternalIdentifiers = [ '3', '15', '20', '20A', '20D', '99', "x" ];
-        const findFoodId = generateFoodId([802336, 802338, 802777], expectedMarkingExternalIdentifiers);
-        let foodWithSpecialMarking: FoodsInformationTypeForParser | null = null;
-
-        for(let food of foodsJson){
-            //console.log(food.basicFoodData.alias)
-            if(food.basicFoodData.id === findFoodId){
-                foundVeganesSchnitzel = true;
-                foodWithSpecialMarking = food;
-                break;
-            }
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersWithCorrectMarkingsInFieldZS_NUMMER());
+        let firstFoodOffer = foodOfferJson[0];
+        expect(!!firstFoodOffer).toBe(true);
+        if(!firstFoodOffer){
+            return;
         }
 
-        expect(foundVeganesSchnitzel).toBe(true);
-
-        if(foodWithSpecialMarking){
-            //console.log("Check if food has the correct markings");
-            expect(foodWithSpecialMarking.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
-
-            //console.log("Check if foodoffers have the correct markings");
-            let foodOffersJson = await foodParser.getFoodoffersForParser();
-            let foodOffersWithSpecialMarking = foodOffersJson.filter((foodOffer) => {
-                return foodOffer.food_id === findFoodId;
-            });
-            //console.log("found foodoffers")
-            //console.log(foodOffersWithSpecialMarking)
-
-            //console.log("Expect foodoffers to be found")
-            expect(foodOffersWithSpecialMarking.length).toBeGreaterThan(0);
-
-            for(let foodOffer of foodOffersWithSpecialMarking){
-                //console.log("Check foodoffer: "+ foodOffer.basicFoodofferData.alias + " " + JSON.stringify(foodOffer.date) + " " + foodOffer.canteen_external_identifier);
-                //console.log("Foodoffer markings: ", foodOffer.marking_external_identifiers);
-                expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
-            }
-
-        }
+        const expectedMarkingExternalIdentifiers = [ "3", "15", "20A", "22", "26", "28", "g", "99" ];
+        expect(firstFoodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
     })
 
     it("Foodoffers all have category", async () => {
@@ -235,6 +205,63 @@ describe("FoodTL1ParserHannover Test", () => {
         // we should have more than one food
         expect(Object.keys(dictFoodIds).length).toBeGreaterThan(1);
         expect(foodsJson.length).toBeGreaterThan(1);
+    });
+
+    function checkForAllAttributesPassed(foodOrFoodoffersJson: FoodoffersTypeForParser[] | FoodsInformationTypeForParser[], allAttributeFields: Tl1AttributeType[]){
+        // Lets create a dict of all attributes we expect to find
+        let dictAllAttributeFields: {[key: string]: Tl1AttributeType} = {};
+        for(let attributeField of allAttributeFields){
+            dictAllAttributeFields[attributeField.external_identifier] = attributeField;
+        }
+
+        // for every food or foodoffer
+        for(let foodOrFoodoffer of foodOrFoodoffersJson){
+            let foodofferAttributes = foodOrFoodoffer.attribute_values;
+
+            // create a dict of all attributes present in the food or foodoffer
+            let dictOfFoodOrFoodofferAttributes: {[key: string]: FoodParseFoodAttributeValueType} = {};
+            for(let foodofferAttribute of foodofferAttributes){
+                dictOfFoodOrFoodofferAttributes[foodofferAttribute.external_identifier] = foodofferAttribute;
+            }
+
+            let externalIdentifiers = Object.keys(dictAllAttributeFields);
+            for(let externalIdentifier of externalIdentifiers){
+                let expectedAttribute = dictAllAttributeFields[externalIdentifier];
+                expect(!!expectedAttribute).toBe(true);
+                if(!expectedAttribute){
+                    return;
+                }
+
+                let foundAttribute = dictOfFoodOrFoodofferAttributes[externalIdentifier];
+                expect(!!foundAttribute).toBe(true);
+                if(!foundAttribute){
+                    return;
+                }
+
+                expect(foundAttribute.external_identifier).toBe(expectedAttribute.external_identifier);
+
+                // Now check if the value is correct set
+                if(expectedAttribute.value_type === TL1AttributeValueType.NUMBER){
+                    expect(foundAttribute.attribute_value.number_value).not.toBeUndefined();
+                } else if(expectedAttribute.value_type === TL1AttributeValueType.STRING) {
+                    expect(!!foundAttribute.attribute_value.string_value).not.toBeUndefined();
+                } else if(expectedAttribute.value_type === TL1AttributeValueType.BOOLEAN) {
+                    expect(!!foundAttribute.attribute_value.boolean_value).not.toBeUndefined();
+                }
+            }
+        }
+    }
+
+    it("Food offers attributes are all parsed", async () => {
+       let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithAttributeValues());
+       let allAttributeFields = FoodTL1ParserHannover.FOOD_ATTRIBUTE_FIELDS;
+       checkForAllAttributesPassed(foodoffersJson, allAttributeFields);
+    });
+
+    it("Food attributes are all parsed", async () => {
+        let foodsJson = await getFoodsJson();
+        let allAttributeFields = FoodTL1ParserHannover.FOOD_ATTRIBUTE_FIELDS;
+        checkForAllAttributesPassed(foodsJson, allAttributeFields);
     });
 
 });

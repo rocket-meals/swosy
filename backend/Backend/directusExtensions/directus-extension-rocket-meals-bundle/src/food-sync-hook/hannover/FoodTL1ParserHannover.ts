@@ -1,6 +1,16 @@
-import {FoodTL1Parser, RawFoodofferInformationType, RawTL1FoodofferType} from "../FoodTL1Parser";
+import {
+    FoodTL1Parser,
+    RawFoodofferInformationType,
+    RawTL1FoodofferType,
+    Tl1AttributeType,
+    TL1AttributeValueType
+} from "../FoodTL1Parser";
 import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
-import {FoodoffersTypeForParser, FoodsInformationTypeForParser} from "../FoodParserInterface";
+import {
+    FoodoffersTypeForParser,
+    FoodParseFoodAttributesType,
+    FoodsInformationTypeForParser
+} from "../FoodParserInterface";
 import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
@@ -98,6 +108,84 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         let food_id = FoodTL1ParserHannover.getHannoverFoodId(recipe_ids, total_marking_external_identifier_list);
 
         return food_id;
+    }
+
+    static FOOD_ATTRIBUTE_FIELDS: Tl1AttributeType[] = [
+        {
+            field_name: "NW_KCAL",
+            external_identifier: "calories_kcal",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_FETT",
+            external_identifier: "fat_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_GESFETT",
+            external_identifier: "saturated_fat_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_EIWEISS",
+            external_identifier: "protein_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_KH",
+            external_identifier: "carbohydrate_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_ZUCKER",
+            external_identifier: "sugar_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "NW_SALZ",
+            external_identifier: "salt_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_CO2_WERT",
+            external_identifier: "co2_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_CO2_EINSPARUNG",
+            external_identifier: "co2_saving_percentage",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_CO2_BEWERTUNG",
+            external_identifier: "co2_rating",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_WASSER_WERT",
+            external_identifier: "water_usage",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_WASSER_BEWERTUNG",
+            external_identifier: "water_rating",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_TIERWOHL",
+            external_identifier: "animal_welfare",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_REGENWALD",
+            external_identifier: "rainforest",
+            value_type: TL1AttributeValueType.STRING
+        }
+    ]
+
+    override getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
+        let foodAttributes = FoodTL1Parser.getAdditionalFoodAttributesFromRawTL1Foodoffer(parsedReportItem, FoodTL1ParserHannover.FOOD_ATTRIBUTE_FIELDS);
+        return foodAttributes;
     }
 
 }

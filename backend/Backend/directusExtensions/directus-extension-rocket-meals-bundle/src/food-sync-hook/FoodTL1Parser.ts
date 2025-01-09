@@ -28,6 +28,17 @@ export type RawFoodofferInformationType = {
 
 type RawFoodofferInformationListType = RawFoodofferInformationType[]
 
+export enum TL1AttributeValueType {
+    NUMBER = "number",
+    STRING = "string",
+    BOOLEAN = "boolean"
+}
+export type Tl1AttributeType = {
+    field_name: string,
+    external_identifier: string,
+    value_type: TL1AttributeValueType
+}
+
 export class FoodTL1Parser implements FoodParserInterface {
 
     static DEFAULT_CANTEEN_FIELD = "MENSA";
@@ -129,7 +140,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
         const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
 
-        let foodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
+        let foodAttributes = this.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
 
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
@@ -184,7 +195,7 @@ export class FoodTL1Parser implements FoodParserInterface {
             const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
             const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
 
-            let foodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
+            let foodAttributes = this.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
 
             const basicFoodofferData: FoodofferTypeWithBasicData = {
                 alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
@@ -485,13 +496,45 @@ export class FoodTL1Parser implements FoodParserInterface {
 
     }
 
-    static getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
+    static getAdditionalFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType, csvAttributes: Tl1AttributeType[]): FoodParseFoodAttributesType {
+        let attributeValues: FoodParseFoodAttributesType = [];
+        for(let csvAttribute of csvAttributes){
+            let value = parsedReportItem[csvAttribute.field_name];
+            if(csvAttribute.value_type === TL1AttributeValueType.NUMBER){
+                let value_as_number = null;
+                if(!!value){
+                    value_as_number = parseFloat(value);
+                }
+                attributeValues.push({
+                    external_identifier: csvAttribute.external_identifier,
+                    attribute_value: {number_value: value_as_number}
+                });
+            } else if(csvAttribute.value_type === TL1AttributeValueType.STRING){
+                attributeValues.push({
+                    external_identifier: csvAttribute.external_identifier,
+                    attribute_value: {string_value: value}
+                });
+            } else if(csvAttribute.value_type === TL1AttributeValueType.BOOLEAN){
+                let value_as_boolean = null;
+                if(value === "true"){
+                    value_as_boolean = true;
+                } else if(value === "false"){
+                    value_as_boolean = false;
+                }
+
+                attributeValues.push({
+                    external_identifier: csvAttribute.external_identifier,
+                    attribute_value: {boolean_value: value_as_boolean}
+                });
+            }
+        }
+        return attributeValues;
+    }
+
+    getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
         let foodAttributes: FoodParseFoodAttributesType = [];
         let nutritionAttributes = FoodTL1Parser.getFoodNutritionAttributeValuesFromRawTL1Foodoffer(parsedReportItem);
         foodAttributes = foodAttributes.concat(nutritionAttributes);
-
-        let foodEnvironmentImpactAttributes = FoodTL1Parser.getFoodEnvironmentImpactAttributeValuesFromRawTL1Foodoffer(parsedReportItem);
-        foodAttributes = foodAttributes.concat(foodEnvironmentImpactAttributes);
 
         return foodAttributes;
     }
@@ -550,6 +593,8 @@ export class FoodTL1Parser implements FoodParserInterface {
         return attributeValues;
 
     }
+
+
 
     static getFoodEnvironmentImpactAttributeValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
         let attributeValues: FoodParseFoodAttributesType = [];

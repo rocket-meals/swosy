@@ -51,7 +51,7 @@ describe("FoodTL1Parser Test", () => {
             [FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD] : "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
         }
 
-        const parsedFoodAttributes = FoodTL1Parser.getFoodAttributesFromRawTL1Foodoffer(exampleParsedReportItem);
+        const parsedFoodAttributes = FoodTL1Parser.getFoodNutritionAttributeValuesFromRawTL1Foodoffer(exampleParsedReportItem);
         expect(parsedFoodAttributes).not.toBeNull();
         expect(parsedFoodAttributes).not.toBeUndefined();
         // check parsedFoodAttributes.length > 0
