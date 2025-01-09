@@ -128,8 +128,7 @@ export class TranslationHelper {
                 //console.log("deleteTranslations: "+JSON.stringify(deleteTranslations, null, 2));
                 //console.log(JSON.stringify(updateObject, null, 2));
 
-                // @ts-ignore
-                await specificItemServiceReader.updateOne(item?.id, {id: item?.id, ...updateObject});
+                await specificItemServiceReader.updateOne(itemWithTranslations?.id, {id: itemWithTranslations?.id, ...updateObject});
             }
         }
     }
