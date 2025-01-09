@@ -10,7 +10,6 @@ import {MarkingParserInterface} from "./MarkingParserInterface";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
 import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {SWOSY_API_Parser} from "./SWOSY_API_Parser";
 import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 
@@ -68,13 +67,6 @@ function getMarkingParser(): MarkingParserInterface | null {
 
             console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
-        case "SWOSY_API":
-            const FOOD_SYNC_SWOSY_API_URL = EnvVariableHelper.getFoodImageSyncSwosyApiServerUrl();
-            if(!!FOOD_SYNC_SWOSY_API_URL && FOOD_SYNC_SWOSY_API_URL.length > 0) {
-                return new SWOSY_API_Parser(FOOD_SYNC_SWOSY_API_URL, 7);
-            } else {
-                console.log(SCHEDULE_NAME + ": no URL configured for SWOSY_API, please set the environment variable FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
-            }
     }
 
     return null;

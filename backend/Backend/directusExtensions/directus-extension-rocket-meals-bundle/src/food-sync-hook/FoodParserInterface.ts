@@ -1,5 +1,6 @@
 import {Canteens, Foodoffers, Foods, FoodsAttributesValues} from "../databaseTypes/types";
 import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
+import {RawFoodofferInformationType, RawTL1FoodofferType} from "./FoodTL1Parser";
 
 export type FoodParseFoodAttributeValueType = {
     external_identifier: string,

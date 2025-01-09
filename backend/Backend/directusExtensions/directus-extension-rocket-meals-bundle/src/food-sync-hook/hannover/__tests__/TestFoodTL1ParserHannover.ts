@@ -6,17 +6,22 @@ import {FoodTL1Parser_RawReportTestReaderHannover} from "../FoodTL1Parser_RawRep
 import {FoodoffersTypeForParser, FoodsInformationTypeForParser} from "../../FoodParserInterface";
 import {FoodTL1Parser} from "../../FoodTL1Parser";
 
-function generateFoodId(foodIds: number[]): string {
-    return foodIds.sort(
-        (a,b) => a - b
-    ).join("-");
+function generateFoodId(foodIds: number[], markingExternalIdentifiers: string[]): string | null {
+    return FoodTL1ParserHannover.getHannoverFoodId(foodIds, markingExternalIdentifiers);
 }
 
-async function getFoodJson(reportToReturn?: string | undefined){
+async function getFoodoffersJson(reportToReturn?: string | undefined){
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
     let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
     await foodParser.createNeededData();
     return await foodParser.getFoodoffersForParser();
+}
+
+async function getFoodsJson(reportToReturn?: string | undefined){
+    let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
+    let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
+    await foodParser.createNeededData();
+    return await foodParser.getFoodsListForParser();
 }
 
 describe("FoodTL1ParserHannover Test", () => {
@@ -75,7 +80,7 @@ describe("FoodTL1ParserHannover Test", () => {
         expect(foundFiber).toBe(false);
     });
 
-    function checkIfFoodHasMarking(foodId: string, expectedMarkingExternalIdentifiersToBeIncluded: string[], foodOffersJson: FoodoffersTypeForParser[]){
+    function checkIfFoodHasMarking(foodId: string | null, expectedMarkingExternalIdentifiersToBeIncluded: string[], foodOffersJson: FoodoffersTypeForParser[]){
         let foodOffersWithSpecialMarking = foodOffersJson.filter((foodOffer) => {
             return foodOffer.food_id === foodId;
         });
@@ -88,15 +93,18 @@ describe("FoodTL1ParserHannover Test", () => {
     }
 
     it("Markings use correctly addition field for vegetarian (v)", async () => {
-        let findFoodId = generateFoodId([801346, 802285])
-        let foodOfferJson = await getFoodJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
+        const marking_external_identifiers = ["26", "99", "v"];
+        let findFoodId = generateFoodId([801346, 802285], marking_external_identifiers)
         const expectedMarkingExternalIdentifiersToBeIncluded = [ 'v' ];
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
         checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
     })
 
     it("Markings use correctly additional field for vegan (x)", async () => {
-        let findFoodId = generateFoodId([800562,802726,801834, 801454])
-        let foodOfferJson = await getFoodJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+        const marking_external_identifiers = ['4',   '20', '20A', '20C', '25',  '99', 'x'];
+        let findFoodId = generateFoodId([800562,802726,801834, 801454], marking_external_identifiers)
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegan());
+
         const expectedMarkingExternalIdentifiersToBeIncluded = [ 'x' ];
         checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
     });
@@ -107,8 +115,9 @@ describe("FoodTL1ParserHannover Test", () => {
         let foodsJson = await foodParser.getFoodsListForParser();
         // search for "Veganes Schnitzel" in the foodoffers
         let foundVeganesSchnitzel = false;
-        const findFoodId = generateFoodId([802336, 802338, 802777]);
-        const expectedMarkingExternalIdentifiers = [ '3', '15', '20', '20A', '20D', '99' ];
+        // 3, 15, 20, 20A, 20D, 99
+        const expectedMarkingExternalIdentifiers = [ '3', '15', '20', '20A', '20D', '99', "x" ];
+        const findFoodId = generateFoodId([802336, 802338, 802777], expectedMarkingExternalIdentifiers);
         let foodWithSpecialMarking: FoodsInformationTypeForParser | null = null;
 
         for(let food of foodsJson){
@@ -146,46 +155,86 @@ describe("FoodTL1ParserHannover Test", () => {
         }
     })
 
-    it("Foodoffers shall have correct category", async () => {
+    it("Foodoffers all have category", async () => {
         await foodParser.createNeededData();
         let foodOffersJson = await foodParser.getFoodoffersForParser();
-        let foundCategory = false;
-        for(let foodOffer of foodOffersJson){
-            if(!!foodOffer.category_external_identifier){
-                foundCategory = true;
+        let everyFoodofferHasCategory = true;
+        for (let foodOffer of foodOffersJson) {
+            if (!foodOffer.category_external_identifier) {
+                everyFoodofferHasCategory = false;
                 break;
             }
         }
-        expect(foundCategory).toBe(true);
+        expect(everyFoodofferHasCategory).toBe(true);
+    });
 
+    it("Foodoffer has correct category", async () => {
+        let foodOffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithFoodofferCategoryMeat());
         let firstFoodOffer = foodOffersJson[0];
-
         expect(!!firstFoodOffer).toBe(true);
         if(firstFoodOffer){
             expect(firstFoodOffer.category_external_identifier).toBe("FLEISCH & MEER");
         }
-
     });
 
-    it("Food shall have correct category", async () => {
+    it("Food all have category", async () => {
         await foodParser.createNeededData();
         let foodsJson = await foodParser.getFoodsListForParser();
-        let foundCategory = false;
+        let everyFoodHasCategory = true;
         for(let food of foodsJson){
-            if(!!food.category_external_identifier){
-                foundCategory = true;
+            if(!food.category_external_identifier){
+                everyFoodHasCategory = false;
                 break;
             }
         }
-        expect(foundCategory).toBe(true);
+        expect(everyFoodHasCategory).toBe(true);
+    })
 
-        let firstFood = foodsJson[0];
-
-        expect(!!firstFood).toBe(true);
-        if(firstFood){
-            expect(firstFood.category_external_identifier).toBe("QUEERBEET");
+    it("Food has correct category", async () => {
+        let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithFoodofferCategoryMeat());
+        let foodJson = foodsJson[0];
+        expect(!!foodJson).toBe(true);
+        if(foodJson){
+            expect(foodJson.category_external_identifier).toBe("FLEISCH & MEER");
         }
     })
 
+    it("Food offers with same recipe ids and same markings shall have same food ids", async () => {
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());
+        let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());
+        // we should have more than one foodoffer
+        expect(foodOfferJson.length).toBeGreaterThan(1);
+        // we should have only one food
+        let dictFoodIds: {[key: string]: any} = {};
+        for(let foodOffer of foodOfferJson){
+            if(!!dictFoodIds[foodOffer.food_id]){
+                dictFoodIds[foodOffer.food_id].push(foodOffer);
+            } else {
+                dictFoodIds[foodOffer.food_id] = [foodOffer];
+            }
+        }
+        // we should have only one food
+        expect(Object.keys(dictFoodIds).length).toBe(1);
+        expect(foodsJson.length).toBe(1);
+    });
+
+    it("Food offers with same recipe ids and differnet markings shall have different food ids", async () => {
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersDifferentMarkings());
+        let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersDifferentMarkings());
+        // we should have more than one foodoffer
+        expect(foodOfferJson.length).toBeGreaterThan(1);
+        // we should have more than one food
+        let dictFoodIds: {[key: string]: any} = {};
+        for(let foodOffer of foodOfferJson){
+            if(!!dictFoodIds[foodOffer.food_id]){
+                dictFoodIds[foodOffer.food_id].push(foodOffer);
+            } else {
+                dictFoodIds[foodOffer.food_id] = [foodOffer];
+            }
+        }
+        // we should have more than one food
+        expect(Object.keys(dictFoodIds).length).toBeGreaterThan(1);
+        expect(foodsJson.length).toBeGreaterThan(1);
+    });
 
 });

@@ -1,4 +1,4 @@
-import {FoodTL1Parser, RawFoodofferInformationType} from "../FoodTL1Parser";
+import {FoodTL1Parser, RawFoodofferInformationType, RawTL1FoodofferType} from "../FoodTL1Parser";
 import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
 import {FoodoffersTypeForParser, FoodsInformationTypeForParser} from "../FoodParserInterface";
 import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
@@ -23,15 +23,9 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         return foodList;
     }
 
-    /**
-     * Wait for confirmation in mail if we should user the markings from the ZS_NUMMERN field
-     * Hannover Mail: 17.10.2024
-     */
-    override getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
-        //return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
-
-        let tl1_zusatz_nummern_string = rawFoodoffer.raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
-        let tl1_menuekennzeichen_string = rawFoodoffer.raw_tl1_foodoffer_json[FoodTL1ParserHannover.MENUEKENNZEICHEN_FIELD];
+    _getMarkingsExternalIdentifiersFromRawFoodoffer(raw_tl1_foodoffer_json: RawTL1FoodofferType): string[] {
+        let tl1_zusatz_nummern_string = raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
+        let tl1_menuekennzeichen_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.MENUEKENNZEICHEN_FIELD];
 
         let combinedMarkings: string[] = [];
         if(!!tl1_zusatz_nummern_string){
@@ -50,6 +44,15 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         return combinedMarkings;
     }
 
+    /**
+     * Wait for confirmation in mail if we should user the markings from the ZS_NUMMERN field
+     * Hannover Mail: 17.10.2024
+     */
+    override getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType){
+        //return super.getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer);
+        return this._getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer.raw_tl1_foodoffer_json);
+    }
+
     override getFoodCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
         return parsedReportItem?.["SPEISE"] || null;
@@ -58,6 +61,43 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     override getFoodofferCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
         return parsedReportItem?.["SPEISE"] || null; // ATTENTION: Hannover has no specific field for foodoffer category
+    }
+
+    static getCombinedSortedMarkingsExternalIdentifiersAsString(total_marking_external_identifier_list: string[]){
+        let sorted_marking_external_identifiers = total_marking_external_identifier_list.sort();
+        let combined_marking_ids_as_string = sorted_marking_external_identifiers.join("-");
+        return combined_marking_ids_as_string;
+    }
+
+    static getHannoverFoodId(recipe_ids: string[] | number[], marking_ids: string[]){
+        let sorted_recipe_ids = FoodTL1Parser.getSortedRecipeIdFromListOfRecipeIds(recipe_ids);
+        let combined_marking_ids_as_string = FoodTL1ParserHannover.getCombinedSortedMarkingsExternalIdentifiersAsString(marking_ids);
+        let food_id = sorted_recipe_ids;
+        if(!!combined_marking_ids_as_string && combined_marking_ids_as_string.length > 0){
+            food_id += "_" + combined_marking_ids_as_string;
+        }
+        return food_id
+    }
+
+    override getFoodId(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): null | string {
+        /**
+         * Agreement with Hannover: A unique food is defined by the combination of the recipe ids and the marking ids
+         */
+
+        const recipe_ids = FoodTL1Parser.getRecipeIdsFromRawTL1Foodoffer(listOfItemsForSameFoodoffer);
+        if(!recipe_ids) {
+            return null;
+        }
+
+        let firstRawTL1Foodoffer = listOfItemsForSameFoodoffer?.[0];
+        if(!firstRawTL1Foodoffer){
+            return null;
+        }
+        let total_marking_external_identifier_list = this._getMarkingsExternalIdentifiersFromRawFoodoffer(firstRawTL1Foodoffer);
+
+        let food_id = FoodTL1ParserHannover.getHannoverFoodId(recipe_ids, total_marking_external_identifier_list);
+
+        return food_id;
     }
 
 }

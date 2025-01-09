@@ -86,7 +86,7 @@ export class FoodTL1Parser implements FoodParserInterface {
         this.resetData()
 
         let rawReport = await this.rawFoodofferReader.getRawReport();
-        this.rawFoodoffersJSONList = await FoodTL1Parser.getRawFoodofferJSONListFromRawReport(rawReport);
+        this.rawFoodoffersJSONList = await this.getRawFoodofferJSONListFromRawReport(rawReport);
     }
 
     /**
@@ -222,10 +222,10 @@ export class FoodTL1Parser implements FoodParserInterface {
 
 
 
-    static async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
+    async getRawFoodofferJSONListFromRawReport(rawReport: string | Buffer | undefined): Promise<RawFoodofferInformationListType> {
         let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
         let groupedRawFoodofferItemsFromReport = FoodTL1Parser._groupParsedReportItemsToFoodofferListsItems(jsonListFromCsvString);
-        return FoodTL1Parser.getRawFoodofferJSONListFromGroupedList(groupedRawFoodofferItemsFromReport);
+        return this.getRawFoodofferJSONListFromGroupedList(groupedRawFoodofferItemsFromReport);
     }
 
     /**
@@ -262,12 +262,12 @@ export class FoodTL1Parser implements FoodParserInterface {
         return dictOfFoodIngredientsForFoodoffer;
     }
 
-    static getRawFoodofferJSONListFromGroupedList(groupedReportItems: {[p: FoodofferIdentifierType]: RawTL1FoodofferType[]}): RawFoodofferInformationListType {
+    getRawFoodofferJSONListFromGroupedList(groupedReportItems: {[p: FoodofferIdentifierType]: RawTL1FoodofferType[]}): RawFoodofferInformationListType {
         let foodOfferJSONList: RawFoodofferInformationType[] = [];
         let keys: FoodofferIdentifierType[] = Object.keys(groupedReportItems) as FoodofferIdentifierType[];
         for(let key of keys){
             let listOfItemsForSameFoodoffer = groupedReportItems[key];
-            let foodOfferJSON = FoodTL1Parser.getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer);
+            let foodOfferJSON = this.getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer);
             if(!!foodOfferJSON){
                 foodOfferJSONList.push(foodOfferJSON);
             }
@@ -275,13 +275,8 @@ export class FoodTL1Parser implements FoodParserInterface {
         return foodOfferJSONList;
     }
 
-    static getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): RawFoodofferInformationType | null{
-
+    static getRecipeIdsFromRawTL1Foodoffer(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): null | string[] {
         if(!listOfItemsForSameFoodoffer || listOfItemsForSameFoodoffer.length === 0){
-            return null;
-        }
-        let parsedReportItem = listOfItemsForSameFoodoffer[0];
-        if(!parsedReportItem){
             return null;
         }
 
@@ -292,7 +287,38 @@ export class FoodTL1Parser implements FoodParserInterface {
                 recipe_ids.push(item_id);
             }
         }
-        let food_id = FoodTL1Parser.getSortedFoodId(recipe_ids);
+        return recipe_ids;
+    }
+
+    getCombinedSortedRecipeIdAsString(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): null | string {
+        const recipe_ids = FoodTL1Parser.getRecipeIdsFromRawTL1Foodoffer(listOfItemsForSameFoodoffer);
+        if(!recipe_ids){
+            return null;
+        }
+
+        let combined_sorted_recpie_ids = FoodTL1Parser.getSortedRecipeIdFromListOfRecipeIds(recipe_ids);
+
+        return combined_sorted_recpie_ids;
+    }
+
+    getFoodId(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): null | string {
+        let sorted_recipe_ids = this.getCombinedSortedRecipeIdAsString(listOfItemsForSameFoodoffer);
+
+        let food_id = sorted_recipe_ids;
+        return food_id;
+    }
+
+    getRawFoodofferInformationFromGroupedItems(listOfItemsForSameFoodoffer: RawTL1FoodofferType[] | undefined): RawFoodofferInformationType | null{
+
+        if(!listOfItemsForSameFoodoffer || listOfItemsForSameFoodoffer.length === 0){
+            return null;
+        }
+        let parsedReportItem = listOfItemsForSameFoodoffer[0];
+        if(!parsedReportItem){
+            return null;
+        }
+
+        let food_id = this.getFoodId(listOfItemsForSameFoodoffer);
         if(!food_id){
             return null;
         }
@@ -315,12 +341,13 @@ export class FoodTL1Parser implements FoodParserInterface {
         };
     }
 
+
     /**
      * sorting the FoodIds in ascending order
      * @param string_recipe_ids the String to be sorted
      * @returns {string} returns the sorted Foodds as a string with - as a delimiter
      */
-    static getSortedFoodId(string_recipe_ids: string[]){
+    static getSortedRecipeIdFromListOfRecipeIds(string_recipe_ids: string[] | number[]){
         if(string_recipe_ids.length <= 0){
             return null
         }
