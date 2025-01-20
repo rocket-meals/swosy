@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Attribut Gruppen",
+        "plural": "Speise Attribut Gruppen",
         "singular": "Speise Attribut Gruppe",
-        "plural": "Speise Attribut Gruppen"
+        "translation": "Speise Attribut Gruppen"
       }
     ],
     "unarchive_value": "draft",

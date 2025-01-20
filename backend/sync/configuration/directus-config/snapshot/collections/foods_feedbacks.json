@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Rückmeldungen",
+        "plural": "Speise Rückmeldungen",
         "singular": "Speise Rückmeldung",
-        "plural": "Speise Rückmeldungen"
+        "translation": "Speise Rückmeldungen"
       }
     ],
     "unarchive_value": "draft",

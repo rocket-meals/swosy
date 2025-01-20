@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Kassen",
+        "plural": "Kassen",
         "singular": "Kasse",
-        "plural": "Kassen"
+        "translation": "Kassen"
       }
     ],
     "unarchive_value": "draft",

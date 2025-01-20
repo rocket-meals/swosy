@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Waschmaschinen",
+        "plural": "Waschmaschinen",
         "singular": "Waschmaschine",
-        "plural": "Waschmaschinen"
+        "translation": "Waschmaschinen"
       }
     ],
     "unarchive_value": "draft",

@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Kassen Transaktion",
+        "plural": "Kassen Transaktion",
         "singular": "Kassen Transaktion",
-        "plural": "Kassen Transaktion"
+        "translation": "Kassen Transaktion"
       }
     ],
     "unarchive_value": "draft",

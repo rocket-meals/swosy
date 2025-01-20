@@ -6,6 +6,9 @@
     "collection": "auto_translation_settings",
     "conditions": [
       {
+        "hidden": true,
+        "options": {},
+        "readonly": true,
         "rule": {
           "_and": [
             {
@@ -14,10 +17,7 @@
               }
             }
           ]
-        },
-        "readonly": true,
-        "hidden": true,
-        "options": {}
+        }
       }
     ],
     "display": null,

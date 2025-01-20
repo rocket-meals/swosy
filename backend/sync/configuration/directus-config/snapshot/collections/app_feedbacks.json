@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "App Rückmeldungen",
+        "plural": "App Rückmeldungen",
         "singular": "App Rückmeldung",
-        "plural": "App Rückmeldungen"
+        "translation": "App Rückmeldungen"
       }
     ],
     "unarchive_value": "draft",

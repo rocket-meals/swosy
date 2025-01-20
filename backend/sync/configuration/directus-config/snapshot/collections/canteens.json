@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Mensen",
+        "plural": "Mensen",
         "singular": "Mensa",
-        "plural": "Mensen"
+        "translation": "Mensen"
       }
     ],
     "unarchive_value": "draft",

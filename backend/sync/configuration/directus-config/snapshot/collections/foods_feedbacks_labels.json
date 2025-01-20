@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Rückmeldung Labels",
+        "plural": "Speise Rückmeldung Labels",
         "singular": "Speise Rückmeldung Label",
-        "plural": "Speise Rückmeldung Labels"
+        "translation": "Speise Rückmeldung Labels"
       }
     ],
     "unarchive_value": "draft",

@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Attribute",
+        "plural": "Speise Attribute",
         "singular": "Speise Attribut",
-        "plural": "Speise Attribute"
+        "translation": "Speise Attribute"
       }
     ],
     "unarchive_value": "draft",

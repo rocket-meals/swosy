@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Nutzer Geräte",
+        "plural": "Nutzer Geräte",
         "singular": "Nutzer Gerät",
-        "plural": "Nutzer Geräte"
+        "translation": "Nutzer Geräte"
       }
     ],
     "unarchive_value": "draft",

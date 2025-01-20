@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Nutzer Profile",
+        "plural": "Nutzer Profile",
         "singular": "Nutzer Profil",
-        "plural": "Nutzer Profile"
+        "translation": "Nutzer Profile"
       }
     ],
     "unarchive_value": "draft",

@@ -7,6 +7,11 @@
     "conditions": [
       {
         "name": "false",
+        "options": {
+          "iconOff": "check_box_outline_blank",
+          "iconOn": "check_box",
+          "label": "Enabled"
+        },
         "rule": {
           "_and": [
             {
@@ -15,11 +20,6 @@
               }
             }
           ]
-        },
-        "options": {
-          "iconOn": "check_box",
-          "iconOff": "check_box_outline_blank",
-          "label": "Enabled"
         }
       }
     ],
@@ -52,6 +52,7 @@
     "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,
+    "is_indexed": false,
     "is_primary_key": false,
     "is_generated": false,
     "generation_expression": null,

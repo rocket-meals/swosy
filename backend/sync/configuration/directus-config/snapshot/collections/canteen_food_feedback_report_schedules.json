@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Mensa Berichte Zeitpläne",
+        "plural": "Mensa Berichte Zeitpläne",
         "singular": "Mensa Bericht Zeitplan",
-        "plural": "Mensa Berichte Zeitpläne"
+        "translation": "Mensa Berichte Zeitpläne"
       }
     ],
     "unarchive_value": "draft",

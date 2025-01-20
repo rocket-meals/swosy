@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Bericht Empfänger",
+        "plural": "Bericht Empfänger",
         "singular": "Bericht Empfänger",
-        "plural": "Bericht Empfänger"
+        "translation": "Bericht Empfänger"
       }
     ],
     "unarchive_value": "draft",

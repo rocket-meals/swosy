@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Kennzeichnungen",
+        "plural": "Kennzeichnungen",
         "singular": "Kennzeichnung",
-        "plural": "Kennzeichnungen"
+        "translation": "Kennzeichnungen"
       }
     ],
     "unarchive_value": "draft",

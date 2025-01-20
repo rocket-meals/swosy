@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Attribute Werte",
+        "plural": "Speise Attribute Werte",
         "singular": "Speise Attribute Wert",
-        "plural": "Speise Attribute Werte"
+        "translation": "Speise Attribute Werte"
       }
     ],
     "unarchive_value": null,

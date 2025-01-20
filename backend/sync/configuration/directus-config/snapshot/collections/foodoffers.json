@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speise Angebote",
+        "plural": "Speise Angebote",
         "singular": "Speise Angebot",
-        "plural": "Speise Angebote"
+        "translation": "Speise Angebote"
       }
     ],
     "unarchive_value": "draft",

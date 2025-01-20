@@ -16,24 +16,24 @@
       "opacity": true,
       "presets": [
         {
-          "name": "Weiß",
-          "color": "#FFFFFF"
+          "color": "#FFFFFF",
+          "name": "Weiß"
         },
         {
-          "name": "Schwarz",
-          "color": "#000000"
+          "color": "#000000",
+          "name": "Schwarz"
         },
         {
-          "name": "Grau",
-          "color": "#A2B5CD"
+          "color": "#A2B5CD",
+          "name": "Grau"
         },
         {
-          "name": "Dunkel Blau",
-          "color": "#18222F"
+          "color": "#18222F",
+          "name": "Dunkel Blau"
         },
         {
-          "name": "Transparent",
-          "color": "#00000000"
+          "color": "#00000000",
+          "name": "Transparent"
         }
       ]
     },
@@ -61,6 +61,7 @@
     "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,
+    "is_indexed": false,
     "is_primary_key": false,
     "is_generated": false,
     "generation_expression": null,

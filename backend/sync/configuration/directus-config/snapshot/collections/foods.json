@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Speisen",
+        "plural": "Speisen",
         "singular": "Speise",
-        "plural": "Speisen"
+        "translation": "Speisen"
       }
     ],
     "unarchive_value": "draft",

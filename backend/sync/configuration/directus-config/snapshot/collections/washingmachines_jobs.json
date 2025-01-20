@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Waschmaschinen Washvorgänge",
+        "plural": "Waschmaschinen Washvorgänge",
         "singular": "Waschmaschinen Washvorgang",
-        "plural": "Waschmaschinen Washvorgänge"
+        "translation": "Waschmaschinen Washvorgänge"
       }
     ],
     "unarchive_value": "draft",

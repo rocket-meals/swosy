@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Öffnungszeiten",
+        "plural": "Öffnungszeiten",
         "singular": "Öffnungszeit",
-        "plural": "Öffnungszeiten"
+        "translation": "Öffnungszeiten"
       }
     ],
     "unarchive_value": "draft",

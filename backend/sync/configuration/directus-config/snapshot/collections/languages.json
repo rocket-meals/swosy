@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Sprachen",
+        "plural": "Sprachen",
         "singular": "Sprache",
-        "plural": "Sprachen"
+        "translation": "Sprachen"
       }
     ],
     "unarchive_value": null,

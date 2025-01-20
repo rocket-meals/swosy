@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Kennzeichnungs Gruppen",
+        "plural": "Kennzeichnungs Gruppen",
         "singular": "Kennzeichnungs Gruppe",
-        "plural": "Kennzeichnungs Gruppen"
+        "translation": "Kennzeichnungs Gruppen"
       }
     ],
     "unarchive_value": "draft",

@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "de-DE",
-        "translation": "Gebäude",
+        "plural": "Gebäude",
         "singular": "Gebäude",
-        "plural": "Gebäude"
+        "translation": "Gebäude"
       }
     ],
     "unarchive_value": "draft",
