@@ -169,6 +169,22 @@ describe("FoodTL1ParserHannover Test", () => {
         }
     })
 
+    it("Food has no co2_g attribute", async () => {
+      let foodsJson = await getFoodsJson();
+      for(let food of foodsJson){
+          let co2_g = food.basicFoodData.co2_g;
+          expect(!!co2_g).toBe(false);
+      }
+    })
+
+    it("Foodoffer has no co2_g attribute", async () => {
+        let foodOffersJson = await getFoodoffersJson();
+        for(let foodOffer of foodOffersJson){
+            let co2_g = foodOffer.basicFoodofferData.co2_g;
+            expect(!!co2_g).toBe(false);
+        }
+    });
+
     it("Food offers with same recipe ids and same markings shall have same food ids", async () => {
         let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());
         let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());

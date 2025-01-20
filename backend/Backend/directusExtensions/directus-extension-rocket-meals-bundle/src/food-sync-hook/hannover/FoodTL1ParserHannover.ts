@@ -9,7 +9,7 @@ import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReport
 import {
     FoodoffersTypeForParser,
     FoodParseFoodAttributesType,
-    FoodsInformationTypeForParser
+    FoodsInformationTypeForParser, FoodWithBasicDataWithoutIdType
 } from "../FoodParserInterface";
 import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
 
@@ -23,13 +23,15 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
 
     override async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]> {
         let foodOffers = await super.getFoodoffersForParser();
-        foodOffers = FoodTL1ParserHelper.adaptFoodOffersRemoveFiber(foodOffers);
+        let fieldsToRemove = ["fiber_g", "co2_g", "co2_saving_percentage", "co2_rating"];
+        foodOffers = FoodTL1ParserHelper.adaptFoodOffersRemoveBasicFoodofferDataFields(foodOffers, fieldsToRemove);
         return foodOffers;
     }
 
     override async getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]> {
         let foodList = await super.getFoodsListForParser();
-        foodList = FoodTL1ParserHelper.adaptFoodsListRemoveFiber(foodList);
+        let fieldsToRemove = ["fiber_g", "co2_g", "co2_saving_percentage", "co2_rating"];
+        foodList = FoodTL1ParserHelper.adaptFoodsListRemoveBasicFoodDataFields(foodList, fieldsToRemove);
         return foodList;
     }
 

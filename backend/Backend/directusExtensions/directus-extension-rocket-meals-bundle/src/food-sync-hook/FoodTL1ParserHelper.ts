@@ -23,4 +23,31 @@ export class FoodTL1ParserHelper {
         return foodOffers;
     }
 
+    static adaptFoodsListRemoveBasicFoodDataFields(foodList: FoodsInformationTypeForParser[], fields: string[]): FoodsInformationTypeForParser[] {
+        // Some customer specific adaptions
+        for (let food of foodList) {
+            let basicFoodData = food.basicFoodData;
+            for (let field of fields) {
+                // @ts-ignore
+                basicFoodData[field] = null;
+            }
+            food.basicFoodData = basicFoodData;
+        }
+        return foodList;
+    }
+
+    static adaptFoodOffersRemoveBasicFoodofferDataFields(foodOffers: FoodoffersTypeForParser[], fields: string[]): FoodoffersTypeForParser[] {
+        // Some customer specific adaptions
+        for (let foodOffer of foodOffers) {
+            let basicFoodofferData = foodOffer.basicFoodofferData;
+            for (let field of fields) {
+                // @ts-ignore
+                basicFoodofferData[field] = null;
+            }
+            foodOffer.basicFoodofferData = basicFoodofferData;
+        }
+
+        return foodOffers;
+    }
+
 }
