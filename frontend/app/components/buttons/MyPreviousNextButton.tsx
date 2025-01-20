@@ -5,6 +5,7 @@ import {IconNames} from '@/constants/IconNames';
 
 export type MyPreviousNextButtonProps = {
     forward: boolean,
+	text?: string,
     translation: string,
     onPress?: (forward: boolean) => void
     useTransparentBorderColor?: boolean,
@@ -26,6 +27,7 @@ export const MyPreviousNextButton = (props: MyPreviousNextButtonProps) => {
 	return (
 		<MyButton useTransparentBorderColor={props?.useTransparentBorderColor}
 			tooltip={usedTranslation}
+  		    text={props.text}
 			useOnlyNecessarySpace={true}
 			leftIcon={iconName}
 			accessibilityLabel={usedTranslation}

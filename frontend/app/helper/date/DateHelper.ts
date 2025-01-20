@@ -119,17 +119,6 @@ export class DateHelper {
 		return tempDate
 	}
 
-	static getFirstMondayOfYear(): Date {
-		let tempDate = new Date();
-		const JANUARY = 0;
-		tempDate.setMonth(JANUARY);
-		tempDate.setDate(1); // first day of month
-		while(tempDate.getDay() != DateHelper.getWeekdayIndex(Weekday.MONDAY)) {
-			tempDate.setDate(tempDate.getDate() + 1);
-		}
-		return tempDate;
-	}
-
 	static getWeekdayIndex(weekday: Weekday) {
 		switch (weekday) {
 		case Weekday.SUNDAY: return 0;
@@ -344,6 +333,49 @@ export class DateHelper {
 		// use addMinutes
 		const totalMinutesToAdd = days*24*60;
 		return DateHelper.addMinutes(date, totalMinutesToAdd);
+	}
+
+	// Kalenderwoche in english is called:
+	/**
+	 * Die Kalenderwoche (abgekürzt: KW) ist für Deutschland durch die Norm DIN 1355 definiert.
+	 * Diese gilt seit dem 1. Januar 1976.
+	 * Folgende Regeln gelten zur Ermittlung der ersten Kalenderwoche eines Jahres:*
+	 *     Die erste Kalenderwoche eines Kalenderjahres ist die Woche, in die mind. 4 Tage der ersten 7 Januartage fallen.
+	 *     An der Grenze der Kalenderjahre gehören also entweder die ersten 3 Tage des kommenden Jahres zur letzten Kalenderwoche des alten Jahres oder die letzten 3 Tage des alten Jahres zur ersten Kalenderwoche des neuen Jahres.
+	 *     Kalenderjahre, die mit dem Wochentag Donnerstag beginnen, haben 53 Kalenderwochen. Im Fall von Schaltjahren gilt dies auch für Jahre, die an einem Mittwoch beginnen.
+	 * @param date
+	 */
+	static getFirstCalendarWeekIso(year: number): string {
+		// Start with January 1st of the given year
+		const firstDayOfYear = new Date(Date.UTC(year, 0, 1));
+
+		// Find the nearest Thursday to determine ISO week 1
+		const dayOfWeek = firstDayOfYear.getUTCDay(); // Day of the week in UTC
+		const diffToThursday = (dayOfWeek <= 4 ? 4 : 11) - dayOfWeek;
+
+		// Adjust to get the Thursday of the first ISO week
+		const kw1Thursday = new Date(firstDayOfYear);
+		kw1Thursday.setUTCDate(firstDayOfYear.getUTCDate() + diffToThursday);
+
+		// Return the Monday of the same week as KW1
+		const kw1Monday = new Date(kw1Thursday);
+		kw1Monday.setUTCDate(kw1Thursday.getUTCDate() - 3);
+
+		// Return the date in ISO 8601 format without timezone (YYYY-MM-DD)
+		return kw1Monday.toISOString().split("T")[0];
+	}
+
+
+	static getFirstCalendarWeek(year: number): Date {
+		const firstCalendarWeekIso = DateHelper.getFirstCalendarWeekIso(year);
+		return new Date(firstCalendarWeekIso);
+	}
+
+	static getLastCalendarWeek(year: number): Date {
+		let firstCalendarWeekMondayNextYear = DateHelper.getFirstCalendarWeek(year+1);
+		// subtract 7 days to get the last calendar week of the current year
+		firstCalendarWeekMondayNextYear.setDate(firstCalendarWeekMondayNextYear.getDate()-7);
+		return firstCalendarWeekMondayNextYear;
 	}
 
 	static formatToOfferDate(date: Date) {
