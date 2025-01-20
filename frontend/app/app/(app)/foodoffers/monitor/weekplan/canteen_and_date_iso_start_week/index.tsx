@@ -74,6 +74,7 @@ export default function FoodplanScreen() {
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
 	const [printCallback, setPrintCallback] = useState<() => void>();
+	const translation_calendarweek = useTranslation(TranslationKeys.week)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
 	//const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
@@ -103,6 +104,8 @@ export default function FoodplanScreen() {
 	}
 
 	const [date_start_week_iso, setDateStartWeekIso] = useState<string>(getStartDateIsoString(param_date_start_week_iso_or_undefined_for_auto_update));
+	const calendarWeek = DateHelper.getCalendarWeek(new Date(date_start_week_iso));
+
 	const [fetchingNewDate, setFetchingNewDate] = useState<boolean>(false);
 
 
@@ -228,7 +231,14 @@ export default function FoodplanScreen() {
 				<View style={{paddingHorizontal: DEFAULT_PADDING}}>
 					<Heading>{canteen?.alias}</Heading>
 				</View>
-				<View>
+
+				<View style={{
+					flexDirection: "row",
+					alignItems: "center",
+				}}>
+					<View style={{paddingHorizontal: DEFAULT_PADDING}}>
+						<Heading>{translation_calendarweek+" "+calendarWeek}</Heading>
+					</View>
 					{renderExitFullScreenButton()}
 				</View>
 			</View>

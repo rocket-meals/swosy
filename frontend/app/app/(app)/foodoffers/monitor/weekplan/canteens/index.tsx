@@ -56,6 +56,7 @@ export default function FoodOfferDetails() {
 	let week_number = 1;
 	while(tempDate <= lastCalendarWeekMonday){
 		let date_start_week_iso = tempDate.toISOString();
+		let calendar_week = DateHelper.getCalendarWeek(tempDate);
 		let key = date_start_week_iso;
 		data.push({ key: key, date_start_week_iso: date_start_week_iso, week_number: week_number });
 		week_number++;
