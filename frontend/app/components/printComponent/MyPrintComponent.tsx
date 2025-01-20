@@ -28,6 +28,7 @@ export class DownloadHelper {
 
 export type MyPrintComponentProps = {
     children: React.ReactNode,
+    fileName: string,
     setPrintCallback: (callback: () => void) => void
 }
 
@@ -51,7 +52,8 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
         console.log("Base64 is still");
         console.log(base64ForWebAndUriForMobile);
         if (base64ForWebAndUriForMobile) {
-            await DownloadHelper.downloadImage(base64ForWebAndUriForMobile, "test.jpg");
+            let filename = (props.fileName || "print") + ".jpg";
+            await DownloadHelper.downloadImage(base64ForWebAndUriForMobile,  filename);
         }
     }
 

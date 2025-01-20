@@ -243,6 +243,7 @@ export enum TranslationKeys {
 	location = "location",
 	title = "title",
 	weekday = "weekday",
+	day = "day",
 	week = "week",
 	startTime = "startTime",
 	endTime = "endTime",
@@ -1817,6 +1818,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'День недели',
 		[LanguageKeys.tr_TR]: 'Hafta içi',
 		[LanguageKeys.zh_CN]: '工作日'
+	},
+	day: {
+		[LanguageKeys.de_DE]: 'Tag',
+		[LanguageKeys.en_US]: 'Day',
+		[LanguageKeys.ar_SA]: 'يوم',
+		[LanguageKeys.es_ES]: 'Día',
+		[LanguageKeys.fr_FR]: 'Jour',
+		[LanguageKeys.ru_RU]: 'День',
+		[LanguageKeys.tr_TR]: 'Gün',
+		[LanguageKeys.zh_CN]: '天'
 	},
 	week: {
 		[LanguageKeys.de_DE]: 'Woche',

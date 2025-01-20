@@ -24,7 +24,7 @@ export default function HomeScreen() {
 						}
 					}}
 				/>
-				<MyPrintComponent setPrintCallback={setCaptureFunction}>
+				<MyPrintComponent fileName={"test"} setPrintCallback={setCaptureFunction}>
 					<View style={{
 						backgroundColor: 'red',
 						width: 100,

@@ -68,8 +68,7 @@ export default function FoodplanScreen() {
 	const projectColor = useProjectColor();
 	const projectContrastColor = useMyContrastColor(projectColor);
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor);
-	const textColorForViewContrastColor = useMyContrastColor(viewContrastColor)
-	const translation_weekday = useTranslation(TranslationKeys.weekday)
+	const translation_weekday = useTranslation(TranslationKeys.day)
 	const localeForJsDate = useProfileLocaleForJsDate()
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
@@ -85,7 +84,7 @@ export default function FoodplanScreen() {
 
 	const foodsAreaColor = useFoodsAreaColor();
 
-	const DEFAULT_PADDING = 10;
+	const DEFAULT_PADDING = 5;
 
 	const translation_fullscreen = "Fullscreen"
 	const translation_fullscreen_exit = "Exit Fullscreen"
@@ -192,7 +191,7 @@ export default function FoodplanScreen() {
 	}, []);
 
 	const FLEX_WEEKDAY = 1;
-	const FLEX_CATEGORIES = 10;
+	const FLEX_CATEGORIES = 20;
 
 	function getSortedHeaderCategories(allOffers: Foodoffers[] | undefined){
 		let foodOffersInCategories = getFoodofferInCategories(allOffers);
@@ -258,7 +257,6 @@ export default function FoodplanScreen() {
 
 		return <View style={{
 			flex: 1,
-			marginBottom: 5,
 		}}>
 			<View style={{}}>
 				<Text style={{
@@ -266,8 +264,8 @@ export default function FoodplanScreen() {
 					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
 				}} size={TEXT_SIZE_EXTRA_SMALL}
 					  numberOfLines={3}
-				>{title}</Text>
-				<Text size={TEXT_SIZE_EXTRA_SMALL} numberOfLines={2}>{price_information}</Text>
+					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
+				>{title+ " ("+price_information+")"}</Text>
 			</View>
 		</View>
 	}
@@ -304,20 +302,27 @@ export default function FoodplanScreen() {
 
 		let foodOffersInCategories = getFoodofferInCategories(offers);
 
-		//for(let category of sortedFoodofferCategories){
 		for(let category of sortedHeaderCategories){
-			let foodOffers = foodOffersInCategories[category.id] || [];
+			let foodOffersInCategory = foodOffersInCategories[category.id] || [];
 			let renderedOffers = [];
-			for(let offer of foodOffers){
+			for(let offer of foodOffersInCategory){
 				renderedOffers.push(renderFoodoffer(offer));
+			}
+			let renderedOffersWithPadding = [];
+			for(let i=0; i<renderedOffers.length; i++){
+				let paddingBottom = i===renderedOffers.length-1 ? 0 : DEFAULT_PADDING;
+				renderedOffersWithPadding.push(
+					<View style={{paddingBottom: paddingBottom}}>
+						{renderedOffers[i]}
+					</View>
+				)
 			}
 			output.push(
 				<View style={{
 					flex: 1,
 					flexDirection: "column",
-					paddingHorizontal: DEFAULT_PADDING
 				}}>
-					{renderedOffers}
+					{renderedOffersWithPadding}
 				</View>
 			)
 		}
@@ -367,7 +372,9 @@ export default function FoodplanScreen() {
 			for(let i=0; i<weekOffers.length; i++){
 				let dayItem = weekOffers[i];
 				const iso_date = dayItem.date_iso;
-				output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
+				if(!!dayItem.offers && dayItem.offers.length>0){
+					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
+				}
 			}
 		}
 		if(weekOffers===undefined){
@@ -445,7 +452,7 @@ export default function FoodplanScreen() {
 		<MySafeAreaViewForScreensWithoutHeader>
 			{header}
 				<MyScrollView>
-					<MyPrintComponent setPrintCallback={setPrintCallback}>
+					<MyPrintComponent fileName={date_start_week_iso} setPrintCallback={setPrintCallback}>
 						<View style={{
 							backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
 						}}>

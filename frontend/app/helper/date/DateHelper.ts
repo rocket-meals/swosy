@@ -378,6 +378,18 @@ export class DateHelper {
 		return firstCalendarWeekMondayNextYear;
 	}
 
+	static getCalendarWeek(date: Date): number {
+		const dateCopy = new Date(date);
+		dateCopy.setHours(0, 0, 0, 0);
+		dateCopy.setDate(dateCopy.getDate() + 4 - (dateCopy.getDay() || 7));
+		const yearStart = new Date(dateCopy.getFullYear(), 0, 1);
+
+		// 86400000 is the number of milliseconds in a day
+		const millisecondsInDay = 86400000;
+		const weekNumber = Math.ceil((((dateCopy - yearStart) / millisecondsInDay) + 1) / 7);
+		return weekNumber;
+	}
+
 	static formatToOfferDate(date: Date) {
 		//const iso = date.toISOString();
 		//const trimmed = iso.slice(0, 'YYYY-MM-DD'.length);
