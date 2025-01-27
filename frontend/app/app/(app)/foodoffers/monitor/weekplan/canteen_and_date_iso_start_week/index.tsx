@@ -26,7 +26,7 @@ import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/sta
 import {ExpoRouter} from "@/.expo/types/router";
 import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
-import MyPrintComponent, {MyPrintComponentCallbackProps} from "@/components/printComponent/MyPrintComponent";
+import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
@@ -76,7 +76,7 @@ export default function FoodplanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
-	const [printCallback, setPrintCallback] = useState<(options?: MyPrintComponentCallbackProps) => void>();
+	const [printCallback, setPrintCallback] = useState<(options?: CaptureOptions) => void>();
 	const translation_calendarweek = useTranslation(TranslationKeys.week)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
@@ -268,21 +268,17 @@ export default function FoodplanScreen() {
 		const formated_prices = [formated_price_student, formated_price_employee, formated_price_guest];
 		const price_information = formated_prices.join(" / ");
 
-		let wholeText = title+ " - ("+price_information+")";
-
 		return <View style={{
 			flex: 1,
 		}}>
-			<View style={{
-				backgroundColor: "white",
-			}}>
+			<View style={{}}>
 				<Text style={{
 					// height between multiple lines
 					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
 				}} size={TEXT_SIZE_EXTRA_SMALL}
 					  numberOfLines={3}
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
-				>{wholeText}</Text>
+				>{title+ " ("+price_information+")"}</Text>
 			</View>
 		</View>
 	}
@@ -397,7 +393,7 @@ export default function FoodplanScreen() {
 				const iso_date = dayItem.date_iso;
 				if(!!dayItem.offers && dayItem.offers.length>0){
 					let backgroundColor = i%2===0 ? viewBackgroundColor : viewBackgroundColorLighterOrDarker;
-					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
+					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories, backgroundColor));
 				}
 			}
 		}
@@ -442,7 +438,6 @@ export default function FoodplanScreen() {
 
 	function renderScreenshotButton(){
 		return <MyButton useOnlyNecessarySpace={true} tooltip={"Screenshot"} accessibilityLabel={"Screenshot"} useTransparentBorderColor={true} leftIcon={IconNames.screenshot_icon} onPress={() => {
-			console.log("Screenshot")
 			if (printCallback) {
 				printCallback();
 			}
@@ -450,35 +445,17 @@ export default function FoodplanScreen() {
 	}
 
 	function renderScreenshotButtonDinA4(){
-		const DIN_A4_IN_CM = {
-			width: 21,
-			height: 29.7,
-		}
-		const DPI = 50;
-
-		let DIN_A4_WIDTH = DIN_A4_IN_CM.width * DPI;
-		let DIN_A4_HEIGHT = DIN_A4_IN_CM.height * DPI;
-
-		return (
-			<MyButton
-				useOnlyNecessarySpace={true}
-				tooltip={translation_print}
-				accessibilityLabel={translation_print}
-				useTransparentBorderColor={true}
-				leftIcon={IconNames.print_icon}
-				onPress={() => {
-					console.log("Screenshot DIN A4")
-					if (printCallback) {
-						printCallback({
-							simulatedViewDimension: {
-								width: DIN_A4_HEIGHT,
-								height: DIN_A4_WIDTH,
-							},
-						});
-					}
-				}}
-			/>
-		);
+		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
+			let upscale = 10
+			if (printCallback) {
+				printCallback({
+					width: 210*upscale,
+					height: 297*upscale,
+					format: "jpg",
+					quality: 0.9
+				});
+			}
+		}} />
 	}
 
 	function renderCanteenSelection(){
