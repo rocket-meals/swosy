@@ -9,20 +9,29 @@ import {useMyGridListDefaultColumns} from "@/components/grid/MyGridFlatListDefau
 import {MyButton} from "@/components/buttons/MyButton";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {formatDateForFoodSelection} from "@/states/SynchedFoodOfferStates";
-import {getRouteToFoodplanCanteenAndDateIsoStartWeek} from "../canteen_and_date_iso_start_week";
+import {
+	getRouteToFoodplanCanteenAndDateIsoStartWeek,
+	SEARCH_PARAM_SHOW_MARKINGS, useShowMarkingsFromLocalSearchParams
+} from "../canteen_and_date_iso_start_week";
 import {useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {getCanteenParam} from "@/app/(app)/foodoffers/monitor/bigscreen/details";
 import {ExpoRouter} from "expo-router/types/expo-router";
 import {MyPreviousNextButton} from "@/components/buttons/MyPreviousNextButton";
 import {IconNames} from "@/constants/IconNames";
 
-export function getRouteToWeekplanCanteen(canteen_id: string){
+export function getRouteToWeekplanCanteen(canteen_id: string, show_markings: boolean){
 	let paramsRaw: any[] = []
 	let paramForCanteen = getCanteenParam(canteen_id)
 	if(paramForCanteen){
 		paramsRaw.push(paramForCanteen)
 	}
+	let paramForShowMarkings = SEARCH_PARAM_SHOW_MARKINGS+"="+show_markings;
+	if(paramForShowMarkings){
+		paramsRaw.push(paramForShowMarkings)
+	}
+
 	let params = paramsRaw.join("&")
+
 
 	return `/foodoffers/monitor/weekplan/canteens/?${params}` as ExpoRouter.Href;
 }
@@ -30,6 +39,7 @@ export function getRouteToWeekplanCanteen(canteen_id: string){
 export default function FoodOfferDetails() {
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const initialAmountColumns = useMyGridListDefaultColumns();
+	const param_show_markings = useShowMarkingsFromLocalSearchParams();
 	const translation_week = useTranslation(TranslationKeys.week)
 	const translation_current = useTranslation(TranslationKeys.current)
 	const [selectedYear, setSelectedYear] = React.useState<number>(new Date().getFullYear());
@@ -66,7 +76,7 @@ export default function FoodOfferDetails() {
 	function renderLinkToWeekPlan(label: string, isActive: boolean, date_start_week_iso_or_current: string | undefined){
 		return(
 			<MyButton rightIcon={IconNames.open_link_icon} accessibilityLabel={label} text={label} isActive={isActive} onPress={() => {
-				let route = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id, date_start_week_iso_or_current);
+				let route = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id, date_start_week_iso_or_current, param_show_markings);
 				router.push(route);
 			}} />
 		)

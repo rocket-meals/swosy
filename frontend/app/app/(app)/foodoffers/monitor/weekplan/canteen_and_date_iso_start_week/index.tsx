@@ -40,8 +40,9 @@ import {MarkingsRowForFood} from "@/app/(app)/foodoffers/monitor/dayplan/details
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
 export const SEARCH_PARAM_DATE_ISO = 'date_iso';
+export const SEARCH_PARAM_SHOW_MARKINGS = 'show_markings';
 
-export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string, date_start_week_iso_or_undefined: string | undefined): ExpoRouter.Href {
+export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string, date_start_week_iso_or_undefined: string | undefined, show_markings: boolean): ExpoRouter.Href {
 	let paramsRaw = []
 	let paramForCanteen = canteen_id ? SearchParams.CANTEENS_ID+"="+canteen_id : null;
 	if(paramForCanteen){
@@ -50,6 +51,10 @@ export function getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen_id: string,
 	let paramForDate = date_start_week_iso_or_undefined ? SEARCH_PARAM_DATE_ISO+"="+date_start_week_iso_or_undefined : null;
 	if(paramForDate){
 		paramsRaw.push(paramForDate)
+	}
+	let paramForShowMarkings = SEARCH_PARAM_SHOW_MARKINGS+"="+show_markings;
+	if(paramForShowMarkings){
+		paramsRaw.push(paramForShowMarkings)
 	}
 
 	let params = paramsRaw.join("&")
@@ -61,9 +66,20 @@ export function useDateIsoFromLocalSearchParams() {
 	return params[SEARCH_PARAM_DATE_ISO];
 }
 
+export function useShowMarkingsFromLocalSearchParams() {
+	const params = useGlobalSearchParams<{ [SEARCH_PARAM_SHOW_MARKINGS]?: string }>();
+	let explicitlyDisabled = params[SEARCH_PARAM_SHOW_MARKINGS]==="false";
+	if(explicitlyDisabled){
+		return false;
+	} else {
+		return true;
+	}
+}
+
 export default function FoodplanScreen() {
 	const [canteen, setCanteen] = useSynchedProfileCanteen();
 	const param_date_start_week_iso_or_undefined_for_auto_update: string | undefined = useDateIsoFromLocalSearchParams()
+	const param_show_markings = useShowMarkingsFromLocalSearchParams();
 	const isDemo = useIsDemo();
 	const AMOUNT_DAYS = 7;
 	const viewBackgroundColor = useViewBackgroundColor();
@@ -282,7 +298,7 @@ export default function FoodplanScreen() {
 				>{title+ " ("+price_information+")"}</Text>
 			</View>
 			<View>
-				<MarkingsRowForFood foodOffer={offer} />
+				{param_show_markings && <MarkingsRowForFood foodOffer={offer} />}
 			</View>
 		</View>
 	}
@@ -425,7 +441,7 @@ export default function FoodplanScreen() {
 
 	function renderFullScreenButton(){
 		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_icon} onPress={() => {
-			let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id+"", param_date_start_week_iso_or_undefined_for_auto_update);
+			let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id+"", param_date_start_week_iso_or_undefined_for_auto_update, param_show_markings);
 			routeToThisScreen+="&"+SEARCH_PARAM_FULLSCREEN+"=true";
 			router.push(routeToThisScreen);
 		}} />
@@ -434,7 +450,7 @@ export default function FoodplanScreen() {
 	function renderExitFullScreenButton(){
 		if(isFullScreenMode){
 			return <MyButton useOnlyNecessarySpace={true} tooltip={translation_fullscreen} accessibilityLabel={translation_fullscreen_exit} useTransparentBorderColor={true} leftIcon={IconNames.fullscreen_exit_icon} onPress={() => {
-				let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id+"", param_date_start_week_iso_or_undefined_for_auto_update);
+				let routeToThisScreen = getRouteToFoodplanCanteenAndDateIsoStartWeek(canteen?.id+"", param_date_start_week_iso_or_undefined_for_auto_update, param_show_markings);
 				router.push(routeToThisScreen);
 			}} />
 		}
