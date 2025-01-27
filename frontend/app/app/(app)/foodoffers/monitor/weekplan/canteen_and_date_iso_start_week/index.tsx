@@ -397,7 +397,7 @@ export default function FoodplanScreen() {
 				const iso_date = dayItem.date_iso;
 				if(!!dayItem.offers && dayItem.offers.length>0){
 					let backgroundColor = i%2===0 ? viewBackgroundColor : viewBackgroundColorLighterOrDarker;
-					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories, backgroundColor));
+					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
 				}
 			}
 		}
