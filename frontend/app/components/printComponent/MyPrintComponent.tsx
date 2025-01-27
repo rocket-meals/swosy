@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react";
-import ViewShot, {captureRef} from 'react-native-view-shot';
+import ViewShot, {CaptureOptions, captureRef} from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import {Platform} from 'react-native';
@@ -29,7 +29,7 @@ export class DownloadHelper {
 export type MyPrintComponentProps = {
     children: React.ReactNode,
     fileName: string,
-    setPrintCallback: (callback: () => void) => void
+    setPrintCallback: (callback: (options?: CaptureOptions) => void) => void
 }
 
 export default function MyPrintComponent(props: MyPrintComponentProps) {

@@ -15,7 +15,8 @@ export class IconNames {
     static software_icon = 'rocket'
     static fullscreen_icon = 'fullscreen'
     static fullscreen_exit_icon = 'fullscreen-exit'
-    static print_icon = 'printer'
+    static screenshot_icon = IconFamily.MaterialIcons+IconParseDelimeter+'screenshot'
+    static print_icon = "printer"
     static foodoffers_icon = 'silverware-variant'
     static monitorDayPlan_icon = 'view-list'
     static foodweekplan_icon = "calendar"

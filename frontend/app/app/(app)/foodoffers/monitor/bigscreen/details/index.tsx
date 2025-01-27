@@ -225,7 +225,6 @@ export default function FoodBigScreenScreen() {
 
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor)
-	const lightContrastColor = useLighterOrDarkerColorForSelection(viewContrastColor);
 
 	const foodAreaColor = useFoodsAreaColor();
 	const foodAreaContrastColor = useMyContrastColor(foodAreaColor);

@@ -13,7 +13,7 @@ import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
 import {Foodoffers, Foods, FoodsCategories} from "@/helper/database/databaseTypes/types";
 import {DateHelper} from "@/helper/date/DateHelper";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {useProfileLanguageCode, useProfileLocaleForJsDate, useSynchedProfileCanteen} from "@/states/SynchedProfile";
 import {getFoodName} from "@/helper/food/FoodTranslation";
@@ -34,6 +34,7 @@ import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/s
 import {getRouteToWeekplanCanteen} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
+import {CaptureOptions} from "react-native-view-shot";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -65,6 +66,8 @@ export default function FoodplanScreen() {
 	const isDemo = useIsDemo();
 	const AMOUNT_DAYS = 7;
 	const viewBackgroundColor = useViewBackgroundColor();
+	const viewBackgroundColorLighterOrDarker = useLighterOrDarkerColorForSelection(viewBackgroundColor);
+
 	const projectColor = useProjectColor();
 	const projectContrastColor = useMyContrastColor(projectColor);
 	const viewContrastColor = useMyContrastColor(viewBackgroundColor);
@@ -73,7 +76,7 @@ export default function FoodplanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
-	const [printCallback, setPrintCallback] = useState<() => void>();
+	const [printCallback, setPrintCallback] = useState<(options?: CaptureOptions) => void>();
 	const translation_calendarweek = useTranslation(TranslationKeys.week)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
@@ -312,6 +315,7 @@ export default function FoodplanScreen() {
 
 		let foodOffersInCategories = getFoodofferInCategories(offers);
 
+		let columnIndex = 0;
 		for(let category of sortedHeaderCategories){
 			let foodOffersInCategory = foodOffersInCategories[category.id] || [];
 			let renderedOffers = [];
@@ -327,14 +331,20 @@ export default function FoodplanScreen() {
 					</View>
 				)
 			}
+
 			output.push(
 				<View style={{
+					paddingHorizontal: DEFAULT_PADDING,
+					borderRightWidth: 1,
+					borderLeftColor: viewContrastColor,
 					flex: 1,
 					flexDirection: "column",
 				}}>
 					{renderedOffersWithPadding}
 				</View>
 			)
+
+			columnIndex++;
 		}
 
 		return (
@@ -365,7 +375,6 @@ export default function FoodplanScreen() {
 	function renderWeekOffers(){
 		let output = [];
 
-
 		let allOffers = [];
 		if(!!weekOffers){
 			for(let i=0; i<weekOffers.length; i++){
@@ -383,7 +392,8 @@ export default function FoodplanScreen() {
 				let dayItem = weekOffers[i];
 				const iso_date = dayItem.date_iso;
 				if(!!dayItem.offers && dayItem.offers.length>0){
-					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories));
+					let backgroundColor = i%2===0 ? viewBackgroundColor : viewBackgroundColorLighterOrDarker;
+					output.push(renderOffersForDayRow(iso_date, dayItem.offers, sortedHeaderCategories, backgroundColor));
 				}
 			}
 		}
@@ -392,6 +402,18 @@ export default function FoodplanScreen() {
 		}
 		if(weekOffers===null){
 			output.push(<ErrorGeneric color={foodsAreaColor} />)
+		}
+		if(!!weekOffers && weekOffers?.length>=0 && allOffers.length===0){
+			output = [];
+			output.push(<View style={{
+				padding: DEFAULT_PADDING,
+				width: "100%",
+				justifyContent: "center",
+				alignItems: "center",
+				height: 100,
+			}}>
+				<Text>{"Keine Angebote an diesem Tag gefunden."}</Text>
+			</View>)
 		}
 
 		return output;
@@ -415,9 +437,23 @@ export default function FoodplanScreen() {
 	}
 
 	function renderScreenshotButton(){
-		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
+		return <MyButton useOnlyNecessarySpace={true} tooltip={"Screenshot"} accessibilityLabel={"Screenshot"} useTransparentBorderColor={true} leftIcon={IconNames.screenshot_icon} onPress={() => {
 			if (printCallback) {
 				printCallback();
+			}
+		}} />
+	}
+
+	function renderScreenshotButtonDinA4(){
+		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
+			let upscale = 10
+			if (printCallback) {
+				printCallback({
+					width: 210*upscale,
+					height: 297*upscale,
+					format: "jpg",
+					quality: 0.9
+				});
 			}
 		}} />
 	}
@@ -449,6 +485,7 @@ export default function FoodplanScreen() {
 			{renderCanteenSelection()}
 			{renderWeekSelection()}
 			{renderScreenshotButton()}
+			{renderScreenshotButtonDinA4()}
 			{renderFullScreenButton()}
 		</View>
 	}
