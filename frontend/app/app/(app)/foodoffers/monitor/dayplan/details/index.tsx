@@ -114,7 +114,7 @@ export function useAdditionalCanteensFromLocalSearchParams() {
 }
 
 
-const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({foodOffer, ...props}) => {
+export const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({foodOffer, ...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 
 	let renderedMarkings: any[] = [];

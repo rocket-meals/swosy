@@ -35,6 +35,7 @@ import {getRouteToWeekplanCanteen} from "@/app/(app)/foodoffers/monitor/weekplan
 import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {CaptureOptions} from "react-native-view-shot";
+import {MarkingsRowForFood} from "@/app/(app)/foodoffers/monitor/dayplan/details";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -279,6 +280,9 @@ export default function FoodplanScreen() {
 					  numberOfLines={3}
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
 				>{title+ " ("+price_information+")"}</Text>
+			</View>
+			<View>
+				<MarkingsRowForFood foodOffer={offer} />
 			</View>
 		</View>
 	}
