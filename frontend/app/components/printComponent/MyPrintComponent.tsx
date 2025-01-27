@@ -1,59 +1,86 @@
-import React, {useEffect, useRef} from "react";
-import ViewShot, {CaptureOptions, captureRef} from 'react-native-view-shot';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import {Platform} from 'react-native';
-import {PlatformHelper} from "@/helper/PlatformHelper";
+import React, { useEffect, useRef, useState } from "react";
+import { captureRef } from "react-native-view-shot";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { Platform, View } from "react-native";
+import domToImage from "dom-to-image";
+import { PlatformHelper } from "@/helper/PlatformHelper";
 
 export class DownloadHelper {
     static async downloadImage(base64ForWebAndUriForMobile: string, filename: string) {
-        const fileUri = FileSystem.cacheDirectory + filename;
-
         if (PlatformHelper.isWeb()) {
-            let base64Href = base64ForWebAndUriForMobile;
-            const link = document.createElement('a');
+            // For web, download directly
+            const link = document.createElement("a");
             link.href = base64ForWebAndUriForMobile;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-        if(PlatformHelper.isSmartPhone()){
-            // Strip the data URL prefix before writing to file
-            let uri = base64ForWebAndUriForMobile;
-            await Sharing.shareAsync(uri);
+        } else {
+            // For mobile, use sharing
+            const fileUri = FileSystem.cacheDirectory + filename;
+            await FileSystem.writeAsStringAsync(fileUri, base64ForWebAndUriForMobile.split(",")[1], {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+            await Sharing.shareAsync(fileUri);
         }
     }
 }
 
+export type MyPrintComponentCallbackProps = {
+    options?: { format?: string; quality?: number };
+    simulatedViewDimension?: { width: number; height: number };
+};
+
 export type MyPrintComponentProps = {
-    children: React.ReactNode,
-    fileName: string,
-    setPrintCallback: (callback: (options?: CaptureOptions) => void) => void
-}
+    children: React.ReactNode;
+    fileName: string;
+    setPrintCallback: (callback: (options?: MyPrintComponentCallbackProps) => void) => void;
+};
 
 export default function MyPrintComponent(props: MyPrintComponentProps) {
-    const ref = useRef();
+    const ref = useRef<any>();
+    const [simulatedDimension, setSimulatedDimension] = useState<{ width?: number; height?: number }>({});
 
-    async function captureAndShare() {
+    async function captureAndShare(myOptions?: MyPrintComponentCallbackProps) {
         let base64ForWebAndUriForMobile = "";
+
         try {
             if (ref.current) {
-                base64ForWebAndUriForMobile = await captureRef(ref.current, {
-                    format: "jpg",
-                    quality: 0.9
-                });
+                // Set simulated dimensions if provided
+                if (myOptions?.simulatedViewDimension) {
+                    setSimulatedDimension(myOptions.simulatedViewDimension);
+                    await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for re-render
+                }
+
+                if (PlatformHelper.isWeb()) {
+                    // Use dom-to-image for web
+                    const element = ref.current as HTMLElement;
+                    base64ForWebAndUriForMobile = await domToImage.toPng(element, {
+                        quality: myOptions?.options?.quality || 1,
+                    });
+                } else {
+                    // Use react-native-view-shot for mobile
+                    const width = myOptions?.simulatedViewDimension?.width || ref.current.props.style.width;
+                    const height = myOptions?.simulatedViewDimension?.height || ref.current.props.style.height;
+
+                    base64ForWebAndUriForMobile = await captureRef(ref.current, {
+                        format: "png",
+                        quality: 1,
+                        width,
+                        height,
+                    });
+                }
+
+                setSimulatedDimension({}); // Reset simulated dimensions
             }
-        } catch (e) {
-            console.log("Error capturing view");
-            console.error(e);
+        } catch (error) {
+            console.error("Error capturing view", error);
         }
 
-        console.log("Base64 is still");
-        console.log(base64ForWebAndUriForMobile);
         if (base64ForWebAndUriForMobile) {
-            let filename = (props.fileName || "print") + ".jpg";
-            await DownloadHelper.downloadImage(base64ForWebAndUriForMobile,  filename);
+            const filename = (props.fileName || "print") + ".png";
+            await DownloadHelper.downloadImage(base64ForWebAndUriForMobile, filename);
         }
     }
 
@@ -63,11 +90,24 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
         }
     }, [props.setPrintCallback]);
 
-    return (
-        <>
-            <ViewShot ref={ref} options={{ fileName: "Your-File-Name", format: "jpg", quality: 0.9 }}>
-                {props.children}
-            </ViewShot>
-        </>
-    )
+    const commonStyle = {
+        backgroundColor: "white",
+        ...simulatedDimension, // Apply simulated dimensions dynamically
+    };
+
+    return PlatformHelper.isWeb() ? (
+        <div
+            ref={ref}
+            style={commonStyle}
+        >
+            {props.children}
+        </div>
+    ) : (
+        <View
+            ref={ref}
+            style={commonStyle}
+        >
+            {props.children}
+        </View>
+    );
 }

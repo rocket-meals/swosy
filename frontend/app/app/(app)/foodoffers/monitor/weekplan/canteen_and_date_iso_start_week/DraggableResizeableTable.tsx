@@ -274,7 +274,6 @@ export default function FoodplanScreen() {
 			flex: 1,
 		}}>
 			<View style={{
-				backgroundColor: "white",
 			}}>
 				<Text style={{
 					// height between multiple lines
