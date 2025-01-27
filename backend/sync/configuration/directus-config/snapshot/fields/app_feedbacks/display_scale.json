@@ -1,7 +1,7 @@
 {
   "collection": "app_feedbacks",
   "field": "display_scale",
-  "type": "integer",
+  "type": "float",
   "meta": {
     "collection": "app_feedbacks",
     "conditions": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 24,
+    "sort": 26,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,11 +25,11 @@
   "schema": {
     "name": "display_scale",
     "table": "app_feedbacks",
-    "data_type": "integer",
+    "data_type": "real",
     "default_value": null,
     "max_length": null,
-    "numeric_precision": 32,
-    "numeric_scale": 0,
+    "numeric_precision": 24,
+    "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,
     "is_indexed": false,

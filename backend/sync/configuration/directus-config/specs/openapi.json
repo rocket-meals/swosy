@@ -5214,393 +5214,6 @@
         ]
       }
     },
-    "/items/app_feedbacks": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new app_feedbacks item.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "createItemsAppFeedbacks",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the app_feedbacks items.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "readItemsAppFeedbacks",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple app_feedbacks items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "updateItemsAppFeedbacks",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing app_feedbacks items.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "deleteItemsAppFeedbacks",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/app_feedbacks/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single app_feedbacks item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "readSingleItemsAppFeedbacks",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing app_feedbacks item.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "updateSingleItemsAppFeedbacks",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsAppFeedbacks"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing app_feedbacks item.",
-        "tags": [
-          "Items",
-          "ItemsAppFeedbacks"
-        ],
-        "operationId": "deleteSingleItemsAppFeedbacks",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/app_settings": {
       "post": {
         "summary": "Create an Item",
@@ -6340,6 +5953,393 @@
           "ItemsApartments"
         ],
         "operationId": "deleteSingleItemsApartments",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/items/app_feedbacks": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new app_feedbacks item.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "createItemsAppFeedbacks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the app_feedbacks items.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "readItemsAppFeedbacks",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple app_feedbacks items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "updateItemsAppFeedbacks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing app_feedbacks items.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "deleteItemsAppFeedbacks",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/app_feedbacks/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single app_feedbacks item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "readSingleItemsAppFeedbacks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing app_feedbacks item.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "updateSingleItemsAppFeedbacks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsAppFeedbacks"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsAppFeedbacks"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing app_feedbacks item.",
+        "tags": [
+          "Items",
+          "ItemsAppFeedbacks"
+        ],
+        "operationId": "deleteSingleItemsAppFeedbacks",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -33907,16 +33907,16 @@
       "x-collection": "markings"
     },
     {
-      "name": "ItemsAppFeedbacks",
-      "x-collection": "app_feedbacks"
-    },
-    {
       "name": "ItemsAppSettings",
       "x-collection": "app_settings"
     },
     {
       "name": "ItemsApartments",
       "x-collection": "apartments"
+    },
+    {
+      "name": "ItemsAppFeedbacks",
+      "x-collection": "app_feedbacks"
     },
     {
       "name": "ItemsBuildingsBusinesshours",
@@ -34307,6 +34307,16 @@
             "example": 137862,
             "type": "integer"
           },
+          "width": {
+            "description": "Width of the file in pixels. Only applies to images.",
+            "example": 800,
+            "type": "integer",
+            "nullable": true
+          },
+          "focal_point_y": {
+            "nullable": true,
+            "type": "integer"
+          },
           "focal_point_x": {
             "nullable": true,
             "type": "integer"
@@ -34322,16 +34332,6 @@
             "example": 838,
             "type": "integer",
             "nullable": true
-          },
-          "width": {
-            "description": "Width of the file in pixels. Only applies to images.",
-            "example": 800,
-            "type": "integer",
-            "nullable": true
-          },
-          "focal_point_y": {
-            "nullable": true,
-            "type": "integer"
           },
           "metadata": {
             "description": "IPTC, Exif, and ICC metadata extracted from file",
@@ -35030,6 +35030,35 @@
       "ItemsCanteenFoodFeedbackReportSchedules": {
         "type": "object",
         "properties": {
+          "show_canteen_feedbacks_also_per_canteen": {
+            "nullable": true,
+            "description": "Zeige Rückmeldungen zu den Mensen pro Mensa: Labels",
+            "type": "boolean"
+          },
+          "send_on_mondays": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "show_food": {
+            "nullable": true,
+            "description": "Zeige Rückmeldungen zu den Speisen",
+            "type": "boolean"
+          },
+          "show_canteen_feedbacks": {
+            "nullable": true,
+            "description": "Zeige Rückmeldungen zu den Mensen: Labels",
+            "type": "boolean"
+          },
+          "show_images": {
+            "nullable": true,
+            "description": "Zeige Bilder der Speisen",
+            "type": "boolean"
+          },
+          "show_food_comments": {
+            "nullable": true,
+            "description": "Zeige Rückmeldungen zu den Speisen: Kommentare",
+            "type": "boolean"
+          },
           "show_food_feedback_labels": {
             "nullable": true,
             "description": "Zeige Rückmeldungen zu den Speisen: Labels",
@@ -35047,25 +35076,11 @@
             "nullable": true,
             "type": "boolean"
           },
-          "show_images": {
-            "nullable": true,
-            "description": "Zeige Bilder der Speisen",
-            "type": "boolean"
-          },
           "send_on_fridays": {
             "nullable": true,
             "type": "boolean"
           },
           "send_on_thursdays": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_food": {
-            "nullable": true,
-            "description": "Zeige Rückmeldungen zu den Speisen",
-            "type": "boolean"
-          },
-          "enabled": {
             "nullable": true,
             "type": "boolean"
           },
@@ -35077,23 +35092,13 @@
             "nullable": true,
             "type": "boolean"
           },
-          "show_canteen_feedbacks": {
+          "foodoffers_days_offset": {
             "nullable": true,
-            "description": "Zeige Rückmeldungen zu den Mensen: Labels",
-            "type": "boolean"
+            "description": "Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.",
+            "type": "integer"
           },
-          "show_canteen_feedbacks_also_per_canteen": {
+          "enabled": {
             "nullable": true,
-            "description": "Zeige Rückmeldungen zu den Mensen pro Mensa: Labels",
-            "type": "boolean"
-          },
-          "send_on_mondays": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_food_comments": {
-            "nullable": true,
-            "description": "Zeige Rückmeldungen zu den Speisen: Kommentare",
             "type": "boolean"
           },
           "sort": {
@@ -35103,11 +35108,6 @@
           "report_status_log": {
             "nullable": true,
             "type": "string"
-          },
-          "foodoffers_days_offset": {
-            "nullable": true,
-            "description": "Anzahl der Tage, um den der Referenztag verschoben wird. Positive Werte verschieben den Referenztag in die Zukunft, negative in die Vergangenheit.",
-            "type": "integer"
           },
           "foodoffers_days_limit": {
             "nullable": true,
@@ -35753,6 +35753,433 @@
           "id"
         ]
       },
+      "ItemsAppSettings": {
+        "type": "object",
+        "properties": {
+          "foods_enabled": {
+            "nullable": true,
+            "description": "Bereich \"Mensa\" in der App aktivieren?",
+            "type": "boolean"
+          },
+          "course_timetable_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "cashregisters_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "canteen_reports_enabled": {
+            "nullable": true,
+            "description": "Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle",
+            "type": "boolean"
+          },
+          "balance_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "utilization_display_enabled": {
+            "nullable": true,
+            "description": "Zeige die Auslastungsprognose in der App",
+            "type": "boolean"
+          },
+          "washingmachine_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "campus_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "campus_enabled": {
+            "nullable": true,
+            "description": "Zeige in der App den Bereich Campus an",
+            "type": "boolean"
+          },
+          "utilization_forecast_calculation_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "notifications_ios_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "notifications_email_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "notifications_android_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "news_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "news_enabled": {
+            "nullable": true,
+            "description": "Zeigt in der App den Bereich News an",
+            "type": "boolean"
+          },
+          "map_enabled": {
+            "nullable": true,
+            "description": "Zeige den Lageplan in der App an",
+            "type": "boolean"
+          },
+          "housing_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "housing_enabled": {
+            "nullable": true,
+            "description": "Zeigt den Bereich Wohnen in der App an",
+            "type": "boolean"
+          },
+          "foods_ratings_average_display": {
+            "nullable": true,
+            "description": "Soll die durschnittliche Bewertung der Speisen angezeigt werden?",
+            "type": "boolean"
+          },
+          "foods_ratings_amount_display": {
+            "nullable": true,
+            "description": "Soll die Anzahl der Bewertungen angezeigt werden?",
+            "type": "boolean"
+          },
+          "foods_parsing_enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "id": {
+            "nullable": false,
+            "type": "integer"
+          },
+          "redirect_whitelist": {
+            "nullable": true,
+            "description": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen"
+          },
+          "washingmachine_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "campus_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "utilization_forecast_calculation_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "notifications_foods_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "news_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "housing_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "foods_ratings_type": {
+            "nullable": true,
+            "description": "Wie sollen die Bewertungen angezeigt werden? Sterne, Daumen, ...",
+            "type": "string"
+          },
+          "foods_placeholder_image_thumb_hash": {
+            "nullable": true,
+            "type": "string"
+          },
+          "foods_placeholder_image_remote_url": {
+            "nullable": true,
+            "type": "string"
+          },
+          "foods_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "foods_parsing_hash": {
+            "nullable": true,
+            "description": "Ändert sich die Prüfsumme, wird der Speiseplan erneut importiert",
+            "type": "string"
+          },
+          "foods_feedbacks_labels_type": {
+            "nullable": true,
+            "type": "string"
+          },
+          "foods_feedbacks_custom_url": {
+            "nullable": true,
+            "description": "URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen",
+            "type": "string"
+          },
+          "foods_feedbacks_comments_type": {
+            "nullable": true,
+            "type": "string"
+          },
+          "food_responsible_organization_name": {
+            "nullable": true,
+            "description": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",
+            "type": "string"
+          },
+          "food_responsible_organization_link": {
+            "nullable": true,
+            "description": "URL bzw. Link zu der verantwortlichen Stelle",
+            "type": "string"
+          },
+          "cashregisters_parsing_status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "app_stores_url_to_google": {
+            "nullable": true,
+            "type": "string"
+          },
+          "app_stores_url_to_apple": {
+            "nullable": true,
+            "type": "string"
+          },
+          "news_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "maintenance_start": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_privacy_policy_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "washingmachine_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "notifications_foods_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "foods_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "cashregisters_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "campus_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "utilization_forecast_calculation_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "housing_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "maintenance_end": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "foods_placeholder_image": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Files"
+              }
+            ]
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "balance_translations": {
+            "nullable": true,
+            "description": "Dieser Text ist in der App sichtbar",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsAppSettingsBalanceTranslations"
+                }
+              ]
+            }
+          },
+          "housing_translations": {
+            "nullable": true,
+            "description": "Zeigt in der App eine Beschreibung an, vor den Wohnungen, bei der Auflistung aller Wohnungen.",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsAppSettingsHousingTranslations"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "app_settings"
+      },
+      "ItemsApartments": {
+        "type": "object",
+        "properties": {
+          "singleflat": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "handicapped_accessible": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "family_friendly": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "status": {
+            "nullable": true,
+            "type": "string"
+          },
+          "external_identifier": {
+            "nullable": true,
+            "type": "string"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "available_from": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "building": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBuildings"
+              }
+            ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "washingmachines": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsWashingmachines"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "apartments",
+        "required": [
+          "id"
+        ]
+      },
       "ItemsAppFeedbacks": {
         "type": "object",
         "properties": {
@@ -35768,31 +36195,11 @@
             "nullable": true,
             "type": "boolean"
           },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
           "priority": {
             "nullable": true,
             "type": "integer"
           },
-          "display_width": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "display_scale": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "display_pixelratio": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "display_height": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "display_fontscale": {
+          "sort": {
             "nullable": true,
             "type": "integer"
           },
@@ -35803,6 +36210,31 @@
           "content": {
             "nullable": true,
             "type": "string"
+          },
+          "display_height": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_width": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_scale": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_fontscale": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "display_pixelratio": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
           },
           "title": {
             "nullable": true,
@@ -35878,433 +36310,6 @@
           "id"
         ]
       },
-      "ItemsAppSettings": {
-        "type": "object",
-        "properties": {
-          "utilization_display_enabled": {
-            "nullable": true,
-            "description": "Zeige die Auslastungsprognose in der App",
-            "type": "boolean"
-          },
-          "washingmachine_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "foods_enabled": {
-            "nullable": true,
-            "description": "Bereich \"Mensa\" in der App aktivieren?",
-            "type": "boolean"
-          },
-          "course_timetable_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "cashregisters_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "canteen_reports_enabled": {
-            "nullable": true,
-            "description": "Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle",
-            "type": "boolean"
-          },
-          "balance_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "campus_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "campus_enabled": {
-            "nullable": true,
-            "description": "Zeige in der App den Bereich Campus an",
-            "type": "boolean"
-          },
-          "utilization_forecast_calculation_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "notifications_ios_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "notifications_email_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "notifications_android_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "news_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "news_enabled": {
-            "nullable": true,
-            "description": "Zeigt in der App den Bereich News an",
-            "type": "boolean"
-          },
-          "map_enabled": {
-            "nullable": true,
-            "description": "Zeige den Lageplan in der App an",
-            "type": "boolean"
-          },
-          "housing_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "housing_enabled": {
-            "nullable": true,
-            "description": "Zeigt den Bereich Wohnen in der App an",
-            "type": "boolean"
-          },
-          "foods_ratings_average_display": {
-            "nullable": true,
-            "description": "Soll die durschnittliche Bewertung der Speisen angezeigt werden?",
-            "type": "boolean"
-          },
-          "foods_ratings_amount_display": {
-            "nullable": true,
-            "description": "Soll die Anzahl der Bewertungen angezeigt werden?",
-            "type": "boolean"
-          },
-          "foods_parsing_enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "id": {
-            "nullable": false,
-            "type": "integer"
-          },
-          "redirect_whitelist": {
-            "nullable": true,
-            "description": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen"
-          },
-          "housing_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "foods_ratings_type": {
-            "nullable": true,
-            "description": "Wie sollen die Bewertungen angezeigt werden? Sterne, Daumen, ...",
-            "type": "string"
-          },
-          "foods_placeholder_image_thumb_hash": {
-            "nullable": true,
-            "type": "string"
-          },
-          "foods_placeholder_image_remote_url": {
-            "nullable": true,
-            "type": "string"
-          },
-          "foods_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "foods_parsing_hash": {
-            "nullable": true,
-            "description": "Ändert sich die Prüfsumme, wird der Speiseplan erneut importiert",
-            "type": "string"
-          },
-          "foods_feedbacks_labels_type": {
-            "nullable": true,
-            "type": "string"
-          },
-          "foods_feedbacks_custom_url": {
-            "nullable": true,
-            "description": "URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen",
-            "type": "string"
-          },
-          "foods_feedbacks_comments_type": {
-            "nullable": true,
-            "type": "string"
-          },
-          "food_responsible_organization_name": {
-            "nullable": true,
-            "description": "Wer ist für die Inhalte der Speiseangebote verantwortlich?",
-            "type": "string"
-          },
-          "food_responsible_organization_link": {
-            "nullable": true,
-            "description": "URL bzw. Link zu der verantwortlichen Stelle",
-            "type": "string"
-          },
-          "cashregisters_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "app_stores_url_to_google": {
-            "nullable": true,
-            "type": "string"
-          },
-          "app_stores_url_to_apple": {
-            "nullable": true,
-            "type": "string"
-          },
-          "washingmachine_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "campus_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "utilization_forecast_calculation_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "notifications_foods_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "news_parsing_status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "washingmachine_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_privacy_policy_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "utilization_forecast_calculation_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "campus_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "foods_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "news_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "maintenance_start": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "notifications_foods_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "housing_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "maintenance_end": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "cashregisters_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "foods_placeholder_image": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Files"
-              }
-            ]
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "balance_translations": {
-            "nullable": true,
-            "description": "Dieser Text ist in der App sichtbar",
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsAppSettingsBalanceTranslations"
-                }
-              ]
-            }
-          },
-          "housing_translations": {
-            "nullable": true,
-            "description": "Zeigt in der App eine Beschreibung an, vor den Wohnungen, bei der Auflistung aller Wohnungen.",
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsAppSettingsHousingTranslations"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "app_settings"
-      },
-      "ItemsApartments": {
-        "type": "object",
-        "properties": {
-          "family_friendly": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "singleflat": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "handicapped_accessible": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "external_identifier": {
-            "nullable": true,
-            "type": "string"
-          },
-          "available_from": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "building": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBuildings"
-              }
-            ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "washingmachines": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsWashingmachines"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "apartments",
-        "required": [
-          "id"
-        ]
-      },
       "ItemsBuildingsBusinesshours": {
         "type": "object",
         "properties": {
@@ -36342,11 +36347,11 @@
       "ItemsAutoTranslationSettings": {
         "type": "object",
         "properties": {
-          "active": {
+          "valid_auth_key": {
             "nullable": true,
             "type": "boolean"
           },
-          "valid_auth_key": {
+          "active": {
             "nullable": true,
             "type": "boolean"
           },
@@ -36387,11 +36392,11 @@
       "ItemsAppSettingsBalanceTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -36677,17 +36682,17 @@
             "nullable": true,
             "type": "string"
           },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "date_of_construction": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
           "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -36849,11 +36854,11 @@
             "nullable": true,
             "type": "boolean"
           },
-          "wednesday": {
+          "tuesday": {
             "nullable": true,
             "type": "boolean"
           },
-          "tuesday": {
+          "wednesday": {
             "nullable": true,
             "type": "boolean"
           },
@@ -36935,11 +36940,11 @@
       "ItemsBuildingsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -37133,6 +37138,10 @@
       "Fields": {
         "type": "object",
         "properties": {
+          "required": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "hidden": {
             "nullable": false,
             "type": "boolean"
@@ -37140,14 +37149,6 @@
           "readonly": {
             "nullable": false,
             "type": "boolean"
-          },
-          "required": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "id": {
-            "nullable": false,
-            "type": "integer"
           },
           "validation_message": {
             "nullable": true,
@@ -37159,6 +37160,10 @@
           },
           "sort": {
             "nullable": true,
+            "type": "integer"
+          },
+          "id": {
+            "nullable": false,
             "type": "integer"
           },
           "options": {
@@ -37455,6 +37460,14 @@
       "Permissions": {
         "type": "object",
         "properties": {
+          "fields": {
+            "description": "CSV of fields that the user is allowed to interact with.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
           "id": {
             "description": "Unique identifier for the permission.",
             "example": 1,
@@ -37473,14 +37486,6 @@
           "presets": {
             "description": "JSON structure containing the preset value for created/updated items.",
             "type": "object",
-            "nullable": true
-          },
-          "fields": {
-            "description": "CSV of fields that the user is allowed to interact with.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
             "nullable": true
           },
           "action": {
@@ -37602,11 +37607,11 @@
             "nullable": false,
             "type": "boolean"
           },
-          "singleton": {
+          "archive_app_filter": {
             "nullable": false,
             "type": "boolean"
           },
-          "archive_app_filter": {
+          "singleton": {
             "nullable": false,
             "type": "boolean"
           },
@@ -37625,6 +37630,10 @@
             "nullable": true
           },
           "note": {
+            "nullable": true,
+            "type": "string"
+          },
+          "accountability": {
             "nullable": true,
             "type": "string"
           },
@@ -37677,10 +37686,6 @@
             ]
           },
           "color": {
-            "nullable": true,
-            "type": "string"
-          },
-          "accountability": {
             "nullable": true,
             "type": "string"
           }
@@ -37960,6 +37965,10 @@
             "description": "$t:fields.directus_settings.public_registration_verify_email_note",
             "type": "boolean"
           },
+          "custom_css": {
+            "nullable": true,
+            "type": "string"
+          },
           "id": {
             "description": "Unique identifier for the setting.",
             "type": "integer",
@@ -37969,6 +37978,19 @@
             "description": "Allowed authentication login attempts before the user's status is set to blocked.",
             "type": "integer",
             "example": 25
+          },
+          "public_registration_email_filter": {
+            "nullable": true,
+            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
+          },
+          "theme_dark_overrides": {
+            "nullable": true
+          },
+          "theme_light_overrides": {
+            "nullable": true
+          },
+          "custom_aspect_ratios": {
+            "nullable": true
           },
           "module_bar": {
             "nullable": true
@@ -38061,23 +38083,6 @@
             "description": "Note rendered on the public pages of the app.",
             "type": "string",
             "example": null,
-            "nullable": true
-          },
-          "custom_css": {
-            "nullable": true,
-            "type": "string"
-          },
-          "public_registration_email_filter": {
-            "nullable": true,
-            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
-          },
-          "theme_dark_overrides": {
-            "nullable": true
-          },
-          "theme_light_overrides": {
-            "nullable": true
-          },
-          "custom_aspect_ratios": {
             "nullable": true
           },
           "report_feature_url": {
@@ -38212,14 +38217,14 @@
       "Webhooks": {
         "type": "object",
         "properties": {
-          "was_active_before_deprecation": {
-            "nullable": false,
-            "type": "boolean"
-          },
           "data": {
             "description": "If yes, send the content of what was done",
             "type": "boolean",
             "example": true
+          },
+          "was_active_before_deprecation": {
+            "nullable": false,
+            "type": "boolean"
           },
           "id": {
             "description": "The index of the webhook.",
@@ -38227,6 +38232,12 @@
             "example": 1
           },
           "headers": {
+            "nullable": true
+          },
+          "url": {
+            "description": "The url of the webhook.",
+            "type": "string",
+            "example": null,
             "nullable": true
           },
           "method": {
@@ -38259,12 +38270,6 @@
             "description": "The status of the webhook.",
             "type": "string",
             "example": "inactive"
-          },
-          "url": {
-            "description": "The url of the webhook.",
-            "type": "string",
-            "example": null,
-            "nullable": true
           },
           "migrated_flow": {
             "nullable": true,
@@ -38403,12 +38408,6 @@
       "Revisions": {
         "type": "object",
         "properties": {
-          "parent": {
-            "description": "If the current item was updated relationally, this is the id of the parent revision record",
-            "example": null,
-            "type": "integer",
-            "nullable": true
-          },
           "activity": {
             "description": "Unique identifier for the activity record.",
             "example": 2,
@@ -38425,6 +38424,12 @@
             "description": "Unique identifier for the revision.",
             "example": 1,
             "type": "integer"
+          },
+          "parent": {
+            "description": "If the current item was updated relationally, this is the id of the parent revision record",
+            "example": null,
+            "type": "integer",
+            "nullable": true
           },
           "data": {
             "description": "Copy of item state at time of update.",
@@ -38725,6 +38730,10 @@
       "ItemsFoods": {
         "type": "object",
         "properties": {
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
           "rating_amount": {
             "nullable": true,
             "type": "integer"
@@ -38733,36 +38742,7 @@
             "nullable": true,
             "type": "integer"
           },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "protein_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "rating_average": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "saturated_fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "sugar_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "calories_kcal": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "carbohydrate_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -38772,7 +38752,7 @@
             "type": "number",
             "format": "float"
           },
-          "fat_g": {
+          "calories_kcal": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -38792,7 +38772,32 @@
             "type": "number",
             "format": "float"
           },
+          "carbohydrate_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "fat_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
           "fiber_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "protein_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "rating_average": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "saturated_fat_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -39139,11 +39144,11 @@
       "ItemsFoodsTranslations": {
         "type": "object",
         "properties": {
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
@@ -39199,12 +39204,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -39276,11 +39281,11 @@
       "ItemsNewsTranslations": {
         "type": "object",
         "properties": {
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
@@ -39359,11 +39364,11 @@
       "ItemsPopupEventsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -39468,7 +39473,12 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_created": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -39480,12 +39490,7 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "user_updated": {
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -39506,15 +39511,15 @@
       "ItemsUtilizationsEntries": {
         "type": "object",
         "properties": {
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
           "value_forecast_current": {
             "nullable": true,
             "type": "integer"
           },
           "value_real": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "sort": {
             "nullable": true,
             "type": "integer"
           },
@@ -39592,6 +39597,18 @@
       "ItemsUtilizationsGroups": {
         "type": "object",
         "properties": {
+          "all_time_high": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "threshold_until_high": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "threshold_until_max": {
+            "nullable": true,
+            "type": "integer"
+          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -39601,18 +39618,6 @@
             "type": "integer"
           },
           "threshold_until_medium": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "threshold_until_max": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "all_time_high": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "threshold_until_high": {
             "nullable": true,
             "type": "integer"
           },
@@ -39687,11 +39692,11 @@
       "ItemsMarkingsTranslations": {
         "type": "object",
         "properties": {
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
@@ -39960,6 +39965,10 @@
             "nullable": true,
             "type": "boolean"
           },
+          "ios_badge_count": {
+            "nullable": true,
+            "type": "integer"
+          },
           "message_ttl": {
             "nullable": true,
             "type": "integer"
@@ -39968,20 +39977,16 @@
             "nullable": true,
             "type": "integer"
           },
-          "ios_badge_count": {
-            "nullable": true,
-            "type": "integer"
-          },
           "message_data": {
             "nullable": true
-          },
-          "status_log": {
-            "nullable": true,
-            "type": "string"
           },
           "expo_push_tokens": {
             "nullable": true,
             "description": "Format: ExponentPushToken[xxxxxxxxxxxxxxxxx] with prefix and brackets, then press enter for more"
+          },
+          "status_log": {
+            "nullable": true,
+            "type": "string"
           },
           "status": {
             "nullable": true,
@@ -40067,11 +40072,11 @@
             "nullable": true,
             "type": "boolean"
           },
-          "position": {
+          "sort": {
             "nullable": true,
             "type": "integer"
           },
-          "sort": {
+          "position": {
             "nullable": true,
             "type": "integer"
           },
@@ -40580,27 +40585,12 @@
             "nullable": true,
             "type": "integer"
           },
-          "co2_saving_percentage": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "saturated_fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "fiber_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
           "fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "protein_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -40616,6 +40606,11 @@
             "format": "float"
           },
           "calories_kcal": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "protein_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -40640,7 +40635,17 @@
             "type": "number",
             "format": "float"
           },
+          "saturated_fat_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
           "sugar_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "co2_saving_percentage": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -41147,19 +41152,19 @@
       "ItemsPopupEvents": {
         "type": "object",
         "properties": {
-          "show_on_ios": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "show_on_web": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "send_notification": {
             "nullable": true,
             "type": "boolean"
           },
           "show_on_android": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "show_on_ios": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "show_on_web": {
             "nullable": true,
             "type": "boolean"
           },
@@ -41360,11 +41365,11 @@
       "ItemsFoodsAttributesGroupsTranslations": {
         "type": "object",
         "properties": {
-          "be_source_for_translations": {
+          "let_be_translated": {
             "nullable": true,
             "type": "boolean"
           },
-          "let_be_translated": {
+          "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
           },

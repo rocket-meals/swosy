@@ -1,7 +1,7 @@
 {
   "collection": "app_feedbacks",
   "field": "display_width",
-  "type": "integer",
+  "type": "float",
   "meta": {
     "collection": "app_feedbacks",
     "conditions": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 20,
+    "sort": 29,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,11 +25,11 @@
   "schema": {
     "name": "display_width",
     "table": "app_feedbacks",
-    "data_type": "integer",
+    "data_type": "real",
     "default_value": null,
     "max_length": null,
-    "numeric_precision": 32,
-    "numeric_scale": 0,
+    "numeric_precision": 24,
+    "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,
     "is_indexed": false,
