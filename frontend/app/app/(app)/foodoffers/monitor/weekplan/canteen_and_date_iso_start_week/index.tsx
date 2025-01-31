@@ -125,7 +125,9 @@ export default function FoodplanScreen() {
 	}
 
 	const [date_start_week_iso, setDateStartWeekIso] = useState<string>(getStartDateIsoString(param_date_start_week_iso_or_undefined_for_auto_update));
-	const calendarWeek = DateHelper.getCalendarWeek(new Date(date_start_week_iso));
+	const date_start_week_date = new Date(date_start_week_iso);
+	const calendarWeek = DateHelper.getCalendarWeek(date_start_week_date);
+	const year = date_start_week_date.getFullYear();
 
 	const [fetchingNewDate, setFetchingNewDate] = useState<boolean>(false);
 
@@ -596,7 +598,7 @@ export default function FoodplanScreen() {
         </html>
     `);
 
-		printWindow.document.title = "Speiseplan Druckansicht - "+canteen?.alias+" - "+calendarWeek;
+		printWindow.document.title = "Speiseplan Druckansicht - "+canteen?.alias+" - "+calendarWeek+" - "+year;
 
 		printWindow.document.close();
 		printWindow.focus();
