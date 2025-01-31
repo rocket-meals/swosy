@@ -596,7 +596,7 @@ export default function FoodplanScreen() {
         </html>
     `);
 
-		printWindow.document.title = "Speiseplan Druckansicht"; // Neuer Titel für den Druck
+		printWindow.document.title = "Speiseplan Druckansicht - "+canteen?.alias+" - "+calendarWeek;
 
 		printWindow.document.close();
 		printWindow.focus();
