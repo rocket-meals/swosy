@@ -36,6 +36,7 @@ import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {CaptureOptions} from "react-native-view-shot";
 import {MarkingsRowForFood} from "@/app/(app)/foodoffers/monitor/dayplan/details";
+import {PlatformHelper} from "@/helper/PlatformHelper";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -93,7 +94,7 @@ export default function FoodplanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode();
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
-	const [printCallback, setPrintCallback] = useState<(options?: CaptureOptions) => void>();
+	//const [printCallback, setPrintCallback] = useState<(options?: CaptureOptions) => void>();
 	const translation_calendarweek = useTranslation(TranslationKeys.week)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
@@ -245,7 +246,10 @@ export default function FoodplanScreen() {
 			)
 		}
 
-		return <View>
+		return <View style={{
+			borderBottomColor: viewContrastColor,
+			borderBottomWidth: 1,
+		}}>
 			<View style={{width: "100%", justifyContent: "space-between", alignItems: "center", flexDirection: "row"
 			}}>
 				<View style={{paddingHorizontal: DEFAULT_PADDING}}>
@@ -377,10 +381,20 @@ export default function FoodplanScreen() {
 		let weekdayName = DateHelper.getWeekdayNameByDate(date, localeForJsDate, true)
 		let weekdayDate = DateHelper.formatOfferDateToReadable(date, false, false);
 
-		return <View style={{width: "100%", borderBottomColor: viewContrastColor, borderBottomWidth: 1, flexDirection: "row"}}>
-			<View style={{flex: FLEX_WEEKDAY}}>
+		return <View id={`day-${iso_date}`} style={{
+			width: "100%",
+			borderBottomColor: viewContrastColor,
+			borderBottomWidth: 1,
+			flexDirection: "row",
+			// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
+			pageBreakInside: "avoid" // Verhindert Page Break innerhalb des Tages
+		}}>
+		<View style={{flex: FLEX_WEEKDAY}}>
 				<View style={{
 					padding: DEFAULT_PADDING,
+					borderRightWidth: 1,
+					borderRightColor: viewContrastColor,
+					height: "100%",
 				}}>
 					<Heading>{weekdayName}</Heading>
 					<Text>{weekdayDate}</Text>
@@ -456,6 +470,7 @@ export default function FoodplanScreen() {
 		}
 	}
 
+	/**
 	function renderScreenshotButton(){
 		return <MyButton useOnlyNecessarySpace={true} tooltip={"Screenshot"} accessibilityLabel={"Screenshot"} useTransparentBorderColor={true} leftIcon={IconNames.screenshot_icon} onPress={() => {
 			if (printCallback) {
@@ -463,10 +478,22 @@ export default function FoodplanScreen() {
 			}
 		}} />
 	}
+	*/
 
 	function renderScreenshotButtonDinA4(){
-		return <MyButton useOnlyNecessarySpace={true} tooltip={translation_print} accessibilityLabel={translation_print} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
+		let isWeb = PlatformHelper.isWeb();
+
+		let tooltip = translation_print;
+		if(!isWeb){
+			tooltip = "Nur auf Web verfügbar";
+		}
+
+		return <MyButton disabled={!isWeb} useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={tooltip} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
 			let upscale = 10
+			printDiv("printableArea");
+			return;
+
+			/**
 			if (printCallback) {
 				printCallback({
 					width: 210*upscale,
@@ -475,6 +502,7 @@ export default function FoodplanScreen() {
 					quality: 0.9
 				});
 			}
+			*/
 		}} />
 	}
 
@@ -504,7 +532,7 @@ export default function FoodplanScreen() {
 			{renderLoadingStatus()}
 			{renderCanteenSelection()}
 			{renderWeekSelection()}
-			{renderScreenshotButton()}
+			{/**renderScreenshotButton()*/}
 			{renderScreenshotButtonDinA4()}
 			{renderFullScreenButton()}
 		</View>
@@ -515,17 +543,78 @@ export default function FoodplanScreen() {
 		header = null;
 	}
 
+	function printDiv(divName: string) {
+		var printContents = document.getElementById(divName)?.innerHTML;
+		if (!printContents) {
+			console.error("Element not found:", divName);
+			return;
+		}
+
+		// Neues Druckfenster öffnen
+		var printWindow = window.open("", "_blank");
+		printWindow.document.open();
+
+		// Alle Stylesheets und Inline-Styles aus dem aktuellen Dokument holen
+		var styles = "";
+		Array.from(document.styleSheets).forEach((styleSheet) => {
+			try {
+				if (styleSheet.cssRules) {
+					Array.from(styleSheet.cssRules).forEach((rule) => {
+						styles += rule.cssText + "\n";
+					});
+				}
+			} catch (e) {
+				console.warn("Could not access stylesheet:", styleSheet.href);
+			}
+		});
+
+
+
+		printWindow.document.write(`
+        <html>
+        <head>
+            <style>
+                ${styles} /* Kopierte Styles */
+                
+                @media print {
+                    @page { 
+                        size: auto; /* Automatische Größe für optimale Darstellung */
+                        margin: 0mm; /* Optional: Ändere die Ränder nach Bedarf */
+                    }
+                
+                    /* Standard Browser-Header & Footer ausblenden (funktioniert in vielen, aber nicht allen Browsern) */
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            ${printContents}
+        </body>
+        </html>
+    `);
+
+		printWindow.document.title = "Speiseplan Druckansicht"; // Neuer Titel für den Druck
+
+		printWindow.document.close();
+		printWindow.focus();
+		printWindow.print();
+		printWindow.close();
+	}
+
 	return (
 		<MySafeAreaViewForScreensWithoutHeader>
 			{header}
 				<MyScrollView>
-					<MyPrintComponent fileName={date_start_week_iso} setPrintCallback={setPrintCallback}>
-						<View style={{
+						<View
+							id={"printableArea"}
+							style={{
 							backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
 						}}>
 							{renderWeekOffers()}
 						</View>
-					</MyPrintComponent>
 				</MyScrollView>
 		</MySafeAreaViewForScreensWithoutHeader>
 	);
