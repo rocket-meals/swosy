@@ -470,7 +470,7 @@ export class ReportGenerator {
                 comments_new = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, startDate, endDate);
             }
 
-            if(reportSchedule.show_food_comments_for_selected_period){
+            if(reportSchedule.show_food_comments_for_all_time){
                 comments = await this.getAllFoodFeedbacksWithCommentsForFood(food_id, null, null);
             }
 
