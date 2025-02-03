@@ -15,8 +15,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 0,
-            foodoffers_days_limit: 7,
+            period_days_offset: 0,
+            period_days_amount: 7,
             send_on_mondays: true,
             send_on_tuesdays: true,
             send_on_wednesdays: true,
@@ -64,8 +64,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 3,// although this is not 0, we expect the report to be due today
-            foodoffers_days_limit: 7,
+            period_days_offset: 3,// although this is not 0, we expect the report to be due today
+            period_days_amount: 7,
             // We want to send the report 3 days before the offer date. The offer date is today (Monday) plus 3 days is Thursday.
             send_on_mondays: true,
             send_on_tuesdays: true,
@@ -114,8 +114,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 0,
-            foodoffers_days_limit: 7,
+            period_days_offset: 0,
+            period_days_amount: 7,
             send_on_mondays: true,
             send_on_tuesdays: true,
             send_on_wednesdays: true,
@@ -163,8 +163,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
             let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
                 enabled: true,
                 send_report_at_hh_mm: sendReportAtHhMmPadded,
-                foodoffers_days_offset: 0,
-                foodoffers_days_limit: 7,
+                period_days_offset: 0,
+                period_days_amount: 7,
                 send_on_mondays: false,
                 send_on_tuesdays: false,
                 send_on_wednesdays: false,
@@ -211,8 +211,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 4,// we want to send the report 4 days before the offer date
-            foodoffers_days_limit: 7,
+            period_days_offset: 4,// we want to send the report 4 days before the offer date
+            period_days_amount: 7,
             // So the offer date is Monday, plus 4 days is Friday. But Friday is not enabled, so we cant generate the report for Friday
             send_on_mondays: true,
             send_on_tuesdays: false,
@@ -262,8 +262,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 0,
-            foodoffers_days_limit: 7,
+            period_days_offset: 0,
+            period_days_amount: 7,
             send_on_mondays: false,
             send_on_tuesdays: false,
             send_on_wednesdays: false,
@@ -295,8 +295,8 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
             enabled: false,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
-            foodoffers_days_offset: 0,
-            foodoffers_days_limit: 7,
+            period_days_offset: 0,
+            period_days_amount: 7,
             send_on_mondays: true,
             send_on_tuesdays: true,
             send_on_wednesdays: true,

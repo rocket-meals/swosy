@@ -11,11 +11,21 @@ export class DictHelper{
         return values;
     }
 
-    static transformListToDict<T>(list: T[], keySelector: (item: T) => string): Record<string, T> {
+    static transformListToDict<T>(list: T[], keySelector: ((item: T) => string ) | string): Record<string, T> {
         let dict: { [p: string]: T } = {};
         for(let item of list){
-            let key = keySelector(item);
-            dict[key] = item;
+            let key: string | undefined = undefined
+            if(typeof keySelector === "string"){
+                let property: string = keySelector as string;
+                // @ts-ignore
+                key = item[property];
+            } else {
+                key = keySelector(item);
+            }
+
+            if(!!key){
+                dict[key] = item;
+            }
         }
         return dict
     }

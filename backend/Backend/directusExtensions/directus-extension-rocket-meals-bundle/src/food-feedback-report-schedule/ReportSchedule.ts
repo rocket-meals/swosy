@@ -15,6 +15,7 @@ import {DateHelper, Weekday} from "../helpers/DateHelper";
 import {PrimaryKey} from "@directus/types";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {EmailTemplatesEnum} from "../helpers/EmailTemplates";
+import {DictHelper} from "../helpers/DictHelper";
 
 const TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES
 
@@ -53,16 +54,16 @@ export class ReportSchedule {
                     let recipientEmailList = await this.getRecipientEmailList(reportSchedule);
 
                     if(recipientEmailList.length>0){
-                        let canteenEntries = await this.getCanteenEntries(reportSchedule);
-                        if(canteenEntries.length>0){
+                        let canteensDict = await this.getCanteenEntries(reportSchedule);
+                        if(Object.keys(canteensDict).length>0){
                             try {
                                 // 3. send report
 
 
-                                let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportSchedule, startDate, endDate, canteenEntries)
+                                let generated_report_data: ReportType = await reportGenerator.generateReportJSON(reportSchedule, startDate, endDate, canteensDict)
                                 if(!!generated_report_data){
                                     for(let toMail of recipientEmailList){
-                                        await this.sendReport(generated_report_data, reportSchedule, canteenEntries, toMail);
+                                        await this.sendReport(generated_report_data, reportSchedule, canteensDict, toMail);
                                     }
                                     //console.log("Report was sent successfully for the date: setting the next report date")
                                     await this.setNextReportDate(reportSchedule);
@@ -95,7 +96,7 @@ export class ReportSchedule {
     static getStartDateBasedOnReferenceDate(referenceDate: Date, reportSchedule: Partial<CanteenFoodFeedbackReportSchedules>): Date {
         // use foodoffers_days_limit to get the start date of the report. foodoffers_days_limit is the amount of days before the reference date
         const DEFAULT_FOODOFFERS_DAYS_LIMIT = 1;
-        let foodoffers_days_limit = reportSchedule.foodoffers_days_limit || DEFAULT_FOODOFFERS_DAYS_LIMIT;
+        let foodoffers_days_limit = reportSchedule.period_days_amount || DEFAULT_FOODOFFERS_DAYS_LIMIT;
         if(foodoffers_days_limit < 0){
             foodoffers_days_limit = -foodoffers_days_limit;
         }
@@ -150,7 +151,7 @@ export class ReportSchedule {
 
 
 
-    async getCanteenEntries(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Canteens[]>{
+    async getCanteenEntries(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Record<string, Canteens>>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedulesCanteens>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS)
         let scheduleCanteens = await itemService.readByQuery({
@@ -179,11 +180,13 @@ export class ReportSchedule {
         }
 
         let canteenService = await itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
-        return await canteenService.readMany(canteen_primary_keys);
+        let canteensList = await canteenService.readMany(canteen_primary_keys);
+        let canteensAsDict = DictHelper.transformListToDict(canteensList, (canteen => canteen.id));
+        return canteensAsDict
     }
 
 
-    private getCanteenAliasForMail(canteenEntries: Canteens[]){
+    private getCanteenAliasForMail(canteenEntries: Record<string, Canteens>){
         let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
         const previewAmount = 3;
         let canteen_alias = "";
@@ -197,8 +200,8 @@ export class ReportSchedule {
         return canteenEntries.length +" Mensen ("+canteen_alias+")";
     }
 
-    async sendReport(generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteenEntries: Canteens[], toMail: string){
-        let canteen_alias = this.getCanteenAliasForMail(canteenEntries);
+    async sendReport(generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteensDict: Record<string, Canteens>, toMail: string){
+        let canteen_alias = this.getCanteenAliasForMail(canteensDict);
 
         let dateHumanReadable = generated_report_data.dateHumanReadable;
 
@@ -316,7 +319,7 @@ export class ReportSchedule {
 
         let now_moment_date = moment(now.toISOString());
 
-        let foodoffers_days_offset = recipientEntry.foodoffers_days_offset || 0; // for example we want to 4 days before the offer date notify the user
+        let foodoffers_days_offset = recipientEntry.period_days_offset || 0; // for example we want to 4 days before the offer date notify the user
         //console.log("MOMENT 2 - now_moment_date: "+now_moment_date)
         let date_for_which_the_report_should_be_generated = moment(now_moment_date.toISOString()).add(foodoffers_days_offset, 'days').set({
             hour: 12,

@@ -21,6 +21,10 @@ export class EnvVariableHelper {
         return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
     }
 
+    static getMarkingSyncTL1FileCreateOnlyFromExportCsvFile(): boolean {
+        return this.getEnvVariable("MARKING_SYNC_TL1FILE_CREATE_ONLY_FROM_EXPORT_CSV_FILE") === "true";
+    }
+
     static getFoodSyncTL1FileExportCsvFileEncoding(): any {
         return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "latin1" as BufferEncoding;
     }

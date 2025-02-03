@@ -17,10 +17,10 @@ describe("Food Feedback E-Mail Template", () => {
     it("ReferenceDate on same Date", async () => {
 
         const canteenFeedbackLabels = ["Ich habe heute Zeit in die Mensa zu gehen", "Heute ist ein  passendes Fleischgericht für mich dabei", "Heute ist ein  passendes vegetarisches Gericht für mich dabei"]
-        const foodFeedbackLabels = ["Geschmack", "Optik", "Größe"]
+        const foodFeedbackLabels = ["Geschmack", "Optik", "Größe", "Preis"]
         const foodNames = ["Frittiertes von der Kartoffel - kleine Portion", "Black Bean Burger Classic mit Pommes", "Kartoffelgratin mit Salat", "Kartoffelgratin mit Salat", "Kartoffelgratin mit Salat"]
         const foodComments = ["Sehr lecker", "Der Preis ist ja mal viel zu teuer, als was soll sowas", "Das war ja mal gar nichts", "Das war ja mal gar nichts", "Das war ja mal gar nichts"]
-        const canteenNames = ["Mensa Zentralstraße", "Mensa Kleine Pause", "Mensa auf dem Berg"];
+        const canteenNames = ["Mensa Zentralstraße", "Mensa Kleine Pause", "Mensa auf dem Berg", "Weitere Mensa"];
 
         function getRatingValues(index: number){
             // return amount_positive_new, amount_negative_new, amount_total, amount_negative, amount_positive, status_total, status_new
@@ -30,7 +30,6 @@ describe("Food Feedback E-Mail Template", () => {
             // i = 2; mixed with around 50%
             let amount_positive_new = 0;
             let amount_negative_new = 0;
-            let amount_total = 0;
             let amount_negative = 0;
             let amount_positive = 0;
             let status_total = "";
@@ -39,7 +38,6 @@ describe("Food Feedback E-Mail Template", () => {
                 case 0:
                     amount_positive_new = 90;
                     amount_negative_new = 10;
-                    amount_total = 100;
                     amount_negative = 10;
                     amount_positive = 90;
                     status_total = "good";
@@ -48,7 +46,6 @@ describe("Food Feedback E-Mail Template", () => {
                 case 1:
                     amount_positive_new = 10;
                     amount_negative_new = 90;
-                    amount_total = 100;
                     amount_negative = 90;
                     amount_positive = 10;
                     status_total = "bad";
@@ -57,7 +54,6 @@ describe("Food Feedback E-Mail Template", () => {
                 case 2:
                     amount_positive_new = 50;
                     amount_negative_new = 50;
-                    amount_total = 100;
                     amount_negative = 50;
                     amount_positive = 50;
                     status_total = "mixed";
@@ -66,7 +62,6 @@ describe("Food Feedback E-Mail Template", () => {
                 case 3:
                     amount_positive_new = 0;
                     amount_negative_new = 0;
-                    amount_total = 0;
                     amount_negative = 0;
                     amount_positive = 0;
                     status_total = "empty";
@@ -76,9 +71,10 @@ describe("Food Feedback E-Mail Template", () => {
             return {
                 amount_positive_new: amount_positive_new,
                 amount_negative_new: amount_negative_new,
-                amount_total: amount_total,
+                amount_total_new: amount_positive_new+amount_negative_new,
                 amount_negative: amount_negative,
                 amount_positive: amount_positive,
+                amount_total: amount_negative+amount_positive,
                 status_total: status_total,
                 status_new: status_new
             }
@@ -97,6 +93,7 @@ describe("Food Feedback E-Mail Template", () => {
                     alias: foodFeedbackLabels[j] || "label_alias"+j,
                     amount_positive_new: ratingValues.amount_positive_new,
                     amount_negative_new: ratingValues.amount_negative_new,
+                    amount_total_new: ratingValues.amount_total_new,
                     amount_total: ratingValues.amount_total,
                     amount_negative: ratingValues.amount_negative,
                     amount_positive: ratingValues.amount_positive,
@@ -113,7 +110,8 @@ describe("Food Feedback E-Mail Template", () => {
                 image_url: "image_url",
                 rating_average: 5 * (foodRatingValues.amount_positive / foodRatingValues.amount_total),
                 rating_amount: foodRatingValues.amount_total,
-                comments: i%2==0 ? foodComments : [],
+                comments: foodComments,
+                comments_new: i%2==0 ? foodComments : [],
                 labels: labelEntries,
                 status_rating: "status_rating"
             };
@@ -134,6 +132,7 @@ describe("Food Feedback E-Mail Template", () => {
                     label_alias: canteenFeedbackLabels[j] || "label_alias"+j,
                     amount_positive_new: ratingValues.amount_positive_new,
                     amount_negative_new: ratingValues.amount_negative_new,
+                    amount_total_new: ratingValues.amount_total_new,
                     amount_total: ratingValues.amount_total,
                     amount_negative: ratingValues.amount_negative,
                     amount_positive: ratingValues.amount_positive,
@@ -164,10 +163,12 @@ describe("Food Feedback E-Mail Template", () => {
             canteen_alias: canteenNames.join(", "),
             dateHumanReadable: "01.01.2024",
             show_images: true,
-            show_food: true,
-            show_food_feedback_labels: true,
-            show_food_comments: true,
-            show_canteen_feedbacks: true,
+            show_food_comments_for_all_time: true,
+            show_food_comments_for_selected_period: true,
+            show_food_feedback_labels_for_all_time: true,
+            show_food_feedback_labels_for_selected_period: true,
+            show_canteen_feedbacks_for_all_time: true,
+            show_canteen_feedbacks_for_selected_period: true,
             food_rating_average: food_rating_average,
             food_rating_threshold_bad: foodAverageRatingThresholds.threshold_bad,
             food_rating_threshold_good: foodAverageRatingThresholds.threshold_good,
