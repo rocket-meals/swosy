@@ -34,7 +34,7 @@
                                 {% assign amount_total = label.amount_total_new | default: 0 %}
                                 {% assign amount_positive = label.amount_positive_new | default: 0 %}
 
-                                {% if amount_total_new > 0 %}
+                                {% if amount_total > 0 %}
                                     {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
 
                                     <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
