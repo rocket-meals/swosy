@@ -11,10 +11,10 @@
 <p>Die folgenden Speisen der Mensen wurden in den Bericht aufgenommen: {{canteen_alias}}</p>
 
 <div>
-    {% if show_canteen_feedbacks %}
+    {% if show_canteen_feedbacks_for_selected_period %}
         <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
         <div>
-            <h2>Mensa Rückmeldungen</h2>
+            <h2>Mensa Rückmeldungen - Im Zeitraum</h2>
         </div>
         <div>
             <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
@@ -31,10 +31,10 @@
                         <tr style="border-bottom: 1px solid #aaa;">
                             <td style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa;">{{ canteen.canteen_alias }}</td>
                             {% for label in canteen.labels %}
-                                {% assign amount_total = label.amount_total | default: 0 %}
-                                {% assign amount_positive = label.amount_positive | default: 0 %}
+                                {% assign amount_total = label.amount_total_new | default: 0 %}
+                                {% assign amount_positive = label.amount_positive_new | default: 0 %}
 
-                                {% if amount_total > 0 %}
+                                {% if amount_total_new > 0 %}
                                     {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
 
                                     <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
@@ -62,10 +62,124 @@
         </div>
     {% endif %}
 
-    {% if show_food %}
+    {% if show_canteen_feedbacks_for_all_time %}
         <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
         <div>
-            <h2>Speise Rückmeldungen</h2>
+            <h2>Mensa Rückmeldungen - Insgesamt</h2>
+        </div>
+        <div>
+            <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
+                <thead>
+                <tr>
+                    <th style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Mensa</th>
+                    {% for canteen_label_entry in canteen_feedbacks[0].labels %}
+                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(75% / {{ canteen_feedbacks[0].labels | size }});">{{ canteen_label_entry.label_alias }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for canteen in canteen_feedbacks %}
+                    <tr style="border-bottom: 1px solid #aaa;">
+                        <td style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa;">{{ canteen.canteen_alias }}</td>
+                        {% for label in canteen.labels %}
+                            {% assign amount_total = label.amount_total | default: 0 %}
+                            {% assign amount_positive = label.amount_positive | default: 0 %}
+
+                            {% if amount_total > 0 %}
+                                {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
+
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
+                                    {{ positive_percentage }}%
+                                    <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
+                                        <div style="width: {{ positive_percentage }}%; height: 100%;
+                                                background-color:
+                                                {% if positive_percentage < 40 %}#E25241
+                                                {% elsif positive_percentage <= 60 %}#F7CD55
+                                                {% else %}#88B153
+                                        {% endif %};">
+                                        </div>
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(75% / {{ canteen.labels | size }});">
+                                    Keine Daten
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {% if show_food_feedback_labels_for_selected_period %}
+        <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
+        <div>
+            <h2>Speise Rückmeldungen - Im Zeitraum</h2>
+        </div>
+        <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
+            <thead>
+            <tr>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise (Durschnittliche Bewertung)</th>
+                {% for label in foods[0].labels %}
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(67% / {{ foods[0].labels | size }});">{{ label.alias }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for food in foods %}
+                <tr style="border-bottom: 1px solid #aaa;">
+                    <td style="padding: 12px; text-align: left; width: 16.5%; border-right: 1px solid #aaa;">
+                        {{ food.alias }}<br/>
+                        ({{ food.rating_average | round: 2 }}
+                        {% if food.rating_average <= food_rating_threshold_bad %}
+                            {{ icon_traffic_light_red }}
+                        {% elsif food.rating_average >= food_rating_threshold_good %}
+                            {{ icon_traffic_light_green }}
+                        {% else %}
+                            {{ icon_traffic_light_yellow }}
+                        {% endif %}
+                        )
+                    </td>
+                    {% for label in food.labels %}
+                        {% assign amount_total = label.amount_total_new | default: 0 %}
+                        {% assign amount_positive = label.amount_positive_new | default: 0 %}
+
+                        {% if amount_total > 0 %}
+                            {% assign positive_percentage = amount_positive | divided_by: amount_total | times: 100 | round %}
+
+                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
+                                {{ positive_percentage }}%
+                                <div style="width: 100%; height: 20px; background-color: #ddd; margin-top: 5px;">
+                                    <div style="width: {{ positive_percentage }}%; height: 100%;
+                                            background-color:
+                                            {% if positive_percentage < 40 %}#E25241
+                                            {% elsif positive_percentage <= 60 %}#F7CD55
+                                            {% else %}#88B153
+                                    {% endif %};">
+                                    </div>
+                                </div>
+                            </td>
+
+                        {% else %}
+                            <td style="padding: 12px; text-align: left; border-right: 1px solid #aaa; width: calc(67% / {{ food.labels | size }});">
+                                Keine Daten
+                            </td>
+                        {% endif %}
+
+                    {% endfor %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if show_food_feedback_labels_for_all_time %}
+        <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
+        <div>
+            <h2>Speise Rückmeldungen - Insgesamt</h2>
         </div>
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
@@ -127,13 +241,55 @@
 
 
 
-    {% if show_food_comments %}
+    {% if show_food_comments_for_selected_period %}
         <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
         <div>
-            <h2>Speise Kommentare</h2>
+            <h2>Speise Kommentare - Im Zeitraum</h2>
         </div>
-        <div style="display: flex; align-items: center;">
-                        <span style="margin-right: 4px;">{{ icon_comment}} Kommentare während dieses Zeitraums:
+        <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
+            <thead>
+            <tr>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise</th>
+                <th style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Kommentare</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for food in foods %}
+                {% if food.comments_new.size > 0 %}
+                    <tr style="border-bottom: 1px solid #aaa;">
+                        <td style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa;">{{ food.alias }}</td>
+                        <td style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa;">
+                            <div>
+                                <ul>
+                                    {% for comment in food.comments_new %}
+                                        <li>{{ comment }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            {% for food in foods %}
+                {% if food.comments.size == 0 %}
+                    <tr style="border-bottom: 1px solid #aaa;">
+                        <td style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa;">{{ food.alias }}</td>
+                        <td style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa;">
+                            <div>
+                                Keine Kommentare vorhanden.
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if show_food_comments_for_all_time %}
+        <div style="border-top: 1px solid #aaa; margin-top: 20px; margin-bottom: 10px"></div>
+        <div>
+            <h2>Speise Kommentare - Insgesamt</h2>
         </div>
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
