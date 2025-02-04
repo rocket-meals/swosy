@@ -1,0 +1,41 @@
+{
+  "collection": "form_submissions",
+  "field": "form_answers",
+  "type": "alias",
+  "meta": {
+    "collection": "form_submissions",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "form_answers",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "filter": {
+        "_and": [
+          {
+            "form_field": {
+              "form": {
+                "id": {
+                  "_eq": "{{form}}"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 10,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

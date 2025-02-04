@@ -1,0 +1,25 @@
+{
+  "collection": "derived_forms",
+  "field": "recipient_email_field",
+  "related_collection": "form_fields",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "derived_forms",
+    "many_field": "recipient_email_field",
+    "one_allowed_collections": null,
+    "one_collection": "form_fields",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": null,
+    "sort_field": null
+  },
+  "schema": {
+    "table": "derived_forms",
+    "column": "recipient_email_field",
+    "foreign_key_table": "form_fields",
+    "foreign_key_column": "id",
+    "constraint_name": "derived_forms_recipient_email_field_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}
