@@ -18,6 +18,7 @@ import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
 import {useRefreshDataIntervalInSecondsFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/dayplan/details";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import MyPrintComponent, {MyPrintButton, useStablePrintCallback} from "@/components/printComponent/MyPrintComponent";
 
 export const SEARCH_PARAM_NEXT_PAGE_INTERVAL = 'nextPageIntervalInSeconds';
 export const SEARCH_PARAM_REFRESH_DATA_INTERVAL = 'refreshDataIntervalInSeconds';
@@ -45,6 +46,8 @@ export function getRouteToMarkingsListScreen(refreshDataIntervalInSeconds?: numb
 
 export default function FoodDayPlanScreen() {
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
+	const [printCallback, stableSetPrintCallback] = useStablePrintCallback();
 
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
 	let unsortedMarkingList: Markings[] = [];
@@ -205,18 +208,22 @@ export default function FoodDayPlanScreen() {
 			width: '100%',
 			height: '100%',
 		}}>
-			<MonitorHeader headerText={translation_markings} dateHumanReadable={foodOfferDateHumanReadable || ""} />
-			<View style={{
-				width: '100%',
-				height: 2,
-				backgroundColor: foodAreaColor,
-			}} />
-			<View style={{
-				width: '100%',
-				padding: 10,
-			}}>
-				{renderMarkingsBottom()}
-			</View>
+			<MyPrintComponent fileName={"labelPrint"} printId={"labelPrint"} setPrintCallback={stableSetPrintCallback}>
+				<MonitorHeader headerText={translation_markings} dateHumanReadable={foodOfferDateHumanReadable || ""} rightContent={
+					<MyPrintButton printCallback={printCallback} />
+				} />
+				<View style={{
+					width: '100%',
+					height: 2,
+					backgroundColor: foodAreaColor,
+				}} />
+				<View style={{
+					width: '100%',
+					padding: 10,
+				}}>
+					{renderMarkingsBottom()}
+				</View>
+			</MyPrintComponent>
 			<View style={{
 				width: '100%',
 				height: 2,
@@ -228,12 +235,12 @@ export default function FoodDayPlanScreen() {
 
 	return <MySafeAreaView>
 		<MyScrollView>
-			<View style={{
-				width: '100%',
-				height: '100%',
-			}} >
-				{renderContent()}
-			</View>
+				<View style={{
+					width: '100%',
+					height: '100%',
+				}} >
+					{renderContent()}
+				</View>
 		</MyScrollView>
 
 	</MySafeAreaView>

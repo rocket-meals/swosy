@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
 	getLineHeightInPixelBySize,
 	Heading,
@@ -26,7 +26,7 @@ import {SEARCH_PARAM_FULLSCREEN, useIsFullscreenModeFromSearchParam} from "@/sta
 import {ExpoRouter} from "@/.expo/types/router";
 import {IconNames} from "@/constants/IconNames";
 import {MyButton} from "@/components/buttons/MyButton";
-import MyPrintComponent from "@/components/printComponent/MyPrintComponent";
+import MyPrintComponent, {MyPrintButton, useStablePrintCallback} from "@/components/printComponent/MyPrintComponent";
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
@@ -95,6 +95,18 @@ export default function FoodplanScreen() {
 	const translation_foodweekplan = useTranslation(TranslationKeys.foodweekplan)
 	const isFullScreenMode = useIsFullscreenModeFromSearchParam();
 	//const [printCallback, setPrintCallback] = useState<(options?: CaptureOptions) => void>();
+	const [printCallback, stableSetPrintCallback] = useStablePrintCallback();
+
+	/**
+	const stableSetPrintCallback = useCallback(
+		(callback: (options?: CaptureOptions) => void) => {
+			setPrintCallback(callback);
+		},
+		[setPrintCallback] // Only update if `setPrintCallback` itself changes
+	);
+		*/
+
+
 	const translation_calendarweek = useTranslation(TranslationKeys.week)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
@@ -391,7 +403,7 @@ export default function FoodplanScreen() {
 			// @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
 			pageBreakInside: "avoid" // Verhindert Page Break innerhalb des Tages
 		}}>
-		<View style={{flex: FLEX_WEEKDAY}}>
+			<View style={{flex: FLEX_WEEKDAY}}>
 				<View style={{
 					padding: DEFAULT_PADDING,
 					borderRightWidth: 1,
@@ -472,40 +484,8 @@ export default function FoodplanScreen() {
 		}
 	}
 
-	/**
-	function renderScreenshotButton(){
-		return <MyButton useOnlyNecessarySpace={true} tooltip={"Screenshot"} accessibilityLabel={"Screenshot"} useTransparentBorderColor={true} leftIcon={IconNames.screenshot_icon} onPress={() => {
-			if (printCallback) {
-				printCallback();
-			}
-		}} />
-	}
-	*/
-
 	function renderScreenshotButtonDinA4(){
-		let isWeb = PlatformHelper.isWeb();
-
-		let tooltip = translation_print;
-		if(!isWeb){
-			tooltip = "Nur auf Web verfügbar";
-		}
-
-		return <MyButton disabled={!isWeb} useOnlyNecessarySpace={true} tooltip={tooltip} accessibilityLabel={tooltip} useTransparentBorderColor={true} leftIcon={IconNames.print_icon} onPress={() => {
-			let upscale = 10
-			printDiv("printableArea");
-			return;
-
-			/**
-			if (printCallback) {
-				printCallback({
-					width: 210*upscale,
-					height: 297*upscale,
-					format: "jpg",
-					quality: 0.9
-				});
-			}
-			*/
-		}} />
+		return <MyPrintButton printCallback={printCallback} />
 	}
 
 	function renderCanteenSelection(){
@@ -516,7 +496,7 @@ export default function FoodplanScreen() {
 
 	function renderWeekSelection(){
 		if(!!canteen){
-			let route = getRouteToWeekplanCanteen(canteen.id);
+			let route = getRouteToWeekplanCanteen(canteen.id, param_show_markings);
 			return <MyButton useOnlyNecessarySpace={true} tooltip={"Wochen Auswahl"} accessibilityLabel={"Wochen Auswahl"} useTransparentBorderColor={true} leftIcon={IconNames.calendar_icon} onPress={() => {
 				router.push(route);
 			}} />
@@ -545,79 +525,18 @@ export default function FoodplanScreen() {
 		header = null;
 	}
 
-	function printDiv(divName: string) {
-		var printContents = document.getElementById(divName)?.innerHTML;
-		if (!printContents) {
-			console.error("Element not found:", divName);
-			return;
-		}
-
-		// Neues Druckfenster öffnen
-		var printWindow = window.open("", "_blank");
-		printWindow.document.open();
-
-		// Alle Stylesheets und Inline-Styles aus dem aktuellen Dokument holen
-		var styles = "";
-		Array.from(document.styleSheets).forEach((styleSheet) => {
-			try {
-				if (styleSheet.cssRules) {
-					Array.from(styleSheet.cssRules).forEach((rule) => {
-						styles += rule.cssText + "\n";
-					});
-				}
-			} catch (e) {
-				console.warn("Could not access stylesheet:", styleSheet.href);
-			}
-		});
-
-
-
-		printWindow.document.write(`
-        <html>
-        <head>
-            <style>
-                ${styles} /* Kopierte Styles */
-                
-                @media print {
-                    @page { 
-                        size: auto; /* Automatische Größe für optimale Darstellung */
-                        margin: 0mm; /* Optional: Ändere die Ränder nach Bedarf */
-                    }
-                
-                    /* Standard Browser-Header & Footer ausblenden (funktioniert in vielen, aber nicht allen Browsern) */
-                    body {
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            ${printContents}
-        </body>
-        </html>
-    `);
-
-		printWindow.document.title = "Speiseplan Druckansicht - "+canteen?.alias+" - "+calendarWeek+" - "+year;
-
-		printWindow.document.close();
-		printWindow.focus();
-		printWindow.print();
-		printWindow.close();
-	}
+	const fileName = canteen?.alias+"_"+calendarWeek+"_"+year;
 
 	return (
 		<MySafeAreaViewForScreensWithoutHeader>
 			{header}
-				<MyScrollView>
-						<View
-							id={"printableArea"}
-							style={{
-							backgroundColor: viewBackgroundColor, // for print mode, otherwise the background color from parent is not rendered
-						}}>
-							{renderWeekOffers()}
-						</View>
-				</MyScrollView>
+			<MyScrollView>
+				<MyPrintComponent fileName={fileName} printId={"canteenWeekPlan"} setPrintCallback={stableSetPrintCallback}>
+					<View>
+						{renderWeekOffers()}
+					</View>
+				</MyPrintComponent>
+			</MyScrollView>
 		</MySafeAreaViewForScreensWithoutHeader>
 	);
 }
