@@ -31132,393 +31132,6 @@
         ]
       }
     },
-    "/items/foods_attributes_groups": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new foods_attributes_groups item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "createItemsFoodsAttributesGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the foods_attributes_groups items.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "readItemsFoodsAttributesGroups",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple foods_attributes_groups items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "updateItemsFoodsAttributesGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing foods_attributes_groups items.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "deleteItemsFoodsAttributesGroups",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/foods_attributes_groups/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single foods_attributes_groups item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "readSingleItemsFoodsAttributesGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing foods_attributes_groups item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "updateSingleItemsFoodsAttributesGroups",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing foods_attributes_groups item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesGroups"
-        ],
-        "operationId": "deleteSingleItemsFoodsAttributesGroups",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
     "/items/foods_attributes_groups_translations": {
       "post": {
         "summary": "Create an Item",
@@ -31871,393 +31484,6 @@
           "ItemsFoodsAttributesGroupsTranslations"
         ],
         "operationId": "deleteSingleItemsFoodsAttributesGroupsTranslations",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "/items/foods_attributes_translations": {
-      "post": {
-        "summary": "Create an Item",
-        "description": "Create a new foods_attributes_translations item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "createItemsFoodsAttributesTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Meta"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "get": {
-        "summary": "List Items",
-        "description": "List the foods_attributes_translations items.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "readItemsFoodsAttributesTranslations",
-        "security": [
-          {
-            "Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                      }
-                    },
-                    "meta": {
-                      "$ref": "#/components/schemas/x-metadata"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update Multiple Items",
-        "description": "Update multiple foods_attributes_translations items at the same time.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "updateItemsFoodsAttributesTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Limit"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Offset"
-          },
-          {
-            "$ref": "#/components/parameters/Sort"
-          },
-          {
-            "$ref": "#/components/parameters/Filter"
-          },
-          {
-            "$ref": "#/components/parameters/Search"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "oneOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "data": {
-                      "items": {
-                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Multiple Items",
-        "description": "Delete multiple existing foods_attributes_translations items.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "deleteItemsFoodsAttributesTranslations",
-        "responses": {
-          "200": {
-            "description": "Successful request"
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          }
-        },
-        "parameters": []
-      }
-    },
-    "/items/foods_attributes_translations/{id}": {
-      "get": {
-        "summary": "Retrieve an Item",
-        "description": "Retrieve a single foods_attributes_translations item by unique identifier.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "readSingleItemsFoodsAttributesTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "$ref": "#/components/parameters/Version"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Update an Item",
-        "description": "Update an existing foods_attributes_translations item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "updateSingleItemsFoodsAttributesTranslations",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Fields"
-          },
-          {
-            "$ref": "#/components/parameters/Meta"
-          },
-          {
-            "name": "id",
-            "description": "Index of the item.",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "oneOf": [
-                {
-                  "type": "integer",
-                  "description": "Incremental index of the item.",
-                  "example": 1
-                },
-                {
-                  "type": "string",
-                  "description": "Unique identifier of the item.",
-                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
-                }
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete an Item",
-        "description": "Delete an existing foods_attributes_translations item.",
-        "tags": [
-          "Items",
-          "ItemsFoodsAttributesTranslations"
-        ],
-        "operationId": "deleteSingleItemsFoodsAttributesTranslations",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -34179,6 +33405,393 @@
           "ItemsFormFieldsTranslations"
         ],
         "operationId": "deleteSingleItemsFormFieldsTranslations",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/items/foods_attributes_translations": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new foods_attributes_translations item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "createItemsFoodsAttributesTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the foods_attributes_translations items.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "readItemsFoodsAttributesTranslations",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple foods_attributes_translations items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "updateItemsFoodsAttributesTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing foods_attributes_translations items.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "deleteItemsFoodsAttributesTranslations",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/foods_attributes_translations/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single foods_attributes_translations item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "readSingleItemsFoodsAttributesTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing foods_attributes_translations item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "updateSingleItemsFoodsAttributesTranslations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesTranslations"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing foods_attributes_translations item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesTranslations"
+        ],
+        "operationId": "deleteSingleItemsFoodsAttributesTranslations",
         "responses": {
           "200": {
             "description": "Successful request"
@@ -36536,6 +36149,393 @@
         ]
       }
     },
+    "/items/foods_attributes_groups": {
+      "post": {
+        "summary": "Create an Item",
+        "description": "Create a new foods_attributes_groups item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "createItemsFoodsAttributesGroups",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Meta"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "get": {
+        "summary": "List Items",
+        "description": "List the foods_attributes_groups items.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "readItemsFoodsAttributesGroups",
+        "security": [
+          {
+            "Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/x-metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Multiple Items",
+        "description": "Update multiple foods_attributes_groups items at the same time.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "updateItemsFoodsAttributesGroups",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "$ref": "#/components/parameters/Filter"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Multiple Items",
+        "description": "Delete multiple existing foods_attributes_groups items.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "deleteItemsFoodsAttributesGroups",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/items/foods_attributes_groups/{id}": {
+      "get": {
+        "summary": "Retrieve an Item",
+        "description": "Retrieve a single foods_attributes_groups item by unique identifier.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "readSingleItemsFoodsAttributesGroups",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "$ref": "#/components/parameters/Version"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an Item",
+        "description": "Update an existing foods_attributes_groups item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "updateSingleItemsFoodsAttributesGroups",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Fields"
+          },
+          {
+            "$ref": "#/components/parameters/Meta"
+          },
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ItemsFoodsAttributesGroups"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an Item",
+        "description": "Delete an existing foods_attributes_groups item.",
+        "tags": [
+          "Items",
+          "ItemsFoodsAttributesGroups"
+        ],
+        "operationId": "deleteSingleItemsFoodsAttributesGroups",
+        "responses": {
+          "200": {
+            "description": "Successful request"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Index of the item.",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "description": "Incremental index of the item.",
+                  "example": 1
+                },
+                {
+                  "type": "string",
+                  "description": "Unique identifier of the item.",
+                  "example": "8cbb43fe-4cdf-4991-8352-c461779cec02"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "/items/form_categories": {
       "post": {
         "summary": "Create an Item",
@@ -38839,16 +38839,8 @@
       "x-collection": "popup_events"
     },
     {
-      "name": "ItemsFoodsAttributesGroups",
-      "x-collection": "foods_attributes_groups"
-    },
-    {
       "name": "ItemsFoodsAttributesGroupsTranslations",
       "x-collection": "foods_attributes_groups_translations"
-    },
-    {
-      "name": "ItemsFoodsAttributesTranslations",
-      "x-collection": "foods_attributes_translations"
     },
     {
       "name": "ItemsFoodsAttributes",
@@ -38870,6 +38862,10 @@
     {
       "name": "ItemsFormFieldsTranslations",
       "x-collection": "form_fields_translations"
+    },
+    {
+      "name": "ItemsFoodsAttributesTranslations",
+      "x-collection": "foods_attributes_translations"
     },
     {
       "name": "ItemsFormAnswersFiles",
@@ -38894,6 +38890,10 @@
     {
       "name": "ItemsBusinesshoursGroups",
       "x-collection": "businesshours_groups"
+    },
+    {
+      "name": "ItemsFoodsAttributesGroups",
+      "x-collection": "foods_attributes_groups"
     },
     {
       "name": "ItemsFormCategories",
@@ -39013,13 +39013,21 @@
             "type": "integer",
             "nullable": true
           },
-          "location": {
-            "description": "Where the file was created. Is automatically populated based on Exif data for images.",
+          "description": {
+            "description": "Description for the file.",
             "type": "string",
             "nullable": true
           },
-          "description": {
-            "description": "Description for the file.",
+          "tags": {
+            "description": "Tags for the file. Is automatically populated based on Exif data for images.",
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "description": "Where the file was created. Is automatically populated based on Exif data for images.",
             "type": "string",
             "nullable": true
           },
@@ -39042,14 +39050,6 @@
           },
           "tus_data": {
             "nullable": true
-          },
-          "tags": {
-            "description": "Tags for the file. Is automatically populated based on Exif data for images.",
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
           },
           "tus_id": {
             "nullable": true,
@@ -39092,8 +39092,8 @@
             "example": "local",
             "type": "string"
           },
-          "uploaded_on": {
-            "description": "When the file was last uploaded/replaced.",
+          "created_on": {
+            "description": "When the file was created.",
             "example": "2019-12-03T00:10:15+00:00",
             "type": "string",
             "format": "date-time"
@@ -39103,11 +39103,23 @@
             "type": "string",
             "format": "timestamp"
           },
-          "created_on": {
-            "description": "When the file was created.",
+          "uploaded_on": {
+            "description": "When the file was last uploaded/replaced.",
             "example": "2019-12-03T00:10:15+00:00",
             "type": "string",
             "format": "date-time"
+          },
+          "uploaded_by": {
+            "description": "Who uploaded the file.",
+            "example": "63716273-0f29-4648-8a2a-2af2948f6f78",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           },
           "folder": {
             "description": "Virtual folder where this file resides in.",
@@ -39138,18 +39150,6 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "uploaded_by": {
-            "description": "Who uploaded the file.",
-            "example": "63716273-0f29-4648-8a2a-2af2948f6f78",
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
           }
         },
         "x-collection": "directus_files"
@@ -39160,11 +39160,6 @@
           "name": {
             "description": "Name of the folder.",
             "example": "New York",
-            "type": "string"
-          },
-          "id": {
-            "description": "Unique identifier for the folder.",
-            "example": "0cf0e03d-4364-45df-b77b-ca61f61869d2",
             "type": "string"
           },
           "parent": {
@@ -39179,6 +39174,11 @@
               }
             ],
             "nullable": true
+          },
+          "id": {
+            "description": "Unique identifier for the folder.",
+            "example": "0cf0e03d-4364-45df-b77b-ca61f61869d2",
+            "type": "string"
           }
         },
         "x-collection": "directus_folders"
@@ -39321,16 +39321,6 @@
           "theme_dark_overrides": {
             "nullable": true
           },
-          "last_name": {
-            "description": "Last name of the user.",
-            "example": "User",
-            "type": "string"
-          },
-          "first_name": {
-            "description": "First name of the user.",
-            "example": "Admin",
-            "type": "string"
-          },
           "theme_light": {
             "nullable": true,
             "type": "string"
@@ -39407,12 +39397,27 @@
             "type": "string",
             "format": "email"
           },
+          "last_name": {
+            "description": "Last name of the user.",
+            "example": "User",
+            "type": "string"
+          },
+          "first_name": {
+            "description": "First name of the user.",
+            "example": "Admin",
+            "type": "string"
+          },
           "last_access": {
             "description": "When this user used the API last.",
             "example": "2020-05-31T14:32:37Z",
             "type": "string",
             "nullable": true,
             "format": "date-time"
+          },
+          "id": {
+            "description": "Unique identifier for the user.",
+            "example": "63716273-0f29-4648-8a2a-2af2948f6f78",
+            "type": "string"
           },
           "profile": {
             "nullable": true,
@@ -39450,11 +39455,6 @@
               }
             ],
             "nullable": true
-          },
-          "id": {
-            "description": "Unique identifier for the user.",
-            "example": "63716273-0f29-4648-8a2a-2af2948f6f78",
-            "type": "string"
           },
           "policies": {
             "nullable": true
@@ -39541,10 +39541,6 @@
             "nullable": true,
             "type": "integer"
           },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
           "image_thumb_hash": {
             "nullable": true,
             "type": "string"
@@ -39562,7 +39558,16 @@
             "nullable": true,
             "type": "string"
           },
+          "status": {
+            "nullable": true,
+            "type": "string"
+          },
           "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -39571,11 +39576,6 @@
             "nullable": false,
             "type": "string",
             "format": "uuid"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
           },
           "user_created": {
             "nullable": true,
@@ -39636,10 +39636,6 @@
       "ItemsCanteenFoodFeedbackReportSchedules": {
         "type": "object",
         "properties": {
-          "enabled": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "show_food_comments_for_all_time": {
             "nullable": true,
             "description": "Zeige Speise Kommentare insgesammt",
@@ -39712,6 +39708,10 @@
             "description": "Zeige Bilder der Speisen",
             "type": "boolean"
           },
+          "enabled": {
+            "nullable": true,
+            "type": "boolean"
+          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -39754,22 +39754,17 @@
             "type": "string",
             "format": "date"
           },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "id": {
-            "nullable": false,
+          "date_updated": {
+            "nullable": true,
             "type": "string",
-            "format": "uuid"
+            "format": "timestamp"
           },
-          "user_created": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -39781,7 +39776,12 @@
               }
             ]
           },
-          "user_updated": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -39848,12 +39848,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_stated": {
+          "date_finished": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "date_finished": {
+          "date_stated": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -39867,11 +39867,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           },
           "user_created": {
             "nullable": true,
@@ -39896,6 +39891,11 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
           },
           "apartment": {
             "nullable": true,
@@ -39926,18 +39926,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "foods_feedbacks_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoodsFeedbacks"
-              }
-            ]
-          },
           "foods_feedbacks_labels_id": {
             "nullable": true,
             "oneOf": [
@@ -39947,6 +39935,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsFoodsFeedbacksLabels"
+              }
+            ]
+          },
+          "foods_feedbacks_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoodsFeedbacks"
               }
             ]
           }
@@ -40032,6 +40032,11 @@
             "type": "string",
             "format": "time"
           },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "date_updated": {
             "nullable": true,
             "type": "string",
@@ -40066,10 +40071,17 @@
               }
             ]
           },
-          "date_created": {
+          "washingmachine": {
             "nullable": true,
-            "type": "string",
-            "format": "timestamp"
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsWashingmachines"
+              }
+            ]
           },
           "apartment": {
             "nullable": true,
@@ -40080,18 +40092,6 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsApartments"
-              }
-            ]
-          },
-          "washingmachine": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsWashingmachines"
               }
             ]
           }
@@ -40134,12 +40134,12 @@
             "type": "string",
             "format": "date-time"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -40193,18 +40193,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "businesshours_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBusinesshours"
-              }
-            ]
-          },
           "canteens_id": {
             "nullable": true,
             "oneOf": [
@@ -40214,6 +40202,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsCanteens"
+              }
+            ]
+          },
+          "businesshours_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBusinesshours"
               }
             ]
           }
@@ -40367,6 +40367,11 @@
             "type": "string",
             "format": "timestamp"
           },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
           "image": {
             "nullable": true,
             "oneOf": [
@@ -40415,11 +40420,6 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
           "excluded_by_markings": {
             "nullable": true,
             "description": "Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein",
@@ -40458,11 +40458,6 @@
       "ItemsAppSettings": {
         "type": "object",
         "properties": {
-          "canteen_reports_enabled": {
-            "nullable": true,
-            "description": "Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle",
-            "type": "boolean"
-          },
           "balance_enabled": {
             "nullable": true,
             "type": "boolean"
@@ -40551,6 +40546,11 @@
             "nullable": true,
             "type": "boolean"
           },
+          "canteen_reports_enabled": {
+            "nullable": true,
+            "description": "Erlaubt Mensa Berichte zu erstellen und zu versenden global für alle",
+            "type": "boolean"
+          },
           "id": {
             "nullable": false,
             "type": "integer"
@@ -40558,10 +40558,6 @@
           "redirect_whitelist": {
             "nullable": true,
             "description": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen"
-          },
-          "cashregisters_parsing_status": {
-            "nullable": true,
-            "type": "string"
           },
           "app_stores_url_to_google": {
             "nullable": true,
@@ -40644,17 +40640,11 @@
             "description": "URL bzw. Link zu der verantwortlichen Stelle",
             "type": "string"
           },
-          "notifications_foods_last_date": {
+          "cashregisters_parsing_status": {
             "nullable": true,
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
-          "cashregisters_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "utilization_forecast_calculation_last_date": {
+          "washingmachine_parsing_last_date": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -40664,27 +40654,17 @@
             "type": "string",
             "format": "date-time"
           },
-          "date_privacy_policy_updated": {
+          "utilization_forecast_calculation_last_date": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "foods_parsing_last_date": {
+          "notifications_foods_last_date": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "housing_parsing_last_date": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "maintenance_end": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
-          },
-          "washingmachine_parsing_last_date": {
+          "news_parsing_last_date": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -40694,7 +40674,27 @@
             "type": "string",
             "format": "date-time"
           },
-          "news_parsing_last_date": {
+          "maintenance_end": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "housing_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "foods_parsing_last_date": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_privacy_policy_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          },
+          "cashregisters_parsing_last_date": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -40805,17 +40805,17 @@
             "nullable": true,
             "type": "string"
           },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "available_from": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
           "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -40905,15 +40905,15 @@
             "nullable": true,
             "type": "integer"
           },
-          "content": {
-            "nullable": true,
-            "type": "string"
-          },
           "response": {
             "nullable": true,
             "type": "string"
           },
-          "display_fontscale": {
+          "content": {
+            "nullable": true,
+            "type": "string"
+          },
+          "display_height": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -40923,7 +40923,7 @@
             "type": "number",
             "format": "float"
           },
-          "display_height": {
+          "display_scale": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -40933,7 +40933,7 @@
             "type": "number",
             "format": "float"
           },
-          "display_scale": {
+          "display_fontscale": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -41073,12 +41073,12 @@
             "nullable": false,
             "type": "integer"
           },
-          "informations": {
+          "extra": {
             "nullable": true,
             "description": "Informations about errors will be shown here.",
             "type": "string"
           },
-          "extra": {
+          "informations": {
             "nullable": true,
             "description": "Informations about errors will be shown here.",
             "type": "string"
@@ -41174,6 +41174,18 @@
             "type": "string",
             "format": "timestamp"
           },
+          "building": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBuildings"
+              }
+            ]
+          },
           "id": {
             "nullable": false,
             "type": "string",
@@ -41212,18 +41224,6 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsUtilizationsGroups"
-              }
-            ]
-          },
-          "building": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBuildings"
               }
             ]
           },
@@ -41268,18 +41268,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "canteen_food_feedback_report_schedules_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
-              }
-            ]
-          },
           "report_recipients_id": {
             "nullable": true,
             "oneOf": [
@@ -41289,6 +41277,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsReportRecipients"
+              }
+            ]
+          },
+          "canteen_food_feedback_report_schedules_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsCanteenFoodFeedbackReportSchedules"
               }
             ]
           }
@@ -41310,17 +41310,17 @@
             "nullable": false,
             "type": "string"
           },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "user_created": {
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -41332,7 +41332,7 @@
               }
             ]
           },
-          "user_updated": {
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -41399,12 +41399,7 @@
             "type": "string",
             "format": "timestamp"
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "image": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -41412,7 +41407,7 @@
                 "format": "uuid"
               },
               {
-                "$ref": "#/components/schemas/Files"
+                "$ref": "#/components/schemas/Users"
               }
             ]
           },
@@ -41428,7 +41423,7 @@
               }
             ]
           },
-          "user_updated": {
+          "image": {
             "nullable": true,
             "oneOf": [
               {
@@ -41436,9 +41431,14 @@
                 "format": "uuid"
               },
               {
-                "$ref": "#/components/schemas/Users"
+                "$ref": "#/components/schemas/Files"
               }
             ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
           },
           "translations": {
             "nullable": true,
@@ -41585,18 +41585,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "businesshours_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBusinesshours"
-              }
-            ]
-          },
           "canteens_id": {
             "nullable": true,
             "oneOf": [
@@ -41606,6 +41594,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsCanteens"
+              }
+            ]
+          },
+          "businesshours_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBusinesshours"
               }
             ]
           }
@@ -41631,22 +41631,17 @@
             "nullable": true,
             "type": "string"
           },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "id": {
-            "nullable": false,
+          "date_created": {
+            "nullable": true,
             "type": "string",
-            "format": "uuid"
+            "format": "timestamp"
           },
-          "user_created": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -41658,7 +41653,12 @@
               }
             ]
           },
-          "user_updated": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -41746,12 +41746,12 @@
             "nullable": false,
             "type": "boolean"
           },
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
           "id": {
             "nullable": false,
+            "type": "integer"
+          },
+          "sort": {
+            "nullable": true,
             "type": "integer"
           },
           "note": {
@@ -41762,6 +41762,9 @@
             "nullable": true,
             "type": "string"
           },
+          "translations": {
+            "nullable": true
+          },
           "options": {
             "nullable": true
           },
@@ -41769,9 +41772,6 @@
             "nullable": true
           },
           "conditions": {
-            "nullable": true
-          },
-          "translations": {
             "nullable": true
           },
           "display_options": {
@@ -41859,17 +41859,7 @@
             "type": "number",
             "format": "float"
           },
-          "display_height": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "display_scale": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "display_fontscale": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -41879,9 +41869,15 @@
             "type": "number",
             "format": "float"
           },
-          "status": {
+          "display_fontscale": {
             "nullable": true,
-            "type": "string"
+            "type": "number",
+            "format": "float"
+          },
+          "display_height": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
           },
           "platform": {
             "nullable": true,
@@ -41896,6 +41892,10 @@
             "type": "string"
           },
           "system_version": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
             "nullable": true,
             "type": "string"
           },
@@ -42061,6 +42061,14 @@
             "example": 1,
             "type": "integer"
           },
+          "fields": {
+            "description": "CSV of fields that the user is allowed to interact with.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
           "presets": {
             "description": "JSON structure containing the preset value for created/updated items.",
             "type": "object",
@@ -42074,14 +42082,6 @@
           "permissions": {
             "description": "JSON structure containing the permissions checks for this permission.",
             "type": "object",
-            "nullable": true
-          },
-          "fields": {
-            "description": "CSV of fields that the user is allowed to interact with.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
             "nullable": true
           },
           "action": {
@@ -42219,15 +42219,15 @@
             "nullable": true,
             "type": "integer"
           },
-          "note": {
-            "nullable": true,
-            "type": "string"
-          },
           "item_duplication_fields": {
             "nullable": true
           },
           "translations": {
             "nullable": true
+          },
+          "note": {
+            "nullable": true,
+            "type": "string"
           },
           "preview_url": {
             "nullable": true,
@@ -42406,10 +42406,6 @@
               "type": "string"
             }
           },
-          "one_deselect_action": {
-            "nullable": false,
-            "type": "string"
-          },
           "sort_field": {
             "nullable": true,
             "type": "string"
@@ -42443,6 +42439,10 @@
           "many_collection": {
             "description": "Collection that has the field that holds the foreign key.",
             "example": "directus_activity",
+            "type": "string"
+          },
+          "one_deselect_action": {
+            "nullable": false,
             "type": "string"
           }
         },
@@ -42567,10 +42567,6 @@
             "example": null,
             "nullable": true
           },
-          "custom_css": {
-            "nullable": true,
-            "type": "string"
-          },
           "auth_login_attempts": {
             "description": "Allowed authentication login attempts before the user's status is set to blocked.",
             "type": "integer",
@@ -42581,20 +42577,21 @@
             "type": "integer",
             "example": 1
           },
-          "basemaps": {
+          "module_bar": {
             "nullable": true
           },
           "theme_light_overrides": {
             "nullable": true
           },
-          "custom_aspect_ratios": {
-            "nullable": true
-          },
-          "module_bar": {
-            "nullable": true
-          },
           "theme_dark_overrides": {
             "nullable": true
+          },
+          "basemaps": {
+            "nullable": true
+          },
+          "public_registration_email_filter": {
+            "nullable": true,
+            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
           },
           "storage_asset_presets": {
             "description": "Array of allowed",
@@ -42677,9 +42674,12 @@
             "example": null,
             "nullable": true
           },
-          "public_registration_email_filter": {
+          "custom_aspect_ratios": {
+            "nullable": true
+          },
+          "custom_css": {
             "nullable": true,
-            "description": "$t:fields.directus_settings.public_registration_email_filter_note"
+            "type": "string"
           },
           "report_feature_url": {
             "nullable": true,
@@ -43009,12 +43009,6 @@
             "example": 1,
             "type": "integer"
           },
-          "parent": {
-            "description": "If the current item was updated relationally, this is the id of the parent revision record",
-            "example": null,
-            "type": "integer",
-            "nullable": true
-          },
           "activity": {
             "description": "Unique identifier for the activity record.",
             "example": 2,
@@ -43026,6 +43020,12 @@
                 "$ref": "#/components/schemas/Activity"
               }
             ]
+          },
+          "parent": {
+            "description": "If the current item was updated relationally, this is the id of the parent revision record",
+            "example": null,
+            "type": "integer",
+            "nullable": true
           },
           "data": {
             "description": "Copy of item state at time of update.",
@@ -43338,22 +43338,7 @@
             "nullable": true,
             "type": "integer"
           },
-          "saturated_fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "co2_saving_percentage": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "fiber_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "protein_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -43363,7 +43348,7 @@
             "type": "number",
             "format": "float"
           },
-          "rating_average_legacy": {
+          "carbohydrate_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -43373,7 +43358,12 @@
             "type": "number",
             "format": "float"
           },
-          "rating_average": {
+          "rating_average_legacy": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "fat_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -43383,12 +43373,22 @@
             "type": "number",
             "format": "float"
           },
-          "carbohydrate_g": {
+          "rating_average": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
-          "fat_g": {
+          "protein_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "fiber_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "saturated_fat_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -43440,18 +43440,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "food_category": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoodsCategories"
-              }
-            ]
-          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -43485,6 +43473,18 @@
               },
               {
                 "$ref": "#/components/schemas/Files"
+              }
+            ]
+          },
+          "food_category": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoodsCategories"
               }
             ]
           },
@@ -43571,10 +43571,6 @@
             "nullable": true,
             "type": "string"
           },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
           "food": {
             "nullable": true,
             "oneOf": [
@@ -43585,6 +43581,10 @@
                 "$ref": "#/components/schemas/ItemsFoods"
               }
             ]
+          },
+          "status": {
+            "nullable": true,
+            "type": "string"
           },
           "date_updated": {
             "nullable": true,
@@ -43810,6 +43810,11 @@
             "type": "string",
             "format": "timestamp"
           },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -43833,11 +43838,6 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           },
           "markings": {
             "nullable": true,
@@ -43881,13 +43881,13 @@
             "nullable": true,
             "type": "boolean"
           },
-          "id": {
-            "nullable": false,
-            "type": "integer"
-          },
           "be_source_for_translations": {
             "nullable": true,
             "type": "boolean"
+          },
+          "id": {
+            "nullable": false,
+            "type": "integer"
           },
           "content": {
             "nullable": true,
@@ -43930,18 +43930,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "canteens_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsCanteens"
-              }
-            ]
-          },
           "popup_events_id": {
             "nullable": true,
             "oneOf": [
@@ -43951,6 +43939,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsPopupEvents"
+              }
+            ]
+          },
+          "canteens_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsCanteens"
               }
             ]
           }
@@ -44059,15 +44059,20 @@
             "nullable": true,
             "type": "string"
           },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
-            "nullable": true,
+          "id": {
+            "nullable": false,
             "type": "string",
-            "format": "timestamp"
+            "format": "uuid"
           },
           "user_updated": {
             "nullable": true,
@@ -44092,11 +44097,6 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           }
         },
         "x-collection": "report_recipients",
@@ -44107,10 +44107,6 @@
       "ItemsUtilizationsEntries": {
         "type": "object",
         "properties": {
-          "value_forecast_current": {
-            "nullable": true,
-            "type": "integer"
-          },
           "value_real": {
             "nullable": true,
             "type": "integer"
@@ -44119,29 +44115,45 @@
             "nullable": true,
             "type": "integer"
           },
+          "value_forecast_current": {
+            "nullable": true,
+            "type": "integer"
+          },
           "status": {
             "nullable": true,
             "type": "string"
-          },
-          "date_start": {
-            "nullable": true,
-            "type": "string",
-            "format": "date-time"
           },
           "date_end": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "date_created": {
+          "date_start": {
             "nullable": true,
             "type": "string",
-            "format": "timestamp"
+            "format": "date-time"
           },
           "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           },
           "utilization_group": {
             "nullable": true,
@@ -44167,18 +44179,6 @@
               }
             ]
           },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
           "id": {
             "nullable": false,
             "type": "string",
@@ -44193,10 +44193,6 @@
       "ItemsUtilizationsGroups": {
         "type": "object",
         "properties": {
-          "threshold_until_high": {
-            "nullable": true,
-            "type": "integer"
-          },
           "sort": {
             "nullable": true,
             "type": "integer"
@@ -44217,6 +44213,10 @@
             "nullable": true,
             "type": "integer"
           },
+          "threshold_until_high": {
+            "nullable": true,
+            "type": "integer"
+          },
           "status": {
             "nullable": true,
             "type": "string"
@@ -44225,12 +44225,12 @@
             "nullable": true,
             "type": "string"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -44341,18 +44341,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "wikis_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsWikis"
-              }
-            ]
-          },
           "directus_roles_id": {
             "nullable": true,
             "oneOf": [
@@ -44362,6 +44350,18 @@
               },
               {
                 "$ref": "#/components/schemas/Roles"
+              }
+            ]
+          },
+          "wikis_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsWikis"
               }
             ]
           }
@@ -44383,18 +44383,6 @@
             "nullable": false,
             "type": "integer"
           },
-          "profiles_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsProfiles"
-              }
-            ]
-          },
           "markings_id": {
             "nullable": true,
             "oneOf": [
@@ -44404,6 +44392,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsMarkings"
+              }
+            ]
+          },
+          "profiles_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsProfiles"
               }
             ]
           }
@@ -44419,10 +44419,6 @@
           },
           "categories": {
             "nullable": true
-          },
-          "status": {
-            "nullable": true,
-            "type": "string"
           },
           "image_thumb_hash": {
             "nullable": true,
@@ -44444,6 +44440,10 @@
             "nullable": true,
             "type": "string"
           },
+          "status": {
+            "nullable": true,
+            "type": "string"
+          },
           "date": {
             "nullable": true,
             "type": "string",
@@ -44459,7 +44459,12 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_updated": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "image": {
             "nullable": true,
             "oneOf": [
               {
@@ -44467,7 +44472,7 @@
                 "format": "uuid"
               },
               {
-                "$ref": "#/components/schemas/Users"
+                "$ref": "#/components/schemas/Files"
               }
             ]
           },
@@ -44483,7 +44488,7 @@
               }
             ]
           },
-          "image": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -44491,14 +44496,9 @@
                 "format": "uuid"
               },
               {
-                "$ref": "#/components/schemas/Files"
+                "$ref": "#/components/schemas/Users"
               }
             ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
           },
           "translations": {
             "nullable": true,
@@ -44561,15 +44561,7 @@
             "nullable": true,
             "type": "boolean"
           },
-          "status_log": {
-            "nullable": true,
-            "type": "string"
-          },
           "ios_badge_count": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "message_ttl": {
             "nullable": true,
             "type": "integer"
           },
@@ -44577,12 +44569,20 @@
             "nullable": true,
             "type": "integer"
           },
-          "expo_push_tokens": {
+          "status_log": {
             "nullable": true,
-            "description": "Format: ExponentPushToken[xxxxxxxxxxxxxxxxx] with prefix and brackets, then press enter for more"
+            "type": "string"
+          },
+          "message_ttl": {
+            "nullable": true,
+            "type": "integer"
           },
           "message_data": {
             "nullable": true
+          },
+          "expo_push_tokens": {
+            "nullable": true,
+            "description": "Format: ExponentPushToken[xxxxxxxxxxxxxxxxx] with prefix and brackets, then press enter for more"
           },
           "status": {
             "nullable": true,
@@ -44618,11 +44618,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -44646,6 +44641,11 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
           }
         },
         "x-collection": "push_notifications",
@@ -44891,7 +44891,7 @@
             "nullable": true,
             "type": "integer"
           },
-          "credit_balance": {
+          "credit_balance_last_transaction": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -44902,7 +44902,7 @@
           "course_timetable": {
             "nullable": true
           },
-          "credit_balance_last_transaction": {
+          "credit_balance": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -44930,12 +44930,12 @@
               }
             ]
           },
-          "credit_balance_date_updated": {
+          "date_privacy_policy_accepted": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "date_privacy_policy_accepted": {
+          "credit_balance_date_updated": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -45088,17 +45088,17 @@
             "nullable": false,
             "type": "string"
           },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
           "date": {
             "nullable": true,
             "type": "string",
             "format": "date"
           },
           "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -45181,7 +45181,12 @@
             "nullable": true,
             "type": "integer"
           },
-          "salt_g": {
+          "co2_saving_percentage": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "price_employee": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -45191,22 +45196,7 @@
             "type": "number",
             "format": "float"
           },
-          "sugar_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "fat_g": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "co2_saving_percentage": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
-          "carbohydrate_g": {
+          "saturated_fat_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -45216,7 +45206,12 @@
             "type": "number",
             "format": "float"
           },
-          "saturated_fat_g": {
+          "fat_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "carbohydrate_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -45231,17 +45226,22 @@
             "type": "number",
             "format": "float"
           },
-          "price_guest": {
-            "nullable": true,
-            "type": "number",
-            "format": "float"
-          },
           "co2_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
           },
-          "price_employee": {
+          "price_guest": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "sugar_g": {
+            "nullable": true,
+            "type": "number",
+            "format": "float"
+          },
+          "salt_g": {
             "nullable": true,
             "type": "number",
             "format": "float"
@@ -45288,6 +45288,23 @@
             "type": "string",
             "format": "timestamp"
           },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "foodoffer_category": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoodoffersCategories"
+              }
+            ]
+          },
           "user_updated": {
             "nullable": true,
             "oneOf": [
@@ -45312,11 +45329,6 @@
               }
             ]
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
           "canteen": {
             "nullable": true,
             "oneOf": [
@@ -45326,18 +45338,6 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsCanteens"
-              }
-            ]
-          },
-          "foodoffer_category": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoodoffersCategories"
               }
             ]
           },
@@ -45391,6 +45391,10 @@
             "nullable": true,
             "type": "integer"
           },
+          "status": {
+            "nullable": true,
+            "type": "string"
+          },
           "food": {
             "nullable": true,
             "oneOf": [
@@ -45402,16 +45406,12 @@
               }
             ]
           },
-          "status": {
-            "nullable": true,
-            "type": "string"
-          },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -45785,6 +45785,18 @@
             "nullable": true,
             "type": "string"
           },
+          "date_end": {
+            "nullable": true,
+            "description": "Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "date_start": {
+            "nullable": false,
+            "description": "* Muss gesetzt sein",
+            "type": "string",
+            "format": "date-time"
+          },
           "date_updated": {
             "nullable": true,
             "type": "string",
@@ -45794,18 +45806,6 @@
             "nullable": true,
             "type": "string",
             "format": "timestamp"
-          },
-          "date_start": {
-            "nullable": false,
-            "description": "* Muss gesetzt sein",
-            "type": "string",
-            "format": "date-time"
-          },
-          "date_end": {
-            "nullable": true,
-            "description": "Falls ein Event nur bis zu einem bestimmten Zeitpunkt gültig ist.",
-            "type": "string",
-            "format": "date-time"
           },
           "user_updated": {
             "nullable": true,
@@ -45884,80 +45884,6 @@
           "id"
         ]
       },
-      "ItemsFoodsAttributesGroups": {
-        "type": "object",
-        "properties": {
-          "sort": {
-            "nullable": true,
-            "type": "integer"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "alias": {
-            "nullable": true,
-            "type": "string"
-          },
-          "date_updated": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "date_created": {
-            "nullable": true,
-            "type": "string",
-            "format": "timestamp"
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_created": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
-          "translations": {
-            "nullable": true,
-            "type": "array",
-            "items": {
-              "oneOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "$ref": "#/components/schemas/ItemsFoodsAttributesGroupsTranslations"
-                }
-              ]
-            }
-          }
-        },
-        "x-collection": "foods_attributes_groups",
-        "required": [
-          "id"
-        ]
-      },
       "ItemsFoodsAttributesGroupsTranslations": {
         "type": "object",
         "properties": {
@@ -46003,57 +45929,28 @@
         },
         "x-collection": "foods_attributes_groups_translations"
       },
-      "ItemsFoodsAttributesTranslations": {
-        "type": "object",
-        "properties": {
-          "be_source_for_translations": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "let_be_translated": {
-            "nullable": true,
-            "type": "boolean"
-          },
-          "id": {
-            "nullable": false,
-            "type": "integer"
-          },
-          "name": {
-            "nullable": true,
-            "type": "string"
-          },
-          "languages_code": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsLanguages"
-              }
-            ]
-          },
-          "foods_attributes_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoodsAttributes"
-              }
-            ]
-          }
-        },
-        "x-collection": "foods_attributes_translations"
-      },
       "ItemsFoodsAttributes": {
         "type": "object",
         "properties": {
           "sort": {
             "nullable": true,
             "type": "integer"
+          },
+          "suffix": {
+            "nullable": true,
+            "type": "string"
+          },
+          "prefix": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "image_thumb_hash": {
+            "nullable": true,
+            "type": "string"
           },
           "image_remote_url": {
             "nullable": true,
@@ -46077,22 +45974,6 @@
             "type": "string"
           },
           "alias": {
-            "nullable": true,
-            "type": "string"
-          },
-          "suffix": {
-            "nullable": true,
-            "type": "string"
-          },
-          "prefix": {
-            "nullable": true,
-            "type": "string"
-          },
-          "status": {
-            "nullable": false,
-            "type": "string"
-          },
-          "image_thumb_hash": {
             "nullable": true,
             "type": "string"
           },
@@ -46214,18 +46095,6 @@
             "nullable": true,
             "type": "string"
           },
-          "foodoffer_id": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFoodoffers"
-              }
-            ]
-          },
           "id": {
             "nullable": false,
             "type": "string",
@@ -46240,6 +46109,18 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsFoodsAttributes"
+              }
+            ]
+          },
+          "foodoffer_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoodoffers"
               }
             ]
           }
@@ -46288,11 +46169,6 @@
             "format": "date-time",
             "nullable": true
           },
-          "id": {
-            "description": "Unique identifier for this single collection preset.",
-            "example": "81dfa7e0-56d2-471f-b96a-1cf8a62bdf28",
-            "type": "string"
-          },
           "user_updated": {
             "description": "User that updated the Comment.",
             "example": "81dfa7e0-56d2-471f-b96a-1cf8a62bdf28",
@@ -46316,6 +46192,11 @@
                 "$ref": "#/components/schemas/Users"
               }
             ]
+          },
+          "id": {
+            "description": "Unique identifier for this single collection preset.",
+            "example": "81dfa7e0-56d2-471f-b96a-1cf8a62bdf28",
+            "type": "string"
           }
         },
         "x-collection": "directus_comments"
@@ -46490,6 +46371,55 @@
         },
         "x-collection": "form_fields_translations"
       },
+      "ItemsFoodsAttributesTranslations": {
+        "type": "object",
+        "properties": {
+          "be_source_for_translations": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "let_be_translated": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "id": {
+            "nullable": false,
+            "type": "integer"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "name": {
+            "nullable": true,
+            "type": "string"
+          },
+          "languages_code": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsLanguages"
+              }
+            ]
+          },
+          "foods_attributes_id": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFoodsAttributes"
+              }
+            ]
+          }
+        },
+        "x-collection": "foods_attributes_translations"
+      },
       "ItemsFormAnswersFiles": {
         "type": "object",
         "properties": {
@@ -46563,12 +46493,12 @@
             "nullable": true,
             "type": "string"
           },
-          "time_end": {
+          "time_start": {
             "nullable": true,
             "type": "string",
             "format": "time"
           },
-          "time_start": {
+          "time_end": {
             "nullable": true,
             "type": "string",
             "format": "time"
@@ -46595,30 +46525,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "group": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsBusinesshoursGroups"
-              }
-            ]
-          },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
           "user_created": {
             "nullable": true,
             "oneOf": [
@@ -46631,10 +46537,34 @@
               }
             ]
           },
+          "group": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsBusinesshoursGroups"
+              }
+            ]
+          },
           "id": {
             "nullable": false,
             "type": "string",
             "format": "uuid"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           }
         },
         "x-collection": "businesshours",
@@ -46645,10 +46575,6 @@
       "ItemsFormFields": {
         "type": "object",
         "properties": {
-          "is_visible_in_form": {
-            "nullable": true,
-            "type": "boolean"
-          },
           "is_visible_in_export": {
             "nullable": true,
             "type": "boolean"
@@ -46658,6 +46584,10 @@
             "type": "boolean"
           },
           "is_required": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "is_visible_in_form": {
             "nullable": true,
             "type": "boolean"
           },
@@ -46732,11 +46662,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "id": {
-            "nullable": false,
-            "type": "string",
-            "format": "uuid"
-          },
           "form": {
             "nullable": true,
             "oneOf": [
@@ -46761,7 +46686,12 @@
               }
             ]
           },
-          "user_updated": {
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -46773,7 +46703,7 @@
               }
             ]
           },
-          "user_created": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -46847,6 +46777,18 @@
             "type": "string",
             "format": "timestamp"
           },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
           "value_image": {
             "nullable": true,
             "oneOf": [
@@ -46896,18 +46838,6 @@
             ]
           },
           "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
-          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -47004,12 +46934,12 @@
             "nullable": false,
             "type": "string"
           },
-          "date_created": {
+          "date_updated": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
@@ -47063,6 +46993,112 @@
           "id"
         ]
       },
+      "ItemsFoodsAttributesGroups": {
+        "type": "object",
+        "properties": {
+          "sort": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "image_thumb_hash": {
+            "nullable": true,
+            "type": "string"
+          },
+          "image_remote_url": {
+            "nullable": true,
+            "type": "string"
+          },
+          "icon_expo": {
+            "nullable": true,
+            "type": "string"
+          },
+          "icon": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "nullable": false,
+            "type": "string"
+          },
+          "alias": {
+            "nullable": true,
+            "type": "string"
+          },
+          "background_color": {
+            "nullable": true,
+            "type": "string"
+          },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "date_created": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
+          "user_created": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "id": {
+            "nullable": false,
+            "type": "string",
+            "format": "uuid"
+          },
+          "image": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Files"
+              }
+            ]
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
+          },
+          "translations": {
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "$ref": "#/components/schemas/ItemsFoodsAttributesGroupsTranslations"
+                }
+              ]
+            }
+          }
+        },
+        "x-collection": "foods_attributes_groups",
+        "required": [
+          "id"
+        ]
+      },
       "ItemsFormCategories": {
         "type": "object",
         "properties": {
@@ -47088,18 +47124,6 @@
             "type": "string",
             "format": "timestamp"
           },
-          "user_updated": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/Users"
-              }
-            ]
-          },
           "user_created": {
             "nullable": true,
             "oneOf": [
@@ -47116,6 +47140,18 @@
             "nullable": false,
             "type": "string",
             "format": "uuid"
+          },
+          "user_updated": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/Users"
+              }
+            ]
           },
           "translations": {
             "nullable": true,
@@ -47189,12 +47225,12 @@
             "nullable": true,
             "type": "integer"
           },
-          "date_submitted": {
+          "date_started": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
           },
-          "date_started": {
+          "date_submitted": {
             "nullable": true,
             "type": "string",
             "format": "date-time"
@@ -47336,22 +47372,34 @@
             "nullable": false,
             "type": "string"
           },
+          "date_updated": {
+            "nullable": true,
+            "type": "string",
+            "format": "timestamp"
+          },
           "date_created": {
             "nullable": true,
             "type": "string",
             "format": "timestamp"
           },
-          "date_updated": {
+          "recipient_email_field": {
             "nullable": true,
-            "type": "string",
-            "format": "timestamp"
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "$ref": "#/components/schemas/ItemsFormFields"
+              }
+            ]
           },
           "id": {
             "nullable": false,
             "type": "string",
             "format": "uuid"
           },
-          "user_created": {
+          "user_updated": {
             "nullable": true,
             "oneOf": [
               {
@@ -47363,7 +47411,7 @@
               }
             ]
           },
-          "user_updated": {
+          "user_created": {
             "nullable": true,
             "oneOf": [
               {
@@ -47384,18 +47432,6 @@
               },
               {
                 "$ref": "#/components/schemas/ItemsForms"
-              }
-            ]
-          },
-          "recipient_email_field": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "$ref": "#/components/schemas/ItemsFormFields"
               }
             ]
           },

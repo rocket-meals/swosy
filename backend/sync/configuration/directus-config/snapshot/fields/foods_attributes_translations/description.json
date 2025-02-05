@@ -1,23 +1,23 @@
 {
-  "collection": "foods_attributes_values",
-  "field": "number_value",
-  "type": "float",
+  "collection": "foods_attributes_translations",
+  "field": "description",
+  "type": "text",
   "meta": {
-    "collection": "foods_attributes_values",
+    "collection": "foods_attributes_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "number_value",
+    "field": "description",
     "group": null,
     "hidden": false,
-    "interface": "input",
+    "interface": "input-rich-text-md",
     "note": null,
     "options": {
-      "step": 0.01
+      "folder": "05b8de5b-86a7-4dd5-89a0-2a5ee58677cc"
     },
     "readonly": false,
     "required": false,
-    "sort": 4,
+    "sort": 5,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,12 +25,12 @@
     "width": "full"
   },
   "schema": {
-    "name": "number_value",
-    "table": "foods_attributes_values",
-    "data_type": "real",
+    "name": "description",
+    "table": "foods_attributes_translations",
+    "data_type": "text",
     "default_value": null,
     "max_length": null,
-    "numeric_precision": 24,
+    "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,

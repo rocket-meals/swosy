@@ -12,7 +12,9 @@
     "hidden": false,
     "interface": "input",
     "note": null,
-    "options": null,
+    "options": {
+      "step": 0.01
+    },
     "readonly": false,
     "required": false,
     "sort": 2,
