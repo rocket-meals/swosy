@@ -503,6 +503,9 @@ export class FoodTL1Parser implements FoodParserInterface {
             if(csvAttribute.value_type === TL1AttributeValueType.NUMBER){
                 let value_as_number = null;
                 if(!!value){
+                    if(value.includes(",")){
+                        value = value.replace(",", ".");
+                    }
                     value_as_number = parseFloat(value);
                 }
                 attributeValues.push({
@@ -699,7 +702,8 @@ export class FoodTL1Parser implements FoodParserInterface {
                 let matchString = match[0];
                 let valueString = matchString.slice(searchText.length);
                 valueString = valueString.replace(",",".");
-                return FoodTL1Parser.parseFloatWithOneDecimal(valueString);
+                let valueNumer = FoodTL1Parser.parseFloatWithOneDecimal(valueString);
+                return valueNumer;
             }
         } catch(err){
             return null;

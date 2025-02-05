@@ -90,7 +90,8 @@ describe("FoodTL1Parser Test", () => {
             let expectedAttributeValue = expectedExternalIdentifiersAndValues[parsedFoodAttribute.external_identifier];
             expect(expectedAttributeValue).not.toBeNull();
             expect(expectedAttributeValue).not.toBeUndefined();
-            expect(parsedFoodAttribute.attribute_value).toStrictEqual(expectedAttributeValue);
+            expect(JSON.stringify(parsedFoodAttribute.attribute_value)).toStrictEqual(JSON.stringify(expectedAttributeValue));
+            //console.log("" + JSON.stringify(parsedFoodAttribute.attribute_value) + " == " + JSON.stringify(expectedAttributeValue));
         }
         let allExternalIdentifiersFound = true;
         for (let expectedExternalIdentifier of Object.keys(expectedExternalIdentifiersAndValues)) {

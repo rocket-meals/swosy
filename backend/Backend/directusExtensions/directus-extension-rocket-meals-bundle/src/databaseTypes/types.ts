@@ -405,6 +405,28 @@ export type CollectionsDatesLastUpdate = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type DerivedForms = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  fields: any[] | DerivedFormsFormFields[];
+  id: string;
+  internal_identifier?: string | null;
+  name?: string | null;
+  parent_form?: string | Forms | null;
+  recipient_email_field?: string | FormFields | null;
+  recipient_email_static?: string | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type DerivedFormsFormFields = {
+  derived_forms_id?: string | DerivedForms | null;
+  form_fields_id?: string | FormFields | null;
+  id: number;
+};
+
 export type Devices = {
   alias?: string | null;
   brand?: string | null;
@@ -996,6 +1018,7 @@ export type FoodsAttributesGroupsTranslations = {
 
 export type FoodsAttributesTranslations = {
   be_source_for_translations?: boolean | null;
+  description?: string | null;
   foods_attributes_id?: string | FoodsAttributes | null;
   id: number;
   languages_code?: string | Languages | null;
@@ -1191,7 +1214,7 @@ export type FormFields = {
   image_thumb_hash?: string | null;
   import_settings: string;
   internal_custom_id?: string | null;
-  is_editable?: boolean | null;
+  is_disabled?: boolean | null;
   is_required?: boolean | null;
   is_visible_in_export?: boolean | null;
   is_visible_in_form?: boolean | null;
@@ -1234,6 +1257,7 @@ export type Forms = {
   category?: string | FormCategories | null;
   date_created?: string | null;
   date_updated?: string | null;
+  derived_forms: any[] | DerivedForms[];
   form_fields: any[] | FormFields[];
   form_submissions: any[] | FormSubmissions[];
   id: string;
@@ -1615,6 +1639,8 @@ export type CustomDirectusTypes = {
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
+  derived_forms: DerivedForms[];
+  derived_forms_form_fields: DerivedFormsFormFields[];
   devices: Devices[];
   directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];
