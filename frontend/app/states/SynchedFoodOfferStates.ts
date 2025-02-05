@@ -6,6 +6,7 @@ import {getDemoFoods} from '@/states/SynchedFoods';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {useSearchParamSelectedFoodoffersDate} from "@/helper/searchParams/SearchParams";
 import {useEffect} from "react";
+import {getDemoFoodsAttributesValuesAsList} from "@/states/SynchedFoodattributes";
 
 export function useFoodOfferSelectedDate(): [Date, (newValue: Date) => void, (days: number) => void]
 {
@@ -33,8 +34,8 @@ export function formatDateForFoodSelection(date: Date): Date{
 export const TABLE_NAME_FOODOFFERS = 'foodoffers';
 export const TABLE_NAME_FOODS = 'foods';
 
-const QUERY_FIELDS_FOOD_OFFER = ['*','food.*', '!food.feedbacks' ,'food.translations.*', 'markings.*'];
-const QUERY_FIELDS_FOOD = ['*','translations.*', 'markings.*'];
+const QUERY_FIELDS_FOOD_OFFER = ['*','food.*', '!food.feedbacks' ,'food.translations.*', 'markings.*', "attribute_values.*"];
+const QUERY_FIELDS_FOOD = ['*','translations.*', 'markings.*', "attribute_values.*"];
 
 export function useFoodFeedbacks(food_id: string, offset: number, limit: number): FoodsFeedbacks[] {
 	const [dictFoodIdToFoodFeedbacks, setDictFoodIdToFoodFeedbacks] = useSyncState<Record<string, FoodsFeedbacks[]>>(NonPersistentStore.foodFeedbacks);
@@ -370,7 +371,8 @@ function getDemoFoodOffersForDate(date: Date | undefined): Foodoffers[]
 			// placeholders for the expandable fields in directus
 			environmental_impact: "",
 			nutrition: "",
-			prices: ""
+			prices: "",
+			attribute_values: getDemoFoodsAttributesValuesAsList(),
 		});
 	}
 

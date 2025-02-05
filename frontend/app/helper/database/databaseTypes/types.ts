@@ -199,6 +199,7 @@ export type Businesshours = {
   date_valid_from?: string | null;
   date_valid_till?: string | null;
   friday?: boolean | null;
+  group?: string | BusinesshoursGroups | null;
   id: string;
   monday?: boolean | null;
   saturday?: boolean | null;
@@ -216,6 +217,28 @@ export type Businesshours = {
   wednesday?: boolean | null;
 };
 
+export type BusinesshoursGroups = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | BusinesshoursGroupsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type BusinesshoursGroupsTranslations = {
+  be_source_for_translations?: boolean | null;
+  businesshours_groups_id?: string | BusinesshoursGroups | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
+};
+
 export type CanteenFoodFeedbackReportSchedules = {
   alias?: string | null;
   canteens: any[] | CanteenFoodFeedbackReportSchedulesCanteens[];
@@ -223,9 +246,9 @@ export type CanteenFoodFeedbackReportSchedules = {
   date_next_report_is_due?: string | null;
   date_updated?: string | null;
   enabled?: boolean | null;
-  foodoffers_days_limit?: number | null;
-  foodoffers_days_offset?: number | null;
   id: string;
+  period_days_amount?: number | null;
+  period_days_offset?: number | null;
   recipients: any[] | CanteenFoodFeedbackReportSchedulesReportRecipients[];
   report_content_settings: string;
   report_debug_settings: string;
@@ -245,11 +268,13 @@ export type CanteenFoodFeedbackReportSchedules = {
   send_on_wednesdays?: boolean | null;
   send_once_now_for_reference_date?: string | null;
   send_report_at_hh_mm?: string | null;
-  show_canteen_feedbacks?: boolean | null;
   show_canteen_feedbacks_also_per_canteen?: boolean | null;
-  show_food?: boolean | null;
-  show_food_comments?: boolean | null;
-  show_food_feedback_labels?: boolean | null;
+  show_canteen_feedbacks_for_all_time?: boolean | null;
+  show_canteen_feedbacks_for_selected_period?: boolean | null;
+  show_food_comments_for_all_time?: boolean | null;
+  show_food_comments_for_selected_period?: boolean | null;
+  show_food_feedback_labels_for_all_time?: boolean | null;
+  show_food_feedback_labels_for_selected_period?: boolean | null;
   show_images?: boolean | null;
   sort?: number | null;
   status?: string | null;
@@ -380,6 +405,28 @@ export type CollectionsDatesLastUpdate = {
   user_updated?: string | DirectusUsers | null;
 };
 
+export type DerivedForms = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  fields: any[] | DerivedFormsFormFields[];
+  id: string;
+  internal_identifier?: string | null;
+  name?: string | null;
+  parent_form?: string | Forms | null;
+  recipient_email_field?: string | FormFields | null;
+  recipient_email_static?: string | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type DerivedFormsFormFields = {
+  derived_forms_id?: string | DerivedForms | null;
+  form_fields_id?: string | FormFields | null;
+  id: number;
+};
+
 export type Devices = {
   alias?: string | null;
   brand?: string | null;
@@ -420,7 +467,6 @@ export type DirectusAccess = {
 export type DirectusActivity = {
   action: string;
   collection: string;
-  comment?: string | null;
   id: number;
   ip?: string | null;
   item: string;
@@ -452,6 +498,17 @@ export type DirectusCollections = {
   translations?: unknown | null;
   unarchive_value?: string | null;
   versioning: boolean;
+};
+
+export type DirectusComments = {
+  collection: string | DirectusCollections;
+  comment: string;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  item: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type DirectusDashboards = {
@@ -787,6 +844,7 @@ export type DirectusVersions = {
   collection: string | DirectusCollections;
   date_created?: string | null;
   date_updated?: string | null;
+  delta?: unknown | null;
   hash?: string | null;
   id: string;
   item: string;
@@ -938,9 +996,15 @@ export type FoodsAttributes = {
 
 export type FoodsAttributesGroups = {
   alias?: string | null;
+  background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  icon?: string | null;
+  icon_expo?: string | null;
   id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
   translations: any[] | FoodsAttributesGroupsTranslations[];
@@ -960,6 +1024,7 @@ export type FoodsAttributesGroupsTranslations = {
 
 export type FoodsAttributesTranslations = {
   be_source_for_translations?: boolean | null;
+  description?: string | null;
   foods_attributes_id?: string | FoodsAttributes | null;
   id: number;
   languages_code?: string | Languages | null;
@@ -1084,6 +1149,130 @@ export type FoodsTranslations = {
   let_be_translated?: boolean | null;
   name?: string | null;
   translation_settings: string;
+};
+
+export type FormAnswers = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  form_field?: string | FormFields | null;
+  form_submission?: string | FormSubmissions | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  value_boolean?: boolean | null;
+  value_custom?: unknown | null;
+  value_date?: string | null;
+  value_file?: string | DirectusFiles | null;
+  value_files: any[] | FormAnswersFiles[];
+  value_image?: string | DirectusFiles | null;
+  value_number?: number | null;
+  value_string?: string | null;
+  values: string;
+};
+
+export type FormAnswersFiles = {
+  directus_files_id?: string | DirectusFiles | null;
+  form_answers_id?: string | FormAnswers | null;
+  id: number;
+};
+
+export type FormCategories = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | FormCategoriesTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FormCategoriesTranslations = {
+  be_source_for_translations?: boolean | null;
+  form_categories_id?: string | FormCategories | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
+};
+
+export type FormFields = {
+  alias?: string | null;
+  background_color?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  export_settings: string;
+  external_export_field_name?: string | null;
+  external_export_id?: string | null;
+  external_import_id?: string | null;
+  field_type?: string | null;
+  form?: string | Forms | null;
+  form_settings: string;
+  icon?: string | null;
+  icon_expo?: string | null;
+  id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
+  import_settings: string;
+  internal_custom_id?: string | null;
+  is_disabled?: boolean | null;
+  is_required?: boolean | null;
+  is_visible_in_export?: boolean | null;
+  is_visible_in_form?: boolean | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | FormFieldsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  value_prefix?: string | null;
+  value_suffix?: string | null;
+};
+
+export type FormFieldsTranslations = {
+  be_source_for_translations?: boolean | null;
+  description?: string | null;
+  form_fields_id?: string | FormFields | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
+};
+
+export type FormSubmissions = {
+  date_created?: string | null;
+  date_started?: string | null;
+  date_submitted?: string | null;
+  date_updated?: string | null;
+  external_identifier?: string | null;
+  form?: string | Forms | null;
+  form_answers: any[] | FormAnswers[];
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type Forms = {
+  category?: string | FormCategories | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  derived_forms: any[] | DerivedForms[];
+  form_fields: any[] | FormFields[];
+  form_submissions: any[] | FormSubmissions[];
+  id: string;
+  internal_custom_id?: string | null;
+  name?: string | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Languages = {
@@ -1250,7 +1439,7 @@ export type Profiles = {
   buildings_favorites: any[] | ProfilesBuildingsFavorites[];
   buildings_last_opened: any[] | ProfilesBuildingsLastOpened[];
   canteen?: string | Canteens | null;
-  course_timetable?: string | null;
+  course_timetable?: unknown | null;
   credit_balance?: number | null;
   credit_balance_date_updated?: string | null;
   credit_balance_last_transaction?: number | null;
@@ -1442,6 +1631,8 @@ export type CustomDirectusTypes = {
   buildings_businesshours: BuildingsBusinesshours[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
+  businesshours_groups: BusinesshoursGroups[];
+  businesshours_groups_translations: BusinesshoursGroupsTranslations[];
   canteen_food_feedback_report_schedules: CanteenFoodFeedbackReportSchedules[];
   canteen_food_feedback_report_schedules_canteens: CanteenFoodFeedbackReportSchedulesCanteens[];
   canteen_food_feedback_report_schedules_report_recipients: CanteenFoodFeedbackReportSchedulesReportRecipients[];
@@ -1454,10 +1645,13 @@ export type CustomDirectusTypes = {
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
+  derived_forms: DerivedForms[];
+  derived_forms_form_fields: DerivedFormsFormFields[];
   devices: Devices[];
   directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];
   directus_collections: DirectusCollections[];
+  directus_comments: DirectusComments[];
   directus_dashboards: DirectusDashboards[];
   directus_extensions: DirectusExtensions[];
   directus_fields: DirectusFields[];
@@ -1501,6 +1695,14 @@ export type CustomDirectusTypes = {
   foods_feedbacks_labels_translations: FoodsFeedbacksLabelsTranslations[];
   foods_markings: FoodsMarkings[];
   foods_translations: FoodsTranslations[];
+  form_answers: FormAnswers[];
+  form_answers_files: FormAnswersFiles[];
+  form_categories: FormCategories[];
+  form_categories_translations: FormCategoriesTranslations[];
+  form_fields: FormFields[];
+  form_fields_translations: FormFieldsTranslations[];
+  form_submissions: FormSubmissions[];
+  forms: Forms[];
   languages: Languages[];
   mails: Mails[];
   markings: Markings[];

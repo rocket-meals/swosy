@@ -2,6 +2,11 @@ import {Foods, FoodsFeedbacks, FoodsMarkings} from '@/helper/database/databaseTy
 import {getDemoLanguagesDict} from "@/states/SynchedLanguages";
 import {getDemoMarkings} from "@/states/SynchedMarkings";
 import {CollectionHelper} from "@/helper/database/server/CollectionHelper";
+import {
+	getDemoFoodsAttributes,
+	getDemoFoodsAttributesValues,
+	getDemoFoodsAttributesValuesAsList
+} from "@/states/SynchedFoodattributes";
 
 
 export function getDemoFoods(): Record<string, Foods> {
@@ -67,7 +72,7 @@ function getDemoResource(index: number, id: string, name: string, category: stri
 			user_updated: undefined,
 			translations: translations,
 			feedbacks: [],
-			foodoffers: []
+			attribute_values: getDemoFoodsAttributesValuesAsList(),
 		}
 	)
 }

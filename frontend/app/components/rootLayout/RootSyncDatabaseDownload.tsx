@@ -28,6 +28,8 @@ import {useSynchedCanteensFeedbacksLabelsDict} from "@/states/SynchedCanteensFee
 import {useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict} from "@/states/SynchedCanteensFeedbacksLabelsEntries";
+import {useSynchedFoodsAttributesDict} from "@/states/SynchedFoodattributes";
+import {useSynchedFoodsAttributesGroupsDict} from "@/states/SynchedFoodattributesGroups";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -66,6 +68,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [foodsCategoriesDict, setFoodsCategoriesDict, cacheHelperFoodsCategories] = useSynchedFoodsCategoriesDict()
 	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict, cacheHelperFoodoffersCategories] = useSynchedFoodoffersCategoriesDict()
 	const [canteensFeedbacksLabelsDict, setCanteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels] = useSynchedCanteensFeedbacksLabelsDict()
+	const [foodsAttributesDict, setFoodsAttributesDict, cacheHelperFoodsAttributes] = useSynchedFoodsAttributesDict()
+	const [foodsAttributesGroupsDict, setFoodsAttributesGroupsDict, cacheHelperFoodsAttributesGroups] = useSynchedFoodsAttributesGroupsDict()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict()
 	const [ownFoodFeedbacksLabelsEntriesListDict, setOwnFoodFeedbacksLabelsEntriesListDict, cacheHelperObjOwnFoodFeedbacksLabelEntries] = useSynchedOwnFoodIdToFoodFeedbacksLabelEntriesListDict();
 	const [ownCanteenFeedbacksLabelsEntriesDict, setOwnCanteenFeedbacksLabelsEntriesDict, cacheHelperObjOwnCanteenFeedbacksLabelEntries] = useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict();
@@ -123,6 +127,8 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	addResourceToCheckForUpdates('foodsFeedbacksLabels', foodsFeedbacksLabelsDict, cacheHelperFoodsFeedbacksLabels)
 	addResourceToCheckForUpdates('foodsCategories', foodsCategoriesDict, cacheHelperFoodsCategories)
 	addResourceToCheckForUpdates('foodoffersCategories', foodoffersCategoriesDict, cacheHelperFoodoffersCategories)
+	addResourceToCheckForUpdates('foodsAttributes', foodsAttributesDict, cacheHelperFoodsAttributes)
+	addResourceToCheckForUpdates('foodsAttributesGroups', foodsAttributesGroupsDict, cacheHelperFoodsAttributesGroups)
 	addResourceToCheckForUpdates('canteensFeedbacksLabels', canteensFeedbacksLabelsDict, cacheHelperCanteensFeedbacksLabels	)
 	addResourceToCheckForUpdates('profile', profile, cacheHelperObjProfile);
 	addResourceToCheckForUpdates('wikis', wikisDict, cacheHelperObjWikis)

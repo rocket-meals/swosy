@@ -1,13 +1,27 @@
-import {Icon, Text, View} from '@/components/Themed';
-import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {TranslationKeys, useTranslation, useTranslations} from '@/helper/translations/Translation';
-import {IconNames} from '@/constants/IconNames';
-import {AppConfiguration} from "@/constants/AppConfiguration";
+import {getLineHeightInPixelBySize, Text, TEXT_SIZE_DEFAULT, useViewBackgroundColor, View} from '@/components/Themed';
 import {StringHelper} from "@/helper/string/StringHelper";
-import {Foodoffers, Foods} from "@/helper/database/databaseTypes/types";
+import {
+	Foodoffers,
+	Foods,
+	FoodsAttributes,
+	FoodsAttributesGroups,
+	FoodsAttributesValues
+} from "@/helper/database/databaseTypes/types";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRow} from "@/components/settings/SettingsRow";
 import {NumberHelper} from "@/helper/number/NumberHelper";
+import {FoodAttributesDict, useSynchedFoodsAttributesDict} from "@/states/SynchedFoodattributes";
+import {FoodAttributesGroupsDict, useSynchedFoodsAttributesGroupsDict} from "@/states/SynchedFoodattributesGroups";
+import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {useProfileLanguageCode} from "@/states/SynchedProfile";
+import {ItemStatusFilter} from "@/helper/database/ItemStatus";
+import DirectusImageOrIconComponent, {
+	hasResourceImageIconOrRemoteImage,
+	hasResourceImageOrRemoteImage
+} from "@/components/image/DirectusImageOrIconComponent";
+import React from "react";
+import {useMyContrastColor} from "@/helper/color/MyContrastColor";
+import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 
 // Utility type to make properties optional if they are optional in either T or U
 type MergeTypes<T1, T2> = T1 | T2;
@@ -126,70 +140,246 @@ export class FoodInformationValueFormatter {
 	}
 }
 
-export function FoodDataList(props: FoodInformationListProps) {
-	const [
-		translation_calories,
-		translation_protein,
-		translation_fat,
-		translation_carbohydrate,
-		translation_fiber,
-		translation_sugar,
-		translation_salt,
-		translation_saturated_fat,
-	] = useTranslations([
-		TranslationKeys.nutrition_calories,
-		TranslationKeys.nutrition_protein,
-		TranslationKeys.nutrition_fat,
-		TranslationKeys.nutrition_carbohydrate,
-		TranslationKeys.nutrition_fiber,
-		TranslationKeys.nutrition_sugar,
-		TranslationKeys.nutrition_salt,
-		TranslationKeys.nutrition_saturated_fat
-	])
-	const translations_nutrition = useTranslation(TranslationKeys.nutrition);
+function getFoodAttributeGroupFromAttributeValues(attribute_value: FoodsAttributesValues, foodAttributesDict: FoodAttributesDict, foodAttributesGroupsDict: FoodAttributesGroupsDict): FoodsAttributesGroups | null | undefined {
+	const food_attribute = attribute_value.food_attribute
+	let food_attribute_id: string | null | undefined = null;
+	if(typeof food_attribute === "string") {
+		food_attribute_id = food_attribute
+	} else if(food_attribute) {
+		food_attribute_id = food_attribute.id;
+	}
+	if(food_attribute_id && foodAttributesDict) {
+		const food_attribute = foodAttributesDict[food_attribute_id];
+		if(food_attribute) {
+			const food_attribute_group_raw = food_attribute.group;
+			let food_attribute_group_id: string | null | undefined = null;
+			if(typeof food_attribute_group_raw === "string") {
+				food_attribute_group_id = food_attribute_group_raw;
+			} else if(food_attribute_group_raw) {
+				food_attribute_group_id = food_attribute_group_raw.id;
+			}
+			if(food_attribute_group_id && foodAttributesGroupsDict) {
+				const food_attribute_group = foodAttributesGroupsDict[food_attribute_group_id];
+				if(food_attribute_group) {
+					return food_attribute_group;
+				}
+			}
+		}
+	}
+	return null;
+}
 
-	const [
-		translation_environmental_impact_co2,
-		translation_environmental_impact_co2_saving_percentage,
-		translation_environmental_impact_co2_rating
-	] = useTranslations([
-		TranslationKeys.environmental_impact_co2,
-		TranslationKeys.environmental_impact_co2_saving_percentage,
-		TranslationKeys.environmental_impact_co2_rating,
-	])
-	const translation_environmental_impact = useTranslation(TranslationKeys.environmental_impact);
+function getSortedFoodAttributesGroups(foodAttributesGroups: FoodsAttributesGroups[]): FoodsAttributesGroups[] {
+	return foodAttributesGroups.sort((a, b) => {
+		let aSort = a.sort || 0;
+		let bSort = b.sort || 0;
+		return aSort - bSort; // smaller sort values come first
+	});
+}
 
-	const translation_no_value = useTranslation(TranslationKeys.no_value);
+function getFoodAttributeFromFoodAttributeValue(foodAttributeValue: FoodsAttributesValues, foodAttributesDict: FoodAttributesDict): FoodsAttributes | null | undefined {
+	const food_attribute = foodAttributeValue.food_attribute;
+	let food_attribute_id: string | null | undefined = null;
+	if(typeof food_attribute === "string") {
+		food_attribute_id = food_attribute;
+	} else if(food_attribute) {
+		food_attribute_id = food_attribute.id;
+	}
+	if(food_attribute_id && foodAttributesDict) {
+		const food_attribute = foodAttributesDict[food_attribute_id];
+		if(food_attribute) {
+			return food_attribute;
+		}
+	}
+	return null;
+}
 
-	type nutritionData = {
-		icon: string,
-		label: string,
-		valueFormatted: string | null
+function getSortedFoodAttributeValuesByFoodAttribute(foodAttributeValues: FoodsAttributesValues[], foodAttributesDict: FoodAttributesDict): FoodsAttributesValues[] {
+	return foodAttributeValues.sort((a, b) => {
+		let foodAttributeA = getFoodAttributeFromFoodAttributeValue(a, foodAttributesDict);
+		let foodAttributeB = getFoodAttributeFromFoodAttributeValue(b, foodAttributesDict);
+		let aSort = foodAttributeA?.sort || 0;
+		let bSort = foodAttributeB?.sort || 0;
+		return aSort - bSort; // smaller sort values come first
+	});
+}
+
+function hasFoodAttributeValueAnyValue(foodAttributeValue: FoodsAttributesValues): boolean {
+	return foodAttributeValue.number_value !== null || foodAttributeValue.string_value !== null || foodAttributeValue.boolean_value !== null;
+}
+
+function getFoodAttributeValuesWhereFoodAttributeIsVisible(foodAttributeValues: FoodsAttributesValues[] | undefined, foodAttributesDict: FoodAttributesDict | undefined): FoodsAttributesValues[] | undefined {
+	if(foodAttributeValues && foodAttributesDict) {
+		return foodAttributeValues.filter((foodAttributeValue) => {
+			let foodAttribute = getFoodAttributeFromFoodAttributeValue(foodAttributeValue, foodAttributesDict);
+			if(foodAttribute) {
+				// only show published food attributes
+				return ItemStatusFilter.isItemStatusPublished(foodAttribute);
+			}
+			return true // if food attribute is not found, do not filter it out
+		});
+	}
+	return undefined;
+}
+
+export const FoodAttributeImageOrIcon = ({foodAttribute}: {foodAttribute: FoodsAttributes}) => {
+	const viewBackgroundColor = useViewBackgroundColor()
+	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
+	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
+	const backgroundcolor = foodAttribute?.background_color || viewWhiteOrBlackBackgroundColor
+
+	let backgroundColor = backgroundcolor
+	const textColor = useMyContrastColor(backgroundColor);
+
+	const hasImageOrRemoteImage = hasResourceImageOrRemoteImage(foodAttribute);
+	const hasImageIconOrRemoteImage = hasResourceImageIconOrRemoteImage(foodAttribute);
+
+	if(!backgroundColor && !hasImageOrRemoteImage){
+		backgroundColor = viewWhiteOrBlackBackgroundColor;
 	}
 
-	const data_nutrition: {
-    key: string;
-    data: nutritionData
-  }[] = [
-  	{ key: 'calories', data: {icon: IconNames.nutrition_calories_icon, label: translation_calories, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueCalories(props.data)} },
-  	{ key: 'carbohydrates', data: {icon: IconNames.nutrition_carbohydrate_icon, label: translation_carbohydrate, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueCarbohydrates(props.data)} },
-  	{ key: 'fiber', data: {icon: IconNames.nutrition_fiber_icon, label: translation_fiber, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueFiber(props.data)} },
-  	{ key: 'protein', data: {icon: IconNames.nutrition_protein_icon, label: translation_protein, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueProtein(props.data)} },
-  	{ key: 'salt', data: {icon: IconNames.nutirtion_salt_icon, label: translation_salt, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueSalt(props.data)} },
-  	{ key: 'fat', data: {icon: IconNames.nutrition_fat_icon, label: translation_fat, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueFat(props.data)} },
-  	{ key: 'sugar', data: {icon: IconNames.nutrition_sugar_icon, label: translation_sugar, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueSugar(props.data)} },
-  	{ key: 'saturatedFat', data: {icon: IconNames.nutrition_saturated_fat_icon, label: translation_saturated_fat, valueFormatted: FoodInformationValueFormatter.formatFoodInformationValueSaturatedFat(props.data)} },
-  ]
+	const lineHeight = getLineHeightInPixelBySize(TEXT_SIZE_DEFAULT) || 10;
+	const imageWidthAndHeight = lineHeight;
 
-	// filter nutrition data, remove all entries with no value
-	const data_nutrition_filtered = data_nutrition.filter((element) => {
-		return element.data.valueFormatted !== null;
-	})
-	const nutritionDataFound = data_nutrition_filtered.length > 0;
+	return <DirectusImageOrIconComponent resource={foodAttribute} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} iconColor={textColor} />
 
+}
+
+function getFoodAttributeFormattedValue(foodAttributeValue: FoodsAttributesValues, foodAttribute?: FoodsAttributes): string | null {
+	let prefix = "";
+	let suffix = "";
+	if(foodAttribute) {
+		prefix = foodAttribute.prefix || "";
+		suffix = foodAttribute.suffix || "";
+	}
+	let valueFormatted = null;
+
+	if(foodAttributeValue.number_value !== null) {
+		valueFormatted = NumberHelper.formatNumber(foodAttributeValue.number_value, suffix, false, ",", ".", 1);
+		valueFormatted = prefix + valueFormatted;
+	} else if(foodAttributeValue.string_value !== null) {
+		valueFormatted = foodAttributeValue.string_value;
+		valueFormatted = prefix + valueFormatted + suffix;
+	} else if(foodAttributeValue.boolean_value !== null) {
+		valueFormatted = foodAttributeValue.boolean_value ? "Yes" : "No";
+		valueFormatted = prefix + valueFormatted + suffix;
+	}
+
+	if(valueFormatted === null || valueFormatted === undefined) {
+		valueFormatted = "/";
+	}
+
+	return valueFormatted;
+}
+
+export function FoodDataList(props: FoodInformationListProps) {
+	const attribute_values_unfiltered = props.data.attribute_values;
+	const [foodAttributesDict, setFoodAttributesDict] = useSynchedFoodsAttributesDict();
+	const [foodAttributesGroupsDict, setFoodAttributesGroupsDict] = useSynchedFoodsAttributesGroupsDict();
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
+
+
+	const attribute_values = getFoodAttributeValuesWhereFoodAttributeIsVisible(attribute_values_unfiltered, foodAttributesDict);
+
+	let foodAttributesGroupIdToAttributeValuesDict: Record<string, FoodsAttributesValues[]> = {};
+	let foodAttributesWithoutGroup: FoodsAttributesValues[] = [];
+
+	if(attribute_values) {
+		for(const attribute_value of attribute_values) {
+			if(hasFoodAttributeValueAnyValue(attribute_value)) { // only show attributes with values
+				let food_attribute_group = getFoodAttributeGroupFromAttributeValues(attribute_value, foodAttributesDict, foodAttributesGroupsDict);
+				if(food_attribute_group){
+					foodAttributesGroupIdToAttributeValuesDict[food_attribute_group.id] = foodAttributesGroupIdToAttributeValuesDict[food_attribute_group.id] || [];
+					foodAttributesGroupIdToAttributeValuesDict[food_attribute_group.id].push(attribute_value);
+				} else {
+					foodAttributesWithoutGroup.push(attribute_value);
+				}
+			}
+		}
+	}
+
+	let existingFoodAttributesGroups: FoodsAttributesGroups[] = [];
+	if(foodAttributesGroupsDict) {
+		for(const attribute_group_id in foodAttributesGroupIdToAttributeValuesDict) {
+			const attribute_group = foodAttributesGroupsDict[attribute_group_id];
+			if(attribute_group) {
+				existingFoodAttributesGroups.push(attribute_group);
+			}
+		}
+	}
+	let sortedFoodAttributesGroups = getSortedFoodAttributesGroups(existingFoodAttributesGroups);
+	let listOfGroupsOfFoodAttributeValues: FoodsAttributesValues[][] = [];
+	for(const foodAttributesGroup of sortedFoodAttributesGroups) {
+		let foodAttributeValues = foodAttributesGroupIdToAttributeValuesDict[foodAttributesGroup.id];
+		if(foodAttributeValues.length > 0) {
+			listOfGroupsOfFoodAttributeValues.push(foodAttributeValues);
+		}
+	}
+	if(foodAttributesWithoutGroup.length > 0) {
+		listOfGroupsOfFoodAttributeValues.push(foodAttributesWithoutGroup);
+	}
 
 	const amountColumns = props.columnAmount || 2;
 
+	let renderedFoodAttributeGroupRows: any[] = [];
+
+	let rowIndex = 0;
+	for(const foodAttributeValues of listOfGroupsOfFoodAttributeValues) {
+		let sortedFoodAttributeValues = getSortedFoodAttributeValuesByFoodAttribute(foodAttributeValues, foodAttributesDict);
+
+		let data_nutrition: {
+			key: string;
+			data: FoodsAttributesValues
+		}[] = []
+		for(const foodAttributeValue of sortedFoodAttributeValues) {
+			data_nutrition.push({
+				key: foodAttributeValue.id,
+				data: foodAttributeValue
+			})
+		}
+
+		let renderedAttributeValues = <MyGridFlatList amountColumns={amountColumns}
+													  data={data_nutrition}
+													  renderItem={(listInfoItem) => {
+														  let foodAttributeValue = listInfoItem.item.data;
+														  let foodAttribute = getFoodAttributeFromFoodAttributeValue(foodAttributeValue, foodAttributesDict);
+														  let translationsFoodAttribute = foodAttribute?.translations as TranslationEntry[];
+														  let translatedAttributeName = getDirectusTranslation(languageCode, translationsFoodAttribute, "name");
+
+														  let valueFormatted: string | null = getFoodAttributeFormattedValue(foodAttributeValue, foodAttribute);
+
+														  let image: any = null;
+														  if(foodAttribute) {
+															  image = (
+																  <View style={{
+																	  //backgroundColor: "red"
+																  }}>
+																	  <FoodAttributeImageOrIcon foodAttribute={foodAttribute}/>
+																  </View>
+															  )
+														  }
+														  return <FoodInformationListElement renderedIcon={image} label={translatedAttributeName} valueFormatted={valueFormatted}/>
+													  }}
+		/>
+
+		let foodAttributesGroup = getFoodAttributeGroupFromAttributeValues(foodAttributeValues[0], foodAttributesDict, foodAttributesGroupsDict);
+		let displayedRowName = "";
+		if(foodAttributesGroup) {
+			let translationsFoodAttributeGroup = foodAttributesGroup.translations as TranslationEntry[]
+			let translatedGroupName = getDirectusTranslation(languageCode, translationsFoodAttributeGroup, "name") || foodAttributesGroup.alias || foodAttributesGroup.id;
+			displayedRowName = translatedGroupName;
+		}
+		renderedFoodAttributeGroupRows.push(
+			<SettingsRowGroup key={rowIndex+""} label={displayedRowName}>
+				{renderedAttributeValues}
+			</SettingsRowGroup>
+		)
+		rowIndex++;
+	}
+
+
+	/**
 	let renderedNutritionInformation = null;
 	if(nutritionDataFound) {
 		renderedNutritionInformation = <SettingsRowGroup label={translations_nutrition}>
@@ -230,13 +420,13 @@ export function FoodDataList(props: FoodInformationListProps) {
 			/>
 		</SettingsRowGroup>
 	}
+		*/
 
 	return (
 		<View style={{
 			width: "100%",
 		}}>
-			{renderedNutritionInformation}
-			{renderedEnvironmentalImpactInformation}
+			{renderedFoodAttributeGroupRows}
 		</View>
 	)
 }

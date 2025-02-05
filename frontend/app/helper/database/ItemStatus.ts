@@ -17,6 +17,20 @@ export class ItemStatusFilter {
 		return ItemStatusFilter.transformDictToList(filteredDict);
 	}
 
+	public static isItemStatus(item: ItemWithFieldStatus, itemStatus: ItemStatus | undefined): boolean {
+		if(itemStatus === undefined) {
+			return true;
+		}
+		if (!item) {
+			return false;
+		}
+		return item.status === itemStatus;
+	}
+
+	public static isItemStatusPublished(item: ItemWithFieldStatus): boolean {
+		return ItemStatusFilter.isItemStatus(item, ItemStatus.PUBLISHED);
+	}
+
 	private static transformListToDict<T>(list: T[]): Record<string, T | null | undefined> {
 		const dict: Record<string, T | null | undefined> = {};
 		list.forEach((item, index) => {

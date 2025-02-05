@@ -12,7 +12,7 @@ export function hasResourceImageIconOrRemoteImage(resource: any){
 }
 
 export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage, iconColor }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number, iconColor?: string }) {
-	let iconLeft = resource.icon
+	let iconLeft = resource.icon_expo || resource.icon
 	const alias = resource.alias
 	let iconLeftCustom = undefined
 	if(iconLeft){
