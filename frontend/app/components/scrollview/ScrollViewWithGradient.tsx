@@ -35,6 +35,11 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
 	let height: DimensionValue | undefined = horizontal ? undefined : '100%';
 	let width: DimensionValue | undefined = horizontal ? '100%' : undefined;
 
+	let showsVerticalScrollIndicator = true
+	if(props.showsVerticalScrollIndicator !== undefined){
+		showsVerticalScrollIndicator = props.showsVerticalScrollIndicator
+	}
+
 	return (
 		<View style={{ flexShrink: 1, width: width, height: height, flexDirection: flexDirection }} onLayout={props.onLayout}>
 			<MyScrollView
@@ -43,7 +48,7 @@ export const ScrollViewWithGradient: FunctionComponent<AppState & ScrollViewProp
 				style={[props.style, { flexShrink: 1 }]}
 				horizontal={horizontal}
 				contentContainerStyle={{ flexShrink: 1, alignItems: alignItems, flexDirection: flexDirection }}
-				showsVerticalScrollIndicator={true}
+				showsVerticalScrollIndicator={showsVerticalScrollIndicator}
 				showsHorizontalScrollIndicator={true}
 				scrollEnabled={true}
 				persistentScrollbar={true}
