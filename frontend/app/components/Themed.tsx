@@ -64,9 +64,9 @@ export function IconParseDirectusStringToIconAndFamily(iconString: string): {fam
 		return {family: parts[0], icon: parts[1]}
 	}
 }
-
+export const IconDefaultSize = 24;
 export function Icon({name, size, family, ...props}: IconProps) {
-	const defaultSize = 24
+	const defaultSize = IconDefaultSize
 	let useSize = defaultSize;
 	if (size) {
 		useSize = size;

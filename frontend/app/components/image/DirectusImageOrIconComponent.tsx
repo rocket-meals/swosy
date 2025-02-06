@@ -1,7 +1,21 @@
-import {Icon, View, Text, IconFamily, IconParseDirectusStringToIconAndFamily} from '@/components/Themed';
+import {
+	Icon,
+	View,
+	Text,
+	IconFamily,
+	IconParseDirectusStringToIconAndFamily,
+	TEXT_SIZE_DEFAULT
+} from '@/components/Themed';
 import React from 'react';
 import DirectusImage from "@/components/project/DirectusImage";
 import {StringHelper} from "@/helper/string/StringHelper";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {MyButton} from "@/components/buttons/MyButton";
+import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 
 export function hasResourceImageOrRemoteImage(resource: any){
 	return resource.image || resource.image_remote_url;
@@ -11,7 +25,59 @@ export function hasResourceImageIconOrRemoteImage(resource: any){
 	return hasResourceImageOrRemoteImage(resource) || resource.icon;
 }
 
-export default function DirectusImageOrIconComponent({ resource, iconFamily, widthImage, heightImage, iconColor }: { resource: any, iconFamily?: string, widthImage?: number, heightImage?: number, iconColor?: string }) {
+export type DirectusImageOrIconWithModalComponentProps = {
+	title: string,
+	accessibilityLabel: string,
+	label: string,
+	tooltip?: string,
+	key: string,
+	backgroundColor?: string,
+	renderAsContentInsteadItems?: (key: string, hide: () => void, backgroundColor: string | undefined | null) => React.ReactNode,
+} & DirectusImageOrIconComponentProps
+
+export function DirectusImageOrIconWithModalComponent({ title, backgroundColor, accessibilityLabel, tooltip, label, renderAsContentInsteadItems, ...props }: DirectusImageOrIconWithModalComponentProps) {
+	const [modalConfig, setModalConfig] = useModalGlobalContext();
+
+	const onPress = () => {
+		setModalConfig({
+			title: title,
+			accessibilityLabel: accessibilityLabel,
+			key: props.key,
+			label: label,
+			renderAsContentInsteadItems: renderAsContentInsteadItems
+		})
+	}
+
+	return <DirectusImageOrIconWithButtonComponent backgroundColor={backgroundColor} tooltip={tooltip} onPress={onPress} accessibilityLabel={accessibilityLabel} {...props} />
+}
+
+export type DirectusImageOrIconWithButtonComponentProps = {
+	onPress?: () => void,
+	accessibilityLabel: string,
+	tooltip?: string,
+	backgroundColor?: string
+} & DirectusImageOrIconComponentProps
+
+export function DirectusImageOrIconWithButtonComponent({ onPress, tooltip, accessibilityLabel, backgroundColor, ...props }: DirectusImageOrIconWithButtonComponentProps) {
+	return <MyButton inactiveBackgroundColor={backgroundColor} tooltip={tooltip} useTransparentBorderColor={true} accessibilityLabel={accessibilityLabel} onPress={onPress} customIcon={
+		<View style={{
+			width: props.widthImage, height: props.heightImage, justifyContent: 'center', alignItems: 'center', backgroundColor: "transparent"
+		}}>
+			<DirectusImageOrIconComponent {...props} />
+		</View>
+	} />
+}
+
+export type DirectusImageOrIconComponentProps = {
+	resource: any,
+	iconFamily?: IconFamily,
+	widthImage?: number,
+	heightImage?: number,
+	iconColor?: string
+	iconSize?: number
+}
+
+export default function DirectusImageOrIconComponent({ resource, iconFamily, iconSize, widthImage, heightImage, iconColor }: DirectusImageOrIconComponentProps) {
 	let iconLeft = resource.icon_expo || resource.icon
 	const alias = resource.alias
 	let iconLeftCustom = undefined
@@ -20,11 +86,15 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, wid
 			let {
 				family, icon
 			} = IconParseDirectusStringToIconAndFamily(iconLeft)
-			iconLeftCustom = <Icon accessibilityLabel={alias} name={icon} family={family} color={iconColor} />
+			iconLeftCustom = <Icon accessibilityLabel={alias} name={icon} size={iconSize} family={family} color={iconColor} />
 		} else {
-			iconLeftCustom = <Icon accessibilityLabel={alias}  name={iconLeft} color={iconColor} />
+			iconLeftCustom = <Icon accessibilityLabel={alias} size={iconSize} name={iconLeft} color={iconColor} />
 		}
 	}
+
+
+
+
 	if(hasResourceImageOrRemoteImage(resource)){
 		let width = widthImage || 20;
 		let height = heightImage || 20;

@@ -13,7 +13,11 @@ import {
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
-import {BUTTON_DEFAULT_BorderRadius, BUTTON_DEFAULT_Padding} from "@/components/buttons/MyButtonCustom";
+import {
+	BUTTON_DEFAULT_BorderRadius,
+	BUTTON_DEFAULT_BorderWidth,
+	BUTTON_DEFAULT_Padding
+} from "@/components/buttons/MyButtonCustom";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
@@ -153,6 +157,28 @@ export const MarkingIconOrShortCodeWithTextSize = ({markingId, textSize, imageSi
 			}
 		</View>
 	)
+}
+
+export const useBadgeWidth = () => {
+	const iconWidth = useIconWithInPixel();
+	const defaultPadding = BUTTON_DEFAULT_Padding
+	const imageWidthAndHeight = iconWidth+2*defaultPadding-2*BUTTON_DEFAULT_BorderWidth
+	return imageWidthAndHeight;
+}
+
+export const BadgeWrapper = ({children}: {children: any}) => {
+	const iconWidth = useIconWithInPixel();
+	const defaultPadding = BUTTON_DEFAULT_Padding
+	const imageWidthAndHeight = iconWidth+2*defaultPadding
+
+	return <View style={{
+		width: imageWidthAndHeight,
+		height: imageWidthAndHeight,
+		justifyContent: "center",
+		alignItems: "center",
+	}}>
+		{children}
+	</View>
 }
 
 

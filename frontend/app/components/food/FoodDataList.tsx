@@ -1,4 +1,11 @@
-import {getLineHeightInPixelBySize, Text, TEXT_SIZE_DEFAULT, useViewBackgroundColor, View} from '@/components/Themed';
+import {
+	getLineHeightInPixelBySize,
+	IconDefaultSize,
+	Text,
+	TEXT_SIZE_DEFAULT,
+	useViewBackgroundColor,
+	View
+} from '@/components/Themed';
 import {StringHelper} from "@/helper/string/StringHelper";
 import {
 	Foodoffers,
@@ -8,20 +15,29 @@ import {
 	FoodsAttributesValues
 } from "@/helper/database/databaseTypes/types";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
-import {SettingsRow} from "@/components/settings/SettingsRow";
+import {SETTINGS_ROW_DEFAULT_PADDING, SettingsRow} from "@/components/settings/SettingsRow";
 import {NumberHelper} from "@/helper/number/NumberHelper";
 import {FoodAttributesDict, useSynchedFoodsAttributesDict} from "@/states/SynchedFoodattributes";
 import {FoodAttributesGroupsDict, useSynchedFoodsAttributesGroupsDict} from "@/states/SynchedFoodattributesGroups";
-import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {
+	getDirectusTranslation,
+	hasDirectusTranslation,
+	TranslationEntry
+} from "@/helper/translations/DirectusTranslationUseFunction";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {ItemStatusFilter} from "@/helper/database/ItemStatus";
 import DirectusImageOrIconComponent, {
+	DirectusImageOrIconWithModalComponent,
 	hasResourceImageIconOrRemoteImage,
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
 import React from "react";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
+import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
+import {MyScrollView} from "@/components/scrollview/MyScrollView";
+import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 
 // Utility type to make properties optional if they are optional in either T or U
 type MergeTypes<T1, T2> = T1 | T2;
@@ -177,7 +193,7 @@ function getSortedFoodAttributesGroups(foodAttributesGroups: FoodsAttributesGrou
 	});
 }
 
-function getFoodAttributeFromFoodAttributeValue(foodAttributeValue: FoodsAttributesValues, foodAttributesDict: FoodAttributesDict): FoodsAttributes | null | undefined {
+export function getFoodAttributeFromFoodAttributeValue(foodAttributeValue: FoodsAttributesValues, foodAttributesDict: FoodAttributesDict): FoodsAttributes | null | undefined {
 	const food_attribute = foodAttributeValue.food_attribute;
 	let food_attribute_id: string | null | undefined = null;
 	if(typeof food_attribute === "string") {
@@ -208,7 +224,7 @@ function hasFoodAttributeValueAnyValue(foodAttributeValue: FoodsAttributesValues
 	return foodAttributeValue.number_value !== null || foodAttributeValue.string_value !== null || foodAttributeValue.boolean_value !== null;
 }
 
-function getFoodAttributeValuesWhereFoodAttributeIsVisible(foodAttributeValues: FoodsAttributesValues[] | undefined, foodAttributesDict: FoodAttributesDict | undefined): FoodsAttributesValues[] | undefined {
+export function getFoodAttributeValuesWhereFoodAttributeIsVisible(foodAttributeValues: FoodsAttributesValues[] | undefined, foodAttributesDict: FoodAttributesDict | undefined): FoodsAttributesValues[] | undefined {
 	if(foodAttributeValues && foodAttributesDict) {
 		return foodAttributeValues.filter((foodAttributeValue) => {
 			let foodAttribute = getFoodAttributeFromFoodAttributeValue(foodAttributeValue, foodAttributesDict);
@@ -222,7 +238,9 @@ function getFoodAttributeValuesWhereFoodAttributeIsVisible(foodAttributeValues: 
 	return undefined;
 }
 
-export const FoodAttributeImageOrIcon = ({foodAttribute}: {foodAttribute: FoodsAttributes}) => {
+export const FoodAttributeImageOrIcon = ({foodAttribute, height, width}: {foodAttribute: FoodsAttributes, height: number, width: number}) => {
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
 	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
@@ -241,11 +259,50 @@ export const FoodAttributeImageOrIcon = ({foodAttribute}: {foodAttribute: FoodsA
 	const lineHeight = getLineHeightInPixelBySize(TEXT_SIZE_DEFAULT) || 10;
 	const imageWidthAndHeight = lineHeight;
 
-	return <DirectusImageOrIconComponent resource={foodAttribute} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} iconColor={textColor} />
+	const title = getFoodAttributeName(languageCode, foodAttribute);
+	const accessibilityLabel = title;
+	const label = title;
+
+	let translationsFoodAttribute = foodAttribute?.translations as TranslationEntry[];
+	const hasTranslation = hasDirectusTranslation(languageCode, translationsFoodAttribute, "description");
+	let padding = SETTINGS_ROW_DEFAULT_PADDING/2;
+
+	if(!hasTranslation) {
+		return <DirectusImageOrIconComponent resource={foodAttribute} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} iconColor={textColor} />
+	}
+
+	const translated_description = getDirectusTranslation(languageCode, translationsFoodAttribute, "description");
+
+	let iconSizeInModal = IconDefaultSize*3;
+
+	return <DirectusImageOrIconWithModalComponent
+		title={title}
+		backgroundColor={backgroundColor}
+		tooltip={title}
+		accessibilityLabel={accessibilityLabel}
+		label={label}
+		key={foodAttribute.id}
+		renderAsContentInsteadItems={(key, hide, backgroundColor) => {
+			return(
+				<MyScrollView>
+					<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
+						<View style={{width: "100%", alignItems: "center"}}>
+							<View style={{
+								//backgroundColor: "red"
+							}}>
+								<DirectusImageOrIconComponent iconSize={iconSizeInModal} resource={foodAttribute} widthImage={imageWidthAndHeight*3} heightImage={imageWidthAndHeight*3} iconColor={textColor} />
+							</View>
+						</View>
+						<ThemedMarkdown markdown={translated_description} />
+					</View>
+				</MyScrollView>
+			)
+		}}
+		resource={foodAttribute} widthImage={width} heightImage={height} iconColor={textColor} />
 
 }
 
-function getFoodAttributeFormattedValue(foodAttributeValue: FoodsAttributesValues, foodAttribute?: FoodsAttributes): string | null {
+function getFoodAttributeFormattedValue(foodAttributeValue: FoodsAttributesValues, foodAttribute?: FoodsAttributes | null | undefined): string | null {
 	let prefix = "";
 	let suffix = "";
 	if(foodAttribute) {
@@ -272,16 +329,13 @@ function getFoodAttributeFormattedValue(foodAttributeValue: FoodsAttributesValue
 	return valueFormatted;
 }
 
-export function FoodDataList(props: FoodInformationListProps) {
-	const attribute_values_unfiltered = props.data.attribute_values;
-	const [foodAttributesDict, setFoodAttributesDict] = useSynchedFoodsAttributesDict();
-	const [foodAttributesGroupsDict, setFoodAttributesGroupsDict] = useSynchedFoodsAttributesGroupsDict();
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+function getFoodAttributeName(languageCode: string, foodAttribute?: FoodsAttributes | null | undefined): string {
+	let translationsFoodAttribute = foodAttribute?.translations as TranslationEntry[];
+	let translatedAttributeName = getDirectusTranslation(languageCode, translationsFoodAttribute, "name");
+	return translatedAttributeName;
+}
 
-
-
-	const attribute_values = getFoodAttributeValuesWhereFoodAttributeIsVisible(attribute_values_unfiltered, foodAttributesDict);
-
+export function getSortedListGroupsOfFoodAttributeValues(attribute_values: FoodsAttributesValues[] | undefined, foodAttributesDict: FoodAttributesDict, foodAttributesGroupsDict: FoodAttributesGroupsDict): FoodsAttributesValues[][] {
 	let foodAttributesGroupIdToAttributeValuesDict: Record<string, FoodsAttributesValues[]> = {};
 	let foodAttributesWithoutGroup: FoodsAttributesValues[] = [];
 
@@ -320,6 +374,19 @@ export function FoodDataList(props: FoodInformationListProps) {
 		listOfGroupsOfFoodAttributeValues.push(foodAttributesWithoutGroup);
 	}
 
+	return listOfGroupsOfFoodAttributeValues;
+}
+
+export function FoodDataList(props: FoodInformationListProps) {
+	const attribute_values_unfiltered = props.data.attribute_values;
+	const [foodAttributesDict, setFoodAttributesDict] = useSynchedFoodsAttributesDict();
+	const [foodAttributesGroupsDict, setFoodAttributesGroupsDict] = useSynchedFoodsAttributesGroupsDict();
+	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const iconWidth = useIconWithInPixel();
+
+	const attribute_values = getFoodAttributeValuesWhereFoodAttributeIsVisible(attribute_values_unfiltered, foodAttributesDict);
+	let listOfGroupsOfFoodAttributeValues = getSortedListGroupsOfFoodAttributeValues(attribute_values, foodAttributesDict, foodAttributesGroupsDict);
+
 	const amountColumns = props.columnAmount || 2;
 
 	let renderedFoodAttributeGroupRows: any[] = [];
@@ -344,8 +411,8 @@ export function FoodDataList(props: FoodInformationListProps) {
 													  renderItem={(listInfoItem) => {
 														  let foodAttributeValue = listInfoItem.item.data;
 														  let foodAttribute = getFoodAttributeFromFoodAttributeValue(foodAttributeValue, foodAttributesDict);
-														  let translationsFoodAttribute = foodAttribute?.translations as TranslationEntry[];
-														  let translatedAttributeName = getDirectusTranslation(languageCode, translationsFoodAttribute, "name");
+
+														  let translatedAttributeName = getFoodAttributeName(languageCode, foodAttribute);
 
 														  let valueFormatted: string | null = getFoodAttributeFormattedValue(foodAttributeValue, foodAttribute);
 
@@ -355,7 +422,7 @@ export function FoodDataList(props: FoodInformationListProps) {
 																  <View style={{
 																	  //backgroundColor: "red"
 																  }}>
-																	  <FoodAttributeImageOrIcon foodAttribute={foodAttribute}/>
+																	  <FoodAttributeImageOrIcon foodAttribute={foodAttribute} height={iconWidth} width={iconWidth}/>
 																  </View>
 															  )
 														  }

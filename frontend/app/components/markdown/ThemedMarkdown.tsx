@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import RenderHtml from 'react-native-render-html';
+import RenderHtml, {HTMLContentModel, HTMLElementModel} from 'react-native-render-html';
 import {getFontSizeInPixelBySize, Text, useTextContrastColor, View} from '@/components/Themed';
 
 import {useWindowDimensions} from 'react-native';
@@ -70,7 +70,7 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
     const lineHeightNormal = emToPixel(parseFloat(lineHeightNormalInEm)) || 0;
         */
 
-	const md = new MarkdownIt();
+	const md = new MarkdownIt({ html: true });
 
 	const option_find_linebreaks = true;
 	if (option_find_linebreaks) {
@@ -78,7 +78,13 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 	}
 
 
+	console.log("Source Content", sourceContent)
+
+
+
 	const result = md.render(sourceContent);
+	console.log("Result", result)
+
 
 	const source = {
 		html: result || ''
@@ -102,6 +108,26 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 			color: textColor
 		}
 	}
+
+	const customHTMLElementModels = {
+		'sub': HTMLElementModel.fromCustomModel({
+			tagName: 'sub',
+			mixedUAStyles: {
+				fontSize: '75%',  // Reduce font size
+				//verticalAlign: 'sub'
+			},
+			contentModel: HTMLContentModel.textual
+		}),
+		'sup': HTMLElementModel.fromCustomModel({
+			tagName: 'sup',
+			mixedUAStyles: {
+				fontSize: '75%',  // Reduce font size
+				//verticalAlign: 'super'
+			},
+			contentModel: HTMLContentModel.textual
+		})
+	};
+
 
 	const fontSize = getFontSizeInPixelBySize('md');
 
@@ -134,35 +160,26 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 			return <View>
 				<MyButton backgroundColor={buttonAndLinkColor} accessibilityLabel={text} text={text} href={href} useOnlyNecessarySpace={true} leftIcon={icon} leftIconColoredBox={true} />
 			</View>
+		},
+		"sub": (props: any) => {
+			const {data} = props.tnode;
+			const text = data || props.children[0]?.data;
 
-			/**
-			const { href } = htmlAttribs;
-			if (href.startsWith('tel:')) {
-				// Handle phone links
-				return (
-					<TouchableOpacity onPress={() => Linking.openURL(href)}>
-						<Icon name={"phone"} />
-						<Text style={[{ color: textColor }]}>{children}</Text>
-					</TouchableOpacity>
-				);
-			} else if (href.startsWith('mailto:')) {
-				// Handle mail links
-				return (
-					<TouchableOpacity onPress={() => Linking.openURL(href)}>
-						<MailIcon />
-						<Text style={[{ color: textColor }]}>{children}</Text>
-					</TouchableOpacity>
-				);
-			} else {
-				// Handle regular links
-				return (
-					<TouchableOpacity onPress={() => Linking.openURL(href)} >
-						<ExternalLinkIcon />
-						<Text style={[{ color: textColor }]}>{children}</Text>
-					</TouchableOpacity>
-				);
-			}
-			*/
+			return (
+				<Text style={{ fontSize: fontSize * 0.75, verticalAlign: 'sub' }}>
+					{text}
+				</Text>
+			);
+		},
+		"sup": (props: any) => {
+			const {data} = props.tnode;
+			const text = data || props.children[0]?.data;
+
+			return (
+				<Text style={{ fontSize: fontSize * 0.75, verticalAlign: 'super' }}>
+					{text}
+				</Text>
+			);
 		}
 	};
 
@@ -182,6 +199,7 @@ export const ThemedMarkdown: FunctionComponent<AppState> = (props) => {
 					baseStyle={defaultTextProps}
 					renderers={customRenderers}
 					defaultTextProps={defaultTextProps}
+					customHTMLElementModels={customHTMLElementModels}
 					key={source+""+buttonAndLinkColor}
 					source={source}
 				/>

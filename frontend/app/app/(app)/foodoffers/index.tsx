@@ -47,6 +47,7 @@ import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
 import {CanteenFeedbacksLabelsComponent} from "@/compositions/canteens/CanteenFeedbacks";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
+import {FoodAttributeBadges} from "@/components/food/FoodAttributeBadge";
 
 
 export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -366,6 +367,7 @@ export default function FoodOfferScreen() {
 				topLeftComponent={
 							<ScrollViewWithGradient hideGradient={true} >
 								<MarkingBadges foodoffer={foodOffer} />
+								<FoodAttributeBadges foodoffer={foodOffer} />
 							</ScrollViewWithGradient>
 				}
 				topRightComponent={

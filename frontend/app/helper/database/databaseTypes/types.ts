@@ -986,6 +986,7 @@ export type FoodsAttributes = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   prefix?: string | null;
+  show_on_card?: boolean | null;
   sort?: number | null;
   status: string;
   suffix?: string | null;

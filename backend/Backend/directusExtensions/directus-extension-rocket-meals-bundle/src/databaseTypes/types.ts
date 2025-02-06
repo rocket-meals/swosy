@@ -986,6 +986,7 @@ export type FoodsAttributes = {
   image_remote_url?: string | null;
   image_thumb_hash?: string | null;
   prefix?: string | null;
+  show_on_card?: boolean | null;
   sort?: number | null;
   status: string;
   suffix?: string | null;
@@ -996,9 +997,15 @@ export type FoodsAttributes = {
 
 export type FoodsAttributesGroups = {
   alias?: string | null;
+  background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  icon?: string | null;
+  icon_expo?: string | null;
   id: string;
+  image?: string | DirectusFiles | null;
+  image_remote_url?: string | null;
+  image_thumb_hash?: string | null;
   sort?: number | null;
   status: string;
   translations: any[] | FoodsAttributesGroupsTranslations[];
