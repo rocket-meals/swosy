@@ -1,9 +1,10 @@
 name: Backend Directus Extension Build
 
-on:
-  push:
-    paths:
-      - 'backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/**'
+# Temporary disabled
+#on:
+#  push:
+#    paths:
+#      - 'backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/src/**'
 
 jobs:
   build:
