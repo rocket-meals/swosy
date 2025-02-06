@@ -244,7 +244,7 @@ export const FoodAttributeImageOrIcon = ({foodAttribute, height, width}: {foodAt
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
 	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
-	const backgroundcolor = foodAttribute?.background_color || viewWhiteOrBlackBackgroundColor
+	const backgroundcolor = foodAttribute?.background_color || "#FFFFFF00"
 
 	let backgroundColor = backgroundcolor
 	const textColor = useMyContrastColor(backgroundColor);
@@ -267,22 +267,11 @@ export const FoodAttributeImageOrIcon = ({foodAttribute, height, width}: {foodAt
 	const hasTranslation = hasDirectusTranslation(languageCode, translationsFoodAttribute, "description");
 	let padding = SETTINGS_ROW_DEFAULT_PADDING/2;
 
-	if(!hasTranslation) {
-		return <DirectusImageOrIconComponent resource={foodAttribute} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} iconColor={textColor} />
-	}
+	let renderAsContentInsteadItems: ((key: string, hide: () => void, backgroundColor: string) => Element) | undefined = undefined;
 
-	const translated_description = getDirectusTranslation(languageCode, translationsFoodAttribute, "description");
-
-	let iconSizeInModal = IconDefaultSize*3;
-
-	return <DirectusImageOrIconWithModalComponent
-		title={title}
-		backgroundColor={backgroundColor}
-		tooltip={title}
-		accessibilityLabel={accessibilityLabel}
-		label={label}
-		key={foodAttribute.id}
-		renderAsContentInsteadItems={(key, hide, backgroundColor) => {
+	if(hasTranslation) {
+		// @ts-ignore
+		renderAsContentInsteadItems = (key, hide, backgroundColor) => {
 			return(
 				<MyScrollView>
 					<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
@@ -297,7 +286,21 @@ export const FoodAttributeImageOrIcon = ({foodAttribute, height, width}: {foodAt
 					</View>
 				</MyScrollView>
 			)
-		}}
+		}
+	}
+
+	const translated_description = getDirectusTranslation(languageCode, translationsFoodAttribute, "description");
+
+	let iconSizeInModal = IconDefaultSize*3;
+
+	return <DirectusImageOrIconWithModalComponent
+		title={title}
+		backgroundColor={backgroundColor}
+		tooltip={title}
+		accessibilityLabel={accessibilityLabel}
+		label={label}
+		key={foodAttribute.id}
+		renderAsContentInsteadItems={renderAsContentInsteadItems}
 		resource={foodAttribute} widthImage={width} heightImage={height} iconColor={textColor} />
 
 }
