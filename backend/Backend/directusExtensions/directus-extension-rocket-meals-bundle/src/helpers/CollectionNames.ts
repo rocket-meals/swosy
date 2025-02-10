@@ -37,7 +37,10 @@ export function getAllCollectionNames() {
         CollectionNames.FOODOFFERS,
         CollectionNames.REPORT_RECIPIENTS,
         CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS,
-        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS
+        CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS,
+        CollectionNames.WORKFLOWS_SETTINGS,
+        CollectionNames.WORKFLOWS,
+        CollectionNames.WORKFLOWS_RUNS,
     ];
 }
 
@@ -94,5 +97,9 @@ export class CollectionNames{
 
     static FOODOFFERS = "foodoffers"
     static FOODOFFER_CATEGORIES = "foodoffers_categories"
+
+    static WORKFLOWS_SETTINGS = "workflows_settings"
+    static WORKFLOWS = "workflows"
+    static WORKFLOWS_RUNS = "workflows_runs"
 
 }

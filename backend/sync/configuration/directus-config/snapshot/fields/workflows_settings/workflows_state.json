@@ -1,0 +1,56 @@
+{
+  "collection": "workflows_settings",
+  "field": "workflows_state",
+  "type": "string",
+  "meta": {
+    "collection": "workflows_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "workflows_state",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown",
+    "note": null,
+    "options": {
+      "choices": [
+        {
+          "icon": "stop_circle",
+          "text": "Finished",
+          "value": "finished"
+        },
+        {
+          "icon": "play_circle",
+          "text": "Running",
+          "value": "running"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 7,
+    "special": null,
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "workflows_state",
+    "table": "workflows_settings",
+    "data_type": "character varying",
+    "default_value": null,
+    "max_length": 255,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

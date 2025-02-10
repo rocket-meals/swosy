@@ -25,12 +25,13 @@ import {
     UtilizationsEntries,
     UtilizationsGroups,
     Washingmachines,
-    WashingmachinesJobs
+    WashingmachinesJobs, Workflows, WorkflowsRuns
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {WorkflowsSettingsHelper} from "./itemServiceHelpers/WorkflowsSettingsHelper";
 
 export class MyDatabaseHelper {
 
@@ -50,6 +51,10 @@ export class MyDatabaseHelper {
 
     getAppSettingsHelper() {
         return new AppSettingsHelper(this.apiContext, this.eventContext);
+    }
+
+    getWorkflowsSettingsHelper() {
+        return new WorkflowsSettingsHelper(this.apiContext, this.eventContext);
     }
 
     getAutoTranslationSettingsHelper() {
@@ -162,6 +167,14 @@ export class MyDatabaseHelper {
 
     getWashingmachinesJobsHelper() {
         return new ItemsServiceHelper<WashingmachinesJobs>(this.apiContext, CollectionNames.WASHINGMACHINES_JOBS, this.eventContext);
+    }
+
+    getWorkflowsHelper() {
+        return new ItemsServiceHelper<Workflows>(this.apiContext, CollectionNames.WORKFLOWS, this.eventContext);
+    }
+
+    getWorkflowsRunsHelper() {
+        return new ItemsServiceHelper<WorkflowsRuns>(this.apiContext, CollectionNames.WORKFLOWS_RUNS, this.eventContext);
     }
 
     async sendMail(mail: Partial<Mails>) {

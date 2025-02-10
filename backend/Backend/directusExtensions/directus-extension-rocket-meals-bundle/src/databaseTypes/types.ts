@@ -83,6 +83,7 @@ export type AppSettings = {
   foods_ratings_average_display?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
+  forms_settings: string;
   housing_enabled?: boolean | null;
   housing_parsing_enabled?: boolean | null;
   housing_parsing_last_date?: string | null;
@@ -987,6 +988,7 @@ export type FoodsAttributes = {
   image_thumb_hash?: string | null;
   prefix?: string | null;
   show_on_card?: boolean | null;
+  show_on_label_list?: boolean | null;
   sort?: number | null;
   status: string;
   suffix?: string | null;
@@ -1318,6 +1320,7 @@ export type Markings = {
   invert_background_color?: boolean | null;
   short_code?: string | null;
   show_on_card?: boolean | null;
+  show_on_label_list?: boolean | null;
   sort?: number | null;
   status?: string | null;
   translations: any[] | MarkingsTranslations[];
@@ -1621,6 +1624,48 @@ export type WikisTranslations = {
   wikis_id?: string | Wikis | null;
 };
 
+export type Workflows = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  enabled?: boolean | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  workflows_runs: any[] | WorkflowsRuns[];
+};
+
+export type WorkflowsRuns = {
+  alias?: string | null;
+  date_created?: string | null;
+  date_finished?: string | null;
+  date_started?: string | null;
+  date_updated?: string | null;
+  id: string;
+  input?: string | null;
+  log?: string | null;
+  output?: string | null;
+  result_hash?: string | null;
+  sort?: number | null;
+  state?: string | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  workflow: string | Workflows;
+};
+
+export type WorkflowsSettings = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: number;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+  workflows_state?: string | null;
+};
+
 export type CustomDirectusTypes = {
   apartments: Apartments[];
   app_feedbacks: AppFeedbacks[];
@@ -1729,4 +1774,7 @@ export type CustomDirectusTypes = {
   wikis: Wikis[];
   wikis_directus_roles: WikisDirectusRoles[];
   wikis_translations: WikisTranslations[];
+  workflows: Workflows[];
+  workflows_runs: WorkflowsRuns[];
+  workflows_settings: WorkflowsSettings;
 };

@@ -88,6 +88,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "forms-sync-hook",
+				"source": "src/forms-sync-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "housing-sync-hook",
 				"source": "src/housing-sync-hook/index.ts"
 			},
@@ -140,6 +145,11 @@
 				"type": "hook",
 				"name": "utilization-canteen-hook",
 				"source": "src/utilization-canteen-hook/index.ts"
+			},
+			{
+				"type": "hook",
+				"name": "workflows-runs-sync-hook",
+				"source": "src/workflows-runs-hook/index.ts"
 			}
 		],
 		"host": "^10.10.0"

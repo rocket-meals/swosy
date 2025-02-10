@@ -232,6 +232,14 @@ export function useSynchedMarkingsDict(): [( Record<string, Markings | null | un
 	async function updateFromServer(sync_cache_composed_key_local?: string) {
 		const markingsList = await loadMarkingsFromServer();
 		const filteredMarkings = ItemStatusFilter.filterListByItemStatus(markingsList, ItemStatus.PUBLISHED);
+		const external_identifier_extra = 'eaternity_a';
+		for(let marking of markingsList){
+			if(marking.external_identifier === external_identifier_extra) {
+				console.log("found marking with external_identifier_extra: ", marking)
+				filteredMarkings.push(marking)
+			}
+		}
+
 		const markingsDict = CollectionHelper.convertListToDict(filteredMarkings, 'id')
 		setResourcesOnly((currentValue) => {
 			return markingsDict
