@@ -26,12 +26,33 @@ export class ItemsServiceHelper<T>{
         this.eventContext = eventContext;
     }
 
+    async upsertOne(upsert: Partial<T & {id: PrimaryKey}>, optsCustom?: OptsCustomType): Promise<PrimaryKey>{
+        // https://github.com/directus/directus/blob/main/api/src/services/items.ts#L935
+        // Can only use upsertOne with a primary key, otherwise it will always create a new item...
+
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let opts = this.getOptsCustom(optsCustom);
+        return await itemsService.upsertOne(upsert, opts);
+    }
+
     async updateOne(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
         // DO not update status. It should be only set on creation
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.updateOne(primary_key, update, opts);
+    }
+
+    async updateOneItemWithoutHookTrigger(item: TypeWithId<T>, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void>{
+        let primary_key = item.id;
+        return await this.updateOneWithoutHookTrigger(primary_key, update, optsCustom);
+    }
+
+    async updateOneWithoutHookTrigger(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void>{
+        let database = this.apiContext.database;
+        let table = database(this.tablename);
+        await database(this.tablename).update(update).where('id', primary_key);
     }
 
     async updateMany(items: TypeWithId<T>[], update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
@@ -182,7 +203,6 @@ export class ItemsServiceHelper<T>{
         if (!foundItem) {
             copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
             await itemsService.createOne(copiedCreateItem)
-
         }
         queriedItems = await itemsService.readByQuery(query);
         foundItem = queriedItems[0]
@@ -202,6 +222,11 @@ export class ItemsServiceHelper<T>{
         create = create.map(ItemsServiceHelper.setStatusPublished);
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.createMany(create, opts);
+    }
+
+    async existsItem(search : Partial<T>): Promise<boolean>{
+        let items = await this.findItems(search);
+        return items.length > 0;
     }
 
     async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T>{

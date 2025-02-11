@@ -12,6 +12,12 @@ import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSe
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
+import {WORKFLOW_RUN_STATE, WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
+import {
+    ResultHandleWorkflowRunsWantToRun,
+    WorkflowRunJobInterface, WorkflowRunLogger
+} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WorkflowsRuns} from "../databaseTypes/types";
 
 const SCHEDULE_NAME = "food_parse";
 
@@ -72,59 +78,73 @@ function getMarkingParser(): MarkingParserInterface | null {
     return null;
 }
 
-export default defineHook(async ({action, init, filter}, apiContext) => {
-    let allTablesExist = await DatabaseInitializedCheck.checkAllTablesExistWithApiContext(SCHEDULE_NAME,apiContext);
-    if (!allTablesExist) {
-        return;
+class FoodParseWorkflow implements WorkflowRunJobInterface {
+    getDeleteFailedWorkflowRunsAfterDays(): number | undefined {
+        return undefined;
     }
 
-    let collection = CollectionNames.APP_SETTINGS
+    getDeleteFinishedWorkflowRunsAfterDays(): number | undefined {
+        return undefined;
+    }
 
-    const myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    getWorkflowId(): string {
+        return "food-sync";
+    }
 
-    init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
-        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
-        await myDatabaseHelper.getAppSettingsHelper().setFoodParsingStatus(FlowStatus.FINISHED, null);
-    });
-
-    // filter all update actions where from value running to start want to change, since this is not allowed
-    filter(collection+'.items.update', async (input: any, {keys, collection}, eventContext) => {
-        // Fetch the current item from the database
-        if (!keys || keys.length === 0) {
-            throw new Error("No keys provided for update");
+    handleWorkflowRunsWantToRun(modifiableInput: Partial<WorkflowsRuns>, workflowruns: Partial<WorkflowsRuns>[], alreadyRunningWorkflowruns: WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun {
+        let answer: ResultHandleWorkflowRunsWantToRun = {
+            errorMessage: undefined,
         }
-        // check if input has field FIELD_APP_SETTINGS_FOODS_PARSING_STATUS and if it is set to start
-        if (input[AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS] === FlowStatus.START) {
-            const myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-            const parsingStatus = await myDatabaseHelper.getAppSettingsHelper().getFoodParsingStatus();
-            if (parsingStatus === FlowStatus.RUNNING) {
-                throw new Error("Parsing is already running. Please wait until it is finished or set to "+FlowStatus.FINISHED+" manually.");
+
+        // We only want one workflow run at a time
+        if(workflowruns.length > 1){
+            answer.errorMessage = "Cannot start more than one workflow run at a time";
+        }
+        if(alreadyRunningWorkflowruns.length > 0){
+            answer.errorMessage = "A workflow run is already running";
+        }
+
+        //modifiableInput.state = WORKFLOW_RUN_STATE.RUNNING;
+
+        return answer;
+
+    }
+
+    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+        await logger.appendLog("Starting food parsing");
+
+        try {
+            let usedFoodParser = getFoodParser();
+
+            if(!usedFoodParser) {
+                await logger.appendLog("no food parser configured");
             }
-        }
 
-        return input;
-    });
-
-    action(
-        collection + ".items.update",
-        async (event, eventContext) => {
-            try {
-                let usedFoodParser = getFoodParser();
-
-                if(!usedFoodParser) {
-                    console.log(SCHEDULE_NAME + ": no food parser configured");
-                }
-
-                let usedMarkingParser = getMarkingParser();
-                if(!usedMarkingParser) {
-                    console.log(SCHEDULE_NAME + ": no marking parser configured");
-                }
-
-                const parseSchedule = new ParseSchedule(apiContext, eventContext, usedFoodParser, usedMarkingParser);
-                await parseSchedule.parse();
-            } catch (err) {
-                console.log(err);
+            let usedMarkingParser = getMarkingParser();
+            if(!usedMarkingParser) {
+                await logger.appendLog("no marking parser configured");
             }
+
+            console.log("Parse schedule now creating");
+            const parseSchedule = new ParseSchedule(workflowRun, myDatabaseHelper, logger, usedFoodParser, usedMarkingParser);
+            return await parseSchedule.parse();
+        } catch (err: any) {
+            await logger.appendLog("Error: " + err.toString());
+            return logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            })
         }
-    );
+    }
+
+}
+
+export default defineHook(async ({action, init, filter, schedule}, apiContext) => {
+    let myDatabaseHelper = new MyDatabaseHelper(apiContext);
+
+    WorkflowScheduleHelper.registerScheduleToRunWorkflowRuns({
+        workflowRunInterface: new FoodParseWorkflow(),
+        myDatabaseHelper: myDatabaseHelper,
+        schedule: schedule,
+        cronOject: WorkflowScheduleHelper.EVERY_5_MINUTES,
+    });
 });

@@ -2,15 +2,14 @@ import hash from 'object-hash';
 import {
     CanteensTypeForParser,
     FoodofferDateType,
-    FoodoffersTypeForParser, FoodParseFoodAttributesType,
+    FoodoffersTypeForParser,
+    FoodParseFoodAttributesType,
     FoodParserInterface,
     FoodsInformationTypeForParser,
     FoodWithBasicData
 } from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
-import {ApiContext} from "../helpers/ApiContext";
-import {AppSettingsHelper, FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {ListHelper} from "../helpers/ListHelper";
 import {
@@ -18,20 +17,22 @@ import {
     Foodoffers,
     FoodoffersCategories,
     FoodoffersMarkings,
-    Foods, FoodsAttributes, FoodsAttributesValues,
+    Foods,
+    FoodsAttributes,
+    FoodsAttributesValues,
     FoodsCategories,
     FoodsMarkings,
     FoodsTranslations,
     Markings,
-    MarkingsTranslations
+    MarkingsTranslations,
+    WorkflowsRuns
 } from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
-import PQueue from "p-queue";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {MyTimer, MyTimers} from "../helpers/MyTimer";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -53,35 +54,16 @@ export class ParseSchedule {
     private markingParser: MarkingParserInterface | null;
     //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
     //private finished: boolean; // in multi instance environment this should be a field in the database
-    private apiContext: ApiContext;
-    private eventContext: EventContext;
     private myDatabaseHelper: MyDatabaseHelper;
+    private workflowRun: WorkflowsRuns;
+    private logger: WorkflowRunLogger;
 
-    //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
-    private myAppSettingsHelper: AppSettingsHelper;
-
-    constructor(apiContext: ApiContext, eventContext: EventContext, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
-        this.apiContext = apiContext;
-        this.eventContext = eventContext;
-        this.myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
-        this.myAppSettingsHelper = this.myDatabaseHelper.getAppSettingsHelper();
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.workflowRun = workflowRun;
+        this.logger = logger;
         this.foodParser = foodParser;
         this.markingParser = markingParser;
-    }
-
-    async setStatus(status: FlowStatus) {
-        await this.myAppSettingsHelper.setAppSettings({
-            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_STATUS]: status,
-            [AppSettingsHelper.FIELD_APP_SETTINGS_FOODS_PARSING_LAST_RUN]: new Date()
-        })
-    }
-
-    async isEnabled() {
-        return await this.myAppSettingsHelper.isFoodParsingEnabled();
-    }
-
-    async getStatus() {
-        return await this.myAppSettingsHelper.getFoodParsingStatus();
     }
 
     async getHashOfJsonObject(object: any) {
@@ -92,87 +74,139 @@ export class ParseSchedule {
         });
     }
 
-    async parse(force = false) {
-
-
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
-
-        if ((enabled && status === FlowStatus.START) || force) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
-
-            try {
-                if(!!this.markingParser){
-                    console.log("["+SCHEDULE_NAME+"]"+" - Create Needed Data for MarkingParser");
-                    await this.markingParser.createNeededData()
-                    console.log("["+SCHEDULE_NAME+"]"+" - Update Markings")
-                    let markingsJSONList = await this.markingParser.getMarkingsJSONList();
-                    await this.updateMarkings(markingsJSONList);
-                }
-
-                if(!!this.foodParser){
-                    console.log("["+SCHEDULE_NAME+"]"+" - Create Needed Data for FoodParser");
-                    await this.foodParser.createNeededData()
-
-                    let canteensJSONList = await this.foodParser.getCanteensList();
-                    let foodsJSONList = await this.foodParser.getFoodsListForParser();
-                    let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
-                    let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
-                    let previousMealOffersHash = await this.myAppSettingsHelper.getFoodParsingHash();
-                    const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
-
-
-                    console.log("["+SCHEDULE_NAME+"]"+" - Current meal offers hash: " + currentMealOffersHash);
-                    console.log("["+SCHEDULE_NAME+"]"+" - Check if meal offers changed")
-                    const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
-                    if(mealOffersChanged){
-                        console.log("["+SCHEDULE_NAME+"]"+" - Set previous meal offers hash");
-                        await this.myAppSettingsHelper.setFoodParsingHash(currentMealOffersHash);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Update Canteens")
-                        await this.updateCanteens(canteensJSONList);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Update Foodoffer Categories")
-                        await this.updateFoodofferCategories(foodofferListForParser);
-                        const foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict = await this.getFoodofferCategoriesExternalIdentifiersToFoodofferCategoriesDict();
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Update Foods Categories")
-                        await this.updateFoodsCategories(foodsJSONList);
-                        const foodCategoryExternalIdentifiersToFoodCategoriesDict = await this.getFoodCategoriesExternalIdentifiersToFoodCategoriesDict();
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Get all markings exlusions")
-                        let markingsExclusions = await markingsExclusionsHelper.readAllItems();
-                        const dictMarkingsExclusions: DictMarkingsExclusions = MarkingFilterHelper.getDictMarkingsExclusions(markingsExclusions);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Update Food Attributes")
-                        const dictExternalIdentifierToFoodAttributes = await this.updateFoodAttributesAndGetExternalIdentifierToFoodAttributes(foodsJSONList);
-
-                        let helperObject: FoodCreationHelperObject = {
-                            dictMarkingsExclusions,
-                            foodCategoryExternalIdentifiersToFoodCategoriesDict,
-                            dictExternalIdentifierToFoodAttributes,
-                            foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict
-                        }
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Update Foods")
-                        await this.updateFoods(foodsJSONList, helperObject);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
-                        await this.deleteRequiredFoodOffersForTheirCanteens(foodofferListForParser);
-
-                        console.log("["+SCHEDULE_NAME+"]"+" - Create food offers");
-                        await this.createFoodOffers(foodofferListForParser, helperObject);
-                    }
-                }
-
-                console.log("["+SCHEDULE_NAME+"]"+" - Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("["+SCHEDULE_NAME+"]"+" - Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
+    async getPreviousMealOffersHash(): Promise<string | null | undefined> {
+        // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
+        // if there is no successful run, we return null
+        let workflowId: string | undefined;
+        if(!!this.workflowRun){
+            if(typeof this.workflowRun.workflow === "string"){
+                workflowId = this.workflowRun.workflow;
+            } else {
+                workflowId = this.workflowRun.workflow.id;
             }
+        }
+
+        if(!workflowId){
+            return null;
+        }
+
+        return await this.myDatabaseHelper.getWorkflowsRunsHelper().readByQuery({
+            filter: {
+                workflow: {
+                    _eq: workflowId
+                },
+                state: {
+                    _eq: WORKFLOW_RUN_STATE.SUCCESS // only successful runs
+                },
+                result_hash: {
+                    _nempty: true // not empty
+                },
+                schedule: {
+                    _eq: SCHEDULE_NAME
+                }
+            },
+            fields: ['*'],
+            sort: ['date_finished', 'desc'],
+            limit: 1
+        }).then((workflowRuns) => {
+            let workflowRun = workflowRuns[0];
+            if(!!workflowRun){
+                return workflowRun.result_hash;
+            }
+            return null;
+        }).catch(async (err) => {
+            await this.logger.appendLog("Error while getting previous meal offers hash: " + err.toString());
+            return null;
+        });
+    }
+
+    async parse(force = false): Promise<Partial<WorkflowsRuns>> {
+        await this.logger.appendLog("Starting");
+
+        try {
+            if(!!this.markingParser){
+                await this.logger.appendLog("Create Needed Data for MarkingParser");
+                await this.markingParser.createNeededData()
+                await this.logger.appendLog("Update Markings");
+                let markingsJSONList = await this.markingParser.getMarkingsJSONList();
+                await this.updateMarkings(markingsJSONList);
+            }
+
+            if(!!this.foodParser){
+                await this.logger.appendLog("Create Needed Data for FoodParser");
+                await this.foodParser.createNeededData()
+
+                let canteensJSONList = await this.foodParser.getCanteensList();
+                let foodsJSONList = await this.foodParser.getFoodsListForParser();
+                let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
+                let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
+                let previousMealOffersHash = await this.getPreviousMealOffersHash();
+                const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
+
+                await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash);
+                await this.logger.appendLog("Previous meal offers hash: " + previousMealOffersHash);
+                const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
+                if(mealOffersChanged){
+                    await this.logger.appendLog("Meal offers changed, start parsing");
+                    await this.myDatabaseHelper.getWorkflowsRunsHelper().updateOneItemWithoutHookTrigger(this.workflowRun, {
+                        result_hash: currentMealOffersHash
+                    });
+
+                    await this.logger.appendLog("Meal offers changed, start parsing");
+                    await this.updateCanteens(canteensJSONList);
+
+                    await this.logger.appendLog("Update Foodoffer Categories");
+                    await this.updateFoodofferCategories(foodofferListForParser);
+                    const foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict = await this.getFoodofferCategoriesExternalIdentifiersToFoodofferCategoriesDict();
+
+                    await this.logger.appendLog("Update Foods Categories");
+                    await this.updateFoodsCategories(foodsJSONList);
+                    const foodCategoryExternalIdentifiersToFoodCategoriesDict = await this.getFoodCategoriesExternalIdentifiersToFoodCategoriesDict();
+
+                    await this.logger.appendLog("Get all markings exlusions");
+                    let markingsExclusions = await markingsExclusionsHelper.readAllItems();
+                    const dictMarkingsExclusions: DictMarkingsExclusions = MarkingFilterHelper.getDictMarkingsExclusions(markingsExclusions);
+
+                    await this.logger.appendLog("Update Food Attributes");
+                    const dictExternalIdentifierToFoodAttributes = await this.updateFoodAttributesAndGetExternalIdentifierToFoodAttributes(foodsJSONList);
+
+                    let helperObject: FoodCreationHelperObject = {
+                        dictMarkingsExclusions,
+                        foodCategoryExternalIdentifiersToFoodCategoriesDict,
+                        dictExternalIdentifierToFoodAttributes,
+                        foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict
+                    }
+
+                    await this.logger.appendLog("Update Foods");
+                    await this.updateFoods(foodsJSONList, helperObject);
+
+                    await this.logger.appendLog("Delete specific food offers");
+                    await this.deleteRequiredFoodOffersForTheirCanteens(foodofferListForParser);
+
+                    await this.logger.appendLog("Create food offers");
+                    await this.createFoodOffers(foodofferListForParser, helperObject);
+
+                    return this.logger.getFinalLogWithStateAndParams({
+                        state: WORKFLOW_RUN_STATE.SUCCESS,
+                        result_hash: currentMealOffersHash
+                    });
+                } else {
+                    await this.logger.appendLog("Meal offers did not change, skip parsing");
+                    return this.logger.getFinalLogWithStateAndParams({
+                        state: WORKFLOW_RUN_STATE.SKIPPED
+                    });
+                }
+            }
+
+            await this.logger.appendLog("Finished");
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS,
+            });
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            });
         }
     }
 
@@ -307,7 +341,7 @@ export class ParseSchedule {
 
         let canteenExternalIdentifiers = Object.keys(foodoffersForParserGroupedByCanteen);
         for (let canteenExternalIdentifier of canteenExternalIdentifiers) {
-            console.log("[" + SCHEDULE_NAME + "]" + " - Delete required foodoffers for canteen: " + canteenExternalIdentifier);
+            await this.logger.appendLog("Delete required foodoffers for canteen: " + canteenExternalIdentifier);
             let canteen = await this.findOrCreateCanteenByExternalIdentifier(canteenExternalIdentifier);
             if (!!canteen) {
 
@@ -368,9 +402,7 @@ export class ParseSchedule {
             //    await this.deleteAllFoodOffersNewerOrEqualThanDate(latestPlusOneDayIso8601StringDate);
             //}
 
-            console.log("["+SCHEDULE_NAME+"]"+" - Delete specific food offers");
-            console.log("oldestFoodofferDate: ")
-            console.log(oldestFoodofferDate)
+            await this.logger.appendLog("Delete food offers newer or equal than date: " + oldestFoodofferDate);
             await this.deleteAllFoodOffersNewerOrEqualThanDateForCanteen(oldestFoodofferDate, canteen);
         }
     }
@@ -381,19 +413,19 @@ export class ParseSchedule {
 
         // Step 2: Delete the items using their IDs
         if (idsToDelete.length > 0) {
-            await itemService.deleteMany(idsToDelete).then(() => {
-                console.log(`Foodoffers deleted: ${idsToDelete.length} - ${notice}`);
-            }).catch(error => {
-                console.error(`Foodoffers delete error: ${notice}:`, error);
+            await itemService.deleteMany(idsToDelete).then(async () => {
+                await this.logger.appendLog(`Foodoffers deleted: ${idsToDelete.length} - ${notice}`);
+            }).catch(async (error) => {
+                await this.logger.appendLog(`Foodoffers delete error: ${notice}: ${error}`);
             });
         } else {
-            console.log(`No foodoffers given to delete - ${notice}`);
+            await this.logger.appendLog(`No foodoffers given to delete - ${notice}`);
         }
     }
 
     async deleteAllFoodOffersNewerOrEqualThanDateForCanteen(iso8601StringDate: FoodofferDateType, canteen: Canteens) {
         const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
-        console.log("["+SCHEDULE_NAME+"]"+" - Delete food offers newer or equal than date: " + directusDateOnlyString);
+        await this.logger.appendLog("Delete food offers newer or equal than date: " + directusDateOnlyString + " for canteen: " + canteen.id);
 
         let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         //await itemService.deleteByQuery()
@@ -437,7 +469,7 @@ export class ParseSchedule {
         let currentCanteen = 0;
         for (let canteen of canteenList) {
             currentCanteen++;
-            console.log("["+SCHEDULE_NAME+"]"+" - Update Canteen " + currentCanteen + " / " + amountOfCanteens);
+            await this.logger.appendLog("Update Canteen " + currentCanteen + " / " + amountOfCanteens);
             let canteenFoundOrCreated = await this.findOrCreateCanteen(canteen);
             if (!!canteenFoundOrCreated) {
                 let canteensHelper = this.myDatabaseHelper.getCanteensHelper();
@@ -455,7 +487,7 @@ export class ParseSchedule {
             const searchJSON = food_marking_json;
             const createJSON = food_marking_json;
 
-            const foodMarkingsHelper = new ItemsServiceHelper<FoodsMarkings>(this.apiContext, tablename, this.eventContext);
+            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<FoodsMarkings>(tablename);
             await foodMarkingsHelper.findOrCreateItem(searchJSON, createJSON);
         }
     }
@@ -467,7 +499,7 @@ export class ParseSchedule {
 
         for (let marking of filteredMarkings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
-            const foodMarkingsHelper = new ItemsServiceHelper<FoodoffersMarkings>(this.apiContext, tablename, this.eventContext);
+            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<FoodoffersMarkings>(tablename);
             await foodMarkingsHelper.createOne(foodoffer_marking_json);
         }
     }
@@ -531,7 +563,7 @@ export class ParseSchedule {
     }
 
     async updateFoodTranslations(foundFoodWithTranslations: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.apiContext, this.eventContext);
+        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.myDatabaseHelper.apiContext, this.myDatabaseHelper.eventContext);
     }
 
     async getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList: FoodsInformationTypeForParser[]){
@@ -555,7 +587,7 @@ export class ParseSchedule {
         }
 
         myTimer.printElapsedTime();
-        console.log(`[Step 1] - Found or created ${Object.keys(foodsDict).length} foods.`);
+        await this.logger.appendLog(`[Step 1] - Found or created ${Object.keys(foodsDict).length} foods.`);
         return foodsDict;
     }
 
@@ -617,15 +649,12 @@ export class ParseSchedule {
 
                 await this.updateFoodTranslations(foundFoodWithTranslations, foodsInformationForParser);
 
-                //console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Food " + (index + 1) + " / " + foodsInformationForParserList.length);
                 amountCompleted++;
                 myTimer.printElapsedTimeAndEstimatedTimeRemaining(amountCompleted, foodsInformationForParserList.length);
             }
         }
 
-
-
-        console.log("["+SCHEDULE_NAME+"]"+" - Finished Update Foods");
+        await this.logger.appendLog("Finished Update Foods");
     }
 
     async assignFoodCategoryToFood(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser, foodCategoryExternalIdentifiersToFoodCategoriesDict: DictFoodsCategoryExternalIdentifierToFoodsCategory){
@@ -699,7 +728,7 @@ export class ParseSchedule {
 
     async createFoodOffers(foodofferListForParser: FoodoffersTypeForParser[], helperObject: FoodCreationHelperObject) {
         const amountOfRawMealOffers = foodofferListForParser.length;
-        console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers");
+        await this.logger.appendLog("Create Food Offers");
 
         const dictCanteenExternalIdentifierToCanteen: Record<string, Canteens | null> = {};
         const dictMarkingExternalIdentifierToMarking: Record<string, Markings |null> = {};
@@ -750,7 +779,7 @@ export class ParseSchedule {
         }
 
         const foodoffersToCreate: Partial<Foodoffers>[] = [];
-        foodofferListForParser.map((foodofferForParser, index) => {
+        foodofferListForParser.map(async (foodofferForParser, index) => {
             const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
             const canteenFound = !!canteen;
 
@@ -767,7 +796,7 @@ export class ParseSchedule {
 
             const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
             let foodofferCategory: FoodoffersCategories | undefined = undefined;
-            if(!!foodofferCategoryExternalIdentifier){
+            if (!!foodofferCategoryExternalIdentifier) {
                 foodofferCategory = helperObject.foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict[foodofferCategoryExternalIdentifier];
             }
 
@@ -780,7 +809,7 @@ export class ParseSchedule {
                 let foodOfferToCreate = this.getFoodofferToCreate(foodofferForParser, canteen, filteredMarkings, food, foodofferCategory, helperObject);
                 foodoffersToCreate.push(foodOfferToCreate);
             } else {
-                console.log("["+SCHEDULE_NAME+"]"+" - Error Foodoffer " + (index + 1) + " / " + amountOfRawMealOffers+" - canteenFound: "+canteenFound+" - markingsAllFound: "+markingsAllFound+" - foodFound: "+foodFound);
+                await this.logger.appendLog("Error Foodoffer " + (index + 1) + " / " + amountOfRawMealOffers + " - canteenFound: " + canteenFound + " - markingsAllFound: " + markingsAllFound + " - foodFound: " + foodFound);
             }
         });
 
@@ -795,7 +824,7 @@ export class ParseSchedule {
         const amountOfBatches = Math.ceil(foodoffersToCreate.length / batchSize);
         for (let i = 0; i < foodoffersToCreate.length; i += batchSize) {
             const batch = foodoffersToCreate.slice(i, i + batchSize);
-            console.log("["+SCHEDULE_NAME+"]"+" - Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
+            await this.logger.appendLog("Create Food Offers Batch " + batchIndex + " / " + amountOfBatches);
 
             let disableEventEmit = true
             await myFoodOffersService.createManyItems(batch, {
@@ -815,8 +844,8 @@ export class ParseSchedule {
         let currentMarking = 0;
         for (let markingJSON of markingsJSONList) {
             currentMarking++;
-            console.log("["+SCHEDULE_NAME+"]"+" - Update Marking " + currentMarking + " / " + amountOfMarkings);
-            console.log(markingJSON)
+            await this.logger.appendLog("Update Marking " + currentMarking + " / " + amountOfMarkings);
+            await this.logger.appendLog(JSON.stringify(markingJSON, null, 2));
 
             let markingJSONCopy = JSON.parse(JSON.stringify(markingJSON));
             delete markingJSONCopy.translations; // Remove meals translations, add it later
@@ -851,7 +880,7 @@ export class ParseSchedule {
 
 
     async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.apiContext, this.eventContext);
+        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.myDatabaseHelper.apiContext, this.myDatabaseHelper.eventContext);
     }
 
 }

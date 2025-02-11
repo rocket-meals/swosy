@@ -19,7 +19,6 @@ export default defineHook(async ({init}, apiContext) => {
     const userHelper = myDatabaseHelper.getUsersHelper();
 
     init(ActionInitFilterEventHelper.INIT_APP_STARTED, async () => {
-        console.log(SCHEDULE_NAME + ": App started, resetting food parsing status and parsing hash");
         const usersWithAdminEmail = await userHelper.readByQuery({
             filter: {
                 _and: [

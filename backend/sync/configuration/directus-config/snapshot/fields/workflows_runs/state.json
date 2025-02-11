@@ -16,16 +16,6 @@
       "allowOther": true,
       "choices": [
         {
-          "icon": "hourglass_top",
-          "text": "Pending",
-          "value": "pending"
-        },
-        {
-          "icon": "playlist_add_check_circle",
-          "text": "Checking",
-          "value": "checking"
-        },
-        {
           "icon": "play_circle",
           "text": "Running",
           "value": "running"
@@ -44,6 +34,11 @@
           "icon": "skip_next",
           "text": "Skipped",
           "value": "skipped"
+        },
+        {
+          "icon": "delete",
+          "text": "Delete",
+          "value": "delete"
         }
       ]
     },

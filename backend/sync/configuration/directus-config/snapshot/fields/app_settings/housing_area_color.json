@@ -1,58 +1,34 @@
 {
   "collection": "app_settings",
-  "field": "washingmachine_parsing_status",
+  "field": "housing_area_color",
   "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "washingmachine_parsing_status",
+    "field": "housing_area_color",
     "group": "housing_settings",
     "hidden": false,
-    "interface": "select-dropdown",
+    "interface": "select-color",
     "note": null,
     "options": {
-      "allowNone": true,
-      "allowOther": true,
-      "choices": [
-        {
-          "text": "start",
-          "value": "start"
-        },
-        {
-          "text": "finished",
-          "value": "finished"
-        },
-        {
-          "text": "running",
-          "value": "running"
-        },
-        {
-          "text": "failed",
-          "value": "failed"
-        }
-      ]
+      "opacity": true
     },
-    "readonly": true,
+    "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 3,
     "special": null,
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Waschmaschinen Import Status"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "half"
   },
   "schema": {
-    "name": "washingmachine_parsing_status",
+    "name": "housing_area_color",
     "table": "app_settings",
     "data_type": "character varying",
-    "default_value": "finished",
+    "default_value": null,
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

@@ -1,40 +1,35 @@
 {
   "collection": "app_settings",
-  "field": "housing_parsing_last_date",
-  "type": "dateTime",
+  "field": "course_timetable_area_color",
+  "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "housing_parsing_last_date",
-    "group": "housing_settings",
+    "field": "course_timetable_area_color",
+    "group": "course_timetable_settings",
     "hidden": false,
-    "interface": "datetime",
+    "interface": "select-color",
     "note": null,
     "options": {
-      "includeSeconds": true
+      "opacity": true
     },
     "readonly": false,
     "required": false,
-    "sort": 4,
+    "sort": 2,
     "special": null,
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Wohnanlagen Import Letztes Datum"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "half"
   },
   "schema": {
-    "name": "housing_parsing_last_date",
+    "name": "course_timetable_area_color",
     "table": "app_settings",
-    "data_type": "timestamp without time zone",
+    "data_type": "character varying",
     "default_value": null,
-    "max_length": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

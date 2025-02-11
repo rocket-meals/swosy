@@ -1,120 +1,98 @@
 import {TimerHelper} from "../helpers/TimerHelper";
-import {CollectionNames} from "../helpers/CollectionNames";
-import {ApiContext} from "../helpers/ApiContext";
-import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {
     CashregistersTransactionsForParser,
     CashregisterTransactionParserInterface
 } from "./CashregisterTransactionParserInterface";
-
-const TABLENAME_CASHREGISTERS = CollectionNames.CASHREGISTERS
-const TABLENAME_CASHREGISTERS_TRANSACTIONS = CollectionNames.CASHREGISTERS_TRANSACTIONS
-const TABLENAME_FLOWHOOKS = CollectionNames.APP_SETTINGS
-
-export const SCHEDULE_NAME = "Cashregister"
+import {WorkflowsRuns} from "../databaseTypes/types";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 export class ParseSchedule {
 
-    static SCHEDULE_NAME = SCHEDULE_NAME;
-
-    private apiContext: ApiContext;
+    private workflowRun: WorkflowsRuns
+    private logger: WorkflowRunLogger
     private myDatabaseHelper: MyDatabaseHelper
     private parser: CashregisterTransactionParserInterface;
 
-    constructor(parser: CashregisterTransactionParserInterface, apiContext: ApiContext) {
-        this.apiContext = apiContext
-        this.myDatabaseHelper = new MyDatabaseHelper(apiContext)
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: CashregisterTransactionParserInterface) {
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.workflowRun = workflowRun;
+        this.logger = logger;
         this.parser = parser;
     }
 
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setCashregisterParsingStatus(status, new Date());
-    }
+    async parse(): Promise<Partial<WorkflowsRuns>>{
+        try {
+            await this.logger.appendLog("Starting cashregister parsing");
 
-    async isEnabled() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().isCashregisterParsingEnabled();
-    }
+            await this.logger.appendLog("Parsing cashregister transactions");
+            let transactions = await this.parser.getTransactionsList();
 
-    async getStatus() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().getCashregisterParsingStatus();
-    }
+            let totalTransactionsToCheck = transactions.length;
+            let myTimer = new TimerHelper("Cash register"+" parsing", totalTransactionsToCheck, 100);
 
-    async parse() {
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
+            let external_cashregister_id_to_internal_cashregister_id: {[key: string]: string} = {}
 
-        if (enabled && status === FlowStatus.START) {
-            //console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
+            // DEBUG: DELETE ALL TRANSACTIONS
+            let clearAllData = false;
+            if(clearAllData){
+                await this.myDatabaseHelper.getCashregisterHelper().deleteAllTransactions();
+            }
 
-            try {
-                let transactions = await this.parser.getTransactionsList();
+            myTimer.start()
 
-                let totalTransactionsToCheck = transactions.length;
-                let myTimer = new TimerHelper(SCHEDULE_NAME+" parsing", totalTransactionsToCheck, 100);
-
-                let external_cashregister_id_to_internal_cashregister_id: {[key: string]: string} = {
-
+            for (let i = 0; i < totalTransactionsToCheck; i++) {
+                //console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
+                await this.logger.appendLog("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
+                let transaction = transactions[i];
+                if(!transaction){
+                    continue;
                 }
 
-                // DEBUG: DELETE ALL TRANSACTIONS
-                let clearAllData = false;
-                if(clearAllData){
-                    await this.myDatabaseHelper.getCashregisterHelper().deleteAllTransactions();
-                }
+                let cashregister_external_id = transaction?.cashregister_external_idenfifier;
+                //console.log("cashregister_external_id: "+cashregister_external_id);
 
-
-                myTimer.start()
-
-
-
-                for (let i = 0; i < totalTransactionsToCheck; i++) {
-                    //console.log("Transaction parsing progress: " + i + "/" + totalTransactionsToCheck);
-                    let transaction = transactions[i];
-                    if(!transaction){
-                        continue;
-                    }
-
-                    let cashregister_external_id = transaction?.cashregister_external_idenfifier;
-                    //console.log("cashregister_external_id: "+cashregister_external_id);
-
-                    let cached_cashregister_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
-                    let cashregister_id = undefined;
-                    //console.log("cached_cashregister_id: "+cached_cashregister_id);
-                    if(cached_cashregister_id === undefined){
-                        //console.log("findOrCreateCashregister");
-                        let cashRegister = await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
-                        if(!!cashRegister){
-                            //console.log("cashRegister found: "+cashRegister.id);
-                            cached_cashregister_id = cashRegister?.id;
-                            external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
-                            cashregister_id = cached_cashregister_id
-                        }
-                    } else {
+                let cached_cashregister_id = external_cashregister_id_to_internal_cashregister_id[cashregister_external_id];
+                let cashregister_id = undefined;
+                //console.log("cached_cashregister_id: "+cached_cashregister_id);
+                if(cached_cashregister_id === undefined){
+                    //console.log("findOrCreateCashregister");
+                    let cashRegister = await this.myDatabaseHelper.getCashregisterHelper().findOrCreateCashregister(cashregister_external_id);
+                    if(!!cashRegister){
+                        //console.log("cashRegister found: "+cashRegister.id);
+                        cached_cashregister_id = cashRegister?.id;
+                        external_cashregister_id_to_internal_cashregister_id[cashregister_external_id] = cached_cashregister_id;
                         cashregister_id = cached_cashregister_id
                     }
-                    //console.timeEnd("findOrCreateCashregister");
+                } else {
+                    cashregister_id = cached_cashregister_id
+                }
+                //console.timeEnd("findOrCreateCashregister");
 
-                    if(cashregister_id !== undefined){
-                        //console.log("cashregister_id found: "+cashregister_id);
-                        //console.log("findOrCreateCashregisterTransaction");
-                        await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
-                    } else {
-                        console.log("Houston we got a problem? Seems like somebody deleted a cashregister mid transaction");
-                    }
-
-                    myTimer.printEstimatedTime(i);
+                if(cashregister_id !== undefined){
+                    //console.log("cashregister_id found: "+cashregister_id);
+                    //console.log("findOrCreateCashregisterTransaction");
+                    await this.findOrCreateCashregisterTransaction(transaction, cashregister_id);
+                } else {
+                    console.log("Houston we got a problem? Seems like somebody deleted a cashregister mid transaction");
                 }
 
-
-                //console.log("[CashregisterParseSchedule] Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("[CashregisterParseSchedule] Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
+                myTimer.setCurrentCount(i);
+                let timerInformation = myTimer.calcTimeSpent()
+                let totalTimeInformation = timerInformation.totalTimeInformation;
+                await this.logger.appendLog("Time spent: "+totalTimeInformation);
             }
+
+            await this.logger.appendLog("Finished");
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS,
+            })
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            })
         }
     }
 

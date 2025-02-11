@@ -1,54 +1,44 @@
-import {FoodsAttributesValues, WorkflowsRuns} from "../databaseTypes/types";
+import {WorkflowsRuns} from "../databaseTypes/types";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {WORKFLOW_RUN_STATE} from "./index";
 
-export type WorkflowRunInformationForSchedule = {
-    alias?: string | null;
-    result_hash?: string | null;
-    log?: string | null;
-    output?: string | null;
+export type ResultHandleWorkflowRunsWantToRun = {
+    errorMessage: string | undefined
 }
 
-export type ResultPrioritizePendingJobs = {
-    delelePendingJobs: WorkflowsRuns[];
-    workflowRunToCheck: WorkflowsRuns;
-}
+export class WorkflowRunLogger {
 
-export type ResultHandleOtherJobsAlreadyRunning = {
-    validWorkflowRunsToTrigger: WorkflowsRuns[];
+    private workflowRun: WorkflowsRuns;
+    private myDatabaseHelper: MyDatabaseHelper;
+    private currentLog: string = "";
 
-}
-
-export class WorkflowSortHelper {
-    static getMostRecentWorkflowRun(workflowsRuns: WorkflowsRuns[]): WorkflowsRuns | undefined {
-        let output = workflowsRuns;
-        output = this.sortWorkflowsRunsByDateCreated(output);
-        if(output.length > 0){
-            return output[output.length - 1];
-        }
-        return undefined;
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper) {
+        this.workflowRun = workflowRun;
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.currentLog = workflowRun.log || "";
     }
 
-    static sortWorkflowsRunsByDateCreated(workflowsRuns: WorkflowsRuns[]): WorkflowsRuns[] {
-        let output = workflowsRuns;
-        output.sort((a,b) => {
-            let dateA = undefined
-            if(!!a.date_created){
-                dateA = new Date(a.date_created);
-            }
-            let dateB = undefined
-            if(!!b.date_created){
-                dateB = new Date(b.date_created);
-            }
-            if(!!dateA && !!dateB){
-                return dateA.getTime() - dateB.getTime();
-            } else if (!!dateA){
-                return -1;
-            } else if (!!dateB){
-                return 1;
-            } else {
-                return 0;
-            }
+    async setLog(workflowRunId: string, log: string) {
+        this.myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRunId, {
+            log: log,
         });
-        return output;
+    }
+
+    static createLogRow(log: string) {
+        return new Date().toISOString() + ": " + log + "\n";
+    }
+
+    async appendLog(log: string) {
+        this.currentLog += WorkflowRunLogger.createLogRow(log);
+        await this.setLog(this.workflowRun.id, this.currentLog);
+    }
+
+    getFinalLogWithStateAndParams(workflowrun: Partial<WorkflowsRuns>): Partial<WorkflowsRuns> {
+        let result: Partial<WorkflowsRuns> = {
+            log: this.currentLog,
+            ...workflowrun
+        }
+        return result;
     }
 }
 
@@ -56,14 +46,11 @@ export interface WorkflowRunJobInterface {
 
     getWorkflowId(): string;
 
-    prioritizePendingList(workflowRuns: WorkflowsRuns[]): Promise<ResultPrioritizePendingJobs>;
+    getDeleteFinishedWorkflowRunsAfterDays(): number | undefined;
+    getDeleteFailedWorkflowRunsAfterDays(): number | undefined;
 
-    handleOtherJobAlreadyRunning(workflowRun: WorkflowsRuns): Promise<VALID_WORKFLOW_RUN_STATES_WHEN_PENDING_AND_ANOTHER_WORKFLOW_RUN_IS_RUNNING>;
+    handleWorkflowRunsWantToRun(modifiableInput: Partial<WorkflowsRuns>, workflowruns: Partial<WorkflowsRuns>[], alreadyRunningWorkflowruns: WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
 
-    getWorkflowRunInformationBefore(workflowRun: WorkflowsRuns): Promise<WorkflowRunInformationForSchedule>;
-
-    getWorkflowRunInformationAfter(workflowRun: WorkflowsRuns): Promise<WorkflowRunInformationForSchedule>;
-
-    runJob(workflowRun: WorkflowsRuns): Promise<void>;
+    runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>>;
 
 }

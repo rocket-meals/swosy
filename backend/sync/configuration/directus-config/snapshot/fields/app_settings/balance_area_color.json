@@ -1,40 +1,35 @@
 {
   "collection": "app_settings",
-  "field": "housing_parsing_enabled",
-  "type": "boolean",
+  "field": "balance_area_color",
+  "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "housing_parsing_enabled",
-    "group": "housing_settings",
+    "field": "balance_area_color",
+    "group": "balance_settings",
     "hidden": false,
-    "interface": "boolean",
+    "interface": "select-color",
     "note": null,
-    "options": null,
+    "options": {
+      "opacity": true
+    },
     "readonly": false,
     "required": false,
     "sort": 2,
-    "special": [
-      "cast-boolean"
-    ],
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Wohnanlagen Automatisch Importieren"
-      }
-    ],
+    "special": null,
+    "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "housing_parsing_enabled",
+    "name": "balance_area_color",
     "table": "app_settings",
-    "data_type": "boolean",
-    "default_value": true,
-    "max_length": null,
+    "data_type": "character varying",
+    "default_value": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,

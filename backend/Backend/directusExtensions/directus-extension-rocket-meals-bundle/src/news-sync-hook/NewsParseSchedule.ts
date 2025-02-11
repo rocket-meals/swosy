@@ -1,10 +1,11 @@
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
-import {ApiContext} from "../helpers/ApiContext";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
-import {News} from "../databaseTypes/types";
+import {News, WorkflowsRuns} from "../databaseTypes/types";
 import {CollectionNames} from "../helpers/CollectionNames";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 const SCHEDULE_NAME = "NewsParseSchedule";
 
@@ -13,46 +14,34 @@ export class NewsParseSchedule {
     //TODO stringfiy and cache results to reduce dublicate removing from foodOffers and Meals ...
     private parser: NewsParserInterface;
     private myDatabaseHelper: MyDatabaseHelper;
-    private apiContext: ApiContext;
+    private logger: WorkflowRunLogger;
+    private workflowRun: WorkflowsRuns;
 
-    constructor(apiContext: ApiContext, parser: NewsParserInterface) {
-        this.apiContext = apiContext;
-        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: NewsParserInterface) {
+        this.workflowRun = workflowRun;
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.logger = logger;
         this.parser = parser;
     }
 
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setNewsParsingStatus(status);
-    }
+    async parse(): Promise<Partial<WorkflowsRuns>> {
+        await this.logger.appendLog("Starting sync news parsing");
 
-    async isEnabled() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().isNewsParsingEnabled();
-    }
+        try {
+            await this.logger.appendLog("Getting news items");
+            let newsJSONList = await this.parser.getNewsItems();
+            await this.updateNews(newsJSONList);
 
-    async getStatus() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().getNewsParsingStatus();
-    }
-
-    async parse() {
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
-
-        if (enabled && status === FlowStatus.START) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
-
-            try {
-                let newsJSONList = await this.parser.getNewsItems();
-                await this.updateNews(newsJSONList);
-
-                console.log("Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log(SCHEDULE_NAME+" Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
-            }
+            await this.logger.appendLog("Finished");
+            return await this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS,
+            });
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
         }
+        return await this.logger.getFinalLogWithStateAndParams({
+            state: WORKFLOW_RUN_STATE.FAILED,
+        });
     }
 
     async findOrCreateSingleNews(newsJSON: NewsTypeForParser) {
@@ -66,7 +55,7 @@ export class NewsParseSchedule {
     }
 
     async updateNewsTranslations(item: News, newsJSON: NewsTypeForParser) {
-        await TranslationHelper.updateItemTranslations(item, newsJSON.translations, "news_id", CollectionNames.NEWS, this.apiContext);
+        await TranslationHelper.updateItemTranslations(item, newsJSON.translations, "news_id", CollectionNames.NEWS, this.myDatabaseHelper.apiContext);
     }
 
     async updateOtherFields(item: News, newsJSON: NewsTypeForParser) {

@@ -1,10 +1,18 @@
 
 export class TimerHelper {
 
-    constructor(name, total_count, print_every_x_count) {
+    private name: string;
+    private total_count: number;
+    private current_count: number;
+    private print_every_x_count: number;
+    private startTime: number;
+    private lastTime: number | undefined
+
+    constructor(name: string, total_count: number, print_every_x_count: number) {
         this.name = name;
         this.total_count = total_count;
-        this.startTime = undefined;
+        this.startTime = this.private_getNow();
+        this.current_count = 0;
         this.lastTime = undefined;
         this.print_every_x_count = print_every_x_count || 100;
     }
@@ -12,6 +20,7 @@ export class TimerHelper {
     start() {
         this.startTime = this.private_getNow();
         this.lastTime = this.startTime;
+        this.current_count = 0;
     }
 
     private_getNow(){
@@ -19,7 +28,7 @@ export class TimerHelper {
        return date.getTime();
     }
 
-    calcEstimatedFinishedDate(current_count) {
+    calcEstimatedFinishedDate(current_count: number) {
         //console.log("calcEstimatedFinishedDate: current_count: "+current_count)
         let timeSpent = (this.private_getNow() - this.startTime) / 1000; // Time spent in seconds
         //console.log("timeSpent: "+timeSpent);
@@ -32,7 +41,7 @@ export class TimerHelper {
         return estimatedCompletionTime;
     }
 
-    formatSecondsIntoHHMMSS(remainingTime){
+    formatSecondsIntoHHMMSS(remainingTime: number){
         // Convert remaining time to HH:MM:SS format
         let hours = Math.floor(remainingTime / 3600);
         let minutes = Math.floor((remainingTime % 3600) / 60);
@@ -42,7 +51,8 @@ export class TimerHelper {
         return remainingTimeString;
     }
 
-    printEstimatedTime(current_count) {
+    setCurrentCount(current_count: number){
+        this.current_count = current_count;
         if (this.startTime === undefined) {
             console.log("Timer not started.");
             return;
@@ -56,22 +66,40 @@ export class TimerHelper {
         }
 
         let now = this.private_getNow()
+        this.lastTime = now;
+    }
 
-
-
-        let remainingTime = (this.calcEstimatedFinishedDate(current_count) - now) / 1000; // Remaining time in seconds
+    calcTimeSpent(){
+        let current_count = this.current_count;
+        let now = this.lastTime || this.private_getNow();
+        let remainingTime = (this.calcEstimatedFinishedDate(current_count).getTime() - now) / 1000; // Remaining time in seconds
         let remainingTimeString = this.formatSecondsIntoHHMMSS(remainingTime);
         let estimatedCompletionTimeString = this.calcEstimatedFinishedDate(current_count).toLocaleTimeString();
-
-        console.log(`Estimated remaining time for ${this.name}: ${remainingTimeString}, probably finished at: ${estimatedCompletionTimeString} - `+current_count+" / "+this.total_count);
+        let totalTimeInformation = `Estimated remaining time for ${this.name}: ${remainingTimeString}, probably finished at: ${estimatedCompletionTimeString} - `+current_count+" / "+this.total_count
 
         // print how many HH:MM:SS between now and this.lastTime divided by this.print_every_x_count to print the average
         // Calculate average time per count since last print
-        let timeSinceLastPrint = (now - this.lastTime) / 1000; // Time in seconds
-        let averageTimePerCount = timeSinceLastPrint / this.print_every_x_count;
-        console.log("Average time per action: "+this.formatSecondsIntoHHMMSS(averageTimePerCount))
+        let averageTimePerCount: number | undefined = undefined;
+        let averageTimePerCountFormatted: string | undefined = undefined;
+        if(!!this.lastTime){
+            let timeSinceLastPrint = (now - this.lastTime) / 1000; // Time in seconds
+            averageTimePerCount = timeSinceLastPrint / this.print_every_x_count;
+            averageTimePerCountFormatted = this.formatSecondsIntoHHMMSS(averageTimePerCount);
+        }
 
-        this.lastTime = now;
+        return {
+            totalTimeInformation: totalTimeInformation,
+            remainingTime: remainingTime,
+            estimatedCompletionTime: this.calcEstimatedFinishedDate(current_count),
+            estimatedCompletionTimeString: estimatedCompletionTimeString,
+            remainingTimeString: remainingTimeString,
+            averageTimePerCount: averageTimePerCount,
+            averageTimePerCountFormatted: averageTimePerCountFormatted,
+        }
+    }
 
+    printEstimatedTime() {
+        let calcTimeSpentResult = this.calcTimeSpent();
+        console.log(calcTimeSpentResult.totalTimeInformation);
     }
 }

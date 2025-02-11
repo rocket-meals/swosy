@@ -7,12 +7,17 @@ import {
     Apartments,
     AppFeedbacks,
     Buildings,
-    Canteens, CanteensFeedbacksLabels, CanteensFeedbacksLabelsEntries,
+    Canteens,
+    CanteensFeedbacksLabels,
+    CanteensFeedbacksLabelsEntries,
     CollectionsDatesLastUpdate,
     Devices,
     DirectusUsers,
-    Foodoffers, FoodoffersCategories,
-    Foods, FoodsAttributes, FoodsCategories,
+    Foodoffers,
+    FoodoffersCategories,
+    Foods,
+    FoodsAttributes,
+    FoodsCategories,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
     FoodsFeedbacksLabelsEntries,
@@ -25,18 +30,19 @@ import {
     UtilizationsEntries,
     UtilizationsGroups,
     Washingmachines,
-    WashingmachinesJobs, Workflows, WorkflowsRuns
+    WashingmachinesJobs,
+    Workflows,
+    WorkflowsRuns
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
-import {WorkflowsSettingsHelper} from "./itemServiceHelpers/WorkflowsSettingsHelper";
 
 export class MyDatabaseHelper {
 
-    private apiContext: ApiContext;
-    private eventContext: EventContext | undefined;
+    public apiContext: ApiContext;
+    public eventContext: EventContext | undefined;
 
     constructor(apiContext: ApiContext, eventContext?: EventContext) {
         this.apiContext = apiContext;
@@ -51,10 +57,6 @@ export class MyDatabaseHelper {
 
     getAppSettingsHelper() {
         return new AppSettingsHelper(this.apiContext, this.eventContext);
-    }
-
-    getWorkflowsSettingsHelper() {
-        return new WorkflowsSettingsHelper(this.apiContext, this.eventContext);
     }
 
     getAutoTranslationSettingsHelper() {
@@ -175,6 +177,10 @@ export class MyDatabaseHelper {
 
     getWorkflowsRunsHelper() {
         return new ItemsServiceHelper<WorkflowsRuns>(this.apiContext, CollectionNames.WORKFLOWS_RUNS, this.eventContext);
+    }
+
+    getItemsServiceHelper<T>(collectionName: string) {
+        return new ItemsServiceHelper<T>(this.apiContext, collectionName, this.eventContext);
     }
 
     async sendMail(mail: Partial<Mails>) {

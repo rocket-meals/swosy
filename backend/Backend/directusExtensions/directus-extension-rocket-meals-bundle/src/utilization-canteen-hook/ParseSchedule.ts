@@ -1,66 +1,53 @@
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
-import {Canteens, Cashregisters, UtilizationsGroups} from "../databaseTypes/types";
+import {Canteens, Cashregisters, UtilizationsGroups, WorkflowsRuns} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 
-    private apiContext: ApiContext;
-    private eventContext?: EventContext;
     private myDatabaseHelper: MyDatabaseHelper;
+    private workflowRun: WorkflowsRuns;
+    private logger: WorkflowRunLogger;
 
-    constructor(apiContext: ApiContext, eventContext?: EventContext) {
-        this.apiContext = apiContext;
-        this.eventContext = eventContext;
-        this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext, this.eventContext);
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger) {
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.workflowRun = workflowRun;
+        this.logger = logger;
     }
 
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setUtilizationForecastCalculationStatus(status, new Date());
-    }
-
-    async isEnabled() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().isUtilizationForecastCalculationEnabled();
-    }
-
-    async getStatus() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().getUtilizationForecastCalculationStatus();
-    }
-
-    async parse() {
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
-
-        if (enabled && status === FlowStatus.START) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
-
-            try {
-                // Get all Canteens
-                //console.log("UtilizationSchedule: load all canteens");
-                let canteens = await this.getAllCanteens();
-                // For every canteen, get all cashregisters
-                for(let canteen of canteens){
-                    await this.calcForecastForCanteen(canteen)
-                }
-
-                console.log("Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("[UtilizationSchedule] Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
+    async parse(): Promise<Partial<WorkflowsRuns>>{
+        await this.logger.appendLog("Starting");
+        try {
+            // Get all Canteens
+            //console.log("UtilizationSchedule: load all canteens");
+            await this.logger.appendLog("Loading all canteens");
+            let canteens = await this.getAllCanteens();
+            // For every canteen, get all cashregisters
+            for(let canteen of canteens){
+                await this.calcForecastForCanteen(canteen)
             }
 
+            await this.logger.appendLog("Finished");
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS
+            });
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            })
         }
     }
 
     async calcForecastForCanteen(canteen: Canteens){
         //console.log("UtilizationSchedule: calc for canteen - label: "+canteen?.alias);
+        await this.logger.appendLog("Calculating forecast for canteen - label: "+canteen?.alias);
         //console.log(canteen);
 
         // for every canteen create a utilization group or find it
@@ -90,6 +77,7 @@ export class ParseSchedule {
                 //console.log("")
                 //console.log("###########");
                 //console.log("Calc for: "+date);
+                await this.logger.appendLog("- Calculating forecast for date: "+date.toISOString());
 
                 await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregisters, date, intervalMinutes);
             }

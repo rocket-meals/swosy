@@ -1,43 +1,32 @@
 {
-  "collection": "workflows_settings",
-  "field": "workflows_state",
+  "collection": "app_settings",
+  "field": "news_area_color",
   "type": "string",
   "meta": {
-    "collection": "workflows_settings",
+    "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "workflows_state",
-    "group": null,
+    "field": "news_area_color",
+    "group": "news_settings",
     "hidden": false,
-    "interface": "select-dropdown",
+    "interface": "select-color",
     "note": null,
     "options": {
-      "choices": [
-        {
-          "icon": "stop_circle",
-          "text": "Finished",
-          "value": "finished"
-        },
-        {
-          "icon": "play_circle",
-          "text": "Running",
-          "value": "running"
-        }
-      ]
+      "opacity": true
     },
     "readonly": false,
     "required": false,
-    "sort": 7,
+    "sort": 3,
     "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "workflows_state",
-    "table": "workflows_settings",
+    "name": "news_area_color",
+    "table": "app_settings",
     "data_type": "character varying",
     "default_value": null,
     "max_length": 255,

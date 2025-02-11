@@ -1,152 +1,148 @@
 import {TranslationHelper} from "../helpers/TranslationHelper";
-import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
-import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
-import {Devices, Foodoffers, Foods} from "../databaseTypes/types";
+import {Devices, Foodoffers, Foods, WorkflowsRuns} from "../databaseTypes/types";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 
 export class NotifySchedule {
 
     private myDatabaseHelper: MyDatabaseHelper;
+    private workflowRun: WorkflowsRuns;
+    private logger: WorkflowRunLogger;
 
     constructor(
-        apiExtensionContext: ApiContext
+        workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger
     ) {
-        this.myDatabaseHelper = new MyDatabaseHelper(apiExtensionContext);
-    }
-    
-    // Todo create/generate documentation
-
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setFoodNotificationStatus(status)
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.workflowRun = workflowRun;
+        this.logger = logger;
     }
 
-    async notify(aboutMealsInDays = 1, force = false) {
-        let enabled = true
-        let status = await this.myDatabaseHelper.getAppSettingsHelper().getFoodNotificationStatus();
 
+    async notify(aboutMealsInDays = 1): Promise<Partial<WorkflowsRuns>> {
         let devicesService = this.myDatabaseHelper.getDevicesHelper();
 
-        if ((enabled && status === FlowStatus.START) || force) {
-            console.log("[Start] "+SCHEDULE_NAME+" Schedule");
-            console.log("Notify about meals in "+aboutMealsInDays+" days - force: "+force);
-            //console.log("Set status to running");
-            await this.myDatabaseHelper.getAppSettingsHelper().setFoodNotificationStatus(FlowStatus.RUNNING);
+        await this.logger.appendLog("Start food notify schedule");
+        await this.logger.appendLog("Notify about meals in "+aboutMealsInDays+" days");
+        try {
+            // We need to notify all devices, which want to get notified about new food offers which they are interested in
 
-            try {
-                // We need to notify all devices, which want to get notified about new food offers which they are interested in
+            // Step 1: Get all food offers at aboutMealsInDays days in the future
+            //console.log("Get all food offers at aboutMealsInDays days in the future");
+            let date = new Date()
+            date.setDate(date.getDate() + aboutMealsInDays);
+            await this.logger.appendLog("Date to notify about: "+date.toISOString());
+            let foodOffers = await this.getFoodOffersForDate(date);
+            await this.logger.appendLog("Found "+foodOffers.length+" food offers for "+date.toISOString());
 
-                // Step 1: Get all food offers at aboutMealsInDays days in the future
-                //console.log("Get all food offers at aboutMealsInDays days in the future");
-                let date = new Date()
-                date.setDate(date.getDate() + aboutMealsInDays);
-                //console.log("Date: "+date.toISOString());
-                let foodOffers = await this.getFoodOffersForDate(date);
-                //console.log("Found "+foodOffers.length+" food offers for "+date.toISOString());
-
-                for (let foodOffer of foodOffers) {
-                    //console.log("Notify about food offer: "+foodOffer.id);
-                    let food_id = foodOffer.food as string;
-                    let foodWithTranslations = await this.getFoodWithTranslations(food_id);
+            for (let foodOffer of foodOffers) {
+                await this.logger.appendLog("- Notify about food offer: "+foodOffer.id);
+                let food_id = foodOffer.food as string;
+                let foodWithTranslations = await this.getFoodWithTranslations(food_id);
 
 
-                    let food_offer_in_canteen_id = foodOffer.canteen;
-                    //console.log("Food offer is in canteen: "+food_offer_in_canteen_id);
+                let food_offer_in_canteen_id = foodOffer.canteen;
+                await this.logger.appendLog("- Food offer is in canteen: "+food_offer_in_canteen_id);
 
-                    // Step 2: Get all food_feedbacks which want to get notified about this food
-                    let foodFeedbacks = await this.getFoodFeedbacksForFood(food_id);
-                    //console.log("Found "+foodFeedbacks.length+" food feedbacks for food "+food_id);
+                // Step 2: Get all food_feedbacks which want to get notified about this food
+                let foodFeedbacks = await this.getFoodFeedbacksForFood(food_id);
+                await this.logger.appendLog("- Found "+foodFeedbacks.length+" food feedbacks for food "+food_id);
 
-                    for (let foodFeedback of foodFeedbacks) {
-                        let profile_id = foodFeedback.profile as string;
-                        //console.log("Notify profile: "+profile_id+" about food: "+food_id);
-                        // Step 3: Get the profile and all devices of the profile
-                        let profile = await this.getProfileAndDevicesForProfile(profile_id);
-                        let language = profile.language as string;
-                        let profile_canteen_id = profile.canteen;
+                for (let foodFeedback of foodFeedbacks) {
+                    let profile_id = foodFeedback.profile as string;
+                    await this.logger.appendLog("-- Notify profile: "+profile_id+" about food: "+food_id);
+                    // Step 3: Get the profile and all devices of the profile
+                    let profile = await this.getProfileAndDevicesForProfile(profile_id);
+                    let language = profile.language as string;
+                    let profile_canteen_id = profile.canteen;
 
-                        // Step 3.1: Check if the profile is interested in the canteen
-                        if (profile_canteen_id !== food_offer_in_canteen_id) {
-                            //console.log("Profile is not interested in this canteen");
-                            continue;
+                    // Step 3.1: Check if the profile is interested in the canteen
+                    if (profile_canteen_id !== food_offer_in_canteen_id) {
+                        //console.log("Profile is not interested in this canteen");
+                        continue;
+                    } else {
+                        //console.log("Profile is interested in this canteen");
+                        await this.logger.appendLog("-- Profile is interested in this canteen");
+                    }
+
+                    const profileDevices = profile.devices as Devices[];
+
+                    let expoPushTokensDict = this.getExpoPushTokensToDevicesDict(profileDevices);
+
+                    let expoPushTokens = Object.keys(expoPushTokensDict);
+                    for(let expoPushToken of expoPushTokens) {
+                        let devices = expoPushTokensDict[expoPushToken] as Devices[];
+                        //console.log("Notify devices: "+devices.length+" about food: "+food_id);
+                        await this.logger.appendLog("--- Notify devices: "+devices.length+" about food: "+food_id);
+                        try{
+                            await this.notifyExpoPushTokenAboutFoodOffer(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
+                        }  catch (err: any) {
+                            //console.log("Error while creating push notification");
+                            //console.log(err);
+                            await this.logger.appendLog("--- Error while creating push notification: "+err.toString());
+                            const message = err?.message;
+                            if(message.includes("Failed to send notification")){
+                                //console.log("Failed to send notification");
+                                await this.logger.appendLog("--- Failed to send notification");
+                                //console.log("We better reset on the device the pushTokenObj to null");
+                                // Reset the pushTokenObj to null
+                                for(let device of devices) {
+                                    await devicesService.updateOne(device.id, {pushTokenObj: null});
+                                }
+                            }
+                        }
+
+                        if(devices.length > 1) {
+                            await this.logger.appendLog("--- Notify multiple devices with the same push token");
+                            // we will remove the pushTokenObj from all but the last updated device
+                            await this.logger.appendLog("--- we will remove the pushTokenObj from all but the last updated device");
+                            let recentDateUpdated: Date | null = null;
+                            let recentDevice: Devices | null = null;
+                            for(let device of devices) {
+                                if(!!device.date_updated) {
+                                    let device_date_updated = new Date(device.date_updated);
+                                    if(!recentDateUpdated || device_date_updated > recentDateUpdated) {
+                                        recentDateUpdated = device_date_updated;
+                                        recentDevice = device;
+                                    }
+                                }
+                            }
+                            // now we have the most recent device, so we will remove the pushTokenObj from all other devices
+                            for(let device of devices) {
+                                if(device.id !== recentDevice?.id) {
+                                    await this.logger.appendLog("--- Remove pushTokenObj from device.id: "+device.id+" as it is not the recent updated device: "+device.id);
+                                    await devicesService.updateOne(device.id, {pushTokenObj: null});
+                                }
+                            }
+                        }
+
+                    }
+
+                    for (let device of profileDevices) {
+                        await this.logger.appendLog("--- Notify device: "+device.id+" about food: "+food_id);
+                        // Step 4: Send the notification to the device, where pushTokenObj is not null
+                        if (device.pushTokenObj !== null) {
+                            // Step 5: Send the notification to the device
+                            // TODO: Es kann mehrere Devices mit dem gleichen pushToken geben. Wir sollten nur einmal senden
                         } else {
-                            //console.log("Profile is interested in this canteen");
-                        }
-
-                        const profileDevices = profile.devices as Devices[];
-
-                        let expoPushTokensDict = this.getExpoPushTokensToDevicesDict(profileDevices);
-
-                        let expoPushTokens = Object.keys(expoPushTokensDict);
-                        for(let expoPushToken of expoPushTokens) {
-                            let devices = expoPushTokensDict[expoPushToken] as Devices[];
-                            //console.log("Notify devices: "+devices.length+" about food: "+food_id);
-                            try{
-                                await this.notifyExpoPushTokenAboutFoodOffer(expoPushToken, foodOffer, foodWithTranslations, language, aboutMealsInDays, date);
-                            }  catch (err: any) {
-                                //console.log("Error while creating push notification");
-                                //console.log(err);
-                                const message = err?.message;
-                                if(message.includes("Failed to send notification")){
-                                    //console.log("Failed to send notification");
-                                    //console.log("We better reset on the device the pushTokenObj to null");
-                                    // Reset the pushTokenObj to null
-                                    for(let device of devices) {
-                                        await devicesService.updateOne(device.id, {pushTokenObj: null});
-                                    }
-                                }
-                            }
-
-                            if(devices.length > 1) {
-                                console.log("Notify multiple devices with the same push token");
-                                console.log("Devices: "+devices.length);
-                                console.log(devices);
-                                // we will remove the pushTokenObj from all but the last updated device
-                                let recentDateUpdated: Date | null = null;
-                                let recentDevice: Devices | null = null;
-                                for(let device of devices) {
-                                    if(!!device.date_updated) {
-                                        let device_date_updated = new Date(device.date_updated);
-                                        if(!recentDateUpdated || device_date_updated > recentDateUpdated) {
-                                            recentDateUpdated = device_date_updated;
-                                            recentDevice = device;
-                                        }
-                                    }
-                                }
-                                // now we have the most recent device, so we will remove the pushTokenObj from all other devices
-                                for(let device of devices) {
-                                    if(device.id !== recentDevice?.id) {
-                                        console.log("Remove pushTokenObj from device as it is not the recent updated device: "+device.id);
-                                        await devicesService.updateOne(device.id, {pushTokenObj: null});
-                                    }
-                                }
-                            }
-
-                        }
-
-                        for (let device of profileDevices) {
-                            //console.log("Notify device: "+device.id+" about food: "+food_id);
-                            // Step 4: Send the notification to the device, where pushTokenObj is not null
-                            if (device.pushTokenObj !== null) {
-                                // Step 5: Send the notification to the device
-                                // TODO: Es kann mehrere Devices mit dem gleichen pushToken geben. Wir sollten nur einmal senden
-
-
-                            } else {
-                                //console.log("Device has no push token");
-                            }
+                            //console.log("Device has no push token");
                         }
                     }
                 }
-                //console.log("Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("["+SCHEDULE_NAME+"] Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
             }
+            //console.log("Finished");
+            await this.logger.appendLog("Finished");
+            return await this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS
+            })
+        } catch (err: any) {
+            await this.logger.appendLog("Error: "+err.toString());
+            return await this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED
+            })
         }
     }
 

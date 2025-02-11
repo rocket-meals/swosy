@@ -2,53 +2,45 @@ import {WashingmachineParserInterface, WashingmachinesTypeForParser} from "./Was
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
-import {Washingmachines} from "../databaseTypes/types";
+import {Washingmachines, WorkflowsRuns} from "../databaseTypes/types";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 const SCHEDULE_NAME = "WashingmachineParseSchedule";
 
 export class WashingmachineParseSchedule {
 
     private parser: WashingmachineParserInterface;
-    private apiContext: ApiContext;
     private myDatabaseHelper: MyDatabaseHelper;
+    private workflowRun: WorkflowsRuns;
+    private logger: WorkflowRunLogger;
 
-    constructor(apiContext: ApiContext, parser: WashingmachineParserInterface) {
-        this.apiContext = apiContext
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: WashingmachineParserInterface) {
         this.parser = parser
-        this.myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
+        this.myDatabaseHelper = myDatabaseHelper
+        this.workflowRun = workflowRun
+        this.logger = logger
     }
 
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setWashingmachineParsingStatus(status, new Date());
-    }
+    async parse(): Promise<Partial<WorkflowsRuns>> {
+        await this.logger.appendLog("Starting washingmachine parsing");
 
-    async isEnabled() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().isWashingmachineParsingEnabled();
-    }
+        try {
+            await this.logger.appendLog("Getting washingmachines from parser");
+            let washingmachinesForParser = await this.parser.getWashingmachines();
 
-    async getStatus() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().getWashingmachineParsingStatus();
-    }
+            await this.logger.appendLog("Updating washingmachines");
+            await this.updateWashingmachines(washingmachinesForParser);
 
-    async parse() {
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
-        if (enabled && status === FlowStatus.START) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
-
-            try {
-                let washingmachinesForParser = await this.parser.getWashingmachines();
-
-                await this.updateWashingmachines(washingmachinesForParser);
-
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("["+SCHEDULE_NAME+"] Failed");
-                console.log(err);
-
-                await this.setStatus(FlowStatus.FAILED);
-            }
+            await this.logger.appendLog("Finished washingmachine parsing");
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS
+            });
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            })
         }
     }
 

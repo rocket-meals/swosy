@@ -2,53 +2,44 @@ import {ApiContext} from "../helpers/ApiContext";
 import {ApartmentParserInterface, ApartmentsForParser} from "./ApartmentParserInterface";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
+import {WorkflowsRuns} from "../databaseTypes/types";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
 
 const SCHEDULE_NAME = "ApartmentsParseSchedule";
 
 export class ApartmentsParseSchedule {
 
     private parser: ApartmentParserInterface;
-    private apiContext: ApiContext;
     private myDatabaseHelper: MyDatabaseHelper;
+    private workflowRun: WorkflowsRuns;
+    private logger: WorkflowRunLogger;
 
-    constructor(apiContext: ApiContext, parser: ApartmentParserInterface) {
-        this.apiContext = apiContext;
+    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: ApartmentParserInterface) {
         this.parser = parser;
-        this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
-    }
-
-    async setStatus(status: FlowStatus) {
-        await this.myDatabaseHelper.getAppSettingsHelper().setApartmentParsingStatus(status, new Date());
-    }
-
-    async isEnabled() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().isApartmentParsingEnabled();
-    }
-
-    async getStatus() {
-        return await this.myDatabaseHelper.getAppSettingsHelper().getApartmentParsingStatus();
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.workflowRun = workflowRun;
+        this.logger = logger;
     }
 
     async parse() {
-        let enabled = await this.isEnabled();
-        let status = await this.getStatus()
+        await this.logger.appendLog("Starting");
+        try {
+            await this.logger.appendLog("Parsing apartments");
+            let apartmentsJSONList = await this.parser.getApartmentList();
 
-        console.log("housing-sync-hook: parse: enabled: " + enabled + " status: " + status);
+            await this.logger.appendLog("Updating apartments");
+            await this.updateApartments(apartmentsJSONList);
 
-        if (enabled && status === FlowStatus.START) {
-            console.log("[Start] "+SCHEDULE_NAME+" Parse Schedule");
-            await this.setStatus(FlowStatus.RUNNING);
-            try {
-                let apartmentsJSONList = await this.parser.getApartmentList();
-                await this.updateApartments(apartmentsJSONList);
-
-                console.log("Finished");
-                await this.setStatus(FlowStatus.FINISHED);
-            } catch (err) {
-                console.log("[MealParseSchedule] Failed");
-                console.log(err);
-                await this.setStatus(FlowStatus.FAILED);
-            }
+            await this.logger.appendLog("Finished");
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.SUCCESS,
+            });
+        } catch (err: any) {
+            await this.logger.appendLog("Error: " + err.toString());
+            return this.logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            })
         }
     }
 

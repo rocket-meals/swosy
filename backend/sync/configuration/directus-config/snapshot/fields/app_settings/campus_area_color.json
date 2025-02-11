@@ -1,40 +1,35 @@
 {
   "collection": "app_settings",
-  "field": "utilization_forecast_calculation_enabled",
-  "type": "boolean",
+  "field": "campus_area_color",
+  "type": "string",
   "meta": {
     "collection": "app_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "utilization_forecast_calculation_enabled",
-    "group": "utilization_settings",
+    "field": "campus_area_color",
+    "group": "campus_settings",
     "hidden": false,
-    "interface": "boolean",
+    "interface": "select-color",
     "note": null,
-    "options": null,
+    "options": {
+      "opacity": true
+    },
     "readonly": false,
     "required": false,
-    "sort": 2,
-    "special": [
-      "cast-boolean"
-    ],
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Auslastungsprognose Berechnung Aktiviert"
-      }
-    ],
+    "sort": 3,
+    "special": null,
+    "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "half"
   },
   "schema": {
-    "name": "utilization_forecast_calculation_enabled",
+    "name": "campus_area_color",
     "table": "app_settings",
-    "data_type": "boolean",
-    "default_value": true,
-    "max_length": null,
+    "data_type": "character varying",
+    "default_value": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
