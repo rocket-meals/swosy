@@ -11,13 +11,13 @@
     },
     "field": "date_created",
     "group": null,
-    "hidden": false,
+    "hidden": true,
     "interface": "datetime",
     "note": null,
     "options": null,
     "readonly": true,
     "required": false,
-    "sort": 7,
+    "sort": 5,
     "special": [
       "date-created"
     ],

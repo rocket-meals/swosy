@@ -107,25 +107,19 @@ export function useIsAccountBalanceEnabled(): boolean {
 
 export function useIsUtilizationForecastEnabled(): boolean {
 	const [appSettings] = useSynchedAppSettings();
-	return appSettings?.utilization_forecast_calculation_enabled || false;
+	return appSettings?.utilization_forecast_calculation_enabled // legacy support TODO: remove in future
+		|| appSettings?.utilization_display_enabled
+		|| false;
 }
 
 function getDemoAppSettings(): AppSettings {
 	const demoResource: AppSettings = {
 		app_stores: '',
-		app_url_to_apple_store: '',
-		app_url_to_google_store: '',
-		api_version: '',
+		app_stores_url_to_apple: '',
+		app_stores_url_to_google: '',
 		balance_enabled: true,
 		balance_settings: '',
 		campus_enabled: true,
-		buildings_parsing_enabled: false,
-		buildings_parsing_last_date: '',
-		buildings_parsing_status: '',
-		buildings_settings: '',
-		cashregisters_parsing_enabled: false,
-		cashregisters_parsing_last_date: '',
-		cashregisters_parsing_status: '',
 		cashregisters_settings: '',
 		course_timetable_enabled: true,
 		course_timetable_settings: '',

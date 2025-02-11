@@ -43,23 +43,18 @@ export type AppFeedbacks = {
 };
 
 export type AppSettings = {
+  animations_auto_start?: boolean | null;
   app_stores: string;
   app_stores_url_to_apple?: string | null;
   app_stores_url_to_google?: string | null;
+  balance_area_color?: string | null;
   balance_enabled?: boolean | null;
   balance_settings: string;
   balance_translations: any[] | AppSettingsBalanceTranslations[];
+  campus_area_color?: string | null;
   campus_enabled?: boolean | null;
-  campus_parsing_enabled?: boolean | null;
-  campus_parsing_last_date?: string | null;
-  campus_parsing_status?: string | null;
   campus_settings: string;
-  canteen_reports_enabled?: boolean | null;
-  canteen_reports_settings: string;
-  cashregisters_parsing_enabled?: boolean | null;
-  cashregisters_parsing_last_date?: string | null;
-  cashregisters_parsing_status?: string | null;
-  cashregisters_settings: string;
+  course_timetable_area_color?: string | null;
   course_timetable_enabled?: boolean | null;
   course_timetable_settings: string;
   date_created?: string | null;
@@ -68,14 +63,11 @@ export type AppSettings = {
   food_responsible_organization_link?: string | null;
   food_responsible_organization_name?: string | null;
   food_responsible_settings: string;
+  foods_area_color?: string | null;
   foods_enabled?: boolean | null;
   foods_feedbacks_comments_type?: string | null;
   foods_feedbacks_custom_url?: string | null;
   foods_feedbacks_labels_type?: string | null;
-  foods_parsing_enabled?: boolean | null;
-  foods_parsing_hash?: string | null;
-  foods_parsing_last_date?: string | null;
-  foods_parsing_status?: string | null;
   foods_placeholder_image?: string | DirectusFiles | null;
   foods_placeholder_image_remote_url?: string | null;
   foods_placeholder_image_thumb_hash?: string | null;
@@ -83,11 +75,8 @@ export type AppSettings = {
   foods_ratings_average_display?: boolean | null;
   foods_ratings_type?: string | null;
   foods_settings: string;
-  forms_settings: string;
+  housing_area_color?: string | null;
   housing_enabled?: boolean | null;
-  housing_parsing_enabled?: boolean | null;
-  housing_parsing_last_date?: string | null;
-  housing_parsing_status?: string | null;
   housing_settings: string;
   housing_translations: any[] | AppSettingsHousingTranslations[];
   id: number;
@@ -97,15 +86,11 @@ export type AppSettings = {
   maintenance_start?: string | null;
   map_enabled?: boolean | null;
   map_settings: string;
+  news_area_color?: string | null;
   news_enabled?: boolean | null;
-  news_parsing_enabled?: boolean | null;
-  news_parsing_last_date?: string | null;
-  news_parsing_status?: string | null;
   news_settings: string;
   notifications_android_enabled?: boolean | null;
   notifications_email_enabled?: boolean | null;
-  notifications_foods_last_date?: string | null;
-  notifications_foods_status?: string | null;
   notifications_ios_enabled?: boolean | null;
   notifications_settings: string;
   redirect_settings: string;
@@ -114,13 +99,7 @@ export type AppSettings = {
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   utilization_display_enabled?: boolean | null;
-  utilization_forecast_calculation_enabled?: boolean | null;
-  utilization_forecast_calculation_last_date?: string | null;
-  utilization_forecast_calculation_status?: string | null;
   utilization_settings: string;
-  washingmachine_parsing_enabled?: boolean | null;
-  washingmachine_parsing_last_date?: string | null;
-  washingmachine_parsing_status?: string | null;
 };
 
 export type AppSettingsBalanceTranslations = {
@@ -1648,22 +1627,13 @@ export type WorkflowsRuns = {
   log?: string | null;
   output?: string | null;
   result_hash?: string | null;
+  runtime_in_seconds?: number | null;
   sort?: number | null;
   state?: string | null;
   status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   workflow: string | Workflows;
-};
-
-export type WorkflowsSettings = {
-  date_created?: string | null;
-  date_updated?: string | null;
-  id: number;
-  status: string;
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-  workflows_state?: string | null;
 };
 
 export type CustomDirectusTypes = {
@@ -1776,5 +1746,4 @@ export type CustomDirectusTypes = {
   wikis_translations: WikisTranslations[];
   workflows: Workflows[];
   workflows_runs: WorkflowsRuns[];
-  workflows_settings: WorkflowsSettings;
 };

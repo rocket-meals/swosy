@@ -1,26 +1,26 @@
 {
-  "collection": "app_settings",
-  "field": "foods_feedbacks_custom_url",
-  "type": "string",
+  "collection": "workflows_runs",
+  "field": "runtime_in_seconds",
+  "type": "integer",
   "meta": {
-    "collection": "app_settings",
+    "collection": "workflows_runs",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "foods_feedbacks_custom_url",
-    "group": "foods_settings",
+    "field": "runtime_in_seconds",
+    "group": null,
     "hidden": false,
     "interface": "input",
-    "note": "URL zu einem externen Forum für Rückmeldungen und Bewertungen von Speisen",
+    "note": null,
     "options": null,
-    "readonly": false,
+    "readonly": true,
     "required": false,
-    "sort": 13,
+    "sort": 12,
     "special": null,
     "translations": [
       {
         "language": "de-DE",
-        "translation": "URL für externes Forum"
+        "translation": "Laufzeit in Sekunden"
       }
     ],
     "validation": null,
@@ -28,13 +28,13 @@
     "width": "full"
   },
   "schema": {
-    "name": "foods_feedbacks_custom_url",
-    "table": "app_settings",
-    "data_type": "character varying",
+    "name": "runtime_in_seconds",
+    "table": "workflows_runs",
+    "data_type": "integer",
     "default_value": null,
-    "max_length": 255,
-    "numeric_precision": null,
-    "numeric_scale": null,
+    "max_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
     "is_nullable": true,
     "is_unique": false,
     "is_indexed": false,

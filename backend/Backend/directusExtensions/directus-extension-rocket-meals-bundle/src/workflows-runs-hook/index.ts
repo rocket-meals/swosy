@@ -151,6 +151,7 @@ function cleanWorkflowRun(input: Partial<WorkflowsRuns>): Partial<WorkflowsRuns>
     input.output = null;
     input.date_finished = null;
     input.date_started = null;
+    input.runtime_in_seconds = null;
 
     return input;
 }
@@ -308,6 +309,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
 
                         result.date_started = date_started; // make sure that date_started is not overwritten
                         result.date_finished = new Date().toISOString();
+                        result.runtime_in_seconds = (new Date(result.date_finished).getTime() - new Date(date_started).getTime())/1000;
                         result.log = result.log || "Workflow Run finished";
 
                         await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRun.id, result);

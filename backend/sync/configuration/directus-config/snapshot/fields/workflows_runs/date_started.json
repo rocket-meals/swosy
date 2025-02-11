@@ -15,9 +15,14 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 11,
+    "sort": 10,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Datum: Start"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "half"
