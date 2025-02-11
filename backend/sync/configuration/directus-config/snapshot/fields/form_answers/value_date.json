@@ -1,7 +1,7 @@
 {
   "collection": "form_answers",
   "field": "value_date",
-  "type": "dateTime",
+  "type": "timestamp",
   "meta": {
     "collection": "form_answers",
     "conditions": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "value_date",
     "table": "form_answers",
-    "data_type": "timestamp without time zone",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

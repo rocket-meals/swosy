@@ -1,7 +1,7 @@
 {
   "collection": "form_submissions",
   "field": "date_submitted",
-  "type": "dateTime",
+  "type": "timestamp",
   "meta": {
     "collection": "form_submissions",
     "conditions": null,
@@ -15,17 +15,17 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 12,
+    "sort": 14,
     "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
     "name": "date_submitted",
     "table": "form_submissions",
-    "data_type": "timestamp without time zone",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

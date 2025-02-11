@@ -101,7 +101,13 @@ export class WorkflowScheduleHelper {
         let cronString = WorkflowScheduleHelper.getCronString(config.cronOject);
         config.schedule(cronString, async () => {
             try{
-                await WorkflowScheduleHelper.createWorkflowRunInstance(config.workflowId, config.myDatabaseHelper);
+                let workflowId = config.workflowId;
+                await createWorkflowIfNotExisting(workflowId, config.myDatabaseHelper);
+                let workflow = await config.myDatabaseHelper.getWorkflowsHelper().readOne(workflowId);
+                let enabled = workflow?.enabled;
+                if(enabled){ // schedule will only create a workflow run if the workflow is enabled
+                    await WorkflowScheduleHelper.createWorkflowRunInstance(config.workflowId, config.myDatabaseHelper);
+                }
             } catch (e) {
                 console.error("Error while creating workflow run for workflowId: "+config.workflowId+" for workflow schedule: "+cronString);
                 console.error(e);
@@ -149,7 +155,7 @@ function cleanWorkflowRun(input: Partial<WorkflowsRuns>): Partial<WorkflowsRuns>
     return input;
 }
 
-async function createWorkflowFromInput(workflowId: string, myDatabaseHelper: MyDatabaseHelper): Promise<void> {
+export async function createWorkflowIfNotExisting(workflowId: string, myDatabaseHelper: MyDatabaseHelper): Promise<void> {
     let searchAndUpdate: Partial<Workflows> = {
         id: workflowId,
     };
@@ -204,11 +210,32 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<W
             throw new Error("Please set a workflow for the workflow_run/s");
         }
 
+        // check if all workflows exist
         for(let workflowId of workflowIds){
             try{
-                await createWorkflowFromInput(workflowId, myDatabaseHelper);
+                await createWorkflowIfNotExisting(workflowId, myDatabaseHelper);
             } catch (err: any){
-                throw new Error("Error while create/update of workflowRuns. Cannot find or create workflow with id: "+workflowId);
+                console.error(err);
+                throw new Error("modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot find or create workflow with id: "+workflowId);
+            }
+        }
+
+        // check if all workflows are enabled
+        for(let workflowId of workflowIds){
+            console.log("Checking if workflow with id: "+workflowId+" is enabled");
+            let workflow: Workflows | undefined = undefined;
+            try{
+                workflow = await myDatabaseHelper.getWorkflowsHelper().readOne(workflowId);
+            } catch (err: any){
+                console.error(err);
+                throw new Error("modifyInputForCreateOrUpdateWorkflowRunToRunning: Error while create/update of workflowRuns. Cannot read workflow with id: "+workflowId);
+            }
+            if(!workflow){
+                throw new Error("Workflow with id: "+workflowId+" not found");
+            }
+            let enabled = workflow?.enabled;
+            if(enabled===false){
+                throw new Error("Workflow with id: "+workflowId+" is not enabled");
             }
         }
 
@@ -234,7 +261,6 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<W
                 }
             }
         }
-        input.date_started = new Date().toISOString();
         input.log = input.log || WorkflowRunLogger.createLogRow("Workflow Run started");
     }
 
@@ -265,6 +291,11 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                 } else {
                     for(let workflowRun of workflowRuns){
                         //console.log("-- Running workflowRun: "+workflowRun.id);
+                        let date_started = new Date().toISOString()
+                        await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRun.id, {
+                            date_started: date_started,
+                        });
+
                         let result = await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, new WorkflowRunLogger(workflowRun, myDatabaseHelper));
                         let legalStates = [WORKFLOW_RUN_STATE.SUCCESS, WORKFLOW_RUN_STATE.FAILED, WORKFLOW_RUN_STATE.SKIPPED, WORKFLOW_RUN_STATE.DELETE] as string[];
                         let hasResultLegalState = false;
@@ -275,6 +306,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                             result.state = WORKFLOW_RUN_STATE.SUCCESS;
                         }
 
+                        result.date_started = date_started; // make sure that date_started is not overwritten
                         result.date_finished = new Date().toISOString();
                         result.log = result.log || "Workflow Run finished";
 

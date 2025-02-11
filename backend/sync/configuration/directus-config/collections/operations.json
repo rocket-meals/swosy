@@ -21,8 +21,8 @@
         "foods_parsing_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -45,8 +45,8 @@
         "news_parsing_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -69,8 +69,8 @@
         "notifications_foods_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -93,8 +93,8 @@
         "washingmachine_parsing_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -117,8 +117,8 @@
         "cashregisters_parsing_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -141,8 +141,8 @@
         "housing_parsing_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,
@@ -165,8 +165,8 @@
         "utilization_forecast_calculation_status": "start"
       }
     },
-    "name": "Daten aktualisieren",
     "key": "item_update_jrrlc",
+    "name": "Daten aktualisieren",
     "type": "item-update",
     "resolve": null,
     "reject": null,

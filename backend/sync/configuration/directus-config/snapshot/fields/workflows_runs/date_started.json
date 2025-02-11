@@ -1,7 +1,7 @@
 {
   "collection": "workflows_runs",
   "field": "date_started",
-  "type": "dateTime",
+  "type": "timestamp",
   "meta": {
     "collection": "workflows_runs",
     "conditions": null,
@@ -15,7 +15,7 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 13,
+    "sort": 11,
     "special": null,
     "translations": null,
     "validation": null,
@@ -25,7 +25,7 @@
   "schema": {
     "name": "date_started",
     "table": "workflows_runs",
-    "data_type": "timestamp without time zone",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,
