@@ -55,7 +55,7 @@
     "name": "state",
     "table": "workflows_runs",
     "data_type": "character varying",
-    "default_value": "pending",
+    "default_value": "running",
     "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,

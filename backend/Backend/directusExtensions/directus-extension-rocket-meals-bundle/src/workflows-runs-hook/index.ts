@@ -149,6 +149,13 @@ function cleanWorkflowRun(input: Partial<WorkflowsRuns>): Partial<WorkflowsRuns>
     return input;
 }
 
+async function createWorkflowFromInput(workflowId: string, myDatabaseHelper: MyDatabaseHelper): Promise<void> {
+    let searchAndUpdate: Partial<Workflows> = {
+        id: workflowId,
+    };
+    await myDatabaseHelper.getWorkflowsHelper().upsertOne(searchAndUpdate);
+}
+
 async function getAlreadyRunningWorkflowruns(workflowId: string, myDatabaseHelper: MyDatabaseHelper): Promise<WorkflowsRuns[]> {
     let searchWorkflowRuns: Partial<WorkflowsRuns> = {}
     searchWorkflowRuns = {
@@ -159,18 +166,23 @@ async function getAlreadyRunningWorkflowruns(workflowId: string, myDatabaseHelpe
     return alreadyRunningWorkflowruns
 }
 
+function getWorkflowIdFromInputWorkflowsRuns(input: Partial<WorkflowsRuns>){
+    let workflowId: string | undefined = undefined
+    if(!!input.workflow){
+        if(typeof input.workflow === "string"){
+            workflowId = input.workflow;
+        } else if (typeof input.workflow === "object"){
+            workflowId = input.workflow.id;
+        }
+    }
+    return workflowId;
+}
+
 function getDictWorkflowIdToWorkflowRuns(workflowRuns: Partial<WorkflowsRuns>[]): { [p: string]: Partial<WorkflowsRuns>[] } {
     let dictWorkflowIdToWorkflowRuns: { [p: string]: Partial<WorkflowsRuns>[] } = {};
 
     for(let workflowRun of workflowRuns){
-        let workflowId: string | undefined = undefined
-        if(!!workflowRun.workflow){
-            if(typeof workflowRun.workflow === "string"){
-                workflowId = workflowRun.workflow;
-            } else if (typeof workflowRun.workflow === "object"){
-                workflowId = workflowRun.workflow.id;
-            }
-        }
+        let workflowId = getWorkflowIdFromInputWorkflowsRuns(workflowRun);
         if(!!workflowId){
             let workflowRunsForWorkflow = dictWorkflowIdToWorkflowRuns[workflowId] || [];
             workflowRunsForWorkflow.push(workflowRun);
@@ -187,6 +199,20 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<W
         input = cleanWorkflowRun(input);
 
         let workflowIds = Object.keys(dictWorkflowIdToWorkflowRuns);
+
+        if(workflowIds.length===0){
+            throw new Error("Please set a workflow for the workflow_run/s");
+        }
+
+        for(let workflowId of workflowIds){
+            try{
+                await createWorkflowFromInput(workflowId, myDatabaseHelper);
+            } catch (err: any){
+                throw new Error("Error while create/update of workflowRuns. Cannot find or create workflow with id: "+workflowId);
+            }
+        }
+
+
         let notRegisteredWorkflowIds = workflowIds.filter(workflowId => !WorkflowScheduler.getRegisteredWorkflow(workflowId));
         if(notRegisteredWorkflowIds.length>0){
             throw new Error("-- No WorkflowRunJobInterface found for workflowIds: "+notRegisteredWorkflowIds.join(", "));
@@ -331,15 +357,9 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
             let existingWorkflowRuns = await myDatabaseHelper.getWorkflowsRunsHelper().readMany(item_ids);
             let dictWorkflowIdToWorkflowRuns = getDictWorkflowIdToWorkflowRuns(existingWorkflowRuns);
 
-            let inputWorkflowId: string | undefined = undefined;
-            if(input.workflow){
-                if(typeof input.workflow === "string"){
-                    inputWorkflowId = input.workflow;
-                } else if (typeof input.workflow === "object"){
-                    inputWorkflowId = input.workflow.id;
-                }
-            }
+            let inputWorkflowId = getWorkflowIdFromInputWorkflowsRuns(input);
             if(inputWorkflowId){ // the update want to set the workflow_run to anonther workflow
+                dictWorkflowIdToWorkflowRuns = {}; // existing workflow_runs are not relevant as we want to set the workflow_run to another workflow
                 dictWorkflowIdToWorkflowRuns[inputWorkflowId] = existingWorkflowRuns;
             }
 
