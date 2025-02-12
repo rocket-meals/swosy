@@ -190,7 +190,8 @@ export class ParseSchedule {
                 } else {
                     await this.logger.appendLog("Meal offers did not change, skip parsing");
                     return this.logger.getFinalLogWithStateAndParams({
-                        state: WORKFLOW_RUN_STATE.SKIPPED
+                        state: WORKFLOW_RUN_STATE.SKIPPED,
+                        result_hash: currentMealOffersHash // for the  skipped run it is the same result hash
                     });
                 }
             }
