@@ -101,12 +101,9 @@ export class ParseSchedule {
                 result_hash: {
                     _nempty: true // not empty
                 },
-                schedule: {
-                    _eq: SCHEDULE_NAME
-                }
             },
             fields: ['*'],
-            sort: ['date_finished', 'desc'],
+            sort: ['-date_finished'], // sort by date_finished descending order - so we get the latest run first
             limit: 1
         }).then((workflowRuns) => {
             let workflowRun = workflowRuns[0];
