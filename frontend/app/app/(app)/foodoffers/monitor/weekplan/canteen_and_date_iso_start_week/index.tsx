@@ -313,7 +313,16 @@ export default function FoodplanScreen() {
 				}} size={TEXT_SIZE_EXTRA_SMALL}
 					  numberOfLines={3}
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
-				>{title+ " ("+price_information+")"}</Text>
+				>{title}</Text>
+			</View>
+			<View style={{}}>
+				<Text style={{
+					// height between multiple lines
+					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
+				}} size={TEXT_SIZE_EXTRA_SMALL}
+					  numberOfLines={3}
+					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
+				>{"("+price_information+")"}</Text>
 			</View>
 			<View>
 				{param_show_markings && <MarkingsRowForFood foodOffer={offer} />}
