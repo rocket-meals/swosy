@@ -132,15 +132,17 @@
                 <tr style="border-bottom: 1px solid #aaa;">
                     <td style="padding: 12px; text-align: left; width: 16.5%; border-right: 1px solid #aaa;">
                         {{ food.alias }}<br/>
-                        ({{ food.rating_average | round: 2 }}
-                        {% if food.rating_average <= food_rating_threshold_bad %}
-                            {{ icon_traffic_light_red }}
-                        {% elsif food.rating_average >= food_rating_threshold_good %}
-                            {{ icon_traffic_light_green }}
-                        {% else %}
-                            {{ icon_traffic_light_yellow }}
-                        {% endif %}
-                        )
+                        <span style="white-space: nowrap;">
+                            ({{ food.rating_average | round: 2 }}
+                            {% if food.rating_average <= food_rating_threshold_bad %}
+                                {{ icon_traffic_light_red }}
+                            {% elsif food.rating_average >= food_rating_threshold_good %}
+                                {{ icon_traffic_light_green }}
+                            {% else %}
+                                {{ icon_traffic_light_yellow }}
+                            {% endif %}
+                            )
+                        </span>
                     </td>
                     {% for label in food.labels %}
                         {% assign amount_total = label.amount_total_new | default: 0 %}
@@ -195,15 +197,17 @@
                 <tr style="border-bottom: 1px solid #aaa;">
                     <td style="padding: 12px; text-align: left; width: 16.5%; border-right: 1px solid #aaa;">
                         {{ food.alias }}<br/>
-                        ({{ food.rating_average | round: 2 }}
-                        {% if food.rating_average <= food_rating_threshold_bad %}
-                            {{ icon_traffic_light_red }}
-                        {% elsif food.rating_average >= food_rating_threshold_good %}
-                            {{ icon_traffic_light_green }}
-                        {% else %}
-                            {{ icon_traffic_light_yellow }}
-                        {% endif %}
-                        )
+                        <span style="white-space: nowrap;">
+                            ({{ food.rating_average | round: 2 }}
+                            {% if food.rating_average <= food_rating_threshold_bad %}
+                                {{ icon_traffic_light_red }}
+                            {% elsif food.rating_average >= food_rating_threshold_good %}
+                                {{ icon_traffic_light_green }}
+                            {% else %}
+                                {{ icon_traffic_light_yellow }}
+                            {% endif %}
+                            )
+                        </span>
                     </td>
                     {% for label in food.labels %}
                         {% assign amount_total = label.amount_total | default: 0 %}
