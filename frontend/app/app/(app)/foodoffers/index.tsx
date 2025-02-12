@@ -171,7 +171,7 @@ function sortByPublicFavorite(foodOffers: Foodoffers[]) {
 
 function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
 	foodOffers.sort((a, b) => {
-		console.log(a.alias+ " vs "+b.alias);
+		//console.log(a.alias+ " vs "+b.alias);
 
 		const aDislikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
 		const aAmountLikedEatingHabitsFound = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
