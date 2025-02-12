@@ -69,7 +69,9 @@ const screens = [
     'settings/eatinghabits',
     'settings/price-group',
     'data-access',
-    'login'
+    'login',
+    "foodoffers/monitor/markings?fullscreen=true&kiosk_mode=true",
+
 ]; // Add your screens here
 
 const baseUrl = 'https://' + repositoryOwner + '.github.io/' + repositoryName + '/';
@@ -201,7 +203,7 @@ async function doesFileExist(fileName: string) {
 
 (async () => {
     let browser = await puppeteer.launch({
-        args: ['--lang=de'],  // Set the browser language to German
+        args: ['--lang=de', '--no-sandbox', '--disable-setuid-sandbox'],  // Set the browser language to German
     });
 
     let totalAmountOfScreenshots = urls.length * devices.length;
