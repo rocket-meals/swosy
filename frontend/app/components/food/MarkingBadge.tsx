@@ -22,12 +22,17 @@ import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useProfileLanguageCode} from "@/states/SynchedProfile";
 import {getMarkingShortCode, getMarkingExternalIdentifier, getMarkingName} from "@/components/food/MarkingListItem";
 import DirectusImageOrIconComponent, {
+	DirectusImageOrIconWithModalComponent,
 	hasResourceImageIconOrRemoteImage,
 	hasResourceImageOrRemoteImage
 } from "@/components/image/DirectusImageOrIconComponent";
 import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
-import {getDirectusTranslation, TranslationEntry} from "@/helper/translations/DirectusTranslationUseFunction";
+import {
+	getDirectusTranslation,
+	hasDirectusTranslation,
+	TranslationEntry
+} from "@/helper/translations/DirectusTranslationUseFunction";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
 import {useCharacterWithInPixel, useIconWithInPixel} from "@/components/shapes/Rectangle";
@@ -187,120 +192,76 @@ export type MarkingBadgeProps = {
 	borderRadius?: number,
 }
 export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const viewBackgroundColor = useViewBackgroundColor();
-	const textColor = useTextContrastColor();
+	const badgeWidth = useBadgeWidth();
+	let width = badgeWidth
+	let height = width;
+	const viewBackgroundColor = useViewBackgroundColor()
+	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
+	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
 
 	const widthByCharacters = useCharacterWithInPixel(7);
 
 	const translation_show_more_information = useTranslation(TranslationKeys.show_more_information)
 
-	const foodsAreaColor = useFoodsAreaColor()
-
-	const iconWidth = useIconWithInPixel();
-
-	const borderRadius = props.borderRadius || MyCardDefaultBorderRadius;
-
 	const marking: Markings | undefined | null = markingsDict?.[markingId];
 
-	const translation_description = useTranslation(TranslationKeys.description);
-	const translation_eating_habit = useTranslation(TranslationKeys.eating_habits);
+	const backgroundcolor = marking?.background_color || "#FFFFFF00"
 
+	let backgroundColor = backgroundcolor
+	const textColor = useMyContrastColor(backgroundColor);
+
+	const hasImageOrRemoteImage = hasResourceImageOrRemoteImage(marking);
+
+	if(!backgroundColor && !hasImageOrRemoteImage){
+		backgroundColor = viewWhiteOrBlackBackgroundColor;
+	}
+
+	let translationsFoodAttribute = marking?.translations as TranslationEntry[];
+	const hasTranslation = hasDirectusTranslation(languageCode, translationsFoodAttribute, "description");
 
 	if(!marking){
 		return null;
 	}
 
-	const hide_border = !!marking?.hide_border;
-
-
 	const withoutExternalIdentifier = false;
 	const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+	let label = translated_name;
+	let title = translated_name;
 	const marking_translations = marking?.translations as TranslationEntry[]
 	const translated_description = getDirectusTranslation(languageCode, marking_translations, "description");
 
-	const translation_title = translated_name;
-
 	const accessibilityLabel = translation_show_more_information+": "+translated_name
 
-	const onPress = () => {
-		setModalConfig({
-			title: translation_title,
-			accessibilityLabel: translated_name,
-			key: "foodGroupBadge",
-			label: translation_eating_habit,
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return <MyScrollView>
-					<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
-						<View style={{width: "100%", alignItems: "center"}}>
-							<View style={{
-								//backgroundColor: "red"
-							}}>
-								<MarkingIconOrShortCodeWithTextSize ignoreSpacer={true} markingId={markingId} textSize={TEXT_SIZE_DEFAULT} imageSize={widthByCharacters} />
-							</View>
+	let renderAsContentInsteadItems: ((key: string, hide: () => void, backgroundColor: string) => Element) | undefined = undefined;
+	if(hasTranslation) {
+		// @ts-ignore
+		renderAsContentInsteadItems = (key, hide, backgroundColor) => {
+			return <MyScrollView>
+				<View style={{width: "100%", padding: SETTINGS_ROW_DEFAULT_PADDING}}>
+					<View style={{width: "100%", alignItems: "center"}}>
+						<View style={{
+							//backgroundColor: "red"
+						}}>
+							<MarkingIconOrShortCodeWithTextSize ignoreSpacer={true} markingId={markingId} textSize={TEXT_SIZE_DEFAULT} imageSize={widthByCharacters} />
 						</View>
-						<ThemedMarkdown markdown={translated_description} />
 					</View>
-				</MyScrollView>
-			}
-		})
+					<ThemedMarkdown markdown={translated_description} />
+				</View>
+			</MyScrollView>
+		}
 	}
 
-	let hasImage = hasResourceImageOrRemoteImage(marking);
-
-	let customIcon = null;
-
-	let usedIcon = marking.icon
-
-	const defaultPadding = BUTTON_DEFAULT_Padding
-	const alias = getMarkingShortCode(marking);
-	if(alias){
-		let outerPadding = defaultPadding/2;
-		let innerPadding = defaultPadding - outerPadding; // maybe by dividing 1/2 the outer padding is 0, so we need to subtract it
-
-		customIcon = <View style={{
-			marginVertical: outerPadding,
-			marginHorizontal: outerPadding,
-		}}>
-			<View style={{
-				height: iconWidth+innerPadding*2, // we need more space for the text
-				width: iconWidth+innerPadding*2, // we need more space for the text
-				alignItems: "center",
-				justifyContent: "center",
-				overflow: "hidden",
-			}}>
-				<Text numberOfLines={1}>
-					{alias}
-				</Text>
-			</View>
-		</View>
-	}
-
-	const imageWidthAndHeight = iconWidth+2*defaultPadding
-	if(hasImage){
-		customIcon = <DirectusImageOrIconComponent resource={marking} widthImage={imageWidthAndHeight} heightImage={imageWidthAndHeight} />
-	}
-
-	if(!usedIcon && !customIcon){
-		usedIcon = IconNames.identifier;
-	}
-
-	let transparentBackgroundColor = "#FFFFFF00";
-	let usedBackgroundColor = hasImage ? transparentBackgroundColor : viewBackgroundColor
-
-	return 	<>
-		<MyButton
-			useTransparentBorderColor={hide_border}
-			inactiveBackgroundColor={"transparent"}
-			useOnlyNecessarySpace={true}
-			borderRadius={borderRadius}
-			onPress={onPress}
+	return <BadgeWrapper>
+		<DirectusImageOrIconWithModalComponent
+			title={title}
+			backgroundColor={backgroundColor}
+			tooltip={title}
 			accessibilityLabel={accessibilityLabel}
-			tooltip={accessibilityLabel}
-			icon={usedIcon}
-			customIcon={customIcon}
-		/>
-	</>
+			label={label}
+			key={marking.id}
+			renderAsContentInsteadItems={renderAsContentInsteadItems}
+			resource={marking} widthImage={width} heightImage={height} iconColor={textColor} />
+	</BadgeWrapper>
 }

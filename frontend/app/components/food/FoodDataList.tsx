@@ -15,7 +15,7 @@ import {
 	FoodsAttributesValues
 } from "@/helper/database/databaseTypes/types";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
-import {SETTINGS_ROW_DEFAULT_PADDING, SettingsRow} from "@/components/settings/SettingsRow";
+import {SETTINGS_ROW_DEFAULT_PADDING} from "@/components/settings/SettingsRow";
 import {NumberHelper} from "@/helper/number/NumberHelper";
 import {FoodAttributesDict, useSynchedFoodsAttributesDict} from "@/states/SynchedFoodattributes";
 import {FoodAttributesGroupsDict, useSynchedFoodsAttributesGroupsDict} from "@/states/SynchedFoodattributesGroups";
@@ -36,7 +36,6 @@ import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {MyGridFlatList} from "@/components/grid/MyGridFlatList";
 import {ThemedMarkdown} from "@/components/markdown/ThemedMarkdown";
 import {MyScrollView} from "@/components/scrollview/MyScrollView";
-import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {useIconWithInPixel} from "@/components/shapes/Rectangle";
 
 // Utility type to make properties optional if they are optional in either T or U
