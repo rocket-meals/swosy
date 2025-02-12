@@ -203,7 +203,11 @@ const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSize
 	for(let marking of sortedMarkings){
 		const markingId = marking.id;
 		renderedMarkings.push(
-			<MarkingIconClickable markingId={markingId} textSize={textSize} key={markingId+textSize} />
+			<View style={{
+				padding: 2
+			}}>
+				<MarkingIconClickable markingId={markingId} textSize={textSize} key={markingId+textSize} />
+			</View>
 		)
 	}
 	return <View style={{
