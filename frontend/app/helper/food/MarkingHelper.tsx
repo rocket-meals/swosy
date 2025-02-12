@@ -33,8 +33,13 @@ export class MarkingHelper {
 	}
 
 	static areLikedEatingHabitsFoundInFoodOffer(foodOffer: Foodoffers, profileMarkingsDict: Record<string, ProfilesMarkings>) {
+		const amountLikedHeatingHabits = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(foodOffer, profileMarkingsDict);
+		return amountLikedHeatingHabits > 0;
+	}
+
+	static getAmountLikedEatingHabitsFoundInFoodOffer(foodOffer: Foodoffers, profileMarkingsDict: Record<string, ProfilesMarkings>) {
 		const likedMarkingIds = MarkingHelper.getLikedMarkingIds(foodOffer, profileMarkingsDict);
-		return likedMarkingIds.length > 0;
+		return likedMarkingIds.length;
 	}
 
 	static areDislikedEatingHabitsFoundInFoodOffer(foodOffer: Foodoffers, profileMarkingsDict: Record<string, ProfilesMarkings>) {

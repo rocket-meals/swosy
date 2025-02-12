@@ -171,11 +171,13 @@ function sortByPublicFavorite(foodOffers: Foodoffers[]) {
 
 function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
 	foodOffers.sort((a, b) => {
-		const aDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
-		const aLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		console.log(a.alias+ " vs "+b.alias);
 
-		const bDislikedEatingHabitsFound = MarkingHelper.areLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
-		const bLikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
+		const aDislikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+		const aAmountLikedEatingHabitsFound = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+
+		const bDislikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
+		const bAmountLikedEatingHabitsFound = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
 
 		const returnAShouldBeFirst = -1;
 		const returnNoOrder = 0;
@@ -185,26 +187,36 @@ function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Recor
 		const dislikeSortWeight = likeSortWeight*2;
 
 		let aSortValue = 0;
-		if(aDislikedEatingHabitsFound){
-			aSortValue -= dislikeSortWeight // add a penalty for disliked eating habits
-		}
-		if(aLikedEatingHabitsFound){
-			aSortValue += likeSortWeight // add a bonus for liked eating habits
+
+		// Allergene dislikes should be first and likes are not important for the order
+		let dislikedEatingHabitsFoundInBoth = aDislikedEatingHabitsFound && bDislikedEatingHabitsFound;
+		let dislikedEatingHabitsFoundInAtLeastOne = aDislikedEatingHabitsFound || bDislikedEatingHabitsFound;
+		//console.log("-- dislikedEatingHabitsFoundInBoth: "+dislikedEatingHabitsFoundInBoth);
+		//console.log("-- dislikedEatingHabitsFoundInAtLeastOne: "+dislikedEatingHabitsFoundInAtLeastOne);
+
+		if(dislikedEatingHabitsFoundInAtLeastOne && !dislikedEatingHabitsFoundInBoth){
+			if(aDislikedEatingHabitsFound){
+				//console.log("-- aDislikedEatingHabitsFound");
+				return returnBShouldBeFirst;
+			} else {
+				//console.log("-- bDislikedEatingHabitsFound");
+				return returnAShouldBeFirst;
+			}
 		}
 
-		let bSortValue = 0;
-		if(bDislikedEatingHabitsFound){
-			bSortValue -= dislikeSortWeight // add a penalty for disliked eating habits
-		}
-		if(bLikedEatingHabitsFound){
-			bSortValue += likeSortWeight // add a bonus for liked eating habits
-		}
+		// Allergenes are either in both or in none, so they are equal
+		// we continue with the likes
+		//console.log("-- aAmountLikedEatingHabitsFound: "+aAmountLikedEatingHabitsFound);
+		//console.log("-- bAmountLikedEatingHabitsFound: "+bAmountLikedEatingHabitsFound);
 
-		if(aSortValue > bSortValue){
-			return returnBShouldBeFirst;
-		} else if(aSortValue < bSortValue){
+		if(aAmountLikedEatingHabitsFound > bAmountLikedEatingHabitsFound){
+			//console.log("-- aAmountLikedEatingHabitsFound > bAmountLikedEatingHabitsFound");
 			return returnAShouldBeFirst;
+		} else if(aAmountLikedEatingHabitsFound < bAmountLikedEatingHabitsFound){
+			//console.log("-- aAmountLikedEatingHabitsFound < bAmountLikedEatingHabitsFound");
+			return returnBShouldBeFirst;
 		} else {
+			//console.log("-- aAmountLikedEatingHabitsFound == bAmountLikedEatingHabitsFound");
 			return returnNoOrder;
 		}
 
@@ -217,10 +229,12 @@ export function useSortedFoodOffers(foodOffers: Foodoffers[] | undefined | null,
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
 	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
 	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+	console.log("useSortedFoodOffers");
+	console.log("profilesMarkingsDict");
+	console.log(JSON.parse(JSON.stringify(profilesMarkingsDict)))
 	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
 	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
 	const foodFeedbacksDict = ownFoodFeedbacksDict;
-	const profileMarkingsDict = profilesMarkingsDict;
 
 	if(!foodOffers){
 		return foodOffers;
@@ -231,9 +245,11 @@ export function useSortedFoodOffers(foodOffers: Foodoffers[] | undefined | null,
 		usedSortTypeOrder = [SortType.alphabetical, SortType.foodoffersCategories, SortType.foodsCategories, SortType.favorite, SortType.eatingHabitsPreferences];
 	}
 
+	usedSortTypeOrder = [SortType.alphabetical, SortType.foodoffersCategories, SortType.foodsCategories, SortType.favorite, SortType.eatingHabitsPreferences];
+
 	let copiedFoodOffers = [...foodOffers];
 	for(const sortOrder of usedSortTypeOrder){
-		copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profileMarkingsDict, sortOrder, languageCode, foodoffersCategoriesDict, foodsCategoriesDict);
+		copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortOrder, languageCode, foodoffersCategoriesDict, foodsCategoriesDict);
 	}
 	return copiedFoodOffers;
 }
@@ -245,7 +261,13 @@ function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<stri
 	} else if(sortType === SortType.favorite){
 		copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, foodFeedbacksDict);
 	} else if(sortType === SortType.eatingHabitsPreferences){
+		console.log("Sort by eating habits")
+		console.log("Before");
+		console.log(JSON.parse(JSON.stringify(copiedFoodOffers)));
 		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
+		console.log("After");
+		console.log(JSON.parse(JSON.stringify(copiedFoodOffers)));
+
 	} else if(sortType === SortType.publicRating){
 		copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
 	} else if(sortType === SortType.foodoffersCategories){
