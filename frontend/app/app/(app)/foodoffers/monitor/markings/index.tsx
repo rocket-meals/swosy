@@ -155,8 +155,7 @@ export default function FoodDayPlanScreen() {
 
 
 	const renderMarking = (marking: Markings, withTranslation: boolean = true) => {
-		const withoutExternalIdentifier = true;
-		const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+		const translated_name = getMarkingName(marking, languageCode);
 
 		let renderedTranslation = null
 		if(withTranslation){

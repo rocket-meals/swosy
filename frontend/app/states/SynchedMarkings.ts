@@ -190,9 +190,8 @@ function sortMarkingsByShortCode(resources: Markings[], resourcesDict: Record<st
 
 function sortMarkingsByNames(resources: Markings[], resourcesDict: Record<string, Markings | null | undefined> | null | undefined, languageCode: string): Markings[] {
 	resources.sort((a, b) => {
-		const withoutExternalIdentifier = true;
-		let nameA = getMarkingName(a, languageCode, withoutExternalIdentifier);
-		let nameB = getMarkingName(b, languageCode, withoutExternalIdentifier);
+		let nameA = getMarkingName(a, languageCode);
+		let nameB = getMarkingName(b, languageCode);
 		if(nameA && nameB){
 			return nameA.localeCompare(nameB);
 		} else if (nameA){

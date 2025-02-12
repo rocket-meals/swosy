@@ -19,14 +19,11 @@ export default function MarkingListItem({ markingId }: { markingId: string }) {
 	return memoizedComponent;
 }
 
-export function getMarkingName(marking: Markings, languageCode: string, withoutExternalIdentifier: boolean): string {
+export function getMarkingName(marking: Markings, languageCode: string): string {
 	const translations = marking.translations as TranslationEntry[]
-	const fallbackName = marking.alias || marking.id
-	let finalName = getDirectusTranslation(languageCode, translations, 'name', false, fallbackName)
 	const external_identifier = getMarkingExternalIdentifier(marking);
-	if(!!external_identifier && !withoutExternalIdentifier){
-		finalName +=  " (" + external_identifier + ")";
-	}
+	const fallbackName = marking.alias || external_identifier || marking.id
+	let finalName = getDirectusTranslation(languageCode, translations, 'name', false, fallbackName)
 	return finalName;
 }
 
@@ -57,8 +54,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 			return null;
 		}
 
-		const withoutExternalIdentifier = true;
-		const text = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+		const text = getMarkingName(marking, languageCode);
 		const accessibilityLabel = translation_marking+": "+text;
 
 		let iconLeftCustom = <MarkingIconClickable markingId={markingId} imageHeightInTextSize={TEXT_SIZE_EXTRA_LARGE} />

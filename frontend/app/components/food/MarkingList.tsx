@@ -19,8 +19,7 @@ export const MarkingListSelective: FunctionComponent<{markings: Markings[]}> = (
 	for (let i=0; i<markings.length; i++) {
 		const marking = markings[i];
 		if(!!marking){
-			const withoutExternalIdentifier = false;
-			const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+			const translated_name = getMarkingName(marking, languageCode);
 			data.push({key: marking.id, data: marking, name: translated_name})
 		}
 	}

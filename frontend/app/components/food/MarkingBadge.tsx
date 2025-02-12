@@ -229,8 +229,7 @@ export const MarkingIconClickable = ({markingId, width, height, imageHeightInTex
 		return null;
 	}
 
-	const withoutExternalIdentifier = false;
-	const translated_name = getMarkingName(marking, languageCode, withoutExternalIdentifier);
+	const translated_name = getMarkingName(marking, languageCode);
 	let label = translated_name;
 	let title = translated_name;
 	const marking_translations = marking?.translations as TranslationEntry[]
