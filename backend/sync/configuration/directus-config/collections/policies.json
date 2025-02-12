@@ -1,12 +1,12 @@
 [
   {
-    "app_access": true,
     "admin_access": true,
     "enforce_tfa": false,
-    "description": "$t:admin_policy_description",
+    "app_access": true,
     "ip_access": null,
-    "icon": "verified",
+    "description": "$t:admin_policy_description",
     "name": "Administrator",
+    "icon": "verified",
     "roles": [
       {
         "role": "_sync_default_admin_role",
@@ -16,13 +16,13 @@
     "_syncId": "_sync_default_admin_policy"
   },
   {
-    "app_access": false,
     "admin_access": false,
     "enforce_tfa": false,
-    "description": "$t:public_description",
+    "app_access": false,
     "ip_access": null,
-    "icon": "public",
+    "description": "$t:public_description",
     "name": "$t:public_label",
+    "icon": "public",
     "roles": [
       {
         "role": null,
@@ -40,13 +40,13 @@
     "_syncId": "_sync_default_public_policy"
   },
   {
-    "app_access": true,
     "admin_access": false,
     "enforce_tfa": false,
-    "description": null,
+    "app_access": true,
     "ip_access": null,
-    "icon": "badge",
+    "description": null,
     "name": "Apartmentmanagement",
+    "icon": "badge",
     "roles": [
       {
         "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
@@ -56,13 +56,13 @@
     "_syncId": "5b24cdda-d563-485b-8bfe-5f0ab7afb482"
   },
   {
-    "app_access": false,
     "admin_access": false,
     "enforce_tfa": false,
-    "description": null,
+    "app_access": false,
     "ip_access": null,
-    "icon": "supervised_user_circle",
+    "description": null,
     "name": "User",
+    "icon": "supervised_user_circle",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -76,13 +76,13 @@
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   },
   {
-    "app_access": true,
     "admin_access": false,
     "enforce_tfa": false,
-    "description": null,
+    "app_access": true,
     "ip_access": null,
-    "icon": "badge",
+    "description": null,
     "name": "Gebäudemanagement",
+    "icon": "badge",
     "roles": [
       {
         "role": "9aaa0300-e0ee-4874-b32f-2d165607867d",

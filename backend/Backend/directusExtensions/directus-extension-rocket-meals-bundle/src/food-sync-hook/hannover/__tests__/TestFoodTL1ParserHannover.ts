@@ -104,6 +104,16 @@ describe("FoodTL1ParserHannover Test", () => {
         checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
     })
 
+    it("Markings for co2 values are correctly set", async () => {
+       let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithCO2RatingValues());
+       expect(!!foodOfferJson).toBe(true);
+       expect(foodOfferJson.length).toBeGreaterThan(0);
+       const expectedMarkingExternalIdentifiers = [ FoodTL1ParserHannover.getCO2RatingMarkingExternalIdentifier("A") ];
+       for(let foodOffer of foodOfferJson){
+           expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
+       }
+    })
+
     it("Markings use correctly additional field for vegan (x)", async () => {
         const marking_external_identifiers = ['4',   '20', '20A', '20C', '25',  '99', 'x'];
         let findFoodId = generateFoodId([800562,802726,801834, 801454], marking_external_identifiers)
@@ -260,7 +270,17 @@ describe("FoodTL1ParserHannover Test", () => {
                     expect(foundAttribute.attribute_value.number_value).not.toBeUndefined();
                     if(foundAttribute.attribute_value.number_value){
                         if(foundAttribute.external_identifier==="salt_g"){
-                            let offerData = foodOrFoodoffer?.basicFoodofferData || foodOrFoodoffer?.basicFoodData;
+                            let offerData: any = undefined;
+                            let foodOrFoodofferAsFood = foodOrFoodoffer as FoodsInformationTypeForParser;
+                            if(foodOrFoodofferAsFood?.basicFoodData){
+                                offerData = foodOrFoodofferAsFood.basicFoodData;
+                            }
+
+                            let foodOrFoodofferAsFoodoffer = foodOrFoodoffer as FoodoffersTypeForParser;
+                            if(foodOrFoodofferAsFoodoffer?.basicFoodofferData){
+                                offerData = foodOrFoodofferAsFoodoffer.basicFoodofferData;
+                            }
+
                             expect(foundAttribute.attribute_value.number_value+"").toBe(offerData.salt_g+"")
                         }
                     }

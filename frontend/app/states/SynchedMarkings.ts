@@ -107,7 +107,7 @@ export function sortMarkings(resources: Markings[], resourcesDict: Record<string
 	let copiedResources = [...resources];
 	if(sortType === SortType.intelligent){
 		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.alphabetical, SortType.sortFromServer, SortType.markingsGroupsSortFromServer];
+		let sortOrders = [SortType.sortFromServer, SortType.markingsGroupsSortFromServer];
 		for(const sortOrder of sortOrders){
 			copiedResources = sortMarkings(copiedResources, resourcesDict, markingsGroupsDict, sortOrder, languageCode);
 		}

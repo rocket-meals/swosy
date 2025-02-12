@@ -16,6 +16,9 @@ import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
 export class FoodTL1ParserHannover extends FoodTL1Parser {
 
     static MENUEKENNZEICHEN_FIELD = "MENUEKENNZEICHEN";
+    static EXTINFO_CO2_BEWERTUNG = "EXTINFO_CO2_BEWERTUNG";
+
+    static CO2_BEWERTUNG_PREFIX_IDENTIFIER = "CO2_RATING_";
 
     constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
         super(rawFoodofferReader);
@@ -38,6 +41,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     _getMarkingsExternalIdentifiersFromRawFoodoffer(raw_tl1_foodoffer_json: RawTL1FoodofferType): string[] {
         let tl1_zusatz_nummern_string = raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
         let tl1_menuekennzeichen_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.MENUEKENNZEICHEN_FIELD];
+        let tl1_co2_bewertung_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.EXTINFO_CO2_BEWERTUNG];
 
         let combinedMarkings: string[] = [];
         if(!!tl1_zusatz_nummern_string){
@@ -51,6 +55,9 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
                 return nummernString.trim();
             });
             combinedMarkings = combinedMarkings.concat(markings);
+        }
+        if(!!tl1_co2_bewertung_string){
+            combinedMarkings.push(FoodTL1ParserHannover.getCO2RatingMarkingExternalIdentifier(tl1_co2_bewertung_string));
         }
 
         return combinedMarkings;
@@ -73,6 +80,14 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
     override getFoodofferCategoryFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string | null {
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
         return parsedReportItem?.["SPEISE"] || null; // ATTENTION: Hannover has no specific field for foodoffer category
+    }
+
+    /**
+     * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
+     * @param co2_bewertung_string
+     */
+    static getCO2RatingMarkingExternalIdentifier(co2_bewertung_string: string){
+        return FoodTL1ParserHannover.CO2_BEWERTUNG_PREFIX_IDENTIFIER + co2_bewertung_string;
     }
 
     static getCombinedSortedMarkingsExternalIdentifiersAsString(total_marking_external_identifier_list: string[]){

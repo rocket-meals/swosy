@@ -57,22 +57,26 @@ export function useIsFoodsEnabled(): boolean {
 
 export function useFoodsAreaColor(): string {
 	const projectColor = useProjectColor();
-	return AppAreaColors.FOODS_COLOR || projectColor;
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.foods_area_color || AppAreaColors.FOODS_COLOR || projectColor;
 }
 
 export function useCampusAreaColor(): string {
 	const projectColor = useProjectColor();
-	return AppAreaColors.CAMPUS_COLOR || projectColor;
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.campus_area_color || AppAreaColors.CAMPUS_COLOR || projectColor;
 }
 
 export function useNewsAreaColor(): string {
 	const projectColor = useProjectColor();
-	return AppAreaColors.NEWS_COLOR || projectColor;
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.news_area_color || AppAreaColors.NEWS_COLOR || projectColor;
 }
 
 export function useHousingAreaColor(): string {
 	const projectColor = useProjectColor();
-	return AppAreaColors.HOUSING_COLOR || projectColor;
+	const [appSettings] = useSynchedAppSettings();
+	return appSettings?.housing_area_color || AppAreaColors.HOUSING_COLOR || projectColor;
 }
 
 export function useIsHousingEnabled(): boolean {
@@ -119,17 +123,15 @@ function getDemoAppSettings(): AppSettings {
 		app_stores_url_to_google: '',
 		balance_enabled: true,
 		balance_settings: '',
+		balance_translations: [],
+		campus_settings: '',
 		campus_enabled: true,
-		cashregisters_settings: '',
 		course_timetable_enabled: true,
 		course_timetable_settings: '',
 		date_created: '',
 		date_privacy_policy_updated: '',
 		date_updated: '',
 		foods_enabled: true,
-		foods_parsing_enabled: false,
-		foods_parsing_last_date: '',
-		foods_parsing_status: '',
 		foods_placeholder_image: null,
 		foods_placeholder_image_thumb_hash: '',
 		foods_ratings_amount_display: true,
@@ -139,10 +141,6 @@ function getDemoAppSettings(): AppSettings {
 		foods_feedbacks_labels_type: FeedbackLabelsType.useAndRead,
 		foods_settings: '',
 		housing_enabled: true,
-		housing_maps_enabled: false,
-		housing_parsing_enabled: false,
-		housing_parsing_last_date: '',
-		housing_parsing_status: '',
 		housing_settings: '',
 		housing_translations: [],
 		id: 0,
@@ -150,9 +148,6 @@ function getDemoAppSettings(): AppSettings {
 		maintenance_settings: '',
 		maintenance_start: '',
 		news_enabled: true,
-		news_parsing_enabled: false,
-		news_parsing_last_date: '',
-		news_parsing_status: '',
 		news_settings: '',
 		notifications_android_enabled: true,
 		notifications_email_enabled: true,
@@ -161,11 +156,12 @@ function getDemoAppSettings(): AppSettings {
 		status: '',
 		user_created: '',
 		user_updated: '',
-		utilization_forecast_enabled: true,
-		utilization_forecast_calculation_enabled: false,
-		utilization_forecast_calculation_last_date: '',
-		utilization_forecast_calculation_status: '',
-		utilization_settings: ''
+		utilization_display_enabled: true,
+		utilization_settings: '',
+		food_responsible_settings: "",
+		legal_requirements_settings: "",
+		map_settings: "",
+		redirect_settings: ""
 	}
 
 	return demoResource
