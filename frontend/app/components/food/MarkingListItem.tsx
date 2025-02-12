@@ -1,4 +1,4 @@
-import {View} from '@/components/Themed';
+import {TEXT_SIZE_EXTRA_LARGE, View} from '@/components/Themed';
 import {getDirectusTranslation, TranslationEntry} from '@/helper/translations/DirectusTranslationUseFunction';
 import {useProfileLanguageCode, useSynchedProfileMarking} from '@/states/SynchedProfile';
 import React, {useMemo} from 'react';
@@ -7,7 +7,7 @@ import {TranslationKeys, useTranslation} from "@/helper/translations/Translation
 import {Markings} from "@/helper/database/databaseTypes/types";
 import {useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
-import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconClickable, MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 
 export default function MarkingListItem({ markingId }: { markingId: string }) {
 	// Memoize the MarkingListItemReal component
@@ -61,7 +61,7 @@ function MarkingListItemReal({ markingId }: { markingId: string}) {
 		const text = getMarkingName(marking, languageCode, withoutExternalIdentifier);
 		const accessibilityLabel = translation_marking+": "+text;
 
-		let iconLeftCustom = <MarkingIconOrShortCodeWithTextSize markingId={markingId} textSize={undefined} />
+		let iconLeftCustom = <MarkingIconClickable markingId={markingId} imageHeightInTextSize={TEXT_SIZE_EXTRA_LARGE} />
 
 		const onPress = (like: boolean | undefined) => {
 			const removeMarking = like === undefined;

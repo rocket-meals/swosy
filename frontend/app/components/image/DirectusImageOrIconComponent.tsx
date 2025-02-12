@@ -4,7 +4,7 @@ import {
 	Text,
 	IconFamily,
 	IconParseDirectusStringToIconAndFamily,
-	TEXT_SIZE_DEFAULT
+	TEXT_SIZE_DEFAULT, TextSizeType
 } from '@/components/Themed';
 import React from 'react';
 import DirectusImage from "@/components/project/DirectusImage";
@@ -32,13 +32,14 @@ export type DirectusImageOrIconWithModalComponentProps = {
 	tooltip?: string,
 	key: string,
 	backgroundColor?: string,
+	contrastBorderColorWhenInactive?: boolean,
 	renderAsContentInsteadItems?: (key: string, hide: () => void, backgroundColor: string | undefined | null) => React.ReactNode,
 } & DirectusImageOrIconComponentProps
 
-export function DirectusImageOrIconWithModalComponent({ title, backgroundColor, accessibilityLabel, tooltip, label, renderAsContentInsteadItems, ...props }: DirectusImageOrIconWithModalComponentProps) {
+export function DirectusImageOrIconWithModalComponent({ title, contrastBorderColorWhenInactive, backgroundColor, accessibilityLabel, tooltip, label, renderAsContentInsteadItems, ...props }: DirectusImageOrIconWithModalComponentProps) {
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
-	const onPress = () => {
+	let onPress: undefined | (() => void) = () => {
 		setModalConfig({
 			title: title,
 			accessibilityLabel: accessibilityLabel,
@@ -46,6 +47,9 @@ export function DirectusImageOrIconWithModalComponent({ title, backgroundColor, 
 			label: label,
 			renderAsContentInsteadItems: renderAsContentInsteadItems
 		})
+	}
+	if(!renderAsContentInsteadItems){
+		onPress = undefined;
 	}
 
 	return <DirectusImageOrIconWithButtonComponent backgroundColor={backgroundColor} tooltip={tooltip} onPress={onPress} accessibilityLabel={accessibilityLabel} {...props} />
@@ -55,6 +59,7 @@ export type DirectusImageOrIconWithButtonComponentProps = {
 	onPress?: () => void,
 	accessibilityLabel: string,
 	tooltip?: string,
+	short?: string,
 	backgroundColor?: string
 } & DirectusImageOrIconComponentProps
 
@@ -73,14 +78,33 @@ export type DirectusImageOrIconComponentProps = {
 	iconFamily?: IconFamily,
 	widthImage?: number,
 	heightImage?: number,
-	iconColor?: string
+	short?: string | null,
+	iconColor?: string,
+	textColor?: string
+	textSize?: TextSizeType,
 	iconSize?: number
 }
 
-export default function DirectusImageOrIconComponent({ resource, iconFamily, iconSize, widthImage, heightImage, iconColor }: DirectusImageOrIconComponentProps) {
+export default function DirectusImageOrIconComponent({ resource, iconFamily, iconSize, widthImage, heightImage, iconColor, short, textColor, textSize }: DirectusImageOrIconComponentProps) {
 	let iconLeft = resource.icon_expo || resource.icon
 	const alias = resource.alias
 	let iconLeftCustom = undefined
+
+	let usedTextColor = textColor;
+
+	let shortContent = <View style={{
+		flexDirection: "row",
+		marginHorizontal: 2,
+	}}>
+		<Text style={{
+			color: usedTextColor
+		}} size={textSize}>
+			{short}
+		</Text>
+	</View>
+	iconLeftCustom = shortContent;
+
+
 	if(iconLeft){
 		if(!iconFamily){ // a directus Icon
 			let {
@@ -96,8 +120,8 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, ico
 
 
 	if(hasResourceImageOrRemoteImage(resource)){
-		let width = widthImage || 20;
 		let height = heightImage || 20;
+		let width = widthImage || height
 
 		iconLeftCustom = <View style={{
 			width: width, height: height, justifyContent: 'center', alignItems: 'center', borderRadius: 3

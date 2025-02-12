@@ -36,7 +36,7 @@ import {MarkingHelper} from "@/helper/food/MarkingHelper";
 import {useSortedMarkings, useSynchedMarkingsDict} from "@/states/SynchedMarkings";
 import {CompanyLogo} from "@/components/project/CompanyLogo";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
-import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconClickable, MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {getCanteenName} from "@/compositions/resourceGridList/canteenGridList";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
@@ -203,7 +203,7 @@ const MarkingInformationList: React.FC<{markingIds: string[], textSize: TextSize
 	for(let marking of sortedMarkings){
 		const markingId = marking.id;
 		renderedMarkings.push(
-			<MarkingIconOrShortCodeWithTextSize key={markingId+textSize} markingId={markingId} textSize={textSize} />
+			<MarkingIconClickable markingId={markingId} textSize={textSize} key={markingId+textSize} />
 		)
 	}
 	return <View style={{

@@ -4,7 +4,7 @@ import {
 	MyTextProps,
 	Text,
 	TEXT_SIZE_2_EXTRA_SMALL,
-	TEXT_SIZE_3_EXTRA_LARGE,
+	TEXT_SIZE_3_EXTRA_LARGE, TEXT_SIZE_DEFAULT,
 	TEXT_SIZE_EXTRA_SMALL,
 	useViewBackgroundColor,
 	View
@@ -30,7 +30,7 @@ import {getFoodName} from "@/helper/food/FoodTranslation";
 import {formatPrice} from "@/components/pricing/PricingBadge";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
 import {FoodInformationValueFormatter} from "@/components/food/FoodDataList";
-import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconClickable, MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {useIsDebug} from "@/states/Debug";
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
@@ -135,7 +135,12 @@ export const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({
 
 	for (let i = 0; i < sortedMarkingsForFoodOffer.length; i++) {
 		const marking = sortedMarkingsForFoodOffer[i];
-		renderedMarkings.push(<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />);
+		renderedMarkings.push(
+			<View style={{
+				padding: 2
+			}}>
+				<MarkingIconClickable markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+			</View>);
 	}
 	return <View style={{
 		flex: 1,
@@ -468,12 +473,16 @@ export default function FoodDayPlanScreen() {
 		return (
 			<View style={{
 				flexDirection: "row",
-				alignItems: "flex-start",
+				alignItems: "center",
 				justifyContent: "flex-start",
 				flex: 1,
 				marginVertical: 1,
 			}}>
-				<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				<View style={{
+					paddingRight: 2,
+				}}>
+					<MarkingIconClickable markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				</View>
 				{renderedTranslation}
 			</View>
 		)
@@ -850,7 +859,7 @@ export default function FoodDayPlanScreen() {
 		return <>
 			{renderMyGridList({
 				children: renderedMarkings,
-				amountColumns: 8,
+				amountColumns: 6,
 				paddingColumns: 1,
 			})}
 		</>

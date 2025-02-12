@@ -186,26 +186,30 @@ export const BadgeWrapper = ({children}: {children: any}) => {
 	</View>
 }
 
-
-export type MarkingBadgeProps = {
+export type MarkingIconClickableProps = {
 	markingId: string
 	borderRadius?: number,
+	width?: number,
+	height?: number
+	textSize?: TextSizeType
+	imageHeightInTextSize?: TextSizeType
 }
-export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
+export const MarkingIconClickable = ({markingId, width, height, imageHeightInTextSize, textSize, ...props}: MarkingIconClickableProps) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 	const [languageCode, setLanguageCode] = useProfileLanguageCode()
+	const lineHeight = height || getLineHeightInPixelBySize(imageHeightInTextSize || textSize || TEXT_SIZE_DEFAULT) || 10;
+	height = lineHeight;
 	const badgeWidth = useBadgeWidth();
-	let width = badgeWidth
-	let height = width;
 	const viewBackgroundColor = useViewBackgroundColor()
 	const viewBackgroundContrastColor = useMyContrastColor(viewBackgroundColor)
 	const viewWhiteOrBlackBackgroundColor = useMyContrastColor(viewBackgroundContrastColor)
+
+	const marking: Markings | undefined | null = markingsDict?.[markingId];
 
 	const widthByCharacters = useCharacterWithInPixel(7);
 
 	const translation_show_more_information = useTranslation(TranslationKeys.show_more_information)
 
-	const marking: Markings | undefined | null = markingsDict?.[markingId];
 
 	const backgroundcolor = marking?.background_color || "#FFFFFF00"
 
@@ -253,15 +257,31 @@ export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
 		}
 	}
 
-	return <BadgeWrapper>
-		<DirectusImageOrIconWithModalComponent
+	return <DirectusImageOrIconWithModalComponent
 			title={title}
 			backgroundColor={backgroundColor}
 			tooltip={title}
 			accessibilityLabel={accessibilityLabel}
 			label={label}
 			key={marking.id}
+			textColor={textColor}
+			textSize={textSize}
+			short={marking.short_code}
 			renderAsContentInsteadItems={renderAsContentInsteadItems}
 			resource={marking} widthImage={width} heightImage={height} iconColor={textColor} />
+}
+
+
+export type MarkingBadgeProps = {
+	markingId: string
+	borderRadius?: number,
+}
+export const MarkingBadge = ({markingId, ...props}: MarkingBadgeProps) => {
+	const badgeWidth = useBadgeWidth();
+	let width = badgeWidth
+	let height = width;
+
+	return <BadgeWrapper>
+		<MarkingIconClickable markingId={markingId} textSize={undefined} height={height} width={width} />
 	</BadgeWrapper>
 }

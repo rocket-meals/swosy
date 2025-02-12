@@ -13,7 +13,7 @@ import {SEARCH_PARAM_FULLSCREEN} from "@/states/DrawerSyncConfig";
 import {MyProgressbar} from "@/components/progressbar/MyProgressbar";
 import {getMarkingName} from "@/components/food/MarkingListItem";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
-import {MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
+import {MarkingIconClickable, MarkingIconOrShortCodeWithTextSize} from "@/components/food/MarkingBadge";
 import {useSynchedCanteensDict} from "@/states/SynchedCanteens";
 import {MonitorHeader} from "@/compositions/monitor/MonitorHeader";
 import {useRefreshDataIntervalInSecondsFromLocalSearchParams} from "@/app/(app)/foodoffers/monitor/dayplan/details";
@@ -175,12 +175,16 @@ export default function FoodDayPlanScreen() {
 		return (
 			<View style={{
 				flexDirection: "row",
-				alignItems: "flex-start",
+				alignItems: "center",
 				justifyContent: "flex-start",
 				flex: 1,
 				marginVertical: 1,
 			}}>
-				<MarkingIconOrShortCodeWithTextSize markingId={marking.id} textSize={TEXT_SIZE_DEFAULT} />
+				<View style={{
+					paddingRight: 2,
+				}}>
+					<MarkingIconClickable markingId={marking.id} textSize={TEXT_SIZE_DEFAULT} />
+				</View>
 				{renderedTranslation}
 			</View>
 		)
