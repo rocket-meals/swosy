@@ -36,7 +36,7 @@ export type DirectusImageOrIconWithModalComponentProps = {
 	renderAsContentInsteadItems?: (key: string, hide: () => void, backgroundColor: string | undefined | null) => React.ReactNode,
 } & DirectusImageOrIconComponentProps
 
-export function DirectusImageOrIconWithModalComponent({ title, contrastBorderColorWhenInactive, backgroundColor, accessibilityLabel, tooltip, label, renderAsContentInsteadItems, ...props }: DirectusImageOrIconWithModalComponentProps) {
+export function DirectusImageOrIconWithModalComponent({ title, contrastBorderColorWhenInactive, backgroundColor, accessibilityLabel, iconColor, tooltip, label, renderAsContentInsteadItems, ...props }: DirectusImageOrIconWithModalComponentProps) {
 	const [modalConfig, setModalConfig] = useModalGlobalContext();
 
 	let onPress: undefined | (() => void) = () => {
@@ -52,7 +52,7 @@ export function DirectusImageOrIconWithModalComponent({ title, contrastBorderCol
 		onPress = undefined;
 	}
 
-	return <DirectusImageOrIconWithButtonComponent backgroundColor={backgroundColor} tooltip={tooltip} onPress={onPress} accessibilityLabel={accessibilityLabel} {...props} />
+	return <DirectusImageOrIconWithButtonComponent backgroundColor={backgroundColor} tooltip={tooltip} onPress={onPress} iconColor={iconColor} accessibilityLabel={accessibilityLabel} {...props} />
 }
 
 export type DirectusImageOrIconWithButtonComponentProps = {
@@ -103,7 +103,6 @@ export default function DirectusImageOrIconComponent({ resource, iconFamily, ico
 		</Text>
 	</View>
 	iconLeftCustom = shortContent;
-
 
 	if(iconLeft){
 		if(!iconFamily){ // a directus Icon

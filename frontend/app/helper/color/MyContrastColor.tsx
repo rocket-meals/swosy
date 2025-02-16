@@ -27,6 +27,7 @@ class ContrastRatioCache{
 	}
 
 	private static computeContrastRatio(foreground: string | undefined, background: string): number {
+
 		const lumA = Color(foreground).getLuminance();
 		const lumB = Color(background).getLuminance();
 		return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
@@ -136,7 +137,7 @@ enum ContrastThreshold {
  * It selects the text color (dark or light) that provides the best readability based on the current color mode (dark or light)
  * and the contrast thresholds.
  *
- * @param {string | undefined} trueBg - The background color for which the contrast color is to be calculated.
+ * @param {string | undefined} trueBg - The background color for which the contrast color is to be calculated. can be hex with # and with opacity
  * @param isDarkMode
  * @param contrastThreshold {number}
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
@@ -189,6 +190,10 @@ export function useMyContrastColor(trueBg: string | undefined | null) {
 	const viewBackgroundColor = useViewBackgroundColor()
 	if (trueBg==='transparent') {
 		trueBg = viewBackgroundColor;
+	}
+	// check if trueBg is a hex color with opacity and convert it to a hex color without opacity
+	if(trueBg && trueBg.includes("#") && trueBg.length>7) {
+		trueBg = viewBackgroundColor
 	}
 	return useMyContrastColorByColorMode(trueBg, isDarkTheme, ContrastThreshold.MaternaLandNiedersachsen);
 }
