@@ -22,7 +22,7 @@ export function hasResourceImageOrRemoteImage(resource: any){
 }
 
 export function hasResourceImageIconOrRemoteImage(resource: any){
-	return hasResourceImageOrRemoteImage(resource) || resource.icon;
+	return hasResourceImageOrRemoteImage(resource) || resource.icon || resource.icon_expo;
 }
 
 export type DirectusImageOrIconWithModalComponentProps = {
