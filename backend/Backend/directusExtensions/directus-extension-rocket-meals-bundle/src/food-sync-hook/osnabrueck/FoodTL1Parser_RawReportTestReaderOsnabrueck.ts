@@ -2,12 +2,22 @@ import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReport
 
 export class FoodTL1Parser_RawReportTestReaderOsnabrueck implements FoodTL1Parser_GetRawReportInterface {
 
-    constructor(){
+    private reportToReturn: string | undefined;
 
+    constructor(reportToReturn?: string | undefined){
+        this.reportToReturn = reportToReturn;
     }
 
     async getRawReport(): Promise<string | undefined> {
+        if(this.reportToReturn){
+            return this.reportToReturn;
+        }
         return this.getSavedRawReport();
+    }
+
+    public static getSavedRawReportWithCO2RatingValues(){
+        return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
+Mensa Lingen\t19.02.2025\t2130\t4388\tKM 1 + 2,20 €\tHauptgericht\t2351\tFalafel mit Persischem Reis, Pinienkernen und Pfirsich-Tomatenchutney (3,16,21,a,k,m,a1)\t\t\t\t\t\tFalafel with persian rice, pine nuts and peach tomato chutney (3,16,21,a,k,m,a1)\t\t\t\t\t\t3,40\t5,60\t6,60\tg\t\t\t3, 16, 21, a, k, m, a1, 0, 947, 948, 949, 952, 954\tmit Antioxidationsmittel, KlimaTeller, vegan, Glutenhaltiges Getreide (a), Schwefeldioxid u. Sulfite (k), Sesam (m), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet, in der Dose, ist Bio\t-\tBrennwert=3269 kJ (781 kcal), Fett=34,1g, davon gesättigte Fettsäuren=5,9g, Kohlenhydrate=97,2g, davon Zucker=16,9g, Ballaststoffe=10,2g, Eiweiß=16,9g, Salz=3,1g,\t454,00\tA\t61,00\t53,54\tA\tA\tA`
     }
 
     private async getSavedRawReport(): Promise<string | undefined> {

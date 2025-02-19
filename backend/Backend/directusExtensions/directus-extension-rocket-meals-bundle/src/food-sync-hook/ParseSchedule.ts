@@ -95,6 +95,9 @@ export class ParseSchedule {
                 workflow: {
                     _eq: workflowId
                 },
+                date_finished: {
+                    _nempty: true // not empty
+                },
                 state: {
                     _eq: WORKFLOW_RUN_STATE.SUCCESS // only successful runs
                 },
