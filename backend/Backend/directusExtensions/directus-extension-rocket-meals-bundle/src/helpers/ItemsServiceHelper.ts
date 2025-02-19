@@ -142,6 +142,16 @@ export class ItemsServiceHelper<T>{
         return await itemsService.readMany(keys, query, opts);
     }
 
+    async findFirstItem(search: Partial<T>, customOptions?: {
+        withTranslations?: boolean
+    }): Promise<T | undefined>{
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+
+        let queriedItems = await this.findItems(search, customOptions);
+        return queriedItems[0];
+    }
+
     async findItems(search: Partial<T>, customOptions?: {
         withTranslations?: boolean
     }): Promise<T[]>{
@@ -177,26 +187,7 @@ export class ItemsServiceHelper<T>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
 
-        let andFilter: any[] = [];
-        let fieldsOfItem = Object.keys(search);
-        for(let field of fieldsOfItem){
-            let fieldFilter: any = {};
-            // @ts-ignore
-            let fieldValue = search[field];
-            fieldFilter[field] = {_eq: fieldValue};
-            andFilter.push(fieldFilter);
-        }
-
-        let queryFilter: Filter = {_and: andFilter};
-        let query = {filter: queryFilter};
-        if(customOptions?.withTranslations){
-            query = {
-                ...query,
-                ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING
-            }
-        }
-
-        let queriedItems = await itemsService.readByQuery(query);
+        let queriedItems = await this.findItems(search, customOptions);
         let foundItem = queriedItems[0]
 
         let copiedCreateItem = JSON.parse(JSON.stringify(create));
@@ -204,7 +195,7 @@ export class ItemsServiceHelper<T>{
             copiedCreateItem = ItemsServiceHelper.setStatusPublished(copiedCreateItem);
             await itemsService.createOne(copiedCreateItem)
         }
-        queriedItems = await itemsService.readByQuery(query);
+        queriedItems = await this.findItems(search, customOptions);
         foundItem = queriedItems[0]
         return foundItem;
     }

@@ -70,4 +70,9 @@ export interface FoodParserInterface {
      */
     getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]>;
 
+    /**
+     * Should create new markings when they do not exist yet
+     */
+    shouldCreateNewMarkingsWhenTheyDoNotExistYet(): boolean;
+
 }

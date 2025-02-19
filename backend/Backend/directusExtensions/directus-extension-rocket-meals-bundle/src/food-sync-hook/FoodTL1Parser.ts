@@ -103,6 +103,13 @@ export class FoodTL1Parser implements FoodParserInterface {
     /**
      * @implements FoodParserInterface
      */
+    public shouldCreateNewMarkingsWhenTheyDoNotExistYet(): boolean {
+        return false;
+    }
+
+    /**
+     * @implements FoodParserInterface
+     */
     async getFoodsListForParser(){
         let foodIdToRawFoodofferDict = FoodTL1Parser.getFoodIdToRawFoodofferDict(this.rawFoodoffersJSONList);
         let foodIds = Object.keys(foodIdToRawFoodofferDict);
