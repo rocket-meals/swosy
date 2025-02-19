@@ -123,18 +123,20 @@ export class ParseSchedule {
     async parse(force = false): Promise<Partial<WorkflowsRuns>> {
         await this.logger.appendLog("Starting");
 
+        let markingsJSONList: MarkingsTypeForParser[] = [];
+
         try {
             if(!!this.markingParser){
                 await this.logger.appendLog("Create Needed Data for MarkingParser");
                 await this.markingParser.createNeededData()
                 await this.logger.appendLog("Update Markings");
-                let markingsJSONList = await this.markingParser.getMarkingsJSONList();
+                markingsJSONList = await this.markingParser.getMarkingsJSONList();
                 await this.updateMarkings(markingsJSONList);
             }
 
             if(!!this.foodParser){
                 await this.logger.appendLog("Create Needed Data for FoodParser");
-                await this.foodParser.createNeededData()
+                await this.foodParser.createNeededData(markingsJSONList)
 
                 let canteensJSONList = await this.foodParser.getCanteensList();
                 let foodsJSONList = await this.foodParser.getFoodsListForParser();

@@ -1,6 +1,7 @@
 import {Canteens, Foodoffers, Foods, FoodsAttributesValues} from "../databaseTypes/types";
 import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {RawFoodofferInformationType, RawTL1FoodofferType} from "./FoodTL1Parser";
+import {MarkingsTypeForParser} from "./MarkingParserInterface";
 
 export type FoodParseFoodAttributeValueType = {
     external_identifier: string,
@@ -53,7 +54,7 @@ export interface FoodParserInterface {
     /**
      * This method should create the needed data for the parser to work on every call of the parser.
      */
-    createNeededData(): Promise<void>;
+    createNeededData(markingsJSONList?: MarkingsTypeForParser[] | undefined): Promise<void>;
 
     /**
      * This method should return the list of all canteens

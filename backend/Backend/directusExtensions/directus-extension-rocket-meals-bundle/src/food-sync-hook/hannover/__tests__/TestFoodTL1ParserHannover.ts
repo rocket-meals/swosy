@@ -9,15 +9,16 @@ import {
     FoodsInformationTypeForParser
 } from "../../FoodParserInterface";
 import {FoodTL1Parser, Tl1AttributeType, TL1AttributeValueType} from "../../FoodTL1Parser";
+import {MarkingsTypeForParser} from "../../MarkingParserInterface";
 
 function generateFoodId(foodIds: number[], markingExternalIdentifiers: string[]): string | null {
-    return FoodTL1ParserHannover.getHannoverFoodId(foodIds, markingExternalIdentifiers);
+    return FoodTL1ParserHannover.getHannoverFoodIdByRecipeIdsAndMarkings(foodIds, markingExternalIdentifiers);
 }
 
-async function getFoodoffersJson(reportToReturn?: string | undefined){
+async function getFoodoffersJson(reportToReturn?: string | undefined, markingsJSONList?: MarkingsTypeForParser[] | undefined){
     let testFileGetter: FoodTL1Parser_GetRawReportInterface = new FoodTL1Parser_RawReportTestReaderHannover(reportToReturn);
     let foodParser: FoodTL1Parser = new FoodTL1ParserHannover(testFileGetter);
-    await foodParser.createNeededData();
+    await foodParser.createNeededData(markingsJSONList);
     return await foodParser.getFoodoffersForParser();
 }
 
@@ -102,6 +103,38 @@ describe("FoodTL1ParserHannover Test", () => {
         const expectedMarkingExternalIdentifiersToBeIncluded = [ 'v' ];
         let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithVegatarian());
         checkIfFoodHasMarking(findFoodId, expectedMarkingExternalIdentifiersToBeIncluded, foodOfferJson);
+    })
+
+    it("Hannover Food Id only contains existing marking ids", async () => {
+        let markingTypeForParser : MarkingsTypeForParser[] = [
+            {
+              external_identifier: "26",
+              excluded_by_markings: [],
+              translations: {}
+            },
+            {
+                external_identifier: "99",
+                excluded_by_markings: [],
+                translations: {}
+            }
+        ]
+
+        let notContainedMarkingId = "NON_EXISTING_EXTERNAL_MARKING_ID";
+        let additionalMarkingsString = "26, 99, "+notContainedMarkingId
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithNonExistingMarking(additionalMarkingsString), markingTypeForParser);
+        expect(!!foodOfferJson).toBe(true);
+        expect(foodOfferJson.length).toBeGreaterThan(0);
+
+        let filteredRawMarkingExternalIdentifiers = ["26","99", "v"]; // "v" is from menu_line
+        // but the food id should not contain the non existing marking id
+        let expectedFoodId = generateFoodId([801346], filteredRawMarkingExternalIdentifiers);
+
+        for(let foodOffer of foodOfferJson){
+            expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(filteredRawMarkingExternalIdentifiers));
+            let foodId = foodOffer.food_id;
+            expect(foodId).toBe(expectedFoodId);
+            expect(foodId).not.toContain(notContainedMarkingId);
+        }
     })
 
     it("Markings for co2 values are correctly set", async () => {

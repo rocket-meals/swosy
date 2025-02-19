@@ -12,6 +12,7 @@ import {
     FoodsInformationTypeForParser, FoodWithBasicDataWithoutIdType
 } from "../FoodParserInterface";
 import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
+import {MarkingsTypeForParser} from "../MarkingParserInterface";
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
 
@@ -38,8 +39,30 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         return foodList;
     }
 
+    /**
+     * Hanna-Jordis Schmidt 19.02.0225 08:35
+     * Filter only markings which are passed by the marking parser
+     * nur die Kennzeichnungen auf der Liste relevant sind für die Änderung der Speisen. Die anderen Kennzeichnungen sind wirklich nur für interne Zwecke gedacht und haben keinerlei Auswirkungen auf die Gerichte und sollen es am besten auch gar nicht haben. Gerade bei den Fotos und den Bewertungen zerhauen diese Kennzeichnungen gerade alles.
+     * @param markings
+     */
+    _filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings: string[]){
+        let markingForParserFromMarkingParser = this.markingsJSONListFromMarkingParger;
+        if(!!markingForParserFromMarkingParser){
+            let markingExternalIdentifiersFromMarkingParser = markingForParserFromMarkingParser.map((marking) => {
+                return marking.external_identifier;
+            });
+            let filteredMarkings = markings.filter((marking) => {
+                return markingExternalIdentifiersFromMarkingParser.includes(marking);
+            });
+            return filteredMarkings;
+        } else {
+            return markings; // if no marking parser is set, return all markings as they are
+        }
+    }
+
     _getMarkingsExternalIdentifiersFromRawFoodoffer(raw_tl1_foodoffer_json: RawTL1FoodofferType): string[] {
         let tl1_zusatz_nummern_string = raw_tl1_foodoffer_json[FoodTL1Parser.DEFAULT_ZSNUMMERN_FIELD];
+
         let tl1_menuekennzeichen_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.MENUEKENNZEICHEN_FIELD];
         let tl1_co2_bewertung_string = raw_tl1_foodoffer_json[FoodTL1ParserHannover.EXTINFO_CO2_BEWERTUNG];
 
@@ -48,6 +71,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
             let markings = tl1_zusatz_nummern_string.split(",").map((nummernString) => {
                 return nummernString.trim();
             });
+            markings = this._filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings);
             combinedMarkings = combinedMarkings.concat(markings);
         }
         if(!!tl1_menuekennzeichen_string){
@@ -96,7 +120,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         return combined_marking_ids_as_string;
     }
 
-    static getHannoverFoodId(recipe_ids: string[] | number[], marking_ids: string[]){
+    static getHannoverFoodIdByRecipeIdsAndMarkings(recipe_ids: string[] | number[], marking_ids: string[]){
         let sorted_recipe_ids = FoodTL1Parser.getSortedRecipeIdFromListOfRecipeIds(recipe_ids);
         let combined_marking_ids_as_string = FoodTL1ParserHannover.getCombinedSortedMarkingsExternalIdentifiersAsString(marking_ids);
         let food_id = sorted_recipe_ids;
@@ -122,7 +146,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         }
         let total_marking_external_identifier_list = this._getMarkingsExternalIdentifiersFromRawFoodoffer(firstRawTL1Foodoffer);
 
-        let food_id = FoodTL1ParserHannover.getHannoverFoodId(recipe_ids, total_marking_external_identifier_list);
+        let food_id = FoodTL1ParserHannover.getHannoverFoodIdByRecipeIdsAndMarkings(recipe_ids, total_marking_external_identifier_list);
 
         return food_id;
     }

@@ -14,6 +14,7 @@ import {FoodTL1Parser_GetRawReportInterface} from "./FoodTL1Parser_GetRawReportI
 import {LanguageCodes, TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {PriceGroupEnum} from "./PriceGroupEnum";
 import {DictHelper} from "../helpers/DictHelper";
+import {MarkingsTypeForParser} from "./MarkingParserInterface";
 
 
 type FoodofferIdentifierType = string
@@ -80,6 +81,7 @@ export class FoodTL1Parser implements FoodParserInterface {
 
     private rawFoodoffersJSONList: RawFoodofferInformationListType = [];
     private rawFoodofferReader: FoodTL1Parser_GetRawReportInterface;
+    protected markingsJSONListFromMarkingParger: MarkingsTypeForParser[] | undefined = undefined; // passed from MarkingParserInterface
 
     constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
         this.rawFoodofferReader = rawFoodofferReader;
@@ -88,13 +90,16 @@ export class FoodTL1Parser implements FoodParserInterface {
 
     private resetData(){
         this.rawFoodoffersJSONList = [];
+        this.markingsJSONListFromMarkingParger = undefined;
     }
 
     /**
      * @implements FoodParserInterface
      */
-    public async createNeededData(){
+    public async createNeededData(markingsJSONList?: MarkingsTypeForParser[] | undefined){
         this.resetData()
+
+        this.markingsJSONListFromMarkingParger = markingsJSONList;
 
         let rawReport = await this.rawFoodofferReader.getRawReport();
         this.rawFoodoffersJSONList = await this.getRawFoodofferJSONListFromRawReport(rawReport);
@@ -226,6 +231,21 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
 
         return result;
+    }
+
+    filterZsNummernOnlyForPassedExternalMarkingIdentifiersFromMarkingParser(markings: string[]){
+        let markingForParserFromMarkingParser = this.markingsJSONListFromMarkingParger;
+        if(!!markingForParserFromMarkingParser){
+            let markingExternalIdentifiersFromMarkingParser = markingForParserFromMarkingParser.map((marking) => {
+                return marking.external_identifier;
+            });
+            let filteredMarkings = markings.filter((marking) => {
+                return markingExternalIdentifiersFromMarkingParser.includes(marking);
+            });
+            return filteredMarkings;
+        } else {
+            return markings; // if no marking parser is set, return all markings as they are
+        }
     }
 
     getMarkingsExternalIdentifiersFromRawFoodoffer(rawFoodoffer: RawFoodofferInformationType): string[] {
