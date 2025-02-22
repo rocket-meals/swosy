@@ -1,11 +1,11 @@
 {
-  "collection": "form_answers",
-  "field": "value_file",
+  "collection": "app_settings",
+  "field": "placeholder_image",
   "related_collection": "directus_files",
   "meta": {
     "junction_field": null,
-    "many_collection": "form_answers",
-    "many_field": "value_file",
+    "many_collection": "app_settings",
+    "many_field": "placeholder_image",
     "one_allowed_collections": null,
     "one_collection": "directus_files",
     "one_collection_field": null,
@@ -14,12 +14,12 @@
     "sort_field": null
   },
   "schema": {
-    "table": "form_answers",
-    "column": "value_file",
+    "table": "app_settings",
+    "column": "placeholder_image",
     "foreign_key_table": "directus_files",
     "foreign_key_column": "id",
-    "constraint_name": "form_answers_value_file_foreign",
+    "constraint_name": "app_settings_placeholder_image_foreign",
     "on_update": "NO ACTION",
-    "on_delete": "CASCADE"
+    "on_delete": "SET NULL"
   }
 }

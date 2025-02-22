@@ -21,7 +21,7 @@ export class MarkingTL1Parser implements MarkingParserInterface {
     async createNeededData(){
         this.parsedReport = [];
         let rawExport = await this.getRawReport();
-        this.parsedReport = CSVExportParser.getListOfLineObjects(rawExport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_SEMICOLON, true);
+        this.parsedReport = CSVExportParser.getListOfLineObjectsWithParams(rawExport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_SEMICOLON, true);
     }
 
     async getRawReport(): Promise<string | undefined> {

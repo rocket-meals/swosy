@@ -3,7 +3,7 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {Devices, Foodoffers, Foods, WorkflowsRuns} from "../databaseTypes/types";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
+import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 const SCHEDULE_NAME = "FoodNotifySchedule";
 

@@ -1,36 +1,34 @@
 {
-  "collection": "form_answers",
-  "field": "value_file",
-  "type": "uuid",
+  "collection": "app_settings_login_screen_translations",
+  "field": "let_be_translated",
+  "type": "boolean",
   "meta": {
-    "collection": "form_answers",
+    "collection": "app_settings_login_screen_translations",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "value_file",
-    "group": "values",
+    "field": "let_be_translated",
+    "group": null,
     "hidden": false,
-    "interface": "file",
+    "interface": "boolean",
     "note": null,
-    "options": {
-      "folder": "c6db8977-a2aa-4f7a-8001-b681b2fa143a"
-    },
+    "options": null,
     "readonly": false,
     "required": false,
-    "sort": 3,
+    "sort": 8,
     "special": [
-      "file"
+      "cast-boolean"
     ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "value_file",
-    "table": "form_answers",
-    "data_type": "uuid",
-    "default_value": null,
+    "name": "let_be_translated",
+    "table": "app_settings_login_screen_translations",
+    "data_type": "boolean",
+    "default_value": true,
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
@@ -41,7 +39,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_files",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

@@ -1,11 +1,10 @@
 [
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 3,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 3,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -20,6 +19,7 @@
       "sortField": null,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -29,11 +29,10 @@
   },
   {
     "show_header": true,
-    "position_x": 70,
-    "position_y": 79,
-    "width": 23,
     "height": 10,
-    "note": null,
+    "width": 23,
+    "position_y": 79,
+    "position_x": 70,
     "options": {
       "collection": "profiles",
       "sortField": "credit_balance",
@@ -49,6 +48,7 @@
         ]
       }
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -58,11 +58,10 @@
   },
   {
     "show_header": true,
-    "position_x": 24,
-    "position_y": 79,
-    "width": 23,
     "height": 5,
-    "note": null,
+    "width": 23,
+    "position_y": 79,
+    "position_x": 24,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -82,6 +81,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -91,11 +91,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 74,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 74,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -138,6 +137,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -147,11 +147,10 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 9,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 9,
+    "position_x": 17,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -166,6 +165,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -175,11 +175,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 118,
-    "width": 30,
     "height": 15,
-    "note": null,
+    "width": 30,
+    "position_y": 118,
+    "position_x": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -196,6 +195,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -205,11 +205,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 69,
-    "width": 65,
     "height": 14,
-    "note": null,
+    "width": 65,
+    "position_y": 69,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -227,6 +226,7 @@
         ]
       }
     },
+    "note": null,
     "type": "line-chart",
     "color": null,
     "icon": null,
@@ -236,11 +236,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 55,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 55,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -249,6 +248,7 @@
       "filter": null,
       "range": "1 day"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -258,11 +258,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 128,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 128,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -271,6 +270,7 @@
       "precision": "week",
       "range": "3 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -280,11 +280,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 140,
-    "width": 25,
     "height": 9,
-    "note": "Prüfen, ob das gleiche wie beim linken Panel?",
+    "width": 25,
+    "position_y": 140,
+    "position_x": 1,
     "options": {
       "collection": "directus_files",
       "dateField": "created_on",
@@ -292,6 +291,7 @@
       "function": "countDistinct",
       "filter": null
     },
+    "note": "Prüfen, ob das gleiche wie beim linken Panel?",
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -301,11 +301,10 @@
   },
   {
     "show_header": true,
-    "position_x": 15,
-    "position_y": 11,
-    "width": 14,
     "height": 6,
-    "note": null,
+    "width": 14,
+    "position_y": 11,
+    "position_x": 15,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_END",
       "type": "dateTime",
@@ -313,6 +312,7 @@
       "defaultValue": "$NOW()",
       "options": {}
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -322,11 +322,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 99,
-    "width": 65,
     "height": 5,
-    "note": null,
+    "width": 65,
+    "position_y": 99,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -336,6 +335,7 @@
       "field": "display_width",
       "function": "avg"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -345,11 +345,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 104,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 104,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -358,6 +357,7 @@
       "precision": "day",
       "range": "1 month"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -367,11 +367,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 33,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 33,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -394,6 +393,7 @@
       "sortField": null,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -403,11 +403,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 76,
-    "width": 60,
     "height": 13,
-    "note": null,
+    "width": 60,
+    "position_y": 76,
+    "position_x": 1,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -443,6 +442,7 @@
       "min": 0,
       "max": "{{CUSTOM_Y_MAX}}"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -452,17 +452,17 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 13,
-    "width": 15,
     "height": 5,
-    "note": null,
+    "width": 15,
+    "position_y": 13,
+    "position_x": 2,
     "options": {
       "collection": "foods",
       "field": "id",
       "sortField": "id",
       "function": "countDistinct"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -472,11 +472,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 32,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 32,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -489,6 +488,7 @@
       "curveType": "stepline",
       "precision": "minute"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -498,11 +498,10 @@
   },
   {
     "show_header": true,
-    "position_x": 47,
-    "position_y": 59,
-    "width": 16,
     "height": 15,
-    "note": null,
+    "width": 16,
+    "position_y": 59,
+    "position_x": 47,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -540,6 +539,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -549,11 +549,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 190,
-    "width": 61,
     "height": 13,
-    "note": null,
+    "width": 61,
+    "position_y": 190,
+    "position_x": 1,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -562,6 +561,7 @@
       "valueField": "id",
       "range": "12 month"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -571,11 +571,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 119,
-    "width": 65,
     "height": 5,
-    "note": null,
+    "width": 65,
+    "position_y": 119,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -585,6 +584,7 @@
       "field": "display_height",
       "function": "avg"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -594,11 +594,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 6,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 6,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -617,6 +616,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -626,11 +626,10 @@
   },
   {
     "show_header": true,
-    "position_x": 43,
-    "position_y": 171,
-    "width": 39,
     "height": 19,
-    "note": null,
+    "width": 39,
+    "position_y": 171,
+    "position_x": 43,
     "options": {
       "collection": "profiles",
       "column": "canteen",
@@ -647,6 +646,7 @@
       "conditionalFill": null,
       "horizontal": true
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -656,11 +656,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 99,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 99,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -708,6 +707,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -717,11 +717,10 @@
   },
   {
     "show_header": true,
-    "position_x": 38,
-    "position_y": 23,
-    "width": 29,
     "height": 5,
-    "note": null,
+    "width": 29,
+    "position_y": 23,
+    "position_x": 38,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -748,6 +747,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -757,11 +757,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 107,
-    "width": 66,
     "height": 16,
-    "note": null,
+    "width": 66,
+    "position_y": 107,
+    "position_x": 1,
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
@@ -782,6 +781,7 @@
       "sortField": "date_updated",
       "limit": 10
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -791,11 +791,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 99,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 99,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -843,6 +842,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -852,17 +852,17 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 13,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 13,
+    "position_x": 17,
     "options": {
       "collection": "foodoffers",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -872,11 +872,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 103,
-    "width": 30,
     "height": 15,
-    "note": null,
+    "width": 30,
+    "position_y": 103,
+    "position_x": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -893,6 +892,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -902,17 +902,17 @@
   },
   {
     "show_header": true,
-    "position_x": 62,
-    "position_y": 63,
-    "width": 44,
     "height": 8,
-    "note": null,
+    "width": 44,
+    "position_y": 63,
+    "position_x": 62,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
       "collection": "canteens",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -922,11 +922,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 126,
-    "width": 60,
     "height": 7,
-    "note": null,
+    "width": 60,
+    "position_y": 126,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_PRECISION",
       "type": "string",
@@ -954,6 +953,7 @@
         "allowOther": true
       }
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -963,11 +963,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 51,
-    "width": 28,
     "height": 5,
-    "note": null,
+    "width": 28,
+    "position_y": 51,
+    "position_x": 33,
     "options": {
       "collection": "utilizations_groups",
       "field": "threshold_until_max",
@@ -982,6 +981,7 @@
       },
       "function": "max"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -991,11 +991,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 22,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 22,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -1014,6 +1013,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1023,11 +1023,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 83,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 83,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1075,6 +1074,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1084,11 +1084,10 @@
   },
   {
     "show_header": true,
-    "position_x": 27,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 84,
+    "position_x": 27,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -1122,6 +1121,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1131,11 +1131,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 103,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 103,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1183,6 +1182,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1192,11 +1192,10 @@
   },
   {
     "show_header": true,
-    "position_x": 81,
-    "position_y": 71,
-    "width": 25,
     "height": 6,
-    "note": null,
+    "width": 25,
+    "position_y": 71,
+    "position_x": 81,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1234,6 +1233,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1243,11 +1243,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 54,
-    "width": 20,
     "height": 5,
-    "note": null,
+    "width": 20,
+    "position_y": 54,
+    "position_x": 1,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -1263,6 +1262,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1272,11 +1272,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 67,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 67,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1286,6 +1285,7 @@
       "precision": "day",
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1295,11 +1295,10 @@
   },
   {
     "show_header": true,
-    "position_x": 18,
-    "position_y": 4,
-    "width": 49,
     "height": 9,
-    "note": null,
+    "width": 49,
+    "position_y": 4,
+    "position_x": 18,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -1309,6 +1308,7 @@
       "range": "1 month",
       "valueField": "id"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1318,11 +1318,10 @@
   },
   {
     "show_header": true,
-    "position_x": 38,
-    "position_y": 1,
-    "width": 29,
     "height": 16,
-    "note": null,
+    "width": 29,
+    "position_y": 1,
+    "position_x": 38,
     "options": {
       "collection": "directus_users",
       "column": "provider",
@@ -1334,6 +1333,7 @@
       "yAxis": "provider",
       "xAxis": "provider"
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -1343,17 +1343,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 12,
-    "width": 60,
     "height": 7,
-    "note": null,
+    "width": 60,
+    "position_y": 12,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_SELECTED_UTILIZATION_GROUP_ID",
       "collection": "utilizations_groups",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -1363,11 +1363,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 104,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 104,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -1380,6 +1379,7 @@
       "precision": "week",
       "range": "3 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1389,11 +1389,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 28,
-    "width": 30,
     "height": 16,
-    "note": null,
+    "width": 30,
+    "position_y": 28,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1422,6 +1421,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -1431,11 +1431,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 127,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 127,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1446,6 +1445,7 @@
       "curveType": "straight",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1455,11 +1455,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 3,
-    "width": 30,
     "height": 16,
-    "note": null,
+    "width": 30,
+    "position_y": 3,
+    "position_x": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -1488,6 +1487,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -1497,11 +1497,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 56,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 56,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -1513,6 +1512,7 @@
       "range": "1 day",
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1522,11 +1522,10 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 84,
+    "position_x": 41,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -1560,6 +1559,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1569,17 +1569,17 @@
   },
   {
     "show_header": true,
-    "position_x": 14,
-    "position_y": 23,
-    "width": 13,
     "height": 6,
-    "note": null,
+    "width": 13,
+    "position_y": 23,
+    "position_x": 14,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_END",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -1589,11 +1589,10 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 11,
-    "width": 25,
     "height": 5,
-    "note": null,
+    "width": 25,
+    "position_y": 11,
+    "position_x": 41,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -1609,6 +1608,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1618,11 +1618,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 18,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 18,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1642,6 +1641,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1651,11 +1651,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 133,
-    "width": 30,
     "height": 18,
-    "note": null,
+    "width": 30,
+    "position_y": 133,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -1698,6 +1697,7 @@
       "valueField": "id",
       "color": "#E35169"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1707,11 +1707,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 17,
-    "width": 65,
     "height": 13,
-    "note": null,
+    "width": 65,
+    "position_y": 17,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -1739,6 +1738,7 @@
       "curveType": "stepline",
       "precision": "{{CUSTOM_DIRECTUS_ACTIVITY_PRECISION}}"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1748,11 +1748,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 29,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 29,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1779,6 +1778,7 @@
       "precision": "{{CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION}}",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1788,11 +1788,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 91,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 91,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -1803,6 +1802,7 @@
       "curveType": "stepline",
       "range": "3 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1812,11 +1812,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 79,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 79,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -1864,6 +1863,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1873,11 +1873,10 @@
   },
   {
     "show_header": true,
-    "position_x": 47,
-    "position_y": 9,
-    "width": 24,
     "height": 6,
-    "note": null,
+    "width": 24,
+    "position_y": 9,
+    "position_x": 47,
     "options": {
       "collection": "directus_activity",
       "field": "ip",
@@ -1901,6 +1900,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1910,11 +1910,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 8,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 8,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -1953,6 +1952,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -1962,11 +1962,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 164,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 164,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -1975,6 +1974,7 @@
       "precision": "month",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -1984,11 +1984,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 84,
-    "width": 66,
     "height": 16,
-    "note": null,
+    "width": 66,
+    "position_y": 84,
+    "position_x": 1,
     "options": {
       "linkToItem": true,
       "collection": "foods_feedbacks",
@@ -2015,6 +2014,7 @@
       "precision": "day",
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2024,17 +2024,17 @@
   },
   {
     "show_header": true,
-    "position_x": 16,
-    "position_y": 24,
-    "width": 13,
     "height": 6,
-    "note": null,
+    "width": 13,
+    "position_y": 24,
+    "position_x": 16,
     "options": {
       "field": "CUSTOM_MAILS_DATE_END",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -2044,11 +2044,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 23,
-    "width": 40,
     "height": 13,
-    "note": null,
+    "width": 40,
+    "position_y": 23,
+    "position_x": 1,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -2073,6 +2072,7 @@
         ]
       }
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -2082,16 +2082,16 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 24,
-    "width": 16,
     "height": 9,
-    "note": null,
+    "width": 16,
+    "position_y": 24,
+    "position_x": 2,
     "options": {
       "collection": "push_notifications",
       "field": "id",
       "function": "countDistinct"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2101,11 +2101,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 57,
-    "width": 28,
     "height": 6,
-    "note": null,
+    "width": 28,
+    "position_y": 57,
+    "position_x": 33,
     "options": {
       "collection": "utilizations_groups",
       "field": "all_time_high",
@@ -2120,6 +2119,7 @@
       },
       "function": "max"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2129,17 +2129,17 @@
   },
   {
     "show_header": true,
-    "position_x": 45,
-    "position_y": 49,
-    "width": 22,
     "height": 5,
-    "note": null,
+    "width": 22,
+    "position_y": 49,
+    "position_x": 45,
     "options": {
       "collection": "foods",
       "field": "id",
       "function": "countDistinct",
       "filter": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2149,11 +2149,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 95,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 95,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2201,6 +2200,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2210,11 +2210,10 @@
   },
   {
     "show_header": true,
-    "position_x": 18,
-    "position_y": 13,
-    "width": 49,
     "height": 9,
-    "note": null,
+    "width": 49,
+    "position_y": 13,
+    "position_x": 18,
     "options": {
       "collection": "app_feedbacks",
       "xAxis": "date_created",
@@ -2233,6 +2232,7 @@
         ]
       }
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2242,17 +2242,17 @@
   },
   {
     "show_header": true,
-    "position_x": 37,
-    "position_y": 79,
-    "width": 26,
     "height": 6,
-    "note": null,
+    "width": 26,
+    "position_y": 79,
+    "position_x": 37,
     "options": {
       "field": "CUSTOM_SELECTED_CANTEEN_ID",
       "collection": "canteens",
       "displayTemplate": "{{alias}}",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -2262,16 +2262,16 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 15,
-    "width": 16,
     "height": 5,
-    "note": null,
+    "width": 16,
+    "position_y": 15,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
       "function": "count"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2281,11 +2281,10 @@
   },
   {
     "show_header": true,
-    "position_x": 34,
-    "position_y": 171,
-    "width": 13,
     "height": 22,
-    "note": null,
+    "width": 13,
+    "position_y": 171,
+    "position_x": 34,
     "options": {
       "collection": "canteens",
       "limit": 10,
@@ -2294,6 +2293,7 @@
       "sortDirection": "asc",
       "xAxis": "alias"
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -2303,11 +2303,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 13,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 13,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -2351,6 +2350,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2360,11 +2360,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 24,
-    "width": 65,
     "height": 43,
-    "note": null,
+    "width": 65,
+    "position_y": 24,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -2384,6 +2383,7 @@
       "sortField": "brand",
       "decimals": 0
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -2393,17 +2393,17 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 15,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 15,
+    "position_x": 17,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "sum",
       "suffix": "min"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2413,11 +2413,10 @@
   },
   {
     "show_header": true,
-    "position_x": 81,
-    "position_y": 77,
-    "width": 25,
     "height": 5,
-    "note": null,
+    "width": 25,
+    "position_y": 77,
+    "position_x": 81,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -2467,6 +2466,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2476,17 +2476,17 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 24,
-    "width": 13,
     "height": 6,
-    "note": null,
+    "width": 13,
+    "position_y": 24,
+    "position_x": 3,
     "options": {
       "field": "CUSTOM_MAILS_DATE_START",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW(-31 day)"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -2496,11 +2496,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 2,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 2,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -2519,6 +2518,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2528,11 +2528,10 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 23,
-    "width": 26,
     "height": 13,
-    "note": null,
+    "width": 26,
+    "position_y": 23,
+    "position_x": 41,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -2548,6 +2547,7 @@
         ]
       }
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -2557,11 +2557,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 203,
-    "width": 61,
     "height": 13,
-    "note": null,
+    "width": 61,
+    "position_y": 203,
+    "position_x": 1,
     "options": {
       "collection": "foodoffers",
       "precision": "month",
@@ -2570,6 +2569,7 @@
       "valueField": "id",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2579,11 +2579,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 63,
-    "width": 66,
     "height": 14,
-    "note": null,
+    "width": 66,
+    "position_y": 63,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -2600,6 +2599,7 @@
         ]
       }
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2609,11 +2609,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 177,
-    "width": 61,
     "height": 13,
-    "note": null,
+    "width": 61,
+    "position_y": 177,
+    "position_x": 1,
     "options": {
       "collection": "foodoffers",
       "precision": "week",
@@ -2622,6 +2621,7 @@
       "valueField": "id",
       "range": "12 month"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2631,11 +2631,10 @@
   },
   {
     "show_header": true,
-    "position_x": 25,
-    "position_y": 8,
-    "width": 21,
     "height": 11,
-    "note": null,
+    "width": 21,
+    "position_y": 8,
+    "position_x": 25,
     "options": {
       "collection": "devices",
       "column": "provider",
@@ -2647,6 +2646,7 @@
       "yAxis": "id",
       "xAxis": "platform"
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -2656,11 +2656,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 74,
-    "width": 16,
     "height": 4,
-    "note": null,
+    "width": 16,
+    "position_y": 74,
+    "position_x": 3,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -2683,6 +2682,7 @@
       "maximumFractionDigits": 2,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2692,11 +2692,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 3,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 3,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "field": "id",
@@ -2735,6 +2734,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2744,11 +2744,10 @@
   },
   {
     "show_header": true,
-    "position_x": 47,
-    "position_y": 74,
-    "width": 16,
     "height": 4,
-    "note": null,
+    "width": 16,
+    "position_y": 74,
+    "position_x": 47,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -2771,6 +2770,7 @@
       "maximumFractionDigits": 2,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2780,11 +2780,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 49,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 49,
+    "position_x": 31,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_END",
       "collection": "canteens_feedbacks_labels",
@@ -2793,6 +2792,7 @@
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -2802,11 +2802,10 @@
   },
   {
     "show_header": true,
-    "position_x": 14,
-    "position_y": 84,
-    "width": 13,
     "height": 5,
-    "note": null,
+    "width": 13,
+    "position_y": 84,
+    "position_x": 14,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -2840,6 +2839,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2849,11 +2849,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 116,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 116,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -2862,6 +2861,7 @@
       "precision": "day",
       "range": "3 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2871,11 +2871,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 74,
-    "width": 14,
     "height": 4,
-    "note": null,
+    "width": 14,
+    "position_y": 74,
+    "position_x": 33,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -2909,6 +2908,7 @@
       "maximumFractionDigits": 2,
       "suffix": "⭐"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -2918,11 +2918,10 @@
   },
   {
     "show_header": true,
-    "position_x": 35,
-    "position_y": 65,
-    "width": 32,
     "height": 19,
-    "note": null,
+    "width": 32,
+    "position_y": 65,
+    "position_x": 35,
     "options": {
       "collection": "foods_feedbacks",
       "xAxis": "date_updated",
@@ -2949,6 +2948,7 @@
         ]
       }
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -2958,11 +2958,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 151,
-    "width": 60,
     "height": 17,
-    "note": null,
+    "width": 60,
+    "position_y": 151,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "date",
@@ -3011,6 +3010,7 @@
       "grouping": "like",
       "showLegend": true
     },
+    "note": null,
     "type": "line-chart",
     "color": null,
     "icon": null,
@@ -3020,11 +3020,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 14,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 14,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -3043,6 +3042,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3052,11 +3052,10 @@
   },
   {
     "show_header": true,
-    "position_x": 29,
-    "position_y": 11,
-    "width": 13,
     "height": 6,
-    "note": null,
+    "width": 13,
+    "position_y": 11,
+    "position_x": 29,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_PRECISION",
       "type": "string",
@@ -3092,6 +3091,7 @@
         "allowOther": true
       }
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -3101,17 +3101,17 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 4,
-    "width": 16,
     "height": 9,
-    "note": null,
+    "width": 16,
+    "position_y": 4,
+    "position_x": 2,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
       "function": "countDistinct",
       "sortField": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3121,11 +3121,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 27,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 27,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3145,6 +3144,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3154,11 +3154,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 1,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 1,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3166,6 +3165,7 @@
       "sortField": "id",
       "filter": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3175,14 +3175,14 @@
   },
   {
     "show_header": false,
-    "position_x": 3,
-    "position_y": 21,
-    "width": 60,
     "height": 4,
-    "note": null,
+    "width": 60,
+    "position_y": 21,
+    "position_x": 3,
     "options": {
       "text": "Speise Feedback Labels"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -3192,17 +3192,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 23,
-    "width": 13,
     "height": 6,
-    "note": null,
+    "width": 13,
+    "position_y": 23,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_DATE_START",
       "type": "dateTime",
       "inter": "datetime",
       "defaultValue": "$NOW(-1 day)"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -3212,11 +3212,10 @@
   },
   {
     "show_header": false,
-    "position_x": 3,
-    "position_y": 85,
-    "width": 60,
     "height": 17,
-    "note": null,
+    "width": 60,
+    "position_y": 85,
+    "position_x": 3,
     "options": {
       "collection": "foodoffers",
       "limit": 10,
@@ -3243,6 +3242,7 @@
         ]
       }
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -3252,11 +3252,10 @@
   },
   {
     "show_header": true,
-    "position_x": 45,
-    "position_y": 54,
-    "width": 22,
     "height": 5,
-    "note": null,
+    "width": 22,
+    "position_y": 54,
+    "position_x": 45,
     "options": {
       "collection": "foods",
       "field": "id",
@@ -3275,6 +3274,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3284,11 +3284,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 19,
-    "width": 60,
     "height": 6,
-    "note": null,
+    "width": 60,
+    "position_y": 19,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_PRECISION",
       "type": "string",
@@ -3324,6 +3323,7 @@
         "allowOther": true
       }
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -3333,11 +3333,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 57,
-    "width": 32,
     "height": 6,
-    "note": null,
+    "width": 32,
+    "position_y": 57,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_Y_MAX",
       "type": "integer",
@@ -3347,6 +3346,7 @@
       },
       "defaultValue": 1500
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -3356,17 +3356,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 55,
-    "width": 60,
     "height": 8,
-    "note": null,
+    "width": 60,
+    "position_y": 55,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_CANTEENS_FEEDBACK_LABEL_ID",
       "collection": "canteens_feedbacks_labels",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -3376,11 +3376,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 106,
-    "width": 31,
     "height": 16,
-    "note": null,
+    "width": 31,
+    "position_y": 106,
+    "position_x": 1,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -3397,6 +3396,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -3406,17 +3406,17 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 53,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 53,
+    "position_x": 3,
     "options": {
       "field": "CUSTOM_SELECTED_LEFT_FOOD_ID",
       "collection": "foods",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -3426,11 +3426,10 @@
   },
   {
     "show_header": true,
-    "position_x": 19,
-    "position_y": 69,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 69,
+    "position_x": 19,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -3471,6 +3470,7 @@
       ],
       "sortField": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3480,11 +3480,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 123,
-    "width": 29,
     "height": 6,
-    "note": null,
+    "width": 29,
+    "position_y": 123,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "field": "id",
@@ -3509,6 +3508,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3518,11 +3518,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 39,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 39,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3548,6 +3547,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3557,11 +3557,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 115,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 115,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -3589,6 +3588,7 @@
       "curveType": "straight",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -3598,11 +3598,10 @@
   },
   {
     "show_header": true,
-    "position_x": 81,
-    "position_y": 82,
-    "width": 25,
     "height": 5,
-    "note": null,
+    "width": 25,
+    "position_y": 82,
+    "position_x": 81,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -3652,6 +3651,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3661,11 +3661,10 @@
   },
   {
     "show_header": true,
-    "position_x": 47,
-    "position_y": 3,
-    "width": 24,
     "height": 6,
-    "note": null,
+    "width": 24,
+    "position_y": 3,
+    "position_x": 47,
     "options": {
       "collection": "directus_activity",
       "field": "ip",
@@ -3689,6 +3688,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3698,11 +3698,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 44,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 44,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -3715,6 +3714,7 @@
       "curveType": "stepline",
       "precision": "minute"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -3724,11 +3724,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 11,
-    "width": 14,
     "height": 6,
-    "note": null,
+    "width": 14,
+    "position_y": 11,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_DIRECTUS_ACTIVITY_DATE_START",
       "type": "dateTime",
@@ -3736,6 +3735,7 @@
       "defaultValue": "$NOW(-1 day)",
       "options": {}
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -3745,11 +3745,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 65,
-    "width": 34,
     "height": 19,
-    "note": null,
+    "width": 34,
+    "position_y": 65,
+    "position_x": 1,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "xAxis": "date_updated",
@@ -3763,6 +3762,7 @@
       "min": 0,
       "max": 500
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -3772,11 +3772,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 1,
-    "width": 60,
     "height": 10,
-    "note": null,
+    "width": 60,
+    "position_y": 1,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "groupByField": "id",
@@ -3785,6 +3784,7 @@
       "sortField": "timestamp",
       "displayTemplate": "{{timestamp}} - {{action}} - Profil: {{user.profile.id}}"
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -3794,11 +3794,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 104,
-    "width": 65,
     "height": 14,
-    "note": null,
+    "width": 65,
+    "position_y": 104,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "display_width",
@@ -3806,6 +3805,7 @@
       "aggregation": "count",
       "grouping": null
     },
+    "note": null,
     "type": "line-chart",
     "color": null,
     "icon": null,
@@ -3815,11 +3815,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 63,
-    "width": 60,
     "height": 13,
-    "note": null,
+    "width": 60,
+    "position_y": 63,
+    "position_x": 1,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -3855,6 +3854,7 @@
       "max": "{{CUSTOM_Y_MAX}}",
       "min": 0
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -3864,11 +3864,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 18,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 18,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -3887,6 +3886,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3896,17 +3896,17 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 30,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 30,
+    "position_x": 17,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "min",
       "suffix": "min"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3916,17 +3916,17 @@
   },
   {
     "show_header": true,
-    "position_x": 25,
-    "position_y": 3,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 3,
+    "position_x": 25,
     "options": {
       "collection": "devices",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3936,11 +3936,10 @@
   },
   {
     "show_header": true,
-    "position_x": 38,
-    "position_y": 18,
-    "width": 29,
     "height": 5,
-    "note": null,
+    "width": 29,
+    "position_y": 18,
+    "position_x": 38,
     "options": {
       "collection": "directus_users",
       "field": "id",
@@ -3967,6 +3966,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -3976,11 +3976,10 @@
   },
   {
     "show_header": true,
-    "position_x": 21,
-    "position_y": 54,
-    "width": 24,
     "height": 5,
-    "note": null,
+    "width": 24,
+    "position_y": 54,
+    "position_x": 21,
     "options": {
       "collection": "foods",
       "field": "rating_amount",
@@ -3999,6 +3998,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4008,11 +4008,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 107,
-    "width": 30,
     "height": 18,
-    "note": null,
+    "width": 30,
+    "position_y": 107,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -4058,6 +4057,7 @@
         }
       ]
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -4067,11 +4067,10 @@
   },
   {
     "show_header": true,
-    "position_x": 27,
-    "position_y": 23,
-    "width": 14,
     "height": 6,
-    "note": null,
+    "width": 14,
+    "position_y": 23,
+    "position_x": 27,
     "options": {
       "field": "CUSTOM_CASHREGISTERS_TRANSACTIONS_PRECISION",
       "type": "string",
@@ -4107,6 +4106,7 @@
         "allowOther": true
       }
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -4116,14 +4116,14 @@
   },
   {
     "show_header": false,
-    "position_x": 1,
-    "position_y": 2,
-    "width": 60,
     "height": 4,
-    "note": null,
+    "width": 60,
+    "position_y": 2,
+    "position_x": 1,
     "options": {
       "text": "Mensa Auslatungen"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -4133,17 +4133,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 80,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 80,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4153,11 +4153,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 103,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 103,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4205,6 +4204,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4214,11 +4214,10 @@
   },
   {
     "show_header": true,
-    "position_x": 47,
-    "position_y": 79,
-    "width": 20,
     "height": 5,
-    "note": null,
+    "width": 20,
+    "position_y": 79,
+    "position_x": 47,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4236,6 +4235,7 @@
       "suffix": "€",
       "maximumFractionDigits": 2
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4245,11 +4245,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 50,
-    "width": 37,
     "height": 14,
-    "note": null,
+    "width": 37,
+    "position_y": 50,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "washingmachine",
@@ -4257,6 +4256,7 @@
       "aggregateField": "id",
       "aggregateFunction": "count"
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -4266,11 +4266,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 1,
-    "width": 35,
     "height": 21,
-    "note": null,
+    "width": 35,
+    "position_y": 1,
+    "position_x": 1,
     "options": {
       "collection": "mails",
       "xAxis": "recipient",
@@ -4282,6 +4281,7 @@
       "groupByField": "recipient",
       "aggregateFunction": "count"
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -4291,14 +4291,14 @@
   },
   {
     "show_header": false,
-    "position_x": 3,
-    "position_y": 79,
-    "width": 14,
     "height": 6,
-    "note": null,
+    "width": 14,
+    "position_y": 79,
+    "position_x": 3,
     "options": {
       "text": "Speiseplan"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -4308,17 +4308,17 @@
   },
   {
     "show_header": true,
-    "position_x": 18,
-    "position_y": 24,
-    "width": 49,
     "height": 9,
-    "note": null,
+    "width": 49,
+    "position_y": 24,
+    "position_x": 18,
     "options": {
       "collection": "push_notifications",
       "function": "count",
       "dateField": "date_created",
       "valueField": "id"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4328,11 +4328,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 93,
-    "width": 66,
     "height": 11,
-    "note": null,
+    "width": 66,
+    "position_y": 93,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "dateField": "credit_balance_date_updated",
@@ -4354,6 +4353,7 @@
       },
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4363,11 +4363,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 69,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 69,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4410,6 +4409,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4419,11 +4419,10 @@
   },
   {
     "show_header": true,
-    "position_x": 35,
-    "position_y": 59,
-    "width": 32,
     "height": 6,
-    "note": null,
+    "width": 32,
+    "position_y": 59,
+    "position_x": 35,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -4439,6 +4438,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4448,17 +4448,17 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 6,
-    "width": 25,
     "height": 5,
-    "note": null,
+    "width": 25,
+    "position_y": 6,
+    "position_x": 41,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4468,17 +4468,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 4,
-    "width": 20,
     "height": 5,
-    "note": null,
+    "width": 20,
+    "position_y": 4,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4488,11 +4488,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 26,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 26,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -4511,6 +4510,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4520,11 +4520,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 89,
-    "width": 32,
     "height": 4,
-    "note": null,
+    "width": 32,
+    "position_y": 89,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "dateField": "credit_balance_date_updated",
@@ -4547,6 +4546,7 @@
       "curveType": "stepline",
       "field": "credit_balance_date_updated"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4556,14 +4556,14 @@
   },
   {
     "show_header": false,
-    "position_x": 1,
-    "position_y": 45,
-    "width": 60,
     "height": 4,
-    "note": null,
+    "width": 60,
+    "position_y": 45,
+    "position_x": 1,
     "options": {
       "text": "Rückmeldungen Mensa"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -4573,11 +4573,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 103,
-    "width": 30,
     "height": 15,
-    "note": null,
+    "width": 30,
+    "position_y": 103,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "groupByField": "food",
@@ -4585,6 +4584,7 @@
       "aggregateFunction": "count",
       "limit": 10
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -4594,11 +4594,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 63,
-    "width": 30,
     "height": 16,
-    "note": null,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4639,6 +4638,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -4648,11 +4648,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 37,
-    "width": 37,
     "height": 13,
-    "note": null,
+    "width": 37,
+    "position_y": 37,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_calculated",
@@ -4660,6 +4659,7 @@
       "xAxis": "duration_in_minutes_rounded_10min_calculated",
       "yAxis": "id"
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -4669,11 +4669,10 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 13,
-    "width": 16,
     "height": 9,
-    "note": null,
+    "width": 16,
+    "position_y": 13,
+    "position_x": 2,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -4689,6 +4688,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4698,11 +4698,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 107,
-    "width": 30,
     "height": 18,
-    "note": null,
+    "width": 30,
+    "position_y": 107,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -4748,6 +4747,7 @@
         }
       ]
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -4757,11 +4757,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 68,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 68,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -4772,6 +4771,7 @@
       "filter": null,
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4781,11 +4781,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 30,
-    "width": 63,
     "height": 12,
-    "note": null,
+    "width": 63,
+    "position_y": 30,
+    "position_x": 3,
     "options": {
       "collection": "mails",
       "function": "countDistinct",
@@ -4812,6 +4811,7 @@
       "precision": "{{CUSTOM_MAILS_PRECISION}}",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4821,11 +4821,10 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 23,
-    "width": 25,
     "height": 6,
-    "note": null,
+    "width": 25,
+    "position_y": 23,
+    "position_x": 41,
     "options": {
       "collection": "cashregisters_transactions",
       "field": "id",
@@ -4850,6 +4849,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4859,11 +4859,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 91,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 91,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -4911,6 +4910,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4920,11 +4920,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 176,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 176,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -4933,6 +4932,7 @@
       "precision": "year",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4942,11 +4942,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 79,
-    "width": 23,
     "height": 5,
-    "note": null,
+    "width": 23,
+    "position_y": 79,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -4966,6 +4965,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -4975,11 +4975,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 79,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 79,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -4990,6 +4989,7 @@
       "range": "1 month",
       "curveType": "stepline"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -4999,17 +4999,17 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 59,
-    "width": 34,
     "height": 6,
-    "note": null,
+    "width": 34,
+    "position_y": 59,
+    "position_x": 1,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
       "function": "countDistinct",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5019,11 +5019,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 69,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 69,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5064,6 +5063,7 @@
       ],
       "sortField": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5073,17 +5073,17 @@
   },
   {
     "show_header": true,
-    "position_x": 37,
-    "position_y": 1,
-    "width": 17,
     "height": 5,
-    "note": null,
+    "width": 17,
+    "position_y": 1,
+    "position_x": 37,
     "options": {
       "collection": "mails",
       "field": "id",
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5093,11 +5093,10 @@
   },
   {
     "show_header": true,
-    "position_x": 19,
-    "position_y": 59,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 59,
+    "position_x": 19,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5127,6 +5126,7 @@
       "sortField": null,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5136,11 +5136,10 @@
   },
   {
     "show_header": true,
-    "position_x": 19,
-    "position_y": 64,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 64,
+    "position_x": 19,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5182,6 +5181,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5191,11 +5191,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 38,
-    "width": 60,
     "height": 13,
-    "note": null,
+    "width": 60,
+    "position_y": 38,
+    "position_x": 1,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -5230,6 +5229,7 @@
       "precision": "{{CUSTOM_PRECISION}}",
       "min": 0
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5239,11 +5239,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 92,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 92,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -5251,6 +5250,7 @@
       "valueField": "id",
       "precision": "day"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5260,11 +5260,10 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 20,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 20,
+    "position_x": 17,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
@@ -5272,6 +5271,7 @@
       "sortField": "id",
       "suffix": "min"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5281,11 +5281,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 36,
-    "width": 40,
     "height": 13,
-    "note": null,
+    "width": 40,
+    "position_y": 36,
+    "position_x": 1,
     "options": {
       "collection": "foods",
       "limit": 10,
@@ -5310,6 +5309,7 @@
         ]
       }
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -5319,11 +5319,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 101,
-    "width": 34,
     "height": 6,
-    "note": null,
+    "width": 34,
+    "position_y": 101,
+    "position_x": 1,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -5343,6 +5342,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5352,11 +5352,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 103,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 103,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -5383,6 +5382,7 @@
       "precision": "week",
       "range": "auto"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5392,11 +5392,10 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 35,
-    "width": 58,
     "height": 17,
-    "note": null,
+    "width": 58,
+    "position_y": 35,
+    "position_x": 2,
     "options": {
       "collection": "app_feedbacks",
       "field": "id",
@@ -5406,6 +5405,7 @@
       "displayTemplate": "{{title}} - {{content}}",
       "linkToItem": true
     },
+    "note": null,
     "type": "list",
     "color": null,
     "icon": null,
@@ -5415,11 +5415,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 34,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 34,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -5445,6 +5444,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5454,17 +5454,17 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 25,
-    "width": 60,
     "height": 8,
-    "note": null,
+    "width": 60,
+    "position_y": 25,
+    "position_x": 3,
     "options": {
       "field": "CUSTOM_FOODS_FEEDBACKS_SELECTED_FOOD_FEEDBACK_LABEL_ID",
       "collection": "foods_feedbacks_labels",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -5474,11 +5474,10 @@
   },
   {
     "show_header": true,
-    "position_x": 34,
-    "position_y": 1,
-    "width": 32,
     "height": 10,
-    "note": null,
+    "width": 32,
+    "position_y": 1,
+    "position_x": 34,
     "options": {
       "collection": "foods_feedbacks",
       "column": "rating",
@@ -5505,6 +5504,7 @@
         }
       ]
     },
+    "note": null,
     "type": "bar-chart",
     "color": null,
     "icon": null,
@@ -5514,11 +5514,10 @@
   },
   {
     "show_header": true,
-    "position_x": 19,
-    "position_y": 74,
-    "width": 14,
     "height": 4,
-    "note": null,
+    "width": 14,
+    "position_y": 74,
+    "position_x": 19,
     "options": {
       "collection": "foods",
       "field": "rating_average",
@@ -5552,6 +5551,7 @@
       "maximumFractionDigits": 2,
       "suffix": "⭐"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5561,11 +5561,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 43,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 43,
+    "position_x": 1,
     "options": {
       "collection": "cashregisters_transactions",
       "function": "countDistinct",
@@ -5575,6 +5574,7 @@
       "range": "1 hour",
       "precision": "minute"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5584,11 +5584,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 49,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 49,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_CANTEENS_FEEDBACKS_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -5597,6 +5596,7 @@
       "inter": "datetime",
       "defaultValue": "$NOW(-31 days)"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -5606,11 +5606,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 91,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 91,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -5658,6 +5657,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5667,17 +5667,17 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 25,
-    "width": 21,
     "height": 5,
-    "note": null,
+    "width": 21,
+    "position_y": 25,
+    "position_x": 17,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "duration_in_minutes_calculated",
       "function": "max",
       "suffix": "min"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5687,11 +5687,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 133,
-    "width": 30,
     "height": 18,
-    "note": null,
+    "width": 30,
+    "position_y": 133,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "xAxis": "canteen",
@@ -5734,6 +5733,7 @@
       "range": "auto",
       "color": "#2ECDA7"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5743,11 +5743,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 6,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 6,
+    "position_x": 1,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -5756,6 +5755,7 @@
       "inter": "datetime",
       "defaultValue": "$NOW(-8 hours)"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -5765,11 +5765,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 80,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 80,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -5782,6 +5781,7 @@
       "precision": "day",
       "range": "1 month"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5791,11 +5791,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 33,
-    "width": 30,
     "height": 16,
-    "note": null,
+    "width": 30,
+    "position_y": 33,
+    "position_x": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5826,6 +5825,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -5835,11 +5835,10 @@
   },
   {
     "show_header": true,
-    "position_x": 41,
-    "position_y": 13,
-    "width": 26,
     "height": 5,
-    "note": null,
+    "width": 26,
+    "position_y": 13,
+    "position_x": 41,
     "options": {
       "collection": "foods_feedbacks",
       "field": "id",
@@ -5859,6 +5858,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5868,11 +5868,10 @@
   },
   {
     "show_header": true,
-    "position_x": 32,
-    "position_y": 106,
-    "width": 31,
     "height": 16,
-    "note": null,
+    "width": 31,
+    "position_y": 106,
+    "position_x": 32,
     "options": {
       "collection": "profiles_markings",
       "limit": 10,
@@ -5889,6 +5888,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric-list",
     "color": null,
     "icon": null,
@@ -5898,11 +5898,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 92,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 92,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -5915,6 +5914,7 @@
       "precision": "day",
       "range": "3 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -5924,11 +5924,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 39,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 39,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -5963,6 +5962,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -5972,11 +5972,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 51,
-    "width": 32,
     "height": 5,
-    "note": null,
+    "width": 32,
+    "position_y": 51,
+    "position_x": 1,
     "options": {
       "collection": "utilizations_groups",
       "field": "all_time_high",
@@ -5991,6 +5990,7 @@
       },
       "function": "max"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6000,11 +6000,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 9,
-    "width": 16,
     "height": 5,
-    "note": null,
+    "width": 16,
+    "position_y": 9,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines",
       "field": "id",
@@ -6012,6 +6011,7 @@
       "function": "count",
       "sortField": "id"
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6021,14 +6021,14 @@
   },
   {
     "show_header": false,
-    "position_x": 62,
-    "position_y": 59,
-    "width": 44,
     "height": 4,
-    "note": null,
+    "width": 44,
+    "position_y": 59,
+    "position_x": 62,
     "options": {
       "text": "Mensa Spezifisch"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -6038,11 +6038,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 50,
-    "width": 66,
     "height": 13,
-    "note": null,
+    "width": 66,
+    "position_y": 50,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "dateField": "date_created",
@@ -6050,6 +6049,7 @@
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -6059,11 +6059,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 95,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 95,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6111,6 +6110,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6120,11 +6120,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 124,
-    "width": 65,
     "height": 14,
-    "note": null,
+    "width": 65,
+    "position_y": 124,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "display_height",
@@ -6132,6 +6131,7 @@
       "aggregation": "count",
       "grouping": null
     },
+    "note": null,
     "type": "line-chart",
     "color": null,
     "icon": null,
@@ -6141,11 +6141,10 @@
   },
   {
     "show_header": true,
-    "position_x": 39,
-    "position_y": 10,
-    "width": 21,
     "height": 4,
-    "note": null,
+    "width": 21,
+    "position_y": 10,
+    "position_x": 39,
     "options": {
       "collection": "washingmachines_jobs",
       "field": "id",
@@ -6164,6 +6163,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6173,11 +6173,10 @@
   },
   {
     "show_header": true,
-    "position_x": 55,
-    "position_y": 84,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 84,
+    "position_x": 55,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -6206,6 +6205,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6215,11 +6215,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 83,
-    "width": 65,
     "height": 14,
-    "note": null,
+    "width": 65,
+    "position_y": 83,
+    "position_x": 1,
     "options": {
       "collection": "devices",
       "xAxis": "system_version",
@@ -6237,6 +6236,7 @@
         ]
       }
     },
+    "note": null,
     "type": "line-chart",
     "color": null,
     "icon": null,
@@ -6246,11 +6246,10 @@
   },
   {
     "show_header": true,
-    "position_x": 42,
-    "position_y": 11,
-    "width": 24,
     "height": 6,
-    "note": null,
+    "width": 24,
+    "position_y": 11,
+    "position_x": 42,
     "options": {
       "collection": "directus_activity",
       "field": "id",
@@ -6275,6 +6274,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6284,11 +6284,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 63,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 63,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6319,6 +6318,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6328,11 +6328,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 7,
-    "width": 21,
     "height": 19,
-    "note": null,
+    "width": 21,
+    "position_y": 7,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "column": "language",
@@ -6347,6 +6346,7 @@
       "aggregateFunction": "count",
       "limit": -1
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -6356,11 +6356,10 @@
   },
   {
     "show_header": true,
-    "position_x": 3,
-    "position_y": 59,
-    "width": 16,
     "height": 15,
-    "note": null,
+    "width": 16,
+    "position_y": 59,
+    "position_x": 3,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6398,6 +6397,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -6407,11 +6407,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 164,
-    "width": 61,
     "height": 13,
-    "note": null,
+    "width": 61,
+    "position_y": 164,
+    "position_x": 1,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -6420,6 +6419,7 @@
       "valueField": "id",
       "range": "1 month"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -6429,11 +6429,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 28,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 28,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6446,6 +6445,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6455,11 +6455,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 116,
-    "width": 65,
     "height": 12,
-    "note": null,
+    "width": 65,
+    "position_y": 116,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "xAxis": "timestamp",
@@ -6472,6 +6471,7 @@
       "precision": "week",
       "range": "12 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -6481,11 +6481,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 87,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 87,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6533,6 +6532,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6542,17 +6542,17 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 53,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 53,
+    "position_x": 33,
     "options": {
       "field": "CUSTOM_SELECTED_RIGHT_FOOD_ID",
       "collection": "foods",
       "displayTemplate": "{{alias}} ({{id}})",
       "limit": 100
     },
+    "note": null,
     "type": "relational-variable",
     "color": null,
     "icon": null,
@@ -6562,11 +6562,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 83,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 83,
+    "position_x": 1,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6614,6 +6613,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6623,11 +6623,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 14,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 14,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6655,6 +6654,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6664,11 +6664,10 @@
   },
   {
     "show_header": true,
-    "position_x": 43,
-    "position_y": 24,
-    "width": 23,
     "height": 6,
-    "note": null,
+    "width": 23,
+    "position_y": 24,
+    "position_x": 43,
     "options": {
       "collection": "mails",
       "field": "id",
@@ -6693,6 +6692,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6702,11 +6702,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 152,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 152,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -6715,6 +6714,7 @@
       "precision": "month",
       "range": "12 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -6724,11 +6724,10 @@
   },
   {
     "show_header": true,
-    "position_x": 62,
-    "position_y": 71,
-    "width": 19,
     "height": 16,
-    "note": null,
+    "width": 19,
+    "position_y": 71,
+    "position_x": 62,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6776,6 +6775,7 @@
       "legend": "right",
       "showLabels": true
     },
+    "note": null,
     "type": "pie-chart",
     "color": null,
     "icon": null,
@@ -6785,11 +6785,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 87,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 87,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -6837,6 +6836,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6846,11 +6846,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 44,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 44,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6885,6 +6884,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6894,11 +6894,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 59,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 59,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -6928,6 +6927,7 @@
       "sortField": null,
       "suffix": " "
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -6937,11 +6937,10 @@
   },
   {
     "show_header": true,
-    "position_x": 29,
-    "position_y": 24,
-    "width": 14,
     "height": 6,
-    "note": null,
+    "width": 14,
+    "position_y": 24,
+    "position_x": 29,
     "options": {
       "field": "CUSTOM_MAILS_PRECISION",
       "type": "string",
@@ -6977,6 +6976,7 @@
         "allowOther": true
       }
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -6986,11 +6986,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 140,
-    "width": 61,
     "height": 12,
-    "note": null,
+    "width": 61,
+    "position_y": 140,
+    "position_x": 1,
     "options": {
       "collection": "washingmachines_jobs",
       "dateField": "date_start",
@@ -6999,6 +6998,7 @@
       "precision": "week",
       "range": "12 months"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -7008,11 +7008,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 64,
-    "width": 14,
     "height": 5,
-    "note": null,
+    "width": 14,
+    "position_y": 64,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -7054,6 +7053,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -7063,11 +7063,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 6,
-    "width": 30,
     "height": 6,
-    "note": null,
+    "width": 30,
+    "position_y": 6,
+    "position_x": 31,
     "options": {
       "field": "CUSTOM_SELECTED_DATE_END",
       "collection": "canteens_feedbacks_labels",
@@ -7076,6 +7075,7 @@
       "inter": "datetime",
       "defaultValue": "$NOW(+4 hours)"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -7085,11 +7085,10 @@
   },
   {
     "show_header": true,
-    "position_x": 31,
-    "position_y": 79,
-    "width": 30,
     "height": 4,
-    "note": null,
+    "width": 30,
+    "position_y": 79,
+    "position_x": 31,
     "options": {
       "collection": "canteens_feedbacks_labels_entries",
       "field": "id",
@@ -7137,6 +7136,7 @@
         }
       ]
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -7146,11 +7146,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 36,
-    "width": 66,
     "height": 14,
-    "note": null,
+    "width": 66,
+    "position_y": 36,
+    "position_x": 1,
     "options": {
       "collection": "directus_activity",
       "dateField": "timestamp",
@@ -7171,6 +7170,7 @@
       },
       "range": "1 day"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -7180,11 +7180,10 @@
   },
   {
     "show_header": true,
-    "position_x": 17,
-    "position_y": 79,
-    "width": 20,
     "height": 6,
-    "note": null,
+    "width": 20,
+    "position_y": 79,
+    "position_x": 17,
     "options": {
       "field": "CUSTOM_FOODOFFERS_SELECTED_DATE_START",
       "collection": "canteens_feedbacks_labels",
@@ -7193,6 +7192,7 @@
       "inter": "datetime",
       "defaultValue": "$NOW()"
     },
+    "note": null,
     "type": "variable",
     "color": null,
     "icon": null,
@@ -7202,11 +7202,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 25,
-    "width": 60,
     "height": 13,
-    "note": null,
+    "width": 60,
+    "position_y": 25,
+    "position_x": 1,
     "options": {
       "collection": "utilizations_entries",
       "function": "max",
@@ -7241,6 +7240,7 @@
       "precision": "{{CUSTOM_PRECISION}}",
       "min": 0
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -7250,11 +7250,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 151,
-    "width": 61,
     "height": 13,
-    "note": null,
+    "width": 61,
+    "position_y": 151,
+    "position_x": 1,
     "options": {
       "collection": "foodoffers",
       "precision": "day",
@@ -7262,6 +7261,7 @@
       "function": "count",
       "valueField": "id"
     },
+    "note": null,
     "type": "time-series",
     "color": null,
     "icon": null,
@@ -7271,14 +7271,14 @@
   },
   {
     "show_header": false,
-    "position_x": 3,
-    "position_y": 49,
-    "width": 60,
     "height": 4,
-    "note": null,
+    "width": 60,
+    "position_y": 49,
+    "position_x": 3,
     "options": {
       "text": "Speisen Spezifisch"
     },
+    "note": null,
     "type": "label",
     "color": null,
     "icon": null,
@@ -7288,11 +7288,10 @@
   },
   {
     "show_header": true,
-    "position_x": 1,
-    "position_y": 84,
-    "width": 13,
     "height": 5,
-    "note": null,
+    "width": 13,
+    "position_y": 84,
+    "position_x": 1,
     "options": {
       "collection": "profiles",
       "field": "credit_balance",
@@ -7326,6 +7325,7 @@
         ]
       }
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,
@@ -7335,11 +7335,10 @@
   },
   {
     "show_header": true,
-    "position_x": 2,
-    "position_y": 1,
-    "width": 32,
     "height": 10,
-    "note": null,
+    "width": 32,
+    "position_y": 1,
+    "position_x": 2,
     "options": {
       "collection": "foods_feedbacks",
       "column": "rating",
@@ -7348,6 +7347,7 @@
       "max": 5,
       "strokeWidth": 8
     },
+    "note": null,
     "type": "meter",
     "color": null,
     "icon": null,
@@ -7357,11 +7357,10 @@
   },
   {
     "show_header": true,
-    "position_x": 33,
-    "position_y": 9,
-    "width": 30,
     "height": 5,
-    "note": null,
+    "width": 30,
+    "position_y": 9,
+    "position_x": 33,
     "options": {
       "collection": "foods_feedbacks_labels_entries",
       "field": "id",
@@ -7389,6 +7388,7 @@
       "sortField": null,
       "suffix": null
     },
+    "note": null,
     "type": "metric",
     "color": null,
     "icon": null,

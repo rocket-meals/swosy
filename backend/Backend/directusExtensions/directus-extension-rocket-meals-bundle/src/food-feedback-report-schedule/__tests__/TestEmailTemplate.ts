@@ -6,11 +6,12 @@ import {
     ReportCanteenEntryLabelsType,
     ReportCanteenEntryType,
     ReportFoodEntryLabelType,
-    ReportFoodEntryType, ReportGenerator, ReportStatusTrafficLightValues,
+    ReportFoodEntryType,
+    ReportGenerator,
+    ReportStatusTrafficLightValues,
     ReportType
 } from "../ReportGenerator";
 import {TestArtifacts} from "../../helpers/TestArtifacts";
-import {FoodRatingCalculator} from "../../food-feedback-rating-calculate-hook/FoodRatingCalculator";
 
 describe("Food Feedback E-Mail Template", () => {
 

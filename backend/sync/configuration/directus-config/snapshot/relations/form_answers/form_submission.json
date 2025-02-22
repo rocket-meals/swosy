@@ -9,7 +9,7 @@
     "one_allowed_collections": null,
     "one_collection": "form_submissions",
     "one_collection_field": null,
-    "one_deselect_action": "nullify",
+    "one_deselect_action": "delete",
     "one_field": "form_answers",
     "sort_field": null
   },

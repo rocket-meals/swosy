@@ -64,12 +64,12 @@ describe("CSVExportParser Test", () => {
     let rawReport = getTestRawReport([expectedParsedReportItem]);
 
     it("should parse CSV report", () => {
-        let parsedReport = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
+        let parsedReport = CSVExportParser.getListOfLineObjectsWithParams(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
         expect(parsedReport).toHaveLength(1)
     });
 
     it("should parse all headers", () => {
-        let parsedReport = CSVExportParser.getListOfLineObjects(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
+        let parsedReport = CSVExportParser.getListOfLineObjectsWithParams(rawReport, CSVExportParser.NEW_LINE_DELIMITER, CSVExportParser.INLINE_DELIMITER_TAB, true);
         let firstParsedReportItem = parsedReport[0];
         for (let key in expectedParsedReportItem) {
             expect(firstParsedReportItem).toHaveProperty(key);

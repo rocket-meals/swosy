@@ -10,16 +10,17 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
 import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {Washingmachines, WorkflowsRuns} from "../databaseTypes/types";
-import {WORKFLOW_RUN_STATE, WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
+import {WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
 import {FilterHandler} from "@directus/types";
 import {RegisterFunctions} from "@directus/extensions";
 import {
-    ResultHandleWorkflowRunsWantToRun,
+    ResultHandleWorkflowRunsWantToRun, SingleWorkflowRun,
     WorkflowRunJobInterface, WorkflowRunLogger
 } from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {CashregisterTransactionParserInterface} from "../cashregister-hook/CashregisterTransactionParserInterface";
 import {ParseSchedule} from "../cashregister-hook/ParseSchedule";
 import {log} from "node:util";
+import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 
 
@@ -82,43 +83,17 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
 
 
 
-class WashingmachinesWorkflow implements WorkflowRunJobInterface {
+class WashingmachinesWorkflow extends SingleWorkflowRun {
 
     private usedParser: WashingmachineParserInterface;
 
     constructor(usedParser: WashingmachineParserInterface) {
+        super();
         this.usedParser = usedParser;
-    }
-
-    getDeleteFailedWorkflowRunsAfterDays(): number | undefined {
-        return undefined;
-    }
-
-    getDeleteFinishedWorkflowRunsAfterDays(): number | undefined {
-        return undefined;
     }
 
     getWorkflowId(): string {
         return "washingmachines-parse";
-    }
-
-    handleWorkflowRunsWantToRun(modifiableInput: Partial<WorkflowsRuns>, workflowruns: Partial<WorkflowsRuns>[], alreadyRunningWorkflowruns: WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun {
-        let answer: ResultHandleWorkflowRunsWantToRun = {
-            errorMessage: undefined,
-        }
-
-        // We only want one workflow run at a time
-        if(workflowruns.length > 1){
-            answer.errorMessage = "Cannot start more than one workflow run at a time";
-        }
-        if(alreadyRunningWorkflowruns.length > 0){
-            answer.errorMessage = "A workflow run is already running";
-        }
-
-        //modifiableInput.state = WORKFLOW_RUN_STATE.RUNNING;
-
-        return answer;
-
     }
 
     async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {

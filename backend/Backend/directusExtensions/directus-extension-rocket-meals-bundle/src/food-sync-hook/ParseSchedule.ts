@@ -1,4 +1,3 @@
-import hash from 'object-hash';
 import {
     CanteensTypeForParser,
     FoodofferDateType,
@@ -32,7 +31,8 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 import {MyTimer, MyTimers} from "../helpers/MyTimer";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
+import {HashHelper} from "../helpers/HashHelper";
+import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -66,58 +66,8 @@ export class ParseSchedule {
         this.markingParser = markingParser;
     }
 
-    async getHashOfJsonObject(object: any) {
-        return hash(object, {
-            algorithm: 'md5',
-            excludeValues: false,
-            ignoreUnknown: false
-        });
-    }
-
     async getPreviousMealOffersHash(): Promise<string | null | undefined> {
-        // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
-        // if there is no successful run, we return null
-        let workflowId: string | undefined;
-        if(!!this.workflowRun){
-            if(typeof this.workflowRun.workflow === "string"){
-                workflowId = this.workflowRun.workflow;
-            } else {
-                workflowId = this.workflowRun.workflow.id;
-            }
-        }
-
-        if(!workflowId){
-            return null;
-        }
-
-        return await this.myDatabaseHelper.getWorkflowsRunsHelper().readByQuery({
-            filter: {
-                workflow: {
-                    _eq: workflowId
-                },
-                date_finished: {
-                    _nempty: true // not empty
-                },
-                state: {
-                    _eq: WORKFLOW_RUN_STATE.SUCCESS // only successful runs
-                },
-                result_hash: {
-                    _nempty: true // not empty
-                },
-            },
-            fields: ['*'],
-            sort: ['-date_finished'], // sort by date_finished descending order - so we get the latest run first
-            limit: 1
-        }).then((workflowRuns) => {
-            let workflowRun = workflowRuns[0];
-            if(!!workflowRun){
-                return workflowRun.result_hash;
-            }
-            return null;
-        }).catch(async (err) => {
-            await this.logger.appendLog("Error while getting previous meal offers hash: " + err.toString());
-            return null;
-        });
+        return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
     }
 
     async parse(force = false): Promise<Partial<WorkflowsRuns>> {
@@ -141,7 +91,7 @@ export class ParseSchedule {
                 let canteensJSONList = await this.foodParser.getCanteensList();
                 let foodsJSONList = await this.foodParser.getFoodsListForParser();
                 let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
-                let currentMealOffersHash = await this.getHashOfJsonObject(foodofferListForParser);
+                let currentMealOffersHash = HashHelper.hashFromObject(foodofferListForParser);
                 let previousMealOffersHash = await this.getPreviousMealOffersHash();
                 const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
 

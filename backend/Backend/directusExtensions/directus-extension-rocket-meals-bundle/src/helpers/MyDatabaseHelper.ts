@@ -20,7 +20,7 @@ import {
     FoodsCategories,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
-    FoodsFeedbacksLabelsEntries,
+    FoodsFeedbacksLabelsEntries, FormAnswers, FormFields, Forms, FormSubmissions,
     Mails,
     Markings,
     MarkingsExclusions,
@@ -38,6 +38,7 @@ import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {WorkflowsRunHelper} from "./itemServiceHelpers/WorkflowsRunHelper";
 
 export class MyDatabaseHelper {
 
@@ -105,6 +106,22 @@ export class MyDatabaseHelper {
 
     getCanteenFeedbackLabelsEntriesHelper() {
         return new ItemsServiceHelper<CanteensFeedbacksLabelsEntries>(this.apiContext, CollectionNames.CANTEENS_FEEDBACKS_LABELS_ENTRIES, this.eventContext);
+    }
+
+    getFormsHelper() {
+        return new ItemsServiceHelper<Forms>(this.apiContext, CollectionNames.FORMS, this.eventContext);
+    }
+
+    getFormsFieldsHelper() {
+        return new ItemsServiceHelper<FormFields>(this.apiContext, CollectionNames.FORM_FIELDS, this.eventContext);
+    }
+
+    getFormsSubmissionsHelper() {
+        return new ItemsServiceHelper<FormSubmissions>(this.apiContext, CollectionNames.FORM_SUBMISSIONS, this.eventContext);
+    }
+
+    getFormsAnswersHelper() {
+        return new ItemsServiceHelper<FormAnswers>(this.apiContext, CollectionNames.FORM_ANSWERS, this.eventContext);
     }
 
     getFoodoffersHelper() {
@@ -176,7 +193,7 @@ export class MyDatabaseHelper {
     }
 
     getWorkflowsRunsHelper() {
-        return new ItemsServiceHelper<WorkflowsRuns>(this.apiContext, CollectionNames.WORKFLOWS_RUNS, this.eventContext);
+        return new WorkflowsRunHelper(this.apiContext, CollectionNames.WORKFLOWS_RUNS, this.eventContext);
     }
 
     getItemsServiceHelper<T>(collectionName: string) {

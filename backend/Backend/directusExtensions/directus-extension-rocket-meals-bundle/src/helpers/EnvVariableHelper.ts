@@ -33,6 +33,10 @@ export class EnvVariableHelper {
         return this.getEnvVariable("FOOD_SYNC_TL1WEB_EXPORT_URL");
     }
 
+    static getHousingContractCsvFilePath(): string {
+        return this.getEnvVariable("HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
+    }
+
     static getFoodImageSyncSwosyApiServerUrl(): string {
         return this.getEnvVariable("FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
     }

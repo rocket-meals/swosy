@@ -12,7 +12,10 @@
     "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "filter": null,
+      "template": "{{alias}} ({{form.alias}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 9,

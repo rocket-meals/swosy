@@ -4,9 +4,13 @@ export class CSVExportParser {
     static INLINE_DELIMITER_TAB = "\t";
     static INLINE_DELIMITER_SEMICOLON = ";";
 
-    static getListOfLineObjects(text: string | Buffer | undefined, newLineDelimiter: string, inlineDelimiter: string, removeTailoringQuotes=true){
-        let lines = CSVExportParser.splitTextIntoLines(text, newLineDelimiter);
-        return CSVExportParser.parseFileLinesToJSONList(lines, inlineDelimiter, removeTailoringQuotes)
+    static getListOfLineObjectsWithParams(text: string | Buffer | undefined, newLineDelimiter: string, inlineDelimiter: string, removeTailoringQuotes=true){
+        return CSVExportParser.getListOfLineObjects(text, {newLineDelimiter, inlineDelimiter, removeTailoringQuotes});
+    }
+
+    static getListOfLineObjects(text: string | Buffer | undefined, options: {newLineDelimiter: string, inlineDelimiter: string, removeTailoringQuotes: boolean}){
+        let lines = CSVExportParser.splitTextIntoLines(text, options.newLineDelimiter);
+        return CSVExportParser.parseFileLinesToJSONList(lines, options.inlineDelimiter, options.removeTailoringQuotes)
     }
 
     private static splitTextIntoLines(text: string | Buffer | undefined, delimiter=CSVExportParser.NEW_LINE_DELIMITER){

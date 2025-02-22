@@ -54,6 +54,7 @@ export type AppSettings = {
   campus_area_color?: string | null;
   campus_enabled?: boolean | null;
   campus_settings: string;
+  company_image?: string | DirectusFiles | null;
   course_timetable_area_color?: string | null;
   course_timetable_enabled?: boolean | null;
   course_timetable_settings: string;
@@ -81,6 +82,7 @@ export type AppSettings = {
   housing_translations: any[] | AppSettingsHousingTranslations[];
   id: number;
   legal_requirements_settings: string;
+  login_screen_translations: any[] | AppSettingsLoginScreenTranslations[];
   maintenance_end?: string | null;
   maintenance_settings: string;
   maintenance_start?: string | null;
@@ -93,6 +95,7 @@ export type AppSettings = {
   notifications_email_enabled?: boolean | null;
   notifications_ios_enabled?: boolean | null;
   notifications_settings: string;
+  placeholder_image?: string | DirectusFiles | null;
   redirect_settings: string;
   redirect_whitelist?: unknown | null;
   status: string;
@@ -117,6 +120,17 @@ export type AppSettingsHousingTranslations = {
   be_source_for_translations?: boolean | null;
   content?: string | null;
   id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  translation_settings: string;
+};
+
+export type AppSettingsLoginScreenTranslations = {
+  app_settings_id?: number | AppSettings | null;
+  be_source_for_translations?: boolean | null;
+  detailed_description?: string | null;
+  id: number;
+  intro_description?: string | null;
   languages_code?: string | Languages | null;
   let_be_translated?: boolean | null;
   translation_settings: string;
@@ -153,6 +167,16 @@ export type Buildings = {
   status?: string | null;
   translations: any[] | BuildingsTranslations[];
   url?: string | null;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type BuildingsAttributes = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -1146,7 +1170,6 @@ export type FormAnswers = {
   value_boolean?: boolean | null;
   value_custom?: unknown | null;
   value_date?: string | null;
-  value_file?: string | DirectusFiles | null;
   value_files: any[] | FormAnswersFiles[];
   value_image?: string | DirectusFiles | null;
   value_number?: number | null;
@@ -1164,6 +1187,7 @@ export type FormCategories = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  icon_expo?: string | null;
   id: string;
   sort?: number | null;
   status: string;
@@ -1227,7 +1251,9 @@ export type FormFieldsTranslations = {
 };
 
 export type FormSubmissions = {
+  alias?: string | null;
   date_created?: string | null;
+  date_locked_until?: string | null;
   date_started?: string | null;
   date_submitted?: string | null;
   date_updated?: string | null;
@@ -1236,25 +1262,40 @@ export type FormSubmissions = {
   form_answers: any[] | FormAnswers[];
   id: string;
   sort?: number | null;
+  state?: string | null;
   status: string;
   user_created?: string | DirectusUsers | null;
+  user_locked_by?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
 
 export type Forms = {
+  alias?: string | null;
   category?: string | FormCategories | null;
   date_created?: string | null;
   date_updated?: string | null;
   derived_forms: any[] | DerivedForms[];
   form_fields: any[] | FormFields[];
   form_submissions: any[] | FormSubmissions[];
+  icon_expo?: string | null;
   id: string;
   internal_custom_id?: string | null;
-  name?: string | null;
   sort?: number | null;
   status: string;
+  translations: any[] | FormsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type FormsTranslations = {
+  be_source_for_translations?: boolean | null;
+  description?: string | null;
+  forms_id?: string | Forms | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  name?: string | null;
+  translation_settings: string;
 };
 
 export type Languages = {
@@ -1566,6 +1607,7 @@ export type WashingmachinesJobs = {
 export type Wikis = {
   alias?: string | null;
   children: any[] | Wikis[];
+  color?: string | null;
   custom_id?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
@@ -1642,8 +1684,10 @@ export type CustomDirectusTypes = {
   app_settings: AppSettings;
   app_settings_balance_translations: AppSettingsBalanceTranslations[];
   app_settings_housing_translations: AppSettingsHousingTranslations[];
+  app_settings_login_screen_translations: AppSettingsLoginScreenTranslations[];
   auto_translation_settings: AutoTranslationSettings;
   buildings: Buildings[];
+  buildings_attributes: BuildingsAttributes[];
   buildings_businesshours: BuildingsBusinesshours[];
   buildings_translations: BuildingsTranslations[];
   businesshours: Businesshours[];
@@ -1719,6 +1763,7 @@ export type CustomDirectusTypes = {
   form_fields_translations: FormFieldsTranslations[];
   form_submissions: FormSubmissions[];
   forms: Forms[];
+  forms_translations: FormsTranslations[];
   languages: Languages[];
   mails: Mails[];
   markings: Markings[];

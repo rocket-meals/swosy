@@ -5,7 +5,7 @@ import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {News, WorkflowsRuns} from "../databaseTypes/types";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WORKFLOW_RUN_STATE} from "../workflows-runs-hook";
+import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 const SCHEDULE_NAME = "NewsParseSchedule";
 

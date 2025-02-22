@@ -6,7 +6,6 @@ import {
     FoodsInformationTypeForParser
 } from "../FoodParserInterface";
 import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
-import {FoodTL1ParserHannover} from "../hannover/FoodTL1ParserHannover";
 
 export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
 

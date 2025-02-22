@@ -58,6 +58,11 @@ export class CollectionNames{
 
     static MAILS = "mails"
 
+    static FORMS = "forms"
+    static FORM_FIELDS = "form_fields"
+    static FORM_SUBMISSIONS = "form_submissions"
+    static FORM_ANSWERS = "form_answers"
+
     static CANTEENS_FEEDBACK_LABELS = "canteens_feedbacks_labels"
     static CANTEENS_FEEDBACKS_LABELS_ENTRIES = "canteens_feedbacks_labels_entries"
 

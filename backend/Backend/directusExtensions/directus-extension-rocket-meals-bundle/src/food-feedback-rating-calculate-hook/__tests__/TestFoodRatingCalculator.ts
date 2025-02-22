@@ -1,5 +1,5 @@
 // small jest test
-import {describe, it} from '@jest/globals';
+import {describe, expect, it} from '@jest/globals';
 import {Foods, FoodsFeedbacks} from "../../databaseTypes/types";
 import {FoodRatingCalculator} from "../FoodRatingCalculator";
 

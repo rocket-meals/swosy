@@ -16,71 +16,63 @@
       "choices": [
         {
           "text": "String",
-          "value": "string"
+          "value": "value_string-string"
         },
         {
           "text": "Multiline Text",
-          "value": "string_multiline"
+          "value": "value_string-multiline"
         },
         {
           "text": "Number",
-          "value": "number"
-        },
-        {
-          "text": "Appartment",
-          "value": "reference_appartments"
+          "value": "value_number-number"
         },
         {
           "text": "Datum mit Uhrzeit",
-          "value": "timestamp_date_hh_mm"
+          "value": "value_date-date_hh_mm"
         },
         {
           "text": "Datum",
-          "value": "timestamp_date"
+          "value": "value_date-date"
         },
         {
           "text": "Uhrzeit",
-          "value": "timestamp_hh_mm"
+          "value": "value_date-hh_mm"
         },
         {
           "text": "Zeitstempel",
-          "value": "timestamp"
+          "value": "value_date-timestamp"
         },
         {
           "text": "Adresse",
-          "value": "string_address"
+          "value": "value_string-address"
         },
         {
           "text": "E-Mail",
-          "value": "string_email"
+          "value": "value_string-email"
         },
         {
           "text": "Bankverbindung",
-          "value": "string_bank_account_number"
-        },
-        {
-          "text": "Währung",
-          "value": "number_currency"
+          "value": "value_string-bank_account_number"
         },
         {
           "text": "Checkbox",
-          "value": "boolean_checkbox"
-        },
-        {
-          "text": "Datei",
-          "value": "file"
+          "value": "value_boolean-checkbox"
         },
         {
           "text": "Dateien",
-          "value": "files"
+          "value": "value_files-files"
         },
         {
           "text": "Bild",
-          "value": "image"
+          "value": "value_image-image"
         },
         {
           "text": "Unterschrift",
-          "value": "image_signature"
+          "value": "value_image-signature"
+        },
+        {
+          "text": "Appartment",
+          "value": "value_custom-reference-appartments"
         }
       ]
     },

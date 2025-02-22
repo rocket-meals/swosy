@@ -1,4 +1,4 @@
-import {AbstractService, ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
+import {ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
 import type {Filter} from "@directus/types/dist/filter";
 import {ApiContext} from "./ApiContext";
 import {PrimaryKey, Query} from "@directus/types";
