@@ -1,7 +1,7 @@
-import {readFileSync} from "fs";
+import fs, {readFileSync} from "fs";
+import chardet from "chardet";
 import {CSVExportParser} from "../../../food-sync-hook/CSVExportParser";
 import {HashHelper} from "../../../helpers/HashHelper";
-
 
 export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
     WOHNUNGSNUMMER = "WHNR", // Wohnungsnummer
@@ -16,15 +16,19 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
     MIETER_EMAIL = "EMAIL" // Mieter Email
 }
 
-export type Tl1ImportHousingContract = {
-    [key in HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS]: string
+// Define the type for ImportHousingContract
+export type ImportHousingContract = {
+    [key in HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS]: string;
 };
 
-export type Tl1ImportHousingContracts = Tl1ImportHousingContract[]
+export type Tl1ImportHousingContracts = ImportHousingContract[]
+
+
 
 export interface HannoverHousingFileReaderInterface {
     readData(): Promise<Tl1ImportHousingContracts>
-    getHousingContractExternalId(housingContract: Tl1ImportHousingContract): string
+    getHousingContractInternalCustomId(housingContract: ImportHousingContract): string
+    getAlias(housingContract: ImportHousingContract): string
     getResultHash(TL1ImportHousingContracts: Tl1ImportHousingContracts): string
 }
 
@@ -37,7 +41,12 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
     }
 
     async readData(): Promise<Tl1ImportHousingContracts> {
-        const csvContent = readFileSync(this.path_to_file, "latin1");
+        let encoding = chardet.detect(fs.readFileSync(this.path_to_file));
+        if(!encoding){
+            throw new Error("Could not detect encoding");
+        }
+
+        const csvContent = readFileSync(this.path_to_file, encoding as BufferEncoding);
         let rawReport = csvContent;
         let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, {
             newLineDelimiter: CSVExportParser.NEW_LINE_DELIMITER,
@@ -52,11 +61,15 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         return HashHelper.hashFromObject(TL1ImportHousingContracts);
     }
 
-    private getPartialExternalId(housingContract: Tl1ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string {
+    getAlias(housingContract: ImportHousingContract): string {
+        return this.getHousingContractInternalCustomId(housingContract);
+    }
+
+    private getPartialExternalId(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string {
         return `${field}_${housingContract[field]}`;
     }
 
-    getHousingContractExternalId(housingContract: Tl1ImportHousingContract): string {
+    getHousingContractInternalCustomId(housingContract: ImportHousingContract): string {
         // Wohnungsnummer + Mieter Personennummer + Mieter Mietbeginn sollten eindeutig sein
         // so kann ein Mieter mehrere Wohnungen haben, aber nicht zur gleichen Zeit
         // so kann eine Wohnung mehrere Mieter haben, zur gleichen Zeit

@@ -143,7 +143,8 @@ export class ItemsServiceHelper<T>{
     }
 
     async findFirstItem(search: Partial<T>, customOptions?: {
-        withTranslations?: boolean
+        withTranslations?: boolean,
+        limit?: number
     }): Promise<T | undefined>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
@@ -153,7 +154,8 @@ export class ItemsServiceHelper<T>{
     }
 
     async findItems(search: Partial<T>, customOptions?: {
-        withTranslations?: boolean
+        withTranslations?: boolean,
+        limit?: number
     }): Promise<T[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
@@ -169,7 +171,8 @@ export class ItemsServiceHelper<T>{
         }
 
         let queryFilter: Filter = {_and: andFilter};
-        let query = {filter: queryFilter};
+        let useLimit = customOptions?.limit || -1;
+        let query = {filter: queryFilter, limit: useLimit};
         if(customOptions?.withTranslations){
             query = {
                 ...query,

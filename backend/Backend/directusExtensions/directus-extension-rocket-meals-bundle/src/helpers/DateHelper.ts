@@ -108,6 +108,28 @@ export class DateHelper {
         return `${year}-${month}-${day}`;
     }
 
+    static parseDD_MM_YYYY(dateString: string): Date {
+        const parts = dateString.split(".");
+        if (parts.length !== 3) {
+            throw new Error(`Invalid date string: ${dateString}`);
+        }
+        if(parts[0]==undefined || parts[1]==undefined || parts[2]==undefined){
+            throw new Error(`Invalid date string: ${dateString}`);
+        }
+        const day = parseInt(parts[0]);
+        const month = parseInt(parts[1]);
+        const year = parseInt(parts[2]);
+        return new Date(year, month - 1, day);
+    }
+
+    static formateDateToDatabaseDateOnlyString(date: Date): string {
+        // 2025-02-22
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // months are 0-based but directus expects 1-based // nice
+        const day = date.getDate();
+        return `${year}-${month}-${day}`;
+    }
+
     /**
      * Formats a date to ISO 8601 without timezone
      * @param date the date to format

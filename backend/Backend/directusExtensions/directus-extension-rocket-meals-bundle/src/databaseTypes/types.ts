@@ -410,12 +410,12 @@ export type CollectionsDatesLastUpdate = {
 };
 
 export type DerivedForms = {
+  alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   fields: any[] | DerivedFormsFormFields[];
   id: string;
   internal_identifier?: string | null;
-  name?: string | null;
   parent_form?: string | Forms | null;
   recipient_email_field?: string | FormFields | null;
   recipient_email_static?: string | null;
@@ -1187,6 +1187,7 @@ export type FormCategories = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  forms: any[] | Forms[];
   icon_expo?: string | null;
   id: string;
   sort?: number | null;
@@ -1257,10 +1258,10 @@ export type FormSubmissions = {
   date_started?: string | null;
   date_submitted?: string | null;
   date_updated?: string | null;
-  external_identifier?: string | null;
   form?: string | Forms | null;
   form_answers: any[] | FormAnswers[];
   id: string;
+  internal_custom_id?: string | null;
   sort?: number | null;
   state?: string | null;
   status: string;
