@@ -1,9 +1,9 @@
-import {ItemsServiceCreator, QueryOptions} from "./ItemsServiceCreator";
+import {ItemsService, ItemsServiceCreator, MutationOptions, QueryOptions} from "./ItemsServiceCreator";
 import type {Filter} from "@directus/types/dist/filter";
 import {ApiContext} from "./ApiContext";
-import {PrimaryKey, Query} from "@directus/types";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {Accountability, EventContext, PrimaryKey, Query} from "@directus/types";
 import {TranslationHelper} from "./TranslationHelper";
+import {Knex} from "knex";
 
 export type OptsCustomType = {
     disableEventEmit: boolean
@@ -11,11 +11,11 @@ export type OptsCustomType = {
 
 type TypeWithId<T> = T & {id: PrimaryKey};
 
-export class ItemsServiceHelper<T>{
+export class ItemsServiceHelper<T> implements ItemsService<T> {
 
-    private apiContext: ApiContext;
-    private eventContext: EventContext | undefined;
-    private tablename: string;
+    protected apiContext: ApiContext;
+    protected eventContext: EventContext | undefined;
+    protected tablename: string;
 
     public static FIELD_STATUS = 'status';
     public static FIELD_STATUS_PUBLISHED = 'published';
@@ -24,27 +24,32 @@ export class ItemsServiceHelper<T>{
         this.apiContext = apiContext;
         this.tablename = tablename;
         this.eventContext = eventContext;
+        this.knex = apiContext.database;
+    }
+
+    protected async getItemsService(): Promise<ItemsService<T>> {
+        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
+        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        return itemsService;
     }
 
     async upsertOne(upsert: Partial<T & {id: PrimaryKey}>, optsCustom?: OptsCustomType): Promise<PrimaryKey>{
         // https://github.com/directus/directus/blob/main/api/src/services/items.ts#L935
         // Can only use upsertOne with a primary key, otherwise it will always create a new item...
 
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.upsertOne(upsert, opts);
     }
 
     async updateOne(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         // DO not update status. It should be only set on creation
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.updateOne(primary_key, update, opts);
     }
 
-    async updateOneItemWithoutHookTrigger(item: TypeWithId<T>, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void>{
+    async updateOneItemWithoutHookTrigger(item: TypeWithId<Partial<T>>, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void>{
         let primary_key = item.id;
         return await this.updateOneWithoutHookTrigger(primary_key, update, optsCustom);
     }
@@ -55,14 +60,13 @@ export class ItemsServiceHelper<T>{
         await database(this.tablename).update(update).where('id', primary_key);
     }
 
-    async updateMany(items: TypeWithId<T>[], update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
+    async updateManyByItems(items: TypeWithId<T>[], update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
         let primary_keys = items.map(item => item.id);
         return await this.updateManyByPrimaryKeys(primary_keys, update, optsCustom);
     }
 
     async updateManyByPrimaryKeys(primary_keys: PrimaryKey[], update: Partial<T>, optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         // DO not update status. It should be only set on creation
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.updateMany(primary_keys, update, opts);
@@ -85,9 +89,8 @@ export class ItemsServiceHelper<T>{
      * @returns {Promise<number>} The average of the field or NaN if no data is found
      */
     async calculateAverage(fieldName: string): Promise<number | undefined> {
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         type AggregateAnswer = { avg: {[fieldName: string]: string} };
-        let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
+        let itemsService = await this.getItemsService();
 
         //console.log("Calculating average for field: " + fieldName);
 
@@ -104,7 +107,7 @@ export class ItemsServiceHelper<T>{
         // Define the response structure
 
         // Execute the query
-        let answer = await itemsService.readByQuery(aggregateQuery);
+        let answer = await itemsService.readByQuery(aggregateQuery) as AggregateAnswer[];
 
         //console.log("Answer: " + JSON.stringify(answer, null, 2));
 
@@ -117,9 +120,8 @@ export class ItemsServiceHelper<T>{
     }
 
     async countItems(query?: Query): Promise<number>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         type AggregateAnswer = {count: string};
-        let itemsService = await itemsServiceCreator.getItemsService<AggregateAnswer>(this.tablename);
+        let itemsService = await this.getItemsService();
         let aggregateFilter: Query = {
             aggregate: {
                 count: ["*"]
@@ -127,7 +129,7 @@ export class ItemsServiceHelper<T>{
             limit: -1
         }
         let totalQuery: Query = {...query, ...aggregateFilter};
-        let answer = await itemsService.readByQuery(totalQuery)
+        let answer = await itemsService.readByQuery(totalQuery) as AggregateAnswer[];
         // data = {"data":[{"count":"1869"}]}
         if(!!answer && !!answer[0]){
             return parseInt(answer[0].count);
@@ -137,8 +139,7 @@ export class ItemsServiceHelper<T>{
     }
 
     async readMany(keys: PrimaryKey[], query?: Query, opts?: QueryOptions): Promise<T[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.readMany(keys, query, opts);
     }
 
@@ -146,9 +147,6 @@ export class ItemsServiceHelper<T>{
         withTranslations?: boolean,
         limit?: number
     }): Promise<T | undefined>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
-
         let queriedItems = await this.findItems(search, customOptions);
         return queriedItems[0];
     }
@@ -157,8 +155,7 @@ export class ItemsServiceHelper<T>{
         withTranslations?: boolean,
         limit?: number
     }): Promise<T[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
 
         let andFilter: any[] = [];
         let fieldsOfItem = Object.keys(search);
@@ -187,8 +184,7 @@ export class ItemsServiceHelper<T>{
     async findOrCreateItem(search: Partial<T>, create: Partial<T>, customOptions?: {
         withTranslations?: boolean
     }): Promise<T | undefined>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
 
         let queriedItems = await this.findItems(search, customOptions);
         let foundItem = queriedItems[0]
@@ -204,42 +200,46 @@ export class ItemsServiceHelper<T>{
     }
 
     async createOne(create: Partial<T>): Promise<PrimaryKey>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         create = ItemsServiceHelper.setStatusPublished(create);
         return await itemsService.createOne(create);
     }
 
     async createManyItems(create: Partial<T>[], optsCustom?: OptsCustomType): Promise<PrimaryKey[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         create = create.map(ItemsServiceHelper.setStatusPublished);
         let opts = this.getOptsCustom(optsCustom);
         return await itemsService.createMany(create, opts);
     }
+
 
     async existsItem(search : Partial<T>): Promise<boolean>{
         let items = await this.findItems(search);
         return items.length > 0;
     }
 
+    async readOneWithTranslations(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T>{
+        let queryWithTranslations = {
+            ...query,
+            ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING
+        }
+        return await this.readOne(primary_key, queryWithTranslations, opts);
+    }
+
     async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.readOne(primary_key, query, opts);
     }
 
     async readAllItems(): Promise<T[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.readByQuery({
             limit: -1
         });
     }
 
     async deleteOne(primary_key: PrimaryKey): Promise<PrimaryKey>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.deleteOne(primary_key);
     }
 
@@ -249,8 +249,7 @@ export class ItemsServiceHelper<T>{
     }
 
     async deleteMany(primary_keys: PrimaryKey[]): Promise<PrimaryKey[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.deleteMany(primary_keys);
     }
 
@@ -264,8 +263,55 @@ export class ItemsServiceHelper<T>{
     }
 
     async readByQuery(query: Query, opts?: QueryOptions): Promise<T[]>{
-        const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
-        let itemsService = await itemsServiceCreator.getItemsService<T>(this.tablename);
+        let itemsService = await this.getItemsService();
         return await itemsService.readByQuery(query, opts);
+    }
+
+    accountability: Accountability | null | undefined;
+    knex: Knex
+
+    async createMany(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.createMany(data, opts);
+    }
+
+    async deleteByQuery(query: Query, opts?: MutationOptions): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.deleteByQuery(query, opts);
+    }
+
+    async getKeysByQuery(query: Query): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.getKeysByQuery(query);
+    }
+
+    async readSingleton(query: Query, opts?: QueryOptions): Promise<Partial<T>> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.readSingleton(query, opts);
+    }
+
+    async updateBatch(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.updateBatch(data, opts);
+    }
+
+    async updateByQuery(query: Query, data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.updateByQuery(query, data, opts);
+    }
+
+    async updateMany(keys: PrimaryKey[], data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey[]>{
+        let itemsService = await this.getItemsService();
+        return await itemsService.updateMany(keys, data, opts);
+    }
+
+    async upsertMany(payloads: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.upsertMany(payloads, opts);
+    }
+
+    async upsertSingleton(data: Partial<T>, opts?: MutationOptions): Promise<PrimaryKey> {
+        let itemsService = await this.getItemsService();
+        return await itemsService.upsertSingleton(data, opts);
     }
 }

@@ -345,7 +345,7 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
         let workflowRunsRunning = await myDatabaseHelper.getWorkflowsRunsHelper().findItems(searchWorkflowRuns);
         workflowsNotFinished = workflowsNotFinished.concat(workflowRunsRunning);
 
-        await myDatabaseHelper.getWorkflowsRunsHelper().updateMany(workflowsNotFinished, {
+        await myDatabaseHelper.getWorkflowsRunsHelper().updateManyByItems(workflowsNotFinished, {
             state: WORKFLOW_RUN_STATE.FAILED,
             log: "Workflow Run was not finished, as the server was stopped in the middle of the workflow. The workflow was set to failed."
         });

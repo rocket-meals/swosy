@@ -46,6 +46,8 @@ services:
       - ${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH:-/dev/null}:/directus/tl1/foodPlan.csv
       # TL1 markings
       - ${MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH:-/dev/null}:/directus/tl1/markings.csv
+      # TL1 housing contracts
+      - ${HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH:-/dev/null}:/directus/tl1/housingContracts.csv
     environment:
       # Traefik configuration
       PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
@@ -81,8 +83,6 @@ services:
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/foodPlan.csv
       FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING: "${FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING}"
       FOOD_SYNC_TL1WEB_EXPORT_URL: "${FOOD_SYNC_TL1WEB_EXPORT_URL}"
-      FOOD_SYNC_SWOSY_API_SERVER_URL: "${FOOD_SYNC_SWOSY_API_SERVER_URL}" # If the system relies on a swosy api server. # TODO: Remove when all systems are migrated to the new system
-      FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY: "${FOOD_IMAGE_SYNC_ON_STARTUP_FROM_SWOSY}" # If the system should sync images from swosy. Swosy api server is needed for this
 
       # Rocket Meals configuration - Markings
       MARKING_SYNC_MODE: "${MARKING_SYNC_MODE}"

@@ -1,6 +1,6 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {EmailTemplates, EmailTemplatesEnum} from "../../helpers/EmailTemplates";
+import {EmailTemplates, EmailTemplatesEnum} from "../../helpers/mail/EmailTemplates";
 import {EmojiHelper} from "../../helpers/EmojiHelper";
 import {
     ReportCanteenEntryLabelsType,
@@ -184,7 +184,18 @@ describe("Food Feedback E-Mail Template", () => {
             icon_star: EmojiHelper.getEmojiDivHTML(EmojiHelper.EmojiFileNames.STAR, EmojiHelper.DivTextSize.SMALL)
         }
 
-        let hmtl = await EmailTemplates.renderTemplate(EmailTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT, report);
+        let exampleMarkdown = `
+# Feedback Report
+
+## Mensen
+
+Hier ist der Feedback Report für die Mensen. Text style *italic* und **bold**.
+        `
+
+        let hmtl = await EmailTemplates.renderTemplate(EmailTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT, {
+            template_data: report,
+            markdown_content: exampleMarkdown
+        });
 
         let savePath = TestArtifacts.saveTestArtifact("food-feedback-report.html", hmtl);
 

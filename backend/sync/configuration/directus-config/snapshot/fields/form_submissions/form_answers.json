@@ -4,7 +4,31 @@
   "type": "alias",
   "meta": {
     "collection": "form_submissions",
-    "conditions": null,
+    "conditions": [
+      {
+        "hidden": true,
+        "name": "Hide Form_Answers At Creation",
+        "options": {
+          "enableCreate": true,
+          "enableLink": false,
+          "enableSearchFilter": false,
+          "enableSelect": true,
+          "layout": "list",
+          "limit": 15,
+          "sortDirection": "+"
+        },
+        "readonly": true,
+        "rule": {
+          "_and": [
+            {
+              "id": {
+                "_null": true
+              }
+            }
+          ]
+        }
+      }
+    ],
     "display": "related-values",
     "display_options": {
       "template": "{{form_field.alias}}"
@@ -27,7 +51,7 @@
     },
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 15,
     "special": [
       "o2m"
     ],

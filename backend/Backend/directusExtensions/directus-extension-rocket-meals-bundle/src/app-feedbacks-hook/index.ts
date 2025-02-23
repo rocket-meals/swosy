@@ -4,7 +4,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
-import {EmailTemplatesEnum} from "../helpers/EmailTemplates";
+import {EmailTemplatesEnum} from "../helpers/mail/EmailTemplates";
 
 const SCHEDULE_NAME = "activity_auto_cleanup";
 

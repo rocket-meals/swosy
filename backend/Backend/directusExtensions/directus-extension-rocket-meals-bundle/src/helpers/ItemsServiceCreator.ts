@@ -1,7 +1,25 @@
-import type {Accountability, PrimaryKey, Query, SchemaOverview, Item as DirectusItem, PermissionsAction} from '@directus/types';
+import type {
+    Accountability,
+    Item as DirectusItem,
+    PermissionsAction,
+    PrimaryKey,
+    Query,
+    SchemaOverview
+} from '@directus/types';
 import type {Knex} from 'knex';
 import {ApiContext} from "./ApiContext";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {BusboyFileStream} from "@directus/extensions/node_modules/@directus/types/dist/files";
+import {DirectusFiles} from "../databaseTypes/types";
+import {Readable} from "node:stream";
+import {EventContext as EventContextForServices} from "@directus/types";
+
+export type MyEventContext = EventContextForFlows | EventContextForServices;
+
+export type FileServiceReadable = Readable;
+export type FileServiceBusboyFileStream = BusboyFileStream;
+export type FileServiceSteamType = FileServiceReadable | FileServiceBusboyFileStream;
+export type FileServiceFileStream = Partial<DirectusFiles> & { storage: string };
 
 export type AbstractServiceOptions = {
     knex?: Knex | undefined;
@@ -79,9 +97,9 @@ class GetItemsService {
 // https://github.com/directus/directus/blob/main/api/src/services/items.ts
 export class ItemsServiceCreator extends GetItemsService{
 
-    private eventContext: EventContext | undefined;
+    private eventContext: MyEventContext | undefined;
 
-    constructor(apiContext: ApiContext, eventContext?: EventContext) {
+    constructor(apiContext: ApiContext, eventContext?: MyEventContext) {
         super(apiContext);
         this.eventContext = eventContext;
     }
@@ -103,24 +121,32 @@ export class ItemsServiceCreator extends GetItemsService{
 
 }
 
-export class CollectionsServiceCreator extends GetItemsService{
+export interface FilesService extends ItemsService<DirectusFiles> {
+    uploadOne(
+        stream: FileServiceSteamType,
+        data: FileServiceFileStream,
+        primaryKey?: PrimaryKey,
+        opts?: MutationOptions,
+    ): Promise<PrimaryKey>;
 
-    async getCollectionsService() {
-        const {CollectionsService} = this.apiContext.services;
-        let schema = await this.apiContext.getSchema();
-        let database = this.apiContext.database;
-        return new CollectionsService({
-            accountability: null, //this makes us admin
-            knex: database, //TODO: i think this is not neccessary
-            schema: schema,
-        });
-    }
+    importOne(importURL: string, body: Partial<DirectusFiles>): Promise<PrimaryKey>
+    createOne(data: Partial<DirectusFiles>, opts?: MutationOptions): Promise<PrimaryKey>
+    deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>
+    readByQuery(query: Query, opts?: QueryOptions | undefined): Promise<DirectusFiles[]>
+
 }
 
 export class FileServiceCreator extends GetItemsService{
 
+    private eventContext: MyEventContext | undefined;
+
+    constructor(apiContext: ApiContext, eventContext?: MyEventContext) {
+        super(apiContext);
+        this.eventContext = eventContext;
+    }
+
     //https://github.com/directus/directus/blob/main/api/src/services/files.ts
-        async getFileService() {
+        async getFileService(): Promise<FilesService> {
             const {FilesService} = this.apiContext.services;
             const schema = await this.apiContext.getSchema();
             const database = this.apiContext.database;

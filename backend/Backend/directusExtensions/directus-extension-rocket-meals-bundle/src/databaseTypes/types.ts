@@ -409,28 +409,6 @@ export type CollectionsDatesLastUpdate = {
   user_updated?: string | DirectusUsers | null;
 };
 
-export type DerivedForms = {
-  alias?: string | null;
-  date_created?: string | null;
-  date_updated?: string | null;
-  fields: any[] | DerivedFormsFormFields[];
-  id: string;
-  internal_identifier?: string | null;
-  parent_form?: string | Forms | null;
-  recipient_email_field?: string | FormFields | null;
-  recipient_email_static?: string | null;
-  sort?: number | null;
-  status: string;
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type DerivedFormsFormFields = {
-  derived_forms_id?: string | DerivedForms | null;
-  form_fields_id?: string | FormFields | null;
-  id: number;
-};
-
 export type Devices = {
   alias?: string | null;
   brand?: string | null;
@@ -571,6 +549,8 @@ export type DirectusFiles = {
   height?: number | null;
   id: string;
   location?: string | null;
+  mails: any[] | MailsFiles[];
+  mails_files_id?: number | MailsFiles | null;
   metadata?: unknown | null;
   modified_by?: string | DirectusUsers | null;
   modified_on: string;
@@ -1207,6 +1187,31 @@ export type FormCategoriesTranslations = {
   translation_settings: string;
 };
 
+export type FormExtracts = {
+  alias?: string | null;
+  all_fields?: boolean | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  field_settings: string;
+  fields: any[] | FormExtractsFormFields[];
+  form?: string | Forms | null;
+  id: string;
+  internal_custom_id?: string | null;
+  recipient_email_field?: string | FormFields | null;
+  recipient_email_static?: string | null;
+  recipient_user?: string | DirectusUsers | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FormExtractsFormFields = {
+  form_extracts_id?: string | FormExtracts | null;
+  form_fields_id?: string | FormFields | null;
+  id: number;
+};
+
 export type FormFields = {
   alias?: string | null;
   background_color?: string | null;
@@ -1262,6 +1267,7 @@ export type FormSubmissions = {
   form_answers: any[] | FormAnswers[];
   id: string;
   internal_custom_id?: string | null;
+  mails: any[] | Mails[];
   sort?: number | null;
   state?: string | null;
   status: string;
@@ -1275,7 +1281,6 @@ export type Forms = {
   category?: string | FormCategories | null;
   date_created?: string | null;
   date_updated?: string | null;
-  derived_forms: any[] | DerivedForms[];
   form_fields: any[] | FormFields[];
   form_submissions: any[] | FormSubmissions[];
   icon_expo?: string | null;
@@ -1307,11 +1312,14 @@ export type Languages = {
 };
 
 export type Mails = {
-  content?: string | null;
+  attachments: any[] | MailsFiles[];
   date_created?: string | null;
   date_updated?: string | null;
+  form_submission?: string | FormSubmissions | null;
   id: string;
+  log?: string | null;
   mail_information: string;
+  markdown_content?: string | null;
   recipient?: string | null;
   send_status: string;
   sort?: number | null;
@@ -1322,6 +1330,12 @@ export type Mails = {
   template_settings: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type MailsFiles = {
+  directus_files_id?: string | DirectusFiles | null;
+  id: number;
+  mails_id?: string | Mails | null;
 };
 
 export type Markings = {
@@ -1706,8 +1720,6 @@ export type CustomDirectusTypes = {
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
-  derived_forms: DerivedForms[];
-  derived_forms_form_fields: DerivedFormsFormFields[];
   devices: Devices[];
   directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];
@@ -1760,6 +1772,8 @@ export type CustomDirectusTypes = {
   form_answers_files: FormAnswersFiles[];
   form_categories: FormCategories[];
   form_categories_translations: FormCategoriesTranslations[];
+  form_extracts: FormExtracts[];
+  form_extracts_form_fields: FormExtractsFormFields[];
   form_fields: FormFields[];
   form_fields_translations: FormFieldsTranslations[];
   form_submissions: FormSubmissions[];
@@ -1767,6 +1781,7 @@ export type CustomDirectusTypes = {
   forms_translations: FormsTranslations[];
   languages: Languages[];
   mails: Mails[];
+  mails_files: MailsFiles[];
   markings: Markings[];
   markings_exclusions: MarkingsExclusions[];
   markings_groups: MarkingsGroups[];

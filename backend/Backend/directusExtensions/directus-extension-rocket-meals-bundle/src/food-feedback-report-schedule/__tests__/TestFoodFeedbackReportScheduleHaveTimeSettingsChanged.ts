@@ -1,7 +1,6 @@
 // small jest test
 import {describe, it} from '@jest/globals';
 import {CanteenFoodFeedbackReportSchedules} from "../../databaseTypes/types";
-import {DateHelper} from "../../helpers/DateHelper";
 import {ReportSchedule} from "../ReportSchedule";
 
 describe("TestFoodFeedbackReportScheduleHaveTimeSettingsChanged Test", () => {

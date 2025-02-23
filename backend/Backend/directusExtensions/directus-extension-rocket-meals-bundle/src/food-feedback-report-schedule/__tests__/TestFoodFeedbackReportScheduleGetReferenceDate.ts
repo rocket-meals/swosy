@@ -48,6 +48,11 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
         // we simulate as if the report is due now
         const generateForDate = ReportSchedule.getReferenceDate(recipientEntry, now_simulated);
+        expect(generateForDate).not.toBeNull();
+        if(generateForDate === null) {
+            return;
+        }
+
         const generateForDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(generateForDate);
 
         expect(generateForDateOnly).toEqual(expectedGenerateForDateOnly);
@@ -97,6 +102,11 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
         // we simulate as if the report is due now
         const generateForDate = ReportSchedule.getReferenceDate(recipientEntry, now_simulated)
+        expect(generateForDate).not.toBeNull();
+        if(generateForDate === null) {
+            return;
+        }
+
         const generateForDateOnly: FoodofferDateType = DateHelper.getFoodofferDateTypeFromDate(generateForDate);
         //console.log("generateForDateOnly", generateForDateOnly);
 

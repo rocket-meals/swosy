@@ -16,9 +16,16 @@
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 3,
+    "sort": 4,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "plural": "Formularkategorien",
+        "singular": "Formularkategorie",
+        "translation": "Formularkategorien"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

@@ -14,8 +14,8 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper, Weekday} from "../helpers/DateHelper";
 import {PrimaryKey} from "@directus/types";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
-import {EmailTemplatesEnum} from "../helpers/EmailTemplates";
 import {DictHelper} from "../helpers/DictHelper";
+import {EmailTemplatesEnum} from "../helpers/mail/EmailTemplates";
 
 const TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES
 

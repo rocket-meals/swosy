@@ -15,6 +15,13 @@ export const FormAnswersValueFieldKeys: Record<KeyOfFormAnswersValueFieldsType, 
     value_image: "value_image",
 }
 
+export enum FormSubmissionState {
+    DRAFT = "draft",
+    SUBMITTED = "submitted",
+    SYNCING = "syncing",
+    CLOSED = "closed",
+}
+
 export type FormImportSyncFormAnswer = Partial<FormAnswers> & {external_import_id: string}
 export type FormImportSyncFormAnswers = FormImportSyncFormAnswer[]
 

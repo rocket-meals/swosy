@@ -1,0 +1,11 @@
+{% layout "base-german" %}
+{% block html_content %}
+
+{% if mailContentFieldRenderedAsHtml %}
+    {{ mailContentFieldRenderedAsHtml }}
+    <hr style="margin: 40px 0 20px 0" width="100%" />
+{% endif %}
+
+{% block content %}{{ html }}{% endblock %}
+
+{% endblock %}

@@ -18,7 +18,14 @@
     "singleton": false,
     "sort": 21,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "plural": "Formulare",
+        "singular": "Formular",
+        "translation": "Formulare"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

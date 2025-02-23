@@ -1,5 +1,6 @@
 import {ApiExtensionContext} from "@directus/extensions";
 import {ItemsService} from "./ItemsServiceCreator";
+import {AssetsService} from "@directus/api";
 
 // https://github.com/directus/directus/blob/main/api/src/services/index.ts
 /**
@@ -29,6 +30,7 @@ import {ItemsService} from "./ItemsServiceCreator";
  */
 
 type Services = {
+    AssetsService: AssetsService,
     ActivityService: any,
     CollectionsService: any,
     FilesService: any,
@@ -43,6 +45,6 @@ type Services = {
 
 
 
-export type ApiContext = ApiExtensionContext & {
+export type ApiContext = {
     services: Services, // https://docs.directus.io/extensions/hooks.html
-}
+} & Omit<ApiExtensionContext, "services">

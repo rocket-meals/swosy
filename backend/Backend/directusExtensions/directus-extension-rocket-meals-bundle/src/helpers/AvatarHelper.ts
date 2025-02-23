@@ -13,7 +13,7 @@ export class AvatarHelper {
         accountability,
         userId
     ) {
-        const filesService = AvatarHelper.getAdminFileServiceInstance(
+        const filesService = await AvatarHelper.getAdminFileServiceInstance(
             schema,
             accountability,
             services
@@ -45,7 +45,9 @@ export class AvatarHelper {
      * get a fileService with admin permission
      * @returns {*}
      */
-    static getAdminFileServiceInstance(schema, accountability, services) {
+    static async getAdminFileServiceInstance(schema, accountability, services) {
+        // TODO: Replace with MyDatabaseHelper.getFilesHelper()
+
         const {FilesService} = services;
         const adminAccountAbility =
             AccountHelper.getAdminAccountability(accountability);

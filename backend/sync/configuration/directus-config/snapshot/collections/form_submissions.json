@@ -16,9 +16,16 @@
     "note": null,
     "preview_url": null,
     "singleton": false,
-    "sort": 5,
+    "sort": 6,
     "sort_field": "sort",
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "plural": "Formulareinsendungen",
+        "singular": "Formulareinsendung",
+        "translation": "Formulareinsendungen"
+      }
+    ],
     "unarchive_value": "draft",
     "versioning": false
   },

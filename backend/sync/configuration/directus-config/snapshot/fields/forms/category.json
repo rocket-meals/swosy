@@ -5,14 +5,18 @@
   "meta": {
     "collection": "forms",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}} ({{id}})"
+    },
     "field": "category",
     "group": null,
     "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "template": "{{alias}} ({{id}})"
+    },
     "readonly": false,
     "required": false,
     "sort": 9,

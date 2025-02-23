@@ -20,8 +20,14 @@ import {
     FoodsCategories,
     FoodsFeedbacks,
     FoodsFeedbacksLabels,
-    FoodsFeedbacksLabelsEntries, FormAnswers, FormFields, Forms, FormSubmissions,
-    Mails,
+    FoodsFeedbacksLabelsEntries,
+    FormAnswers,
+    FormExtracts,
+    FormExtractsFormFields,
+    FormFields,
+    Forms,
+    FormSubmissions,
+    Mails, MailsFiles,
     Markings,
     MarkingsExclusions,
     News,
@@ -31,23 +37,25 @@ import {
     UtilizationsGroups,
     Washingmachines,
     WashingmachinesJobs,
-    Workflows,
-    WorkflowsRuns
+    Workflows
 } from "../databaseTypes/types";
 import {ServerServiceCreator} from "./ItemsServiceCreator";
 import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {WorkflowsRunHelper} from "./itemServiceHelpers/WorkflowsRunHelper";
+import {FilesServiceHelper} from "./FilesServiceHelper";
+import {EventContext as ExtentContextDirectusTypes} from "@directus/types";
+import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
 
 export class MyDatabaseHelper {
 
     public apiContext: ApiContext;
-    public eventContext: EventContext | undefined;
+    public eventContext: ExtentContextDirectusTypes | undefined;
 
-    constructor(apiContext: ApiContext, eventContext?: EventContext) {
+    constructor(apiContext: ApiContext, eventContext?: EventContextForFlows) {
         this.apiContext = apiContext;
-        this.eventContext = eventContext; // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
+        // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
+        this.eventContext = eventContext as ExtentContextDirectusTypes; // stupid typescript error, because of the import
         // its better to use the eventContext, because of reusing the database connection instead of creating a new one
     }
 
@@ -110,6 +118,14 @@ export class MyDatabaseHelper {
 
     getFormsHelper() {
         return new ItemsServiceHelper<Forms>(this.apiContext, CollectionNames.FORMS, this.eventContext);
+    }
+
+    getFormExtractsHelper() {
+        return new ItemsServiceHelper<FormExtracts>(this.apiContext, CollectionNames.FORM_EXTRACTS, this.eventContext);
+    }
+
+    getFormExtractFormFieldsHelper() {
+        return new ItemsServiceHelper<FormExtractsFormFields>(this.apiContext, CollectionNames.FORM_EXTRACTS_FORM_FIELDS, this.eventContext);
     }
 
     getFormsFieldsHelper() {
@@ -207,5 +223,13 @@ export class MyDatabaseHelper {
 
     getMailsHelper() {
         return new ItemsServiceHelper<Mails>(this.apiContext, CollectionNames.MAILS, this.eventContext);
+    }
+
+    getMailsFilesHelper() {
+        return new ItemsServiceHelper<MailsFiles>(this.apiContext, CollectionNames.MAILS_FILES, this.eventContext);
+    }
+
+    getFilesHelper(){
+        return new FilesServiceHelper(this.apiContext, this.eventContext);
     }
 }
