@@ -4,7 +4,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {DateHelper} from "../helpers/DateHelper";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
-import {EmailTemplatesEnum} from "../helpers/mail/EmailTemplates";
+import {HtmlTemplatesEnum} from "../helpers/html/HtmlGenerator";
 
 const SCHEDULE_NAME = "activity_auto_cleanup";
 
@@ -101,7 +101,7 @@ export default defineHook(async ({schedule, action}, apiContext) => {
         await myDatabaseHelper.sendMail({
             recipient: toMail,
             subject: subject,
-            template_name: EmailTemplatesEnum.APP_FEEDBACKS,
+            template_name: HtmlTemplatesEnum.APP_FEEDBACKS,
             template_data: data
         })
 

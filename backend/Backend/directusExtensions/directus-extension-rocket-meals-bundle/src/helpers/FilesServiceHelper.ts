@@ -10,7 +10,7 @@ import {CollectionNames} from "./CollectionNames";
 import {PrimaryKey} from "@directus/types";
 import {DirectusFiles} from "../databaseTypes/types";
 import {AssetsService} from "@directus/api";
-import type {Readable} from "node:stream";
+import {Readable} from "node:stream";
 import type {Stat} from "@directus/storage";
 import {CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper} from "./ShareServiceHelper";
 import * as Buffer from "node:buffer";
@@ -27,6 +27,34 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         let filesService = await filesServiceCreator.getFileService();
         return filesService;
     }
+
+    async uploadOneFromBuffer(buffer: Buffer, filename: string, myDatabaseHelper: MyDatabaseHelperInterface, directus_folder_id?: string): Promise<PrimaryKey> {
+        const filesHelper = new FilesServiceHelper(myDatabaseHelper);
+
+        // Convert Buffer to a Readable Stream
+        const stream = new Readable();
+        stream.push(buffer);
+        stream.push(null); // Mark end of stream
+
+        // Define file metadata
+        const fileMetadata = {
+            filename_download: filename,
+            type: 'application/pdf',
+            storage: "local",
+            folder: directus_folder_id,
+        };
+
+        // Upload the file
+        try {
+            const fileId = await this.uploadOne(stream, fileMetadata);
+            console.log('File uploaded successfully with ID:', fileId);
+            return fileId;
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            throw error;
+        }
+    }
+
 
     async uploadOne(
         stream: FileServiceSteamType,

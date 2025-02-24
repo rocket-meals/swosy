@@ -3,8 +3,9 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {DirectusFiles, Mails} from "../databaseTypes/types";
 import {EmailOptions, MailService as MailServiceType} from "@directus/api/dist/services/mail";
-import {DEFAULT_EMAIL_TEMPLATE, EmailDownloadLink, getTemplateDataFromMail} from "../helpers/mail/EmailTemplates";
+import {DEFAULT_HTML_TEMPLATE} from "../helpers/html/HtmlGenerator";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {MailHelper} from "../helpers/mail/MailHelper";
 
 const SCHEDULE_NAME = "food_feedback_report";
 
@@ -24,6 +25,11 @@ export type MailAttachment = {
 	path: string,
 } | {
 	raw: string,
+}
+
+export type EmailDownloadLink = {
+	name: string,
+	url: string,
 }
 
 export default defineHook(async ({schedule, action, filter}, apiContext) => {
@@ -140,7 +146,7 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 		}
 
 		if(!input.template_name){
-			input.template_name =  DEFAULT_EMAIL_TEMPLATE;
+			input.template_name =  DEFAULT_HTML_TEMPLATE;
 		}
 
 		try{
@@ -236,7 +242,7 @@ Sie können die Anhänge über folgende Links herunterladen:
 			}
 			input.markdown_content = markdown_content;
 
-			let data = getTemplateDataFromMail(input);
+			let data = MailHelper.getHtmlTemplateDataFromMail(input);
 
 			let email_delivery = await sendMail({
 				to: input.recipient,

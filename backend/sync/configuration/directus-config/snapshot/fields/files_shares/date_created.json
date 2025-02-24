@@ -1,33 +1,35 @@
 {
-  "collection": "mails",
-  "field": "log",
-  "type": "text",
+  "collection": "files_shares",
+  "field": "date_created",
+  "type": "timestamp",
   "meta": {
-    "collection": "mails",
+    "collection": "files_shares",
     "conditions": null,
-    "display": null,
-    "display_options": null,
-    "field": "log",
-    "group": null,
-    "hidden": false,
-    "interface": "input-rich-text-md",
-    "note": null,
-    "options": {
-      "folder": "2533f43e-231a-438d-8906-373c8cf2c048"
+    "display": "datetime",
+    "display_options": {
+      "relative": true
     },
-    "readonly": false,
+    "field": "date_created",
+    "group": null,
+    "hidden": true,
+    "interface": "datetime",
+    "note": null,
+    "options": null,
+    "readonly": true,
     "required": false,
-    "sort": 13,
-    "special": null,
+    "sort": 5,
+    "special": [
+      "date-created"
+    ],
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "log",
-    "table": "mails",
-    "data_type": "text",
+    "name": "date_created",
+    "table": "files_shares",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,

@@ -156,7 +156,8 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
 
     async findItems(search: Partial<T>, customOptions?: {
         withTranslations?: boolean,
-        limit?: number
+        limit?: number,
+        fields?: string[]
     }): Promise<T[]>{
         let itemsService = await this.getItemsService();
 
@@ -172,7 +173,10 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
 
         let queryFilter: Filter = {_and: andFilter};
         let useLimit = customOptions?.limit || -1;
-        let query = {filter: queryFilter, limit: useLimit};
+        let query = {filter: queryFilter, limit: useLimit, fields: ['*']};
+        if(customOptions?.fields){
+            query.fields = customOptions.fields;
+        }
         if(customOptions?.withTranslations){
             query = {
                 ...query,

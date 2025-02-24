@@ -1,6 +1,6 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {EmailDownloadLink, EmailTemplates, EmailTemplatesEnum} from "../../helpers/mail/EmailTemplates";
+import {HtmlGenerator, HtmlTemplatesEnum} from "../../helpers/html/HtmlGenerator";
 import {EmojiHelper} from "../../helpers/EmojiHelper";
 import {
     ReportCanteenEntryLabelsType,
@@ -12,8 +12,9 @@ import {
     ReportType
 } from "../ReportGenerator";
 import {TestArtifacts} from "../../helpers/TestArtifacts";
+import {MailHelper} from "../../helpers/mail/MailHelper";
 
-describe("Food Feedback E-Mail Template", () => {
+describe("Food Feedback Html Template", () => {
 
     it("ReferenceDate on same Date", async () => {
 
@@ -192,12 +193,13 @@ describe("Food Feedback E-Mail Template", () => {
 Hier ist der Feedback Report für die Mensen. Text style *italic* und **bold**.
         `
 
-        let hmtl = await EmailTemplates.renderTemplate(EmailTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT, {
+        let hmtl = await MailHelper.renderMailToHtml({
             template_data: report,
-            markdown_content: exampleMarkdown
+            markdown_content: exampleMarkdown,
+            template_name: HtmlTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT
         });
 
-        let savePath = TestArtifacts.saveTestArtifact("food-feedback-report.html", hmtl);
+        let savePath = TestArtifacts.saveTestArtifact(hmtl, "food-feedback-report/example.html");
 
         expect(true).toBe(true);
     });

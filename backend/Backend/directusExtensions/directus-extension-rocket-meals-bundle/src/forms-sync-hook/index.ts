@@ -5,6 +5,7 @@ import {FormSyncHannover} from "./customers/hannover/FormSyncHannover";
 import {registerHookToCreateFormAnswersForFormSubmission} from "./RegisterHookCreateFormSubmissionsFormAnswers";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {
+    DirectusFiles,
     DirectusUsers,
     FormAnswers,
     FormFields,
@@ -18,6 +19,7 @@ import {ApiContext} from "../helpers/ApiContext";
 import {PrimaryKey} from "@directus/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {TranslationHelper} from "../helpers/TranslationHelper";
+import {FormHelper} from "../helpers/form/FormHelper";
 
 function getFormSync(): FormsSyncInterface | null {
     return null;
@@ -112,7 +114,9 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
     });
 }
 
-export type FormExtractRelevantInformation = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormAnswers }[]
+export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles, value_files: DirectusFiles[]}
+export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormExtractFormAnswer }
+export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[]
 
 function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     // TODO: Move this into a workflow instead of a hook
@@ -144,9 +148,13 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 
                     // Get the answers of the user
                     console.log("Get form answers");
-                    let form_answers = await myDatabaseHelper.getFormsAnswersHelper().findItems({
+                    let form_answers_raw = await myDatabaseHelper.getFormsAnswersHelper().findItems({
                         form_submission: formSubmission.id
-                    });
+                    }, {
+                        fields: ["*", "value_image.*", "value_files.*"] // this allows us to parse as FormExtractFormAnswer
+                    })
+                    let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
+
                     // Get the form fields of the form
                     console.log("Get form fields");
                     let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
@@ -286,7 +294,6 @@ async function sendFormExtractMail(
     myDatabaseHelper: MyDatabaseHelper
 ){
     console.log("Send mail for form extract");
-    // TODO: Send mail
     let form_translated_name = TranslationHelper.getTranslation(form.translations, TranslationHelper.LANGUAGE_CODE_DE, "name")
     let form_alias = form.alias;
     let form_name = form_translated_name || form_alias || "Form submission";
@@ -298,19 +305,31 @@ async function sendFormExtractMail(
     }
     console.log("Subject: " + subject);
 
+    let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation);
 
     for(let recipient_email of recipient_emails){
-        let example_markdown_content = `JSON stringify data:
 
-\`\`\`
-`+JSON.stringify(formExtractRelevantInformation, null, 2)+`
-\`\`\``;
+        let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", myDatabaseHelper);
+        let attachments = {
+          "create": [
+            {
+              "mails_id": "+",
+              "directus_files_id": {
+                "id": newFile
+              }
+            }
+          ],
+          "update": [],
+          "delete": []
+        }
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: example_markdown_content,
+            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name,
             subject: subject,
-            form_submission: formSubmission.id
+            form_submission: formSubmission.id,
+            // @ts-ignore - thats how directus allows to set attachments
+            attachments: attachments
         }
         console.log("Send mail to: " + recipient_email);
         console.log("Mail content: ")

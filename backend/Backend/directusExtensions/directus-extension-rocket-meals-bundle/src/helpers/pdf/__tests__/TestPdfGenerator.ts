@@ -1,0 +1,19 @@
+// small jest test
+import {describe, expect, it} from '@jest/globals';
+import {getTestHtmlForBaseGermanMarkdownContent} from "../../html/__tests__/TestHtmlTemplates";
+import {PdfGeneratorHelper} from "../PdfGeneratorHelper";
+import {TestArtifacts} from "../../TestArtifacts";
+import {HtmlTemplatesEnum} from "../../html/HtmlGenerator";
+
+describe("Pdf Generator Test", () => {
+
+    it("Test pdf generation from html", async () => {
+        let html = await getTestHtmlForBaseGermanMarkdownContent();
+        let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(html);
+        expect(pdfBuffer).toBeTruthy();
+        let savePath = TestArtifacts.saveTestArtifact(pdfBuffer, "pdf/" + HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONTENT + ".pdf");
+
+        expect(true).toBeTruthy();
+    });
+
+});

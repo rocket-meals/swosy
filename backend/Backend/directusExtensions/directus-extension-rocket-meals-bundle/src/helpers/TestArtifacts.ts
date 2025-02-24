@@ -8,14 +8,18 @@ export class TestArtifacts {
         return rootPath;
     }
 
-    static getPathToTestArtifact(fileName: string): string {
-        return path.join(this.getPathToTestArtifacts(), fileName);
+    static getPathToTestArtifact(filePath: string): string {
+        return path.join(this.getPathToTestArtifacts(), filePath);
     }
 
-    static saveTestArtifact(fileName: string, content: string): string {
-        const filePath = this.getPathToTestArtifact(fileName);
+    static saveTestArtifact(content: string | NodeJS.ArrayBufferView, relativePath: string): string {
+        // iterate over folderAndFileNames and replace "/" into separator
+
+        const filePath = this.getPathToTestArtifact(relativePath);
         // create folder if not exists
-        fse.ensureDirSync(this.getPathToTestArtifacts());
+        const folderPath = path.dirname(filePath);
+
+        fse.ensureDirSync(folderPath);
 
         fse.writeFileSync(filePath, content);
         return filePath;

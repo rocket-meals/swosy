@@ -15,7 +15,7 @@ import {DateHelper, Weekday} from "../helpers/DateHelper";
 import {PrimaryKey} from "@directus/types";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {DictHelper} from "../helpers/DictHelper";
-import {EmailTemplatesEnum} from "../helpers/mail/EmailTemplates";
+import {HtmlTemplatesEnum} from "../helpers/html/HtmlGenerator";
 
 const TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES
 
@@ -210,7 +210,7 @@ export class ReportSchedule {
         await this.myDatabaseHelper.sendMail({
             recipient: toMail,
             subject: subject,
-            template_name: EmailTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT,
+            template_name: HtmlTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT,
             template_data: generated_report_data
         })
     }

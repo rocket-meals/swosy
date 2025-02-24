@@ -1,32 +1,37 @@
 {
-  "collection": "mails",
-  "field": "form_submission",
+  "collection": "files_shares",
+  "field": "file",
   "type": "uuid",
   "meta": {
-    "collection": "mails",
+    "collection": "files_shares",
     "conditions": null,
-    "display": null,
+    "display": "file",
     "display_options": null,
-    "field": "form_submission",
+    "field": "file",
     "group": null,
     "hidden": false,
-    "interface": "select-dropdown-m2o",
-    "note": null,
+    "interface": "file",
+    "note": "Klicken Sie auf die Datei um diese herunterzuladen.",
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 14,
+    "sort": 8,
     "special": [
-      "m2o"
+      "file"
     ],
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Datei"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"
   },
   "schema": {
-    "name": "form_submission",
-    "table": "mails",
+    "name": "file",
+    "table": "files_shares",
     "data_type": "uuid",
     "default_value": null,
     "max_length": null,
@@ -39,7 +44,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "form_submissions",
+    "foreign_key_table": "directus_files",
     "foreign_key_column": "id"
   }
 }
