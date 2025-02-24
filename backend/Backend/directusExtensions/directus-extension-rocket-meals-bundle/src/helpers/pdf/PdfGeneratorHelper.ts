@@ -4,7 +4,7 @@
 // import { chromium } from 'playwright'; // Requires chromium to be installed --> cannot be used therefore
 // html2pdf.js only works in the browser
 
-import {generatePdfFromHtmlPuppeteer} from "./PuppeteerGenerator";
+import {PuppeteerGenerator} from "./PuppeteerGenerator";
 
 export type PdfGeneratorOptions = {
     format?: "A3" | "A4" | "A5" | "Legal" | "Letter" | "Tabloid";
@@ -38,7 +38,7 @@ export class PdfGeneratorHelper {
     /** Generates a PDF from the provided HTML string */
     public static async generatePdfFromHtml(html: string, options?: PdfGeneratorOptions): Promise<Buffer> {
         options = { ...this.getDefaultPdfGeneratorOptions(), ...options };
-        return await generatePdfFromHtmlPuppeteer(html, options);
+        return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, options);
     }
 
 

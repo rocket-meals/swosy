@@ -4,8 +4,12 @@ import {getTestHtmlForBaseGermanMarkdownContent} from "../../html/__tests__/Test
 import {PdfGeneratorHelper} from "../PdfGeneratorHelper";
 import {TestArtifacts} from "../../TestArtifacts";
 import {HtmlTemplatesEnum} from "../../html/HtmlGenerator";
+import {PuppeteerGenerator} from "../PuppeteerGenerator";
+import puppeteer from "puppeteer";
 
 describe("Pdf Generator Test", () => {
+
+    PuppeteerGenerator.PuppeteerForJest = puppeteer; // set puppeteer for jest tests
 
     it("Test pdf generation from html", async () => {
         let html = await getTestHtmlForBaseGermanMarkdownContent();
