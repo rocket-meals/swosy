@@ -22,11 +22,15 @@ export class BaseGermanMarkdownTemplateHelper {
     }
 }
 
-export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONTENT;
+export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN;
 
 export const HTML_TEMPLATE_FILE_ENDING = '.liquid';
 
 export const rootPathHtmlTemplates = path.resolve(process.cwd(), '../templates');
+// log all files in rootPath sync
+fse.readdirSync(rootPathHtmlTemplates).forEach(file => {
+    console.log(file);
+});
 
 export class HtmlGenerator {
 
@@ -79,6 +83,8 @@ export class HtmlGenerator {
             ...defaultTemplateData,
             ...variables,
         };
+
+
 
         const systemTemplatePath = path.join(rootPath, template + HTML_TEMPLATE_FILE_ENDING);
         const templatePath = systemTemplatePath;
