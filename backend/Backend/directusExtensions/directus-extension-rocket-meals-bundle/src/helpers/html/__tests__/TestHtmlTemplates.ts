@@ -5,7 +5,6 @@ import {
     HTML_TEMPLATE_FILE_ENDING,
     HtmlGenerator,
     HtmlTemplatesEnum,
-    rootPathHtmlTemplates
 } from "../HtmlGenerator";
 import path from "path";
 import fse from "fs-extra";
@@ -72,9 +71,9 @@ describe("Html Template Test", () => {
 
     it("Test if all enum templates exist", async () => {
         let emailTemplateNamesWithoutEnding = Object.values(HtmlTemplatesEnum);
-        rootPathHtmlTemplates
 
         for(let templateName of emailTemplateNamesWithoutEnding) {
+            const rootPathHtmlTemplates = HtmlGenerator.getPathToHtmlTemplates();
             const systemTemplatePath = path.join(rootPathHtmlTemplates, templateName + HTML_TEMPLATE_FILE_ENDING);
             expect(path).toBeTruthy();
             let exists = await fse.pathExists(systemTemplatePath);

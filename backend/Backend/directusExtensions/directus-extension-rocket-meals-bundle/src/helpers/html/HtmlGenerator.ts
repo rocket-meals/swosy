@@ -1,9 +1,8 @@
 import {Liquid} from 'liquidjs';
 import path from "path";
 import fse from "fs-extra";
-import {Mails} from "../../databaseTypes/types";
 import MarkdownIt from "markdown-it";
-import {MyTimer} from "../MyTimer";
+import {PathHelper} from "../PathHelper";
 
 export enum HtmlTemplatesEnum {
     BASE_GERMAN = "base-german",
@@ -26,13 +25,13 @@ export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN;
 
 export const HTML_TEMPLATE_FILE_ENDING = '.liquid';
 
-export const rootPathHtmlTemplates = path.resolve(process.cwd(), '../templates');
-// log all files in rootPath sync
-fse.readdirSync(rootPathHtmlTemplates).forEach(file => {
-    console.log(file);
-});
+
 
 export class HtmlGenerator {
+
+    public static getPathToHtmlTemplates(): string {
+        return PathHelper.getPathToLiquidTemplates();
+    }
 
     public static getDefaultTemplateData() {
 
@@ -66,7 +65,7 @@ export class HtmlGenerator {
 
 
     public static async generateHtml(variables: {[key: string]: any}, template?: HtmlTemplatesEnum | null | undefined): Promise<string> {
-        const rootPath = rootPathHtmlTemplates;
+        const rootPath = HtmlGenerator.getPathToHtmlTemplates();
 
         const liquidEngine = new Liquid({
             root: [rootPath],
