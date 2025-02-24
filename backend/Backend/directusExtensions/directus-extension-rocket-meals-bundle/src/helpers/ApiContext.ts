@@ -1,6 +1,6 @@
 import {ApiExtensionContext} from "@directus/extensions";
 import {ItemsService} from "./ItemsServiceCreator";
-import {AssetsService} from "@directus/api";
+import {AssetsService, SharesService} from "@directus/api";
 
 // https://github.com/directus/directus/blob/main/api/src/services/index.ts
 /**
@@ -30,6 +30,7 @@ import {AssetsService} from "@directus/api";
  */
 
 type Services = {
+    SharesService: SharesService,
     AssetsService: AssetsService,
     ActivityService: any,
     CollectionsService: any,

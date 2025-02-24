@@ -62,6 +62,7 @@ export class EnvVariableHelper {
     }
 
     static getPublicUrl(): string {
+        // PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
         return this.getEnvVariable("PUBLIC_URL");
     }
 

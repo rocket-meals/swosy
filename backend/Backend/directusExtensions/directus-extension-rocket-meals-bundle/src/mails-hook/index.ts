@@ -1,11 +1,10 @@
 import {defineHook} from '@directus/extensions-sdk';
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {Mails, MailsFiles} from "../databaseTypes/types";
+import {DirectusFiles, Mails} from "../databaseTypes/types";
 import {EmailOptions, MailService as MailServiceType} from "@directus/api/dist/services/mail";
-import {DEFAULT_EMAIL_TEMPLATE, getTemplateDataFromMail} from "../helpers/mail/EmailTemplates";
+import {DEFAULT_EMAIL_TEMPLATE, EmailDownloadLink, getTemplateDataFromMail} from "../helpers/mail/EmailTemplates";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {PrimaryKey} from "@directus/types";
 
 const SCHEDULE_NAME = "food_feedback_report";
 
@@ -119,21 +118,32 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 
 	});
 
+	filter("shares.create", async (input, meta, eventContext) => {
+		console.log("Filter: shares.create: ")
+		console.log(JSON.stringify(input, null, 2));
+		console.log("Accountability: ")
+		console.log(JSON.stringify(eventContext.accountability, null, 2));
+		return input;
+	});
+
 	// filter all update actions where from value running to start want to change, since this is not allowed
 	filter<Partial<Mails>>(CollectionNames.MAILS+'.items.create', async (input: Partial<Mails>, meta, eventContext) => {
+		// TODO: Maybe outsource this into a workflow instead of a filter
+		let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
+
 		console.log("Filter: Mails create: ", input);
 		input.send_status = MAIL_SEND_STATUS.PENDING;
+
+		let send_attachments_as_links = input.send_attachments_as_links;
+		if(send_attachments_as_links===undefined){
+			send_attachments_as_links = true; // default
+		}
 
 		if(!input.template_name){
 			input.template_name =  DEFAULT_EMAIL_TEMPLATE;
 		}
 
 		try{
-			// https://github.com/directus/directus/issues/23937
-			// https://nodemailer.com/message/attachments/
-			// TODO: Support attachments
-
-			let data = getTemplateDataFromMail(input);
 			let attachments: MailAttachment[] = [];
 
 			console.log("input: ")
@@ -164,7 +174,7 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 				let attachments_create = input.attachments.create;
 				if(attachments_create){
 					for(let attachment of attachments_create){
-						let directus_files_id_raw = attachment.directus_files_id;
+						let directus_files_id_raw = attachment.directus_files_id as DirectusFiles | string | undefined;
 						if(!!directus_files_id_raw){
 							if(typeof directus_files_id_raw === 'string') {
 								directus_files_ids.push(directus_files_id_raw);
@@ -176,22 +186,57 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 				}
 			}
 
-			let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
+
 			let filesHelper = myDatabaseHelper.getFilesHelper();
+			let downloadLinks: EmailDownloadLink[] = [];
 			for(let directus_files_id of directus_files_ids){
 				try{
 					let direcuts_file = await filesHelper.readOne(directus_files_id);
-					let filename_download = direcuts_file.filename_download;
-					let buffer = await filesHelper.readFileContent(directus_files_id);
-					attachments.push({
-						filename: filename_download,
-						content: buffer,
-					});
+					// filename_disk is the name of the file on the server - its cryptic
+					if(send_attachments_as_links){
+						let name = direcuts_file.filename_disk || direcuts_file.filename_download || "file";
+						let shareLink = await filesHelper.createDirectusFilesShareLink({
+							directus_files_id: directus_files_id,
+							// TODO: hier noch die Mail_id mitgeben, geht aber nur nach dem erstellen der mail oder im workflow
+							name: name,
+						});
+						if(shareLink){
+							downloadLinks.push({
+								name: name,
+								url: shareLink,
+							});
+						}
+					} else {
+						// https://github.com/directus/directus/issues/23937
+						// https://nodemailer.com/message/attachments/
+						let buffer = await filesHelper.readFileContent(directus_files_id);
+						attachments.push({
+							filename: direcuts_file.filename_download,
+							content: buffer,
+						});
+					}
 				} catch (error: any) {
 					console.error("Filter: Error reading file: ", error);
 				}
 
 			}
+
+			let markdown_content = input.markdown_content;
+			if(downloadLinks.length>0){
+				markdown_content += "\n\n";
+				markdown_content += `
+Sie können die Anhänge über folgende Links herunterladen:
+
+					`
+				for(let downloadLink of downloadLinks){
+					markdown_content += `
+[${downloadLink.name}](${downloadLink.url})
+					`
+				}
+			}
+			input.markdown_content = markdown_content;
+
+			let data = getTemplateDataFromMail(input);
 
 			let email_delivery = await sendMail({
 				to: input.recipient,

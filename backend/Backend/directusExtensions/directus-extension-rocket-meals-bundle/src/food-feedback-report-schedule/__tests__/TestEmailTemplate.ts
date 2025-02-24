@@ -1,6 +1,6 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {EmailTemplates, EmailTemplatesEnum} from "../../helpers/mail/EmailTemplates";
+import {EmailDownloadLink, EmailTemplates, EmailTemplatesEnum} from "../../helpers/mail/EmailTemplates";
 import {EmojiHelper} from "../../helpers/EmojiHelper";
 import {
     ReportCanteenEntryLabelsType,

@@ -4,6 +4,7 @@ import {ApiContext} from "./ApiContext";
 import {Accountability, EventContext, PrimaryKey, Query} from "@directus/types";
 import {TranslationHelper} from "./TranslationHelper";
 import {Knex} from "knex";
+import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 
 export type OptsCustomType = {
     disableEventEmit: boolean
@@ -16,15 +17,17 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     protected apiContext: ApiContext;
     protected eventContext: EventContext | undefined;
     protected tablename: string;
+    protected myDatabaseHelper: MyDatabaseHelperInterface;
 
     public static FIELD_STATUS = 'status';
     public static FIELD_STATUS_PUBLISHED = 'published';
 
-    constructor(apiContext: ApiContext, tablename: string, eventContext?: EventContext) {
-        this.apiContext = apiContext;
+    constructor(myDatabaseHelper: MyDatabaseHelperInterface, tablename: string) {
+        this.myDatabaseHelper = myDatabaseHelper;
+        this.apiContext = myDatabaseHelper.apiContext;
         this.tablename = tablename;
-        this.eventContext = eventContext;
-        this.knex = apiContext.database;
+        this.eventContext = myDatabaseHelper.eventContext;
+        this.knex = myDatabaseHelper.apiContext.database;
     }
 
     protected async getItemsService(): Promise<ItemsService<T>> {

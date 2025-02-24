@@ -22,8 +22,16 @@ function renderMarkdownTextToHtml(markdownText: string): string {
     return md.render(markdownText);
 }
 
-export function getTemplateDataFromMail(mail: Partial<Mails>) {
-    let data = {};
+export type EmailDownloadLink = {
+    name: string,
+    url: string,
+}
+
+export function getTemplateDataFromMail(mail: Partial<Mails>): {[key: string]: any} & {mailContentFieldRenderedAsHtml?: string} {
+    let data: {[key: string]: any} & {
+        mailContentFieldRenderedAsHtml?: string,
+        downloadLinks?: string[]
+    } = {};
     if(mail.template_data){
         data = {
             ...data,

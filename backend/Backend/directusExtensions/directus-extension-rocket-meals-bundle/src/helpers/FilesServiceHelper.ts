@@ -5,19 +5,21 @@ import {
     FilesService,
     MutationOptions
 } from "./ItemsServiceCreator";
-import {ApiContext} from "./ApiContext";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
 import {CollectionNames} from "./CollectionNames";
-import {EventContext, PrimaryKey} from "@directus/types";
+import {PrimaryKey} from "@directus/types";
 import {DirectusFiles} from "../databaseTypes/types";
 import {AssetsService} from "@directus/api";
 import type {Readable} from "node:stream";
 import type {Stat} from "@directus/storage";
+import {CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper} from "./ShareServiceHelper";
+import * as Buffer from "node:buffer";
+import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 
-export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implements FilesService {
+export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implements FilesService, ShareDirectusFileMethod {
 
-    constructor(apiContext: ApiContext, eventContext?: EventContext) {
-        super(apiContext, CollectionNames.DIRECTUS_FILES, eventContext);
+    constructor(myDatabaseHelper: MyDatabaseHelperInterface) {
+        super(myDatabaseHelper, CollectionNames.DIRECTUS_FILES);
     }
 
     protected override async getItemsService(){
@@ -47,6 +49,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         let schema = await this.apiContext.getSchema();
         // @ts-ignore
         let assetsService = new AssetsService({
+            accountability: null, //this makes us admin
             knex: this.knex,
             schema: schema,
         })
@@ -65,12 +68,18 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
                 chunks.push(chunk);
             });
             file.stream.on('end', () => {
+                // @ts-ignore
                 resolve(Buffer.concat(chunks));
             });
             file.stream.on('error', (error: Error) => {
                 reject(error);
             });
         });
+    }
+
+    createDirectusFilesShareLink(options: CreateShareLinkOptionForDirectusFiles): Promise<string | null> {
+        let shareServiceHelper = new ShareServiceHelper(this.myDatabaseHelper);
+        return shareServiceHelper.createDirectusFilesShareLink(options);
     }
 
 }

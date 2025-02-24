@@ -549,7 +549,6 @@ export type DirectusFiles = {
   height?: number | null;
   id: string;
   location?: string | null;
-  mails: any[] | MailsFiles[];
   mails_files_id?: number | MailsFiles | null;
   metadata?: unknown | null;
   modified_by?: string | DirectusUsers | null;
@@ -850,6 +849,17 @@ export type DirectusWebhooks = {
   status: string;
   url: string;
   was_active_before_deprecation: boolean;
+};
+
+export type FilesShares = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  file?: string | DirectusFiles | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
 };
 
 export type Foodoffers = {
@@ -1321,6 +1331,7 @@ export type Mails = {
   mail_information: string;
   markdown_content?: string | null;
   recipient?: string | null;
+  send_attachments_as_links?: boolean | null;
   send_status: string;
   sort?: number | null;
   status: string;
@@ -1749,6 +1760,7 @@ export type CustomDirectusTypes = {
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];
   directus_webhooks: DirectusWebhooks[];
+  files_shares: FilesShares[];
   foodoffers: Foodoffers[];
   foodoffers_categories: FoodoffersCategories[];
   foodoffers_categories_translations: FoodoffersCategoriesTranslations[];
