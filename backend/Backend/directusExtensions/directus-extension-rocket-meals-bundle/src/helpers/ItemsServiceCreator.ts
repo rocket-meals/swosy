@@ -202,30 +202,6 @@ export type ServerInfo = {
         public_registation?: boolean,
         public_registration_verify_email?: boolean,
         public_background?: string,
-        server_url?: string, // This is not in the official types, but added by me
-    },
-    version?: string,
-}
-
-export type ServerInfoRaw = {
-    project: {
-        project_name?: string;
-        project_descriptor?: string;
-        project_logo?: string;
-        project_color?: string;
-        default_appearance?: string;
-        default_theme_light?: any,
-        default_theme_dark?: any,
-        theme_light_overrides?: any,
-        theme_dark_overrides?: any,
-        public_foreground?: string,
-        public_favicon?: string,
-        public_note?: string,
-        custom_css?: string,
-        public_registation?: boolean,
-        public_registration_verify_email?: boolean,
-        public_background?: string,
-        server_url?: string, // This is not in the official types, but added by me
     },
     version?: string,
 }
@@ -254,11 +230,6 @@ export class ServerServiceCreator extends GetItemsService{
 
         directusServerInfo.project.project_name = directusServerInfo.project.project_name || "Rocket Meals";
         directusServerInfo.project.project_color = directusServerInfo.project.project_color || "#D14610";
-
-        let publicUrl = EnvVariableHelper.getServerUrl();
-        if(directusServerInfo.project){
-            directusServerInfo.project.server_url = publicUrl;
-        }
 
 
         return directusServerInfo;

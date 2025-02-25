@@ -7,7 +7,7 @@ import {BaseGermanMarkdownTemplateHelper, DEFAULT_HTML_TEMPLATE, HtmlGenerator} 
 import {PdfGeneratorHelper} from "../pdf/PdfGeneratorHelper";
 import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 import {MarkdownHelper} from "../html/MarkdownHelper";
-import {MyDatabaseHelperInterface, MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
+import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
 
 export class FormHelper {
 
@@ -84,7 +84,7 @@ export class FormHelper {
         }
     }
 
-    public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[]): Promise<string> {
+    public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
         let markdownContent = "";
 
         console.log("generateMarkdownContentFromForm")
@@ -111,7 +111,7 @@ export class FormHelper {
 
             let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
             if(formAnswerValueImage){
-                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage);
+                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
                 markdownContent += `![${fieldName}](${imageUrl})`;
                 markdownContent += `
                 `
@@ -121,7 +121,7 @@ export class FormHelper {
             let formAnswerValueFiles = formExtractRelevantInformationSingle.form_answer.value_files;
             if(formAnswerValueFiles){
                 for(let formAnswerValueFile of formAnswerValueFiles){
-                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile);
+                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface);
                     markdownContent += `![${fieldName}](${imageUrl})`;
                     markdownContent += `
                     `
@@ -138,7 +138,7 @@ export class FormHelper {
     }
 
     public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
-        let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation);
+        let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
         let template = DEFAULT_HTML_TEMPLATE;
         let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
         let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html);

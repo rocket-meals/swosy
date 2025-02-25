@@ -49,6 +49,7 @@ import {EventContext as ExtentContextDirectusTypes} from "@directus/types";
 import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {ShareServiceHelper} from "./ShareServiceHelper";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
+import {EnvVariableHelper} from "./EnvVariableHelper";
 
 export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
@@ -65,6 +66,10 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     async getServerInfo() {
         const serverServiceCreator = new ServerServiceCreator(this.apiContext);
         return await serverServiceCreator.getServerInfo();
+    }
+
+    getServerUrl(): string | undefined {
+        return EnvVariableHelper.getEnvVariable("PUBLIC_URL");
     }
 
     getAppSettingsHelper() {

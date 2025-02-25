@@ -5,7 +5,7 @@ export enum SyncForCustomerEnum {
 }
 
 export class EnvVariableHelper {
-    private static getEnvVariable(name: string): string | undefined {
+    public static getEnvVariable(name: string): string | undefined {
         let envVariable = process.env[name];
         //if (envVariable == null) {
         //    throw new Error("Environment Variable " + name + " not set.");
@@ -55,11 +55,6 @@ export class EnvVariableHelper {
 
     static getAutoTranslateApiKey() {
         return this.getEnvVariable(EnvVariableHelper.getEnvFieldNameForAutoTranslateApiKey());
-    }
-
-    static getServerUrl() {
-        // PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
-        return this.getEnvVariable("PUBLIC_URL");
     }
 
     static getAdminEmail() {

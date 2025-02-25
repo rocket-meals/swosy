@@ -306,7 +306,7 @@ async function sendFormExtractMail(
     console.log("Subject: " + subject);
 
     let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, myDatabaseHelper);
-    let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation);
+    let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
 
     for(let recipient_email of recipient_emails){
 

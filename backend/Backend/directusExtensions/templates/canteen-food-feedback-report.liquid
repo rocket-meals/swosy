@@ -1,5 +1,5 @@
 {% layout "base-german-markdown-content" %} {% block content %}
-<h1>{{project_name}} - Bericht</h1>
+<h1>{{projectName}} - Bericht</h1>
 
 <h2>Bericht über den Zeitraum {{dateHumanReadable}}</h2>
 <p>Dieser Bericht enthält zusammengefasste Informationen über die angebotenen Speisen, einschließlich Bewertungen und Kundenkommentare. Sehen Sie sich die Liste unten an, um zu erfahren, was unsere Kunden dazu sagen.</p>
@@ -15,9 +15,9 @@
             <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
                 <thead>
                 <tr>
-                    <th style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Mensa</th>
+                    <th style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Mensa</th>
                     {% for canteen_label_entry in canteen_feedbacks[0].labels %}
-                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }}; width: calc(75% / {{ canteen_feedbacks[0].labels | size }});">{{ canteen_label_entry.label_alias }}</th>
+                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(75% / {{ canteen_feedbacks[0].labels | size }});">{{ canteen_label_entry.label_alias }}</th>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -66,9 +66,9 @@
             <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
                 <thead>
                 <tr>
-                    <th style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Mensa</th>
+                    <th style="padding: 12px; text-align: left; width: 25%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Mensa</th>
                     {% for canteen_label_entry in canteen_feedbacks[0].labels %}
-                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }}; width: calc(75% / {{ canteen_feedbacks[0].labels | size }});">{{ canteen_label_entry.label_alias }}</th>
+                        <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(75% / {{ canteen_feedbacks[0].labels | size }});">{{ canteen_label_entry.label_alias }}</th>
                     {% endfor %}
                 </tr>
                 </thead>
@@ -116,9 +116,9 @@
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
             <tr>
-                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Name der Speise (Durschnittliche Bewertung)</th>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise (Durschnittliche Bewertung)</th>
                 {% for label in foods[0].labels %}
-                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }}; width: calc(67% / {{ foods[0].labels | size }});">{{ label.alias }}</th>
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(67% / {{ foods[0].labels | size }});">{{ label.alias }}</th>
                 {% endfor %}
             </tr>
             </thead>
@@ -181,9 +181,9 @@
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
             <tr>
-                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Name der Speise (Durschnittliche Bewertung)</th>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise (Durschnittliche Bewertung)</th>
                 {% for label in foods[0].labels %}
-                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }}; width: calc(67% / {{ foods[0].labels | size }});">{{ label.alias }}</th>
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }}; width: calc(67% / {{ foods[0].labels | size }});">{{ label.alias }}</th>
                 {% endfor %}
             </tr>
             </thead>
@@ -248,8 +248,8 @@
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
             <tr>
-                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Name der Speise</th>
-                <th style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Kommentare</th>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise</th>
+                <th style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Kommentare</th>
             </tr>
             </thead>
             <tbody>
@@ -293,8 +293,8 @@
         <table style="border-collapse: collapse; width: 100%; margin: 20px 0; font-family: Arial, sans-serif; border: 2px solid #ddd;">
             <thead>
             <tr>
-                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Name der Speise</th>
-                <th style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ project_color }};">Kommentare</th>
+                <th style="padding: 12px; text-align: left; width: 33%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Name der Speise</th>
+                <th style="padding: 6px; text-align: left; width: 67%; border-right: 1px solid #aaa; background-color: #f2f2f2; border-bottom: 3px solid {{ projectColor }};">Kommentare</th>
             </tr>
             </thead>
             <tbody>

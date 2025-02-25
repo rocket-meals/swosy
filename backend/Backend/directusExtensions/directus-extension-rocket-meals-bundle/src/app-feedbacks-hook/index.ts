@@ -42,7 +42,7 @@ export default defineHook(async ({schedule, action}, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
-    const publicUrl = EnvVariableHelper.getServerUrl();
+    const publicUrl = myDatabaseHelper.getServerUrl()
 
     // TODO: Create a table for app-feedbacks-settings
     // There we can store to which emails we should send the feedbacks and at which time or on a daily basis

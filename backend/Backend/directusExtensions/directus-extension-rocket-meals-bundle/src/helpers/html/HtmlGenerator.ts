@@ -5,6 +5,7 @@ import {PathHelper} from "../PathHelper";
 import {MarkdownHelper} from "./MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
 import {ServerInfo} from "../ItemsServiceCreator";
+import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 
 export enum HtmlTemplatesEnum {
     BASE_GERMAN = "base-german",
@@ -38,11 +39,22 @@ export class HtmlGenerator {
     public static async getDefaultTemplateData(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{[key: string]: any }> {
         let serverInfo: ServerInfo = await myDatabaseHelperInterface.getServerInfo();
 
+        const projectLogoAssetId = serverInfo?.project?.project_logo;
+        let projectLogoImageUrl: string | null = null;
+        if(projectLogoAssetId){
+            projectLogoImageUrl = DirectusFilesAssetHelper.getDirectAssetUrlById(projectLogoAssetId, myDatabaseHelperInterface);
+        }
+
+        // https://docs.directus.io/guides/extensions/email-template.html#variables-in-templates
+        // we want to use the same variables as in the directus email templates
         return {
-            project_name: serverInfo?.project?.project_name || 'Rocket Meals',
+            // SYSTEM VARIABLES DEFINED BY DIRECTUS
+            projectName: serverInfo?.project?.project_name || 'Rocket Meals',
             project_color: serverInfo?.project?.project_color || '#D14610',
-            project_logo: serverInfo?.project?.project_logo || null,
-            project_url: serverInfo?.project?.server_url || null,
+            projectLogo: projectLogoImageUrl || null,
+            projectUrl: null, // We don't want to show the backend link in the emails
+            // CUSTOM VARIABLES START HERE
+            server_url: myDatabaseHelperInterface.getServerUrl(), // currently not used
         };
     }
 

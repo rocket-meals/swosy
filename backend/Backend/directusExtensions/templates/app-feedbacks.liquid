@@ -33,7 +33,7 @@
             <p>Die Kontaktemail ist vom Benutzer angegeben worden und ist nicht verifiziert worden und kann ggf. nicht der tatsächlichen Email des Nutzers entsprechen.</p>
             <a href="mailto:{{ feedback.contract_email | escape }}">{{ feedback.contract_email | escape }}</a>
         <br>
-            <button style="background-color: project_color; color: #333; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+            <button style="background-color: projectColor; color: #333; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
                 <a href="mailto:{{ feedback.contract_email | escape }}" style="text-decoration: none; color: inherit;">Email senden</a>
             </button>
         {% else %}
@@ -43,7 +43,7 @@
             <p><strong>Antwort schreiben:</strong>
                 <a href="{{ feedback.answer_to_feedback_url | escape }}">{{ feedback.answer_to_feedback_url | escape }}</a>
                 <br>
-                <button style="background-color: project_color; color: #333; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                <button style="background-color: projectColor; color: #333; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
                     <a href="{{ feedback.answer_to_feedback_url | escape }}" style="text-decoration: none; color: inherit;">Antworten</a>
                 </button>
             </p>
