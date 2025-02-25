@@ -254,7 +254,10 @@ Sie können die Anhänge über folgende Links herunterladen:
 				attachments: attachments,
 			});
 			input.send_status = MAIL_SEND_STATUS.SUCCESS;
-			input.log = JSON.stringify(email_delivery, null, 2);
+			input.log = "";
+			input.log += "send_attachments_as_links: "+send_attachments_as_links+"\n";
+			input.log += "attachments amount: "+attachments.length+"\n";
+			input.log += JSON.stringify(email_delivery, null, 2)+"\n";
 
 		} catch (error: any) {
 			input.send_status = MAIL_SEND_STATUS.FAILED;

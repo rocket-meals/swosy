@@ -21,7 +21,7 @@ export class BaseGermanMarkdownTemplateHelper {
     }
 }
 
-export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN;
+export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONTENT;
 
 export const HTML_TEMPLATE_FILE_ENDING = '.liquid';
 
