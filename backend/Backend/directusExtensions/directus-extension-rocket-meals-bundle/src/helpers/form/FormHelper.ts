@@ -87,6 +87,11 @@ export class FormHelper {
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[]): Promise<string> {
         let markdownContent = "";
 
+        console.log("generateMarkdownContentFromForm")
+
+        console.log("formExtractRelevantInformation")
+        console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
+
         markdownContent += MarkdownHelper.EXAMPLE_MARKDOWN+`
         
         
@@ -125,6 +130,10 @@ export class FormHelper {
             }
 
         }
+
+        console.log("markdownContent")
+        console.log(markdownContent)
+
         return markdownContent;
     }
 
