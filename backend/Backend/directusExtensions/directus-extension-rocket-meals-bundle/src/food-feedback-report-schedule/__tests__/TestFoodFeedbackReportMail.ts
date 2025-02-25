@@ -13,6 +13,7 @@ import {
 } from "../ReportGenerator";
 import {TestArtifacts} from "../../helpers/TestArtifacts";
 import {MailHelper} from "../../helpers/mail/MailHelper";
+import {MyDatabaseTestableHelper} from "../../helpers/MyDatabaseHelperInterface";
 
 describe("Food Feedback Html Template", () => {
 
@@ -197,7 +198,7 @@ Hier ist der Feedback Report für die Mensen. Text style *italic* und **bold**.
             template_data: report,
             markdown_content: exampleMarkdown,
             template_name: HtmlTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT
-        });
+        }, new MyDatabaseTestableHelper());
 
         let savePath = TestArtifacts.saveTestArtifact(hmtl, "food-feedback-report/example.html");
 

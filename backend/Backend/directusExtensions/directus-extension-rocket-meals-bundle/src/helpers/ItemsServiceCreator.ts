@@ -13,6 +13,7 @@ import {BusboyFileStream} from "@directus/extensions/node_modules/@directus/type
 import {DirectusFiles} from "../databaseTypes/types";
 import {Readable} from "node:stream";
 import {EventContext as EventContextForServices} from "@directus/types";
+import {EnvVariableHelper} from "./EnvVariableHelper";
 
 export type MyEventContext = EventContextForFlows | EventContextForServices;
 
@@ -183,6 +184,52 @@ export class ActivityServiceCreator extends GetItemsService{
         }
 }
 
+export type ServerInfo = {
+    project: {
+        project_name: string;
+        project_descriptor?: string;
+        project_logo?: string;
+        project_color: string;
+        default_appearance?: string;
+        default_theme_light?: any,
+        default_theme_dark?: any,
+        theme_light_overrides?: any,
+        theme_dark_overrides?: any,
+        public_foreground?: string,
+        public_favicon?: string,
+        public_note?: string,
+        custom_css?: string,
+        public_registation?: boolean,
+        public_registration_verify_email?: boolean,
+        public_background?: string,
+        server_url?: string, // This is not in the official types, but added by me
+    },
+    version?: string,
+}
+
+export type ServerInfoRaw = {
+    project: {
+        project_name?: string;
+        project_descriptor?: string;
+        project_logo?: string;
+        project_color?: string;
+        default_appearance?: string;
+        default_theme_light?: any,
+        default_theme_dark?: any,
+        theme_light_overrides?: any,
+        theme_dark_overrides?: any,
+        public_foreground?: string,
+        public_favicon?: string,
+        public_note?: string,
+        custom_css?: string,
+        public_registation?: boolean,
+        public_registration_verify_email?: boolean,
+        public_background?: string,
+        server_url?: string, // This is not in the official types, but added by me
+    },
+    version?: string,
+}
+
 export class ServerServiceCreator extends GetItemsService{
 
     // https://github.com/directus/directus/blob/main/api/src/services/server.ts
@@ -198,14 +245,23 @@ export class ServerServiceCreator extends GetItemsService{
     }
 
     async getServerInfo() {
-        type ServerInfo = {
-            project: {
-                project_name: string;
-            }
+        const serverService = await this.getServerService();
+        let directusServerInfo = await serverService.serverInfo() || {} as ServerInfo;
+
+        if(!directusServerInfo.project){
+            directusServerInfo.project = {};
         }
 
-        const serverService = await this.getServerService();
-        return await serverService.serverInfo() as ServerInfo;
+        directusServerInfo.project.project_name = directusServerInfo.project.project_name || "Rocket Meals";
+        directusServerInfo.project.project_color = directusServerInfo.project.project_color || "#D14610";
+
+        let publicUrl = EnvVariableHelper.getServerUrl();
+        if(directusServerInfo.project){
+            directusServerInfo.project.server_url = publicUrl;
+        }
+
+
+        return directusServerInfo;
     }
 
 }

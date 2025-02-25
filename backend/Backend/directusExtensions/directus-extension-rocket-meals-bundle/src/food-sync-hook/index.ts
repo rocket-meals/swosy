@@ -62,10 +62,7 @@ function getMarkingParser(): MarkingParserInterface | null {
     switch (MARKING_SYNC_MODE) {
         case "TL1CSV":
             /* TL1 CSV FILE */
-            const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFilePath();
             const MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING = EnvVariableHelper.getMarkingSyncTL1FileExportCsvFileEncoding();
-
-            console.log(SCHEDULE_NAME + ": Using TL1 CSV file from host file path: " + MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH);
             return new MarkingTL1Parser(DIRECTUS_TL1_MARKING_PATH, MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING);
     }
 

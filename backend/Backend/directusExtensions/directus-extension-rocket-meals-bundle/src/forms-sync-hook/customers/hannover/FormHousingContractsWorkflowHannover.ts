@@ -22,9 +22,9 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
     private reader: HannoverTL1HousingFileReader;
     private contracts: Tl1ImportHousingContracts = [];
 
-    constructor() {
+    constructor(housingPath: string) {
         super();
-        this.reader = new HannoverTL1HousingFileReader(EnvVariableHelper.getHousingContractCsvFilePath());
+        this.reader = new HannoverTL1HousingFileReader(housingPath);
     }
 
     getWorkflowId(): string {

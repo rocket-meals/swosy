@@ -122,7 +122,7 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
             date_end: options.date_end,
         })
 
-        return EnvVariableHelper.getPublicUrl()+"/admin/shared/"+shareId;
+        return EnvVariableHelper.getServerUrl()+"/admin/shared/"+shareId;
 
         //{
         //    "max_uses": null,

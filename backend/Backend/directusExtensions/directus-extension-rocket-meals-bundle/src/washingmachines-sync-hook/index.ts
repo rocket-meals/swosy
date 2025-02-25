@@ -1,27 +1,16 @@
 import {WashingmachineParseSchedule} from "./WashingmachineParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
 import {CollectionNames} from "../helpers/CollectionNames";
-import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {DemoWashingmachineParser} from "./testParser/DemoWashingmachineParser";
 import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {ActionInitFilterEventHelper} from "../helpers/ActionInitFilterEventHelper";
-import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {Washingmachines, WorkflowsRuns} from "../databaseTypes/types";
-import {WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
-import {FilterHandler} from "@directus/types";
+import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {RegisterFunctions} from "@directus/extensions";
-import {
-    ResultHandleWorkflowRunsWantToRun, SingleWorkflowRun,
-    WorkflowRunJobInterface, WorkflowRunLogger
-} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {CashregisterTransactionParserInterface} from "../cashregister-hook/CashregisterTransactionParserInterface";
-import {ParseSchedule} from "../cashregister-hook/ParseSchedule";
-import {log} from "node:util";
+import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
-
 
 
 function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions: RegisterFunctions) {

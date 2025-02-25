@@ -1,8 +1,10 @@
 import {Liquid} from 'liquidjs';
 import path from "path";
 import fse from "fs-extra";
-import MarkdownIt from "markdown-it";
 import {PathHelper} from "../PathHelper";
+import {MarkdownHelper} from "./MarkdownHelper";
+import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
+import {ServerInfo} from "../ItemsServiceCreator";
 
 export enum HtmlTemplatesEnum {
     BASE_GERMAN = "base-german",
@@ -16,7 +18,7 @@ export class BaseGermanMarkdownTemplateHelper {
 
     public static getTemplateDataForMarkdownContent(markdownContent: string): {[key: string]: any} {
         return {
-            [BaseGermanMarkdownTemplateHelper.TEMPLATE_MARKDOWN_FIELD]: HtmlGenerator.renderMarkdownTextToHtml(markdownContent),
+            [BaseGermanMarkdownTemplateHelper.TEMPLATE_MARKDOWN_FIELD]: MarkdownHelper.renderMarkdownTextToHtml(markdownContent),
         }
     }
 }
@@ -33,13 +35,14 @@ export class HtmlGenerator {
         return PathHelper.getPathToLiquidTemplates();
     }
 
-    public static getDefaultTemplateData() {
+    public static async getDefaultTemplateData(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{[key: string]: any }> {
+        let serverInfo: ServerInfo = await myDatabaseHelperInterface.getServerInfo();
 
         return {
-            projectName: 'Rocket Meals',
-            projectColor: '#D14610',
-            projectLogo: null,
-            projectUrl: '',
+            project_name: serverInfo?.project?.project_name || 'Rocket Meals',
+            project_color: serverInfo?.project?.project_color || '#D14610',
+            project_logo: serverInfo?.project?.project_logo || null,
+            project_url: serverInfo?.project?.server_url || null,
         };
     }
 
@@ -58,13 +61,7 @@ export class HtmlGenerator {
         }
     }
 
-    public static renderMarkdownTextToHtml(markdownText: string): string {
-        const md = new MarkdownIt({ html: true });
-        return md.render(markdownText);
-    }
-
-
-    public static async generateHtml(variables: {[key: string]: any}, template?: HtmlTemplatesEnum | null | undefined): Promise<string> {
+    public static async generateHtml(variables: {[key: string]: any}, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, template?: HtmlTemplatesEnum | null | undefined): Promise<string> {
         const rootPath = HtmlGenerator.getPathToHtmlTemplates();
 
         const liquidEngine = new Liquid({
@@ -76,7 +73,7 @@ export class HtmlGenerator {
             template = DEFAULT_HTML_TEMPLATE;
         }
 
-        const defaultTemplateData = await this.getDefaultTemplateData();
+        const defaultTemplateData = await this.getDefaultTemplateData(myDatabaseHelperInterface);
 
         variables = {
             ...defaultTemplateData,

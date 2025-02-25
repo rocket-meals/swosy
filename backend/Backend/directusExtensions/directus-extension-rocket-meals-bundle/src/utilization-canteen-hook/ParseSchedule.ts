@@ -1,13 +1,8 @@
-import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FlowStatus} from "../helpers/itemServiceHelpers/AppSettingsHelper";
 import {Canteens, Cashregisters, UtilizationsGroups, WorkflowsRuns} from "../databaseTypes/types";
 import {DateHelper} from "../helpers/DateHelper";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
-
-const SCHEDULE_NAME = "UtilizationSchedule";
 
 export class ParseSchedule {
 

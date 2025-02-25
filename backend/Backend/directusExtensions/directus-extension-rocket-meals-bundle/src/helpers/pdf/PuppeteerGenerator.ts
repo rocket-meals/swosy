@@ -11,15 +11,9 @@ export class PuppeteerGenerator {
 
     static async generatePdfFromHtmlPuppeteer(html: string, options: PdfGeneratorOptions): Promise<Buffer> {
         let browser;
-        console.log("generatePdfFromHtmlPuppeteer");
-
         let puppeteer = PuppeteerGenerator.getPuppeteerLib();
 
-        // Erkennen, ob Code in Docker läuft
         let isInsideDocker = !process.env.JEST_WORKER_ID; // Falls Jest gesetzt ist, dann ist es ein lokaler Test
-        console.log("isInsideDocker:", isInsideDocker);
-
-        // Setzt den ausführbaren Pfad für Chrome (statt Chromium)
         let executablePath = isInsideDocker ? "/usr/bin/chromium" : undefined;
 
         try {
@@ -57,6 +51,14 @@ export class PuppeteerGenerator {
             });
 
             const page = await browser.newPage();
+
+            // Log failed image loads
+            page.on('requestfailed', (request: any) => {
+                if (request.resourceType() === 'image') {
+                    console.error(`Image failed to load: ${request.url()}`);
+                }
+            });
+
             await page.setContent(html, { waitUntil: "networkidle0" });
 
             const pdfUint8Array = await page.pdf(options);

@@ -8,7 +8,7 @@ export class DirectusFilesAssetHelper {
      * @param directusFile
      */
     public static getDirectAssetUrl(directusFile: DirectusFiles): string {
-        let publicUrl = EnvVariableHelper.getPublicUrl();
+        let publicUrl = EnvVariableHelper.getServerUrl();
         return `${publicUrl}/assets/${directusFile.id}`;
     }
 

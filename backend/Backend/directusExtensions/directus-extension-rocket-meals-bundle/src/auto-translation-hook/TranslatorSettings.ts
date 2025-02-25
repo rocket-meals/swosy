@@ -5,13 +5,13 @@ import {AutoTranslationSettingsHelper} from "../helpers/itemServiceHelpers/AutoT
 
 export class TranslatorSettings {
 
-    private apiKey: null | string;
+    private apiKey: undefined | string | null;
     private translationSettingsService: AutoTranslationSettingsHelper;
     private apiContext: ApiContext;
 
     constructor(apiContext: ApiContext) {
         this.apiContext = apiContext;
-        this.apiKey = null; // To hold the API key in memory
+        this.apiKey = undefined; // To hold the API key in memory
         this.apiKey = EnvVariableHelper.getAutoTranslateApiKey();
         const myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
         this.translationSettingsService = myDatabaseHelper.getAutoTranslationSettingsHelper();

@@ -114,7 +114,7 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
     });
 }
 
-export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles, value_files: DirectusFiles[]}
+export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: DirectusFiles[]}
 export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormExtractFormAnswer }
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[]
 
@@ -305,7 +305,8 @@ async function sendFormExtractMail(
     }
     console.log("Subject: " + subject);
 
-    let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation);
+    let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, myDatabaseHelper);
+    let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation);
 
     for(let recipient_email of recipient_emails){
 
@@ -325,7 +326,7 @@ async function sendFormExtractMail(
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name,
+            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name+" \n\n"+pdfMarkdown,
             subject: subject,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments

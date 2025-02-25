@@ -42,7 +42,7 @@ export default defineHook(async ({schedule, action}, apiContext) => {
     const myDatabaseHelper = new MyDatabaseHelper(apiContext);
     const appFeedbacksHelper = myDatabaseHelper.getAppFeedbacksHelper();
 
-    const publicUrl = EnvVariableHelper.getPublicUrl();
+    const publicUrl = EnvVariableHelper.getServerUrl();
 
     // TODO: Create a table for app-feedbacks-settings
     // There we can store to which emails we should send the feedbacks and at which time or on a daily basis
@@ -58,7 +58,7 @@ export default defineHook(async ({schedule, action}, apiContext) => {
         }
 
         const server_info = await myDatabaseHelper.getServerInfo();
-        const project_name = server_info.project.project_name || "Rocket Meals";
+        const project_name = server_info?.project?.project_name || "Rocket Meals";
 
         const now = new Date();
         const humanReadableDate = DateHelper.getHumanReadableDateAndTime(now);

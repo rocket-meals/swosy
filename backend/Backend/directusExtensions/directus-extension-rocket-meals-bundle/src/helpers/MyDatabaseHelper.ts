@@ -48,8 +48,9 @@ import {FilesServiceHelper} from "./FilesServiceHelper";
 import {EventContext as ExtentContextDirectusTypes} from "@directus/types";
 import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {ShareServiceHelper} from "./ShareServiceHelper";
+import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 
-export class MyDatabaseHelper {
+export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
     public apiContext: ApiContext;
     public eventContext: ExtentContextDirectusTypes | undefined;

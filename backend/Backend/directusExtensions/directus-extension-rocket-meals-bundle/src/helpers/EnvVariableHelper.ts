@@ -5,48 +5,44 @@ export enum SyncForCustomerEnum {
 }
 
 export class EnvVariableHelper {
-    private static getEnvVariable(name: string): string {
+    private static getEnvVariable(name: string): string | undefined {
         let envVariable = process.env[name];
-        if (envVariable == null) {
-            throw new Error("Environment Variable " + name + " not set.");
-        }
+        //if (envVariable == null) {
+        //    throw new Error("Environment Variable " + name + " not set.");
+        //}
         return envVariable;
     }
 
-    static getFoodSyncMode(): string {
+    static getFoodSyncMode() {
         return this.getEnvVariable("FOOD_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"
     }
 
-    static getFoodSyncTL1FileExportCsvFilePath(): string {
+    static getFoodSyncTL1FileExportCsvFilePath() {
         return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
     }
 
-    static getMarkingSyncTL1FileCreateOnlyFromExportCsvFile(): boolean {
+    static getMarkingSyncTL1FileCreateOnlyFromExportCsvFile() {
         return this.getEnvVariable("MARKING_SYNC_TL1FILE_CREATE_ONLY_FROM_EXPORT_CSV_FILE") === "true";
     }
 
-    static getFoodSyncTL1FileExportCsvFileEncoding(): any {
+    static getFoodSyncTL1FileExportCsvFileEncoding() {
         return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "latin1" as BufferEncoding;
     }
 
-    static getFoodSyncTL1WebExportUrl(): string {
+    static getFoodSyncTL1WebExportUrl() {
         return this.getEnvVariable("FOOD_SYNC_TL1WEB_EXPORT_URL");
     }
 
-    static getHousingContractCsvFilePath(): string {
+    static getHousingContractCsvFilePath() {
         return this.getEnvVariable("HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
     }
 
-    static getFoodImageSyncSwosyApiServerUrl(): string {
+    static getFoodImageSyncSwosyApiServerUrl() {
         return this.getEnvVariable("FOOD_IMAGE_SYNC_SWOSY_API_SERVER_URL");
     }
 
-    static getMarkingSyncMode(): string {
+    static getMarkingSyncMode() {
         return this.getEnvVariable("MARKING_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"
-    }
-
-    static getMarkingSyncTL1FileExportCsvFilePath(): string {
-        return this.getEnvVariable("MARKING_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
     }
 
     static getMarkingSyncTL1FileExportCsvFileEncoding(): any {
@@ -57,20 +53,20 @@ export class EnvVariableHelper {
         return "AUTO_TRANSLATE_API_KEY";
     }
 
-    static getAutoTranslateApiKey(): string {
+    static getAutoTranslateApiKey() {
         return this.getEnvVariable(EnvVariableHelper.getEnvFieldNameForAutoTranslateApiKey());
     }
 
-    static getPublicUrl(): string {
+    static getServerUrl() {
         // PUBLIC_URL: "https://${MYHOST}/${ROCKET_MEALS_PATH}/${ROCKET_MEALS_BACKEND_PATH}"
         return this.getEnvVariable("PUBLIC_URL");
     }
 
-    static getAdminEmail(): string {
+    static getAdminEmail() {
         return this.getEnvVariable("ADMIN_EMAIL");
     }
 
-    static getAdminPassword(): string {
+    static getAdminPassword() {
         return this.getEnvVariable("ADMIN_PASSWORD");
     }
 
