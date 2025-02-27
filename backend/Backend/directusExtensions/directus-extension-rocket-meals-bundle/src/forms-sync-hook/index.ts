@@ -349,6 +349,7 @@ export default defineHook(async (registerFunctions, apiContext) => {
     registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
     registerHookCheckAllRequiredFieldsAreFilled(registerFunctions, apiContext);
 
+
     switch(EnvVariableHelper.getSyncForCustomer()){
         case SyncForCustomerEnum.HANNOVER:
             FormSyncHannover.registerHooks(registerFunctions, apiContext);

@@ -3,6 +3,7 @@ import {FormAnswers, FormFields, Forms, FormSubmissions, WorkflowsRuns} from "..
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 import {FormImportSyncFormSubmissions} from "./FormImportTypes";
+import {WorkflowResultHash} from "../helpers/itemServiceHelpers/WorkflowsRunHelper";
 
 export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
 
@@ -11,7 +12,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
     }
 
     abstract createNeededData(): Promise<void>;
-    abstract getCurrentResultHash(): Promise<string>;
+    abstract getCurrentResultHash(): Promise<WorkflowResultHash>;
     abstract getData(): Promise<FormImportSyncFormSubmissions[]>;
     abstract getFormInternalCustomId(): string;
     abstract getFormAlias(): string;
@@ -27,11 +28,18 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         const currentResultHash = await this.getCurrentResultHash();
         await logger.appendLog("Current Result Hash: " + currentResultHash);
 
-        if(lastResultHash === currentResultHash) {
+        if(WorkflowResultHash.isError(lastResultHash)){
+            await logger.appendLog("Error getting previous result hash: " + lastResultHash.message);
+            return logger.getFinalLogWithStateAndParams({
+                state: WORKFLOW_RUN_STATE.FAILED,
+            });
+        }
+
+        if(currentResultHash.isSame(lastResultHash)){
             await logger.appendLog("No new data found. Skipping workflow run.");
             return logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.SKIPPED,
-                result_hash: currentResultHash
+                result_hash: currentResultHash.getHash()
             });
         } else {
             await logger.appendLog("New data found. Running workflow.");
@@ -50,7 +58,6 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                 await logger.appendLog("Form not found and could not be created. Skipping workflow run.");
                 return logger.getFinalLogWithStateAndParams({
                     state: WORKFLOW_RUN_STATE.FAILED,
-                    result_hash: currentResultHash
                 });
             } else {
                 let formFields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
@@ -120,7 +127,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
 
                 return logger.getFinalLogWithStateAndParams({
                     state: WORKFLOW_RUN_STATE.SUCCESS,
-                    result_hash: currentResultHash
+                    result_hash: currentResultHash.getHash()
                 });
             }
         }

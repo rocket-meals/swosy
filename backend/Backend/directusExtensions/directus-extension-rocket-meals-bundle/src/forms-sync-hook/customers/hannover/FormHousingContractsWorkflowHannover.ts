@@ -13,6 +13,7 @@ import {
     FormImportSyncFormSubmissions
 } from "../../FormImportTypes";
 import {DateHelper} from "../../../helpers/DateHelper";
+import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
 
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
@@ -36,8 +37,9 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         this.contracts = data;
     }
 
-    async getCurrentResultHash(): Promise<string> {
-        return await this.reader.getResultHash(this.contracts);
+    async getCurrentResultHash(): Promise<WorkflowResultHash> {
+        let hash = await this.reader.getResultHash(this.contracts);
+        return new WorkflowResultHash(hash);
     }
 
     public static getFormImportSyncFormAnswer(contract: ImportHousingContract, key: keyof ImportHousingContract): FormImportSyncFormAnswer {

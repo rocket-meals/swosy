@@ -33,6 +33,7 @@ import {MyTimer, MyTimers} from "../helpers/MyTimer";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {HashHelper} from "../helpers/HashHelper";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
+import {WorkflowResultHash} from "../helpers/itemServiceHelpers/WorkflowsRunHelper";
 
 
 const SCHEDULE_NAME = "FoodParseSchedule";
@@ -66,7 +67,7 @@ export class ParseSchedule {
         this.markingParser = markingParser;
     }
 
-    async getPreviousMealOffersHash(): Promise<string | null | undefined> {
+    async getPreviousMealOffersHash() {
         return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
     }
 
@@ -91,17 +92,28 @@ export class ParseSchedule {
                 let canteensJSONList = await this.foodParser.getCanteensList();
                 let foodsJSONList = await this.foodParser.getFoodsListForParser();
                 let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
-                let currentMealOffersHash = HashHelper.hashFromObject(foodofferListForParser);
+                let currentMealOffersHash = new WorkflowResultHash(HashHelper.hashFromObject(foodofferListForParser));
+                await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash);
+
                 let previousMealOffersHash = await this.getPreviousMealOffersHash();
+                // check if previousMealOffersHash is Error
+                if(WorkflowResultHash.isError(previousMealOffersHash)){
+                    await this.logger.appendLog("Error: " + previousMealOffersHash.toString());
+                    return this.logger.getFinalLogWithStateAndParams({
+                        state: WORKFLOW_RUN_STATE.FAILED,
+                    });
+                }
+
+                await this.logger.appendLog("Previous meal offers hash: " + previousMealOffersHash);
+
                 const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
 
-                await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash);
-                await this.logger.appendLog("Previous meal offers hash: " + previousMealOffersHash);
-                const mealOffersChanged = !previousMealOffersHash || previousMealOffersHash !== currentMealOffersHash;
-                if(mealOffersChanged){
+                let noPreviousMealOffersHash = !previousMealOffersHash;
+                let isSameHash = currentMealOffersHash.isSame(previousMealOffersHash);
+                if(noPreviousMealOffersHash || !isSameHash){
                     await this.logger.appendLog("Meal offers changed, start parsing");
                     await this.myDatabaseHelper.getWorkflowsRunsHelper().updateOneItemWithoutHookTrigger(this.workflowRun, {
-                        result_hash: currentMealOffersHash
+                        result_hash: currentMealOffersHash.getHash()
                     });
 
                     await this.logger.appendLog("Meal offers changed, start parsing");
@@ -140,13 +152,13 @@ export class ParseSchedule {
 
                     return this.logger.getFinalLogWithStateAndParams({
                         state: WORKFLOW_RUN_STATE.SUCCESS,
-                        result_hash: currentMealOffersHash
+                        result_hash: currentMealOffersHash.getHash()
                     });
                 } else {
                     await this.logger.appendLog("Meal offers did not change, skip parsing");
                     return this.logger.getFinalLogWithStateAndParams({
                         state: WORKFLOW_RUN_STATE.SKIPPED,
-                        result_hash: currentMealOffersHash // for the  skipped run it is the same result hash
+                        result_hash: currentMealOffersHash.getHash() // for the  skipped run it is the same result hash
                     });
                 }
             }

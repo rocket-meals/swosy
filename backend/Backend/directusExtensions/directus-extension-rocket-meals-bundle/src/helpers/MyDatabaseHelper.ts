@@ -283,7 +283,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
         return new WorkflowsRunHelper(this, CollectionNames.WORKFLOWS_RUNS);
     }
 
-    getItemsServiceHelper<T>(collectionName: string) {
+    getItemsServiceHelper<T>(collectionName: CollectionNames) {
         return new ItemsServiceHelper<T>(this, collectionName);
     }
 

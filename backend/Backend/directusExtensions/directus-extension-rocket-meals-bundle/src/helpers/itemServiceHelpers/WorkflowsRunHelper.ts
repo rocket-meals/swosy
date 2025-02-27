@@ -3,9 +3,32 @@ import {ItemsServiceHelper} from "../ItemsServiceHelper";
 import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "./WorkflowsRunEnum";
 
+export class WorkflowResultHash {
+    private result_hash: string | null | undefined;
+
+    constructor(result_hash: string | null | undefined) {
+        this.result_hash = result_hash;
+    }
+
+    public isSame(otherResultHash: WorkflowResultHash){
+        return this.result_hash === otherResultHash.result_hash;
+    }
+
+    public getHash(){
+        return this.result_hash;
+    }
+
+    public static isError(resultHash: WorkflowResultHash | Error): resultHash is Error {
+        return resultHash instanceof Error;
+    }
+}
+
 export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
 
-    async getPreviousResultHash(workflowRun: WorkflowsRuns, logger: WorkflowRunLogger): Promise<string | null | undefined> {
+    /**
+     * @throws {Error}
+     */
+    async getPreviousResultHash(workflowRun: WorkflowsRuns, logger: WorkflowRunLogger): Promise<WorkflowResultHash | Error> {
 
         // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
         // if there is no successful run, we return null
@@ -19,7 +42,7 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
         }
 
         if(!workflowId){
-            return null;
+            return new WorkflowResultHash(null);
         }
 
         return await this.readByQuery({
@@ -42,13 +65,11 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
             limit: 1
         }).then((workflowRuns) => {
             let workflowRun = workflowRuns[0];
-            if(!!workflowRun){
-                return workflowRun.result_hash;
-            }
-            return null;
-        }).catch(async (err) => {
-            await logger.appendLog("Error while getting previous result hash: " + err.toString());
-            return null;
+
+            return new WorkflowResultHash(workflowRun?.result_hash);
+        }).catch(async (exception: unknown) => {
+            await logger.appendLog("Error while getting previous result hash: " + exception?.toString());
+            throw new Error("Error while getting previous result hash: " + exception?.toString());
         });
     }
 
