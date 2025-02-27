@@ -164,8 +164,7 @@ async function getAlreadyRunningWorkflowruns(workflowId: string, myDatabaseHelpe
         workflow: workflowId,
         state: WORKFLOW_RUN_STATE.RUNNING
     };
-    let alreadyRunningWorkflowruns = await myDatabaseHelper.getWorkflowsRunsHelper().findItems(searchWorkflowRuns);
-    return alreadyRunningWorkflowruns
+    return await myDatabaseHelper.getWorkflowsRunsHelper().findItems(searchWorkflowRuns)
 }
 
 function getWorkflowIdFromInputWorkflowsRuns(input: Partial<WorkflowsRuns>){
@@ -198,6 +197,8 @@ function getDictWorkflowIdToWorkflowRuns(workflowRuns: Partial<WorkflowsRuns>[])
 
 async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<WorkflowsRuns>, dictWorkflowIdToWorkflowRuns: {[p: string]: Partial<WorkflowsRuns>[]}, myDatabaseHelper: MyDatabaseHelper): Promise<Partial<WorkflowsRuns>> {
     if(input.state===WORKFLOW_RUN_STATE.RUNNING){
+        console.log("modifyInputForCreateOrUpdateWorkflowRunToRunning");
+
         input = cleanWorkflowRun(input);
 
         let workflowIds = Object.keys(dictWorkflowIdToWorkflowRuns);
@@ -242,6 +243,7 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<W
         }
 
         for(let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)){
+            console.log("Running workflowId: "+workflowId);
             const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
             if(workflowRuns){
                 let alreadyRunningWorkflowRuns = await getAlreadyRunningWorkflowruns(workflowId, myDatabaseHelper);
@@ -250,8 +252,10 @@ async function modifyInputForCreateOrUpdateWorkflowRunToRunning(input: Partial<W
                     // never the case, because we checked before, but just to be sure
                     throw new Error("-- No WorkflowRunJobInterface found for workflowId: "+workflowId);
                 } else {
+                    console.log("Handling workflow_runs for workflowId: "+workflowId);
                     let result = await workflowRunJobInterface.handleWorkflowRunsWantToRun(input, workflowRuns, alreadyRunningWorkflowRuns);
                     if(result.errorMessage){
+                        console.error("Error while setting workflow_runs to running: "+result.errorMessage);
                         throw new Error("Error while setting workflow_runs to running: "+result.errorMessage);
                     }
                 }
@@ -271,12 +275,12 @@ async function handleActionWorkflowRunUpdatedOrCreated(payload: Partial<Workflow
 async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<WorkflowsRuns>, myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[], apiContext: any, eventContext: any): Promise<void> {
     myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     if(payload.state===WORKFLOW_RUN_STATE.RUNNING){
-        //console.log("Action: WorkflowRun update to running");
+        console.log("Action: WorkflowRun update to running");
         let item_ids = keys as PrimaryKey[];
-        //console.log("item_ids: "+item_ids);
+        console.log("item_ids: "+item_ids);
         let existingWorkflowRuns = await myDatabaseHelper.getWorkflowsRunsHelper().readMany(item_ids);
         let dictWorkflowIdToWorkflowRuns = getDictWorkflowIdToWorkflowRuns(existingWorkflowRuns) as {[p: string]: WorkflowsRuns[]};
-        //console.log("dictWorkflowIdToWorkflowRuns: ");
+        console.log("dictWorkflowIdToWorkflowRuns: ");
         //console.log(JSON.stringify(dictWorkflowIdToWorkflowRuns, null, 2));
         for(let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)){
             const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
@@ -286,13 +290,23 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                     throw new Error("No WorkflowRunJobInterface found for workflowId: "+workflowId);
                 } else {
                     for(let workflowRun of workflowRuns){
-                        //console.log("-- Running workflowRun: "+workflowRun.id);
+                        console.log("-- Running workflowRun: "+workflowRun.id);
                         let date_started = new Date().toISOString()
                         await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRun.id, {
                             date_started: date_started,
                         });
 
-                        let result = await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, new WorkflowRunLogger(workflowRun, myDatabaseHelper));
+                        console.log("About to run job for workflowRun: "+workflowRun.id);
+                        let result: Partial<WorkflowsRuns> = workflowRun
+                        let logger = new WorkflowRunLogger(workflowRun, myDatabaseHelper);
+                        try{
+                            await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, logger);
+                        } catch (e: any){
+                            result = logger.getFinalLogWithStateAndParams({
+                                state: WORKFLOW_RUN_STATE.FAILED,
+                                log: "Error while running workflow: "+e.message
+                            });
+                        }
                         let legalStates = [WORKFLOW_RUN_STATE.SUCCESS, WORKFLOW_RUN_STATE.FAILED, WORKFLOW_RUN_STATE.SKIPPED, WORKFLOW_RUN_STATE.DELETE] as string[];
                         let hasResultLegalState = false;
                         if(!!result.state && legalStates.includes(result.state)){
@@ -366,6 +380,7 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
 
     // Filter: WorkflowRun created - setzt log, output, date_finished, date_started auf null und state auf "pending"
     filter<Partial<WorkflowsRuns>>(CollectionNames.WORKFLOWS_RUNS+'.items.create', async (input, {keys, collection}, eventContext) => {
+        console.log("WorkflowRun created");
         if(input.state===undefined){ // default state is "running"
             // TODO: Fetch database schema and look what the default value is
             input.state = WORKFLOW_RUN_STATE.RUNNING;
@@ -373,6 +388,7 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
 
         if(input.state===WORKFLOW_RUN_STATE.RUNNING){
             let dictWorkflowIdToWorkflowRuns = getDictWorkflowIdToWorkflowRuns([input]);
+            console.log("modifyInputForCreateOrUpdateWorkflowRunToRunning");
             input = await modifyInputForCreateOrUpdateWorkflowRunToRunning(input, dictWorkflowIdToWorkflowRuns, myDatabaseHelper);
         }
         return input;
