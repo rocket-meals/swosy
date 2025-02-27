@@ -60,7 +60,6 @@ export class ParseSchedule {
     private logger: WorkflowRunLogger;
 
     constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
-        console.log("Food Parse Schedule Constructor");
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
         this.logger = logger;
@@ -73,26 +72,26 @@ export class ParseSchedule {
     }
 
     async parse(): Promise<Partial<WorkflowsRuns>> {
-        console.log("Start ParseSchedule and setting first log");
+        //console.log("Start ParseSchedule and setting first log");
         await this.logger.appendLog("Starting");
-        console.log("Start ParseSchedule and setting first log - done");
+        //console.log("Start ParseSchedule and setting first log - done");
 
         let markingsJSONList: MarkingsTypeForParser[] = [];
 
         try {
             if(!!this.markingParser){
-                console.log("Create Needed Data for MarkingParser");
+                //console.log("Create Needed Data for MarkingParser");
                 await this.logger.appendLog("Create Needed Data for MarkingParser");
                 await this.markingParser.createNeededData()
                 await this.logger.appendLog("Update Markings");
-                console.log("Get Markings JSON List");
+                //console.log("Get Markings JSON List");
                 markingsJSONList = await this.markingParser.getMarkingsJSONList();
-                console.log("Update Markings");
+                //console.log("Update Markings");
                 await this.updateMarkings(markingsJSONList);
             }
 
             if(!!this.foodParser){
-                console.log("Create Needed Data for FoodParser");
+                //console.log("Create Needed Data for FoodParser");
                 await this.logger.appendLog("Create Needed Data for FoodParser");
                 await this.foodParser.createNeededData(markingsJSONList)
 
@@ -100,10 +99,11 @@ export class ParseSchedule {
                 let foodsJSONList = await this.foodParser.getFoodsListForParser();
                 let foodofferListForParser = await this.foodParser.getFoodoffersForParser();
                 let currentMealOffersHash = new WorkflowResultHash(HashHelper.hashFromObject(foodofferListForParser));
-                await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash);
+                await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash.getHash());
 
-                console.log("Get Previous Meal Offers Hash");
+                //console.log("Get Previous Meal Offers Hash");
                 let previousMealOffersHash = await this.getPreviousMealOffersHash();
+                //console.log("Previous Meal Offers Hash: " + previousMealOffersHash);
                 // check if previousMealOffersHash is Error
                 if(WorkflowResultHash.isError(previousMealOffersHash)){
                     console.log("Previous Meal Offers Hash is Error");
@@ -113,7 +113,7 @@ export class ParseSchedule {
                     });
                 }
 
-                await this.logger.appendLog("Previous meal offers hash: " + previousMealOffersHash);
+                await this.logger.appendLog("Previous meal offers hash: " + previousMealOffersHash.getHash());
 
                 const markingsExclusionsHelper = this.myDatabaseHelper.getMarkingsExclusionsHelper();
 

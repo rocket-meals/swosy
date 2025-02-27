@@ -29,7 +29,7 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
      * @throws {Error}
      */
     async getPreviousResultHash(workflowRun: WorkflowsRuns, logger: WorkflowRunLogger): Promise<WorkflowResultHash | Error> {
-        console.log("getPreviousResultHash");
+        //console.log("getPreviousResultHash");
         // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
         // if there is no successful run, we return null
         let workflowId: string | undefined;
@@ -45,8 +45,8 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
             return new WorkflowResultHash(null);
         }
 
-        console.log("getPreviousResultHash workflowId: ", workflowId);
-        console.log("Now calling readByQuery");
+        //console.log("getPreviousResultHash workflowId: ", workflowId);
+        //console.log("Now calling readByQuery");
         return await this.readByQuery({
             filter: {
                 workflow: {
@@ -66,14 +66,14 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
             sort: ['-date_finished'], // sort by date_finished descending order - so we get the latest run first
             limit: 1
         }).then((workflowRuns) => {
-            console.log("getPreviousResultHash workflowRuns readByQuery Finished");
-            console.log("workflowRuns: ")
-            console.log(workflowRuns);
+            //console.log("getPreviousResultHash workflowRuns readByQuery Finished");
+            //console.log("workflowRuns: ")
+            //console.log(workflowRuns);
             let workflowRun = workflowRuns[0];
             return new WorkflowResultHash(workflowRun?.result_hash);
         }).catch(async (exception: any) => {
-            console.log("getPreviousResultHash workflowRuns readByQuery Error");
-            console.log(exception.message);
+            //console.log("getPreviousResultHash workflowRuns readByQuery Error");
+            //console.log(exception.message);
             await logger.appendLog("Error while getting previous result hash: " + exception?.toString());
             return new Error("Error while getting previous result hash: " + exception?.toString());
         });

@@ -275,12 +275,12 @@ async function handleActionWorkflowRunUpdatedOrCreated(payload: Partial<Workflow
 async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<WorkflowsRuns>, myDatabaseHelper: MyDatabaseHelper, keys: PrimaryKey[], apiContext: any, eventContext: any): Promise<void> {
     myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
     if(payload.state===WORKFLOW_RUN_STATE.RUNNING){
-        console.log("Action: WorkflowRun update to running");
+        //console.log("Action: WorkflowRun update to running");
         let item_ids = keys as PrimaryKey[];
-        console.log("item_ids: "+item_ids);
+        //console.log("item_ids: "+item_ids);
         let existingWorkflowRuns = await myDatabaseHelper.getWorkflowsRunsHelper().readMany(item_ids);
         let dictWorkflowIdToWorkflowRuns = getDictWorkflowIdToWorkflowRuns(existingWorkflowRuns) as {[p: string]: WorkflowsRuns[]};
-        console.log("dictWorkflowIdToWorkflowRuns: ");
+        //console.log("dictWorkflowIdToWorkflowRuns: ");
         //console.log(JSON.stringify(dictWorkflowIdToWorkflowRuns, null, 2));
         for(let workflowId of Object.keys(dictWorkflowIdToWorkflowRuns)){
             const workflowRuns = dictWorkflowIdToWorkflowRuns[workflowId];
@@ -290,7 +290,7 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                     throw new Error("No WorkflowRunJobInterface found for workflowId: "+workflowId);
                 } else {
                     for(let workflowRun of workflowRuns){
-                        console.log("-- Running workflowRun: "+workflowRun.id);
+                        //console.log("-- Running workflowRun: "+workflowRun.id);
                         let date_started = new Date().toISOString()
                         await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRun.id, {
                             date_started: date_started,
@@ -300,25 +300,27 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                         let result: Partial<WorkflowsRuns> = workflowRun
                         let logger = new WorkflowRunLogger(workflowRun, myDatabaseHelper);
                         try{
-                            console.log("About to run job for workflowRun: "+workflowRun.id);
-                            await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, logger);
+                            //console.log("About to run job for workflowRun: "+workflowRun.id);
+                            result = await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, logger);
                         } catch (e: any){
                             console.log("Error while running workflow: "+e.message);
                             result = logger.getFinalLogWithStateAndParams({
-                                state: WORKFLOW_RUN_STATE.FAILED,
-                                log: "Error while running workflow: "+e.message
+                                state: WORKFLOW_RUN_STATE.FAILED
                             });
                         }
-                        console.log("WorkflowRun finished: "+workflowRun.id);
+                        //console.log("WorkflowRun finished: "+workflowRun.id);
                         let legalStates = Object.values(WORKFLOW_RUN_STATE) as string[];
                         let hasResultLegalState = false;
-                        if(!!result.state && legalStates.includes(result.state)){
+                        if(!!result.state &&
+                            legalStates.includes(result.state) && // check if state is a legal state
+                            result.state!==WORKFLOW_RUN_STATE.RUNNING // and not still running
+                        ){
                             hasResultLegalState = true;
                         }
                         if(!hasResultLegalState){
                             result.state = WORKFLOW_RUN_STATE.FAILED;
                         }
-                        console.log("Had result legal state: "+hasResultLegalState);
+                        //console.log("Had result legal state: "+hasResultLegalState);
 
                         result.date_started = date_started; // make sure that date_started is not overwritten
                         result.date_finished = new Date().toISOString();
