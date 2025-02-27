@@ -106,6 +106,7 @@ export class ParseSchedule {
                 let previousMealOffersHash = await this.getPreviousMealOffersHash();
                 // check if previousMealOffersHash is Error
                 if(WorkflowResultHash.isError(previousMealOffersHash)){
+                    console.log("Previous Meal Offers Hash is Error");
                     await this.logger.appendLog("Error: " + previousMealOffersHash.toString());
                     return this.logger.getFinalLogWithStateAndParams({
                         state: WORKFLOW_RUN_STATE.FAILED,
