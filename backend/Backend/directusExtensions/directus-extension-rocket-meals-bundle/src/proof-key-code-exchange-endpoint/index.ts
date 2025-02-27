@@ -6,6 +6,7 @@ import {Knex} from "knex";
 import {RedirectWhitelistHelper} from "../helpers/RedirectWhitelistHelper";
 import {ApiContext} from "../helpers/ApiContext"; // Use Node.js crypto module for secure comparisons
 import {createKv, KvLocal, KvRedis} from '@directus/memory';
+import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 
 const env = process.env;
 const PUBLIC_URL = env.PUBLIC_URL || ''; // e.g. http://rocket-meals.de/rocket-meals/api or empty string
@@ -193,7 +194,7 @@ async function generateRefreshToken(directus_session_token: string, accountabili
 	const { nanoid } = await import('nanoid');
 
 	const refreshToken = nanoid(64);
-	const msRefreshTokenTTL: number = ms(String(env['REFRESH_TOKEN_TTL'])) || 0;
+	const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
 	const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
 
 	await knex('directus_sessions').insert({

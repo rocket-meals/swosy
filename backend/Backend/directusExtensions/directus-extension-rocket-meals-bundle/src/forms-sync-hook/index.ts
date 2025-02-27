@@ -271,16 +271,16 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                         state: FormSubmissionState.CLOSED
                     });
                 } catch (e: any){
-                    console.error("Error while sending mail after form submission state syncing: " + e.message);
+                    console.error("Error while sending mail after form submission state syncing: " + e.toString());
                     console.error(e);
                 }
-                    // set state to closed on error
-                    console.log("Set form submission state to closed on error");
-                    await myDatabaseHelper.getFormsSubmissionsHelper().updateOneItemWithoutHookTrigger({
-                        id: formSubmission.id
-                    }, {
-                        state: FormSubmissionState.CLOSED,
-                    });
+                // set state to closed on error
+                console.log("Set form submission state to closed on error");
+                await myDatabaseHelper.getFormsSubmissionsHelper().updateOneItemWithoutHookTrigger({
+                    id: formSubmission.id
+                }, {
+                    state: FormSubmissionState.CLOSED,
+                });
             }
         }
     })
@@ -308,8 +308,10 @@ async function sendFormExtractMail(
     let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, myDatabaseHelper);
     let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
 
+    console.log("recipient_emails: ");
+    console.log(recipient_emails);
     for(let recipient_email of recipient_emails){
-
+        console.log("Send mail to: " + recipient_email);
         let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", myDatabaseHelper);
         let attachments = {
           "create": [
@@ -333,8 +335,6 @@ async function sendFormExtractMail(
             attachments: attachments
         }
         console.log("Send mail to: " + recipient_email);
-        console.log("Mail content: ")
-        console.log(mail.markdown_content);
         let mail_id = await myDatabaseHelper.sendMail(mail);
         console.log("Mail id: " + mail_id);
     }

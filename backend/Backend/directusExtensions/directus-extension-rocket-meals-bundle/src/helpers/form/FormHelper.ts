@@ -87,10 +87,13 @@ export class FormHelper {
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
         let markdownContent = "";
 
-        console.log("generateMarkdownContentFromForm")
+        // access the resource without authentication, by using the internal asset URL, since we are at the backend
+        let options = DirectusFilesAssetHelper.getOptionsInternal() // use internal server URL
 
-        console.log("formExtractRelevantInformation")
-        console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
+        console.log("generateMarkdownContentFromForm start")
+
+        //console.log("formExtractRelevantInformation")
+        //console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
 
         markdownContent += MarkdownHelper.EXAMPLE_MARKDOWN+`
         
@@ -111,7 +114,7 @@ export class FormHelper {
 
             let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
             if(formAnswerValueImage){
-                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
+                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface, options);
                 markdownContent += `![${fieldName}](${imageUrl})`;
                 markdownContent += `
                 `
@@ -121,7 +124,8 @@ export class FormHelper {
             let formAnswerValueFiles = formExtractRelevantInformationSingle.form_answer.value_files;
             if(formAnswerValueFiles){
                 for(let formAnswerValueFile of formAnswerValueFiles){
-                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface);
+                    // access the resource without authentication, by using the internal asset URL, since we are at the backend
+                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface, options);
                     markdownContent += `![${fieldName}](${imageUrl})`;
                     markdownContent += `
                     `
@@ -131,8 +135,9 @@ export class FormHelper {
 
         }
 
-        console.log("markdownContent")
-        console.log(markdownContent)
+        console.log("generateMarkdownContentFromForm end")
+        //console.log("markdownContent")
+        //console.log(markdownContent)
 
         return markdownContent;
     }
@@ -140,8 +145,14 @@ export class FormHelper {
     public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
         let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
         let template = DEFAULT_HTML_TEMPLATE;
-        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
-        let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html);
+        let options = HtmlGenerator.getHtmlGeneratorOptionsInternal();
+        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, options, template);
+
+        let requestOptions = {
+            bearerToken: await myDatabaseHelperInterface.getAdminBearerToken()
+        }
+
+        let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
         return pdfBuffer;
     }
 }

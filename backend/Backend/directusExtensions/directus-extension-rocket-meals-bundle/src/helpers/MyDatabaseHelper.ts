@@ -50,6 +50,9 @@ import {EventContext as EventContextForFlows} from "@directus/extensions/node_mo
 import {ShareServiceHelper} from "./ShareServiceHelper";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 import {EnvVariableHelper} from "./EnvVariableHelper";
+import ms from "ms";
+import jwt from 'jsonwebtoken';
+import {NanoidHelper} from "./NanoidHelper";
 
 export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
@@ -63,13 +66,69 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
         // its better to use the eventContext, because of reusing the database connection instead of creating a new one
     }
 
+    async getAdminBearerToken(): Promise<string | undefined> {
+        let usersHelper = await this.getUsersHelper();
+        let adminEmail = EnvVariableHelper.getAdminEmail();
+        let adminUser = await usersHelper.findFirstItem({
+            email: adminEmail,
+            provider: "default",
+        })
+        const secret = EnvVariableHelper.getSecret();
+        if(!adminUser){
+            console.error("Admin user not found")
+            return undefined;
+        }
+
+        const refreshToken = await NanoidHelper.getNanoid(64);
+        const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
+        const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
+
+        let knex = this.apiContext.database;
+
+        // Insert session into Directus
+        await knex('directus_sessions').insert({
+            token: refreshToken,
+            user: adminUser.id, // Required, cannot be NULL
+            expires: refreshTokenExpiration,
+            ip: null,
+            user_agent: null,
+            origin: null,
+        });
+
+        // JWT payload
+        const tokenPayload = {
+            id: adminUser.id,
+            role: adminUser.role,
+            app_access: true,
+            admin_access: true,
+            session: refreshToken, // Attach the session
+        };
+
+        // Sign JWT with Directus secret
+        const accessToken = jwt.sign(tokenPayload, secret, {
+            expiresIn: EnvVariableHelper.getAccessTokenTTL(),
+            issuer: 'directus',
+        });
+
+        return `${accessToken}`;
+
+    }
+
     async getServerInfo() {
         const serverServiceCreator = new ServerServiceCreator(this.apiContext);
         return await serverServiceCreator.getServerInfo();
     }
 
-    getServerUrl(): string | undefined {
-        return EnvVariableHelper.getEnvVariable("PUBLIC_URL");
+    getServerUrl(): string {
+        let defaultServerUrl = 'http://127.0.0.1:8055'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
+        // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/app/vite.config.js#L64
+
+        return EnvVariableHelper.getEnvVariable("PUBLIC_URL") || defaultServerUrl;
+    }
+
+    getServerPort(): string {
+        let defaultServerPort = "8055";
+        return EnvVariableHelper.getEnvVariable("PORT") || defaultServerPort;
     }
 
     getAppSettingsHelper() {

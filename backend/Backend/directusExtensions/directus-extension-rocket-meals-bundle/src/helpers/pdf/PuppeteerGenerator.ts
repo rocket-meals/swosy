@@ -1,4 +1,4 @@
-import { PdfGeneratorOptions } from "./PdfGeneratorHelper";
+import {PdfGeneratorOptions, RequestOptions} from "./PdfGeneratorHelper";
 import { default as puppeteerCore } from "puppeteer-core";
 
 export class PuppeteerGenerator {
@@ -9,7 +9,7 @@ export class PuppeteerGenerator {
         return this.PuppeteerForJest || this.PuppeteerCore;
     }
 
-    static async generatePdfFromHtmlPuppeteer(html: string, options: PdfGeneratorOptions): Promise<Buffer> {
+    static async generatePdfFromHtmlPuppeteer(html: string, requestOptions: RequestOptions, options: PdfGeneratorOptions): Promise<Buffer> {
         let browser;
         let puppeteer = PuppeteerGenerator.getPuppeteerLib();
 
@@ -58,6 +58,20 @@ export class PuppeteerGenerator {
                     console.error(`Image failed to load: ${request.url()}`);
                 }
             });
+
+            console.log("Bearer token: " + requestOptions.bearerToken);
+
+            // Intercept requests to add Authorization header
+            if (requestOptions.bearerToken) {
+                await page.setRequestInterception(true);
+                page.on("request", (request: any) => {
+                    const headers = {
+                        ...request.headers(),
+                        Authorization: `Bearer ${requestOptions.bearerToken}`
+                    };
+                    request.continue({ headers });
+                });
+            }
 
             await page.setContent(html, { waitUntil: "networkidle0" });
 

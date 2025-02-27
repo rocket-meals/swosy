@@ -5,7 +5,7 @@ import {PathHelper} from "../PathHelper";
 import {MarkdownHelper} from "./MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
 import {ServerInfo} from "../ItemsServiceCreator";
-import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
+import {DirectusFilesAssetHelper, DirectusFilesAssetHelperOptions} from "../DirectusFilesAssetHelper";
 
 export enum HtmlTemplatesEnum {
     BASE_GERMAN = "base-german",
@@ -29,6 +29,7 @@ export const DEFAULT_HTML_TEMPLATE = HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONT
 export const HTML_TEMPLATE_FILE_ENDING = '.liquid';
 
 
+export type HtmlGeneratorOptions = {} & DirectusFilesAssetHelperOptions;
 
 export class HtmlGenerator {
 
@@ -36,13 +37,34 @@ export class HtmlGenerator {
         return PathHelper.getPathToLiquidTemplates();
     }
 
-    public static async getDefaultTemplateData(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<{[key: string]: any }> {
+    /**
+     * This method is used to generate HTML for external purposes, e.g. for emails.
+     */
+    public static getHtmlGeneratorOptionsDefault(): HtmlGeneratorOptions {
+        return {
+            ...DirectusFilesAssetHelper.getOptionsDefault()
+        }
+    }
+
+    /**
+     * This method is used to generate HTML for internal purposes, e.g. for PDF generation.
+     */
+    public static getHtmlGeneratorOptionsInternal(): HtmlGeneratorOptions {
+        let defaultOptions = this.getHtmlGeneratorOptionsDefault();
+        defaultOptions = {
+            ...defaultOptions,
+            ...DirectusFilesAssetHelper.getOptionsInternal(),
+        };
+        return defaultOptions;
+    }
+
+    public static async getDefaultTemplateData(myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, options: HtmlGeneratorOptions): Promise<{[key: string]: any }> {
         let serverInfo: ServerInfo = await myDatabaseHelperInterface.getServerInfo();
 
         const projectLogoAssetId = serverInfo?.project?.project_logo;
         let projectLogoImageUrl: string | null = null;
         if(projectLogoAssetId){
-            projectLogoImageUrl = DirectusFilesAssetHelper.getDirectAssetUrlById(projectLogoAssetId, myDatabaseHelperInterface);
+            projectLogoImageUrl = DirectusFilesAssetHelper.getDirectAssetUrlById(projectLogoAssetId, myDatabaseHelperInterface, options);
         }
 
         // https://docs.directus.io/guides/extensions/email-template.html#variables-in-templates
@@ -73,7 +95,7 @@ export class HtmlGenerator {
         }
     }
 
-    public static async generateHtml(variables: {[key: string]: any}, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, template?: HtmlTemplatesEnum | null | undefined): Promise<string> {
+    public static async generateHtml(variables: {[key: string]: any}, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, options: HtmlGeneratorOptions, template?: HtmlTemplatesEnum | null | undefined): Promise<string> {
         const rootPath = HtmlGenerator.getPathToHtmlTemplates();
 
         const liquidEngine = new Liquid({
@@ -85,7 +107,7 @@ export class HtmlGenerator {
             template = DEFAULT_HTML_TEMPLATE;
         }
 
-        const defaultTemplateData = await this.getDefaultTemplateData(myDatabaseHelperInterface);
+        const defaultTemplateData = await this.getDefaultTemplateData(myDatabaseHelperInterface, options);
 
         variables = {
             ...defaultTemplateData,

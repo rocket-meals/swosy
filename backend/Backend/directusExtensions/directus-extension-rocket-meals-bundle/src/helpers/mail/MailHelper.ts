@@ -1,13 +1,13 @@
 import {Mails} from "../../databaseTypes/types";
-import {BaseGermanMarkdownTemplateHelper, HtmlGenerator} from "../html/HtmlGenerator";
+import {BaseGermanMarkdownTemplateHelper, HtmlGenerator, HtmlGeneratorOptions} from "../html/HtmlGenerator";
 import {MyDatabaseHelperInterface, MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
 
 export class MailHelper {
 
-    public static async renderMailToHtml(mail: Partial<Mails>, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<any> {
+    public static async renderMailToHtml(mail: Partial<Mails>, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, options: HtmlGeneratorOptions): Promise<any> {
         let variables = MailHelper.getHtmlTemplateDataFromMail(mail);
         let template = HtmlGenerator.getHtmlTemplate(mail.template_name);
-        return await HtmlGenerator.generateHtml(variables, myDatabaseHelperInterface, template);
+        return await HtmlGenerator.generateHtml(variables, myDatabaseHelperInterface, options, template);
     }
 
     public static getHtmlTemplateDataFromMail(mail: Partial<Mails>): {[key: string]: any} & {mailContentFieldRenderedAsHtml?: string} {

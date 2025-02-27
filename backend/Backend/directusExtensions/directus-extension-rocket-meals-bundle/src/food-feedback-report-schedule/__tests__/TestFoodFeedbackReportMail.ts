@@ -198,7 +198,7 @@ Hier ist der Feedback Report für die Mensen. Text style *italic* und **bold**.
             template_data: report,
             markdown_content: exampleMarkdown,
             template_name: HtmlTemplatesEnum.CANTEEN_FOOD_FEEDBACK_REPORT
-        }, new MyDatabaseTestableHelper());
+        }, new MyDatabaseTestableHelper(), HtmlGenerator.getHtmlGeneratorOptionsDefault());
 
         let savePath = TestArtifacts.saveTestArtifact(hmtl, "food-feedback-report/example.html");
 

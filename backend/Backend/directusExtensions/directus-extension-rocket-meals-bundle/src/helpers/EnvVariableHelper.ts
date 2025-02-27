@@ -13,6 +13,8 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
+
+
     static getFoodSyncMode() {
         return this.getEnvVariable("FOOD_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"
     }
@@ -35,6 +37,26 @@ export class EnvVariableHelper {
 
     static getHousingContractCsvFilePath() {
         return this.getEnvVariable("HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH");
+    }
+
+    static secretCache: string | null = null;
+    static getSecret() {
+        let secretFromEnv = this.getEnvVariable("SECRET");
+        if(secretFromEnv) {
+            return secretFromEnv;
+        }
+        if(!this.secretCache) {
+            this.secretCache = "secret";
+        }
+        return this.secretCache;
+    }
+
+    static getAccessTokenTTL() {
+        return this.getEnvVariable("ACCESS_TOKEN_TTL");
+    }
+
+    static getRefreshTTL() {
+        return this.getEnvVariable("REFRESH_TOKEN_TTL");
     }
 
     static getFoodImageSyncSwosyApiServerUrl() {

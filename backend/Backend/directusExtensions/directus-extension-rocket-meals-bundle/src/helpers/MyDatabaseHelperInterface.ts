@@ -6,7 +6,9 @@ import {ServerInfo} from "./ItemsServiceCreator";
 
 export interface MyDatabaseTestableHelperInterface {
     getServerInfo(): Promise<ServerInfo>;
-    getServerUrl(): string | undefined;
+    getServerUrl(): string;
+    getServerPort(): string;
+    getAdminBearerToken(): Promise<string | undefined>;
 }
 
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
@@ -20,8 +22,16 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
         };
     }
 
-    getServerUrl(): string | undefined {
+    getServerUrl(): string {
         return 'https://127.0.0.1/rocket-meals/api';
+    }
+
+    getServerPort(): string {
+        return "8055";
+    }
+
+    async getAdminBearerToken(): Promise<string | undefined> {
+        return undefined;
     }
 }
 
