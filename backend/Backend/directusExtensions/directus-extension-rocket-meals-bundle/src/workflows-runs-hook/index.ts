@@ -296,24 +296,27 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                             date_started: date_started,
                         });
 
-                        console.log("About to run job for workflowRun: "+workflowRun.id);
+
                         let result: Partial<WorkflowsRuns> = workflowRun
                         let logger = new WorkflowRunLogger(workflowRun, myDatabaseHelper);
                         try{
+                            console.log("About to run job for workflowRun: "+workflowRun.id);
                             await workflowRunJobInterface.runJob(workflowRun, myDatabaseHelper, logger);
                         } catch (e: any){
+                            console.log("Error while running workflow: "+e.message);
                             result = logger.getFinalLogWithStateAndParams({
                                 state: WORKFLOW_RUN_STATE.FAILED,
                                 log: "Error while running workflow: "+e.message
                             });
                         }
-                        let legalStates = [WORKFLOW_RUN_STATE.SUCCESS, WORKFLOW_RUN_STATE.FAILED, WORKFLOW_RUN_STATE.SKIPPED, WORKFLOW_RUN_STATE.DELETE] as string[];
+                        console.log("WorkflowRun finished: "+workflowRun.id);
+                        let legalStates = Object.values(WORKFLOW_RUN_STATE) as string[];
                         let hasResultLegalState = false;
                         if(!!result.state && legalStates.includes(result.state)){
                             hasResultLegalState = true;
                         }
                         if(!hasResultLegalState){
-                            result.state = WORKFLOW_RUN_STATE.SUCCESS;
+                            result.state = WORKFLOW_RUN_STATE.FAILED;
                         }
 
                         result.date_started = date_started; // make sure that date_started is not overwritten

@@ -72,7 +72,9 @@ export class ParseSchedule {
     }
 
     async parse(force = false): Promise<Partial<WorkflowsRuns>> {
+        console.log("Start ParseSchedule and setting first log");
         await this.logger.appendLog("Starting");
+        console.log("Start ParseSchedule and setting first log - done");
 
         let markingsJSONList: MarkingsTypeForParser[] = [];
 
