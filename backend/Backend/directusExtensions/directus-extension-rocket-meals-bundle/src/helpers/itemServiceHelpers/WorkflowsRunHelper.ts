@@ -29,7 +29,7 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
      * @throws {Error}
      */
     async getPreviousResultHash(workflowRun: WorkflowsRuns, logger: WorkflowRunLogger): Promise<WorkflowResultHash | Error> {
-
+        console.log("getPreviousResultHash");
         // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
         // if there is no successful run, we return null
         let workflowId: string | undefined;
@@ -50,9 +50,9 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
                 workflow: {
                     _eq: workflowId
                 },
-                date_finished: {
-                    _nempty: true // not empty
-                },
+                //date_finished: { //   invalid input syntax for type timestamp with time zone: ""
+                //    _null: false // not null
+                //},
                 state: {
                     _eq: WORKFLOW_RUN_STATE.SUCCESS // only successful runs
                 },
@@ -65,7 +65,6 @@ export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
             limit: 1
         }).then((workflowRuns) => {
             let workflowRun = workflowRuns[0];
-
             return new WorkflowResultHash(workflowRun?.result_hash);
         }).catch(async (exception: unknown) => {
             await logger.appendLog("Error while getting previous result hash: " + exception?.toString());

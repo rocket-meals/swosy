@@ -81,14 +81,18 @@ export class ParseSchedule {
 
         try {
             if(!!this.markingParser){
+                console.log("Create Needed Data for MarkingParser");
                 await this.logger.appendLog("Create Needed Data for MarkingParser");
                 await this.markingParser.createNeededData()
                 await this.logger.appendLog("Update Markings");
+                console.log("Get Markings JSON List");
                 markingsJSONList = await this.markingParser.getMarkingsJSONList();
+                console.log("Update Markings");
                 await this.updateMarkings(markingsJSONList);
             }
 
             if(!!this.foodParser){
+                console.log("Create Needed Data for FoodParser");
                 await this.logger.appendLog("Create Needed Data for FoodParser");
                 await this.foodParser.createNeededData(markingsJSONList)
 
@@ -98,6 +102,7 @@ export class ParseSchedule {
                 let currentMealOffersHash = new WorkflowResultHash(HashHelper.hashFromObject(foodofferListForParser));
                 await this.logger.appendLog("Current meal offers hash: " + currentMealOffersHash);
 
+                console.log("Get Previous Meal Offers Hash");
                 let previousMealOffersHash = await this.getPreviousMealOffersHash();
                 // check if previousMealOffersHash is Error
                 if(WorkflowResultHash.isError(previousMealOffersHash)){
@@ -171,6 +176,8 @@ export class ParseSchedule {
                 state: WORKFLOW_RUN_STATE.SUCCESS,
             });
         } catch (err: any) {
+            console.log("FoodParseSchedule error");
+            console.log(err.toString())
             await this.logger.appendLog("Error: " + err.toString());
             return this.logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.FAILED,

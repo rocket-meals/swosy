@@ -318,11 +318,11 @@ async function handleActionRunningCreatedOrUpdatedWorkflow(payload: Partial<Work
                         if(!hasResultLegalState){
                             result.state = WORKFLOW_RUN_STATE.FAILED;
                         }
+                        console.log("Had result legal state: "+hasResultLegalState);
 
                         result.date_started = date_started; // make sure that date_started is not overwritten
                         result.date_finished = new Date().toISOString();
                         result.runtime_in_seconds = parseInt(""+(new Date(result.date_finished).getTime() - new Date(date_started).getTime())/1000);
-                        result.log = result.log || "Workflow Run finished";
 
                         await myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRun.id, result);
 
