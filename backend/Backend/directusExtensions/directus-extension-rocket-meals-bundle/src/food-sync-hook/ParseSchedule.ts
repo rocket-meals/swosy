@@ -60,6 +60,7 @@ export class ParseSchedule {
     private logger: WorkflowRunLogger;
 
     constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+        console.log("Food Parse Schedule Constructor");
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
         this.logger = logger;
@@ -71,7 +72,7 @@ export class ParseSchedule {
         return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
     }
 
-    async parse(force = false): Promise<Partial<WorkflowsRuns>> {
+    async parse(): Promise<Partial<WorkflowsRuns>> {
         console.log("Start ParseSchedule and setting first log");
         await this.logger.appendLog("Starting");
         console.log("Start ParseSchedule and setting first log - done");

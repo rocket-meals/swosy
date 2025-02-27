@@ -91,8 +91,11 @@ class FoodParseWorkflow extends SingleWorkflowRun {
 
             console.log("Parse schedule now creating");
             const parseSchedule = new ParseSchedule(workflowRun, myDatabaseHelper, logger, usedFoodParser, usedMarkingParser);
+            console.log("await parseSchedule.parse();");
             return await parseSchedule.parse();
         } catch (err: any) {
+            console.log("Parse schedule now creating error");
+            console.log("Error: " + err.toString());
             await logger.appendLog("Error: " + err.toString());
             return logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.FAILED,
