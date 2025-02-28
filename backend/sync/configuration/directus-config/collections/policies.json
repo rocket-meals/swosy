@@ -3,8 +3,8 @@
     "app_access": true,
     "admin_access": true,
     "enforce_tfa": false,
-    "ip_access": null,
     "description": "$t:admin_policy_description",
+    "ip_access": null,
     "icon": "verified",
     "name": "Administrator",
     "roles": [
@@ -19,8 +19,8 @@
     "app_access": false,
     "admin_access": false,
     "enforce_tfa": false,
-    "ip_access": null,
     "description": "$t:public_description",
+    "ip_access": null,
     "icon": "public",
     "name": "$t:public_label",
     "roles": [
@@ -43,8 +43,8 @@
     "app_access": true,
     "admin_access": false,
     "enforce_tfa": false,
-    "ip_access": null,
     "description": null,
+    "ip_access": null,
     "icon": "badge",
     "name": "Apartmentmanagement",
     "roles": [
@@ -59,8 +59,8 @@
     "app_access": false,
     "admin_access": false,
     "enforce_tfa": false,
-    "ip_access": null,
     "description": null,
+    "ip_access": null,
     "icon": "supervised_user_circle",
     "name": "User",
     "roles": [
@@ -79,8 +79,8 @@
     "app_access": true,
     "admin_access": false,
     "enforce_tfa": false,
-    "ip_access": null,
     "description": null,
+    "ip_access": null,
     "icon": "badge",
     "name": "Gebäudemanagement",
     "roles": [

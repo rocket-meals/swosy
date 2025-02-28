@@ -68,6 +68,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "directus-file-cleanup-hook",
+				"source": "src/file-cleanup-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "food-feedback-rating-calculate-hook",
 				"source": "src/food-feedback-rating-calculate-hook/index.ts"
 			},

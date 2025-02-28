@@ -45,7 +45,7 @@ import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
 import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
 import {WorkflowsRunHelper} from "./itemServiceHelpers/WorkflowsRunHelper";
 import {FilesServiceHelper} from "./FilesServiceHelper";
-import {EventContext as ExtentContextDirectusTypes} from "@directus/types";
+import {EventContext as ExtentContextDirectusTypes, SchemaOverview} from "@directus/types";
 import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {ShareServiceHelper} from "./ShareServiceHelper";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
@@ -64,6 +64,14 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
         // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
         this.eventContext = eventContext as ExtentContextDirectusTypes; // stupid typescript error, because of the import
         // its better to use the eventContext, because of reusing the database connection instead of creating a new one
+    }
+
+    async getSchema(): Promise<SchemaOverview | null> {
+        if(this.eventContext){
+            return this.eventContext.schema;
+        } else {
+            return await this.apiContext.getSchema();
+        }
     }
 
     async getAdminBearerToken(): Promise<string | undefined> {

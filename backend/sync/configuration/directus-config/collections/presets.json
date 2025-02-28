@@ -1,6 +1,8 @@
 [
   {
     "refresh_interval": null,
+    "filter": null,
+    "layout_options": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -12,14 +14,12 @@
         ]
       }
     },
-    "layout_options": null,
-    "filter": null,
-    "color": null,
-    "icon": "bookmark",
     "layout": "tabular",
     "search": null,
     "collection": "apartments",
     "bookmark": null,
+    "color": null,
+    "icon": "bookmark",
     "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
     "_syncId": "adf9b001-649f-4fdd-af29-2052246c27ff"
   }

@@ -44,6 +44,15 @@ export class WorkflowScheduleHelper {
         dayOfWeek: "*"
     }
 
+    static EVERY_MONTH_AT_1AM: CronObject = {
+        seconds: 0,
+        minutes: 0,
+        hours: 1,
+        dayOfMonth: 1,
+        month: "*",
+        dayOfWeek: "*"
+    }
+
     static EVERY_15_MINUTES: CronObject = {
         seconds: 0,
         minutes: "*/15",

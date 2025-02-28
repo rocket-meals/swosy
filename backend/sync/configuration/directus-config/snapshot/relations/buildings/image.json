@@ -9,7 +9,7 @@
     "one_allowed_collections": null,
     "one_collection": "directus_files",
     "one_collection_field": null,
-    "one_deselect_action": "nullify",
+    "one_deselect_action": "delete",
     "one_field": null,
     "sort_field": null
   },

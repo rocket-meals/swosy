@@ -292,9 +292,12 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
         return await itemsService.getKeysByQuery(query);
     }
 
-    async readSingleton(query: Query, opts?: QueryOptions): Promise<Partial<T>> {
+    async readSingleton(query?: Query, opts?: QueryOptions): Promise<Partial<T>> {
         let itemsService = await this.getItemsService();
-        return await itemsService.readSingleton(query, opts);
+        return await itemsService.readSingleton({
+            ...query,
+            limit: 1
+        }, opts);
     }
 
     async updateBatch(data: Partial<T>[], opts?: MutationOptions): Promise<PrimaryKey[]> {

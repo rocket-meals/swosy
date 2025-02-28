@@ -548,8 +548,8 @@ export type DirectusFiles = {
   folder?: string | DirectusFolders | null;
   height?: number | null;
   id: string;
+  is_unreferenced?: boolean | null;
   location?: string | null;
-  mails_files_id?: number | MailsFiles | null;
   metadata?: unknown | null;
   modified_by?: string | DirectusUsers | null;
   modified_on: string;
@@ -853,6 +853,7 @@ export type DirectusWebhooks = {
 
 export type FilesShares = {
   date_created?: string | null;
+  date_exires_at?: string | null;
   date_updated?: string | null;
   file?: string | DirectusFiles | null;
   id: string;

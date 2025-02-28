@@ -1,35 +1,31 @@
 {
-  "collection": "form_answers",
-  "field": "user_created",
-  "type": "uuid",
+  "collection": "files_shares",
+  "field": "date_exires_at",
+  "type": "timestamp",
   "meta": {
-    "collection": "form_answers",
+    "collection": "files_shares",
     "conditions": null,
-    "display": "user",
+    "display": null,
     "display_options": null,
-    "field": "user_created",
+    "field": "date_exires_at",
     "group": null,
     "hidden": false,
-    "interface": "select-dropdown-m2o",
+    "interface": "datetime",
     "note": null,
-    "options": {
-      "template": "{{avatar}} {{first_name}} {{last_name}}"
-    },
-    "readonly": true,
+    "options": null,
+    "readonly": false,
     "required": false,
-    "sort": 4,
-    "special": [
-      "user-created"
-    ],
+    "sort": 8,
+    "special": null,
     "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "user_created",
-    "table": "form_answers",
-    "data_type": "uuid",
+    "name": "date_exires_at",
+    "table": "files_shares",
+    "data_type": "timestamp with time zone",
     "default_value": null,
     "max_length": null,
     "numeric_precision": null,
@@ -41,7 +37,7 @@
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_users",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

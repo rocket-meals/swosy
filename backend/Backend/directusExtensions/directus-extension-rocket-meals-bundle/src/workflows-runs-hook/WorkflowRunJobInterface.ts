@@ -6,6 +6,10 @@ export type ResultHandleWorkflowRunsWantToRun = {
     errorMessage: string | undefined
 }
 
+export enum WorkflowEnum {
+    fileCleanup = "file-cleanup",
+}
+
 export class WorkflowRunLogger {
 
     private workflowRun: WorkflowsRuns;
@@ -24,6 +28,10 @@ export class WorkflowRunLogger {
         });
     }
 
+    getCurrentLog() {
+        return this.currentLog;
+    }
+
     static createLogRow(log: string) {
         return new Date().toISOString() + ": " + log + "\n";
     }
@@ -35,8 +43,10 @@ export class WorkflowRunLogger {
 
     getFinalLogWithStateAndParams(workflowrun: Partial<WorkflowsRuns>): Partial<WorkflowsRuns> {
         let result: Partial<WorkflowsRuns> = {
-            log: this.currentLog,
-            ...workflowrun
+            ...workflowrun,
+            ...{
+                log: this.currentLog
+            },
         }
         return result;
     }
