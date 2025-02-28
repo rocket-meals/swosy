@@ -8,6 +8,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {ApiContext} from "../helpers/ApiContext";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {AutoTranslationSettingsHelper} from "../helpers/itemServiceHelpers/AutoTranslationSettingsHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 export const scheduleNameAutoTranslation = "auto-translation";
 
@@ -27,7 +28,7 @@ async function getCurrentItemForTranslation(tablename: string, meta: any, transl
 	//console.log("getCurrentItemForTranslation");
 	let currentItem: any = {}; //For create we don't have a current item
 	let primaryKeys = meta?.keys || [];
-	const itemsService = await new ItemsServiceHelper<any>(apiContext, tablename);
+	const itemsService = await new ItemsServiceHelper<any>(new MyDatabaseHelper(apiContext), tablename);
 	for (let primaryKey of primaryKeys) { //For update we have a current item
 		currentItem = await itemsService.readOne(primaryKey, {fields: [translations_field+".*"]});
 		break; //we only need get the first primary key
