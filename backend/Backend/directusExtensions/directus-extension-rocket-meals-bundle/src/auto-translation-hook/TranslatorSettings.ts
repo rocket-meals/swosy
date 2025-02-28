@@ -1,4 +1,3 @@
-import {ApiContext} from "../helpers/ApiContext";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {AutoTranslationSettingsHelper} from "../helpers/itemServiceHelpers/AutoTranslationSettingsHelper";
@@ -7,14 +6,13 @@ export class TranslatorSettings {
 
     private apiKey: undefined | string | null;
     private translationSettingsService: AutoTranslationSettingsHelper;
-    private apiContext: ApiContext;
+    private myDatabaseHelper: MyDatabaseHelper;
 
-    constructor(apiContext: ApiContext) {
-        this.apiContext = apiContext;
+    constructor(myDatabaseHelper: MyDatabaseHelper){
+        this.myDatabaseHelper = myDatabaseHelper;
         this.apiKey = undefined; // To hold the API key in memory
         this.apiKey = EnvVariableHelper.getAutoTranslateApiKey();
-        const myDatabaseHelper = new MyDatabaseHelper(this.apiContext);
-        this.translationSettingsService = myDatabaseHelper.getAutoTranslationSettingsHelper();
+        this.translationSettingsService = this.myDatabaseHelper.getAutoTranslationSettingsHelper();
     }
 
     async getSettings() {

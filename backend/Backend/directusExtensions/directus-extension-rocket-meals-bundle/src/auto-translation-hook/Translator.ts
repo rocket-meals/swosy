@@ -1,16 +1,16 @@
 import {DeepLTranslator} from './DeepLTranslator';
 import {MyTranslatorInterface} from "./MyTranslatorInterface";
-import {ApiContext} from "../helpers/ApiContext";
 import {TranslatorSettings} from "./TranslatorSettings";
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 export class Translator {
     private logger: any;
     translatorSettings: TranslatorSettings;
     private translatorImplementation: undefined | MyTranslatorInterface;
 
-    constructor(translatorSettings: TranslatorSettings, apiContext: ApiContext) {
-        this.logger = apiContext.logger;
+    constructor(translatorSettings: TranslatorSettings, myDatabaseHelper: MyDatabaseHelper) {
+        this.logger = myDatabaseHelper?.apiContext?.logger;
         this.translatorSettings = translatorSettings;
     }
 

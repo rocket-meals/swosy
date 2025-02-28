@@ -66,8 +66,8 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
         // its better to use the eventContext, because of reusing the database connection instead of creating a new one
     }
 
-    async getSchema(): Promise<SchemaOverview | null> {
-        if(this.eventContext){
+    async getSchema(): Promise<SchemaOverview> {
+        if(this?.eventContext?.schema){
             return this.eventContext.schema;
         } else {
             return await this.apiContext.getSchema();

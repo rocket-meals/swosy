@@ -1,8 +1,7 @@
-import {ApiContext} from "../helpers/ApiContext";
 import {Translator} from "./Translator";
 import {TranslatorSettings} from "./TranslatorSettings";
-import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {Languages} from "../databaseTypes/types";
+import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 export class DirectusCollectionTranslator {
     static FIELD_BE_SOURCE_FOR_TRANSLATION = "be_source_for_translations";
@@ -82,7 +81,7 @@ export class DirectusCollectionTranslator {
         return languagesCodeDict;
     }
 
-    static async modifyPayloadForTranslation(currentItem: any, payload: any, translator: Translator, translatorSettings: TranslatorSettings, apiContext: ApiContext, collectionName: string, translation_field: string) {
+    static async modifyPayloadForTranslation(currentItem: any, payload: any, translator: Translator, translatorSettings: TranslatorSettings, myDatabaseHelper: MyDatabaseHelper, collectionName: string, translation_field: string) {
         //console.log("Modify Payload for Translation");
         //console.log("translation_field: ", translation_field);
 
@@ -90,7 +89,7 @@ export class DirectusCollectionTranslator {
             //console.log("There are translations to translate");
             let workPayload = JSON.parse(JSON.stringify(payload));
 
-            const schema = await apiContext.getSchema();
+            const schema = await myDatabaseHelper.getSchema();
 
             /**
               workPayload either:
@@ -215,7 +214,7 @@ export class DirectusCollectionTranslator {
                 let sourceTranslationLanguageCode = sourceTranslation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE]?.code;
                 //console.log("sourceTranslationLanguageCode: ", sourceTranslationLanguageCode);
 
-                let languagesService = new ItemsServiceHelper<Languages>(apiContext, DirectusCollectionTranslator.COLLECTION_LANGUAGES);
+                let languagesService = myDatabaseHelper.getItemsServiceHelper<Languages>(DirectusCollectionTranslator.COLLECTION_LANGUAGES);
                 let languages = await languagesService.readByQuery({});
                 if (languages.length > 0) {
                     let translationsToCreate = [];

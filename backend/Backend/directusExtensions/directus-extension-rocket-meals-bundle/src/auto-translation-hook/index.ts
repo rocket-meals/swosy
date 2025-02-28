@@ -9,14 +9,16 @@ import {ApiContext} from "../helpers/ApiContext";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {AutoTranslationSettingsHelper} from "../helpers/itemServiceHelpers/AutoTranslationSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {EventContext} from "@directus/types";
+import {CollectionNames} from "../helpers/CollectionNames";
 
 export const scheduleNameAutoTranslation = "auto-translation";
 
 const DEV_MODE = false
 
-async function getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(apiContext: ApiContext) {
-	let translatorSettings = new TranslatorSettings(apiContext);
-	let translator = new Translator(translatorSettings, apiContext);
+async function getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(myDatabaseHelper: MyDatabaseHelper) {
+	let translatorSettings = new TranslatorSettings(myDatabaseHelper);
+	let translator = new Translator(translatorSettings, myDatabaseHelper);
 	await translator.init();
 	return {
 		translatorSettings: translatorSettings,
@@ -24,11 +26,11 @@ async function getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAn
 	}
 }
 
-async function getCurrentItemForTranslation(tablename: string, meta: any, translations_field: string, apiContext: ApiContext) {
+async function getCurrentItemForTranslation(tablename: string, meta: any, translations_field: string, myDatabaseHelper: MyDatabaseHelper) {
 	//console.log("getCurrentItemForTranslation");
 	let currentItem: any = {}; //For create we don't have a current item
 	let primaryKeys = meta?.keys || [];
-	const itemsService = await new ItemsServiceHelper<any>(new MyDatabaseHelper(apiContext), tablename);
+	const itemsService = myDatabaseHelper.getItemsServiceHelper(tablename as CollectionNames);
 	for (let primaryKey of primaryKeys) { //For update we have a current item
 		currentItem = await itemsService.readOne(primaryKey, {fields: [translations_field+".*"]});
 		break; //we only need get the first primary key
@@ -36,18 +38,22 @@ async function getCurrentItemForTranslation(tablename: string, meta: any, transl
 	return currentItem;
 }
 
-async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, context: any, apiContext: ApiContext) {
+async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, myDatabaseHelper: MyDatabaseHelper) {
 	if(tablename === AutoTranslationSettingsHelper.TABLENAME){
 		// Don't translate settings
 		return payload;
 	}
 
 	//console.log("handleCreateOrUpdate");
+
+	//console.log("handleCreateOrUpdate");
 	//console.log("Table: "+tablename);
 	//console.log("Payload: ");
 	//console.log(JSON.stringify(payload, null, 2));
-	let database = context.database; //Have to get database here! https://github.com/directus/directus/discussions/13744
-	let schemaToGetTranslationFields = await apiContext.getSchema();
+	//let database = context?.database; //Have to get database here! https://github.com/directus/directus/discussions/13744
+
+	//console.log("getSchema");
+	let schemaToGetTranslationFields = await myDatabaseHelper.getSchema();
 
 	let field_special_translation = "translations";
 	let table_schema = schemaToGetTranslationFields.collections[tablename];
@@ -101,7 +107,7 @@ async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, 
 		let {
 			translatorSettings,
 			translator,
-		} = await getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(apiContext);
+		} = await getAndInitItemsServiceCreatorAndTranslatorSettingsAndTranslatorAndSchema(myDatabaseHelper);
 
 		let autoTranslate = await translatorSettings.isAutoTranslationEnabled();
 		if (autoTranslate || DEV_MODE) {
@@ -114,8 +120,8 @@ async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, 
 			let modifiedPayload = payload;
 			//console.log("["+scheduleNameAutoTranslation+"] - "+"Start translation for "+tablename+" table");
 			for(let translation_field of translations_fields){
-				let currentItem = await getCurrentItemForTranslation(tablename, meta, translation_field, apiContext);
-				modifiedPayload = await DirectusCollectionTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, translator, translatorSettings, apiContext, tablename, translation_field);
+				let currentItem = await getCurrentItemForTranslation(tablename, meta, translation_field, myDatabaseHelper);
+				modifiedPayload = await DirectusCollectionTranslator.modifyPayloadForTranslation(currentItem, modifiedPayload, translator, translatorSettings, myDatabaseHelper, tablename, translation_field);
 			}
 			//console.log("["+scheduleNameAutoTranslation+"] - "+"End translation for "+tablename+" table");
 			//console.log("Modified Payload: ");
@@ -132,10 +138,11 @@ function registerCollectionAutoTranslation(filter: any, apiContext: ApiContext) 
 	for (let event of events) {
 		filter(
 			"items." + event,
-			async (payload: any, meta: any, context: any) => {
+			async (payload: any, meta: any, context: EventContext) => {
 				let tablename = meta?.collection;
 				//console.log("Auto-Translation for "+event+" event in "+tablename);
-				return await handleCreateOrUpdate(tablename, payload, meta, context, apiContext);
+				let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
+				return await handleCreateOrUpdate(tablename, payload, meta, myDatabaseHelper);
 			}
 		);
 	}
@@ -151,9 +158,11 @@ export default defineHook(({filter, action, init, schedule}, apiContext) => {
 	action(
 		EventHelper.SERVER_START_EVENT,
 		async (meta, context) => {
+			let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
+
 			try{
-				let translatorSettings = new TranslatorSettings(apiContext);
-				let translator = new Translator(translatorSettings, apiContext);
+				let translatorSettings = new TranslatorSettings(myDatabaseHelper);
+				let translator = new Translator(translatorSettings, myDatabaseHelper);
 				await translator.init();
 
 				registerCollectionAutoTranslation(filter, apiContext);

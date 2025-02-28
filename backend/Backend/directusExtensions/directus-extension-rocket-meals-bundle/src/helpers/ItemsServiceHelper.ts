@@ -58,8 +58,9 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     }
 
     async updateOneWithoutHookTrigger(primary_key: PrimaryKey, update: Partial<T>, optsCustom?: OptsCustomType): Promise<void>{
+        console.log("Updating item without hook trigger - pre");
         let database = this.apiContext.database;
-        let table = database(this.tablename);
+        console.log("Updating item without hook trigger - post");
         await database(this.tablename).update(update).where('id', primary_key);
     }
 
