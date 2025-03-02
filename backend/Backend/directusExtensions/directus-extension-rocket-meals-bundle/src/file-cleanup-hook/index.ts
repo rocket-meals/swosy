@@ -7,6 +7,7 @@ import {DirectusFiles, WorkflowsRuns} from "../databaseTypes/types";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {Query} from "@directus/types";
+import {ByteSizeHelper} from "../helpers/ByteSizeHelper";
 
 enum FileCleanupWorkflowConfigEnum {
     delete_unreferenced_files_when_older_than_ms = "delete_unreferenced_files_when_older_than_ms",
@@ -23,6 +24,16 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
     private config: FileCleanupWorkflowConfig;
 
+    private statistics = {
+        itemsCheckedAmount: 0,
+        filesTotalAmount: 0,
+        filesTotalDiskSpace: 0,
+        filesUnreferencedAmount: 0,
+        filesUnreferencedDiskSpace: 0,
+        filesDeletedAmount: 0,
+        filesDeletedDiskSpace: 0,
+    }
+
     constructor() {
         super();
         this.config = {
@@ -36,6 +47,9 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
     async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
         await logger.appendLog("Starting file cleanup job.");
+
+
+
 
         if(!!workflowRun.input) {
             let input = JSON.parse(workflowRun.input || "{}") as FileCleanupWorkflowConfig;
@@ -65,6 +79,8 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                 limit: -1,
                 fields: ['id'], // only interested in the id
             });
+            this.statistics.filesTotalAmount = allFiles.length;
+
             await logger.appendLog(`Found ${allFiles.length} files in the database.`);
             // set all files to false
             for(let file of allFiles) {
@@ -95,6 +111,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
                             let collectionHelper = myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);
                             if(isSingleton) {
+                                this.statistics.itemsCheckedAmount++;
                                 await logger.appendLog("- Reading singleton item.");
                                 let item = await collectionHelper.readSingleton();
                                 let fieldRaw = item[fieldForDirectusFileId];
@@ -119,6 +136,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                                     }
                                 }
                                 let amountItems = await collectionHelper.countItems(query);
+                                this.statistics.itemsCheckedAmount += amountItems;
                                 await logger.appendLog(`- Found ${amountItems} items in collection ${collectionName}.`);
 
                                 let limit = 1000;
@@ -205,25 +223,41 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                     unreferencedFiles.push(fileId);
                 }
             }
+            this.statistics.filesUnreferencedAmount = unreferencedFiles.length;
 
             for(let fileId of unreferencedFiles) {
+                let file = await filesHelper.readOne(fileId);
+                let fileSize = file.filesize;
+                if(!!fileSize) {
+                    this.statistics.filesUnreferencedDiskSpace += fileSize; // 6072327 bytes => 6.07 MB is using 1MB = 1000 * 1000 bytes
+                }
+
                 await filesHelper.updateOne(fileId, {
                     [directusFiles_fieldname_is_unreferenced]: true,
                 });
-                if(this.delete_unreferenced_files_when_older_than_ms>=0) {
-                    let file = await filesHelper.readOne(fileId);
+                if(this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]>=0) {
                     if(!!file) {
                         let fileCreatedAt = file.created_on;
                         let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
-                        if(fileAge >= this.delete_unreferenced_files_when_older_than_ms) {
+                        if(fileAge >= this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
+                            await logger.appendLog("Deleting file: " + fileId);
                             await filesHelper.deleteOne(fileId);
-                            deletedFiles.push(fileId);
+                            this.statistics.filesDeletedAmount++;
+                            if(!!fileSize) {
+                                this.statistics.filesDeletedDiskSpace += fileSize;
+                            }
                         }
                     }
                 }
             }
 
-            await logger.appendLog("Files: (total: " + allFiles.length + ", unreferenced: " + unreferencedFiles.length + ", deleted: " + deletedFiles.length + ")");
+            await logger.appendLog(`Summary:`)
+            await logger.appendLog(`- Files total: ${this.statistics.filesTotalAmount}`)
+            await logger.appendLog(`- Files unreferenced: ${this.statistics.filesUnreferencedAmount}`)
+            await logger.appendLog(`- Files unreferenced disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesUnreferencedDiskSpace)}`)
+            await logger.appendLog(`- Files deleted: ${this.statistics.filesDeletedAmount}`)
+            await logger.appendLog(`- Files deleted disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesDeletedDiskSpace)}`)
+
 
             return logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.SUCCESS,
@@ -236,6 +270,8 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             });
         }
     }
+
+
 
 }
 
