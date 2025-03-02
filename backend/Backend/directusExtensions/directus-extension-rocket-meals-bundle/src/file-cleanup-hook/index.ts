@@ -228,7 +228,8 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             for(let fileId of unreferencedFiles) {
                 let file = await filesHelper.readOne(fileId);
                 let fileSize = file.filesize;
-                if(!!fileSize) {
+                console.log("fileSize: "+fileSize);
+                if(!!fileSize && !isNaN(fileSize)) {
                     this.statistics.filesUnreferencedDiskSpace += fileSize; // 6072327 bytes => 6.07 MB is using 1MB = 1000 * 1000 bytes
                 }
 
@@ -243,7 +244,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                             await logger.appendLog("Deleting file: " + fileId);
                             await filesHelper.deleteOne(fileId);
                             this.statistics.filesDeletedAmount++;
-                            if(!!fileSize) {
+                            if(!!fileSize && !isNaN(fileSize)) {
                                 this.statistics.filesDeletedDiskSpace += fileSize;
                             }
                         }
