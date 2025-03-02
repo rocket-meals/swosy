@@ -8,15 +8,26 @@ import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum
 import {CollectionNames} from "../helpers/CollectionNames";
 import {Query} from "@directus/types";
 
+enum FileCleanupWorkflowConfigEnum {
+    delete_unreferenced_files_when_older_than_ms = "delete_unreferenced_files_when_older_than_ms",
+}
+
+type FileCleanupWorkflowConfig = {
+    [FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]: number
+}
 
 export class FileCleanupWorkflow extends SingleWorkflowRun {
 
-    private delete_unreferenced_files_when_older_than_ms: number;
+    private static PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE = -1;
+    private static PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_30_DAYS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+    private config: FileCleanupWorkflowConfig;
 
     constructor() {
         super();
-        this.delete_unreferenced_files_when_older_than_ms = 30 * 24 * 60 * 60 * 1000; // 30 days
-        this.delete_unreferenced_files_when_older_than_ms = -1 // -1 means that we do not want to delete any files
+        this.config = {
+            [FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]: FileCleanupWorkflow.PARAM_DELETE_UNREFERENCED_FILES_WHEN_OLDER_THAN_MS_DONT_DELETE,
+        }
     }
 
     getWorkflowId(): string {
@@ -25,6 +36,18 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
     async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
         await logger.appendLog("Starting file cleanup job.");
+
+        if(!!workflowRun.input) {
+            let input = JSON.parse(workflowRun.input || "{}") as FileCleanupWorkflowConfig;
+            if(!!input[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]) {
+                this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms] = input[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms];
+            }
+        }
+
+        await logger.appendLog("Current configuration:");
+        await logger.appendLog(JSON.stringify(this.config, null, 2));
+        await logger.appendLog("- "+FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms+": time in ms to delete unreferenced files. -1 to disable.");
+
 
         const directusFiles_fieldname_is_unreferenced = "is_unreferenced";
 
@@ -178,16 +201,23 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             let deletedFiles: string[] = [];
             for(let fileId in dictFileIdsUsedInDatabase) {
                 if(!dictFileIdsUsedInDatabase[fileId]) { // if the file is not used
+                    await logger.appendLog("File is unreferenced: " + fileId);
                     unreferencedFiles.push(fileId);
-                    if(this.delete_unreferenced_files_when_older_than_ms>=0) {
-                        let file = await filesHelper.readOne(fileId);
-                        if(!!file) {
-                            let fileCreatedAt = file.created_on;
-                            let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
-                            if(fileAge >= this.delete_unreferenced_files_when_older_than_ms) {
-                                await filesHelper.deleteOne(fileId);
-                                deletedFiles.push(fileId);
-                            }
+                }
+            }
+
+            for(let fileId of unreferencedFiles) {
+                await filesHelper.updateOne(fileId, {
+                    [directusFiles_fieldname_is_unreferenced]: true,
+                });
+                if(this.delete_unreferenced_files_when_older_than_ms>=0) {
+                    let file = await filesHelper.readOne(fileId);
+                    if(!!file) {
+                        let fileCreatedAt = file.created_on;
+                        let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
+                        if(fileAge >= this.delete_unreferenced_files_when_older_than_ms) {
+                            await filesHelper.deleteOne(fileId);
+                            deletedFiles.push(fileId);
                         }
                     }
                 }
