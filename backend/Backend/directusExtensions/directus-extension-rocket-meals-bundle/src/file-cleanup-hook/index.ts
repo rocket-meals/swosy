@@ -94,14 +94,13 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                 let relationObj = schemaRelations[relation];
                 if(!!relationObj) {
                     let collectionName = relationObj.collection;
-                    await logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName}`);
+                    let fieldForDirectusFileId = relationObj.field;
+                    await logger.appendLog(`Checking relation progress: ${relation}/${amountRelations} - ${collectionName} - field ${fieldForDirectusFileId}`);
                     // search for related_collection is directus_files
                     if(relationObj.related_collection === "directus_files") {
                         let collectionObj = schema.collections[collectionName];
                         if(!!collectionObj){
                             let isSingleton = collectionObj.singleton;
-
-                            let fieldForDirectusFileId = relationObj.field;
                             await logger.appendLog("- Found relation to directus_files in collection: " + collectionName + " (singleton: " + isSingleton + ", field: " + fieldForDirectusFileId + ")");
                             // define the SpecificCollection type
                             type SpecificCollection = {
@@ -219,7 +218,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             let deletedFiles: string[] = [];
             for(let fileId in dictFileIdsUsedInDatabase) {
                 if(!dictFileIdsUsedInDatabase[fileId]) { // if the file is not used
-                    await logger.appendLog("File is unreferenced: " + fileId);
+                    //await logger.appendLog("File is unreferenced: " + fileId);
                     unreferencedFiles.push(fileId);
                 }
             }
@@ -253,12 +252,14 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
             await logger.appendLog(JSON.stringify(this.statistics, null, 2));
             await logger.appendLog(`Summary:`)
+            await logger.appendLog(`- Items checked: ${this.statistics.itemsCheckedAmount}`)
             await logger.appendLog(`- Files total: ${this.statistics.filesTotalAmount}`)
+            await logger.appendLog(`- Files total disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesTotalDiskSpace)}`)
             await logger.appendLog(`- Files unreferenced: ${this.statistics.filesUnreferencedAmount}`)
             await logger.appendLog(`- Files unreferenced disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesUnreferencedDiskSpace)}`)
             await logger.appendLog(`- Files deleted: ${this.statistics.filesDeletedAmount}`)
             await logger.appendLog(`- Files deleted disk space: ${ByteSizeHelper.convertBytesToReadableFormat(this.statistics.filesDeletedDiskSpace)}`)
-
+            await logger.appendLog(`- Finished file cleanup job.`);
 
             return logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.SUCCESS,
