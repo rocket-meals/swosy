@@ -73,6 +73,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             await logger.appendLog("Schema is defined.");
             await logger.appendLog("Searching for files that are used in the database.");
             let dictFileIdsUsedInDatabase: {[key: string]: boolean} = {};
+            let dictFileIdsDiskSpace: {[key: string]: number} = {};
 
             let filesHelper = myDatabaseHelper.getFilesHelper();
             let allFiles = await filesHelper.readByQuery({
@@ -215,8 +216,16 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
 
             // now we need to look for all directusFiles that exist and then compare which are not used
             let unreferencedFiles: string[] = [];
-            let deletedFiles: string[] = [];
             for(let fileId in dictFileIdsUsedInDatabase) {
+                let file = await filesHelper.readOne(fileId);
+                const fileSizeAsString = file.filesize;
+                let fileSizeAsNumber = 0
+                if(!!fileSizeAsString && !isNaN(fileSizeAsString)) {
+                    fileSizeAsNumber = parseInt(fileSizeAsString+"");
+                }
+                this.statistics.filesTotalDiskSpace += fileSizeAsNumber;
+                dictFileIdsDiskSpace[fileId] = fileSizeAsNumber;
+
                 if(!dictFileIdsUsedInDatabase[fileId]) { // if the file is not used
                     //await logger.appendLog("File is unreferenced: " + fileId);
                     unreferencedFiles.push(fileId);
@@ -225,18 +234,14 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
             this.statistics.filesUnreferencedAmount = unreferencedFiles.length;
 
             for(let fileId of unreferencedFiles) {
-                let file = await filesHelper.readOne(fileId);
-                const fileSizeAsString = file.filesize;
-                let fileSizeAsNumber = 0
-                if(!!fileSizeAsString && !isNaN(fileSizeAsString)) {
-                    fileSizeAsNumber = parseInt(fileSizeAsString+"");
-                }
+                let fileSizeAsNumber = dictFileIdsDiskSpace[fileId] || 0;
                 this.statistics.filesUnreferencedDiskSpace += fileSizeAsNumber;
 
                 await filesHelper.updateOne(fileId, {
                     [directusFiles_fieldname_is_unreferenced]: true,
                 });
                 if(this.config[FileCleanupWorkflowConfigEnum.delete_unreferenced_files_when_older_than_ms]>=0) {
+                    let file = await filesHelper.readOne(fileId);
                     if(!!file) {
                         let fileCreatedAt = file.created_on;
                         let fileAge = Date.now() - new Date(fileCreatedAt).getTime();
