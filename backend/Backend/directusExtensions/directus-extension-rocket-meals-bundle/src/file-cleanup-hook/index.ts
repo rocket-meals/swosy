@@ -253,6 +253,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                 }
             }
 
+            await logger.appendLog(JSON.stringify(this.statistics, null, 2));
             await logger.appendLog(`Summary:`)
             await logger.appendLog(`- Files total: ${this.statistics.filesTotalAmount}`)
             await logger.appendLog(`- Files unreferenced: ${this.statistics.filesUnreferencedAmount}`)

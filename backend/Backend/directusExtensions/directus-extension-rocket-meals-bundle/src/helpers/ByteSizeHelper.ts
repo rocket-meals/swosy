@@ -2,7 +2,7 @@ export class ByteSizeHelper {
 	static convertBytesToReadableFormat(bytes: number, decimals = 1) {
 		if (bytes === 0) return '0 Bytes';
 
-		const k = 1024;
+		const k = 1000; // MB = 1000^2 vs MiB = 1024^2
 		const dm = decimals < 0 ? 0 : decimals;
 		const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
