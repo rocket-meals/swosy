@@ -40,12 +40,6 @@ const HOUSING_CONTRACT_FIELDS_FOR_ID: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIE
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN
 ].sort(); // sort the keys to ensure the order is always the same, so even when the order of the fields defined above changes, the id stays the same
 
-const HOUSING_CONTRACT_FIELDS_FOR_ALIAS: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[] = [
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME,
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME,
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN
-].sort()
-
 const HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS_REQUIRED: Record<HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS, boolean> = {
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER]: true,
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME]: true,
@@ -152,24 +146,47 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         return HashHelper.hashFromObject(TL1ImportHousingContracts);
     }
 
+    private getValue(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
+        let value = housingContract[field];
+        if(!value){
+            return null;
+        }
+        return value;
+    }
+
     getAlias(housingContract: ImportHousingContract): string {
         let id = this.getHousingContractInternalCustomId(housingContract);
 
         let partialIds: (string | null)[] = [];
 
-        let sortedKeysForHousingContractCompositeId = HOUSING_CONTRACT_FIELDS_FOR_ALIAS;
-        for(let partialKey of sortedKeysForHousingContractCompositeId){
-            let partialId = this.getPartialExternalId(housingContract, partialKey);
-            if(!partialId){
-                // then return id instead
-                return id as string;
+        let wohnheimname = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME);
+        partialIds.push(wohnheimname);
+        let nachname = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME);
+        partialIds.push(nachname);
+        let mietendeRaw = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE);
+        let mietende: string | null = null;
+        if(mietendeRaw){
+            let date = new Date(mietendeRaw);
+            mietende = DateHelper.getHumanReadableDate(date, false);
+        }
+        partialIds.push(mietende);
+
+        // if any partial id is missing, return id
+        let allPartialIdsDefined = true;
+        for(let partialId of partialIds){
+            if(!allPartialIdsDefined){
+                break;
             }
-            partialIds.push(partialId);
+            if(!partialId) {
+                allPartialIdsDefined = false;
+            }
         }
 
-        return partialIds.join(" ");
-
-
+        if(allPartialIdsDefined){
+            return partialIds.join(" ");
+        } else {
+            return id || "";
+        }
     }
 
     private getPartialExternalId(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
