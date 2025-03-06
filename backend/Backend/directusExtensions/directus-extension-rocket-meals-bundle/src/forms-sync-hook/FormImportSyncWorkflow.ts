@@ -23,14 +23,13 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         await this.createNeededData(logger);
 
         const lastResultHash = await workflowRunHelper.getPreviousResultHash(workflowRun, logger);
-        await logger.appendLog("Last Result Hash: " + lastResultHash);
         if(WorkflowResultHash.isError(lastResultHash)){
             await logger.appendLog("Error getting previous result hash: " + lastResultHash.message);
             return logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.FAILED,
             });
         }
-        await logger.appendLog("Previous hash: " + lastResultHash.getHash());
+        await logger.appendLog("Last result hash: " + lastResultHash.getHash());
 
         const currentResultHash = await this.getCurrentResultHash();
         await logger.appendLog("Current Result Hash: " + currentResultHash.getHash());
