@@ -3,6 +3,7 @@ import chardet from "chardet";
 import {CSVExportParser} from "../../../food-sync-hook/CSVExportParser";
 import {HashHelper} from "../../../helpers/HashHelper";
 import iconv from 'iconv-lite';
+import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
 
 // VONUMMER: Haus-Wohnung-Wohnungsnummer
 // 420-01-05-51-6
@@ -76,7 +77,11 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         this.path_to_file = path_to_file;
     }
 
-    async readData(): Promise<Tl1ImportHousingContracts> {
+    async readData(logger?: WorkflowRunLogger): Promise<Tl1ImportHousingContracts> {
+        if(logger){
+            await logger.appendLog("Reading data from: " + this.path_to_file);
+        }
+
         // check if file exists
         const fileExists = fs.existsSync(this.path_to_file);
         if(!fileExists){
@@ -85,6 +90,9 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
 
         let encoding = chardet.detect(fs.readFileSync(this.path_to_file));
         //console.log("Encoding detected: ", encoding);
+        if(logger){
+            await logger.appendLog("Reading data from: " + this.path_to_file);
+        }
 
         if(!encoding){
             throw new Error("Could not detect encoding");

@@ -21,7 +21,7 @@ export class FormSyncHannover {
             workflowRunInterface: new FormHousingContractsWorkflowHannover(housingPath),
             myDatabaseHelper: myDatabaseHelper,
             schedule: triggerContext.schedule,
-            cronOject: WorkflowScheduleHelper.EVERY_5_MINUTES,
+            cronOject: WorkflowScheduleHelper.EVERY_HOUR,
         });
     }
 

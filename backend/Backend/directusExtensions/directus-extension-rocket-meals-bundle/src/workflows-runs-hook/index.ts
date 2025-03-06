@@ -26,6 +26,15 @@ export class WorkflowScheduleHelper {
         return cronObject.seconds + " " + cronObject.minutes + " " + cronObject.hours + " " + cronObject.dayOfMonth + " " + cronObject.month + " " + cronObject.dayOfWeek;
     }
 
+    static EVERY_HOUR: CronObject = {
+        seconds: 0,
+        minutes: 0,
+        hours: "*",
+        dayOfMonth: "*",
+        month: "*",
+        dayOfWeek: "*"
+    }
+
     static EVERY_MINUTE: CronObject = {
         seconds: 0,
         minutes: "*",

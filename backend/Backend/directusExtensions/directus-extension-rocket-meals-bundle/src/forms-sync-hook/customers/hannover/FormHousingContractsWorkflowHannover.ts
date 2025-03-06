@@ -15,6 +15,7 @@ import {
 import {DateHelper} from "../../../helpers/DateHelper";
 import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
 import {FormAnswers} from "../../../databaseTypes/types";
+import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
 
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
@@ -33,8 +34,8 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         return "housing-contract-sync-hannover";
     }
 
-    async createNeededData(): Promise<void> {
-        let data = await this.reader.readData()
+    async createNeededData(logger: WorkflowRunLogger): Promise<void> {
+        let data = await this.reader.readData(logger)
         this.contracts = data;
     }
 
