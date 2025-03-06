@@ -1,6 +1,9 @@
 // small jest test
 import {describe, expect, it} from '@jest/globals';
-import {HannoverTL1HousingTestFileReader} from "../HannoverTL1HousingTestFileReader";
+import {
+    hannoverHousingContractExamplePath,
+    HannoverTL1HousingTestFileReader
+} from "../HannoverTL1HousingTestFileReader";
 import {
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS,
     HannoverTL1HousingFileReader,
@@ -10,12 +13,24 @@ import {FormHousingContractsWorkflowHannover} from "../FormHousingContractsWorkf
 import {FIELD_VALUE_KEY_PREFIX, KeyOfFormAnswersValueFieldsType} from "../../../FormImportTypes";
 
 const testFileReader = new HannoverTL1HousingTestFileReader();
+const testWorkflow = new FormHousingContractsWorkflowHannover(hannoverHousingContractExamplePath);
 
 describe("Hannover Housing Form Test", () => {
 
     async function getData() {
         return await testFileReader.readData();
     }
+
+    it("Test Example", async () => {
+        await testWorkflow.createNeededData();
+        const data = await testWorkflow.getData();
+        expect(data).not.toBeNull();
+        expect(data.length).toBeGreaterThan(0);
+        for(let entry of data){
+            //console.log(JSON.stringify(entry, null, 2));
+            expect(entry).not.toBeNull();
+        }
+    })
 
     it("all composite keys are required", async () => {
         let sortedKeysForHousingContractCompositeId = HannoverTL1HousingFileReader.getSortedKeysForHousingContractCompositeId();

@@ -11,9 +11,9 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
         super();
     }
 
-    abstract createNeededData(logger: WorkflowRunLogger): Promise<void>;
+    abstract createNeededData(logger?: WorkflowRunLogger): Promise<void>;
     abstract getCurrentResultHash(): Promise<WorkflowResultHash>;
-    abstract getData(): Promise<FormImportSyncFormSubmissions[]>;
+    abstract getData(logger?: WorkflowRunLogger): Promise<FormImportSyncFormSubmissions[]>;
     abstract getFormInternalCustomId(): string;
     abstract getFormAlias(): string;
 
@@ -82,6 +82,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                     currentIndexOfFormSubmission++;
                     let internal_custom_id = formSubmission.internal_custom_id;
                     await logger.appendLog("Processing (" + currentIndexOfFormSubmission + "/" + amountOfFormSubmissions + "): " + internal_custom_id);
+                    await logger.appendLog(JSON.stringify(formSubmission, null, 2));
                     let searchFormSubmission: Partial<FormSubmissions> = {
                         form: form.id,
                         internal_custom_id: internal_custom_id, // identifier for the housing contract for future reference

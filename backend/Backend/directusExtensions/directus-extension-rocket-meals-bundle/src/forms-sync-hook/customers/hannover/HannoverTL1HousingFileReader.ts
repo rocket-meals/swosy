@@ -39,6 +39,12 @@ const HOUSING_CONTRACT_FIELDS_FOR_ID: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIE
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN
 ].sort(); // sort the keys to ensure the order is always the same, so even when the order of the fields defined above changes, the id stays the same
 
+const HOUSING_CONTRACT_FIELDS_FOR_ALIAS: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[] = [
+    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME,
+    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME,
+    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN
+].sort()
+
 const HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS_REQUIRED: Record<HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS, boolean> = {
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER]: true,
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME]: true,
@@ -121,8 +127,24 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         return HashHelper.hashFromObject(TL1ImportHousingContracts);
     }
 
-    getAlias(housingContract: ImportHousingContract): string | null {
-        return this.getHousingContractInternalCustomId(housingContract);
+    getAlias(housingContract: ImportHousingContract): string {
+        let id = this.getHousingContractInternalCustomId(housingContract);
+
+        let partialIds: (string | null)[] = [];
+
+        let sortedKeysForHousingContractCompositeId = HOUSING_CONTRACT_FIELDS_FOR_ALIAS;
+        for(let partialKey of sortedKeysForHousingContractCompositeId){
+            let partialId = this.getPartialExternalId(housingContract, partialKey);
+            if(!partialId){
+                // then return id instead
+                return id as string;
+            }
+            partialIds.push(partialId);
+        }
+
+        return partialIds.join(" ");
+
+
     }
 
     private getPartialExternalId(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {

@@ -34,7 +34,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         return "housing-contract-sync-hannover";
     }
 
-    async createNeededData(logger: WorkflowRunLogger): Promise<void> {
+    async createNeededData(logger?: WorkflowRunLogger): Promise<void> {
         let data = await this.reader.readData(logger)
         this.contracts = data;
     }
@@ -44,7 +44,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         return new WorkflowResultHash(hash);
     }
 
-    private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): Partial<FormAnswers> {
+    private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: keyof ImportHousingContract): Partial<FormAnswers> {
         let value_raw = contract[key];
 
         switch (key) {
@@ -73,7 +73,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
     public static getFormImportSyncFormAnswer(contract: ImportHousingContract, key: keyof ImportHousingContract): FormImportSyncFormAnswer {
         let result: FormImportSyncFormAnswer = {
             external_import_id: key,
-            ...FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswerValue(contract, key as HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS)
+            ...FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswerValue(contract, key)
         };
 
         return result;
@@ -81,18 +81,17 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
 
     private getFormImportSyncFormAnswers(contract: ImportHousingContract): FormImportSyncFormAnswers {
         let formAnswers: FormImportSyncFormAnswers = [];
-        for (let key in contract) {
-            if (Object.prototype.hasOwnProperty.call(contract, key)) { // Ensure the key belongs to the object itself
-                let formAnswer = FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswer(contract, key as keyof ImportHousingContract);
-                formAnswers.push(formAnswer);
-            }
+        let contractKeys = Object.keys(contract) as HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[];
+        for (let key of contractKeys) {
+            let formAnswer = FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswer(contract, key);
+            formAnswers.push(formAnswer);
         }
 
         return formAnswers;
     }
 
 
-    async getData(): Promise<FormImportSyncFormSubmissions[]> {
+    async getData(logger?: WorkflowRunLogger): Promise<FormImportSyncFormSubmissions[]> {
         let result: FormImportSyncFormSubmissions[] = [];
         for (let contract of this.contracts) {
             let internal_custom_id = this.reader.getHousingContractInternalCustomId(contract);
