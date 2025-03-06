@@ -1,5 +1,5 @@
 import {FoodofferDateType} from "../food-sync-hook/FoodParserInterface";
-
+import moment from "moment-timezone";
 
 export enum Weekday {
     MONDAY = "MONDAY",
@@ -19,6 +19,10 @@ export type MySimpleDate = {
     minutes: number,
     seconds: number
     milliseconds: number
+}
+
+export enum DateHelperTimezone {
+    GERMANY = "Europe/Berlin"
 }
 
 export class DateHelper {
@@ -122,12 +126,9 @@ export class DateHelper {
         return new Date(year, month - 1, day);
     }
 
-    static formateDateToDatabaseDateOnlyString(date: Date): string {
-        // 2025-02-22
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1; // months are 0-based but directus expects 1-based // nice
-        const day = date.getDate();
-        return `${year}-${month}-${day}`;
+    static formatDDMMYYYYToDateWithTimeZone(value_raw: string, timezone: DateHelperTimezone){
+        let date_with_timezone = moment.tz(value_raw, "DD.MM.YYYY", "Europe/Berlin");
+        return date_with_timezone.toDate();
     }
 
     /**

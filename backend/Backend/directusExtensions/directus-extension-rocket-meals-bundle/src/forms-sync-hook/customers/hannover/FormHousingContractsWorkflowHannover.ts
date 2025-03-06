@@ -1,4 +1,3 @@
-import {EnvVariableHelper} from "../../../helpers/EnvVariableHelper";
 import {FormImportSyncWorkflow} from "../../FormImportSyncWorkflow";
 import {
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS,
@@ -7,15 +6,14 @@ import {
     Tl1ImportHousingContracts
 } from "./HannoverTL1HousingFileReader";
 import {
-    FormAnswersValueFieldKeys,
     FormImportSyncFormAnswer,
     FormImportSyncFormAnswers,
     FormImportSyncFormSubmissions
 } from "../../FormImportTypes";
-import {DateHelper} from "../../../helpers/DateHelper";
 import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
 import {FormAnswers} from "../../../databaseTypes/types";
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
+import {DateHelper, DateHelperTimezone} from "../../../helpers/DateHelper";
 
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
@@ -51,17 +49,9 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN:
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE:
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM:
-                // date is stored as string in format "DD.MM.YYYY"
-                //console.log("Parsing date: " + value_raw);
-                let date = DateHelper.parseDD_MM_YYYY(value_raw);
-                //console.log("Parsed date: ", date);
-                let date_as_string_without_timezone = DateHelper.formateDateToDatabaseDateOnlyString(date);
-                if(date_as_string_without_timezone.includes("NaN")){
-                    throw new Error(`Invalid date string: ${value_raw}`);
-                }
-
+                // date is already in ISO format
                 return {
-                    value_date: date_as_string_without_timezone
+                    value_date: value_raw
                 };
             default:
                 return {

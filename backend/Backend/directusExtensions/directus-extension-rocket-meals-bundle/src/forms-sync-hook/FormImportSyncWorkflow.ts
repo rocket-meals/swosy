@@ -70,6 +70,9 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                         dictFormFieldExternalImportIdToFormFieldId[external_import_id] = formField;
                     }
                 }
+                await logger.appendLog("Found " + formFields.length + " form fields.");
+                await logger.appendLog("dictFormFieldExternalImportIdToFormFieldId")
+                await logger.appendLog(JSON.stringify(dictFormFieldExternalImportIdToFormFieldId, null, 2));
 
 
                 // Now we can create the form submissions or search for existing ones
@@ -82,7 +85,6 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                     currentIndexOfFormSubmission++;
                     let internal_custom_id = formSubmission.internal_custom_id;
                     await logger.appendLog("Processing (" + currentIndexOfFormSubmission + "/" + amountOfFormSubmissions + "): " + internal_custom_id);
-                    await logger.appendLog(JSON.stringify(formSubmission, null, 2));
                     let searchFormSubmission: Partial<FormSubmissions> = {
                         form: form.id,
                         internal_custom_id: internal_custom_id, // identifier for the housing contract for future reference
@@ -90,6 +92,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                     let foundFormSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().findFirstItem(searchFormSubmission);
                     if(!foundFormSubmission){
                         await logger.appendLog("- does not exist. Creating.");
+                        await logger.appendLog(JSON.stringify(formSubmission, null, 2));
                         let alias = formSubmission.alias;
                         let createFormSubmission: Partial<FormSubmissions> = {
                             form: form.id,
@@ -103,6 +106,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                         let formAnswers = formSubmission.form_answers;
                         for(let passedFormAnswer of formAnswers){
                             let external_import_id = passedFormAnswer.external_import_id;
+                            await logger.appendLog("-- FormAnswer external_import_id: " + external_import_id);
                             let formField = dictFormFieldExternalImportIdToFormFieldId[external_import_id];
                             if(formField){
                                 createFormAnswers.push({

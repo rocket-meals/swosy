@@ -4,6 +4,7 @@ import {CSVExportParser} from "../../../food-sync-hook/CSVExportParser";
 import {HashHelper} from "../../../helpers/HashHelper";
 import iconv from 'iconv-lite';
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
+import {DateHelper, DateHelperTimezone} from "../../../helpers/DateHelper";
 
 // VONUMMER: Haus-Wohnung-Wohnungsnummer
 // 420-01-05-51-6
@@ -120,6 +121,30 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
             removeTailoringQuotes: true
         });
         let result: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
+
+        for(let i = 0; i < result.length; i++){
+            let housingContract = result[i];
+            if(housingContract){
+                result[i] = this.correctDateValues(housingContract);
+            }
+        }
+
+        return result;
+    }
+
+    private correctDateValues(housingContract: ImportHousingContract): ImportHousingContract {
+        let result: ImportHousingContract = {
+            ...housingContract
+        };
+
+        for(let key of [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]){
+            let value = housingContract[key];
+            if(value){
+                let date = DateHelper.formatDDMMYYYYToDateWithTimeZone(value, DateHelperTimezone.GERMANY);
+                result[key] = date.toISOString()
+            }
+        }
+
         return result;
     }
 

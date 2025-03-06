@@ -32,6 +32,32 @@ describe("Hannover Housing Form Test", () => {
         }
     })
 
+    it("all value_date must be in ISO format", async () => {
+        await testWorkflow.createNeededData();
+        const data = await testWorkflow.getData();
+        for(let entry of data){
+            for(let formAnswer of entry.form_answers){
+                let value_date = formAnswer.value_date;
+                if(value_date){
+                    expect(value_date).toBeDefined();
+                    expect(value_date).not.toBe("");
+                    expect(value_date).not.toBe(NaN+"");
+
+                    let date = new Date(value_date);
+                    let isoString = date.toISOString();
+                    let isIsoStringSameAsValueDate = isoString === value_date;
+                    if(!isIsoStringSameAsValueDate){
+                        console.log("Date is not in ISO format: ", value_date);
+                        console.log("ISO format: ", isoString);
+                        console.log(JSON.stringify(entry, null, 2));
+                    }
+                    expect(isIsoStringSameAsValueDate).toBe(true);
+                }
+            }
+
+        }
+    })
+
     it("all composite keys are required", async () => {
         let sortedKeysForHousingContractCompositeId = HannoverTL1HousingFileReader.getSortedKeysForHousingContractCompositeId();
         for(let key of sortedKeysForHousingContractCompositeId){
