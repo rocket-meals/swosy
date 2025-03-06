@@ -106,7 +106,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                         let formAnswers = formSubmission.form_answers;
                         for(let passedFormAnswer of formAnswers){
                             let external_import_id = passedFormAnswer.external_import_id;
-                            await logger.appendLog("-- FormAnswer external_import_id: " + external_import_id);
+                            //await logger.appendLog("-- FormAnswer external_import_id: " + external_import_id);
                             let formField = dictFormFieldExternalImportIdToFormFieldId[external_import_id];
                             if(formField){
                                 createFormAnswers.push({
