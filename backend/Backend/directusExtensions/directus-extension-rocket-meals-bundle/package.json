@@ -195,6 +195,7 @@
 		"chardet": "^2.0.0",
 		"cheerio": "^1.0.0-rc.12",
 		"deepl-node": "^1.13.1",
+		"iconv-lite": "^0.6.3",
 		"js-yaml": "^4.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"markdown-it": "^14.1.0",

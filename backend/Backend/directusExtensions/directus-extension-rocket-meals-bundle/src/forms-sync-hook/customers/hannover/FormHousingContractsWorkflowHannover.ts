@@ -14,6 +14,7 @@ import {
 } from "../../FormImportTypes";
 import {DateHelper} from "../../../helpers/DateHelper";
 import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
+import {FormAnswers} from "../../../databaseTypes/types";
 
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
@@ -42,12 +43,8 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         return new WorkflowResultHash(hash);
     }
 
-    public static getFormImportSyncFormAnswer(contract: ImportHousingContract, key: keyof ImportHousingContract): FormImportSyncFormAnswer {
+    private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): Partial<FormAnswers> {
         let value_raw = contract[key];
-
-        let result: FormImportSyncFormAnswer = {
-            external_import_id: key
-        };
 
         switch (key) {
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN:
@@ -62,18 +59,21 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
                     throw new Error(`Invalid date string: ${value_raw}`);
                 }
 
-                result.value_date = date_as_string_without_timezone;
-                break;
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_EMAIL:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSONENNUMMER:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_VORNAME:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_TELEFON_MOBILE:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME:
-                result.value_string = value_raw;
-                break;
+                return {
+                    value_date: date_as_string_without_timezone
+                };
+            default:
+                return {
+                    value_string: value_raw
+                };
         }
+    }
+
+    public static getFormImportSyncFormAnswer(contract: ImportHousingContract, key: keyof ImportHousingContract): FormImportSyncFormAnswer {
+        let result: FormImportSyncFormAnswer = {
+            external_import_id: key,
+            ...FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswerValue(contract, key as HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS)
+        };
 
         return result;
     }
@@ -95,15 +95,17 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         let result: FormImportSyncFormSubmissions[] = [];
         for (let contract of this.contracts) {
             let internal_custom_id = this.reader.getHousingContractInternalCustomId(contract);
-            // add form interal custom id as prefix
-            internal_custom_id = `${this.getFormInternalCustomId()}-${internal_custom_id}`;
+            if(internal_custom_id !== null){
+                // add form interal custom id as prefix
+                internal_custom_id = `${this.getFormInternalCustomId()}-${internal_custom_id}`;
 
-            let formSubmission: FormImportSyncFormSubmissions = {
-                alias: this.reader.getAlias(contract),
-                internal_custom_id: internal_custom_id,
-                form_answers: this.getFormImportSyncFormAnswers(contract)
-            };
-            result.push(formSubmission);
+                let formSubmission: FormImportSyncFormSubmissions = {
+                    alias: this.reader.getAlias(contract),
+                    internal_custom_id: internal_custom_id,
+                    form_answers: this.getFormImportSyncFormAnswers(contract)
+                };
+                result.push(formSubmission);
+            }
         }
         return result;
     }

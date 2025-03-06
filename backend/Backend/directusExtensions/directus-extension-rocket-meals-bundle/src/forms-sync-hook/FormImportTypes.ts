@@ -27,6 +27,6 @@ export type FormImportSyncFormAnswers = FormImportSyncFormAnswer[]
 
 export type FormImportSyncFormSubmissions = {
     internal_custom_id: string,
-    alias?: string,
+    alias?: string | null,
     form_answers: FormImportSyncFormAnswers
 }

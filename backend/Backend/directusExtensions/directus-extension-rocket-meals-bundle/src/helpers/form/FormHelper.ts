@@ -90,7 +90,7 @@ export class FormHelper {
         // access the resource without authentication, by using the internal asset URL, since we are at the backend
         let options = DirectusFilesAssetHelper.getOptionsInternal() // use internal server URL
 
-        console.log("generateMarkdownContentFromForm start")
+        //console.log("generateMarkdownContentFromForm start")
 
         //console.log("formExtractRelevantInformation")
         //console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
@@ -135,7 +135,7 @@ export class FormHelper {
 
         }
 
-        console.log("generateMarkdownContentFromForm end")
+        //console.log("generateMarkdownContentFromForm end")
         //console.log("markdownContent")
         //console.log(markdownContent)
 

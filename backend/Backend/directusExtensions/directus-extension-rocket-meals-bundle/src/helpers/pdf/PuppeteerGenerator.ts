@@ -59,7 +59,7 @@ export class PuppeteerGenerator {
                 }
             });
 
-            console.log("Bearer token: " + requestOptions.bearerToken);
+            //console.log("Bearer token: " + requestOptions.bearerToken);
 
             // Intercept requests to add Authorization header
             if (requestOptions.bearerToken) {
