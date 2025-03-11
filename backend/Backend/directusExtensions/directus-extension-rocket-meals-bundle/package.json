@@ -192,6 +192,7 @@
 	"dependencies": {
 		"@types/moment": "^2.13.0",
 		"@types/object-hash": "^3.0.6",
+		"base-x": "^5.0.1",
 		"chardet": "^2.0.0",
 		"cheerio": "^1.0.0-rc.12",
 		"deepl-node": "^1.13.1",
@@ -206,8 +207,8 @@
 		"p-queue": "^8.0.1",
 		"puppeteer": "^24.3.0",
 		"puppeteer-core": "^24.3.0",
-		"short-unique-id": "^5.2.0",
-		"ts-morph": "^25.0.1"
+		"ts-morph": "^25.0.1",
+		"uuid": "^11.1.0"
 	},
 	"peerDependencies": {
 		"@directus/memory": "2.0.1",
