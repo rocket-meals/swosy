@@ -6,7 +6,7 @@ import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {Washingmachines, WorkflowsRuns} from "../databaseTypes/types";
+import {Washingmachines, WashingmachinesJobs, WorkflowsRuns} from "../databaseTypes/types";
 import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {RegisterFunctions} from "@directus/extensions";
 import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
@@ -50,7 +50,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
                             // Round duration to the nearest 10-minute interval
                             const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;
 
-                            await myDatabaseHelper.getWashingmachinesJobsHelper().createOne({
+                            let partialWashingmachineJob: Partial<WashingmachinesJobs> = {
                                 date_start: current_date_stated,
                                 date_end: current_date_finished,
                                 duration_calculated: hh_mm_ss,
@@ -58,7 +58,10 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
                                 duration_in_minutes_rounded_10min_calculated: duration_rounded_10min_calculated,
                                 washingmachine: washingmachine_curent.id,
                                 apartment: washingmachine_curent.apartment
-                            });
+                            }
+
+
+                            await myDatabaseHelper.getWashingmachinesJobsHelper().createOne(partialWashingmachineJob);
                         }
 
                     }

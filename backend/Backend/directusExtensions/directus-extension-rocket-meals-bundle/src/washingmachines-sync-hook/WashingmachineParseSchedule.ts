@@ -75,11 +75,14 @@ export class WashingmachineParseSchedule {
                 additionalWashingmachineData.date_stated = null
             }
 
-            await itemsService.updateOne(foundItem.id, {
+            await this.logger.appendLog("Updating washingmachine " + external_identifier + " with alias " + newAlias);
+            let partialNewWashingmachine: Partial<Washingmachines> = {
                 ...washingmachine.basicData,
                 ...additionalWashingmachineData,
                 alias: newAlias // do not overwrite alias if it is already set
-            })
+            }
+            await this.logger.appendLog(JSON.stringify(partialNewWashingmachine, null, 2));
+            await itemsService.updateOne(foundItem.id, partialNewWashingmachine);
         }
 
     }
