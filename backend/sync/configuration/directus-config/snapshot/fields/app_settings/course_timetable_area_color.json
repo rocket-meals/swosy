@@ -13,7 +13,8 @@
     "interface": "select-color",
     "note": null,
     "options": {
-      "opacity": true
+      "opacity": true,
+      "presets": null
     },
     "readonly": false,
     "required": false,

@@ -10,6 +10,13 @@
     "note": null,
     "color": null,
     "icon": "space_dashboard",
+    "name": "Workflows",
+    "_syncId": "107ae978-0259-41e8-9bf0-3b4f0830112b"
+  },
+  {
+    "note": null,
+    "color": null,
+    "icon": "space_dashboard",
     "name": "Nutzer",
     "_syncId": "116a8172-4d9a-4e62-adeb-24160389d016"
   },

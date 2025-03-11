@@ -31,6 +31,12 @@
     },
     {
         "status": "published",
+        "name": "Polish",
+        "direction": "ltr",
+        "code": "pl-PL"
+    },
+    {
+        "status": "published",
         "name": "Russian",
         "direction": "ltr",
         "code": "ru-RU"
