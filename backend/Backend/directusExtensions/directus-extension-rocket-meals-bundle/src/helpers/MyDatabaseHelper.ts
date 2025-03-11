@@ -152,7 +152,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     }
 
     getCashregisterHelper() {
-        return new CashregisterHelper(this.apiContext);
+        return new CashregisterHelper(this);
     }
 
     getCollectionDatesLastUpdateHelper() {

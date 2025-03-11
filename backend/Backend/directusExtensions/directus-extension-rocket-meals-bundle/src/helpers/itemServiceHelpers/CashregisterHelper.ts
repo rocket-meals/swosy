@@ -1,18 +1,18 @@
-import {ApiContext} from "./../ApiContext";
 import {CollectionNames} from "./../CollectionNames";
 import {Cashregisters, CashregistersTransactions} from "../../databaseTypes/types";
 import {CashregistersTransactionsForParser} from "../../cashregister-hook/CashregisterTransactionParserInterface";
 import {ItemsServiceHelper} from "../ItemsServiceHelper";
 import {DateHelper} from "../DateHelper";
+import {MyDatabaseHelperInterface} from "../MyDatabaseHelperInterface";
 
 export class CashregisterHelper {
 
     private cashregisterServiceHelper: ItemsServiceHelper<Cashregisters>;
     private cashregisterTransactionsServiceHelper: ItemsServiceHelper<CashregistersTransactions>;
 
-    constructor(apiContext: ApiContext) {
-        this.cashregisterServiceHelper = new ItemsServiceHelper<Cashregisters>(apiContext, CollectionNames.CASHREGISTERS);
-        this.cashregisterTransactionsServiceHelper = new ItemsServiceHelper<CashregistersTransactions>(apiContext, CollectionNames.CASHREGISTERS_TRANSACTIONS);
+    constructor(myDatabaseHelper: MyDatabaseHelperInterface) {
+        this.cashregisterServiceHelper = new ItemsServiceHelper<Cashregisters>(myDatabaseHelper, CollectionNames.CASHREGISTERS);
+        this.cashregisterTransactionsServiceHelper = new ItemsServiceHelper<CashregistersTransactions>(myDatabaseHelper, CollectionNames.CASHREGISTERS_TRANSACTIONS);
     }
 
     async getCashregistersForCanteen(canteen_id: string) {
