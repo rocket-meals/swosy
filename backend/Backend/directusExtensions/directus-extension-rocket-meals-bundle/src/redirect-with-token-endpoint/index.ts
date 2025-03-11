@@ -3,6 +3,7 @@ import ms from 'ms';
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {StringHelper} from "../helpers/StringHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {NanoidHelper} from "../helpers/NanoidHelper";
 
 const SCHEDULE_NAME = "redirect_with_token";
 const env = process.env;
@@ -249,10 +250,7 @@ export default defineEndpoint({
 				/**
 				 * Start of copy: https://github.com/directus/directus/blob/main/api/src/services/authentication.ts Login
 				 */
-
-				const { nanoid } = await import('nanoid');
-
-				const refreshToken = nanoid(64);
+				const refreshToken = await NanoidHelper.getNanoid(64);
 				const msRefreshTokenTTL: number = ms(String(env['REFRESH_TOKEN_TTL'])) || 0;
 				const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
 
