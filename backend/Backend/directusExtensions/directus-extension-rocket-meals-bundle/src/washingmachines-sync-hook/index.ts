@@ -45,6 +45,15 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
                             let time_seconds = parseInt(time_diff / 1000 % 60 + "");
                             let hh_mm_ss = time_hours + ":" + time_minutes + ":" + time_seconds;
 
+                            // check if duration out of range (more than 24 hours)
+                            let isDurationOutOfRange = time_hours > 24;
+                            if (isDurationOutOfRange) {
+                                // no normal washing machine job can take more than 24 hours
+                                // therefore we will not create a washing machine job
+                                // we might have missed the start of the washing machine job
+                                return input;
+                            }
+
                             const duration_in_minutes = parseInt((time_diff / 1000 / 60)+""); // Total duration in minutes
 
                             // Round duration to the nearest 10-minute interval
