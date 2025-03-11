@@ -18,6 +18,8 @@ export class ParseSchedule {
 
     async parse(): Promise<Partial<WorkflowsRuns>>{
         await this.logger.appendLog("Starting");
+        await this.logger.appendLog("this.myDatabaseHelper.apiContext exists: "+!!this.myDatabaseHelper.apiContext);
+
         try {
             // Get all Canteens
             //console.log("UtilizationSchedule: load all canteens");
@@ -46,13 +48,16 @@ export class ParseSchedule {
         //console.log(canteen);
 
         // for every canteen create a utilization group or find it
+        await this.logger.appendLog("- Finding or creating utilization group for canteen: "+canteen?.alias);
         let utilization_group_for_canteen = await this.findOrCreateOrUpdateUtilizationGroupForCanteen(canteen)
 
+        await this.logger.appendLog("- utilization_group_for_canteen: "+utilization_group_for_canteen?.id);
         if(utilization_group_for_canteen){
             // delete all future utilization forecast entries for the canteen group
             //await this.deleteAllFutureUtilizationForecastEntries(utilization_group_for_canteen); Why should we delete all future entries? We should just update the existing ones
 
             // Have a list of all transactions
+            await this.logger.appendLog("- Getting all cashregisters for canteen: "+canteen?.alias);
             let cashregisters = await this.getAllCashregistersForCanteen(canteen);
 
             // calculate the prediction using as input: the transactions in the last x days, the canteen business hours
@@ -69,9 +74,6 @@ export class ParseSchedule {
             }
 
             for(let date of dates){
-                //console.log("")
-                //console.log("###########");
-                //console.log("Calc for: "+date);
                 await this.logger.appendLog("- Calculating forecast for date: "+date.toISOString());
 
                 await this.updateUtilizationEntryForCanteenAtDate(canteen, utilization_group_for_canteen, cashregisters, date, intervalMinutes);
