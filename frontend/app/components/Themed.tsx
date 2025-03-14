@@ -150,11 +150,11 @@ const TEXT_SIZE_MAP = createTextSizeMap(TEXT_SIZE_ORDER);
  * WARNING ! You might want to use: getLineHeightInPixelBySize instead? FontSize is only the text size without the padding which is normally added
  * @param size
  */
-export function getFontSizeInPixelBySize(size: TextSizeType | undefined): number | undefined {
+export function getFontSizeInPixelBySize(size: TextSizeType | undefined) {
 	const tokens = config.tokens;
 	const fontSize = tokens.fontSizes
 	const usedSize = size || TEXT_SIZE_DEFAULT;
-	return fontSize[usedSize]
+	return fontSize[usedSize] || fontSize[TEXT_SIZE_DEFAULT];
 }
 
 function getCorrectedLineHeightInPixelBySize(size: TextSizeType){
@@ -173,7 +173,7 @@ export function getLineHeightInPixelBySize(size: TextSizeType | undefined) {
 	//console.log("getLineHeightInPixelBySize")
 	//console.log("size: "+size)
 	//console.log("usedSize: "+usedSize)
-	return lineHeight[usedSize];
+	return lineHeight[usedSize] || lineHeight[TEXT_SIZE_DEFAULT];
 }
 
 type TextInputProps = {
@@ -346,6 +346,7 @@ export function Heading({style,...props}: TextProps) {
 
 export type MyTextProps = TextProps & {
     size?: TextSizeType | undefined;
+	sizeInPixel?: number | undefined;
     bold?: boolean;
     italic?: boolean;
     underline?: boolean;
@@ -354,15 +355,17 @@ export type MyTextProps = TextProps & {
     sub?: boolean;
     strikeThrough?: boolean;
 }
-export function Text({style, size,...props}: MyTextProps) {
+export function Text({style, size, sizeInPixel,...props}: MyTextProps) {
 	const textContrastColor = useTextContrastColor();
 	const isWeb = PlatformHelper.isWeb();
 
 	const usedSize = size || TEXT_SIZE_DEFAULT;
+	let fontSize = sizeInPixel || getFontSizeInPixelBySize(usedSize);
 
 	// @ts-ignore
 	const defaultStyle = {
-		color: textContrastColor
+		color: textContrastColor,
+		fontSize: fontSize,
 	}
 
 	if (isWeb) { // only for web since on mobile the text will break automatically
@@ -370,7 +373,7 @@ export function Text({style, size,...props}: MyTextProps) {
 		defaultStyle['wordBreak'] = 'break-word' // only for web since otherwise a long word would not break
 	}
 
-	return <DefaultText selectable={true} size={usedSize} style={[defaultStyle, style]} {...props} />;
+	return <DefaultText selectable={true} style={[defaultStyle, style]} {...props} />;
 }
 
 export type CheckboxProps = {

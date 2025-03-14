@@ -1,9 +1,11 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+	getFontSizeInPixelBySize,
 	getLineHeightInPixelBySize,
 	Heading,
 	MySpinner,
 	Text,
+	TEXT_SIZE_2_EXTRA_SMALL,
 	TEXT_SIZE_EXTRA_SMALL,
 	useViewBackgroundColor,
 	View
@@ -11,7 +13,7 @@ import {
 import {router, useGlobalSearchParams} from 'expo-router';
 import {getFoodOffersForSelectedDate} from "@/states/SynchedFoodOfferStates";
 import {useIsDemo} from "@/states/SynchedDemo";
-import {Foodoffers, Foods, FoodsCategories} from "@/helper/database/databaseTypes/types";
+import {Foodoffers, FoodsCategories} from "@/helper/database/databaseTypes/types";
 import {DateHelper} from "@/helper/date/DateHelper";
 import {useLighterOrDarkerColorForSelection, useMyContrastColor} from "@/helper/color/MyContrastColor";
 import {TranslationKeys, useTranslation} from "@/helper/translations/Translation";
@@ -30,13 +32,10 @@ import MyPrintComponent, {MyPrintButton, useStablePrintCallback} from "@/compone
 import {MySafeAreaViewForScreensWithoutHeader} from "@/components/MySafeAreaViewForScreensWithoutHeader";
 import {useFoodsAreaColor} from "@/states/SynchedAppSettings";
 import {SearchParams} from "@/helper/searchParams/SearchParams";
-import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {getRouteToWeekplanCanteen} from "@/app/(app)/foodoffers/monitor/weekplan/canteens";
 import {getRouteToWeekplan} from "@/app/(app)/foodoffers/monitor/weekplan";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
-import {CaptureOptions} from "react-native-view-shot";
 import {MarkingsRowForFood} from "@/app/(app)/foodoffers/monitor/dayplan/details";
-import {PlatformHelper} from "@/helper/PlatformHelper";
 
 const CATEGORY_UNKNOWN = "Ohne Kategorie"
 
@@ -85,6 +84,10 @@ export default function FoodplanScreen() {
 	const AMOUNT_DAYS = 7;
 	const viewBackgroundColor = useViewBackgroundColor();
 	const viewBackgroundColorLighterOrDarker = useLighterOrDarkerColorForSelection(viewBackgroundColor);
+
+	let scale = 1;
+	let lineHeight = getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL) * scale
+	let fontSize = getFontSizeInPixelBySize(TEXT_SIZE_EXTRA_SMALL) * scale
 
 	const projectColor = useProjectColor();
 	const projectContrastColor = useMyContrastColor(projectColor);
@@ -309,8 +312,8 @@ export default function FoodplanScreen() {
 			<View style={{}}>
 				<Text style={{
 					// height between multiple lines
-					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
-				}} size={TEXT_SIZE_EXTRA_SMALL}
+					lineHeight: lineHeight,
+				}} sizeInPixel={fontSize}
 					  numberOfLines={3}
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
 				>{title}</Text>
@@ -318,8 +321,8 @@ export default function FoodplanScreen() {
 			<View style={{}}>
 				<Text style={{
 					// height between multiple lines
-					lineHeight: getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL),
-				}} size={TEXT_SIZE_EXTRA_SMALL}
+					lineHeight: lineHeight,
+				}} sizeInPixel={fontSize}
 					  numberOfLines={3}
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
 				>{"("+price_information+")"}</Text>
