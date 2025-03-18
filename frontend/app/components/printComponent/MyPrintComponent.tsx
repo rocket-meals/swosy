@@ -76,10 +76,12 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
             });
 
 
+            console.log("Title:", title);
 
             printWindow.document.write(`
         <html>
         <head>
+            <title>${title}</title>
             <style>
                 ${styles} /* Kopierte Styles */
                 
@@ -114,7 +116,7 @@ export default function MyPrintComponent(props: MyPrintComponentProps) {
 
     async function captureAndShare() {
         if(PlatformHelper.isWeb()){
-            printDiv(props.printId, "fileName");
+            printDiv(props.printId, props.fileName);
         } else {
             console.error("Capture and share not implemented for native mobile");
         }
