@@ -234,6 +234,29 @@ export default function FoodplanScreen() {
 	const FLEX_WEEKDAY = 1;
 	const FLEX_CATEGORIES = 20;
 
+	let foodColumnFlexDict: {[key: string]: number} = getFoodColumnFlexDict();
+
+	/**
+	 * Nicht alle Kategorien haben Angebote. Einige Kategorien haben mehrere Angebote an einem Tag bzw. in der Woche.
+	 * Daher wird die Anzahl der Angebote in einer Kategorie gezählt und die Flex-Werte für die Kategorien berechnet.
+	 * Ein Flex mindestens 1 wird gesetzt, damit die Kategorien immer sichtbar sind.
+	 */
+	function getFoodColumnFlexDict(){
+		let allOffers = getAllOffers();
+		let sortedHeaderCategories = getSortedHeaderCategories(allOffers);
+		let foodOffersInCategories = getFoodofferInCategories(allOffers);
+
+		let foodColumnFlexDict: {[key: string]: number} = {};
+
+		for(let category of sortedHeaderCategories){
+			let foodOffersInCategory = foodOffersInCategories[category.id] || [];
+			let amountOffers = foodOffersInCategory.length;
+			foodColumnFlexDict[category.id] = amountOffers || 1;
+		}
+
+		return foodColumnFlexDict;
+	}
+
 	function getSortedHeaderCategories(allOffers: Foodoffers[] | undefined){
 		let foodOffersInCategories = getFoodofferInCategories(allOffers);
 		let sortedCategories = [];
@@ -250,14 +273,21 @@ export default function FoodplanScreen() {
 
 	}
 
+	function getFlexForCategory(category: FoodsCategories | { id: string, alias: string }){
+		let flex = foodColumnFlexDict[category.id] || 1;
+		return flex;
+	}
+
 	function renderHeaderRow(sortedHeaderCategories: (FoodsCategories | { id: string, alias: string })[]){
 		let renderedCategories = [];
 		//for(let category of sortedFoodofferCategories){
 
 
 		for(let category of sortedHeaderCategories){
+			let flex = getFlexForCategory(category);
+
 			renderedCategories.push(
-				<View style={{flex: 1, padding: DEFAULT_PADDING}}>
+				<View style={{flex: flex, padding: DEFAULT_PADDING}}>
 					<Text style={{color: projectContrastColor}}>{category.alias}</Text>
 				</View>
 			)
@@ -367,6 +397,8 @@ export default function FoodplanScreen() {
 
 		let columnIndex = 0;
 		for(let category of sortedHeaderCategories){
+			let flex = getFlexForCategory(category);
+
 			let foodOffersInCategory = foodOffersInCategories[category.id] || [];
 			let renderedOffers = [];
 			for(let offer of foodOffersInCategory){
@@ -387,7 +419,7 @@ export default function FoodplanScreen() {
 					paddingHorizontal: DEFAULT_PADDING,
 					borderRightWidth: 1,
 					borderLeftColor: viewContrastColor,
-					flex: 1,
+					flex: flex,
 					flexDirection: "column",
 				}}>
 					{renderedOffersWithPadding}
@@ -432,10 +464,8 @@ export default function FoodplanScreen() {
 		</View>
 	}
 
-	function renderWeekOffers(){
-		let output = [];
-
-		let allOffers = [];
+	function getAllOffers(){
+		let allOffers: Foodoffers[] = [];
 		if(!!weekOffers){
 			for(let i=0; i<weekOffers.length; i++){
 				let dayItem = weekOffers[i];
@@ -444,6 +474,13 @@ export default function FoodplanScreen() {
 				}
 			}
 		}
+		return allOffers;
+	}
+
+	function renderWeekOffers(){
+		let output = [];
+
+		let allOffers = getAllOffers();
 		let sortedHeaderCategories = getSortedHeaderCategories(allOffers);
 
 		output.push(renderHeaderRow(sortedHeaderCategories));
