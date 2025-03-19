@@ -82,6 +82,12 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         }
         if(!!tl1_co2_bewertung_string){
             combinedMarkings.push(FoodTL1ParserHannover.getCO2RatingMarkingExternalIdentifier(tl1_co2_bewertung_string));
+
+            // 19.03.2025 um 12:32 schrieb Steinhauer, Katharina
+            // Klimateller Icon wird automatisch ausgewiesen, wenn ein Gericht eine CO2-Bewertung mit A hat
+            if(tl1_co2_bewertung_string === FoodTL1ParserHannover.CO2RATING_A_VALUE) {
+                combinedMarkings.push(FoodTL1ParserHannover.KLIMA_TELLER_EXTERNAL_IDENTIFIER);
+            }
         }
 
         return combinedMarkings;
@@ -105,6 +111,14 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
         let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
         return parsedReportItem?.["SPEISE"] || null; // ATTENTION: Hannover has no specific field for foodoffer category
     }
+
+    static KLIMA_TELLER_EXTERNAL_IDENTIFIER = "kt";
+
+    /**
+     * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
+     * @param co2_bewertung_string
+     */
+    static CO2RATING_A_VALUE = "A";
 
     /**
      * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E

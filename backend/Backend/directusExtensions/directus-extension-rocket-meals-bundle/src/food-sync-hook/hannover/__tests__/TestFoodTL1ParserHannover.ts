@@ -247,6 +247,28 @@ describe("FoodTL1ParserHannover Test", () => {
         expect(foodsJson.length).toBe(1);
     });
 
+    it("Food offers with CO2_Rating A should have KlimaTeller Marking", async () => {
+        let co2_rating_value = FoodTL1ParserHannover.CO2RATING_A_VALUE
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithCO2WithRatingValue(co2_rating_value));
+        let expectedMarkingExternalIdentifiers = [ FoodTL1ParserHannover.getCO2RatingMarkingExternalIdentifier(co2_rating_value), FoodTL1ParserHannover.KLIMA_TELLER_EXTERNAL_IDENTIFIER ];
+        expect(!!foodOfferJson).toBe(true);
+        expect(foodOfferJson.length).toBeGreaterThan(0);
+        for(let foodOffer of foodOfferJson){
+            expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
+        }
+    })
+
+    it("Food offers with CO2_Rating other than A should not have automatically KlimaTeller Marking", async () => {
+        let co2_rating_value = "B"
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithCO2WithRatingValue(co2_rating_value));
+        let notExpectedMarkingExternalIdentifiers = [ FoodTL1ParserHannover.KLIMA_TELLER_EXTERNAL_IDENTIFIER ];
+        expect(!!foodOfferJson).toBe(true);
+        expect(foodOfferJson.length).toBeGreaterThan(0);
+        for(let foodOffer of foodOfferJson){
+            expect(foodOffer.marking_external_identifiers).not.toEqual(expect.arrayContaining(notExpectedMarkingExternalIdentifiers));
+        }
+    })
+
     it("Food offers with same recipe ids and differnet markings shall have different food ids", async () => {
         let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersDifferentMarkings());
         let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersDifferentMarkings());
