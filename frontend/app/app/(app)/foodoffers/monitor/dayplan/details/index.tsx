@@ -5,7 +5,7 @@ import {
 	Text,
 	TEXT_SIZE_2_EXTRA_SMALL,
 	TEXT_SIZE_3_EXTRA_LARGE, TEXT_SIZE_DEFAULT,
-	TEXT_SIZE_EXTRA_SMALL,
+	TEXT_SIZE_EXTRA_SMALL, TextSizeType,
 	useViewBackgroundColor,
 	View
 } from "@/components/Themed";
@@ -114,7 +114,8 @@ export function useAdditionalCanteensFromLocalSearchParams() {
 }
 
 
-export const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({foodOffer, ...props}) => {
+export const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers,
+	height?: number, textSize?: TextSizeType | undefined}> = ({foodOffer,textSize, height,...props}) => {
 	const [markingsDict, setMarkingsDict] = useSynchedMarkingsDict();
 
 	let renderedMarkings: any[] = [];
@@ -139,7 +140,7 @@ export const MarkingsRowForFood: FunctionComponent<{foodOffer: Foodoffers}> = ({
 			<View style={{
 				padding: 2
 			}}>
-				<MarkingIconClickable markingId={marking.id} textSize={TEXT_SIZE_2_EXTRA_SMALL} />
+				<MarkingIconClickable markingId={marking.id} height={height} textSize={textSize || TEXT_SIZE_2_EXTRA_SMALL} />
 			</View>);
 	}
 	return <View style={{

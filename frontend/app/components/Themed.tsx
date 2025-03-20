@@ -347,6 +347,7 @@ export function Heading({style,...props}: TextProps) {
 export type MyTextProps = TextProps & {
     size?: TextSizeType | undefined;
 	sizeInPixel?: number | undefined;
+	lineHeightInPixel?: number | undefined;
     bold?: boolean;
     italic?: boolean;
     underline?: boolean;
@@ -355,17 +356,19 @@ export type MyTextProps = TextProps & {
     sub?: boolean;
     strikeThrough?: boolean;
 }
-export function Text({style, size, sizeInPixel,...props}: MyTextProps) {
+export function Text({style, size, sizeInPixel, lineHeightInPixel, ...props}: MyTextProps) {
 	const textContrastColor = useTextContrastColor();
 	const isWeb = PlatformHelper.isWeb();
 
 	const usedSize = size || TEXT_SIZE_DEFAULT;
 	let fontSize = sizeInPixel || getFontSizeInPixelBySize(usedSize);
+	let line
 
 	// @ts-ignore
 	const defaultStyle = {
 		color: textContrastColor,
-		fontSize: fontSize,
+		fontSize: fontSize+"px",
+		lineHeight: lineHeightInPixel? lineHeightInPixel+"px" : undefined,
 	}
 
 	if (isWeb) { // only for web since on mobile the text will break automatically

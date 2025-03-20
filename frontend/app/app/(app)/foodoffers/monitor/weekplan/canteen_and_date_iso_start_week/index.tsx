@@ -86,7 +86,7 @@ export default function FoodplanScreen() {
 	const viewBackgroundColorLighterOrDarker = useLighterOrDarkerColorForSelection(viewBackgroundColor);
 
 	let scale = 1;
-	let lineHeight = getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL) * scale
+	let lineHeight = getLineHeightInPixelBySize(TEXT_SIZE_EXTRA_SMALL) * 0.75 * scale
 	let fontSize = getFontSizeInPixelBySize(TEXT_SIZE_EXTRA_SMALL) * scale
 
 	const projectColor = useProjectColor();
@@ -251,7 +251,8 @@ export default function FoodplanScreen() {
 		for(let category of sortedHeaderCategories){
 			let foodOffersInCategory = foodOffersInCategories[category.id] || [];
 			let amountOffers = foodOffersInCategory.length;
-			foodColumnFlexDict[category.id] = amountOffers || 1;
+			let flex = amountOffers
+			foodColumnFlexDict[category.id] = flex || 1;
 		}
 
 		return foodColumnFlexDict;
@@ -288,7 +289,7 @@ export default function FoodplanScreen() {
 
 			renderedCategories.push(
 				<View style={{flex: flex, padding: DEFAULT_PADDING}}>
-					<Text style={{color: projectContrastColor}}>{category.alias}</Text>
+					<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize} style={{color: projectContrastColor}}>{category.alias}</Text>
 				</View>
 			)
 		}
@@ -300,7 +301,7 @@ export default function FoodplanScreen() {
 			<View style={{width: "100%", justifyContent: "space-between", alignItems: "center", flexDirection: "row"
 			}}>
 				<View style={{paddingHorizontal: DEFAULT_PADDING}}>
-					<Heading>{canteen?.alias}</Heading>
+					<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize}>{canteen?.alias}</Text>
 				</View>
 
 				<View style={{
@@ -308,7 +309,7 @@ export default function FoodplanScreen() {
 					alignItems: "center",
 				}}>
 					<View style={{paddingHorizontal: DEFAULT_PADDING}}>
-						<Heading>{translation_calendar_week_short+" "+calendarWeek}</Heading>
+						<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize}>{translation_calendar_week_short+" "+calendarWeek}</Text>
 					</View>
 					{renderExitFullScreenButton()}
 				</View>
@@ -316,7 +317,7 @@ export default function FoodplanScreen() {
 			<View style={{backgroundColor: projectColor, width: "100%", flexDirection: "row"}}>
 				<View style={{flex: FLEX_WEEKDAY}}>
 					<View style={{flex: 1, padding: DEFAULT_PADDING}}>
-						<Text style={{color: projectContrastColor}}>{translation_weekday}</Text>
+						<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize} style={{color: projectContrastColor}}>{translation_weekday}</Text>
 					</View>
 				</View>
 				<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
@@ -358,7 +359,7 @@ export default function FoodplanScreen() {
 				>{"("+price_information+")"}</Text>
 			</View>
 			<View>
-				{param_show_markings && <MarkingsRowForFood foodOffer={offer} />}
+				{param_show_markings && <MarkingsRowForFood foodOffer={offer} height={fontSize} />}
 			</View>
 		</View>
 	}
@@ -454,8 +455,8 @@ export default function FoodplanScreen() {
 					borderRightColor: viewContrastColor,
 					height: "100%",
 				}}>
-					<Heading>{weekdayName}</Heading>
-					<Text>{weekdayDate}</Text>
+					<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize}>{weekdayName}</Text>
+					<Text lineHeightInPixel={lineHeight} sizeInPixel={fontSize}>{weekdayDate}</Text>
 				</View>
 			</View>
 			<View style={{flex: FLEX_CATEGORIES, flexDirection: "row"}}>
