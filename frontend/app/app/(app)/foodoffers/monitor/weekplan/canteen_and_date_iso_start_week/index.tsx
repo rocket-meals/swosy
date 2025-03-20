@@ -110,7 +110,7 @@ export default function FoodplanScreen() {
 		*/
 
 
-	const translation_calendarweek = useTranslation(TranslationKeys.week)
+	const translation_calendar_week_short = useTranslation(TranslationKeys.calendar_week_short)
 
 	//const sortedFoodofferCategories = FoodOfferCategoriesHelper.useSortedFoodofferCategories();
 	//const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
@@ -308,7 +308,7 @@ export default function FoodplanScreen() {
 					alignItems: "center",
 				}}>
 					<View style={{paddingHorizontal: DEFAULT_PADDING}}>
-						<Heading>{translation_calendarweek+" "+calendarWeek}</Heading>
+						<Heading>{translation_calendar_week_short+" "+calendarWeek}</Heading>
 					</View>
 					{renderExitFullScreenButton()}
 				</View>
@@ -344,7 +344,7 @@ export default function FoodplanScreen() {
 					// height between multiple lines
 					lineHeight: lineHeight,
 				}} sizeInPixel={fontSize}
-					  numberOfLines={3}
+					  //numberOfLines={3} // 20.03.2025 Hanna-Jördis Schmidt: "Bitte, dass auch wirklich der gesamte Text angezeigt wird und nicht abgeschnitten wird nach drei Zeilen"
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
 				>{title}</Text>
 			</View>
@@ -353,7 +353,7 @@ export default function FoodplanScreen() {
 					// height between multiple lines
 					lineHeight: lineHeight,
 				}} sizeInPixel={fontSize}
-					  numberOfLines={3}
+					  //numberOfLines={3} // 20.03.2025 Hanna-Jördis Schmidt: "Bitte, dass auch wirklich der gesamte Text angezeigt wird und nicht abgeschnitten wird nach drei Zeilen"
 					  ellipsizeMode={"middle"} // middle this makes sure, that the price is always visible
 				>{"("+price_information+")"}</Text>
 			</View>

@@ -243,8 +243,8 @@ export enum TranslationKeys {
 	location = "location",
 	title = "title",
 	weekday = "weekday",
-	day = "day",
 	week = "week",
+	calendar_week_short = "calendar_week_short",
 	startTime = "startTime",
 	endTime = "endTime",
 	color = "color",
@@ -1839,6 +1839,16 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.tr_TR]: 'Hafta',
 		[LanguageKeys.zh_CN]: '周'
 	},
+	calendar_week_short: {
+		[LanguageKeys.de_DE]: 'KW',
+		[LanguageKeys.en_US]: 'CW',
+		[LanguageKeys.ar_SA]: 'CW',
+		[LanguageKeys.es_ES]: 'CW',
+		[LanguageKeys.fr_FR]: 'CW',
+		[LanguageKeys.ru_RU]: 'CW',
+		[LanguageKeys.tr_TR]: 'CW',
+		[LanguageKeys.zh_CN]: 'CW'
+	},
 	startTime: {
 		[LanguageKeys.de_DE]: 'Startzeit',
 		[LanguageKeys.en_US]: 'Start Time',
@@ -2038,16 +2048,6 @@ Bize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.`,
 		[LanguageKeys.ru_RU]: 'до',
 		[LanguageKeys.tr_TR]: 'kadar',
 		[LanguageKeys.zh_CN]: '直到'
-	},
-	day: {
-		[LanguageKeys.de_DE]: 'Tag',
-		[LanguageKeys.en_US]: 'Day',
-		[LanguageKeys.ar_SA]: 'يوم',
-		[LanguageKeys.es_ES]: 'Día',
-		[LanguageKeys.fr_FR]: 'Jour',
-		[LanguageKeys.ru_RU]: 'День',
-		[LanguageKeys.tr_TR]: 'Gün',
-		[LanguageKeys.zh_CN]: '天'
 	},
 	today: {
 		[LanguageKeys.de_DE]: 'Heute',
