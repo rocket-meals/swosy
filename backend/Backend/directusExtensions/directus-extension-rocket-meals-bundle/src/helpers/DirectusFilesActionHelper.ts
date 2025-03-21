@@ -14,9 +14,9 @@ export class DirectusFilesActionHelper {
             let mailsHelper = await myDatabaseHelper.getMailsHelper();
             // get the mail get the attachments (directus_files), then set the mail_id for the attachments (directus_files)
             let mailsFilesHelper = await myDatabaseHelper.getMailsFilesHelper();
-            console.log("Action get mail file with id: ", id);
+            //console.log("Action get mail file with id: ", id);
             let mailsFile = await mailsFilesHelper.readOne(id);
-            console.log("Action found mail files: ");
+            //console.log("Action found mail files: ");
 
             let directus_files_id: string | undefined = undefined
             let directus_files_id_raw = mailsFile.directus_files_id;
@@ -28,13 +28,13 @@ export class DirectusFilesActionHelper {
                 }
             }
             if(!directus_files_id){
-                console.log("Action: directus_files_id is undefined - skipping");
+                //console.log("Action: directus_files_id is undefined - skipping");
                 return;
             }
-            console.log("Action: found directus_files_id: ", directus_files_id);
+            //console.log("Action: found directus_files_id: ", directus_files_id);
             let filesHelper = myDatabaseHelper.getFilesHelper();
             try{
-                console.log("Action: setting mails_files_id ", mailsFile.id, " for file: ", directus_files_id);
+                //console.log("Action: setting mails_files_id ", mailsFile.id, " for file: ", directus_files_id);
                 await filesHelper.updateOne(directus_files_id, {
                     mails_files_id: mailsFile.id,
                 });

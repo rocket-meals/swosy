@@ -52,10 +52,10 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 	}
 
 	filter("shares.create", async (input, meta, eventContext) => {
-		console.log("Filter: shares.create: ")
-		console.log(JSON.stringify(input, null, 2));
-		console.log("Accountability: ")
-		console.log(JSON.stringify(eventContext.accountability, null, 2));
+		//console.log("Filter: shares.create: ")
+		//console.log(JSON.stringify(input, null, 2));
+		//console.log("Accountability: ")
+		//console.log(JSON.stringify(eventContext.accountability, null, 2));
 		return input;
 	});
 
@@ -64,7 +64,7 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 		// TODO: Maybe outsource this into a workflow instead of a filter
 		let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
 
-		console.log("Filter: Mails create: ", input);
+		//console.log("Filter: Mails create: ", input);
 		input.send_status = MAIL_SEND_STATUS.PENDING;
 
 		let send_attachments_as_links = input.send_attachments_as_links;
@@ -79,8 +79,8 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 		try{
 			let attachments: MailAttachment[] = [];
 
-			console.log("input: ")
-			console.log(JSON.stringify(input, null, 2));
+			//console.log("input: ")
+			//console.log(JSON.stringify(input, null, 2));
 
 			// Bei einem Create mit einem neuen Attachment, welches vorher nocht nicht existierte.
 			//input:

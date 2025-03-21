@@ -47,7 +47,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         // Upload the file
         try {
             const fileId = await this.uploadOne(stream, fileMetadata);
-            console.log('File uploaded successfully with ID:', fileId);
+            //console.log('File uploaded successfully with ID:', fileId);
             return fileId;
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -72,7 +72,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
     }
 
     async readFileContent(id: PrimaryKey): Promise<Buffer> {
-        console.log("FilesServiceHelper.readFileContent: ", id);
+        //console.log("FilesServiceHelper.readFileContent: ", id);
         const AssetsService: AssetsService = this.apiContext.services.AssetsService
         let schema = await this.apiContext.getSchema();
         // @ts-ignore
@@ -82,14 +82,14 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
             schema: schema,
         })
 
-        console.log(" - getAsset: ", id);
+        //console.log(" - getAsset: ", id);
         let file: {
             stream: Readable;
             file: any;
             stat: Stat;
         } = await assetsService.getAsset(id, { transformationParams: {} }); // https://github.com/directus/directus/discussions/14318
 
-        console.log(" - read the file buffer");
+        //console.log(" - read the file buffer");
         let chunks: Buffer[] = [];
         return new Promise<Buffer>((resolve, reject) => {
             file.stream.on('data', (chunk: Buffer) => {
