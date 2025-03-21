@@ -684,12 +684,6 @@ export class ReportGenerator {
             }
         }
 
-        let showFillter = food_id == "22-3872";
-        if(showFillter){
-            console.log("Filter for food feedbacks with comments: ");
-            console.log(JSON.stringify(filter, null, 2));
-        }
-
         let feedbacksWithCommentsAndCanteenObject = await itemService.readByQuery({
             filter: {
                 _and: filter
@@ -697,11 +691,6 @@ export class ReportGenerator {
             fields: ['*', "canteen.*"],
             limit: -1
         });
-
-        if(showFillter){
-            console.log("Feedbacks with comments and canteen object: ");
-            console.log(JSON.stringify(feedbacksWithCommentsAndCanteenObject, null, 2));
-        }
 
         let comments = [];
         for(let feedback of feedbacksWithCommentsAndCanteenObject){

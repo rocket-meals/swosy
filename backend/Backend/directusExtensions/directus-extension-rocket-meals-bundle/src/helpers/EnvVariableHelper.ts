@@ -1,3 +1,5 @@
+import {DateHelperTimezone} from "./DateHelper";
+
 export enum SyncForCustomerEnum {
     TEST = "Test",
     OSNABRUECK = "Osnabrück",
@@ -13,7 +15,9 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
-
+    static getTimeZoneString() {
+        return this.getEnvVariable("TZ") || DateHelperTimezone.GERMANY
+    }
 
     static getFoodSyncMode() {
         return this.getEnvVariable("FOOD_SYNC_MODE"); // Options: "TL1CSV", "TL1WEB", "SWOSY"

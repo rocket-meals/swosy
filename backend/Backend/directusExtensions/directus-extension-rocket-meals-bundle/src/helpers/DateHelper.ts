@@ -127,7 +127,7 @@ export class DateHelper {
     }
 
     static formatDDMMYYYYToDateWithTimeZone(value_raw: string, timezone: DateHelperTimezone){
-        let date_with_timezone = moment.tz(value_raw, "DD.MM.YYYY", "Europe/Berlin");
+        let date_with_timezone = moment.tz(value_raw, "DD.MM.YYYY", timezone);
         return date_with_timezone.toDate();
     }
 
