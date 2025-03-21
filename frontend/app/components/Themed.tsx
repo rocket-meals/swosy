@@ -367,8 +367,8 @@ export function Text({style, size, sizeInPixel, lineHeightInPixel, ...props}: My
 	// @ts-ignore
 	const defaultStyle = {
 		color: textContrastColor,
-		fontSize: fontSize+"px",
-		lineHeight: lineHeightInPixel? lineHeightInPixel+"px" : undefined,
+		fontSize: fontSize,
+		lineHeight: lineHeightInPixel? lineHeightInPixel : undefined,
 	}
 
 	if (isWeb) { // only for web since on mobile the text will break automatically
