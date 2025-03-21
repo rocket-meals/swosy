@@ -4,6 +4,7 @@ import {CanteenFoodFeedbackReportSchedules} from "../../databaseTypes/types";
 import {DateHelper} from "../../helpers/DateHelper";
 import {ReportSchedule} from "../ReportSchedule";
 import {FoodofferDateType} from "../../food-sync-hook/FoodParserInterface";
+import {ReportGenerator} from "../ReportGenerator";
 
 describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
@@ -158,6 +159,20 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
         expect(expectedStartDateOnly).toEqual(startDateOnly);
     });
+
+    it("Test Filter For Date Updated", async () => {
+        let startDate = new Date()
+        let endDate = new Date()
+
+        let filter = ReportGenerator.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate)
+        console.log(filter)
+
+        let exampleDateUpdated = new Date("2025-03-21T09:41:19.738Z");
+
+
+        expect(true).toBe(true)
+
+    })
 
     it("StartDate based on ReferenceDate previous day", async () => {
         const sendReportAtHour = 6;

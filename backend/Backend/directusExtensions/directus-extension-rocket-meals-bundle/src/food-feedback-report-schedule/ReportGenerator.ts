@@ -266,7 +266,7 @@ export class ReportGenerator {
             }
         };
 
-        const filterDateUpdatedFeedbackLabelEntries: Filter[] = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
+        const filterDateUpdatedFeedbackLabelEntries: Filter[] = ReportGenerator.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
 
         let canteen_feedback_all: ReportCanteenEntryType = {
             id: "all",
@@ -557,7 +557,7 @@ export class ReportGenerator {
 
 
 
-        let filterDateUpdatedFeedbackLabelEntries: Filter[] = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
+        let filterDateUpdatedFeedbackLabelEntries: Filter[] = ReportGenerator.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
 
         let labels_counted_as_list: ReportFoodEntryLabelType[] = [];
 
@@ -640,7 +640,7 @@ export class ReportGenerator {
         return labels_counted_as_list;
     }
 
-    private getFilterDateUpdatedForReportFeedbackPeriodDays(startDate: Date, endDate: Date): Filter[] {
+    public static getFilterDateUpdatedForReportFeedbackPeriodDays(startDate: Date, endDate: Date): Filter[] {
 
         let endDatePlusOneDay = new Date(endDate);
         endDatePlusOneDay.setDate(endDatePlusOneDay.getDate() + 1);
@@ -678,10 +678,16 @@ export class ReportGenerator {
         ]
 
         if(startDate && endDate){
-            let filterDateUpdated = this.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
+            let filterDateUpdated = ReportGenerator.getFilterDateUpdatedForReportFeedbackPeriodDays(startDate, endDate);
             if(filterDateUpdated){
                 filter.push(...filterDateUpdated);
             }
+        }
+
+        let showFillter = food_id == "22-3872";
+        if(showFillter){
+            console.log("Filter for food feedbacks with comments: ");
+            console.log(JSON.stringify(filter, null, 2));
         }
 
         let feedbacksWithCommentsAndCanteenObject = await itemService.readByQuery({
@@ -691,6 +697,11 @@ export class ReportGenerator {
             fields: ['*', "canteen.*"],
             limit: -1
         });
+
+        if(showFillter){
+            console.log("Feedbacks with comments and canteen object: ");
+            console.log(JSON.stringify(feedbacksWithCommentsAndCanteenObject, null, 2));
+        }
 
         let comments = [];
         for(let feedback of feedbacksWithCommentsAndCanteenObject){
@@ -705,7 +716,7 @@ export class ReportGenerator {
                 // we should sanitize the comment here just to be sure that we don't have any html tags in the comment
                 let sanitized_comment = comment.replace(/<[^>]*>?/gm, '');
                 if(!!canteenAlias){
-                    sanitized_comment+= "["+canteenAlias+"]";
+                    sanitized_comment+= " ["+canteenAlias+"]";
                 }
                 comments.push(sanitized_comment);
             }
