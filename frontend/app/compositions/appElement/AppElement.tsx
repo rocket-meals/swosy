@@ -1,7 +1,7 @@
 import React from 'react';
 import {DirectusTranslatedMarkdownWithCards} from "@/components/markdown/DirectusTranslatedMarkdownWithCards";
 import {
-	getDirectusTranslation,
+	getDirectusTranslation, getDirectusTranslationUnsafe,
 	TranslationEntry,
 	useDirectusTranslation
 } from "@/helper/translations/DirectusTranslationUseFunction";
@@ -31,13 +31,19 @@ export default function AppElement({ id, color }: { id: string | AppElements | n
 
 	if(element && typeof element === 'object'){
 		const translations = element?.translations as TranslationEntry[];
+		let contentUnsafe = getDirectusTranslationUnsafe(languageCode, translations, 'content', true);
 
 		if (typeof translations === 'undefined' || typeof translations === 'string') {
 			return null;
 		}
 
+		let markdownContent = null;
+		if(contentUnsafe && contentUnsafe.length > 0){
+			markdownContent = <DirectusTranslatedMarkdownWithCards field={'content'} translations={translations} color={color} />;
+		}
+
 		return  <>
-			<DirectusTranslatedMarkdownWithCards field={'content'} translations={translations} color={color} />
+			{markdownContent}
 			<AppPopup appElement={element} color={color} />
 		</>
 	} else {
