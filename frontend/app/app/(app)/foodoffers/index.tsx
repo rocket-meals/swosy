@@ -483,6 +483,7 @@ export default function FoodOfferScreen() {
 							  <AppElement id={foodoffers_list_after_element} color={foodsAreaColor} />
 						  </View>
 						  <CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />
+						  <View style={{paddingBottom: DEFAULT_GRID_LIST_SPACING.marginOuter}} />
 					  </>
 					}
   				/>
