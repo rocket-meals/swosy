@@ -55,15 +55,6 @@ export default function ImageWithComponents(props: ImageWithComponentProps) {
 			>
 				{props.topRightComponent}
 			</View>
-			<View style={{
-				position: 'absolute',
-				bottom: 0,
-				left: 0,
-				padding: innerPadding,
-			}}
-			>
-				{props.bottomLeftComponent}
-			</View>
 			<View
 				accessibilityElementsHidden={true}
 				accessible={false}
@@ -75,7 +66,7 @@ export default function ImageWithComponents(props: ImageWithComponentProps) {
 				top: 0,
 				left: 0,
 				width: '50%',
-				height: '50%',
+				height: '80%',
 				//backgroundColor: "blue",
 				padding: innerPadding,
 			}}
@@ -89,6 +80,15 @@ export default function ImageWithComponents(props: ImageWithComponentProps) {
 						{props.topLeftComponent}
 					</View>
 				</View>
+			</View>
+			<View style={{
+				position: 'absolute',
+				bottom: 0,
+				left: 0,
+				padding: innerPadding,
+			}}
+			>
+				{props.bottomLeftComponent}
 			</View>
 		</View>
 	)
