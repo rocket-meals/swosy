@@ -25,6 +25,8 @@ export class PersistentStore {
 	static collections_dates_last_update = 'PersistentStore.collections_dates_last_update'
 	static canteens = 'PersistentStore.canteens'
 
+	static app_elements = 'PersistentStore.app_elements'
+
 	static foodattributes = 'PersistentStore.foodattributes'
 	static foodattributes_groups = 'PersistentStore.foodattributes_groups'
 

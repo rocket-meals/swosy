@@ -30,6 +30,7 @@ import {useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCate
 import {useSynchedOwnDictToCanteensFeedbacksLabelEntriesListDict} from "@/states/SynchedCanteensFeedbacksLabelsEntries";
 import {useSynchedFoodsAttributesDict} from "@/states/SynchedFoodattributes";
 import {useSynchedFoodsAttributesGroupsDict} from "@/states/SynchedFoodattributesGroups";
+import {useSynchedAppElementsDict} from "@/states/SynchedAppElements";
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -59,6 +60,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	const [startSyncTimeRequest, setStartSyncTimeRequest] = useState<string>(new Date().getTime().toString());
 	const [collectionsDatesLastUpdateDict, setCollectionsDatesLastUpdateDict, cacheHelperLastUpdateDict] = useSynchedCollectionsDatesLastUpdateDict()
 
+	const [appElementsDict, setAppElementsDict, cacheHelperObjAppElements] = useSynchedAppElementsDict()
 	const [canteensDict, setCanteens, cacheHelperObjCanteens] = useSynchedCanteensDict()
 	const [businesshoursDict, setBusinesshoursDict, cacheHelperObjBusinesshours] = useSynchedBusinesshoursDict()
 	const [markingsDict, setMarkingsDict, cacheHelperObjMarkings] = useSynchedMarkingsDict()
@@ -121,6 +123,7 @@ export const RootSyncDatabaseDownloadInner = (props: RootAuthUserFlowLoaderInner
 	/**
    * Needs to be called before the useEffect
    */
+	addResourceToCheckForUpdates('appElements', appElementsDict, cacheHelperObjAppElements)
 	addResourceToCheckForUpdates('canteens', canteensDict, cacheHelperObjCanteens)
 	addResourceToCheckForUpdates('businesshours', businesshoursDict, cacheHelperObjBusinesshours)
 	addResourceToCheckForUpdates('buildings', buildingsDict, cacheHelperObjBuildings)

@@ -3,7 +3,7 @@ import {Apartments, Buildings, Washingmachines} from '@/helper/database/database
 import {useSynchedResourcesDictRaw} from '@/states/SynchedResource';
 import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
-import {getBuildingLocationType, getDemoBuildings} from '@/states/SynchedBuildings';
+import {getBuildingLocationType, getDemoResources} from '@/states/SynchedBuildings';
 import {LocationType} from "@/helper/geo/LocationType";
 import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
@@ -96,7 +96,7 @@ export function getDemoWashingmachines(): Washingmachines[] {
 }
 
 function getDemoApartments(): Record<string, Apartments> {
-	const buildingsDict = getDemoBuildings()
+	const buildingsDict = getDemoResources()
 	const demoBuildingsKeys = Object.keys(buildingsDict)
 	const amountApartments = 500
 

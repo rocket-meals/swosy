@@ -1,12 +1,12 @@
 [
   {
-    "enforce_tfa": false,
     "app_access": true,
     "admin_access": true,
+    "enforce_tfa": false,
     "description": "$t:admin_policy_description",
     "ip_access": null,
-    "name": "Administrator",
     "icon": "verified",
+    "name": "Administrator",
     "roles": [
       {
         "role": "_sync_default_admin_role",
@@ -16,13 +16,13 @@
     "_syncId": "_sync_default_admin_policy"
   },
   {
-    "enforce_tfa": false,
     "app_access": false,
     "admin_access": false,
+    "enforce_tfa": false,
     "description": "$t:public_description",
     "ip_access": null,
-    "name": "$t:public_label",
     "icon": "public",
+    "name": "$t:public_label",
     "roles": [
       {
         "role": null,
@@ -40,13 +40,13 @@
     "_syncId": "_sync_default_public_policy"
   },
   {
-    "enforce_tfa": false,
     "app_access": true,
     "admin_access": false,
+    "enforce_tfa": false,
     "description": null,
     "ip_access": null,
-    "name": "Apartmentmanagement",
     "icon": "badge",
+    "name": "Apartmentmanagement",
     "roles": [
       {
         "role": "e0d3b51c-8f50-4844-a788-b5152180bf43",
@@ -56,13 +56,13 @@
     "_syncId": "5b24cdda-d563-485b-8bfe-5f0ab7afb482"
   },
   {
-    "enforce_tfa": false,
     "app_access": false,
     "admin_access": false,
+    "enforce_tfa": false,
     "description": null,
     "ip_access": null,
-    "name": "User",
     "icon": "supervised_user_circle",
+    "name": "User",
     "roles": [
       {
         "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
@@ -76,13 +76,13 @@
     "_syncId": "abe3a726-f85c-4d70-a86c-15e7092e5da2"
   },
   {
-    "enforce_tfa": false,
     "app_access": true,
     "admin_access": false,
+    "enforce_tfa": false,
     "description": null,
     "ip_access": null,
-    "name": "Gebäudemanagement",
     "icon": "badge",
+    "name": "Gebäudemanagement",
     "roles": [
       {
         "role": "9aaa0300-e0ee-4874-b32f-2d165607867d",

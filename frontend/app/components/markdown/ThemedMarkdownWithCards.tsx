@@ -259,7 +259,7 @@ export const ThemedMarkdownWithCards: FunctionComponent<AppState> = (props) => {
 	} else {
 		return (
 			<View>
-				{renderTokenOrSections(tokenOrSections, width, defaultTextProps, true, buttonAndLinkColor)}
+				{renderTokenOrSections(tokenOrSections, width, defaultTextProps, false, buttonAndLinkColor)}
 			</View>
 		)
 	}

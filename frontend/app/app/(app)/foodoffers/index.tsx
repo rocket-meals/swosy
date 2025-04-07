@@ -5,7 +5,7 @@ import {
 	TABLE_NAME_FOODS,
 	useFoodOfferSelectedDate
 } from '@/states/SynchedFoodOfferStates';
-import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
+import {DEFAULT_GRID_LIST_SPACING, MyGridFlatList} from '@/components/grid/MyGridFlatList';
 import {
 	DirectusFiles,
 	Foodoffers,
@@ -48,6 +48,9 @@ import {CanteenFeedbacksLabelsComponent} from "@/compositions/canteens/CanteenFe
 import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
 import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
 import {FoodAttributeBadges} from "@/components/food/FoodAttributeBadge";
+import AppElement from "@/compositions/appElement/AppElement";
+import {UrlHelper} from "@/helper/UrlHelper";
+import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
 
 
 export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -289,6 +292,8 @@ export default function FoodOfferScreen() {
 	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
 
 	const foodsAreaColor = useFoodsAreaColor();
+	const foodoffers_list_before_element = appSettings?.foodoffers_list_before_element;
+	const foodoffers_list_after_element = appSettings?.foodoffers_list_after_element;
 
 
 	const dateAsIsoString = selectedDate.toISOString();
@@ -377,7 +382,11 @@ export default function FoodOfferScreen() {
 				assetId={assetId}
 				placeholderAssetId={placeholderAssetId}
 				onPress={() => {
-					router.push(`/(app)/foodoffers/details/?${SEARCH_PARAM_FOODOFFER_ID}=${foodOffer.id}`)
+					if(foodOffer.redirect_url){
+						CommonSystemActionHelper.openExternalURL(foodOffer.redirect_url, true);
+					} else {
+						router.push(`/(app)/foodoffers/details/?${SEARCH_PARAM_FOODOFFER_ID}=${foodOffer.id}`)
+					}
 				}}
 				accessibilityLabel={title}
 				innerPadding={0}
@@ -455,7 +464,27 @@ export default function FoodOfferScreen() {
   					data={data}
   					renderItem={renderItem}
   					amountColumns={initialAmountColumns}
-					postItem={<CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />}
+					preItem={
+					  	<>
+							<View style={{
+								width: '100%',
+								paddingHorizontal: DEFAULT_GRID_LIST_SPACING.marginOuter
+							}} >
+								<AppElement id={foodoffers_list_before_element} color={foodsAreaColor} />
+							</View>
+						</>
+					}
+					postItem={
+					  <>
+						  <View style={{
+							  width: '100%',
+							  paddingHorizontal: DEFAULT_GRID_LIST_SPACING.marginOuter
+						  }} >
+							  <AppElement id={foodoffers_list_after_element} color={foodsAreaColor} />
+						  </View>
+						  <CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />
+					  </>
+					}
   				/>
   			</MySafeAreaView>
   		);

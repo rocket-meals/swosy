@@ -1,8 +1,8 @@
 [
   {
     "refresh_interval": null,
-    "filter": null,
     "layout_options": null,
+    "filter": null,
     "layout_query": {
       "tabular": {
         "fields": [

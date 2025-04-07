@@ -10,7 +10,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup, TABLE_NAME_UTILIZATIONS_GROUPS} from '@/states/SynchedUtiliztations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
-import {getDemoBuildings} from "@/states/SynchedBuildings";
+import {getDemoResources} from "@/states/SynchedBuildings";
 import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
 export const TABLE_NAME_FOODS_ATTRIBUTES_GROUPS = 'foods_attributes_groups';

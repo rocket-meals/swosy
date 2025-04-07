@@ -15,6 +15,14 @@
     "interface": "list-o2m",
     "note": null,
     "options": {
+      "fields": [
+        "sort",
+        "short_code",
+        "alias",
+        "external_identifier"
+      ],
+      "layout": "table",
+      "sort": "sort",
       "template": "{{alias}} ({{id}})"
     },
     "readonly": false,

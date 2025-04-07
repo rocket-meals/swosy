@@ -10,7 +10,7 @@ export type MyModalPropsConfirmer = {
 	hideConfirmAndCancelOption?: boolean
 	confirmLabel?: string
 	cancelLabel?: string
-	onConfirm: () => void | Promise<boolean | void> | void,
+	onConfirm: () => (void | boolean) | Promise<boolean | void> | void
 	onCancel?: () => void | Promise<void> | void,
 	renderAsContentPreItems?: (key: string, hide: () => void) => React.ReactNode
 }

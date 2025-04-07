@@ -6,7 +6,9 @@
     "collection": "app_settings",
     "conditions": null,
     "display": null,
-    "display_options": null,
+    "display_options": {
+      "defaultColor": null
+    },
     "field": "housing_area_color",
     "group": "housing_settings",
     "hidden": false,

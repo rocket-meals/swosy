@@ -18,7 +18,7 @@ export const DirectusTranslatedMarkdownWithCards: FunctionComponent<AppState> = 
 
 	return (
 		<View style={{width: '100%'}}>
-			<ThemedMarkdownWithCards color={props?.color}>
+			<ThemedMarkdownWithCards buttonAndLinkColor={props?.color}>
 				{content}
 			</ThemedMarkdownWithCards>
 		</View>

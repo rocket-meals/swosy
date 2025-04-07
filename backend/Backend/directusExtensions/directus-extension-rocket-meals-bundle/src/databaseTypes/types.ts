@@ -15,6 +15,31 @@ export type Apartments = {
   washingmachines: any[] | Washingmachines[];
 };
 
+export type AppElements = {
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | AppElementsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type AppElementsTranslations = {
+  app_elements_id?: string | AppElements | null;
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  content_settings: string;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  popup_button_text?: string | null;
+  popup_content?: string | null;
+  popup_settings: string;
+  translation_settings: string;
+};
+
 export type AppFeedbacks = {
   contact_email?: string | null;
   content?: string | null;
@@ -64,6 +89,8 @@ export type AppSettings = {
   food_responsible_organization_link?: string | null;
   food_responsible_organization_name?: string | null;
   food_responsible_settings: string;
+  foodoffers_list_after_element?: string | AppElements | null;
+  foodoffers_list_before_element?: string | AppElements | null;
   foods_area_color?: string | null;
   foods_enabled?: boolean | null;
   foods_feedbacks_comments_type?: string | null;
@@ -306,8 +333,6 @@ export type Canteens = {
   external_identifier?: string | null;
   foodoffers_import_delete_all_without_dates?: boolean | null;
   foodoffers_import_without_date?: boolean | null;
-  foodservice_hours: any[] | CanteensFoodserviceHours[];
-  foodservice_hours_during_semester_break: any[] | CanteensFoodserviceHoursDuringSemesterBreak[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -397,6 +422,53 @@ export type CashregistersTransactions = {
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   weekday_index_calculated?: number | null;
+};
+
+export type CollectibleEventParticipants = {
+  collectible_event?: string | CollectibleEvents | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  email?: string | null;
+  id: string;
+  phone_number?: string | null;
+  points?: string | null;
+  profile?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CollectibleEvents = {
+  alias?: string | null;
+  collectible_image?: string | DirectusFiles | null;
+  collectible_settings: string;
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
+  date_updated?: string | null;
+  id: string;
+  monitor_background_image?: string | DirectusFiles | null;
+  monitor_settings: string;
+  participants: any[] | CollectibleEventParticipants[];
+  points_maximum?: string | null;
+  points_minimum?: string | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | CollectibleEventsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CollectibleEventsTranslations = {
+  be_source_for_translations?: boolean | null;
+  collectible_events_id?: string | CollectibleEvents | null;
+  description?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  title?: string | null;
+  translation_settings: string;
 };
 
 export type CollectionsDatesLastUpdate = {
@@ -889,6 +961,7 @@ export type Foodoffers = {
   price_student?: number | null;
   prices: string;
   protein_g?: number | null;
+  redirect_url?: string | null;
   salt_g?: number | null;
   saturated_fat_g?: number | null;
   sort?: number | null;
@@ -973,8 +1046,8 @@ export type FoodsAttributes = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
+  full_width?: boolean | null;
   group?: string | FoodsAttributesGroups | null;
-  icon?: string | null;
   icon_expo?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
@@ -996,6 +1069,7 @@ export type FoodsAttributesGroups = {
   background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  food_attributes: any[] | FoodsAttributes[];
   icon?: string | null;
   icon_expo?: string | null;
   id: string;
@@ -1707,6 +1781,8 @@ export type WorkflowsRuns = {
 
 export type CustomDirectusTypes = {
   apartments: Apartments[];
+  app_elements: AppElements[];
+  app_elements_translations: AppElementsTranslations[];
   app_feedbacks: AppFeedbacks[];
   app_settings: AppSettings;
   app_settings_balance_translations: AppSettingsBalanceTranslations[];
@@ -1731,6 +1807,9 @@ export type CustomDirectusTypes = {
   canteens_foodservice_hours_during_semester_break: CanteensFoodserviceHoursDuringSemesterBreak[];
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
+  collectible_event_participants: CollectibleEventParticipants[];
+  collectible_events: CollectibleEvents[];
+  collectible_events_translations: CollectibleEventsTranslations[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
   devices: Devices[];
   directus_access: DirectusAccess[];

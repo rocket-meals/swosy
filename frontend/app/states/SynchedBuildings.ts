@@ -40,7 +40,7 @@ export function useSynchedBuildingsDict(): [( Record<string, Buildings | null | 
 	const sync_cache_composed_key_local = resourcesRaw?.sync_cache_composed_key_local;
 	let usedResources = resourcesOnly;
 	if (demo) {
-		usedResources = getDemoBuildings()
+		usedResources = getDemoResources()
 	}
 
 	async function updateFromServer(sync_cache_composed_key_local?: string) {
@@ -108,7 +108,7 @@ export function getBuildingLocationType(building: Buildings): LocationType | nul
 	return locationA;
 }
 
-export function getDemoBuildings(): Record<string, Buildings> {
+export function getDemoResources(): Record<string, Buildings> {
 	const demoResources: Record<string, Buildings> = {}
 	for (let i = 0; i < 500; i++) {
 		const demoResource = getDemoResource(i)

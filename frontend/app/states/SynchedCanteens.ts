@@ -10,7 +10,7 @@ import {useIsDemo} from '@/states/SynchedDemo';
 import {CollectionHelper} from '@/helper/database/server/CollectionHelper';
 import {getDemoUtilizationGroup, TABLE_NAME_UTILIZATIONS_GROUPS} from '@/states/SynchedUtiliztations';
 import {useSynchedBusinesshoursDict} from "@/states/SynchedBusinesshours";
-import {getDemoBuildings} from "@/states/SynchedBuildings";
+import {getDemoResources} from "@/states/SynchedBuildings";
 import {MyCacheHelperDeepFields, MyCacheHelperType} from "@/helper/cache/MyCacheHelper";
 
 export const TABLE_NAME_CANTEENS = 'canteens';
@@ -80,7 +80,7 @@ export function useSynchedCanteenById(canteen_id: string | undefined): Canteens 
 function getDemoCanteens(): Record<string, Canteens> {
 	const resources: Record<string, Canteens> = {};
 
-	const buildingsDict = getDemoBuildings()
+	const buildingsDict = getDemoResources()
 	const demoBuildingsKeys = Object.keys(buildingsDict)
 
 	for (let i=0; i<100; i++) {
