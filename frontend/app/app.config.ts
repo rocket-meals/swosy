@@ -14,7 +14,7 @@ function getVersion() {
 }
 
 function getBuildNumber() {
-    return 120;
+    return 121;
 }
 
 function getCustomerConfig(): CustomerConfig {
