@@ -163,7 +163,7 @@ export default ({config}: {config?: any}) => {
                 },
                 "supportsTablet": true,
                 "bundleIdentifier": customerConfig.bundleIdIos,
-                "buildNumber": customerConfig.toString(),
+                "buildNumber": getBuildNumber()
             },
             "android": {
                 "package": customerConfig.bundleIdAndroid,
