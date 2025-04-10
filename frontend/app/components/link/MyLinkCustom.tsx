@@ -10,8 +10,7 @@ import {PlatformHelper} from "@/helper/PlatformHelper";
 import {router} from "expo-router";
 import {Text} from "@/components/Themed";
 import React from "react";
-// access app.json from expo
-import appJson from "../../app.json"
+import {EnvHelper} from "@/helper/EnvHelper";
 
 
 export type MyLinkDefaultProps = {
@@ -74,7 +73,7 @@ export const MyLinkCustom = ({onPress, routeInternal, hrefExternal, accessibilit
 	// TODO: Check if expo issue is fixed: https://github.com/expo/expo/issues/26566
 	if (Platform.OS === 'web' && !onPress && usedHrefForWeb) {
 		if(routeInternal){
-			let baseUrl = appJson?.expo?.experiments?.baseUrl
+			let baseUrl = EnvHelper.getBaseUrl()
 			if(baseUrl){
 				usedHrefForWeb = baseUrl + routeInternal
 			}

@@ -11,11 +11,8 @@ import {useIsCurrentUserAnonymous, useLogoutCallback} from '@/states/User';
 import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
 import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
 import {SettingsRow} from "@/components/settings/SettingsRow";
-import {useProjectName} from "@/states/ProjectInfo";
-import {DeveloperInformation} from "@/constants/DeveloperInformation";
 import {SettingsRowGroup} from "@/components/settings/SettingsRowGroup";
 import {SettingsRowUser} from "@/compositions/settings/SettingsRowUser";
-import {MyLinkCustom} from "@/components/link/MyLinkCustom";
 import {useRenderDeveloperSettingsRows} from "@/app/(app)/support";
 
 

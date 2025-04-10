@@ -1,4 +1,6 @@
-import * as appJson from '@/components/../app.json';
+//import * as appJson from '@/app.config';
+import getAppJson from "@/app.config";
+
 
 export class EnvHelper {
 	static isProduction() {
@@ -7,6 +9,8 @@ export class EnvHelper {
 	}
 
 	static getBaseUrl() {
+		const appJson = getAppJson({});
+
 		return appJson.expo.experiments.baseUrl;
 	}
 

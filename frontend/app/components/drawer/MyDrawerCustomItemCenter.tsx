@@ -6,11 +6,11 @@ import {CommonSystemActionHelper} from '@/helper/device/CommonSystemActionHelper
 import {getMyDrawerItemIcon} from '@/components/drawer/MyDrawerItemIcon';
 import {getMyDrawerItemLabel} from '@/components/drawer/MyDrawerItemLabel';
 import {useProjectColor} from '@/states/ProjectInfo';
-import {Text, useViewBackgroundColor, View} from "@/components/Themed";
+import {useViewBackgroundColor, View} from "@/components/Themed";
 import {PlatformPressable} from "@react-navigation/elements";
 import {Platform, StyleProp, ViewStyle} from "react-native";
 import {Link} from "@react-navigation/native";
-import {MyLinkCustom, MyLinkDefault} from "@/components/link/MyLinkCustom";
+import {MyLinkDefault} from "@/components/link/MyLinkCustom";
 import {useMyContrastColor} from "@/helper/color/MyContrastColor";
 
 export type MyDrawerCustomItemProps = {
