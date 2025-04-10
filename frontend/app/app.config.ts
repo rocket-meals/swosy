@@ -17,6 +17,10 @@ function getBuildNumber() {
     return 121;
 }
 
+function getIosBuildNumber() { // "ios.buildNumber" must be a string
+    return getBuildNumber().toString();
+}
+
 function getCustomerConfig(): CustomerConfig {
     return devConfig;
 }
@@ -163,7 +167,7 @@ export default ({config}: {config?: any}) => {
                 },
                 "supportsTablet": true,
                 "bundleIdentifier": customerConfig.bundleIdIos,
-                "buildNumber": getBuildNumber()
+                "buildNumber": getIosBuildNumber()
             },
             "android": {
                 "package": customerConfig.bundleIdAndroid,
