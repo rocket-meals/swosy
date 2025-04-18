@@ -30,8 +30,8 @@ jobs:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install and Build
-        run: npm install && npm run build
+      - name: 📦 Install dependencies with Yarn
+        run: yarn install --frozen-lockfile
         working-directory: tools/screenshotGenerator
 
       - name: 📦 Debug Environment Variables
@@ -41,7 +41,7 @@ jobs:
           echo "SCREENSHOT_DIR=${{ github.workspace }}/screenshots"
 
       - name: 🚀 Generate Screenshots
-        run: npm run start
+        run: yarn start
         working-directory: tools/screenshotGenerator
         env:
           REPOSITORY_OWNER: ${{ github.repository_owner }}

@@ -32,8 +32,8 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+      - name: 📦 Install dependencies with Yarn
+        run: cd ./frontend/app && yarn install --frozen-lockfile
 
       - name: 🚀 Build app - all platforms
         run: cd ./frontend/app && eas build --platform all --non-interactive
