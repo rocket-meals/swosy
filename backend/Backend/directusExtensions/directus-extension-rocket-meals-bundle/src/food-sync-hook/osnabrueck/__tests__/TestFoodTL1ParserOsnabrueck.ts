@@ -97,6 +97,16 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
         expect(foundFiber).toBe(false);
     });
 
+    it("Foodoffer with vegetarian marking shall have vegetarian marking", async () => {
+        let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithVegetarianValues());
+        expect(!!foodOfferJson).toBe(true);
+        expect(foodOfferJson.length).toBeGreaterThan(0);
+        const expectedMarkingExternalIdentifiers = ["20"];
+        for(let foodOffer of foodOfferJson){
+            expect(foodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
+        }
+    });
+
     it("Foodoffers shall have correct category", async () => {
         await foodParser.createNeededData();
         let foodOffersJson = await foodParser.getFoodoffersForParser();
