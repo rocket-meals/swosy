@@ -1,8 +1,6 @@
-import {IconFamily, IconParseDelimeter} from "@/components/Themed";
+import { IconFamily, IconParseDelimeter } from "@/helper/iconHelper"
 
-/**
- * Default icon family is MaterialCommunityIcons
- */
+
 export class IconNames {
     static delete_icon = 'delete'
     static save_icon = 'content-save'
@@ -15,19 +13,18 @@ export class IconNames {
     static software_icon = 'rocket'
     static fullscreen_icon = 'fullscreen'
     static fullscreen_exit_icon = 'fullscreen-exit'
-    static screenshot_icon = IconFamily.MaterialIcons+IconParseDelimeter+'screenshot'
-    static print_icon = "printer"
+    static print_icon = 'printer'
     static foodoffers_icon = 'silverware-variant'
     static monitorDayPlan_icon = 'view-list'
     static foodweekplan_icon = "calendar"
     static map_icon = 'map'
-    static campus_icon = IconFamily.FontAwesome5+IconParseDelimeter+"university"
+    static campus_icon = IconFamily.FontAwesome5 + IconParseDelimeter + "university"
     static apartments_icon = 'home-account'
     static news_icon = 'newspaper'
     static course_timetable_icon = 'calendar-clock'
     static eating_habit_icon = 'medical-bag'
     static settings_icon = 'cog'
-    static amount_columns_icon = IconFamily.FontAwesome5+IconParseDelimeter+"columns";
+    static amount_columns_icon = IconFamily.FontAwesome5 + IconParseDelimeter + "columns";
     static drawer_position_icon = 'menu'
     static drawer_position_left_icon = 'format-horizontal-align-left'
     static drawer_position_right_icon = 'format-horizontal-align-right'
@@ -63,7 +60,7 @@ export class IconNames {
     static utilization_icon = 'human-queue'
     static businesshours_icon = 'clock-time-eight'
 
-    static support_icon = IconFamily.MaterialIcons+IconParseDelimeter+"support-agent"
+    static support_icon = IconFamily.MaterialIcons + IconParseDelimeter + "support-agent"
     static license_information_icon = 'license'
 
     static data_access_icon = 'database-eye'
@@ -105,17 +102,17 @@ export class IconNames {
 
     static trash_icon = 'delete'
 
-    static food_data_list_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'nutrition'
-    static nutrition_calories_icon = 'fire'
-    static nutrition_carbohydrate_icon = IconFamily.FontAwesome6+IconParseDelimeter+'wheat-awn'
-    static nutrition_fat_icon = 'water'
-    static nutrition_fiber_icon = 'leaf'
-    static nutrition_protein_icon = 'fish'
-    static nutrition_saturated_fat_icon = 'water-circle'
-    static nutirtion_salt_icon = 'grain'
-    static nutrition_sugar_icon = 'cupcake'
+    static food_data_list_icon = IconFamily.MaterialCommunityIcons + IconParseDelimeter + 'nutrition'
+    static nutrition_calories = 'fire'
+    static nutrition_carbohydrate = IconFamily.FontAwesome6 + IconParseDelimeter + 'wheat-awn'
+    static nutrition_fat = 'water'
+    static nutrition_fiber = 'leaf'
+    static nutrition_protein = 'fish'
+    static nutrition_saturated_fat = 'water-circle'
+    static nutrition_salt = 'grain'
+    static nutrition_sugar = 'cupcake'
 
-    static environmental_impact_co2_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+'cloud'
+    static environmental_impact_co2_icon = IconFamily.MaterialCommunityIcons + IconParseDelimeter + 'cloud'
 
     static price_group_icon = 'currency-eur'
     static price_group_student = 'school'
@@ -167,7 +164,7 @@ export class IconNames {
     static collapse_icon = "chevron-up"
 
     // Phone mock
-    static phone_mock_iphone_battery_full_icon = IconFamily.FontAwesome+IconParseDelimeter+"battery-full"
-    static phone_mock_iphone_wifi_icon = IconFamily.FontAwesome+IconParseDelimeter+"wifi"
-    static phone_mock_iphone_signal_icon = IconFamily.MaterialCommunityIcons+IconParseDelimeter+"signal"
+    static phone_mock_iphone_battery_full_icon = IconFamily.FontAwesome + IconParseDelimeter + "battery-full"
+    static phone_mock_iphone_wifi_icon = IconFamily.FontAwesome + IconParseDelimeter + "wifi"
+    static phone_mock_iphone_signal_icon = IconFamily.MaterialCommunityIcons + IconParseDelimeter + "signal"
 }

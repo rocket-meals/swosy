@@ -1,374 +1,345 @@
-import {Redirect, router, useGlobalSearchParams} from 'expo-router';
-import React, {useEffect, useState} from 'react';
-import {ServerAPI} from '@/helper/database/server/ServerAPI';
-import {Checkbox, MySpinner, Text, TEXT_SIZE_SMALL, TextInput, useViewBackgroundColor, View} from '@/components/Themed';
-import {AuthenticationData} from '@directus/sdk';
-import {ButtonAuthAnonym} from '@/components/buttons/ButtonAuthAnonym';
-import {getAnonymousUser, isUserLoggedIn, useCurrentUser, useLogoutCallback} from '@/states/User';
-import {ServerSsoAuthProviders} from '@/components/auth/ServerSsoAuthProviders';
-import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {LoginLayout} from '@/components/auth/LoginLayout';
-import {MyButton} from '@/components/buttons/MyButton';
-import {useNickname, useSynchedProfile} from '@/states/SynchedProfile';
-import {SettingsRowProfileLanguage} from '@/compositions/settings/SettingsRowProfileLanguage';
-import {IconNames} from '@/constants/IconNames';
-import {AnimationAstronautComputer} from "@/compositions/animations/AnimationAstronautComputer";
-import {useMyModalConfirmer} from "@/components/modal/MyModalConfirmer";
-import {PlatformHelper} from "@/helper/PlatformHelper";
-import {useMyContrastColor} from "@/helper/color/MyContrastColor";
-import {useIsDebug} from "@/states/Debug";
-import {MyDivider} from "@/components/divider/MyDivider";
-import {ButtonAuthProviderCustom} from "@/components/buttons/ButtonAuthProviderCustom";
-import {useTermsAndPrivacyConsentAcceptedDate} from "@/states/ConsentStatus";
-
-const WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES = true;
+import React, { useCallback } from 'react';
+import { View, Text, Dimensions, Image, Platform } from 'react-native';
+import styles from './styles';
+import { useTheme } from '@/hooks/useTheme';
+import Form from '@/components/Login/Form';
+import Header from '@/components/Login/Header';
+import Footer from '@/components/Login/Footer';
+import ManagementModal from '@/components/Login/ManagementModal';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import ManagementSheet from '@/components/Login/ManagementSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { isWeb } from '@/constants/Constants';
+import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
+import { ServerAPI } from '@/redux/actions/Auth/Auth';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  SET_APP_SETTINGS,
+  SET_WIKIS,
+  UPDATE_MANAGEMENT,
+  UPDATE_PRIVACY_POLICY_DATE,
+} from '@/redux/Types/types';
+import AttentionSheet from '@/components/Login/AttentionSheet';
+import useToast from '@/hooks/useToast';
+import { updateLoginStatus } from '@/constants/HelperFunctions';
+import { DirectusUsers, Wikis } from '@/constants/types';
+import { format } from 'date-fns';
+import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
+import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
+import DeviceMock from '@/components/DeviceMock/DeviceMock';
+import {
+  getDetailedDescriptionTranslation,
+  getIntroDescriptionTranslation,
+} from '@/helper/resourceHelper';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function Login() {
-	const loggedIn = isUserLoggedIn();
-	const logout = useLogoutCallback()
-	const [nickname, setNickname] = useNickname()
-	const debug = useIsDebug()
+  const toast = useToast();
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const dispatch = useDispatch();
+  const { deviceMock } = useGlobalSearchParams();
+  const appSettingsHelper = new AppSettingsHelper();
+  const wikisHelper = new WikisHelper();
+  const [isVisible, setIsVisible] = useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [loading, setLoading] = useState(false);
+  const snapPoints = useMemo(() => ['50%'], []);
+  const [isActive, setIsActive] = useState(false);
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+  const attentionSheetRef = useRef<BottomSheet>(null);
+  const attentionSnapPoints = useMemo(() => ['80%'], []);
+  const [providers, setProviders] = useState<any>([]);
+  const [isWebVisible, setIsWebVisible] = useState(
+    Dimensions.get('window').width > 500
+  );
+  const { appSettings, language } = useSelector((state: any) => state.settings);
+  const intro_description =
+    appSettings?.login_screen_translations &&
+    getIntroDescriptionTranslation(
+      appSettings?.login_screen_translations,
+      language
+    );
+  const detailed_description =
+    appSettings?.login_screen_translations &&
+    getDetailedDescriptionTranslation(
+      appSettings?.login_screen_translations,
+      language
+    );
+  const [heading, subHeading] = intro_description?.split('-') || ['', ''];
+  const getProviders = async () => {
+    const providers = await ServerAPI.getAuthProviders();
+    if (providers) {
+      setProviders(providers);
+    }
+  };
 
-	const [profile, setProfile] = useSynchedProfile();
-	const [isCheckboxTicketToConsentTermsAndPrivacy, setIsCheckboxTicketToConsentTermsAndPrivacy] = useState(false)
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = t('sign_in');
+        document.title = title;
+      }
+    }, [])
+  );
+  const getAppSettings = async () => {
+    try {
+      const result = await appSettingsHelper.fetchAppSettings({});
+      if (result) {
+        dispatch({ type: SET_APP_SETTINGS, payload: result });
+      }
+    } catch (error) {
+      console.error('Error fetching app settings:', error);
+    }
+  };
 
+  useEffect(() => {
+    getAppSettings();
+    getProviders();
+  }, []);
 
-	const [isPrivacyPolicyCheckboxHighlighted, setIsPrivacyPolicyCheckboxHighlighted] = useState(false)
+  const openSheet = () => {
+    bottomSheetRef.current?.expand();
+  };
 
-	const translation_t_accept_privacy_policy_and_terms_of_service = useTranslation(TranslationKeys.i_accept_privacy_policy_and_terms_of_service);
+  const closeSheet = () => {
+    bottomSheetRef?.current?.close();
+  };
 
-	const highlightPrivacyPolicyCheckbox = () => {
-		setIsPrivacyPolicyCheckboxHighlighted(true)
-	}
+  const openAttentionSheet = () => {
+    setIsBottomSheetVisible(true);
+    attentionSheetRef.current?.expand();
+  };
 
-	const onPressWhenPrivacyPolicyIsNotAccepted = () => {
-		highlightPrivacyPolicyCheckbox()
-	}
+  const closeAttentionSheet = () => {
+    setIsBottomSheetVisible(false);
+    attentionSheetRef?.current?.close();
+  };
 
-	const onChangeTermsAndPrivacyConsent = (isChecked: boolean) => {
-		setIsPrivacyPolicyCheckboxHighlighted(false)
-		setIsCheckboxTicketToConsentTermsAndPrivacy(isChecked)
-	}
+  const handleUserLogin = async (
+    token?: string,
+    email?: string,
+    password?: string
+  ) => {
+    try {
+      // Authenticate based on token or credentials
+      setLoading(true);
+      if (token) {
+        await ServerAPI.authenticateWithAccessToken(token);
+      } else if (email && password) {
+        const result = await ServerAPI.authenticateWithEmailAndPassword(
+          email,
+          password
+        );
+        if (!result) throw new Error('Invalid credentials');
+        dispatch({ type: UPDATE_MANAGEMENT, payload: true });
+      }
 
-	let backgroundColor = useViewBackgroundColor()
-	const backgroundContrastColor = useMyContrastColor(backgroundColor)
+      // Fetch and process user data
+      const user = await ServerAPI.getMe();
+      updateLoginStatus(dispatch, user as DirectusUsers);
+      const currentDate = getCurrentDate();
 
-	const [changedLoginStatus, setChangedLoginStatus] = useState(false)
-	const onWarnAboutAnonymousLogin = useMyModalConfirmer({
-		onConfirm: handleLoginAsAnonymous,
-		renderAsContentPreItems: (key: string, hide: () => void) => {
-			return renderAnonymousAttention();
-		}
-	})
+      dispatch({
+        type: UPDATE_PRIVACY_POLICY_DATE,
+        payload: currentDate,
+      });
+      setLoading(false);
+      router.replace('/(app)');
+    } catch (error) {
+      console.error('Error during login: ', error);
+      if (!token) {
+        toast('Invalid credentials', 'error');
+        setLoading(false);
+      }
+    }
+  };
 
-	const [showLoginWithUsernameAndPassword, setShowLoginWithUsernameAndPassword] = useState(false)
-	const translation_show_login_internal_management_with_username_and_password = useTranslation(TranslationKeys.show_login_for_management_with_email_and_password);
-	const translation_sign_in= useTranslation(TranslationKeys.sign_in);
-	const translation_currently_logged_in_as = useTranslation(TranslationKeys.currently_logged_in_as);
-	const translation_if_you_want_to_login_with_this_account_please_press = useTranslation(TranslationKeys.if_you_want_to_login_with_this_account_please_press);
-	const translation_continue = useTranslation(TranslationKeys.continue);
-	const translation_logout = useTranslation(TranslationKeys.logout);
-	const translation_email = useTranslation(TranslationKeys.email);
-	const translation_password = useTranslation(TranslationKeys.password);
-	const translation_loggingInPleaseWait = useTranslation(TranslationKeys.loggingInPleaseWait);
+  const handleAnonymousLogin = () => {
+    // @ts-ignore
+    updateLoginStatus(dispatch, { id: '' });
+    router.replace('/(app)');
+    const currentDate = getCurrentDate();
 
-	const translation_anonymous_limitations = useTranslation(TranslationKeys.without_account_limitations);
+    dispatch({
+      type: UPDATE_PRIVACY_POLICY_DATE,
+      payload: currentDate,
+    });
+  };
 
-	// email and password for login
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
+  const getCurrentDate = () => {
+    const now = new Date();
+    const currentDate = format(now, 'dd.MM.yyyy HH:mm:ss');
+    return currentDate;
+  };
 
-	const [currentUser, setCurrentUser] = useCurrentUser()
+  useEffect(() => {
+    const handleResize = () => {
+      setIsWebVisible(Dimensions.get('window').width > 650);
+    };
 
-	const globalSearchParams = useGlobalSearchParams(); // get url params from router
-	const directus_token = ServerAPI.getDirectusAccessTokenFromParams(globalSearchParams);
-	const loggingInWithToken = !!directus_token && directus_token.length > 0;
+    const subscription = Dimensions.addEventListener('change', handleResize);
 
-	const [loggingInWithMailAndPassword, setLoggingInWithMailAndPassword] = useState(false)
+    return () => subscription?.remove();
+  }, []);
 
-	const loggingIn = loggingInWithToken || loggingInWithMailAndPassword;
+  useFocusEffect(
+    useCallback(() => {
+      setIsActive(true);
+      return () => {
+        setIsActive(false);
+      };
+    }, [])
+  );
 
+  const getWikis = async () => {
+    try {
+      const response = (await wikisHelper.fetchWikis()) as Wikis[];
+      if (response) {
+        dispatch({ type: SET_WIKIS, payload: response });
+      }
+    } catch (error) {
+      console.error('Error fetching wikis:', error);
+    }
+  };
 
-	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
-	function isOnGithubPages() {
-		if(PlatformHelper.isWeb()){
-			if(window.location.origin.includes('github.io')){
-				return true;
-			}
-		}
-		return false;
-	}
+  useFocusEffect(
+    useCallback(() => {
+      getWikis();
+    }, [])
+  );
 
-	// TODO: Workaround Expo Issue: https://github.com/expo/expo/issues/29274
-	function reloadAndRemoveParamsForGithubPages() {
-		window.location.replace(window.location.origin + window.location.pathname);
-	}
+  const extractDescriptionAndImage = (content: string): [string, string] => {
+    if (!content) return ['', ''];
 
-	function signIn() {
-		console.log('login.tsx signIn');
-		router.replace('/(app)/home');
-	}
+    const imageRegex = /!\[.*?\]\((.*?)\)/;
+    const imageMatch = content.match(imageRegex);
+    const imageUrl = imageMatch ? imageMatch[1] : '';
 
-	useEffect(() => {
-		console.log('login.tsx useEffect loggedIn: changedLoginStatus: '+changedLoginStatus+' loggedIn: '+loggedIn);
-		if (changedLoginStatus && loggedIn) {
-			signIn();
-		}
-	}, [changedLoginStatus, loggedIn]);
+    const description = content.replace(imageRegex, '').trim();
 
-	function renderAnonymousAttention() {
-		return(
-			<View style={{width: "100%"}}>
-				<AnimationAstronautComputer />
-				<View style={{
-					width: "100%",
-					paddingHorizontal: 20,
-				}}>
-					<View style={{
-						width: "100%",
-						paddingBottom: 20,
-					}}>
-						<Text>{translation_anonymous_limitations}</Text>
-					</View>
-				</View>
-			</View>
-		)
-	}
+    return [description, imageUrl];
+  };
 
-	async function handleSuccessfulAuthenticationWithNewCurrentUser(new_current_user: any) {
-		setCurrentUser(new_current_user);
-		console.log('login.tsx handleSuccessfulAuthenticationWithNewCurrentUser', new_current_user)
-		setChangedLoginStatus(true)
-	}
+  const renderContent = () => {
+    const [description, imageUrl] =
+      extractDescriptionAndImage(detailed_description);
 
-	async function handleSuccessfulAuthenticationNonAnonymous(result: AuthenticationData) {
-		// the result is irrelevant, just to make sure authentication was successful
-		const me = await ServerAPI.getMe();
-		if(isOnGithubPages()){
-			reloadAndRemoveParamsForGithubPages();
-		} else {
-			handleSuccessfulAuthenticationWithNewCurrentUser(me)
-		}
-	}
+    return (
+      <View style={styles.detailedContentContainer}>
+        {imageUrl && (
+          <Image
+            source={{ uri: imageUrl }}
+            style={{
+              width: '95%',
+              height: 450,
+              resizeMode: 'cover',
+              marginBottom: 10,
+              borderRadius: 8,
+            }}
+          />
+        )}
+        {description && (
+          <Text style={{ ...styles.subTitle, color: theme.login.text }}>
+            {description}
+          </Text>
+        )}
+      </View>
+    );
+  };
 
-	async function handleFailedAuthentication(e: any) {
-		console.log('login.tsx authentication failed')
-		console.error(e)
-		if(isOnGithubPages()){
-			reloadAndRemoveParamsForGithubPages();
-		} else {
-			router.replace('/home/');
-		}
-	}
-
-	async function handleLoginAsAnonymous () {
-		console.log('login.tsx proceed_to_authenticate_as_anonymous handleLoginAsAnonymous');
-		const anonymous_user = getAnonymousUser();
-		handleSuccessfulAuthenticationWithNewCurrentUser(anonymous_user)
-	}
-
-	async function proceed_to_authenticate_as_anonymous() {
-		if(WARN_ANONYMOUS_ABOUT_MISSING_FUNCTIONALITIES){
-			onWarnAboutAnonymousLogin()
-		} else {
-			handleLoginAsAnonymous()
-		}
-	}
-
-	async function authenticate_with_access_token(directus_token: string | null | undefined) {
-		console.log('login.tsx useEffect directus_token');
-		if (directus_token) {
-			console.log('login.tsx useEffect directus_token: '+directus_token);
-			ServerAPI.authenticate_with_access_token(directus_token).then((result) => {
-				if(result){
-					handleSuccessfulAuthenticationNonAnonymous(result)
-				} else {
-					handleFailedAuthentication('No result')
-				}
-			}).catch((e) => {
-				console.log('login.tsx useEffect directus_token catch')
-				handleFailedAuthentication(e)
-			})
-		}
-	}
-
-	async function authenticate_with_email_and_password(email: string, password: string) {
-		console.log('login.tsx useEffect email: '+email+' password: '+password);
-		ServerAPI.authenticate_with_email_and_password(email, password).then((result) => {
-			if(result){
-				handleSuccessfulAuthenticationNonAnonymous(result)
-			} else {
-				handleFailedAuthentication('No result')
-			}
-		}).catch((e) => {
-			handleFailedAuthentication(e)
-		})
-	}
-
-	// UseEffect when directus_token changes, then call login with access token
-	useEffect(() => {
-		authenticate_with_access_token(directus_token);
-	}, [directus_token]);
-
-	// UseEffect when loggingInWithMailAndPassword changes, then call login with email and password
-	useEffect(() => {
-		if (loggingInWithMailAndPassword) {
-			(async () => {
-				await authenticate_with_email_and_password(email, password);
-				setLoggingInWithMailAndPassword(false);
-			})();
-		}
-	}, [loggingInWithMailAndPassword]);
-
-	function renderWhenLoggedIn() {
-		if (loggedIn) {
-			return (
-				<>
-					<Text>{translation_currently_logged_in_as+': '+nickname}</Text>
-					<Text>{translation_if_you_want_to_login_with_this_account_please_press+': '+translation_continue}</Text>
-					<View style={{height: 16}}></View>
-					<View style={{flexDirection: 'row', width: '100%'}}>
-						<View style={{flex: 1}}>
-							<MyButton leftIcon={IconNames.logout_icon} accessibilityLabel={translation_logout} text={translation_logout} disabled={!loggedIn} onPress={logout} />
-						</View>
-						<View style={{width: 8}}></View>
-						<View style={{flex: 1}}>
-							<MyButton leftIcon={IconNames.sign_in_icon}
-								accessibilityLabel={translation_continue}
-								text={translation_continue}
-								disabled={!loggedIn}
-								onPress={() => {
-									console.log('Handle sign in');
-									signIn();
-								}}
-							/>
-						</View>
-					</View>
-				</>
-			)
-		}
-	}
-
-	function renderInternalLogin() {
-		if (showLoginWithUsernameAndPassword) {
-			return (
-				<>
-					<TextInput value={email} onChangeText={setEmail} placeholder={translation_email} />
-					<View style={{height: 8}}></View>
-					<TextInput isPassword={true} value={password} onChangeText={setPassword} placeholder={translation_password} />
-					<View style={{height: 8}}></View>
-					<MyButton
-						leftIconColoredBox={true}
-						leftIcon={IconNames.sign_in_icon}
-						text={translation_sign_in}
-						accessibilityLabel={translation_sign_in}
-						tooltip={translation_sign_in}
-						disabled={loggedIn || !email || !password}
-						onPress={() => {
-							setLoggingInWithMailAndPassword(true)
-						}}
-					/>
-				</>
-			)
-		}
-
-		return (
-			<>
-				<ButtonAuthProviderCustom
-					leftIconColoredBox={false}
-					icon_name={IconNames.sign_in_with_mail_icon}
-					privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy}
-					text={translation_show_login_internal_management_with_username_and_password}
-					accessibilityLabel={translation_show_login_internal_management_with_username_and_password}
-					onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted}
-					onPress={() => {
-						setShowLoginWithUsernameAndPassword(!showLoginWithUsernameAndPassword)
-					}}
-				/>
-			</>
-		)
-	}
-
-	function renderAnonymousLoginOption() {
-		return(
-			<>
-				<ButtonAuthAnonym onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy} onPress={proceed_to_authenticate_as_anonymous} />
-			</>
-		)
-	}
-
-
-	function renderConsentTermsOfUseAndPrivacyPolicy() {
-
-		return (
-			<Checkbox isInvalid={isPrivacyPolicyCheckboxHighlighted} isChecked={isCheckboxTicketToConsentTermsAndPrivacy} onChange={(isChecked) => {
-				onChangeTermsAndPrivacyConsent(isChecked)
-			}} accessibilityLabel={translation_t_accept_privacy_policy_and_terms_of_service} label={translation_t_accept_privacy_policy_and_terms_of_service} >
-				<View style={{
-					width: '100%',
-					flexDirection: 'row',
-					flexWrap: 'wrap',
-					justifyContent: 'center',
-					alignItems: 'center'
-				}}
-				>
-					<Text style={{
-						fontSize: 12,
-						textAlign: 'left',
-						width: '100%' // Add this line to ensure full width
-					}}
-					>
-						{translation_t_accept_privacy_policy_and_terms_of_service}
-					</Text>
-				</View>
-			</Checkbox>
-		)
-	}
-
-	function renderLoginOptions() {
-		if(loggingIn){
-			return (
-				<View style={{
-					width: '100%',
-					height: '100%',
-					flexDirection: 'column',
-					alignItems: 'center',
-
-				}}>
-					<MySpinner />
-					<Text size={TEXT_SIZE_SMALL} >
-						{translation_loggingInPleaseWait}
-					</Text>
-				</View>
-			)
-		} else {
-			return (
-				<>
-					<ServerSsoAuthProviders onPressWhenPrivacyPolicyIsNotAccepted={onPressWhenPrivacyPolicyIsNotAccepted} privacyPolicyAccepted={isCheckboxTicketToConsentTermsAndPrivacy} onSuccess={(newToken: string) => {
-						authenticate_with_access_token(newToken);
-					}} />
-					{renderAnonymousLoginOption()}
-					<MyDivider />
-					{renderInternalLogin()}
-				</>
-			)
-		}
-	}
-
-	if(loggedIn){
-		return <Redirect href="/(app)/home" />
-	}
-
-	return (
-		<LoginLayout>
-			<Text style={{fontSize: 24, fontWeight: 'bold'}}>{translation_sign_in}</Text>
-			<View style={{height: 16}}></View>
-			<SettingsRowProfileLanguage />
-			<View style={{height: 16}}></View>
-			{renderConsentTermsOfUseAndPrivacyPolicy()}
-			<View style={{height: 16}}></View>
-			{renderWhenLoggedIn()}
-			{renderLoginOptions()}
-		</LoginLayout>
-	);
+  return (
+    <>
+      {deviceMock && deviceMock === 'iphone' && isWeb && <DeviceMock />}
+      <View
+        style={{
+          ...styles.mainContainer,
+          backgroundColor: theme.login.background,
+          padding: isWebVisible ? 20 : 20,
+          justifyContent: isWeb ? 'space-between' : 'flex-start',
+        }}
+      >
+        <View
+          style={{
+            ...styles.loginContainer,
+            width: isWeb && isWebVisible ? '35%' : '100%',
+          }}
+        >
+          <Header />
+          <Form
+            setIsVisible={setIsVisible}
+            openSheet={openSheet}
+            openAttentionSheet={openAttentionSheet}
+            onSuccess={handleUserLogin}
+            providers={providers}
+          />
+          <Footer />
+        </View>
+        {isWeb && isWebVisible && (
+          <View
+            style={{
+              ...styles.webContainer,
+              backgroundColor: theme.login.webContainerBg,
+            }}
+          >
+            <View style={styles.webTitleContainer}>
+              {heading && (
+                <Text style={{ ...styles.title, color: theme.login.text }}>
+                  {heading}
+                </Text>
+              )}
+              {subHeading && (
+                <Text style={{ ...styles.subTitle, color: theme.login.text }}>
+                  {subHeading}
+                </Text>
+              )}
+            </View>
+            {renderContent()}
+          </View>
+        )}
+        {isWeb ? (
+          <ManagementModal
+            isVisible={isVisible}
+            setIsVisible={setIsVisible}
+            handleLogin={handleUserLogin}
+            loading={loading}
+          />
+        ) : (
+          <BottomSheet
+            ref={bottomSheetRef}
+            index={-1}
+            snapPoints={snapPoints}
+            handleComponent={null}
+            backgroundStyle={{
+              borderTopRightRadius: 30,
+              borderTopLeftRadius: 30,
+            }}
+          >
+            <ManagementSheet
+              closeSheet={closeSheet}
+              handleLogin={handleUserLogin}
+            />
+          </BottomSheet>
+        )}
+        {isActive && (
+          <BottomSheet
+            ref={attentionSheetRef}
+            index={-1}
+            snapPoints={attentionSnapPoints}
+            handleComponent={null}
+            backgroundStyle={{
+              borderTopRightRadius: 30,
+              borderTopLeftRadius: 30,
+            }}
+          >
+            <AttentionSheet
+              closeSheet={closeAttentionSheet}
+              handleLogin={handleAnonymousLogin}
+              isBottomSheetVisible={isBottomSheetVisible}
+            />
+          </BottomSheet>
+        )}
+      </View>
+    </>
+  );
 }

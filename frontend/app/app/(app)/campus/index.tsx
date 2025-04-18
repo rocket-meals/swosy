@@ -1,225 +1,461 @@
-import {ListRenderItemInfo} from 'react-native';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {MyGridFlatList} from '@/components/grid/MyGridFlatList';
-import {Buildings, DirectusFiles} from '@/helper/database/databaseTypes/types';
-import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
-import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
-import {getBuildingLocationType, useSynchedBuildingsDict} from '@/states/SynchedBuildings';
-import {router, useGlobalSearchParams, useLocalSearchParams} from "expo-router";
-import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {useEstimatedLocationUponSelectedCanteen, useProfileLanguageCode} from "@/states/SynchedProfile";
-import {LocationType} from "@/helper/geo/LocationType";
-import {DistanceHelper} from "@/helper/geo/DistanceHelper";
-import DistanceBadge from "@/components/distance/DistanceBadge";
-import React from "react";
 import {
-	filterAndSortResourcesBySearchValue,
-	useSearchTextFromGlobalSearchParams
-} from "@/compositions/header/HeaderSearchButtonParams";
-import {useCampusAreaColor} from "@/states/SynchedAppSettings";
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  RefreshControl,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import styles from './styles';
+import { useTheme } from '@/hooks/useTheme';
+import { isWeb } from '@/constants/Constants';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import {
+  DrawerContentComponentProps,
+  DrawerNavigationProp,
+} from '@react-navigation/drawer';
+import { RootDrawerParamList } from './types';
+import { useFocusEffect, useNavigation } from 'expo-router';
+import BuildingItem from '@/components/BuildingItem/BuildingItem';
+import { useDispatch, useSelector } from 'react-redux';
+import { CampusHelper } from '@/redux/actions/Campus/Campus';
+import { Buildings } from '@/constants/types';
+import {
+  SET_CAMPUSES,
+  SET_CAMPUSES_LOCAL,
+  SET_UNSORTED_CAMPUSES,
+} from '@/redux/Types/types';
+import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
+import { calculateDistanceInMeter } from '@/helper/distanceHelper';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BuildingSortSheet from '@/components/BuildingSortSheet/BuildingSortSheet';
+import useToast from '@/hooks/useToast';
+import { useLanguage } from '@/hooks/useLanguage';
+import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
+import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { Platform } from 'react-native';
+const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
+  const { theme } = useTheme();
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const { t } = useLanguage();
+  const campusHelper = new CampusHelper();
+  const buildingsHelper = new BuildingsHelper();
 
-export function getBuildingName(building: Buildings, languageCode: string): string | null {
-	let alias = building.alias;
-	let externalIdentifier = building.external_identifier;
-	let totalName = alias;
-	if(externalIdentifier){
-		totalName += ' (' + externalIdentifier + ')';
-	}
-	if(totalName){
-		return totalName;
-	}
-	return building.id;
-}
+  const [query, setQuery] = useState<string>('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [campusesDispatched, setCampusesDispatched] = useState(false);
+  const [selectedBuilding, setSelectedBuilding] = useState<Buildings | null>();
+  const [isActive, setIsActive] = useState(false);
+  const [distanceAdded, setDistanceAdded] = useState(false);
+  const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get('window').width
+  );
+  const { drawerPosition, campusesSortBy } = useSelector(
+    (state: any) => state.settings
+  );
+  const { campuses, campusesLocal, unSortedCampuses } = useSelector(
+    (state: any) => state.campus
+  );
+  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const drawerNavigation =
+    useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
-function sortByBuildingName(resources: Buildings[], buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
-	resources.sort((a, b) => {
-		let nameA = getBuildingName(a, languageCode);
-		let nameB = getBuildingName(b, languageCode);
-		if(nameA && nameB){
-			return nameA.localeCompare(nameB);
-		} else if (nameA){
-			return -1;
-		} else if (nameB){
-			return 1;
-		}
-		return 0;
-	});
-	return resources;
-}
+  const sortSheetRef = useRef<BottomSheet>(null);
+  const sortPoints = useMemo(() => ['80%'], []);
+  const imageManagementSheetRef = useRef<BottomSheet>(null);
+  const imageManagementPoints = useMemo(() => ['70%'], []);
 
-function sortByDistance(resources: Buildings[], currentLocation: LocationType) {
-	resources.sort((a, b) => {
-		let locationA = getBuildingLocationType(a);
-		let locationB = getBuildingLocationType(b);
+  const openSortSheet = () => {
+    sortSheetRef.current?.expand();
+  };
 
-		if(locationA && locationB){
-			let distanceA = DistanceHelper.getDistanceOfLocationInM(currentLocation, locationA);
-			let distanceB = DistanceHelper.getDistanceOfLocationInM(currentLocation, locationB);
-			return distanceA - distanceB;
-		} else if(locationA){
-			return -1;
-		} else if(locationB){
-			return 1;
-		} else {
-			return 0;
-		}
-	});
-	return resources;
+  const closeSortSheet = () => {
+    sortSheetRef?.current?.close();
+  };
 
-}
+  const openImageManagementSheet = () => {
+    imageManagementSheetRef?.current?.expand();
+  };
 
-function sortBuildings(resources: Buildings[], buildingsDict: Record<string, Buildings> | undefined, sortType: SortType, languageCode: string, currentLocation: LocationType | null) {
-	let copiedResources = [...resources];
-	if(sortType === SortType.intelligent){
-		// sort first by name, then by eating habits, then by favorite
-		let sortOrders = [SortType.alphabetical, SortType.distance, SortType.favorite];
-		for(const sortOrder of sortOrders){
-			copiedResources = sortBuildings(copiedResources, buildingsDict, sortOrder, languageCode, currentLocation);
-		}
-	} else if(sortType === SortType.alphabetical){
-		copiedResources = sortByBuildingName(copiedResources, buildingsDict, languageCode);
-	} else if(sortType === SortType.distance){
-		if(currentLocation){
-			copiedResources = sortByDistance(copiedResources, currentLocation);
-		}
-	}
-	/**
-	 else if(sortType === SortType.favorite){
-	 copiedResources = sortByFavorite(copiedResources, foodFeedbacksDict);
-	 }
-	 */
-	return copiedResources;
-}
+  const closeImageManagementSheet = () => {
+    imageManagementSheetRef?.current?.close();
+  };
 
-export const SEARCH_PARAM_BUILDINGS_ID = 'buildings_id';
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'Campus';
+      document.title = title;
+    }
+  }, []);
 
-export function useBuildingIdFromLocalSearchParams() {
-	const params = useGlobalSearchParams<{ [SEARCH_PARAM_BUILDINGS_ID]?: string }>();
-	return params[SEARCH_PARAM_BUILDINGS_ID];
-}
+  useFocusEffect(
+    useCallback(() => {
+      setIsActive(true);
+      return () => {
+        setIsActive(false);
+      };
+    }, [])
+  );
 
-export default function CampusScreen() {
-	return <CampusScreenIndex />
-}
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setCampusesDispatched(false);
+    fetchAllCampuses();
+    setRefreshing(false);
+  }, []);
 
-function filterForSearchValue(resources: Buildings[], searchValue: string | undefined | null, buildingsDict: Record<string, Buildings> | undefined, languageCode: string) {
-	return filterAndSortResourcesBySearchValue(resources, searchValue, (resource) => {
-		let buildingName = getBuildingName(resource, languageCode)
-		let buildingExternalIdentifier = resource.external_identifier;
-		let totalName = buildingName;
-		if(buildingExternalIdentifier){
-			totalName += ' ' + buildingExternalIdentifier;
-		}
-		return totalName;
-	});
-}
+  const fetchAllCampuses = async () => {
+    setLoading(true);
+    const campusData = (await campusHelper.fetchCampus({})) as Buildings[];
+    const campuses = campusData || [];
+    if (campuses) {
+      dispatch({ type: SET_CAMPUSES, payload: campuses });
+      setCampusesDispatched(true);
+    }
+  };
 
-function CampusScreenIndex() {
-	const [buildingsDict, setBuildingsDict, lastUpdateBuildings, updateBuildingsFromServer] = useSynchedBuildingsDict()
+  const updateSort = (id: string, campuses: Buildings[]) => {
+    setLoading(true);
+    let copiedCampuses = [...campuses];
 
-	const initialAmountColumns = useMyGridListDefaultColumns();
+    switch (id) {
+      case 'intelligent':
+        copiedCampuses = sortCampusesWithDistance(copiedCampuses) || [];
+        break;
+      case 'alphabetical':
+        copiedCampuses = sortCampusesAlphabetically(copiedCampuses) || [];
+        break;
+      case 'distance':
+        copiedCampuses = sortCampusesWithDistance(copiedCampuses) || [];
+        break;
+      default:
+        copiedCampuses = unSortedCampuses || [];
+        break;
+    }
 
-	const searchValue = useSearchTextFromGlobalSearchParams();
-	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigBuildings);
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const estimatedLocation: LocationType | null = useEstimatedLocationUponSelectedCanteen();
+    dispatch({
+      type: SET_CAMPUSES,
+      payload: copiedCampuses,
+    });
+    dispatch({
+      type: SET_CAMPUSES_LOCAL,
+      payload: copiedCampuses,
+    });
+    setLoading(false);
+  };
 
-	const campusColor = useCampusAreaColor();
+  useEffect(() => {
+    if (campuses && selectedBuilding && campusesDispatched) {
+      setLoading(true);
+      const campusesWithDistance = addDistance(campuses);
+      dispatch({
+        type: SET_CAMPUSES,
+        payload: campusesWithDistance,
+      });
+      dispatch({
+        type: SET_UNSORTED_CAMPUSES,
+        payload: campusesWithDistance,
+      });
+      setDistanceAdded(true);
+      setLoading(false);
+    }
+  }, [selectedBuilding, campusesDispatched]);
 
-	const resources: Buildings[] = []
-	if (buildingsDict) {
-		const buildingsKeys = Object.keys(buildingsDict)
-		for (let i = 0; i < buildingsKeys.length; i++) {
-			const key = buildingsKeys[i];
-			const building = buildingsDict[key];
-			if (building) {
-				resources.push(building)
-			}
-		}
-	}
+  const addDistance = (campuses: Buildings[]) => {
+    let campusWithDistance: Array<Buildings> = [];
+    if (campuses) {
+      campuses?.forEach((campus: any) => {
+        const distance = calculateDistanceInMeter(
+          selectedBuilding?.coordinates?.coordinates,
+          campus?.coordinates?.coordinates
+        );
+        campusWithDistance.push({ ...campus, distance });
+      });
+      if (campusWithDistance?.length === 0) {
+        return campuses;
+      }
+      return campusWithDistance;
+    }
+  };
 
-	let usedResources = resources
-	if (usedResources) {
-		usedResources = sortBuildings(usedResources, buildingsDict, sortType, languageCode, estimatedLocation)
-		usedResources = filterForSearchValue(usedResources, searchValue, buildingsDict, languageCode)
-	}
+  const sortCampusesWithDistance = (campuses: Buildings[]) => {
+    if (campuses) {
+      return campuses?.sort((a: any, b: any) => a.distance - b.distance);
+    } else {
+      return campuses;
+    }
+  };
 
-  type DataItem = { key: string; data: Buildings }
+  const sortCampusesAlphabetically = (campuses: Buildings[]) => {
+    if (campuses) {
+      return campuses?.sort((a: any, b: any) => a.alias.localeCompare(b.alias));
+    } else {
+      return campuses;
+    }
+  };
 
-  const data: DataItem[] = []
-  if (usedResources) {
-  	for (let i = 0; i < usedResources.length; i++) {
-  		const resource = usedResources[i];
-  		data.push({
-  			key: resource.id + '', data: resource
-  		})
-  	}
-  }
+  const fetchSelectedBuilding = async () => {
+    if (selectedCanteen?.building) {
+      const buildingData = (await buildingsHelper.fetchBuildingById(
+        selectedCanteen.building
+      )) as Buildings;
+      const building = buildingData || [];
+      if (building) {
+        setSelectedBuilding(building);
+      }
+    } else {
+      toast('Please select canteen', 'error');
+    }
+  };
 
-  const renderItem = (info: ListRenderItemInfo<DataItem>) => {
-  	const {item, index} = info;
-  	const resource = item.data;
+  useEffect(() => {
+    fetchSelectedBuilding();
+    fetchAllCampuses();
+  }, []);
 
-	  let location = getBuildingLocationType(resource)
-	  let distance = null;
-	  let distanceBadge = null;
-	  if(location && estimatedLocation){
-		  distance = DistanceHelper.getDistanceOfLocationInM(estimatedLocation, location)
-		  distanceBadge = <DistanceBadge color={campusColor} distanceInMeter={distance} />
-	  }
+  useEffect(() => {
+    if (campuses && distanceAdded) {
+      updateSort(campusesSortBy, campuses);
+    }
+  }, [campusesSortBy, distanceAdded]);
 
-	  let title: string | null | undefined = getBuildingName(resource, languageCode)
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (query === '') {
+        dispatch({
+          type: SET_CAMPUSES,
+          payload: campusesLocal,
+        });
+      } else {
+        const filteredCampuses = campuses?.filter((campus: any) =>
+          campus?.alias?.toLowerCase()?.includes(query?.toLowerCase())
+        );
+        dispatch({
+          type: SET_CAMPUSES,
+          payload: filteredCampuses,
+        });
+      }
+    }, 500);
 
+    return () => clearTimeout(debounceTimer);
+  }, [query]);
 
-  	let assetId: string | DirectusFiles | null | undefined = undefined
-  	let image_url: string | undefined = undefined
-  	let thumb_hash: string | undefined = undefined
-  	if (typeof resource !== 'string') {
-  		if (resource?.image) {
-  			assetId = resource.image
-  		}
-  		if (resource?.image_remote_url) {
-  			image_url = resource.image_remote_url
-  		}
-  		if (resource?.image_thumb_hash) {
-  			thumb_hash = resource.image_thumb_hash
-  		}
-  	}
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
 
-  	return (
-  		<MyCardForResourcesWithImage
-			separatorColor={campusColor}
-  			key={item.key}
-  			heading={title}
-  			thumbHash={thumb_hash}
-  			image_url={image_url}
-			bottomRightComponent={
-				distanceBadge
-			}
-  			assetId={assetId}
-  			onPress={() => {
-				  router.push(`/(app)/buildings/details/?${SEARCH_PARAM_BUILDINGS_ID}=${resource.id}`)
-			}}
-  			accessibilityLabel={title}
-			imageUploaderConfig={{
-				resourceId: resource.id,
-				resourceCollectionName: 'buildings',
-				onImageUpdated: async () => {
-					await updateBuildingsFromServer();
-				}
-			}}
-  		/>
-  	);
-  }
+    const subscription = Dimensions.addEventListener('change', handleResize);
+
+    return () => subscription?.remove();
+  }, []);
 
   return (
-  	<MySafeAreaView>
-  		<MyGridFlatList
-  			data={data}
-  			renderItem={renderItem}
-  			amountColumns={initialAmountColumns}
-  		/>
-  	</MySafeAreaView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
+      <View style={{ ...styles.container }}>
+        <View
+          style={{
+            ...styles.header,
+            backgroundColor: theme.header.background,
+            paddingHorizontal: isWeb ? 20 : 10,
+          }}
+        >
+          <View
+            style={[
+              styles.row,
+              {
+                flexDirection:
+                  drawerPosition === 'right' ? 'row-reverse' : 'row',
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.col1,
+                {
+                  flexDirection:
+                    drawerPosition === 'right' ? 'row-reverse' : 'row',
+                },
+              ]}
+            >
+              <Tooltip
+                placement='top'
+                trigger={(triggerProps) => (
+                  <TouchableOpacity
+                    {...triggerProps}
+                    onPress={() => drawerNavigation.toggleDrawer()}
+                    style={{ padding: 10 }}
+                  >
+                    <Ionicons name='menu' size={24} color={theme.header.text} />
+                  </TouchableOpacity>
+                )}
+              >
+                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                    {`${t('open_drawer')}`}
+                  </TooltipText>
+                </TooltipContent>
+              </Tooltip>
+
+              <Text style={{ ...styles.heading, color: theme.header.text }}>
+                {t('campus')}
+              </Text>
+            </View>
+            <View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
+              <Tooltip
+                placement='top'
+                trigger={(triggerProps) => (
+                  <TouchableOpacity
+                    {...triggerProps}
+                    onPress={openSortSheet}
+                    style={{ padding: 10 }}
+                  >
+                    <MaterialIcons
+                      name='sort'
+                      size={24}
+                      color={theme.header.text}
+                    />
+                  </TouchableOpacity>
+                )}
+              >
+                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                    {`${t('sort')}: ${t('buildings')}`}
+                  </TooltipText>
+                </TooltipContent>
+              </Tooltip>
+            </View>
+          </View>
+        </View>
+        <ScrollView
+          style={{
+            ...styles.compusContainer,
+            backgroundColor: theme.screen.background,
+          }}
+          contentContainerStyle={{
+            ...styles.compusContentContainer,
+            paddingHorizontal: isWeb ? 5 : 5,
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View
+            style={{
+              ...styles.searchContainer,
+              width: screenWidth > 768 ? '60%' : '100%',
+            }}
+          >
+            <TextInput
+              style={[styles.searchInput, { color: theme.screen.text }]}
+              cursorColor={theme.screen.text}
+              placeholderTextColor={theme.screen.placeholder}
+              onChangeText={setQuery}
+              value={query}
+              placeholder='Search campus here...'
+            />
+          </View>
+          <View style={{ ...styles.campusContainer, gap: isWeb ? 10 : 10 }}>
+            {loading ? (
+              <View
+                style={{
+                  height: 200,
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ActivityIndicator size={30} color={theme.screen.text} />
+              </View>
+            ) : campuses && campuses?.length > 0 ? (
+              campuses?.map((campus: any) => (
+                <BuildingItem
+                  key={campus.id}
+                  campus={campus}
+                  setSelectedApartementId={setSelectedApartementId}
+                  openImageManagementSheet={openImageManagementSheet}
+                />
+              ))
+            ) : (
+              <View
+                style={{
+                  height: 200,
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: 'Poppins_400Regular',
+                    color: theme.screen.text,
+                  }}
+                >
+                  No Campus Found
+                </Text>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+        {isActive && (
+          <BottomSheet
+            ref={sortSheetRef}
+            index={-1}
+            snapPoints={sortPoints}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+          >
+            <BuildingSortSheet closeSheet={closeSortSheet} freeRooms={false} />
+          </BottomSheet>
+        )}
+        {isActive && (
+          <BottomSheet
+            ref={imageManagementSheetRef}
+            index={-1}
+            snapPoints={imageManagementPoints}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            handleComponent={null}
+            enablePanDownToClose
+            enableHandlePanningGesture={false}
+            enableContentPanningGesture={false}
+            backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+          >
+            <ImageManagementSheet
+              closeSheet={closeImageManagementSheet}
+              selectedFoodId={selectedApartmentId}
+              handleFetch={() => {
+                setCampusesDispatched(false);
+                fetchAllCampuses();
+              }}
+              fileName='buildings'
+            />
+          </BottomSheet>
+        )}
+      </View>
+    </SafeAreaView>
   );
-}
+};
+
+export default index;

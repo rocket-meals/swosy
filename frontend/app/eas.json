@@ -1,13 +1,9 @@
 {
-  "cli": {
-    "version": ">= 7.4.0"
-  },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "channel": "development",
-      "autoIncrement": false
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
     },
     "previewApk": {
       "android": {
@@ -15,10 +11,16 @@
       },
       "channel": "production"
     },
-    "preview": {
-      "distribution": "internal",
-      "channel": "preview",
-      "autoIncrement": false
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
     },
     "production": {
       "autoIncrement": false,

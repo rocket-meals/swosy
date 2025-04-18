@@ -1,0 +1,35 @@
+import { Text, View } from 'react-native';
+import React from 'react';
+import styles from './styles';
+import { useTheme } from '@/hooks/useTheme';
+import { useSelector } from 'react-redux';
+import { getBuildingTranslationByLanguageCode } from '@/helper/resourceHelper';
+import { useLanguage } from '@/hooks/useLanguage';
+
+const BuildingDescription: React.FC<any> = ({ campusDetails }) => {
+  const { theme } = useTheme();
+  const { t } = useLanguage();
+  const { language } = useSelector((state: any) => state.settings);
+
+  return (
+    <View style={styles.container}>
+      <Text style={{ ...styles.heading, color: theme.screen.text }}>
+        {t('description')}
+      </Text>
+      {campusDetails && campusDetails?.translations?.length > 0 ? (
+        <Text style={{ ...styles.body, color: theme.screen.text }}>
+          {getBuildingTranslationByLanguageCode(
+            campusDetails?.translations,
+            language
+          ) || ''}
+        </Text>
+      ) : (
+        <Text style={{ ...styles.body, color: theme.screen.text }}>
+          {'Missing translation(content)'}
+        </Text>
+      )}
+    </View>
+  );
+};
+
+export default BuildingDescription;
