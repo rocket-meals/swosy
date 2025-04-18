@@ -16,18 +16,24 @@ jobs:
     steps:
       - name: 🏗 Setup repository
         uses: actions/checkout@v3
+
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
-      - name: 📦 Install dependencies
-        run: npm ci
-      - run: git config --global user.name 'Rocket Meals'
-      - run: git config --global user.email 'nils@baumgartner-software.de'
-      #https://www.npmjs.com/package/gh-pages
-      - run: |
+
+      - name: 📦 Install dependencies with Yarn
+        run: yarn install --frozen-lockfile
+
+      - name: 📛 Git user config
+        run: |
+          git config --global user.name 'Rocket Meals'
+          git config --global user.email 'nils@baumgartner-software.de'
+
+      - name: 🚀 Deploy to GitHub Pages
+        run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          CI=false npm run deploy:gh:pages -- -u "github-actions-bot <support+actions@github.com>"
+          CI=false yarn deploy:gh:pages -- -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

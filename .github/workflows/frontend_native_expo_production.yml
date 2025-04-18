@@ -28,14 +28,15 @@ jobs:
         with:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
+
       - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies
-        run: cd ./frontend/app && npm ci
+      - name: 📦 Install dependencies with Yarn
+        run: cd ./frontend/app && yarn install --frozen-lockfile
 
       - name: 🚀 Publish update to channel 'production'
         run: cd ./frontend/app && eas update --auto --platform all --non-interactive --channel production
