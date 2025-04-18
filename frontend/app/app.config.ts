@@ -66,6 +66,13 @@ export default ({config}: {config?: any}) => {
             "version": getVersion(),
             "orientation": "default",
             "icon": "./assets/images/icon.png",
+            "notification": {
+                "icon": "./assets/images/notification-icon.png"
+            },
+            "updates": {
+                "enabled": true,
+                "url": "https://u.expo.dev/"+customerConfig.easUpdateId,
+            },
             "scheme": customerConfig.appScheme,
             "userInterfaceStyle": "automatic",
             "splash": {
