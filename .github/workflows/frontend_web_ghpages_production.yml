@@ -34,6 +34,6 @@ jobs:
       - name: 🚀 Deploy to GitHub Pages
         run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          CI=false yarn deploy:gh:pages -- -u "github-actions-bot <support+actions@github.com>"
+          CI=false yarn deploy:gh:pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
