@@ -1,232 +1,237 @@
-import {MySafeAreaView} from '@/components/MySafeAreaView';
-import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {NoCourseTimetableFound} from '@/compositions/courseTimetable/NoCourseTimetableFound';
-import {TranslationKeys, useTranslation} from '@/helper/translations/Translation';
-import {useIsDemo} from '@/states/SynchedDemo';
-import {Text, useViewBackgroundColor, View} from '@/components/Themed';
-import {MyButton} from '@/components/buttons/MyButton';
-import {DateHelper} from '@/helper/date/DateHelper';
-import {useBreakPointValue} from '@/helper/device/DeviceHelper';
-import {useSynchedFirstWeekday} from '@/states/SynchedFirstWeekday';
-import {useProfileLocaleForJsDate} from '@/states/SynchedProfile';
-import {
-	BaseCourseTimetableEvent,
-	CourseTimetableDictType,
-	CourseTimetableEventType,
-	useCourseTimetableEvents,
-	usePersonalCourseTimetableAmountDaysOnScreen,
-	usePersonalCourseTimetableTimeEnd,
-	usePersonalCourseTimetableTimeStart
-} from '@/compositions/courseTimetable/CourseTimetableHelper';
-import React from 'react';
-import {TimetableImportDemo} from '@/compositions/courseTimetable/timetableProviders/TimetableImportDemo';
-import {CourseTimetableSchedule} from '@/compositions/courseTimetable/CourseTimetableSchedule';
-import {IconNames} from '@/constants/IconNames';
-import {CourseTimetableEvent} from '@/compositions/courseTimetable/CourseTimetableEvent';
-import {useIsDebug} from "@/states/Debug";
-import {MyModalActionSheetItem} from "@/components/modal/MyModalActionSheet";
-import {useModalGlobalContext} from "@/components/rootLayout/RootThemeProvider";
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
+import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
+import { useFocusEffect } from 'expo-router';
+import TimeTableData from '@/constants/TimeTable';
+import CourseTimetable from '../../../components/CourseTimeTable/CourseTimetable';
+import CourseBottomSheet from '../../../components/CourseTimeTable/CourseBottomSheet';
+import styles from './styles';
+import { FontAwesome } from '@expo/vector-icons';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { useSelector } from 'react-redux';
+import { EventTypes } from './types';
+import { courseTimetableDescriptionEmpty } from '@/constants/translationConstants';
+import RedirectButton from '@/components/RedirectButton';
+import useToast from '@/hooks/useToast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { myContrastColor } from '@/helper/colorHelper';
 
-export default function CourseTimetableScreen() {
-	const translation_import = useTranslation(TranslationKeys.import);
-	const [modalConfig, setModalConfig] = useModalGlobalContext();
+const extractTextAndLink = (description: string) => {
+  // Remove unintended spaces between `]` and `(`
+  const cleanedDescription = description.replace(/\]\s+\(/g, '](');
 
-	const isDemo = useIsDemo()
-	const isDebug = useIsDebug()
+  const regex = /\[(.*?)\]\((.*?)\)/g;
+  const match = regex.exec(cleanedDescription);
 
-	const locale = useProfileLocaleForJsDate();
-	const backgroundColor = useViewBackgroundColor()
+  if (match) {
+    const label = match[1]; // The text inside the square brackets
+    const link = match[2]; // The URL inside the parentheses
+    const textWithoutLinkAndLabel = cleanedDescription
+      .replace(match[0], '')
+      .trim(); // Remove the entire match
+    return { text: textWithoutLinkAndLabel, label, link };
+  }
 
-	const [firstDayOfWeek, setFirstDayOfWeek] = useSynchedFirstWeekday()
-	const [startTime, setStartTime] = usePersonalCourseTimetableTimeStart();
-	const [endTime, setEndTime] = usePersonalCourseTimetableTimeEnd();
-	const [amountDaysOnScreen, setAmountDaysOnScreen] = usePersonalCourseTimetableAmountDaysOnScreen();
-	const [timetableEvents, setTimetableEvents, addNewCourseTimetableEvent, removeCourseTimetableEvent] = useCourseTimetableEvents();
+  return { text: description, label: '', link: null };
+};
 
-	const translation_event = useTranslation(TranslationKeys.event)
-	const translation_create = useTranslation(TranslationKeys.create)
-	const translation_edit = useTranslation(TranslationKeys.edit)
+const TimetableScreen = () => {
+  const { theme } = useTheme();
+  const toast = useToast();
+  const { t } = useLanguage();
+  const { primaryColor, language ,appSettings} = useSelector(
+    (state: any) => state.settings
+  );
+  const mode = useSelector((state: any) => state.settings.theme);
+  const { profile } = useSelector((state: any) => state.authReducer);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['90%'], []);
+  const [events, setEvents] = useState<EventTypes[]>([]);
+  const [isActive, setIsActive] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState('');
+  const [timeTableData, setTimeTableData] = useState(() =>
+    TimeTableData(theme).map((item) => ({ ...item }))
+  );
+  const course_timetable_area_color = appSettings?.course_timetable_area_color
+  ? appSettings?.course_timetable_area_color
+  : primaryColor;
+  const contrastColor = myContrastColor(
+    course_timetable_area_color,
+    theme,
+    mode === 'dark'
+  );
+  const { text, label, link } = extractTextAndLink(
+    courseTimetableDescriptionEmpty[language ? language : 'en']
+  );
 
-	const translationCreateEvent = translation_event+' '+translation_create
+  const openSheet = useCallback(() => {
+    bottomSheetRef?.current?.expand();
+  }, []);
 
-	const breakPointsAmountOfDaysToShowOnScreen = {
-		sm: 2.1,
-		md: 5.1,
-		lg: 7,
-		xl: 7
-	}
-	const amountOfDaysToShowOnScreen = amountDaysOnScreen || useBreakPointValue(breakPointsAmountOfDaysToShowOnScreen)
+  const closeSheet = () => {
+    bottomSheetRef?.current?.close();
+    setIsUpdate(false);
+  };
 
-	function renderTimetableEventForEditOrCreate(item?: BaseCourseTimetableEvent | CourseTimetableEventType) {
-		return (
-			<MyScrollView>
-				<CourseTimetableEvent item={item}
-					handleEditExisting={async (usedEvent: CourseTimetableEventType, hide: () => void) => {
-						console.log(usedEvent)
-						// update the event in the timetableEvents with the id
-						timetableEvents[usedEvent.id] = usedEvent;
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'Course Timetable';
+      document.title = title;
+    }
+  }, []);
 
-						//@NilsBaumgartner: why is this a function instead of the value?
-						//@ts-ignore
-						setTimetableEvents((usedCourseTimetable) => {
-							return timetableEvents
-						})
-						handlePressOnEvent(usedEvent);
-					}}
-					handleEditTemplate={async (usedEvent: BaseCourseTimetableEvent, hide: () => void) => {
-						handlePressOnEvent(usedEvent);
-					}}
-					handleDelete={async (itemToDelete: CourseTimetableEventType) => {
-						console.log('Delete')
-						console.log(itemToDelete)
-						await removeCourseTimetableEvent(itemToDelete)
-						setModalConfig(null)
-					}}
-					handleCreateNew={async (usedEvent: BaseCourseTimetableEvent) => {
-						console.log('Save')
-						console.log(usedEvent)
-						await addNewCourseTimetableEvent(usedEvent)
-						setModalConfig(null)
-					}}
-				/>
-			</MyScrollView>
-		)
-	}
+  useFocusEffect(
+    useCallback(() => {
+      setIsActive(true);
+      return () => {
+        setIsActive(false);
+      };
+    }, [])
+  );
 
-	function handlePressOnEvent(item: BaseCourseTimetableEvent) {
-		const configShowOnPressEvent: MyModalActionSheetItem = {
-			label: translation_event + ': ' + translation_edit,
-			accessibilityLabel: translation_event + ': ' + translation_edit,
-			key: 'edit',
-			title: translation_event + ': ' + translation_edit,
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return renderTimetableEventForEditOrCreate(item)
-			}
-		}
-		setModalConfig(configShowOnPressEvent)
-	}
+  const capitalizeFirstLetter = (string: string) => {
+    return string?.charAt(0)?.toUpperCase() + string?.slice(1)?.toLowerCase();
+  };
 
-	function handlePressCreateEvent() {
-		const configShowCreateEvent: MyModalActionSheetItem = {
-			label: translationCreateEvent,
-			accessibilityLabel: translationCreateEvent,
-			key: 'create',
-			title: translation_event + ': ' + translation_create,
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return renderTimetableEventForEditOrCreate(undefined)
-			}
-		}
-		setModalConfig(configShowCreateEvent)
-	}
+  useEffect(() => {
+    if (profile?.course_timetable) {
+      let courseTimetable = profile?.course_timetable
+        ? profile?.course_timetable
+        : {};
+      const events = Object.values(courseTimetable).map((item: any) => ({
+        day: capitalizeFirstLetter(item?.weekday?.id) || 'Monday',
+        startTime: item.start,
+        endTime: item.end,
+        title: item.title,
+        color: item.color,
+        id: item.id,
+        location: item.location,
+      }));
+      setEvents(events);
+    }
+  }, [profile]);
 
-	const importProviders: MyModalActionSheetItem[] = []
+  const handleOpenInBrowser = async (link: string) => {
+    if (link) {
+      try {
+        if (Platform.OS === 'web') {
+          window.open(link, '_blank');
+        } else {
+          const supported = await Linking.canOpenURL(link);
 
-	if (isDemo || isDebug) {
-		importProviders.push({
-			key: 'demo',
-			label: 'Demo',
-			iconLeft: IconNames.demo_icon_on,
-			accessibilityLabel: 'Demo',
-			renderAsContentInsteadItems: (key: string, hide: () => void) => {
-				return(
-					<MyScrollView>
-						<View style={{
-							width: '100%',
-						}}
-						>
-							<Text>{'Show Import'}</Text>
-							<TimetableImportDemo onCloseModal={hide} onImport={onImport}/>
-						</View>
-					</MyScrollView>
-				)
-			}
-		})
-	}
+          if (supported) {
+            await Linking.openURL(link);
+          } else {
+            toast(`Cannot open URL: ${link}`, 'error');
+          }
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    }
+  };
 
-	const hasImportProviders = importProviders.length > 0;
+  const parseMarkdown = (text: string) => {
+    const regex = /(\*\*.*?\*\*|\*.*?\*|\[.*?\]\(.*?\))/g;
+    const parts = text?.split(regex);
 
-	function onImport(events: CourseTimetableEventType[]) {
-		console.log('On Import')
-		console.log(events);
+    return parts?.map((part, index) => {
+      if (part?.startsWith('**') && part?.endsWith('**')) {
+        return (
+          <Text key={index} style={{ fontWeight: 'bold' }}>
+            {part?.slice(2, -2)}
+          </Text>
+        );
+      } else if (part?.startsWith('*') && part?.endsWith('*')) {
+        return (
+          <Text key={index} style={{ fontStyle: 'italic' }}>
+            {part?.slice(1, -1)}
+          </Text>
+        );
+      } else {
+        return part;
+      }
+    });
+  };
 
-		const newEvents: CourseTimetableDictType = {};
-		let currentEventId = 1;
-		for (const event of events) {
-			const id = event?.id || currentEventId;
-			event.id = id+'';
-			newEvents[id] = event;
-			currentEventId++;
-		}
+  return (
+    <View
+      style={{ ...styles.container, backgroundColor: theme.screen.background }}
+    >
+      <TouchableOpacity
+        style={{ ...styles.createButton, backgroundColor: course_timetable_area_color }}
+        onPress={openSheet}
+      >
+        <FontAwesome
+          name='calendar-plus-o'
+          size={20}
+          color={contrastColor}
+        />
+        <View>
+          <Text style={{ ...styles.createButtonText, color: contrastColor }}>
+            {`${t('event')} ${t('create')}`}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      {events && events?.length > 0 ? (
+        <CourseTimetable
+          events={events}
+          openSheet={openSheet}
+          setIsUpdate={setIsUpdate}
+          setTimeTableData={setTimeTableData}
+          setSelectedEventId={setSelectedEventId}
+        />
+      ) : (
+        <View style={styles.noEventsContainer}>
+          <Text
+            style={{
+              ...styles.body,
+              color: theme.sheet.text,
+            }}
+          >
+            {parseMarkdown(text)}
+          </Text>
+          {link && (
+            <RedirectButton
+              label={label}
+              type='link'
+              backgroundColor={course_timetable_area_color}
+              color={contrastColor}
+              onClick={handleOpenInBrowser}
+            />
+          )}
+        </View>
+      )}
+      {isActive && (
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          backgroundStyle={{
+            ...styles.sheetBackground,
+            backgroundColor: theme.sheet.sheetBg,
+          }}
+          enablePanDownToClose
+          handleComponent={null}
+          backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+        >
+          <CourseBottomSheet
+            timeTableData={timeTableData}
+            closeSheet={closeSheet}
+            isUpdate={isUpdate}
+            selectedEventId={selectedEventId}
+          />
+        </BottomSheet>
+      )}
+    </View>
+  );
+};
 
-		console.log('New Events dict')
-		console.log(newEvents);
-		setTimetableEvents(newEvents)
-	}
-
-	const coursesFound = Object.keys(timetableEvents).length > 0;
-
-	return (
-		<MySafeAreaView>
-			<View style={{flexDirection: 'row', marginTop: 10, marginHorizontal: 10, flexWrap: 'wrap'}}>
-				{hasImportProviders && (
-					<View style={{paddingBottom: 10, paddingRight: 10}}>
-						<MyButton leftIconColoredBox={true}
-								  useOnlyNecessarySpace={true}
-								  leftIcon={IconNames.calendar_import_icon}
-								  accessibilityLabel={translation_import}
-								  text={translation_import}
-								  onPress={() => {
-									  setModalConfig({
-										  label: translation_import,
-										  accessibilityLabel: translation_import,
-										  key: 'import',
-										  title: translation_import,
-										  items: importProviders
-									  })
-								  }}
-						/>
-					</View>
-				)}
-
-
-				<View style={{paddingBottom: 10}}>
-					<MyButton leftIconColoredBox={true}
-							  useOnlyNecessarySpace={true}
-							  leftIcon={IconNames.course_timetable_create_icon}
-							  accessibilityLabel={translationCreateEvent}
-							  onPress={() => {
-								  handlePressCreateEvent()
-							  }}
-							  text={translationCreateEvent}
-					/>
-				</View>
-			</View>
-
-			{coursesFound ? (
-				<View style={{width: '100%', flex: 1}}>
-					<CourseTimetableSchedule
-						key={amountOfDaysToShowOnScreen+'-'+firstDayOfWeek+'-'+startTime+'-'+endTime}
-						weekStartsOn={firstDayOfWeek}
-						currentWeekday={DateHelper.getWeekdayToday()}
-						amountOfDaysToShowOnScreen={amountOfDaysToShowOnScreen}
-						backgroundColor={backgroundColor}
-						locale={locale}
-						eventsDict={timetableEvents}
-						onPressEvent={(item: CourseTimetableEventType) => {
-							handlePressOnEvent(item);
-						}}
-						fromHour={parseInt(startTime)}
-						toHour={parseInt(endTime)}
-					/>
-				</View>
-			) : (
-				<MyScrollView style={{
-					paddingHorizontal: 10
-				}}
-				>
-					<NoCourseTimetableFound />
-				</MyScrollView>
-			)}
-		</MySafeAreaView>
-	)
-}
+export default TimetableScreen;

@@ -1,494 +1,1191 @@
-import {ListRenderItemInfo} from 'react-native';
-import {MySafeAreaView} from '@/components/MySafeAreaView';
 import {
-	getFoodOffersForSelectedDate,
-	TABLE_NAME_FOODS,
-	useFoodOfferSelectedDate
-} from '@/states/SynchedFoodOfferStates';
-import {DEFAULT_GRID_LIST_SPACING, MyGridFlatList} from '@/components/grid/MyGridFlatList';
+  ActivityIndicator,
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  RefreshControl,
+  View,
+  Platform,
+  Linking,
+  Image,
+} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import styles from './styles';
+import { useTheme } from '@/hooks/useTheme';
 import {
-	DirectusFiles,
-	Foodoffers,
-	FoodoffersCategories,
-	Foods, FoodsCategories,
-	FoodsFeedbacks,
-	ProfilesMarkings
-} from '@/helper/database/databaseTypes/types';
-import {MyCardForResourcesWithImage} from '@/components/card/MyCardForResourcesWithImage';
-import {useMyGridListDefaultColumns} from '@/components/grid/MyGridFlatListDefaultColumns';
+  DrawerContentComponentProps,
+  DrawerNavigationProp,
+} from '@react-navigation/drawer';
+import { isWeb } from '@/constants/Constants';
+import FoodItem from '@/components/FoodItem/FoodItem';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
-	CanteenSelectionRequired,
-	useIsValidProfileCanteenSelected
-} from '@/compositions/foodoffers/CanteenSelectionRequired';
-import {useProfileLanguageCode, useSynchedProfileCanteen, useSynchedProfileMarkingsDict} from '@/states/SynchedProfile';
-import React, {useEffect, useState} from 'react';
-import {MySpinner, View} from '@/components/Themed';
-import {useIsDemo} from '@/states/SynchedDemo';
-import {MyScrollView} from '@/components/scrollview/MyScrollView';
-import {router} from 'expo-router';
-import IndividualPricingBadge from '@/components/pricing/IndividualPricingBadge';
-import {FoodFeedbackRating} from "@/components/foodfeedback/FoodRatingDisplay";
-import {MyCardDefaultBorderRadius} from "@/components/card/MyCard";
-import {SortType, useSynchedSortType} from "@/states/SynchedSortType";
-import {PersistentStore} from "@/helper/syncState/PersistentStore";
-import {isRatingNegative, isRatingPositive} from "@/components/buttons/MyRatingButton";
-import {MarkingHelper} from "@/helper/food/MarkingHelper";
-import {getFoodName} from "@/helper/food/FoodTranslation";
-import {MarkingsDislikedWarningBadge} from "@/components/food/MarkingsDislikedWarningBadge";
-import {useDislikeColor} from "@/states/ColorScheme";
-import {useSynchedOwnFoodIdToFoodFeedbacksDict} from "@/states/SynchedFoodFeedbacks";
-import {useFoodImagePlaceholderAssetId, useFoodsAreaColor, useSynchedAppSettings} from "@/states/SynchedAppSettings";
-import {ScrollViewWithGradient} from "@/components/scrollview/ScrollViewWithGradient";
-import {MarkingBadges} from "@/components/food/MarkingBadge";
-import NoFoodOffersFound from "@/compositions/foodoffers/NoFoodOffersFound";
-import {ErrorGeneric} from "@/compositions/errors/ErrorGeneric";
-import {SEARCH_PARAM_FOODOFFER_ID} from "@/app/(app)/foodoffers/details";
-import {FoodNotifyButton} from "@/components/foodfeedback/FoodNotifyButton";
-import {CanteenFeedbacksLabelsComponent} from "@/compositions/canteens/CanteenFeedbacks";
-import {FoodOfferCategoriesHelper, useSynchedFoodoffersCategoriesDict} from "@/states/SynchedFoodoffersCategories";
-import {FoodsCategoriesHelper, useSynchedFoodsCategoriesDict} from "@/states/SynchedFoodsCategories";
-import {FoodAttributeBadges} from "@/components/food/FoodAttributeBadge";
-import AppElement from "@/compositions/appElement/AppElement";
-import {UrlHelper} from "@/helper/UrlHelper";
-import {CommonSystemActionHelper} from "@/helper/device/CommonSystemActionHelper";
+  SET_BUSINESS_HOURS,
+  SET_CANTEEN_FEEDBACK_LABELS,
+  SET_POPUP_EVENTS,
+  SET_SELECTED_CANTEEN_FOOD_OFFERS,
+  SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
+} from '@/redux/Types/types';
+import { CanteensFeedbacksLabels, Foodoffers } from '@/constants/types';
+import {
+  Entypo,
+  FontAwesome6,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons';
+import { RootDrawerParamList } from './types';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
+import SortSheet from '@/components/SortSheet/SortSheet';
+import HourSheet from '@/components/HoursSheet/HoursSheet';
+import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
+import { excerpt } from '@/constants/HelperFunctions';
+import { useLanguage } from '@/hooks/useLanguage';
+import ForecastSheet from '@/components/ForecastSheet/ForecastSheet';
+import MenuSheet from '@/components/MenuSheet/MenuSheet';
+import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
+import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
+import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
+import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
+import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import * as Notifications from 'expo-notifications';
+import {
+  intelligentSort,
+  sortByEatingHabits,
+  sortByFoodName,
+  sortByOwnFavorite,
+  sortByPublicFavorite,
+} from '@/helper/sortingHelper';
+import { format } from 'date-fns';
+import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
+import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
+import {
+  getAppElementTranslation,
+  getTextFromTranslation,
+} from '@/helper/resourceHelper';
+import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
+import RedirectButton from '@/components/RedirectButton';
+import { myContrastColor } from '@/helper/colorHelper';
 
+export const SHEET_COMPONENTS = {
+  canteen: CanteenSelectionSheet,
+  sort: SortSheet,
+  hours: HourSheet,
+  calendar: CalendarSheet,
+  forecast: ForecastSheet,
+  menu: MenuSheet,
+  imageManagement: ImageManagementSheet,
+  eatingHabits: EatingHabitsSheet,
+};
 
-export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
-	foodOffers.sort((a, b) => {
-		let nameA = getFoodName(a.food, languageCode);
-		let nameB = getFoodName(b.food, languageCode);
-		if(nameA && nameB){
-			return nameA.localeCompare(nameB);
-		} else if (nameA){
-			return -1;
-		} else if (nameB){
-			return 1;
-		}
-	});
-	return foodOffers;
-}
+const SHEET_POINTS = {
+  canteen: ['100%'],
+  sort: ['80%'],
+  hours: ['85%'],
+  calendar: ['80%'],
+  forecast: ['80%'],
+  menu: ['90%'],
+  imageManagement: ['70%'],
+  eatingHabits: ['90%'],
+};
 
-function sortByOwnFavorite(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>) {
-	foodOffers.sort((a, b) => {
-		const aFoodId = a?.food?.id;
-		const bFoodId = b?.food?.id;
-		const aFeedback = foodFeedbacksDict[aFoodId];
-		const bFeedback = foodFeedbacksDict[bFoodId];
-		const aRating = aFeedback?.rating
-		const bRating = bFeedback?.rating
+const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { theme } = useTheme();
+  const { t } = useLanguage();
+  const router = useRouter();
+  const drawerNavigation =
+    useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const eventPoints = useMemo(() => ['100%'], []);
+  const eventSheetRef = useRef<BottomSheet>(null);
+  const businessHoursHelper = new BusinessHoursHelper();
+  const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
+  const [loading, setLoading] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [beforeElement, setBeforeElement] = useState<any>(null);
+  const [afterElement, setAfterElement] = useState<any>(null);
+  const [selectedFoodId, setSelectedFoodId] = useState('');
+  const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+  const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
+  const [selected, setSelected] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get('window').width
+  );
+  const [selectedSheet, setSelectedSheet] = useState<
+    keyof typeof SHEET_COMPONENTS | null
+  >(null);
 
-		const aRatingPositive = isRatingPositive(aRating)
-		const aRatingNegative = isRatingNegative(aRating);
-		const aRatingUnknown = aRating === null || aRating === undefined;
+  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    sortBy,
+    language: languageCode,
+    drawerPosition,
+    appSettings,
+    primaryColor,
+  } = useSelector((state: any) => state.settings);
+  const { ownFoodFeedbacks, popupEvents } = useSelector(
+    (state: any) => state.food
+  );
+  const { profile } = useSelector((state: any) => state.authReducer);
+  const { appElements } = useSelector((state: any) => state.appElements);
+  // console.log('appElements', appElements);
+  // console.log('beforeElement', beforeElement);
+  // console.log('afterElement', afterElement);
+  const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
+    useSelector((state: any) => state.canteenReducer);
+  const foods_area_color = appSettings?.foods_area_color
+    ? appSettings?.foods_area_color
+    : primaryColor;
 
-		const bRatingPositive = isRatingPositive(bRating);
-		const bRatingNegative = isRatingNegative(bRating);
-		const bRatingUnknown = bRating === null || bRating === undefined;
+  const contrastColor = myContrastColor(
+    foods_area_color,
+    theme,
+    mode === 'dark'
+  );
 
-		const returnAShouldBeFirst = -1;
-		const returnNoOrder = 0;
-		const returnBShouldBeFirst = 1;
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = selectedCanteen?.alias || 'FoodOffers';
+      document.title = title;
+    }
+  }, []);
 
-		// negative ratings should be last, then unknown, then positive
-		// complete cases aRatingNegative, aRatingUnknown, aRatingPositive and bRatingNegative, bRatingUnknown, bRatingPositive
+  useEffect(() => {
+    if (!appElements || !appSettings) return;
 
-		if(aRatingNegative && bRatingNegative){
-			return returnNoOrder;
-		} else if(aRatingNegative){
-			return returnBShouldBeFirst;
-		} else if(bRatingNegative){
-			return returnAShouldBeFirst;
-		}
+    const getElement = (id: string) => {
+      const element = appElements?.find((el: any) => el.id === id);
+      if (!element.translations) return null;
+      const { content, popup_button_text, popup_content } =
+        getAppElementTranslation(element.translations, languageCode);
 
-		if(aRatingUnknown && bRatingUnknown){
-			return returnNoOrder;
-		} else if(aRatingUnknown){
-			return returnBShouldBeFirst;
-		} else if(bRatingUnknown){
-			return returnAShouldBeFirst;
-		}
+      return {
+        content,
+        popup_button_text,
+        popup_content,
+      };
+    };
 
-		if(aRatingPositive && bRatingPositive){
-			return returnNoOrder;
-		} else if(aRatingPositive){
-			return returnAShouldBeFirst;
-		} else if(bRatingPositive){
-			return returnBShouldBeFirst;
-		}
+    const before = getElement(appSettings.foodoffers_list_before_element);
+    const after = getElement(appSettings.foodoffers_list_after_element);
 
+    setBeforeElement(before);
+    setAfterElement(after);
+  }, [appElements, appSettings]);
 
-	});
-	return foodOffers;
+  useFocusEffect(
+    useCallback(() => {
+      setIsActive(true);
+      return () => {
+        setIsActive(false);
+      };
+    }, [])
+  );
 
-}
+  useEffect(() => {
+    const currentEvent = popupEvents?.find((e: any) => e.isCurrent);
+    if (currentEvent) {
+      setTimeout(() => {
+        openEventSheet();
+      }, 300);
+    }
+  }, [popupEvents]);
 
-function sortByPublicFavorite(foodOffers: Foodoffers[]) {
-	foodOffers.sort((a, b) => {
-		const aFood: Foods = a.food;
-		const bFood: Foods = b.food;
+  const openSheet = useCallback(
+    (sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
+      setSelectedSheet(sheet);
+      setSheetProps(props);
+    },
+    []
+  );
 
-		const aRating = aFood?.rating_average
-		const bRating = bFood?.rating_average
+  const openManagementSheet = (id: string) => {
+    if (id) {
+      openSheet('imageManagement', {
+        selectedFoodId: id,
+        fileName: 'foods',
+        closeSheet: closeSheet,
+        handleFetch: fetchFoods,
+      });
+    }
+  };
 
-		const aRatingPositive = isRatingPositive(aRating)
-		const aRatingNegative = isRatingNegative(aRating);
-		const aRatingUnknown = aRating === null || aRating === undefined;
+  const openEventSheet = () => {
+    eventSheetRef?.current?.expand();
+  };
 
-		const bRatingPositive = isRatingPositive(bRating);
-		const bRatingNegative = isRatingNegative(bRating);
-		const bRatingUnknown = bRating === null || bRating === undefined;
+  const closeEventSheet = () => {
+    eventSheetRef?.current?.close();
+    setTimeout(() => {
+      const currentIndex = popupEvents?.findIndex((e: any) => e.isCurrent);
 
-		const returnAShouldBeFirst = -1;
-		const returnNoOrder = 0;
-		const returnBShouldBeFirst = 1;
+      const updatedEvents = popupEvents.map((e: any, idx: number) => {
+        if (idx === currentIndex) {
+          return { ...e, isOpen: true, isCurrent: false };
+        } else if (idx === currentIndex + 1) {
+          return { ...e, isCurrent: true };
+        }
+        return e;
+      });
 
-		// negative ratings should be last, then unknown, then positive
-		// complete cases aRatingNegative, aRatingUnknown, aRatingPositive and bRatingNegative, bRatingUnknown, bRatingPositive
+      dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
+    }, 500);
+  };
 
-		if (aRatingNegative && bRatingNegative) {
-			return returnNoOrder;
-		} else if (aRatingNegative) {
-			return returnBShouldBeFirst;
-		} else if (bRatingNegative) {
-			return returnAShouldBeFirst;
-		}
+  useEffect(() => {
+    if (isActive && selectedSheet) {
+      setTimeout(() => {
+        bottomSheetRef.current?.expand();
+        bottomSheetRef.current?.snapToIndex(0);
+        bottomSheetRef.current?.snapToPosition(
+          SHEET_POINTS[selectedSheet!][0] || '80%'
+        );
+      }, 150);
+    }
+  }, [selectedSheet, isActive]);
 
-		if (aRatingUnknown && bRatingUnknown) {
-			return returnNoOrder;
-		} else if (aRatingUnknown) {
-			return returnBShouldBeFirst;
-		} else if (bRatingUnknown) {
-			return returnAShouldBeFirst;
-		}
+  const closeSheet = useCallback(() => {
+    bottomSheetRef.current?.snapToIndex(-1);
+    bottomSheetRef.current?.close();
+    setTimeout(() => {
+      setSelectedSheet(null);
+      setSheetProps({});
+    }, 150);
+  }, []);
 
-		if (aRatingPositive && bRatingPositive) {
-			return returnNoOrder;
-		} else if (aRatingPositive) {
-			return returnAShouldBeFirst;
-		} else if (bRatingPositive) {
-			return returnBShouldBeFirst;
-		}
-	});
-	return foodOffers;
-}
+  const getBusinessHours = async () => {
+    try {
+      const businessHours = await businessHoursHelper.fetchBusinessHours({});
+      dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
+    } catch (error) {
+      console.error('Error fetching business hours:', error);
+    }
+  };
 
-function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsDict: Record<string, ProfilesMarkings>) {
-	foodOffers.sort((a, b) => {
-		//console.log(a.alias+ " vs "+b.alias);
+  useEffect(() => {
+    getBusinessHours();
+  }, []);
 
-		const aDislikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
-		const aAmountLikedEatingHabitsFound = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(a, profileMarkingsDict);
+  const requestPermissions = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') {
+      await Notifications.requestPermissionsAsync();
+    }
+  };
 
-		const bDislikedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
-		const bAmountLikedEatingHabitsFound = MarkingHelper.getAmountLikedEatingHabitsFoundInFoodOffer(b, profileMarkingsDict);
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      requestPermissions();
+    }
+  }, []);
 
-		const returnAShouldBeFirst = -1;
-		const returnNoOrder = 0;
-		const returnBShouldBeFirst = 1;
+  const handleDateChange = (direction: 'prev' | 'next') => {
+    const currentDate = new Date(selected);
+    if (direction === 'prev') {
+      currentDate.setDate(currentDate.getDate() - 1);
+    } else {
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    setSelected(currentDate.toISOString().split('T')[0]);
+  };
 
-		const likeSortWeight = 1;
-		const dislikeSortWeight = likeSortWeight*2;
+  const getDayLabel = (date: string) => {
+    const currentDate = new Date();
+    const day = new Date(date);
 
-		let aSortValue = 0;
+    // Set both dates to midnight to avoid time differences affecting comparison
+    currentDate.setHours(0, 0, 0, 0);
+    day.setHours(0, 0, 0, 0);
 
-		// Allergene dislikes should be first and likes are not important for the order
-		let dislikedEatingHabitsFoundInBoth = aDislikedEatingHabitsFound && bDislikedEatingHabitsFound;
-		let dislikedEatingHabitsFoundInAtLeastOne = aDislikedEatingHabitsFound || bDislikedEatingHabitsFound;
-		//console.log("-- dislikedEatingHabitsFoundInBoth: "+dislikedEatingHabitsFoundInBoth);
-		//console.log("-- dislikedEatingHabitsFoundInAtLeastOne: "+dislikedEatingHabitsFoundInAtLeastOne);
+    if (currentDate.toDateString() === day.toDateString()) {
+      return 'today';
+    }
 
-		if(dislikedEatingHabitsFoundInAtLeastOne && !dislikedEatingHabitsFoundInBoth){
-			if(aDislikedEatingHabitsFound){
-				//console.log("-- aDislikedEatingHabitsFound");
-				return returnBShouldBeFirst;
-			} else {
-				//console.log("-- bDislikedEatingHabitsFound");
-				return returnAShouldBeFirst;
-			}
-		}
+    // Check for yesterday
+    currentDate.setDate(currentDate.getDate() - 1);
+    if (currentDate.toDateString() === day.toDateString()) {
+      return 'yesterday';
+    }
 
-		// Allergenes are either in both or in none, so they are equal
-		// we continue with the likes
-		//console.log("-- aAmountLikedEatingHabitsFound: "+aAmountLikedEatingHabitsFound);
-		//console.log("-- bAmountLikedEatingHabitsFound: "+bAmountLikedEatingHabitsFound);
+    // Check for tomorrow
+    currentDate.setDate(currentDate.getDate() + 2);
+    if (currentDate.toDateString() === day.toDateString()) {
+      return 'tomorrow';
+    }
 
-		if(aAmountLikedEatingHabitsFound > bAmountLikedEatingHabitsFound){
-			//console.log("-- aAmountLikedEatingHabitsFound > bAmountLikedEatingHabitsFound");
-			return returnAShouldBeFirst;
-		} else if(aAmountLikedEatingHabitsFound < bAmountLikedEatingHabitsFound){
-			//console.log("-- aAmountLikedEatingHabitsFound < bAmountLikedEatingHabitsFound");
-			return returnBShouldBeFirst;
-		} else {
-			//console.log("-- aAmountLikedEatingHabitsFound == bAmountLikedEatingHabitsFound");
-			return returnNoOrder;
-		}
+    return format(day, 'dd.MM.yyyy'); // Return the date if it's not Today, Yesterday, or Tomorrow
+  };
 
-	});
-	return foodOffers;
+  const updateSort = (id: string, foodOffers: Foodoffers[]) => {
+    // Copy food offers to avoid mutation
+    let copiedFoodOffers = [...foodOffers];
 
-}
+    // Sorting logic based on option id
+    switch (id) {
+      case 'alphabetical':
+        copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
+        break;
+      case 'favorite':
+        copiedFoodOffers = sortByOwnFavorite(
+          copiedFoodOffers,
+          ownFoodFeedbacks
+        );
+        break;
+      case 'eating':
+        copiedFoodOffers = sortByEatingHabits(
+          copiedFoodOffers,
+          profile.markings
+        );
+        break;
+      case 'rating':
+        copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
+        break;
+      case 'intelligent':
+        copiedFoodOffers = intelligentSort(
+          copiedFoodOffers,
+          ownFoodFeedbacks,
+          profile.markings,
+          languageCode
+        );
+        break;
+      default:
+        console.warn('Unknown sorting option:', id);
+        break;
+    }
 
-export function useSortedFoodOffers(foodOffers: Foodoffers[] | undefined | null, sortTypeOrder: SortType[]) {
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [ownFoodFeedbacksDict, setOwnFoodFeedbacksDict, cacheHelperObjOwnFoodFeedbacks] = useSynchedOwnFoodIdToFoodFeedbacksDict();
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
-	console.log("useSortedFoodOffers");
-	console.log("profilesMarkingsDict");
-	console.log(JSON.parse(JSON.stringify(profilesMarkingsDict)))
-	const [foodoffersCategoriesDict, setFoodoffersCategoriesDict] = useSynchedFoodoffersCategoriesDict()
-	const [foodsCategoriesDict, setFoodsCategoriesDict] = useSynchedFoodsCategoriesDict()
-	const foodFeedbacksDict = ownFoodFeedbacksDict;
+    // Dispatch updated food offers and close the sheet
+    dispatch({
+      type: SET_SELECTED_CANTEEN_FOOD_OFFERS,
+      payload: copiedFoodOffers,
+    });
+  };
 
-	if(!foodOffers){
-		return foodOffers;
-	}
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
 
-	let usedSortTypeOrder = sortTypeOrder;
-	if(!usedSortTypeOrder || usedSortTypeOrder.length === 0 || usedSortTypeOrder.includes(SortType.intelligent)){
-		usedSortTypeOrder = [SortType.alphabetical, SortType.foodoffersCategories, SortType.foodsCategories, SortType.favorite, SortType.eatingHabitsPreferences];
-	}
+    const subscription = Dimensions.addEventListener('change', handleResize);
 
-	usedSortTypeOrder = [SortType.alphabetical, SortType.foodoffersCategories, SortType.foodsCategories, SortType.favorite, SortType.eatingHabitsPreferences];
+    return () => subscription?.remove();
+  }, []);
 
-	let copiedFoodOffers = [...foodOffers];
-	for(const sortOrder of usedSortTypeOrder){
-		copiedFoodOffers = sortFoodOffers(copiedFoodOffers, foodFeedbacksDict, profilesMarkingsDict, sortOrder, languageCode, foodoffersCategoriesDict, foodsCategoriesDict);
-	}
-	return copiedFoodOffers;
-}
+  const getPriceGroup = (price_group: string) => {
+    if (price_group) {
+      return `price_group_${price_group?.toLocaleLowerCase()}`;
+    }
+    return '';
+  };
 
-function sortFoodOffers(foodOffers: Foodoffers[], foodFeedbacksDict: Record<string, FoodsFeedbacks | undefined>, profileMarkingsDict: Record<string, ProfilesMarkings>, sortType: SortType, languageCode: string, foodoffersCategoriesDict: Record<string, FoodoffersCategories>, foodsCategoriesDict: Record<string, FoodsCategories>) {
-	let copiedFoodOffers = [...foodOffers];
-	if(sortType === SortType.alphabetical){
-		copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
-	} else if(sortType === SortType.favorite){
-		copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, foodFeedbacksDict);
-	} else if(sortType === SortType.eatingHabitsPreferences){
-		console.log("Sort by eating habits")
-		console.log("Before");
-		console.log(JSON.parse(JSON.stringify(copiedFoodOffers)));
-		copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profileMarkingsDict);
-		console.log("After");
-		console.log(JSON.parse(JSON.stringify(copiedFoodOffers)));
+  const fetchFoods = async () => {
+    try {
+      setLoading(true);
+      const foodData = await fetchFoodOffersByCanteen(
+        selectedCanteen?.id,
+        selected
+      );
+      const foodOffers = foodData?.data || [];
 
-	} else if(sortType === SortType.publicRating){
-		copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
-	} else if(sortType === SortType.foodoffersCategories){
-		copiedFoodOffers = FoodOfferCategoriesHelper.sortFoodoffersByFoodofferCategory(copiedFoodOffers, foodoffersCategoriesDict, languageCode);
-	} else if(sortType === SortType.foodsCategories){
-		copiedFoodOffers = FoodsCategoriesHelper.sortFoodoffersByFoodsCategory(copiedFoodOffers, foodsCategoriesDict, languageCode);
-	}
-	return copiedFoodOffers;
-}
+      updateSort(sortBy, foodOffers);
 
-export default function FoodOfferScreen() {
-	const isDemo = useIsDemo();
-	const [selectedDate, setSelectedDate, changeAmountDays] = useFoodOfferSelectedDate();
-	const [profileCanteen, setProfileCanteen] = useSynchedProfileCanteen();
-	const [unsortedFoodoffers, setUnsortedFoodoffers] = useState<Foodoffers[] | undefined | null>(undefined);
-	const isValidCanteenSelected = useIsValidProfileCanteenSelected();
-	const dislikeColor = useDislikeColor();
-	const [appSettings] = useSynchedAppSettings();
-	const foods_placeholder_image = useFoodImagePlaceholderAssetId()
+      dispatch({
+        type: SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
+        payload: foodOffers,
+      });
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error('Error fetching Food Offers:', error);
+    }
+  };
 
-	const foodsAreaColor = useFoodsAreaColor();
-	const foodoffers_list_before_element = appSettings?.foodoffers_list_before_element;
-	const foodoffers_list_after_element = appSettings?.foodoffers_list_after_element;
+  const fetchCanteenLabels = async () => {
+    try {
+      setFeedbackLabelsLoading(true);
+      // Fetch Canteen Feedback Labels
+      const canteenFeedbackLabels =
+        await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels();
+      dispatch({
+        type: SET_CANTEEN_FEEDBACK_LABELS,
+        payload: canteenFeedbackLabels,
+      });
+    } catch (error) {
+      console.error('Error fetching Canteen Feedback Labels:', error);
+    } finally {
+      setFeedbackLabelsLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchFoods();
+  }, [selectedCanteen, selected]);
 
-	const dateAsIsoString = selectedDate.toISOString();
+  useEffect(() => {
+    fetchCanteenLabels();
+  }, []);
 
-	const initialAmountColumns = useMyGridListDefaultColumns();
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchFoods();
+    fetchCanteenLabels();
+    setRefreshing(false);
+  }, []);
 
-	const [sortType, setSortType] = useSynchedSortType(PersistentStore.sortConfigFoodoffers);
-	const [languageCode, setLanguageCode] = useProfileLanguageCode()
-	const [profilesMarkingsDict, setProfileMarking, removeProfileMarking] = useSynchedProfileMarkingsDict();
+  const memoizedCanteenFeedbackLabels = useMemo(
+    () =>
+      canteenFeedbackLabels?.map(
+        (label: CanteensFeedbacksLabels, index: number) => (
+          <CanteenFeedbackLabels
+            key={label?.id || `feedback-label-${index}`}
+            label={label}
+            date={selected}
+          />
+        )
+      ),
+    [canteenFeedbackLabels, selected]
+  );
 
+  const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 
-	const foodOffersSorted = useSortedFoodOffers(unsortedFoodoffers, [sortType]);
+  const getContent = (element: string) => {
+    // Regex patterns for different content types
+    const contentPatterns = {
+      email: /\[([^\]]+)]\((mailto:[^\)]+)\)/,
+      link: /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/,
+      image: /!\[([^\]]*)]\(([^)]+)\)/,
+      heading: /^#{1,3}\s*(.*)$/,
+    };
 
-	async function loadFoodOffers() {
-		//console.log('loadFoodOffers')
-		setUnsortedFoodoffers(undefined)
-		if (isValidCanteenSelected && !!profileCanteen) {
-			try{
-				const downloadedFoodOffers = await getFoodOffersForSelectedDate(isDemo, selectedDate, profileCanteen);
-				setUnsortedFoodoffers(downloadedFoodOffers);
-				// sort the food offers
-			} catch (err){
-				console.error('loadFoodOffers error', err)
-				setUnsortedFoodoffers(null);
-			}
-		} else {
-			console.log('No valid canteen selected')
-		}
-	}
+    if (element) {
+      const rawText = element;
+      const lines = rawText.split('\n').filter((line) => line.trim() !== '');
 
-	// wait half a second before loading the food offers but reset the timeout if any dependencies change
-	let depsReloadFood = [dateAsIsoString, profileCanteen?.id]
-	useEffect(() => {
-		setUnsortedFoodoffers(undefined)
-		loadFoodOffers();
-	}, depsReloadFood);
+      // Process content into a structured format
+      const processContent = (lines: string[]) => {
+        const result: any[] = [];
+        let stack = [{ level: 0, items: result }];
+        let currentText = '';
 
-  type DataItem = { key: string; data: Foodoffers }
+        const flushTextContent = () => {
+          if (currentText.trim()) {
+            stack[stack.length - 1].items.push({
+              type: 'text',
+              content: currentText.trim(),
+            });
+            currentText = '';
+          }
+        };
 
-  const data: DataItem[] = []
-  if (foodOffersSorted) {
-  	for (let i = 0; i < foodOffersSorted.length; i++) {
-  		const foodOffer = foodOffersSorted[i];
-  		data.push({
-  			key: foodOffer.id + '', data: foodOffer
-  		})
-  	}
-  }
+        lines.forEach((line) => {
+          // Check for headings first
+          const headingMatch = line.match(contentPatterns.heading);
+          if (headingMatch) {
+            flushTextContent();
 
-  const renderItem = (info: ListRenderItemInfo<DataItem>) => {
-  	const {item, index} = info;
-  	const foodOffer = item.data;
-  	const food = foodOffer.food;
-  	let title: string | null | undefined = foodOffer.id + ''
-  	let assetId: string | DirectusFiles | null | undefined = undefined
-  	let image_url: string | undefined = undefined
-  	let thumb_hash: string | undefined = undefined
+            const level = headingMatch[0].match(/#/g)?.length || 1;
+            const headerText = headingMatch[1].trim();
 
-  	if (typeof food === 'object' && food !== null) {
-  		if (food?.image) {
-  			assetId = food.image
-  		}
-  		if (food?.image_remote_url) {
-  			image_url = food.image_remote_url
-  		}
-  		if (food?.image_thumb_hash) {
-  			thumb_hash = food.image_thumb_hash
-  		}
-		title = getFoodName(food, languageCode)
+            // Close previous sections at this level or higher
+            while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+              stack.pop();
+            }
 
-		const unwantedEatingHabitsFound = MarkingHelper.areDislikedEatingHabitsFoundInFoodOffer(foodOffer, profilesMarkingsDict);
-		const borderColor = unwantedEatingHabitsFound ? dislikeColor : undefined;
+            const newSection = {
+              type: 'collapsible',
+              header: headerText,
+              items: [],
+              level,
+            };
 
-		const markingBadge = unwantedEatingHabitsFound ? <MarkingsDislikedWarningBadge borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer}/> : null;
+            stack[stack.length - 1].items.push(newSection);
+            stack.push({ level, items: newSection.items });
+            return;
+          }
 
-		const placeholderAssetId = foods_placeholder_image;
+          // Check for other content types
+          if (contentPatterns.image.test(line)) {
+            flushTextContent();
+            const match = line.match(contentPatterns.image);
+            stack[stack.length - 1].items.push({
+              type: 'image',
+              altText: match?.[1] || '',
+              url: match?.[2] || '',
+            });
+          } else if (contentPatterns.email.test(line)) {
+            flushTextContent();
+            const match = line.match(contentPatterns.email);
+            stack[stack.length - 1].items.push({
+              type: 'email',
+              displayText: match?.[1],
+              email: match?.[2],
+            });
+          } else if (contentPatterns.link.test(line)) {
+            flushTextContent();
+            const match = line.match(contentPatterns.link);
+            stack[stack.length - 1].items.push({
+              type: 'link',
+              displayText: match?.[1],
+              url: match?.[2],
+            });
+          } else {
+            currentText += `${line}\n`;
+          }
+        });
 
-		return (
-			<MyCardForResourcesWithImage
-				key={item.key}
-				heading={title}
-				borderColor={borderColor}
-				separatorColor={foodsAreaColor}
-				thumbHash={thumb_hash}
-				image_url={image_url}
-				assetId={assetId}
-				placeholderAssetId={placeholderAssetId}
-				onPress={() => {
-					if(foodOffer.redirect_url){
-						CommonSystemActionHelper.openExternalURL(foodOffer.redirect_url, true);
-					} else {
-						router.push(`/(app)/foodoffers/details/?${SEARCH_PARAM_FOODOFFER_ID}=${foodOffer.id}`)
-					}
-				}}
-				accessibilityLabel={title}
-				innerPadding={0}
-				bottomRightComponent={
-					<IndividualPricingBadge foodOffer={foodOffer} badgeProps={{
-						color: foodsAreaColor
-					}}/>
-				}
-				topLeftComponent={
-							<ScrollViewWithGradient showsVerticalScrollIndicator={false} hideGradient={true} >
-								<MarkingBadges foodoffer={foodOffer} />
-								<FoodAttributeBadges foodoffer={foodOffer} />
-							</ScrollViewWithGradient>
-				}
-				topRightComponent={
-					<View style={{
-						flexDirection: 'column',
-					}}>
-						<FoodFeedbackRating food={food} showQuickAction={true} borderRadius={MyCardDefaultBorderRadius} foodoffer={foodOffer} />
-						{markingBadge}
-						<FoodNotifyButton food={food} showOnlyWhenNotificationIsActive={true} foodoffer={foodOffer} />
-					</View>
-				}
-				imageUploaderConfig={{
-					resourceId: food.id,
-					resourceCollectionName: TABLE_NAME_FOODS,
-					onImageUpdated: () => {
-						loadFoodOffers();
-					}
-				}}
-			/>
-		);
-  	}
+        flushTextContent();
+        return result;
+      };
 
-	  return null;
-  }
+      // Component for rendering text with proper formatting
+      const TextContent = ({
+        text,
+        level,
+      }: {
+        text: string;
+        level: number;
+      }) => (
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: 'Poppins_400Regular',
+            color: theme.screen.text,
+            marginLeft: level * 16,
+            lineHeight: 24,
+          }}
+        >
+          {text}
+        </Text>
+      );
 
-  if (!isValidCanteenSelected) {
-  	return (
-  		<MySafeAreaView>
-  			<CanteenSelectionRequired/>
-  		</MySafeAreaView>
-  	)
-  } else {
-  	if (foodOffersSorted === undefined) {
-		// Show loading
-		return <View style={{
-			height: '100%',
-			width: '100%',
-			justifyContent: "center",
-			alignItems: "center"
-		}}>
-			<MySpinner/>
-		</View>
-	} else if (foodOffersSorted === null) {
-		return (
-			<MySafeAreaView>
-				<MyScrollView>
-					<ErrorGeneric color={foodsAreaColor} />
-				</MyScrollView>
-			</MySafeAreaView>
-		);
-  	} else if (foodOffersSorted.length === 0) {
-  		return (
-  			<MySafeAreaView>
-  				<MyScrollView>
-					<NoFoodOffersFound />
-  				</MyScrollView>
-  			</MySafeAreaView>
-  		);
-  	} else if (foodOffersSorted.length > 0) {
-  		return (
-  			<MySafeAreaView>
-  				<MyGridFlatList
-  					data={data}
-  					renderItem={renderItem}
-  					amountColumns={initialAmountColumns}
-					preItem={
-					  	<>
-							<View style={{
-								width: '100%',
-								paddingHorizontal: DEFAULT_GRID_LIST_SPACING.marginOuter
-							}} >
-								<AppElement id={foodoffers_list_before_element} color={foodsAreaColor} />
-							</View>
-						</>
-					}
-					postItem={
-					  <>
-						  <View style={{
-							  width: '100%',
-							  paddingHorizontal: DEFAULT_GRID_LIST_SPACING.marginOuter
-						  }} >
-							  <AppElement id={foodoffers_list_after_element} color={foodsAreaColor} />
-						  </View>
-						  <CanteenFeedbacksLabelsComponent canteen={profileCanteen} dateAsIsoString={dateAsIsoString} />
-						  <View style={{paddingBottom: DEFAULT_GRID_LIST_SPACING.marginOuter}} />
-					  </>
-					}
-  				/>
-  			</MySafeAreaView>
-  		);
-  	}
-  }
-}
+      // Component for rendering images
+      const ImageContent = ({
+        url,
+        altText,
+        level,
+      }: {
+        url: string;
+        altText: string;
+        level: number;
+      }) => {
+        const [error, setError] = useState(false);
+
+        return (
+          <View
+            style={{
+              width: '100%',
+              alignItems: 'center',
+              marginLeft: level * 16,
+              marginVertical: 10,
+              borderRadius: 8,
+              overflow: 'hidden',
+              marginTop: 20,
+            }}
+          >
+            {error ? (
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.screen.text,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: theme.screen.text,
+                    fontFamily: 'Poppins_400Regular',
+                    textAlign: 'center',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {altText}
+                </Text>
+              </View>
+            ) : (
+              <View
+                style={{
+                  width: 440,
+                  height: 293,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 10,
+                }}
+              >
+                <Image
+                  source={{ uri: url }}
+                  style={{
+                    width: 440,
+                    height: 293,
+                    resizeMode: 'cover',
+                  }}
+                  onError={() => setError(true)}
+                />
+              </View>
+            )}
+          </View>
+        );
+      };
+
+      // Main renderer for content items
+      const renderContentItem = (item: any, level: number, index: number) => {
+        switch (item.type) {
+          case 'text':
+            return (
+              <TextContent
+                key={`text-${level}-${index}`}
+                text={item.content}
+                level={level}
+              />
+            );
+
+          case 'email':
+            return (
+              <View
+                key={`email-${level}-${index}`}
+                style={{ marginLeft: level * 16, marginBottom: 10 }}
+              >
+                <RedirectButton
+                  type='email'
+                  label={item.displayText}
+                  onClick={() => Linking.openURL(`mailto:${item.email}`)}
+                  backgroundColor={foods_area_color}
+                  color={contrastColor}
+                />
+              </View>
+            );
+
+          case 'link':
+            return (
+              <View
+                key={`link-${level}-${index}`}
+                style={{ marginLeft: level * 16, marginBottom: 10 }}
+              >
+                <RedirectButton
+                  type='link'
+                  label={item.displayText}
+                  onClick={() => Linking.openURL(item.url)}
+                  backgroundColor={foods_area_color}
+                  color={contrastColor}
+                />
+              </View>
+            );
+
+          case 'image':
+            return (
+              <ImageContent
+                key={`image-${level}-${index}`}
+                url={item.url}
+                altText={item.altText}
+                level={level}
+              />
+            );
+
+          case 'collapsible':
+            return (
+              <View
+                key={`collapsible-${level}-${index}`}
+                style={{ marginTop: level > 0 ? 5 : 10 }}
+              >
+                <CustomCollapsible
+                  headerText={item.header}
+                  customColor={foods_area_color}
+                >
+                  {renderContent(item.items, level + 1)}
+                </CustomCollapsible>
+              </View>
+            );
+
+          default:
+            return null;
+        }
+      };
+
+      // Recursive content renderer
+      const renderContent = (items: any[], level = 0) => {
+        return items.map((item, index) =>
+          renderContentItem(item, level, index)
+        );
+      };
+
+      const hierarchicalContent = processContent(lines);
+      return (
+        <View style={{ paddingBottom: 20 }}>
+          {renderContent(hierarchicalContent)}
+        </View>
+      );
+    }
+
+    return null;
+  };
+  return (
+    <>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              ...styles.header,
+              backgroundColor: theme.header.background,
+              paddingHorizontal: 10,
+            }}
+          >
+            <View
+              style={[
+                styles.row,
+                {
+                  flexDirection:
+                    drawerPosition === 'right' ? 'row-reverse' : 'row',
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.col1,
+                  {
+                    flexDirection:
+                      drawerPosition === 'right' ? 'row-reverse' : 'row',
+                  },
+                ]}
+              >
+                {/* Menu */}
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => drawerNavigation.toggleDrawer()}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
+                      }}
+                    >
+                      <Ionicons
+                        name='menu'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${t('open_drawer')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Canteen Heading */}
+                <Text style={{ ...styles.heading, color: theme.header.text }}>
+                  {excerpt(
+                    String(selectedCanteen?.alias),
+                    screenWidth > 800 ? 30 : 10
+                  ) || 'Food Offers'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  ...styles.col2,
+                  gap: isWeb ? (screenWidth < 500 ? 6 : 10) : 5,
+                  flexDirection:
+                    drawerPosition === 'right' ? 'row-reverse' : 'row',
+                }}
+              >
+                {/* Sorting */}
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => openSheet('sort')}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
+                      }}
+                    >
+                      <MaterialIcons
+                        name='sort'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${t('sort')}: ${t('foods')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Price Group */}
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => {
+                        router.navigate('/price-group');
+                      }}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
+                      }}
+                    >
+                      <FontAwesome6
+                        name='euro-sign'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${t('edit')}: ${t('price_group')} ${t(
+                        getPriceGroup(profile?.price_group)
+                      )}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Eating Habits */}
+
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => {
+                        router.navigate('/eating-habits');
+                      }}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
+                      }}
+                    >
+                      <Ionicons
+                        name='bag-add'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('eating_habits')}: ${t('edit')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Change Canteen */}
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => openSheet('canteen')}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 5 : 10) : 5,
+                      }}
+                    >
+                      <MaterialIcons
+                        name='restaurant-menu'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('canteen')}: ${t('select')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+              </View>
+            </View>
+            <View style={styles.row}>
+              {/* Calendar */}
+              <View
+                style={{
+                  ...styles.col2,
+                  gap: isWeb ? (screenWidth < 500 ? 15 : 10) : 10,
+                }}
+              >
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => handleDateChange('prev')}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
+                      }}
+                    >
+                      <Entypo
+                        name='chevron-left'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('day')}: ${t('previous')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() =>
+                        openSheet('calendar', {
+                          selected: selected,
+                          setSelected: setSelected,
+                        })
+                      }
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
+                      }}
+                    >
+                      <MaterialIcons
+                        name='calendar-month'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('edit')}: ${t('date')}: ${selected}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => handleDateChange('next')}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
+                      }}
+                    >
+                      <Entypo
+                        name='chevron-right'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('day')}: ${t('proceed')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Text style={{ ...styles.heading, color: theme.header.text }}>
+                  {t(getDayLabel(selected))}
+                </Text>
+              </View>
+              <View style={{ ...styles.col2, gap: 10 }}>
+                {/* ForeCast */}
+                {appSettings.utilization_display_enabled && (
+                  <Tooltip
+                    placement='top'
+                    trigger={(triggerProps) => (
+                      <TouchableOpacity
+                        {...triggerProps}
+                        onPress={() =>
+                          openSheet('forecast', { forDate: selected })
+                        }
+                        style={{
+                          padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
+                        }}
+                      >
+                        <FontAwesome6
+                          name='people-group'
+                          size={24}
+                          color={theme.header.text}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  >
+                    <TooltipContent
+                      bg={theme.tooltip.background}
+                      py='$1'
+                      px='$2'
+                    >
+                      <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                        {` ${t('forecast')}: ${t('utilization')}`}
+                      </TooltipText>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                {/* Opening Hours */}
+
+                <Tooltip
+                  placement='top'
+                  trigger={(triggerProps) => (
+                    <TouchableOpacity
+                      {...triggerProps}
+                      onPress={() => openSheet('hours')}
+                      style={{
+                        padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name='clock-time-eight'
+                        size={24}
+                        color={theme.header.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {` ${t('businesshours')}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+              </View>
+            </View>
+          </View>
+          <ScrollView
+            style={{
+              ...styles.container,
+              backgroundColor: theme.screen.background,
+            }}
+            contentContainerStyle={{
+              ...styles.contentContainer,
+              paddingHorizontal: isWeb ? (screenWidth < 500 ? 5 : 20) : 5,
+            }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {/* <View style={styles.elementContainer}>
+              {beforeElement && getContent(beforeElement?.content)}
+            </View> */}
+            <View
+              style={{
+                ...styles.foodContainer,
+                gap: screenWidth > 550 ? 10 : 10,
+                justifyContent: 'center',
+              }}
+            >
+              {loading ? (
+                <View
+                  style={{
+                    width: '100%',
+                    height: 400,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ActivityIndicator size={'large'} color={theme.screen.icon} />
+                </View>
+              ) : (
+                selectedCanteenFoodOffers &&
+                selectedCanteenFoodOffers?.map((item: Foodoffers) => (
+                  <FoodItem
+                    item={item}
+                    key={item?.id || `food-item-${index}`}
+                    handleMenuSheet={openSheet}
+                    handleImageSheet={openManagementSheet}
+                    handleEatingHabitsSheet={openSheet}
+                    setSelectedFoodId={setSelectedFoodId}
+                  />
+                ))
+              )}
+            </View>
+            {/* <View style={styles.elementContainer}>
+              {afterElement && getContent(afterElement?.content)}
+            </View> */}
+            {!feedbackLabelsLoading && (
+              <View style={styles.feebackContainer}>
+                <View>
+                  <Text
+                    style={{
+                      ...styles.foodLabels,
+                      color: theme.screen.text,
+                    }}
+                  >
+                    {t('feedback_labels')}
+                  </Text>
+                </View>
+                {memoizedCanteenFeedbackLabels}
+              </View>
+            )}
+          </ScrollView>
+        </View>
+        {isActive && (
+          <BottomSheet
+            key={selectedSheet}
+            ref={bottomSheetRef}
+            snapPoints={['40%']}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
+            enableContentPanningGesture={
+              selectedSheet === 'forecast' ? false : true
+            }
+            enableHandlePanningGesture={
+              selectedSheet === 'forecast' ? false : true
+            }
+            backdropComponent={(props) => (
+              <BottomSheetBackdrop {...props} onPress={closeSheet} />
+            )}
+            handleComponent={null}
+          >
+            {SheetComponent && (
+              <SheetComponent closeSheet={closeSheet} {...sheetProps} />
+            )}
+          </BottomSheet>
+        )}
+
+        {isActive && (
+          <BottomSheet
+            ref={eventSheetRef}
+            index={-1}
+            snapPoints={eventPoints}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose={false}
+            enableDynamicSizing={false}
+            handleComponent={null}
+          >
+            <PopupEventSheet
+              closeSheet={closeEventSheet}
+              eventData={popupEvents?.find((e: any) => e.isCurrent) || {}}
+            />
+          </BottomSheet>
+        )}
+      </SafeAreaView>
+    </>
+  );
+};
+
+export default index;

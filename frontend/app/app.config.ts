@@ -10,18 +10,18 @@ type CustomerConfig = {
 }
 
 function getVersion() {
-    return "20.0.4";
+    return "20.0.5";
 }
 
 function getBuildNumber() {
-    return 121;
+    return 122;
 }
 
 function getIosBuildNumber() { // "ios.buildNumber" must be a string
     return getBuildNumber().toString();
 }
 
-function getCustomerConfig(): CustomerConfig {
+export function getCustomerConfig(): CustomerConfig {
     return devConfig;
 }
 
@@ -56,8 +56,6 @@ const studiFutterConfig: CustomerConfig = {
     baseUrl: "/studi-futter"
 }
 
-
-
 export default ({config}: {config?: any}) => {
     const customerConfig: CustomerConfig = getCustomerConfig();
 
@@ -68,13 +66,6 @@ export default ({config}: {config?: any}) => {
             "version": getVersion(),
             "orientation": "default",
             "icon": "./assets/images/icon.png",
-            "notification": {
-                "icon": "./assets/images/notification-icon.png"
-            },
-            "updates": {
-                "enabled": true,
-                "url": "https://u.expo.dev/"+customerConfig.easUpdateId,
-            },
             "scheme": customerConfig.appScheme,
             "userInterfaceStyle": "automatic",
             "splash": {
@@ -86,6 +77,13 @@ export default ({config}: {config?: any}) => {
                 "**/*"
             ],
             "ios": {
+                "supportsTablet": true,
+                "bundleIdentifier": customerConfig.bundleIdIos,
+                "buildNumber": getIosBuildNumber(),
+                "infoPlist": {
+                    "NSPhotoLibraryUsageDescription": "We need access to your photo library to select files",
+                    "NSDocumentDirectoryUsageDescription": "We need access to your document directory to select files"
+                },
                 "config": {
                     "usesNonExemptEncryption": false
                 },
@@ -164,12 +162,13 @@ export default ({config}: {config?: any}) => {
                             ]
                         }
                     ]
-                },
-                "supportsTablet": true,
-                "bundleIdentifier": customerConfig.bundleIdIos,
-                "buildNumber": getIosBuildNumber()
+                }
             },
             "android": {
+                "adaptiveIcon": {
+                    "foregroundImage": "./assets/images/adaptive-icon.png",
+                    "backgroundColor": "#ffffff"
+                },
                 "package": customerConfig.bundleIdAndroid,
                 "versionCode": getBuildNumber(),
                 "blockedPermissions": [
@@ -185,13 +184,28 @@ export default ({config}: {config?: any}) => {
             "plugins": [
                 "expo-router",
                 "expo-secure-store",
-                "expo-notifications",
                 "expo-location",
+                "expo-notifications",
                 [
-                    "expo-image-picker",
+                    "expo-document-picker",
                     {
-                        "photosPermission": "The app accesses your photos to let you share them with the world.",
-                        "cameraPermission": "The app accesses your camera to let you share photos with the world."
+                        "iCloudContainerEnvironment": "Production"
+                    }
+                ],
+                [
+                    "expo-splash-screen",
+                    {
+                        "image": "./assets/images/splash-icon.png",
+                        "imageWidth": 200,
+                        "resizeMode": "contain",
+                        "backgroundColor": "#ffffff"
+                    }
+                ],
+                [
+                    "react-native-nfc-manager",
+                    {
+                        "nfcPermission": "The app accesses NFC read your Card balance.",
+                        "includeNdefEntitlement": false
                     }
                 ],
                 [
@@ -201,10 +215,12 @@ export default ({config}: {config?: any}) => {
                     }
                 ],
                 [
-                    "react-native-nfc-manager",
+                    "expo-image-picker",
                     {
-                        "nfcPermission": "The app accesses NFC read your Card balance.",
-                        "includeNdefEntitlement": false
+                        "photosPermission": "custom photos permission",
+                        "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
+                        "//": "Disables the microphone permission",
+                        "microphonePermission": false
                     }
                 ],
                 [
@@ -216,7 +232,7 @@ export default ({config}: {config?: any}) => {
                             "buildToolsVersion": "34.0.0"
                         },
                         "ios": {
-                            "deploymentTarget": "13.4"
+                            "deploymentTarget": "15.1"
                         }
                     }
                 ],
@@ -227,7 +243,7 @@ export default ({config}: {config?: any}) => {
             ],
             "experiments": {
                 "typedRoutes": true,
-                "baseUrl": customerConfig.baseUrl,
+                "baseUrl": customerConfig.baseUrl
             },
             "extra": {
                 "router": {

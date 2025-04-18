@@ -1,34 +1,51 @@
-# rocket-meals
+# Welcome to your Expo app 👋
 
-## Synchronized variables and Storage
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-In order to synchronize states of variables across the app, we use the `easy-peasy` library. It is a wrapper around `redux` and `redux-thunk` libraries.
+## Get started
 
-In order to use it, follow these steps:
+1. Install dependencies
 
-1. Create a variable entry:
-    - a) Store on device: `app/helper/sync_state_helper/PersistentStore.ts` and add a new static variable to the `PersistentStore` class.
-    - b) Just synchronize across the app: `app/helper/sync_state_helper/NonPersistentStore.ts` and add a new static variable to the `NonPersistentStore` class.
+   ```bash
+   npm install
+   ```
 
-2. Use it in the app:
-   ```javascript
-   import {useSyncState} from "@/helper/sync_state_helper/SyncState";
-   import {NonPersistentStore} from "@/helper/sync_state_helper/NonPersistentStore";
+2. Start the app
 
-   const [exampleValue, setExampleValue] = useSyncState<string>(NonPersistentStore.test);
-    ```
-   
-## Update Expo SDK
+   ```bash
+    npx expo start
+   ```
 
-In order to update the Expo SDK, follow these steps:
+In the output, you'll find options to open the app in a
 
-1. Run `npm install expo@latest` - which will update the `package.json` file with the new version of the SDK.
-2. Run `npx expo install --fix` to upgrade the project to the new version of the SDK and fix any issues that may arise.
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-## iOS Build
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-In order to build the iOS app, follow these steps with expo:
-1. Run `eas build --platform ios` to build the iOS app.
-2. Run `eas submit --platform ios` to submit the build to the App Store.
-3. Run `eas update --branch <BRANCH>` where `<BRANCH>` is the branch you want to update the app to. For production, use `production` and for development, use `main`.
+## Get a fresh project
 
+When you're ready, run:
+
+```bash
+npm run reset-project
+```
+
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+
+## Learn more
+
+To learn more about developing your project with Expo, look at the following resources:
+
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+"# rocket-meals-faster-expo" 

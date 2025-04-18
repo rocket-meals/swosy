@@ -1,0 +1,661 @@
+import {
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  Image,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from '@/hooks/useTheme';
+import React from 'react';
+import ListWeekHeader from '@/components/ListWeekHeader/ListWeekHeader';
+import styles from './styles';
+import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
+import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
+import { getTextFromTranslation } from '@/helper/resourceHelper';
+import {
+  getImageUrl,
+  showDayPlanPrice,
+  showFormatedPrice,
+} from '@/constants/HelperFunctions';
+import { myContrastColor } from '@/helper/colorHelper';
+import { useLocalSearchParams } from 'expo-router';
+import moment from 'moment';
+import { useLanguage } from '@/hooks/useLanguage';
+import * as Print from 'expo-print';
+import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import useToast from '@/hooks/useToast';
+import { Markings, MarkingsGroups } from '@/constants/types';
+import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
+import { MarkingHelper } from '@/redux/actions/Markings/Markings';
+import { UPDATE_MARKINGS } from '@/redux/Types/types';
+
+const index = () => {
+  const toast = useToast();
+  const printRef = useRef<HTMLElement | null>(null);
+  const { t } = useLanguage();
+  const { theme } = useTheme();
+  const dispatch = useDispatch();
+  const {
+    canteens_id,
+    date_iso: dateParam,
+    show_markings,
+  } = useLocalSearchParams();
+  const markingHelper = new MarkingHelper();
+  const markingGroupsHelper = new MarkingGroupsHelper();
+  const foodCategoriesHelper = new FoodCategoriesHelper();
+  const [foods, setFoods] = useState<any>({});
+  const [categories, setCategories] = useState({});
+  const [foodMarkings, setFoodMarkings] = useState<any>({});
+  const { markings } = useSelector((state: any) => state.food);
+  const [loading, setLoading] = useState(true);
+  const mode = useSelector((state: any) => state.settings.theme);
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get('window').width
+  );
+  const { weekPlan } = useSelector((state: any) => state.management);
+  const isMobile = screenWidth < 800;
+  const {
+    primaryColor: projectColor,
+    language,
+    appSettings,
+  } = useSelector((state: any) => state.settings);
+  const foods_area_color = appSettings?.foods_area_color
+    ? appSettings?.foods_area_color
+    : projectColor;
+
+  const contrastColor = myContrastColor(
+    foods_area_color,
+    theme,
+    mode === 'dark'
+  );
+  const weekDayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const date_iso = dateParam || moment().format('YYYY-MM-DD');
+  const startDate = moment(date_iso);
+  const weekDays = Array.from({ length: 7 }, (_, i) =>
+    startDate.clone().add(i, 'days').format('YYYY-MM-DD')
+  );
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title =
+        weekPlan?.selectedCanteen?.alias +
+        ` - ${t('week')} ${weekPlan?.selectedWeek?.week}`;
+      document.title = title;
+    }
+  }, []);
+
+  const fetchFoods = async () => {
+    try {
+      setLoading(true);
+      if (!canteens_id || !date_iso) {
+        setLoading(false);
+        return;
+      }
+
+      const newFoods: Record<string, any[]> = {};
+
+      for (let i = 0; i < weekDays?.length; i++) {
+        const dayName = weekDayNames[i];
+        const date = weekDays[i];
+
+        const foodData = await fetchFoodsByCanteen(String(canteens_id), date);
+        newFoods[dayName] = foodData?.data || [];
+      }
+
+      setFoods(newFoods);
+      if (newFoods) {
+        fetchCurrentFoodCategory(newFoods);
+      }
+    } catch (error) {
+      console.error('Error fetching Food Offers:', error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFoods();
+  }, [canteens_id, date_iso]);
+
+  const fetchCurrentFoodCategory = async (foodData: Record<string, any[]>) => {
+    try {
+      if (!foodData) return;
+
+      const newCategories: Record<string, any> = {}; // Store unique categories
+
+      for (const day in foodData) {
+        const dayFoods = foodData[day];
+
+        for (const food of dayFoods) {
+          if (!food?.food?.food_category) continue; // Skip if category doesn't exist
+
+          const categoryId = food.food.food_category;
+
+          // Fetch category only if it's new (not in newCategories)
+          if (!newCategories[categoryId]) {
+            const result: any =
+              await foodCategoriesHelper.fetchFoodCategoriesById(categoryId);
+            if (result) {
+              newCategories[categoryId] = result?.alias; // Save unique category
+            }
+          }
+        }
+      }
+      setCategories(newCategories);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching food categories:', error);
+    }
+  };
+
+  const getColumns = (): {
+    key: string;
+    title: string;
+    isFixed?: boolean;
+  }[] => {
+    if (!categories || Object.keys(categories).length === 0) {
+      return [{ key: 'day', title: 'Day', isFixed: true }];
+    }
+
+    return [
+      { key: 'day', title: 'Day', isFixed: true },
+      ...Object.entries(categories).map(([categoryId, alias]) => ({
+        key: categoryId,
+        title: typeof alias === 'string' ? alias : 'Unknown',
+      })),
+    ];
+  };
+
+  const getPriceText = (food: any) => {
+    return `${showFormatedPrice(
+      showDayPlanPrice(food, 'student')
+    )} / ${showFormatedPrice(
+      showDayPlanPrice(food, 'employee')
+    )} / ${showFormatedPrice(showDayPlanPrice(food, 'guest'))}`;
+  };
+
+  const getMarkings = async () => {
+    try {
+      const markingResult = (await markingHelper.fetchMarkings(
+        {}
+      )) as Markings[];
+      const markingGroupResult = (await markingGroupsHelper.fetchMarkingGroups(
+        {}
+      )) as MarkingsGroups[];
+
+      // Normalize sort values to ensure undefined, null, or empty values don't break sorting
+      const normalizeSort = (value: any) =>
+        value === undefined || value === null || value === ''
+          ? Infinity
+          : value;
+
+      // Sort marking groups by their "sort" field
+      const sortedGroups = [...markingGroupResult].sort(
+        (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
+      );
+
+      // Create a map for quick lookup of each marking's group
+      const markingToGroupMap = new Map<string, MarkingsGroups>();
+      sortedGroups.forEach((group) => {
+        group.markings.forEach((markingId) => {
+          markingToGroupMap.set(markingId, group);
+        });
+      });
+
+      // Helper function to get group sort value
+      const getGroupSort = (marking: Markings): number => {
+        const group = markingToGroupMap.get(marking.id);
+        return normalizeSort(group?.sort);
+      };
+
+      // Helper function to get marking's own sort value
+      const getMarkingSort = (marking: Markings): number => {
+        return normalizeSort(marking.sort);
+      };
+
+      // Sort markings based on the specified criteria
+      const sortedMarkings = [...markingResult].sort((a, b) => {
+        const groupSortA = getGroupSort(a);
+        const groupSortB = getGroupSort(b);
+
+        // First, compare group sorts
+        if (groupSortA !== groupSortB) {
+          return groupSortA - groupSortB;
+        }
+
+        // If both markings belong to the same group, sort by their "sort" value
+        const markingSortA = getMarkingSort(a);
+        const markingSortB = getMarkingSort(b);
+
+        if (markingSortA !== markingSortB) {
+          return markingSortA - markingSortB;
+        }
+
+        // If no sort values exist, sort alphabetically by alias
+        return (a.alias || '').localeCompare(b.alias || '');
+      });
+
+      dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
+    } catch (error) {
+      console.error('Error fetching markings:', error);
+    }
+  };
+
+  const fetchFoodMarkingLabels = useCallback(
+    async (foodData: Record<string, any[]>, setMarkingsState: any) => {
+      if (!foodData) return;
+      if (!markings || Object.keys(markings).length === 0) {
+        await getMarkings();
+      }
+      const newMarkings: Record<string, any[]> = {};
+      // Iterate over each day's foods
+      Object.entries(foodData).forEach(([day, dayFoods]) => {
+        dayFoods.forEach((food: any) => {
+          if (!food?.id) return; // Skip if food has no ID
+
+          // Extract marking IDs properly
+          const markingIds =
+            food?.markings?.map((mark: any) => mark.markings_id) || [];
+
+          // Find matching marking objects from `markings` array
+          const filteredMarkings =
+            markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
+
+          const dummyMarkings = filteredMarkings.map((item: any) => ({
+            image: item?.image_remote_url
+              ? { uri: item.image_remote_url }
+              : { uri: getImageUrl(item.image) },
+            bgColor: item?.background_color,
+            color: myContrastColor(
+              item?.background_color,
+              theme,
+              mode === 'dark'
+            ),
+            shortCode: item?.short_code,
+            icon: item?.icon,
+          }));
+
+          newMarkings[food.id] = dummyMarkings; // Store by food ID
+        });
+      });
+      setMarkingsState(newMarkings);
+    },
+    [markings, theme, mode]
+  );
+
+  useEffect(() => {
+    if (foods && Object.keys(foods).length > 0 && markings) {
+      fetchFoodMarkingLabels(foods, setFoodMarkings);
+    }
+  }, [foods, markings]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
+
+    const subscription = Dimensions.addEventListener('change', handleResize);
+
+    return () => subscription?.remove();
+  }, []);
+
+  const formatDate = (dateStr: string) => {
+    const dateObj = new Date(dateStr);
+    return `${dateObj.getDate().toString().padStart(2, '0')}.${(
+      dateObj.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}`;
+  };
+
+  const handlePrint = () => {
+    if (Platform.OS === 'web' && printRef.current) {
+      // Clone content so we can manipulate it
+      const contentNode = printRef.current.cloneNode(true) as HTMLElement;
+
+      // Add real class="no-break" to data-print-break elements
+      contentNode
+        .querySelectorAll('[data-print-break="true"]')
+        .forEach((el) => {
+          el.classList.add('no-break');
+        });
+
+      const content = contentNode.outerHTML;
+
+      const stylesheets = Array.from(document.styleSheets)
+        .map((styleSheet) => {
+          try {
+            return Array.from(styleSheet.cssRules || [])
+              .map((rule) => rule.cssText)
+              .join('\n');
+          } catch (err) {
+            return '';
+          }
+        })
+        .join('\n');
+
+      const html = `
+      <html>
+        <head>
+          <style>
+            ${stylesheets}
+            @media print {
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                background-clip: padding-box !important;
+              }
+
+              body {
+                background-color: white !important;
+              }
+
+              .no-break,
+              .food-item,
+              .food-text,
+              .price-text,
+              tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              thead {
+                display: table-header-group !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${content}
+          <script>
+            window.onload = function () {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+      const newWindow = window.open('', '_blank');
+      newWindow?.document.write(html);
+      newWindow?.document.close();
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
+      <ListWeekHeader handlePrint={handlePrint} />
+
+      <View style={{ flex: 1 }}>
+        {loading ? (
+          <View
+            style={{
+              height: 200,
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <ActivityIndicator size={30} color={foods_area_color} />
+          </View>
+        ) : Object.entries(categories)?.length < 1 ? (
+          <View
+            style={{
+              height: 200,
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ ...styles.noDataFound, color: theme.screen.text }}>
+              Keine Angebote an diesem Tag gefunden.
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={{ flex: 1 }}
+            ref={printRef}
+            contentContainerStyle={[
+              styles.container,
+              {
+                width: isMobile ? '100%' : '100%',
+                backgroundColor: theme.rowBg,
+                paddingBottom: 10,
+              },
+            ]}
+          >
+            <View
+              style={[styles.headerRow, { backgroundColor: foods_area_color }]}
+            >
+              {getColumns()?.map((col, index) => (
+                <View
+                  key={col.key}
+                  style={[
+                    styles.cell,
+                    { flex: index === 0 ? (isMobile ? 0.2 : 0.2) : 1 },
+                  ]}
+                >
+                  <Text style={{ ...styles.headerText, color: contrastColor }}>
+                    {col.key === 'day' ? t(col.key) : col.title}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            {/* Data Rows */}
+            {weekDays.map((date, index) => {
+              const dayName = weekDayNames[index];
+              const shortDayName = dayName?.concat('_S');
+
+              // Check if any column for this day has food items
+              const hasAnyFood = getColumns().some((col) => {
+                if (col.key === 'day') return false;
+                return (
+                  foods[dayName]?.some(
+                    (food: any) => food?.food?.food_category === col.key
+                  ) || false
+                );
+              });
+
+              if (!hasAnyFood) return null;
+
+              return (
+                <View
+                  key={index}
+                  style={{
+                    ...styles.dataRow,
+                    // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
+                    pageBreakInside: 'avoid', // Avoid the page break
+                  }}
+                >
+                  {getColumns().map((col, colIndex) => {
+                    const foodItems = foods[dayName]
+                      ?.filter(
+                        (food: any) => food.food.food_category === col.key
+                      )
+                      ?.map((filteredFood: any) => {
+                        const foodText = getTextFromTranslation(
+                          filteredFood?.food?.translations,
+                          language
+                        );
+                        const priceText = getPriceText(filteredFood);
+
+                        return (
+                          <View
+                            key={filteredFood.id}
+                            style={{
+                              flexDirection: 'column',
+                              alignItems: 'flex-start',
+                              flexWrap: 'wrap',
+                            }}
+                          >
+                            <Text
+                              style={{
+                                ...styles.itemText,
+                                fontSize: 10,
+                                color: theme.screen.text,
+                              }}
+                            >
+                              {foodText}
+                            </Text>
+                            <Text
+                              style={{
+                                ...styles.itemText,
+                                fontSize: 10,
+                                color: theme.screen.text,
+                              }}
+                            >
+                              ({priceText})
+                            </Text>
+
+                            {show_markings === 'true' && (
+                              <View
+                                style={{
+                                  width: '100%',
+                                  flexDirection: 'row',
+                                  alignItems: 'center',
+                                  justifyContent: 'flex-start',
+                                  flexWrap: 'wrap',
+                                  padding: 2,
+                                }}
+                              >
+                                {foodMarkings[filteredFood.id] &&
+                                  foodMarkings[filteredFood.id].map(
+                                    (marking: any, idx: number) => {
+                                      const iconParts =
+                                        marking?.icon?.split(':') || [];
+                                      const [library, name] = iconParts;
+                                      const Icon =
+                                        library && iconLibraries[library];
+                                      return marking?.icon ? (
+                                        <View
+                                          key={idx}
+                                          style={{
+                                            ...styles.iconMarking,
+                                            backgroundColor: marking?.bgColor,
+                                            marginRight: 5,
+                                            borderRadius: 5,
+                                          }}
+                                        >
+                                          <Icon
+                                            name={name}
+                                            size={14}
+                                            color={marking.color}
+                                          />
+                                        </View>
+                                      ) : !marking?.image?.uri &&
+                                        marking?.shortCode ? (
+                                        <View
+                                          key={idx}
+                                          style={{
+                                            ...styles.shortCode,
+                                            backgroundColor: marking?.bgColor,
+                                            marginRight: 5,
+                                            padding: 2,
+                                            borderRadius: 5,
+                                          }}
+                                        >
+                                          <Text
+                                            style={{
+                                              color: marking.color,
+                                              fontSize: 10,
+                                            }}
+                                          >
+                                            {marking?.shortCode}
+                                          </Text>
+                                        </View>
+                                      ) : marking?.image?.uri ? (
+                                        <Image
+                                          key={idx}
+                                          source={marking.image.uri}
+                                          style={{
+                                            backgroundColor: marking?.bgColor,
+                                            width: 20,
+                                            height: 20,
+                                            marginRight: 5,
+                                            borderRadius: 8,
+                                          }}
+                                        />
+                                      ) : null;
+                                    }
+                                  )}
+                              </View>
+                            )}
+                          </View>
+                        );
+                      });
+
+                    return (
+                      <View
+                        key={col.key}
+                        style={[
+                          styles.cell,
+                          {
+                            flex: colIndex === 0 ? (isMobile ? 0.2 : 0.2) : 1,
+                            borderRightWidth: 1,
+                            borderBottomWidth: 1,
+                            borderLeftWidth: colIndex === 0 ? 1 : 0,
+                            borderColor: foods_area_color,
+                          },
+                        ]}
+                      >
+                        {col.key === 'day' ? (
+                          <View style={{ flexDirection: 'column' }}>
+                            <Text
+                              style={[
+                                styles.itemText,
+                                {
+                                  fontSize: isMobile ? 10 : 10,
+                                  fontFamily: isMobile
+                                    ? 'Poppins_400Regular'
+                                    : 'Poppins_700Bold',
+                                  textAlign: 'center',
+                                  color: theme.screen.text,
+                                },
+                              ]}
+                            >
+                              {t(shortDayName)}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.itemText,
+                                {
+                                  fontSize: isMobile ? 10 : 10,
+                                  fontFamily: isMobile
+                                    ? 'Poppins_400Regular'
+                                    : 'Poppins_700Bold',
+                                  textAlign: 'center',
+                                  color: theme.screen.text,
+                                },
+                              ]}
+                            >
+                              {formatDate(date)}
+                            </Text>
+                          </View>
+                        ) : (
+                          <View style={{ flexDirection: 'column' }}>
+                            {foodItems?.length > 0 ? (
+                              foodItems
+                            ) : (
+                              <Text style={{ color: theme.screen.text }}>
+                                -
+                              </Text>
+                            )}
+                          </View>
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+              );
+            })}
+          </ScrollView>
+        )}
+      </View>
+    </View>
+  );
+};
+
+export default index;

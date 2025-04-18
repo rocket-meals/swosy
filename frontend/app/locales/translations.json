@@ -1,0 +1,3146 @@
+{
+  "CHECK_FOR_APP_UPDATES": {
+    "de": "Nach App-Updates suchen",
+    "en": "Check for App Updates",
+    "ar": "تحقق من تحديثات التطبيق",
+    "es": "Buscar actualizaciones de la aplicación",
+    "fr": "Vérifier les mises à jour de l",
+    "ru": "Проверить обновления приложения",
+    "tr": "Uygulama güncellemelerini kontrol et",
+    "zh": "检查应用更新"
+  },
+  "DOWNLOAD_NEW_APP_UPDATE": {
+    "de": "Neues App-Update herunterladen",
+    "en": "Download New App Update",
+    "ar": "تحميل تحديث التطبيق الجديد",
+    "es": "Descargar nueva actualización de la aplicación",
+    "fr": "Télécharger la nouvelle mise à jour de l",
+    "ru": "Скачать новое обновление приложения",
+    "tr": "Yeni uygulama güncellemesini indir",
+    "zh": "下载新的应用更新"
+  },
+  "SYNC_SERVER_SETTINGS": {
+    "de": "Servereinstellungen synchronisieren",
+    "en": "Sync Server Settings",
+    "ar": "مزامنة إعدادات الخادم",
+    "es": "Sincronizar configuración del servidor",
+    "fr": "Synchroniser les paramètres du serveur",
+    "ru": "Синхронизировать настройки сервера",
+    "tr": "Sunucu ayarlarını senkronize et",
+    "zh": "同步服务器设置"
+  },
+  "SYNC_DATABASE": {
+    "de": "Datenbank synchronisieren",
+    "en": "Sync Database",
+    "ar": "مزامنة قاعدة البيانات",
+    "es": "Sincronizar base de datos",
+    "fr": "Synchroniser la base de données",
+    "ru": "Синхронизировать базу данных",
+    "tr": "Veritabanını senkronize et",
+    "zh": "同步数据库"
+  },
+  "SYNC_USER_SETTINGS": {
+    "de": "Benutzereinstellungen synchronisieren",
+    "en": "Sync User Settings",
+    "ar": "مزامنة إعدادات المستخدم",
+    "es": "Sincronizar configuración de usuario",
+    "fr": "Synchroniser les paramètres de l",
+    "ru": "Синхронизировать настройки пользователя",
+    "tr": "Kullanıcı ayarlarını senkronize et",
+    "zh": "同步用户设置"
+  },
+  "CHECK_USER_AUTHENTICATION": {
+    "de": "Benutzerauthentifizierung prüfen",
+    "en": "Check User Authentication",
+    "ar": "تحقق من مصادقة المستخدم",
+    "es": "Verificar autenticación de usuario",
+    "fr": "Vérifier l",
+    "ru": "Проверить аутентификацию пользователя",
+    "tr": "Kullanıcı kimlik doğrulamasını kontrol et",
+    "zh": "检查用户认证"
+  },
+  "CHECK_SERVER_STATUS": {
+    "de": "Serverstatus prüfen",
+    "en": "Check Server Status",
+    "ar": "تحقق من حالة الخادم",
+    "es": "Verificar estado del servidor",
+    "fr": "Vérifier le statut du serveur",
+    "ru": "Проверить статус сервера",
+    "tr": "Sunucu durumunu kontrol et",
+    "zh": "检查服务器状态"
+  },
+  "SERVER_IS_OFFLINE": {
+    "de": "Server ist offline",
+    "en": "Server is offline",
+    "ar": "الخادم غير متصل",
+    "es": "El servidor está desconectado",
+    "fr": "Le serveur est hors ligne",
+    "ru": "Сервер оффлайн",
+    "tr": "Sunucu çevrimdışı",
+    "zh": "服务器离线"
+  },
+  "CONTINUE_WITH_CACHE": {
+    "de": "Mit Cache fortfahren",
+    "en": "Continue with Cache",
+    "ar": "الاستمرار مع ذاكرة التخزين المؤقت",
+    "es": "Continuar con caché",
+    "fr": "Continuer avec le cache",
+    "ru": "Продолжить с кэшем",
+    "tr": "Önbellekle devam et",
+    "zh": "继续使用缓存"
+  },
+  "automatic": {
+    "de": "Automatisch",
+    "en": "Automatic",
+    "ar": "تلقائي",
+    "es": "Automático",
+    "fr": "Automatique",
+    "ru": "Автоматически",
+    "tr": "Otomatik",
+    "zh": "自动"
+  },
+  "amount_columns_for_cards": {
+    "de": "Anzahl Spalten für Karten",
+    "en": "Amount Columns for Cards",
+    "ar": "عدد الأعمدة للبطاقات",
+    "es": "Cantidad de columnas para tarjetas",
+    "fr": "Nombre de colonnes pour les cartes",
+    "ru": "Количество столбцов для карточек",
+    "tr": "Kartlar için sütun sayısı",
+    "zh": "卡片的列数"
+  },
+  "archived": {
+    "de": "Archiviert",
+    "en": "Archived",
+    "ar": "أرشفة",
+    "es": "Archivado",
+    "fr": "Archivé",
+    "ru": "Архивировано",
+    "tr": "Arşivlendi",
+    "zh": "已归档"
+  },
+  "loggingInPleaseWait": {
+    "de": "Anmelden, bitte warten",
+    "en": "Logging in, please wait",
+    "ar": "تسجيل الدخول، يرجى الانتظار",
+    "es": "Iniciando sesión, por favor espere",
+    "fr": "Connexion, veuillez patienter",
+    "ru": "Вход, пожалуйста, подождите",
+    "tr": "Giriş yapılıyor, lütfen bekleyin",
+    "zh": "登录中，请稍候"
+  },
+  "developer": {
+    "de": "Entwickler",
+    "en": "Developer",
+    "ar": "مطور",
+    "es": "Desarrollador",
+    "fr": "Développeur",
+    "ru": "Разработчик",
+    "tr": "Geliştirici",
+    "zh": "开发者"
+  },
+  "developerModeActive": {
+    "de": "Entwicklermodus aktiv",
+    "en": "Developer Mode Active",
+    "ar": "وضع المطور نشط",
+    "es": "Modo desarrollador activo",
+    "fr": "Mode développeur actif",
+    "ru": "Режим разработчика активен",
+    "tr": "Geliştirici Modu Aktif",
+    "zh": "开发者模式已启用"
+  },
+  "developer_homepage": {
+    "de": "Entwickler-Homepage",
+    "en": "Developer Homepage",
+    "ar": "الصفحة الرئيسية للمطور",
+    "es": "Página de inicio del desarrollador",
+    "fr": "Page d",
+    "ru": "Домашняя страница разработчика",
+    "tr": "Geliştirici Ana Sayfası",
+    "zh": "开发者主页"
+  },
+  "download_or_open_the_app": {
+    "de": "App herunterladen oder öffnen",
+    "en": "Download or Open the App",
+    "ar": "تحميل أو فتح التطبيق",
+    "es": "Descargar o abrir la aplicación",
+    "fr": "Télécharger ou ouvrir l",
+    "ru": "Скачать или открыть приложение",
+    "tr": "Uygulamayı indir veya aç",
+    "zh": "下载或打开应用"
+  },
+  "software_homepage": {
+    "de": "Software-Homepage",
+    "en": "Software Homepage",
+    "ar": "الصفحة الرئيسية للبرنامج",
+    "es": "Página de inicio del software",
+    "fr": "Page d",
+    "ru": "Домашняя страница программного обеспечения",
+    "tr": "Yazılım Ana Sayfası",
+    "zh": "软件主页"
+  },
+  "software_name": {
+    "de": "Software-Name",
+    "en": "Software Name",
+    "ar": "اسم البرنامج",
+    "es": "Nombre del software",
+    "fr": "Nom du logiciel",
+    "ru": "Название программы",
+    "tr": "Yazılım Adı",
+    "zh": "软件名称"
+  },
+  "project_name": {
+    "de": "Projektname",
+    "en": "Project Name",
+    "ar": "اسم المشروع",
+    "es": "Nombre del proyecto",
+    "fr": "Nom du projet",
+    "ru": "Название проекта",
+    "tr": "Proje Adı",
+    "zh": "项目名称"
+  },
+  "loading": {
+    "de": "Lädt",
+    "en": "Loading",
+    "ar": "جار التحميل",
+    "es": "Cargando",
+    "fr": "Chargement",
+    "ru": "Загрузка",
+    "tr": "Yükleniyor",
+    "zh": "加载中"
+  },
+  "profile": {
+    "de": "Profil",
+    "en": "Profile",
+    "ar": "الملف الشخصي",
+    "es": "Perfil",
+    "fr": "Profil",
+    "ru": "Профиль",
+    "tr": "Profil",
+    "zh": "个人资料"
+  },
+  "nickname": {
+    "de": "Spitzname",
+    "en": "Nickname",
+    "ar": "اللقب",
+    "es": "Apodo",
+    "fr": "Surnom",
+    "ru": "Прозвище",
+    "tr": "Takma ad",
+    "zh": "昵称"
+  },
+  "search": {
+    "de": "Suche",
+    "en": "Search",
+    "ar": "بحث",
+    "es": "Buscar",
+    "fr": "Rechercher",
+    "ru": "Поиск",
+    "tr": "Arama",
+    "zh": "搜索"
+  },
+  "search_here": {
+    "de": "Hier suchen...",
+    "en": "Search here...",
+    "ar": "ابحث هنا...",
+    "es": "Buscar aquí...",
+    "fr": "Rechercher ici...",
+    "ru": "Искать здесь...",
+    "tr": "Burada ara...",
+    "zh": "在这里搜索..."
+  },
+  "type_here": {
+    "de": "Hier eingeben...",
+    "en": "Type here...",
+    "ar": "اكتب هنا...",
+    "es": "Escribe aquí...",
+    "fr": "Tapez ici...",
+    "ru": "Введите здесь...",
+    "tr": "Buraya yaz...",
+    "zh": "在这里输入..."
+  },
+  "enter_number": {
+    "de": "Nummer eingeben",
+    "en": "Enter Number",
+    "ar": "أدخل الرقم",
+    "es": "Ingrese el número",
+    "fr": "Entrez le numéro",
+    "ru": "Введите номер",
+    "tr": "Numara girin",
+    "zh": "输入号码"
+  },
+  "iban_format": {
+    "de": "IBAN-Format (XX00 0000 0000 0000 0000 00)",
+    "en": "IBAN Format (XX00 0000 0000 0000 0000 00)",
+    "ar": "تنسيق IBAN (XX00 0000 0000 0000 0000 00)",
+    "es": "Formato IBAN (XX00 0000 0000 0000 0000 00)",
+    "fr": "Format IBAN (XX00 0000 0000 0000 0000 00)",
+    "ru": "Формат IBAN (XX00 0000 0000 0000 0000 00)",
+    "tr": "IBAN Formatı (XX00 0000 0000 0000 0000 00)",
+    "zh": "IBAN 格式 (XX00 0000 0000 0000 0000 00)"
+  },
+  "enter_email": {
+    "de": "E-Mail eingeben...",
+    "en": "Enter email...",
+    "ar": "أدخل البريد الإلكتروني...",
+    "es": "Ingrese el correo electrónico...",
+    "fr": "Entrez l'email...",
+    "ru": "Введите email...",
+    "tr": "E-posta girin...",
+    "zh": "输入电子邮件..."
+  },
+  "unchecked": {
+    "de": "Nicht ausgewählt",
+    "en": "Unchecked",
+    "ar": "غير محدد",
+    "es": "No marcado",
+    "fr": "Non coché",
+    "ru": "Не отмечено",
+    "tr": "İşaretlenmemiş",
+    "zh": "未选中"
+  },
+  "checked": {
+    "de": "Ausgewählt",
+    "en": "Checked",
+    "ar": "محدد",
+    "es": "Marcado",
+    "fr": "Coché",
+    "ru": "Отмечено",
+    "tr": "İşaretli",
+    "zh": "已选中"
+  },
+  "indeterminate": {
+    "de": "Unbestimmt",
+    "en": "Indeterminate",
+    "ar": "غير محدد",
+    "es": "Indeterminado",
+    "fr": "Indéterminé",
+    "ru": "Неопределенный",
+    "tr": "Belirsiz",
+    "zh": "不确定"
+  },
+  "form_edit_warning": {
+    "de": "Dieses Formular wird derzeit von einem anderen Benutzer bearbeitet. Wenn Sie fortfahren, könnten dessen Änderungen überschrieben werden. Möchten Sie trotzdem fortfahren?",
+    "en": "This form is currently being edited by another user. Proceeding may overwrite their changes. Do you still want to continue?",
+    "ar": "يتم حاليًا تعديل هذا النموذج من قبل مستخدم آخر. المتابعة قد تؤدي إلى استبدال تغييراتهم. هل لا تزال تريد المتابعة؟",
+    "es": "Este formulario está siendo editado actualmente por otro usuario. Si continúa, puede sobrescribir sus cambios. ¿Aún desea continuar?",
+    "fr": "Ce formulaire est actuellement en cours de modification par un autre utilisateur. Continuer pourrait écraser ses modifications. Voulez-vous toujours continuer?",
+    "ru": "Эта форма в настоящее время редактируется другим пользователем. Если вы продолжите, его изменения могут быть перезаписаны. Вы все еще хотите продолжить?",
+    "tr": "Bu form şu anda başka bir kullanıcı tarafından düzenleniyor. Devam ederseniz, yaptıkları değişiklikler üzerine yazılabilir. Yine de devam etmek istiyor musunuz?",
+    "zh": "此表单当前正在被另一位用户编辑。继续操作可能会覆盖他们的更改。您确定要继续吗？"
+  },
+  "search_with_alias": {
+    "de": "Mit Alias suchen..",
+    "en": "Search with Alias..",
+    "ar": "البحث باستخدام الاسم المستعار",
+    "es": "Buscar con alias..",
+    "fr": "Rechercher avec un alias..",
+    "ru": "Поиск по псевдониму..",
+    "tr": "Takma ad ile ara..",
+    "zh": "使用别名搜索.."
+  },
+  "account": {
+    "de": "Account",
+    "en": "Account",
+    "ar": "حساب",
+    "es": "Cuenta",
+    "fr": "Compte",
+    "ru": "Аккаунт",
+    "tr": "Hesap",
+    "zh": "账户"
+  },
+  "without_account": {
+    "de": "Ohne Account",
+    "en": "Without Account",
+    "ar": "بدون حساب",
+    "es": "Sin cuenta",
+    "fr": "Sans compte",
+    "ru": "Без аккаунта",
+    "tr": "Hesapsız",
+    "zh": "没有账户"
+  },
+  "reset": {
+    "de": "Zurücksetzen",
+    "en": "Reset",
+    "ar": "إعادة تعيين",
+    "es": "Restablecer",
+    "fr": "Réinitialiser",
+    "ru": "Сбросить",
+    "tr": "Sıfırla",
+    "zh": "重置"
+  },
+  "confirm": {
+    "de": "Bestätigen",
+    "en": "Confirm",
+    "ar": "تأكيد",
+    "es": "Confirmar",
+    "fr": "Confirmer",
+    "ru": "Подтвердить",
+    "tr": "Onayla",
+    "zh": "确认"
+  },
+  "are_you_sure_to_delete_your_account": {
+    "de": "Sind Sie sicher, dass Sie Ihren Account löschen möchten?",
+    "en": "Are you sure to delete your account?",
+    "ar": "هل أنت متأكد من حذف حسابك؟",
+    "es": "¿Está seguro de eliminar su cuenta?",
+    "fr": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+    "ru": "Вы уверены, что хотите удалить свой аккаунт?",
+    "tr": "Hesabınızı silmek istediğinizden emin misiniz?",
+    "zh": "您确定要删除您的帐户吗？"
+  },
+  "account_deletion_info": {
+    "de": "Wir respektieren Ihren Wunsch, Ihr Konto und alle zugehörigen Daten aus der App zu löschen. Wenn Sie ein Konto haben, können Sie es selbst mit der untenstehenden Schaltfläche löschen. Alternativ senden Sie uns eine E-Mail mit Ihrer Benutzer-ID, damit wir Ihr Konto verifizieren und dann löschen können. Falls Sie kein Konto erstellt haben, können Sie die App einfach deinstallieren und alle Daten werden gelöscht.",
+    "en": "We respect your wish to delete your account and all associated data from the app. If you have an account, you can delete it yourself using the button below. Alternatively, send us an email with your user ID so we can verify your account with you and then delete it. If you have not created an account, you can simply uninstall the app, and all data will be deleted.",
+    "ar": "نحن نحترم رغبتك في حذف حسابك وجميع البيانات المرتبطة بالتطبيق. إذا كان لديك حساب، يمكنك حذفه بنفسك باستخدام الزر أدناه. بدلاً من ذلك، أرسل لنا بريدًا إلكترونيًا مع معرف المستخدم الخاص بك حتى نتمكن من التحقق من حسابك معك ثم حذفه. إذا لم تقم بإنشاء حساب، يمكنك ببساطة إلغاء تثبيت التطبيق وسيتم حذف جميع البيانات.",
+    "es": "Respetamos tu deseo de eliminar tu cuenta y todos los datos asociados de la aplicación. Si tienes una cuenta, puedes eliminarla tú mismo usando el botón de abajo. Alternativamente, envíanos un correo electrónico con tu ID de usuario para que podamos verificar tu cuenta contigo y luego eliminarla. Si no has creado una cuenta, simplemente desinstala la aplicación y todos los datos serán eliminados.",
+    "fr": "Nous respectons votre souhait de supprimer votre compte et toutes les données associées de l'application. Si vous avez un compte, vous pouvez le supprimer vous-même en utilisant le bouton ci-dessous. Sinon, envoyez-nous un e-mail avec votre identifiant utilisateur afin que nous puissions vérifier votre compte avec vous, puis le supprimer. Si vous n'avez pas créé de compte, vous pouvez simplement désinstaller l'application et toutes les données seront supprimées.",
+    "ru": "Мы уважаем ваше желание удалить ваш аккаунт и все связанные данные из приложения. Если у вас есть аккаунт, вы можете удалить его самостоятельно, используя кнопку ниже. В качестве альтернативы отправьте нам электронное письмо с вашим идентификатором пользователя, чтобы мы могли подтвердить ваш аккаунт вместе с вами, а затем удалить его. Если вы не создавали аккаунт, просто удалите приложение, и все данные будут удалены.",
+    "tr": "Hesabınızı ve uygulamaya bağlı tüm verileri silme isteğinize saygı duyuyoruz. Bir hesabınız varsa, aşağıdaki düğmeyi kullanarak kendiniz silebilirsiniz. Alternatif olarak, kullanıcı kimliğinizle birlikte bize bir e-posta gönderin, böylece hesabınızı sizinle doğrulayıp silebiliriz. Eğer bir hesap oluşturmadıysanız, uygulamayı kaldırarak tüm verilerin silinmesini sağlayabilirsiniz.",
+    "zh": "我们尊重您删除账户及其相关数据的意愿。如果您有账户，可以使用下方按钮自行删除。或者，您可以通过电子邮件向我们发送您的用户 ID，以便我们与您核实账户后进行删除。如果您没有创建账户，只需卸载应用程序，所有数据将被删除。"
+  },
+  "dataAccess": {
+    "de": "Datenauskunft",
+    "en": "Data Access",
+    "ar": "الوصول إلى البيانات",
+    "es": "Acceso a los datos",
+    "fr": "Accès aux données",
+    "ru": "Доступ к данным",
+    "tr": "Veri Erişimi",
+    "zh": "数据访问"
+  },
+  "your_comment": {
+    "de": "Dein Kommentar",
+    "en": "Your Comment",
+    "ar": "تعليقك",
+    "es": "Tu comentario",
+    "fr": "Ton commentaire",
+    "ru": "Ваш комментарий",
+    "tr": "Yorumunuz",
+    "zh": "你的评论"
+  },
+  "others_comments": {
+    "de": "Kommentare anderer",
+    "en": "Others Comments",
+    "ar": "تعليقات الآخرين",
+    "es": "Comentarios de otros",
+    "fr": "Autres commentaires",
+    "ru": "Другие комментарии",
+    "tr": "Diğer yorumlar",
+    "zh": "其他评论"
+  },
+  "comments": {
+    "de": "Kommentare",
+    "en": "Comments",
+    "ar": "تعليقات",
+    "es": "Comentarios",
+    "fr": "Commentaires",
+    "ru": "Комментарии",
+    "tr": "Yorumlar",
+    "zh": "评论"
+  },
+  "save_comment": {
+    "de": "Kommentar speichern",
+    "en": "Save Comment",
+    "ar": "احفظ التعليق",
+    "es": "Guardar comentario",
+    "fr": "Enregistrer le commentaire",
+    "ru": "Сохранить комментарий",
+    "tr": "Yorumu kaydet",
+    "zh": "保存评论"
+  },
+  "delete_comment": {
+    "de": "Kommentar löschen",
+    "en": "Delete Comment",
+    "ar": "حذف التعليق",
+    "es": "Eliminar comentario",
+    "fr": "Supprimer le commentaire",
+    "ru": "Удалить комментарий",
+    "tr": "Yorumu sil",
+    "zh": "删除评论"
+  },
+  "average_rating": {
+    "de": "Durchschnittsbewertung",
+    "en": "Average Rating",
+    "ar": "التقييم المتوسط",
+    "es": "Calificación promedio",
+    "fr": "Note moyenne",
+    "ru": "Средняя оценка",
+    "tr": "Ortalama puan",
+    "zh": "平均评分"
+  },
+  "amount_ratings": {
+    "de": "Anzahl Bewertungen",
+    "en": "Number of Ratings",
+    "ar": "عدد التقييمات",
+    "es": "Número de calificaciones",
+    "fr": "Nombre de notes",
+    "ru": "Количество оценок",
+    "tr": "Değerlendirme sayısı",
+    "zh": "评分数量"
+  },
+  "no_value": {
+    "de": "N/A",
+    "en": "N/A",
+    "ar": "N/A",
+    "es": "N/A",
+    "fr": "N/A",
+    "ru": "N/A",
+    "tr": "N/A",
+    "zh": "N/A"
+  },
+  "no_data_found": {
+    "de": "Keine Daten gefunden",
+    "en": "No Data Found",
+    "ar": "لم يتم العثور على بيانات",
+    "es": "No se encontraron datos",
+    "fr": "Aucune donnée trouvée",
+    "ru": "Данные не найдены",
+    "tr": "Veri bulunamadı",
+    "zh": "未找到数据"
+  },
+  "accountbalance": {
+    "de": "Guthaben",
+    "en": "Account Balance",
+    "ar": "رصيد الحساب",
+    "es": "Saldo de la cuenta",
+    "fr": "Solde du compte",
+    "ru": "Баланс счета",
+    "tr": "Hesap bakiyesi",
+    "zh": "账户余额"
+  },
+  "accountbalanceLastTransaction": {
+    "de": "Letzte Transaktion",
+    "en": "Last Transaction",
+    "ar": "آخر عملية",
+    "es": "Última transacción",
+    "fr": "Dernière transaction",
+    "ru": "Последняя транзакция",
+    "tr": "Son işlem",
+    "zh": "最后交易"
+  },
+  "accountbalanceDateUpdated": {
+    "de": "Zuletzt ausgelesen am",
+    "en": "Last updated at",
+    "ar": "آخر تحديث في",
+    "es": "Última actualización en",
+    "fr": "Dernière mise à jour à",
+    "ru": "Последнее обновление в",
+    "tr": "Son güncelleme",
+    "zh": "最后更新于"
+  },
+  "sort": {
+    "de": "Sortieren",
+    "en": "Sort",
+    "ar": "فرز",
+    "es": "Ordenar",
+    "fr": "Trier",
+    "ru": "Сортировать",
+    "tr": "Sırala",
+    "zh": "排序"
+  },
+  "filter": {
+    "de": "Filtern",
+    "en": "Filter",
+    "ar": "تصفية",
+    "es": "Filtrar",
+    "fr": "Filtrer",
+    "ru": "Фильтр",
+    "tr": "Filtrele",
+    "zh": "筛选"
+  },
+  "draft": {
+    "de": "Entwurf",
+    "en": "Draft",
+    "ar": "مسودة",
+    "es": "Borrador",
+    "fr": "Brouillon",
+    "ru": "Черновик",
+    "tr": "Taslak",
+    "zh": "草稿"
+  },
+  "submitted": {
+    "de": "Einreichen",
+    "en": "Submitting",
+    "ar": "تم الإرسال",
+    "es": "Enviado",
+    "fr": "Soumis",
+    "ru": "Отправлено",
+    "tr": "Gönderildi",
+    "zh": "已提交"
+  },
+  "syncing": {
+    "de": "Wird vom System verarbeitet",
+    "en": "Being processed by the system",
+    "ar": "جارٍ المزامنة",
+    "es": "Sincronizando",
+    "fr": "Synchronisation",
+    "ru": "Синхронизация",
+    "tr": "Senkronize ediliyor",
+    "zh": "同步中"
+  },
+  "closed": {
+    "de": "Beendet vom System",
+    "en": "Closed by system",
+    "ar": "مغلق",
+    "es": "Cerrado",
+    "fr": "Fermé",
+    "ru": "Закрыто",
+    "tr": "Kapalı",
+    "zh": "已关闭"
+  },
+  "closed_hours": {
+    "en": "Closed",
+    "de": "Geschlossen",
+    "ar": "مغلق",
+    "es": "Cerrado",
+    "fr": "Fermé",
+    "ru": "Закрыто",
+    "tr": "Kapalı",
+    "zh": "关闭"
+  },
+  "sort_option_none": {
+    "de": "Keine",
+    "en": "None",
+    "ar": "لا أحد",
+    "es": "Ninguno",
+    "fr": "Aucun",
+    "ru": "Нет",
+    "tr": "Hiçbiri",
+    "zh": "没有"
+  },
+  "sort_option_alphabetical": {
+    "de": "Alphabetisch",
+    "en": "Alphabetical",
+    "ar": "أبجدي",
+    "es": "Alfabético",
+    "fr": "Alphabétique",
+    "ru": "Алфавитный",
+    "tr": "Alfabetik",
+    "zh": "按字母顺序"
+  },
+  "sort_option_favorite": {
+    "de": "Favorit",
+    "en": "Favorite",
+    "ar": "المفضل",
+    "es": "Favorito",
+    "fr": "Favori",
+    "ru": "Любимый",
+    "tr": "Favori",
+    "zh": "最喜欢的"
+  },
+  "sort_option_public_rating": {
+    "de": "Öffentliche Bewertung",
+    "en": "Public Rating",
+    "ar": "التقييم العام",
+    "es": "Calificación pública",
+    "fr": "Note publique",
+    "ru": "Общественный рейтинг",
+    "tr": "Kamuoyu değerlendirmesi",
+    "zh": "公众评分"
+  },
+  "sort_option_intelligent": {
+    "de": "Intelligent",
+    "en": "Intelligent",
+    "ar": "ذكي",
+    "es": "Inteligente",
+    "fr": "Intelligent",
+    "ru": "Интеллектуальный",
+    "tr": "Zeki",
+    "zh": "智能的"
+  },
+  "sort_option_distance": {
+    "de": "Distanz",
+    "en": "Distance",
+    "ar": "مسافة",
+    "es": "Distancia",
+    "fr": "Distance",
+    "ru": "Расстояние",
+    "tr": "Mesafe",
+    "zh": "距离"
+  },
+  "free_rooms": {
+    "de": "Freie Zimmer",
+    "en": "Free Rooms",
+    "ar": "غرف مجانية",
+    "es": "Habitaciones libres",
+    "fr": "Chambres libres",
+    "ru": "Свободные комнаты",
+    "tr": "Boş Odalar",
+    "zh": "空房间"
+  },
+  "foodweekplan": {
+    "de": "Speiseplan: Woche",
+    "en": "Food Plan: Week",
+    "ar": "خطة الطعام: الأسبوع",
+    "es": "Plan de alimentos: Semana",
+    "fr": "Plan alimentaire: Semaine",
+    "ru": "План питания: Неделя",
+    "tr": "Yemek Planı: Hafta",
+    "zh": "食品计划：周"
+  },
+  "monitorDayPlan": {
+    "de": "Speiseplan: Tag: Liste",
+    "en": "Food Plan: Day: List",
+    "ar": "خطة الطعام: اليوم: قائمة",
+    "es": "Plan de alimentos: Día: Lista",
+    "fr": "Plan alimentaire: Jour: Liste",
+    "ru": "План питания: День: Список",
+    "tr": "Yemek Planı: Gün: Liste",
+    "zh": "食品计划：天：列表"
+  },
+  "foodBigScreen": {
+    "de": "Speiseplan: Tag: Einzelansicht mit Bild",
+    "en": "Food Plan: Day: Single View with Image",
+    "ar": "خطة الطعام: اليوم: عرض واحد مع صورة",
+    "es": "Plan de alimentos: Día: Vista única con imagen",
+    "fr": "Plan alimentaire: Jour: Vue unique avec image",
+    "ru": "План питания: День: Одиночный вид с изображением",
+    "tr": "Yemek Planı: Gün: Resimli Tek Görünüm",
+    "zh": "食品计划：天：单视图与图片"
+  },
+  "data_access_introduction": {
+    "de": "## 🌟 Deine Daten - Dein Recht\n\nWir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format.\n\n### 🛠 Hilfe Benötigt?\nKeine Sorge, falls du mit JSON nicht vertraut bist! Unser Team steht bereit, um jede Frage zu klären und dir bei der Dateninterpretation zur Seite zu stehen.\n\nFühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.",
+    "en": "## 🌟 Your Data - Your Right\n\nWe believe in transparency and the right of our users to fully access their data. That's why we allow you to access your information, usually in machine-readable JSON format.\n\n### 🛠 Need Help?\nDon't worry if you're not familiar with JSON! Our team is ready to answer any questions and assist you in interpreting your data.\n\nFeel free to contact us at any time. Your data, your control.",
+    "ar": "## 🌟 بياناتك - حقك\n\nنحن نؤمن بالشفافية وحق مستخدمينا في الوصول الكامل إلى بياناتهم. لهذا السبب نسمح لك بالوصول إلى معلوماتك، عادةً بتنسيق JSON القابل للقراءة بواسطة الآلة.\n\n### 🛠 هل تحتاج إلى مساعدة؟\nلا تقلق إذا لم تكن على دراية بـ JSON! فريقنا جاهز للإجابة على أي أسئلة ومساعدتك في تفسير بياناتك.\n\nلا تتردد في الاتصال بنا في أي وقت. بياناتك، تحكمك.",
+    "es": "## 🌟 Tus datos - Tu derecho\n\nCreemos en la transparencia y el derecho de nuestros usuarios a acceder completamente a sus datos. Por eso te permitimos acceder a tu información, generalmente en formato JSON legible por máquina.\n\n### 🛠 ¿Necesitas ayuda?\n¡No te preocupes si no estás familiarizado con JSON! Nuestro equipo está listo para responder cualquier pregunta y asistirte en la interpretación de tus datos.\n\nNo dudes en contactarnos en cualquier momento. Tus datos, tu control.",
+    "fr": "## 🌟 Vos données - Votre droit\n\nNous croyons en la transparence et au droit de nos utilisateurs d'accéder pleinement à leurs données. C'est pourquoi nous vous permettons d'accéder à vos informations, généralement au format JSON lisible par machine.\n\n### 🛠 Besoin d'aide ?\nNe vous inquiétez pas si vous n'êtes pas familier avec JSON ! Notre équipe est prête à répondre à toutes vos questions et à vous aider à interpréter vos données.\n\nN'hésitez pas à nous contacter à tout moment. Vos données, votre contrôle.",
+    "ru": "## 🌟 Ваши данные - Ваше право\n\nМы верим в прозрачность и право наших пользователей на полный доступ к своим данным. Именно поэтому мы предоставляем вам доступ к вашей информации, как правило, в машиночитаемом формате JSON.\n\n### 🛠 Нужна помощь?\nНе беспокойтесь, если вы не знакомы с JSON! Наша команда готова ответить на любые вопросы и помочь вам в интерпретации ваших данных.\n\nНе стесняйтесь обращаться к нам в любое время. Ваши данные, ваш контроль.",
+    "tr": "## 🌟 Verileriniz - Hakkınız\n\nŞeffaflığa ve kullanıcılarımızın verilerine tam erişim hakkına inanıyoruz. Bu nedenle bilgilerinize genellikle makine tarafından okunabilir JSON formatında erişmenize izin veriyoruz.\n\n### 🛠 Yardıma mı ihtiyacınız var?\nJSON konusunda bilgili değilseniz endişelenmeyin! Ekibimiz, sorularınızı yanıtlamak ve verilerinizi yorumlamanızda size yardımcı olmak için hazır.\n\nBize her zaman ulaşabilirsiniz. Verileriniz, kontrolünüz.",
+    "zh": "## 🌟 你的数据 - 你的权利\n\n我们相信透明度和用户完全访问其数据的权利。因此，我们允许您访问您的信息，通常为机器可读的 JSON 格式。\n\n### 🛠 需要帮助？\n如果您不熟悉 JSON，请不要担心！我们的团队随时准备回答您的任何问题并协助您解释您的数据。\n\n随时联系我们。您的数据，您的控制权。"
+  },
+  "your_data_which_we_know_if_you_have_a_profile": {
+    "de": "Deine Daten, die uns bekannt sind, wenn du ein Profil hast.",
+    "en": "Your data, which we know if you have a profile.",
+    "ar": "بياناتك التي نعرفها إذا كان لديك ملف تعريف.",
+    "es": "Tus datos, que conocemos si tienes un perfil.",
+    "fr": "Vos données, que nous connaissons si vous avez un profil.",
+    "ru": "Ваши данные, которые мы знаем, если у вас есть профиль.",
+    "tr": "Bir profiliniz varsa bildiğimiz verileriniz.",
+    "zh": "您的数据，如果您有个人资料，我们知道。"
+  },
+  "translation_all_on_device_saved_data": {
+    "de": "Alle auf dem Gerät gespeicherten Daten.",
+    "en": "All data saved on the device.",
+    "ar": "جميع البيانات المحفوظة على الجهاز.",
+    "es": "Todos los datos guardados en el dispositivo.",
+    "fr": "Toutes les données enregistrées sur l",
+    "ru": "Все данные, сохраненные на устройстве.",
+    "tr": "Cihazda kaydedilen tüm veriler.",
+    "zh": "设备上保存的所有数据。"
+  },
+  "success": {
+    "de": "Erfolg",
+    "en": "Success",
+    "ar": "نجاح",
+    "es": "Éxito",
+    "fr": "Succès",
+    "ru": "Успех",
+    "tr": "Başarı",
+    "zh": "成功"
+  },
+  "maintenance": {
+    "de": "Wartung",
+    "en": "Maintenance",
+    "ar": "صيانة",
+    "es": "Mantenimiento",
+    "fr": "Maintenance",
+    "ru": "Техническое обслуживание",
+    "tr": "Bakım",
+    "zh": "维护"
+  },
+  "maintenance_message": {
+    "de": "Du kannst eine gespeicherte Version der App verwenden, aber einige Funktionen sind möglicherweise nicht verfügbar.",
+    "en": "You can use a cached version of the app, but some features may not be available.",
+    "ar": "يمكنك استخدام نسخة مخبأة من التطبيق ، ولكن قد لا تتوفر بعض الميزات.",
+    "es": "Puedes usar una versión almacenada en caché de la aplicación, pero algunas funciones pueden no estar disponibles.",
+    "fr": "Vous pouvez utiliser une version mise en cache de l",
+    "ru": "Вы можете использовать кэшированную версию приложения, но некоторые функции могут быть недоступны.",
+    "tr": "Uygulamanın önbelleğe alınmış bir sürümünü kullanabilirsiniz, ancak bazı özellikler mevcut olmayabilir.",
+    "zh": "您可以使用缓存版本的应用程序，但某些功能可能无法使用。"
+  },
+  "maintenance_estimated_end": {
+    "de": "Voraussichtliches Ende der Wartung",
+    "en": "Estimated End of Maintenance",
+    "ar": "تقدير نهاية الصيانة",
+    "es": "Fin estimado del mantenimiento",
+    "fr": "Fin estimée de la maintenance",
+    "ru": "Ориентировочный конец техобслуживания",
+    "tr": "Bakımın Tahmini Sonu",
+    "zh": "预计维护结束时间"
+  },
+  "use_cached_version": {
+    "de": "Gespeicherte Version verwenden",
+    "en": "Use Cached Version",
+    "ar": "استخدام النسخة المخبأة",
+    "es": "Usar versión en caché",
+    "fr": "Utiliser la version en cache",
+    "ru": "Использовать кэшированную версию",
+    "tr": "Önbelleğe Alınmış Sürümü Kullan",
+    "zh": "使用缓存版本"
+  },
+  "foods": {
+    "de": "Speisen",
+    "en": "Foods",
+    "ar": "الأطعمة",
+    "es": "Comidas",
+    "fr": "Aliments",
+    "ru": "Еда",
+    "tr": "Gıdalar",
+    "zh": "食品"
+  },
+  "apartments": {
+    "de": "Wohnungen",
+    "en": "Apartments",
+    "ar": "شقق",
+    "es": "Apartamentos",
+    "fr": "Appartements",
+    "ru": "Квартиры",
+    "tr": "Daireler",
+    "zh": "公寓"
+  },
+  "nfcReadCard": {
+    "de": "NFC Karte lesen",
+    "en": "Read NFC Card",
+    "ar": "قراءة بطاقة NFC",
+    "es": "Leer tarjeta NFC",
+    "fr": "Lire la carte NFC",
+    "ru": "Считать карту NFC",
+    "tr": "NFC Kartı Oku",
+    "zh": "读取 NFC 卡"
+  },
+  "nfcNotSupported": {
+    "de": "NFC wird nicht unterstützt",
+    "en": "NFC not supported",
+    "ar": "NFC غير مدعوم",
+    "es": "NFC no soportado",
+    "fr": "NFC non pris en charge",
+    "ru": "NFC не поддерживается",
+    "tr": "NFC desteklenmiyor",
+    "zh": "不支持 NFC"
+  },
+  "supportedCards": {
+    "de": "Unterstützte Karten",
+    "en": "Supported cards",
+    "ar": "البطاقات المدعومة",
+    "es": "Tarjetas compatibles",
+    "fr": "Cartes prises en charge",
+    "ru": "Поддерживаемые карты",
+    "tr": "Desteklenen kartlar",
+    "zh": "支持的卡"
+  },
+  "nfcNotEnabled": {
+    "de": "NFC ist nicht aktiviert",
+    "en": "NFC not enabled",
+    "ar": "NFC غير مفعل",
+    "es": "NFC no está habilitado",
+    "fr": "NFC non activé",
+    "ru": "NFC не включен",
+    "tr": "NFC etkin değil",
+    "zh": "NFC 未启用"
+  },
+  "pleaseEnableNFC": {
+    "de": "Bitte NFC aktivieren",
+    "en": "Please enable NFC",
+    "ar": "يرجى تمكين NFC",
+    "es": "Por favor, habilite NFC",
+    "fr": "Veuillez activer le NFC",
+    "ru": "Пожалуйста, включите NFC",
+    "tr": "Lütfen NFC'yi etkinleştirin",
+    "zh": "请启用 NFC"
+  },
+  "nfcInstructionRead": {
+    "de": "Halte dein Gerät an die Karte, um sie zu lesen.",
+    "en": "Hold your device to the card to read it.",
+    "ar": "أمسك جهازك بالقرب من البطاقة لقراءتها.",
+    "es": "Sostenga su dispositivo cerca de la tarjeta para leerla.",
+    "fr": "Tenez votre appareil près de la carte pour la lire.",
+    "ru": "Поднесите устройство к карте, чтобы считать её.",
+    "tr": "Kartı okumak için cihazınızı karta tutun.",
+    "zh": "将设备靠近卡片以读取。"
+  },
+  "new": {
+    "de": "Neu",
+    "en": "New",
+    "ar": "جديد",
+    "es": "Nuevo",
+    "fr": "Nouveau",
+    "ru": "Новый",
+    "tr": "Yeni",
+    "zh": "新的"
+  },
+  "attention": {
+    "de": "Achtung!",
+    "en": "Attention!",
+    "ar": "انتباه!",
+    "es": "¡Atención!",
+    "fr": "Attention!",
+    "ru": "Внимание!",
+    "tr": "Dikkat!",
+    "zh": "注意！"
+  },
+  "without_account_limitations": {
+    "de": "Wir respektieren deine Privatsphäre und bieten dir die Möglichkeit, die App weitesgehend anonym zu nutzen. Einige Funktionen wie Pushnachrichten, Synchronisation und andere Funktionen sind jedoch nicht verfügbar, da hierfür ein Account benötigt wird.",
+    "en": "We respect your privacy and offer you the option to use the app as anonymously as possible. However, some features such as push notifications, synchronization, and other functions are not available because an account is required for these.",
+    "ar": "نحن نحترم خصوصيتك ونوفر لك خيار استخدام التطبيق بأكبر قدر ممكن من الخصوصية. ومع ذلك، فإن بعض الميزات مثل الإشعارات الفورية والمزامنة والوظائف الأخرى غير متاحة لأن هذه الميزات تتطلب حسابًا.",
+    "es": "Respetamos tu privacidad y te ofrecemos la opción de usar la aplicación de la manera más anónima posible. Sin embargo, algunas funciones como las notificaciones push, la sincronización y otras funciones no están disponibles porque se requiere una cuenta para estas.",
+    "fr": "Nous respectons votre vie privée et vous offrons la possibilité d",
+    "ru": "Мы уважаем вашу конфиденциальность и предлагаем вам возможность использовать приложение как можно более анонимно. Однако некоторые функции, такие как push-уведомления, синхронизация и другие функции, недоступны, поскольку для них требуется учетная запись.",
+    "tr": "Gizliliğinize saygı duyuyor ve uygulamayı mümkün olduğunca anonim olarak kullanma seçeneği sunuyoruz. Ancak, push bildirimleri, senkronizasyon ve diğer işlevler gibi bazı özellikler, bu işlevler için bir hesap gerektiğinden kullanılamaz.",
+    "zh": "我们尊重您的隐私，并提供尽可能匿名使用应用程序的选项。但是，由于这些功能需要帐户，因此某些功能（如推送通知、同步和其他功能）不可用。"
+  },
+  "not_useable": {
+    "de": "Nicht nutzbar",
+    "en": "Not usable",
+    "ar": "غير قابل للاستخدام",
+    "es": "No utilizable",
+    "fr": "Non utilisable",
+    "ru": "Не пригоден для использования",
+    "tr": "Kullanılamaz",
+    "zh": "不可用"
+  },
+  "no_foodoffers_found_for_selection": {
+    "de": "Keine Angebote gefunden.",
+    "en": "No offers found.",
+    "ar": "لم يتم العثور على عروض.",
+    "es": "No se encontraron ofertas.",
+    "fr": "Aucune offre trouvée.",
+    "ru": "Предложений не найдено.",
+    "tr": "Teklif bulunamadı.",
+    "zh": "未找到优惠。"
+  },
+  "error": {
+    "de": "Fehler",
+    "en": "Error",
+    "ar": "خطأ",
+    "es": "Error",
+    "fr": "Erreur",
+    "ru": "Ошибка",
+    "tr": "Hata",
+    "zh": "错误"
+  },
+  "description": {
+    "de": "Beschreibung",
+    "en": "Description",
+    "ar": "وصف",
+    "es": "Descripción",
+    "fr": "Description",
+    "ru": "Описание",
+    "tr": "Açıklama",
+    "zh": "描述"
+  },
+  "information": {
+    "de": "Informationen",
+    "en": "Information",
+    "ar": "معلومة",
+    "es": "Información",
+    "fr": "Information",
+    "ru": "Информация",
+    "tr": "Bilgi",
+    "zh": "信息"
+  },
+  "no_data_currently_calculating": {
+    "de": "Keine Daten gefunden oder werden gerade berechnet.",
+    "en": "No data found or currently calculating.",
+    "ar": "لم يتم العثور على بيانات أو يتم حسابها حاليًا.",
+    "es": "No se encontraron datos o se están calculando actualmente.",
+    "fr": "Aucune donnée trouvée ou en cours de calcul.",
+    "ru": "Данные не найдены или в настоящее время вычисляются.",
+    "tr": "Veri bulunamadı veya şu anda hesaplanıyor.",
+    "zh": "未找到数据或当前正在计算。"
+  },
+  "food_data": {
+    "de": "Speisendaten",
+    "en": "Food Data",
+    "ar": "بيانات الطعام",
+    "es": "Datos de alimentos",
+    "fr": "Données alimentaires",
+    "ru": "Данные о еде",
+    "tr": "Yemek Verileri",
+    "zh": "食品数据"
+  },
+  "food_feedbacks": {
+    "de": "Essensbewertungen",
+    "en": "Food Feedbacks",
+    "ar": "تعليقات الطعام",
+    "es": "Comentarios sobre la comida",
+    "fr": "Commentaires sur les aliments",
+    "ru": "Отзывы о еде",
+    "tr": "Yemek Geri Bildirimleri",
+    "zh": "食品反馈"
+  },
+  "to_the_forum": {
+    "de": "Zum Forum",
+    "en": "To the Forum",
+    "ar": "إلى المنتدى",
+    "es": "Al foro",
+    "fr": "Au forum",
+    "ru": "На форум",
+    "tr": "Foruma",
+    "zh": "去论坛"
+  },
+  "reset_rating": {
+    "de": "Bewertung zurücksetzen",
+    "en": "Reset Rating",
+    "ar": "إعادة تعيين التقييم",
+    "es": "Restablecer calificación",
+    "fr": "Réinitialiser la note",
+    "ru": "Сбросить рейтинг",
+    "tr": "Değerlendirmeyi sıfırla",
+    "zh": "重置评分"
+  },
+  "set_rating_to": {
+    "de": "Bewertung auf",
+    "en": "Set Rating to",
+    "ar": "تعيين التقييم إلى",
+    "es": "Establecer calificación en",
+    "fr": "Définir la note sur",
+    "ru": "Установить рейтинг на",
+    "tr": "Değerlendirmeyi şu şekilde ayarla",
+    "zh": "将评分设置为"
+  },
+  "set_rate_as_favorite": {
+    "de": "Bewertung als Favorit",
+    "en": "Set Rating as Favorite",
+    "ar": "تعيين التقييم كمفضل",
+    "es": "Establecer calificación como favorita",
+    "fr": "Définir la note comme favori",
+    "ru": "Установить рейтинг как любимый",
+    "tr": "Değerlendirmeyi Favori Olarak Ayarla",
+    "zh": "将评分设为收藏"
+  },
+  "set_rate_as_not_favorite": {
+    "de": "Bewertung nicht als Favorit",
+    "en": "Set Rating as Not Favorite",
+    "ar": "تعيين التقييم كغير مفضل",
+    "es": "Establecer calificación como no favorita",
+    "fr": "Définir la note comme non favori",
+    "ru": "Установить рейтинг как нелюбимый",
+    "tr": "Değerlendirmeyi Favori Olmayan Olarak Ayarla",
+    "zh": "将评分设为非收藏"
+  },
+  "set_rating": {
+    "de": "Bewertung setzen",
+    "en": "Set Rating",
+    "ar": "تعيين التقييم",
+    "es": "Establecer calificación",
+    "fr": "Définir la note",
+    "ru": "Установить рейтинг",
+    "tr": "Değerlendirme Ayarla",
+    "zh": "设置评分"
+  },
+  "feedback_labels": {
+    "de": "Rückmeldungen",
+    "en": "Feedback Labels",
+    "ar": "تسميات التغذية الراجعة",
+    "es": "Etiquetas de comentarios",
+    "fr": "Étiquettes de retour",
+    "ru": "Метки отзывов",
+    "tr": "Geri Bildirim Etiketleri",
+    "zh": "反馈标签"
+  },
+  "open_navitation_to_location": {
+    "de": "Navigation zum Standort öffnen",
+    "en": "Open Navigation to Location",
+    "ar": "افتح التنقل إلى الموقع",
+    "es": "Abrir navegación a la ubicación",
+    "fr": "Ouvrir la navigation vers le lieu",
+    "ru": "Открыть навигацию к месту",
+    "tr": "Konuma Navigasyonu Aç",
+    "zh": "打开导航到位置"
+  },
+  "distance_based_canteen_selection_or_if_asked_on_real_location": {
+    "de": "Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.",
+    "en": "The distance is calculated based on the distance to your selected canteen or, if you explicitly asked, to your device",
+    "ar": "يتم حساب المسافة بناءً على المسافة إلى المقصف الذي اخترته أو، إذا طلبت ذلك صراحةً، إلى موقع جهازك.",
+    "es": "La distancia se calcula en función de la distancia a tu comedor seleccionado o, si lo pediste explícitamente, a la ubicación de tu dispositivo.",
+    "fr": "La distance est calculée en fonction de la distance à votre cantine sélectionnée ou, si vous avez explicitement demandé, à l",
+    "ru": "Расстояние рассчитывается на основе расстояния до выбранной вами столовой или, если вы специально запросили, до местоположения вашего устройства.",
+    "tr": "Mesafe, seçtiğiniz kantine veya açıkça sorduysanız cihazınızın konumuna olan mesafeye göre hesaplanır.",
+    "zh": "距离是根据您选择的食堂的距离或，如果您明确要求，根据您设备的位置计算的。"
+  },
+  "coordinates": {
+    "de": "Koordinaten",
+    "en": "Coordinates",
+    "ar": "إحداثيات",
+    "es": "Coordenadas",
+    "fr": "Coordonnées",
+    "ru": "Координаты",
+    "tr": "Koordinatlar",
+    "zh": "坐标"
+  },
+  "copy_url": {
+    "de": "URL kopieren",
+    "en": "Copy URL",
+    "ar": "نسخ URL",
+    "es": "Copiar URL",
+    "fr": "Copier l",
+    "ru": "Копировать URL",
+    "tr": "URL",
+    "zh": "复制 URL"
+  },
+  "copy": {
+    "de": "Kopieren",
+    "en": "Copy",
+    "ar": "نسخ",
+    "es": "Copiar",
+    "fr": "Copier",
+    "ru": "Копировать",
+    "tr": "Kopyala",
+    "zh": "复制"
+  },
+  "copied": {
+    "de": "Kopiert",
+    "en": "Copied",
+    "ar": "تم النسخ",
+    "es": "Copiado",
+    "fr": "Copié",
+    "ru": "Скопировано",
+    "tr": "Kopyalandı",
+    "zh": "已复制"
+  },
+  "year_of_construction": {
+    "de": "Baujahr",
+    "en": "Year of Construction",
+    "ar": "سنة البناء",
+    "es": "Año de construcción",
+    "fr": "Année de construction",
+    "ru": "Год строительства",
+    "tr": "İnşaat Yılı",
+    "zh": "建造年份"
+  },
+  "unknown": {
+    "de": "Unbekannt",
+    "en": "Unknown",
+    "ar": "مجهول",
+    "es": "Desconocido",
+    "fr": "Inconnu",
+    "ru": "Неизвестный",
+    "tr": "Bilinmeyen",
+    "zh": "未知"
+  },
+  "animation": {
+    "de": "Animation",
+    "en": "Animation",
+    "ar": "الرسوم المتحركة",
+    "es": "Animación",
+    "fr": "Animation",
+    "ru": "Анимация",
+    "tr": "Animasyon",
+    "zh": "动画"
+  },
+  "allergene": {
+    "de": "Allergene",
+    "en": "Allergens",
+    "ar": "مسببات الحساسية",
+    "es": "Alérgenos",
+    "fr": "Allergènes",
+    "ru": "Аллергены",
+    "tr": "Alerjenler",
+    "zh": "过敏原"
+  },
+  "eatinghabits_introduction": {
+    "de": "Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.",
+    "en": "Tell us which eating habits you prefer or want to avoid. We will then sort and mark the meal offers for you. We can use this information to improve our offer. Your data will not be passed on to third parties.",
+    "ar": "أخبرنا بعادات الأكل التي تفضلها أو تريد تجنبها. سنقوم بعد ذلك بفرز وتحديد عروض الوجبات لك. يمكننا استخدام هذه المعلومات لتحسين عرضنا. لن يتم نقل بياناتك إلى أطراف ثالثة.",
+    "es": "Dinos qué hábitos alimentarios prefieres o quieres evitar. Luego ordenaremos y marcaremos las ofertas de comidas para ti. Podemos utilizar esta información para mejorar nuestra oferta. Tus datos no se pasarán a terceros.",
+    "fr": "Dites-nous quelles habitudes alimentaires vous préférez ou souhaitez éviter. Nous trierons et marquerons ensuite les offres de repas pour vous. Nous pouvons utiliser ces informations pour améliorer notre offre. Vos données ne seront pas transmises à des tiers.",
+    "ru": "Сообщите нам, какие пищевые привычки вы предпочитаете или хотите избегать. Мы отсортируем и отметим предложения блюд для вас. Мы можем использовать эту информацию для улучшения нашего предложения. Ваши данные не будут переданы третьим лицам.",
+    "tr": "Hangi yeme alışkanlıklarını tercih ettiğinizi veya kaçınmak istediğinizi bize bildirin. Daha sonra yemek tekliflerini sizin için sıralayacak ve işaretleyeceğiz. Bu bilgileri teklifimizi geliştirmek için kullanabiliriz. Verileriniz üçüncü taraflara aktarılmayacaktır.",
+    "zh": "告诉我们您喜欢或想要避免的饮食习惯。然后我们将为您排序和标记餐饮优惠。我们可以使用这些信息来改进我们的产品。您的数据不会传递给第三方。"
+  },
+  "notification": {
+    "de": "Benachrichtigung",
+    "en": "Notification",
+    "ar": "إشعار",
+    "es": "Notificación",
+    "fr": "Notification",
+    "ru": "Уведомление",
+    "tr": "Bildirim",
+    "zh": "通知"
+  },
+  "notification_index_introduction": {
+    "de": "Deine eingestellten Benachrichtigungen kannst du hier einsehen und anpassen.",
+    "en": "You can view and adjust your set notifications here.",
+    "ar": "يمكنك عرض وضبط الإشعارات التي قمت بتعيينها هنا.",
+    "es": "Puedes ver y ajustar tus notificaciones establecidas aquí.",
+    "fr": "Vous pouvez consulter et ajuster vos notifications définies ici.",
+    "ru": "Вы можете просматривать и настраивать установленные уведомления здесь.",
+    "tr": "Burada ayarladığınız bildirimleri görebilir ve ayarlayabilirsiniz.",
+    "zh": "您可以在此处查看和调整设置的通知。"
+  },
+  "notification_please_enable_notifications_in_order_to_use_this_feature": {
+    "de": "Bitte aktiviere Benachrichtigungen, um diese Funktion zu nutzen.",
+    "en": "Please enable notifications to use this feature.",
+    "ar": "يرجى تمكين الإشعارات لاستخدام هذه الميزة.",
+    "es": "Por favor, habilita las notificaciones para usar esta función.",
+    "fr": "Veuillez activer les notifications pour utiliser cette fonctionnalité.",
+    "ru": "Пожалуйста, включите уведомления, чтобы использовать эту функцию.",
+    "tr": "Bu özelliği kullanmak için lütfen bildirimleri etkinleştirin.",
+    "zh": "请启用通知以使用此功能。"
+  },
+  "notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified": {
+    "de": "Bitte benachrichtige mich auf meinen Smartphones. Die Benachrichtigungen müssen auf den Geräten erlaubt sein.",
+    "en": "Please notify me on my smartphones. Notifications must be allowed on the devices.",
+    "ar": "يرجى إعلامي على هواتفي الذكية. يجب أن تكون الإشعارات مسموح بها على الأجهزة.",
+    "es": "Por favor, notifíqueme en mis teléfonos inteligentes. Las notificaciones deben estar permitidas en los dispositivos.",
+    "fr": "Veuillez me notifier sur mes smartphones. Les notifications doivent être autorisées sur les appareils.",
+    "ru": "Пожалуйста, уведомите меня на моих смартфонах. Уведомления должны быть разрешены на устройствах.",
+    "tr": "Lütfen beni akıllı telefonlarımda bilgilendirin. Bildirimler cihazlarda izin verilmelidir.",
+    "zh": "请在我的智能手机上通知我。设备上必须允许通知。"
+  },
+  "this_feature_is_not_available_currently_reason": {
+    "de": "Diese Funktion ist derzeit nicht verfügbar. Grund:",
+    "en": "This feature is currently not available. Reason:",
+    "ar": "هذه الميزة غير متوفرة حاليا. السبب:",
+    "es": "Esta función no está disponible actualmente. Razón:",
+    "fr": "Cette fonctionnalité n",
+    "ru": "Эта функция в настоящее время недоступна. Причина:",
+    "tr": "Bu özellik şu anda mevcut değil. Sebep:",
+    "zh": "此功能目前不可用。原因："
+  },
+  "device_android_system": {
+    "de": "Android System",
+    "en": "Android System",
+    "ar": "نظام أندرويد",
+    "es": "Sistema Android",
+    "fr": "Système Android",
+    "ru": "Система Android",
+    "tr": "Android Sistemi",
+    "zh": "安卓系统"
+  },
+  "device_ios_system": {
+    "de": "iOS System",
+    "en": "iOS System",
+    "ar": "نظام iOS",
+    "es": "Sistema iOS",
+    "fr": "Système iOS",
+    "ru": "Система iOS",
+    "tr": "iOS Sistemi",
+    "zh": "iOS 系统"
+  },
+  "device_web_system": {
+    "de": "Web System",
+    "en": "Web System",
+    "ar": "نظام الويب",
+    "es": "Sistema web",
+    "fr": "Système Web",
+    "ru": "Веб-система",
+    "tr": "Web Sistemi",
+    "zh": "网络系统"
+  },
+  "support": {
+    "de": "Support",
+    "en": "Support",
+    "ar": "الدعم",
+    "es": "Soporte",
+    "fr": "Support",
+    "ru": "Поддержка",
+    "tr": "Destek",
+    "zh": "支持"
+  },
+  "price": {
+    "de": "Preis",
+    "en": "Price",
+    "ar": "السعر",
+    "es": "Precio",
+    "fr": "Prix",
+    "ru": "Цена",
+    "tr": "Fiyat",
+    "zh": "价格"
+  },
+  "price_group": {
+    "de": "Preisgruppe",
+    "en": "Price Group",
+    "ar": "مجموعة الأسعار",
+    "es": "Grupo de precios",
+    "fr": "Groupe de prix",
+    "ru": "Ценовая группа",
+    "tr": "Fiyat Grubu",
+    "zh": "价格组"
+  },
+  "price_group_student": {
+    "de": "Studierende",
+    "en": "Students",
+    "ar": "الطلاب",
+    "es": "Estudiantes",
+    "fr": "Étudiants",
+    "ru": "Студенты",
+    "tr": "Öğrenciler",
+    "zh": "学生"
+  },
+  "price_group_employee": {
+    "de": "Mitarbeitende",
+    "en": "Employees",
+    "ar": "الموظفين",
+    "es": "Empleados",
+    "fr": "Employés",
+    "ru": "Сотрудники",
+    "tr": "Çalışanlar",
+    "zh": "员工"
+  },
+  "price_group_guest": {
+    "de": "Gäste",
+    "en": "Guests",
+    "ar": "ضيوف",
+    "es": "Huéspedes",
+    "fr": "Invités",
+    "ru": "Гости",
+    "tr": "Misafirler",
+    "zh": "来宾"
+  },
+  "role_management": {
+    "de": "Verwaltung",
+    "en": "Management",
+    "ar": "الإدارة",
+    "es": "Gestión",
+    "fr": "Gestion",
+    "ru": "Управление",
+    "tr": "Yönetim",
+    "zh": "管理"
+  },
+  "for_management": {
+    "de": "Für die Verwaltung",
+    "en": "For Management",
+    "ar": "للإدارة",
+    "es": "Para la gestión",
+    "fr": "Pour la gestion",
+    "ru": "Для управления",
+    "tr": "Yönetim için",
+    "zh": "用于管理"
+  },
+  "support_team": {
+    "de": "Support Team",
+    "en": "Support Team",
+    "ar": "فريق الدعم",
+    "es": "Equipo de soporte",
+    "fr": "Équipe de support",
+    "ru": "Команда поддержки",
+    "tr": "Destek Ekibi",
+    "zh": "支持团队"
+  },
+  "response": {
+    "de": "Antwort",
+    "en": "Response",
+    "ar": "استجابة",
+    "es": "Respuesta",
+    "fr": "Réponse",
+    "ru": "Ответ",
+    "tr": "Yanıt",
+    "zh": "响应"
+  },
+  "your_request": {
+    "de": "Deine Anfrage",
+    "en": "Your Request",
+    "ar": "طلبك",
+    "es": "Tu solicitud",
+    "fr": "Votre demande",
+    "ru": "Ваш запрос",
+    "tr": "Talebiniz",
+    "zh": "你的请求"
+  },
+  "support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request": {
+    "de": "Kein Account vorhanden oder E-Mail Adresse angegeben, daher können wir deine Anfrage nicht beantworten.",
+    "en": "No account provided or email address given, therefore we cannot answer your request.",
+    "ar": "لم يتم توفير حساب أو تقديم عنوان بريد إلكتروني، لذا لا يمكننا الرد على طلبك.",
+    "es": "No se proporcionó una cuenta o dirección de correo electrónico, por lo tanto no podemos responder a tu solicitud.",
+    "fr": "Aucun compte fourni ou adresse e-mail donnée, nous ne pouvons donc pas répondre à votre demande.",
+    "ru": "Учетная запись не предоставлена или не указан адрес электронной почты, поэтому мы не можем ответить на ваш запрос.",
+    "tr": "Hesap sağlanmadı veya e-posta adresi verilmediği için talebinizi yanıtlayamıyoruz.",
+    "zh": "未提供帐户或提供电子邮件地址，因此我们无法回答您的请求。"
+  },
+  "my_support_tickets": {
+    "de": "Meine Support-Tickets",
+    "en": "My Support Tickets",
+    "ar": "تذاكر الدعم الخاصة بي",
+    "es": "Mis tickets de soporte",
+    "fr": "Mes tickets de support",
+    "ru": "Мои билеты поддержки",
+    "tr": "Destek Biletlerim",
+    "zh": "我的支持票"
+  },
+  "no_permission_for": {
+    "de": "Keine Berechtigung für",
+    "en": "No Permission for",
+    "ar": "لا توجد إذن لـ",
+    "es": "Sin permiso para",
+    "fr": "Pas de permission pour",
+    "ru": "Нет разрешения на",
+    "tr": "İzin yok",
+    "zh": "没有权限"
+  },
+  "please_create_an_account": {
+    "de": "Bitte erstelle einen Account",
+    "en": "Please create an account",
+    "ar": "يرجى إنشاء حساب",
+    "es": "Por favor, crea una cuenta",
+    "fr": "Veuillez créer un compte",
+    "ru": "Пожалуйста, создайте аккаунт",
+    "tr": "Lütfen bir hesap oluşturun",
+    "zh": "请创建一个帐户"
+  },
+  "create_account": {
+    "de": "Account erstellen",
+    "en": "Create Account",
+    "ar": "إنشاء حساب",
+    "es": "Crear cuenta",
+    "fr": "Créer un compte",
+    "ru": "Создать аккаунт",
+    "tr": "Hesap oluştur",
+    "zh": "创建账户"
+  },
+  "washing_machine": {
+    "de": "Waschmaschine",
+    "en": "Washing Machine",
+    "ar": "غسالة",
+    "es": "Lavadora",
+    "fr": "Machine à laver",
+    "ru": "Стиральная машина",
+    "tr": "Çamaşır Makinesi",
+    "zh": "洗衣机"
+  },
+  "washing_machines": {
+    "de": "Waschmaschinen",
+    "en": "Washing Machines",
+    "ar": "غسالات",
+    "es": "Lavadoras",
+    "fr": "Machines à laver",
+    "ru": "Стиральные машины",
+    "tr": "Çamaşır Makineleri",
+    "zh": "洗衣机"
+  },
+  "washingmachine_state_finished": {
+    "de": "Waschen beendet",
+    "en": "Washing finished",
+    "ar": "تم الانتهاء من الغسيل",
+    "es": "Lavado terminado",
+    "fr": "Lavage terminé",
+    "ru": "Стирка закончена",
+    "tr": "Yıkama tamamlandı",
+    "zh": "洗涤完成"
+  },
+  "washingmachine_estimate_finished_at": {
+    "de": "Voraussichtlich fertig um",
+    "en": "Estimated to be finished at",
+    "ar": "من المتوقع أن ينتهي عند",
+    "es": "Estimado para finalizar a las",
+    "fr": "Estimé pour être terminé à",
+    "ru": "Ожидается, что будет завершено к",
+    "tr": "Tahmini bitiş saati",
+    "zh": "预计完成时间"
+  },
+  "washingmachine_state_unknown": {
+    "de": "Waschmaschine unbekannt",
+    "en": "Washing Machine Unknown",
+    "ar": "غسالة غير معروفة",
+    "es": "Lavadora desconocida",
+    "fr": "Machine à laver inconnue",
+    "ru": "Стиральная машина неизвестна",
+    "tr": "Çamaşır makinesi bilinmiyor",
+    "zh": "洗衣机未知"
+  },
+  "current": {
+    "de": "Aktuell",
+    "en": "Current",
+    "ar": "حالي",
+    "es": "Actual",
+    "fr": "Actuel",
+    "ru": "Текущий",
+    "tr": "Güncel",
+    "zh": "当前"
+  },
+  "active": {
+    "de": "Aktiv",
+    "en": "Active",
+    "ar": "نشيط",
+    "es": "Activo",
+    "fr": "Actif",
+    "ru": "Активный",
+    "tr": "Aktif",
+    "zh": "活跃"
+  },
+  "inactive": {
+    "de": "Inaktiv",
+    "en": "Inactive",
+    "ar": "غير نشط",
+    "es": "Inactivo",
+    "fr": "Inactif",
+    "ru": "Неактивный",
+    "tr": "Pasif",
+    "zh": "不活跃"
+  },
+  "state_current": {
+    "de": "Status aktuell",
+    "en": "Current Status",
+    "ar": "الحالة الحالية",
+    "es": "Estado actual",
+    "fr": "Statut actuel",
+    "ru": "Текущий статус",
+    "tr": "Mevcut Durum",
+    "zh": "当前状态"
+  },
+  "state_next": {
+    "de": "Status danach",
+    "en": "Next Status",
+    "ar": "الحالة التالية",
+    "es": "Próximo estado",
+    "fr": "Prochain statut",
+    "ru": "Следующий статус",
+    "tr": "Sonraki Durum",
+    "zh": "下一个状态"
+  },
+  "state": {
+    "de": "Status",
+    "en": "State",
+    "ar": "الحالة",
+    "es": "Estado",
+    "fr": "Statut",
+    "ru": "Статус",
+    "tr": "Durum",
+    "zh": "状态"
+  },
+  "import": {
+    "de": "Importieren",
+    "en": "Import",
+    "ar": "استيراد",
+    "es": "Importar",
+    "fr": "Importer",
+    "ru": "Импортировать",
+    "tr": "İçe aktar",
+    "zh": "进口"
+  },
+  "event": {
+    "de": "Veranstaltung",
+    "en": "Event",
+    "ar": "حدث",
+    "es": "Evento",
+    "fr": "Événement",
+    "ru": "Событие",
+    "tr": "Etkinlik",
+    "zh": "事件"
+  },
+  "create": {
+    "de": "Erstellen",
+    "en": "Create",
+    "ar": "خلق",
+    "es": "Crear",
+    "fr": "Créer",
+    "ru": "Создать",
+    "tr": "Oluştur",
+    "zh": "创建"
+  },
+  "delete": {
+    "de": "Löschen",
+    "en": "Delete",
+    "ar": "حذف",
+    "es": "Eliminar",
+    "fr": "Supprimer",
+    "ru": "Удалить",
+    "tr": "Sil",
+    "zh": "删除"
+  },
+  "account_delete": {
+    "de": "Account löschen",
+    "en": "Account Delete",
+    "ar": "حذف الحساب",
+    "es": "Eliminar cuenta",
+    "fr": "Supprimer le compte",
+    "ru": "Удаление аккаунта",
+    "tr": "Hesap Sil",
+    "zh": "删除账户"
+  },
+  "location": {
+    "de": "Ort",
+    "en": "Location",
+    "ar": "موقع",
+    "es": "Ubicación",
+    "fr": "Lieu",
+    "ru": "Местоположение",
+    "tr": "Konum",
+    "zh": "位置"
+  },
+  "title": {
+    "de": "Titel",
+    "en": "Title",
+    "ar": "عنوان",
+    "es": "Título",
+    "fr": "Titre",
+    "ru": "Название",
+    "tr": "Başlık",
+    "zh": "标题"
+  },
+  "weekday": {
+    "de": "Wochentag",
+    "en": "Weekday",
+    "ar": "يوم من أيام الأسبوع",
+    "es": "Día de la semana",
+    "fr": "Jour de la semaine",
+    "ru": "День недели",
+    "tr": "Hafta içi",
+    "zh": "工作日"
+  },
+  "week": {
+    "de": "Woche",
+    "en": "Week",
+    "ar": "أسبوع",
+    "es": "Semana",
+    "fr": "Semaine",
+    "ru": "Неделя",
+    "tr": "Hafta",
+    "zh": "周"
+  },
+  "startTime": {
+    "de": "Startzeit",
+    "en": "Start Time",
+    "ar": "وقت البدء",
+    "es": "Hora de inicio",
+    "fr": "Heure de début",
+    "ru": "Время начала",
+    "tr": "Başlangıç Zamanı",
+    "zh": "开始时间"
+  },
+  "endTime": {
+    "de": "Endzeit",
+    "en": "End Time",
+    "ar": "وقت النهاية",
+    "es": "Hora de finalización",
+    "fr": "Heure de fin",
+    "ru": "Время окончания",
+    "tr": "Bitiş Zamanı",
+    "zh": "结束时间"
+  },
+  "color": {
+    "de": "Farbe",
+    "en": "Color",
+    "ar": "اللون",
+    "es": "Color",
+    "fr": "Couleur",
+    "ru": "Цвет",
+    "tr": "Renk",
+    "zh": "颜色"
+  },
+  "cancel": {
+    "de": "Abbrechen",
+    "en": "Cancel",
+    "ar": "إلغاء",
+    "es": "Cancelar",
+    "fr": "Annuler",
+    "ru": "Отмена",
+    "tr": "İptal",
+    "zh": "取消"
+  },
+  "submit": {
+    "de": "Einreichen",
+    "en": "Submit",
+    "ar": "إرسال",
+    "es": "Enviar",
+    "fr": "Soumettre",
+    "ru": "Отправить",
+    "tr": "Gönder",
+    "zh": "提交"
+  },
+  "warning": {
+    "de": "Warnung",
+    "en": "Warning",
+    "ar": "تحذير",
+    "es": "Advertencia",
+    "fr": "Avertissement",
+    "ru": "Предупреждение",
+    "tr": "Uyarı",
+    "zh": "警告"
+  },
+  "for_example": {
+    "de": "zum Beispiel",
+    "en": "for example",
+    "ar": "على سبيل المثال",
+    "es": "por ejemplo",
+    "fr": "par exemple",
+    "ru": "например",
+    "tr": "örneğin",
+    "zh": "例如"
+  },
+  "courseTimetableDescriptionEmpty": {
+    "en": "You don",
+    "fr": "Vous n"
+  },
+  "nothing_found": {
+    "de": "Nichts gefunden",
+    "en": "Nothing found",
+    "ar": "لم يتم العثور على شيء",
+    "es": "Nada encontrado",
+    "fr": "Rien trouvé",
+    "ru": "Ничего не найдено",
+    "tr": "Bir şey bulunamadı",
+    "zh": "未找到任何内容"
+  },
+  "seemsEmpty": {
+    "de": "Es scheint leer zu sein",
+    "en": "It seems empty",
+    "ar": "يبدو فارغًا",
+    "es": "Parece vacío",
+    "fr": "Ça semble vide",
+    "ru": "Кажется, пусто",
+    "tr": "Boş görünüyor",
+    "zh": "看起来是空的"
+  },
+  "noFeedbacksFound": {
+    "de": "Kein Feedback gefunden",
+    "en": "No feedback found",
+    "ar": "لم يتم العثور على تعليقات",
+    "es": "No se encontraron comentarios",
+    "fr": "Aucun retour trouvé",
+    "ru": "Обратной связи не найдено",
+    "tr": "Geri bildirim bulunamadı",
+    "zh": "未找到反馈"
+  },
+  "somethingWentWrong": {
+    "de": "Etwas ist schief gelaufen",
+    "en": "Something went wrong",
+    "ar": "حدث خطأ ما",
+    "es": "Algo salió mal",
+    "fr": "Quelque chose a mal tourné",
+    "ru": "Что-то пошло не так",
+    "tr": "Bir şeyler yanlış gitti",
+    "zh": "出了点问题"
+  },
+  "date": {
+    "de": "Datum",
+    "en": "Date",
+    "ar": "تاريخ",
+    "es": "Fecha",
+    "fr": "Date",
+    "ru": "Дата",
+    "tr": "Tarih",
+    "zh": "日期"
+  },
+  "year": {
+    "de": "Jahr",
+    "en": "Year",
+    "ar": "سنة",
+    "es": "Año",
+    "fr": "An",
+    "ru": "Год",
+    "tr": "Yıl",
+    "zh": "年"
+  },
+  "month": {
+    "de": "Monat",
+    "en": "Month",
+    "ar": "شهر",
+    "es": "Mes",
+    "fr": "Mois",
+    "ru": "Месяц",
+    "tr": "Ay",
+    "zh": "月"
+  },
+  "selected": {
+    "de": "Ausgewählt",
+    "en": "Selected",
+    "ar": "المحدد",
+    "es": "Seleccionado",
+    "fr": "Sélectionné",
+    "ru": "Выбранный",
+    "tr": "Seçilmiş",
+    "zh": "已选"
+  },
+  "proceed": {
+    "de": "Weiter",
+    "en": "Proceed",
+    "ar": "تقدم",
+    "es": "Proceder",
+    "fr": "Procéder",
+    "ru": "Продолжить",
+    "tr": "Devam et",
+    "zh": "继续"
+  },
+  "previous": {
+    "de": "Zurück",
+    "en": "Previous",
+    "ar": "السابق",
+    "es": "Anterior",
+    "fr": "Précédent",
+    "ru": "Предыдущий",
+    "tr": "Önceki",
+    "zh": "上一个"
+  },
+  "businesshours": {
+    "de": "Öffnungszeiten",
+    "en": "Opening Hours",
+    "ar": "ساعات العمل",
+    "es": "Horario de apertura",
+    "fr": "Heures d",
+    "ru": "Часы работы",
+    "tr": "Açılış Saatleri",
+    "zh": "营业时间"
+  },
+  "no_business_hours_available": {
+    "de": "Keine Geschäftszeiten verfügbar.",
+    "en": "No business hours available.",
+    "ar": "لا توجد ساعات عمل متاحة.",
+    "es": "No hay horarios comerciales disponibles.",
+    "fr": "Aucune heure d'ouverture disponible.",
+    "ru": "Нет доступных рабочих часов.",
+    "tr": "Mevcut çalışma saatleri yok.",
+    "zh": "没有可用的营业时间。"
+  },
+  "foodservicehours": {
+    "de": "Essenszeiten",
+    "en": "Food Service Hours",
+    "ar": "ساعات خدمة الطعام",
+    "es": "Horario de servicio de comida",
+    "fr": "Heures de service de nourriture",
+    "ru": "Часы работы питания",
+    "tr": "Yemek Servisi Saatleri",
+    "zh": "餐饮服务时间"
+  },
+  "foodservicehoursDuringSemesterBreak": {
+    "de": "Essenszeiten während der Semesterferien",
+    "en": "Food Service Hours during Semester Break",
+    "ar": "ساعات خدمة الطعام خلال إجازة الفصل الدراسي",
+    "es": "Horario de servicio de comida durante las vacaciones del semestre",
+    "fr": "Heures de service de nourriture pendant les vacances du semestre",
+    "ru": "Часы работы питания во время каникул",
+    "tr": "Dönem Tatili Sırasında Yemek Servisi Saatleri",
+    "zh": "学期休息期间的餐饮服务时间"
+  },
+  "until": {
+    "de": "bis",
+    "en": "until",
+    "ar": "حتى",
+    "es": "hasta",
+    "fr": "jusqu",
+    "ru": "до",
+    "tr": "kadar",
+    "zh": "直到"
+  },
+  "day": {
+    "de": "Tag",
+    "en": "Day",
+    "ar": "يوم",
+    "es": "Día",
+    "fr": "Jour",
+    "ru": "День",
+    "tr": "Gün",
+    "zh": "天"
+  },
+  "today": {
+    "de": "Heute",
+    "en": "Today",
+    "ar": "اليوم",
+    "es": "Hoy",
+    "fr": "Aujourd",
+    "ru": "Сегодня",
+    "tr": "Bugün",
+    "zh": "今天"
+  },
+  "tomorrow": {
+    "de": "Morgen",
+    "en": "Tomorrow",
+    "ar": "غدا",
+    "es": "Mañana",
+    "fr": "Demain",
+    "ru": "Завтра",
+    "tr": "Yarın",
+    "zh": "明天"
+  },
+  "yesterday": {
+    "de": "Gestern",
+    "en": "Yesterday",
+    "ar": "أمس",
+    "es": "Ayer",
+    "fr": "Hier",
+    "ru": "Вчера",
+    "tr": "Dün",
+    "zh": "昨天"
+  },
+  "nutrition": {
+    "de": "Durchschnittliche Nährwerte pro Portion",
+    "en": "Average Nutritional Values per Portion",
+    "ar": "القيم الغذائية المتوسطة لكل وجبة",
+    "es": "Valores nutricionales promedio por porción",
+    "fr": "Valeurs nutritionnelles moyennes par portion",
+    "ru": "Средние пищевые ценности на порцию",
+    "tr": "Porsiyon başına ortalama besin değerleri",
+    "zh": "每份的平均营养价值"
+  },
+  "environmental_impact": {
+    "de": "Umweltauswirkungen",
+    "en": "Environmental Impact",
+    "ar": "التأثير البيئي",
+    "es": "Impacto ambiental",
+    "fr": "Impact environnemental",
+    "ru": "Экологическое воздействие",
+    "tr": "Çevresel Etki",
+    "zh": "环境影响"
+  },
+  "food_information_disclaimer": {
+    "de": "Die Angaben zu den Daten basieren auf den Informationen, die uns zur Verfügung stehen und können von den tatsächlichen Werten abweichen. Änderungen vorbehalten. Weitere Informationen zu den Daten können hier entnommen werden:",
+    "en": "The data is based on the information available to us and may differ from the actual values. Subject to change. Further information on the data can be found here:",
+    "ar": "تعتمد البيانات على المعلومات المتاحة لدينا وقد تختلف عن القيم الفعلية. قابل للتغيير. يمكن العثور على مزيد من المعلومات حول البيانات هنا:",
+    "es": "Los datos se basan en la información disponible para nosotros y pueden diferir de los valores reales. Sujeto a cambios. Puede encontrar más información sobre los datos aquí:",
+    "fr": "Les données sont basées sur les informations dont nous disposons et peuvent différer des valeurs réelles. Sous réserve de modifications. Vous trouverez plus d",
+    "ru": "Данные основаны на информации, доступной нам, и могут отличаться от фактических значений. Подлежит изменению. Дополнительную информацию о данных можно найти здесь:",
+    "tr": "Veriler, bize sunulan bilgilere dayanmaktadır ve gerçek değerlerden farklı olabilir. Değişikliklere tabidir. Verilerle ilgili daha fazla bilgi burada bulunabilir:",
+    "zh": "数据基于我们掌握的信息，可能与实际值有所不同。如有更改。有关数据的更多信息，请参见此处："
+  },
+  "nutrition_calories": {
+    "de": "Energie",
+    "en": "Energy",
+    "ar": "طاقة",
+    "es": "Energía",
+    "fr": "Énergie",
+    "ru": "Энергия",
+    "tr": "Enerji",
+    "zh": "能量"
+  },
+  "nutrition_protein": {
+    "de": "Protein",
+    "en": "Protein",
+    "ar": "بروتين",
+    "es": "Proteína",
+    "fr": "Protéine",
+    "ru": "Белок",
+    "tr": "Protein",
+    "zh": "蛋白质"
+  },
+  "nutrition_carbs": {
+    "de": "Kohlenhydrate",
+    "en": "Carbs",
+    "ar": "الكربوهيدرات",
+    "es": "Carbohidratos",
+    "fr": "Glucides",
+    "ru": "Углеводы",
+    "tr": "Karbonhidrat",
+    "zh": "碳水化合物"
+  },
+  "nutrition_fat": {
+    "de": "Fett",
+    "en": "Fat",
+    "ar": "سمين",
+    "es": "Grasa",
+    "fr": "Graisse",
+    "ru": "Жир",
+    "tr": "Yağ",
+    "zh": "脂肪"
+  },
+  "nutrition_carbohydrate": {
+    "de": "Kohlenhydrate",
+    "en": "Carbohydrates",
+    "ar": "الكربوهيدرات",
+    "es": "Carbohidratos",
+    "fr": "Glucides",
+    "ru": "Углеводы",
+    "tr": "Karbonhidratlar",
+    "zh": "碳水化合物"
+  },
+  "nutrition_fiber": {
+    "de": "Ballaststoffe",
+    "en": "Fiber",
+    "ar": "الألياف",
+    "es": "Fibra",
+    "fr": "Fibre",
+    "ru": "Клетчатка",
+    "tr": "Lif",
+    "zh": "纤维"
+  },
+  "nutrition_sugar": {
+    "de": "Zucker",
+    "en": "Sugar",
+    "ar": "سكر",
+    "es": "Azúcar",
+    "fr": "Sucre",
+    "ru": "Сахар",
+    "tr": "Şeker",
+    "zh": "糖"
+  },
+  "nutrition_salt": {
+    "de": "Salz",
+    "en": "Salt",
+    "ar": "ملح",
+    "es": "Sal",
+    "fr": "Sel",
+    "ru": "Соль",
+    "tr": "Tuz",
+    "zh": "盐"
+  },
+  "nutrition_saturated_fat": {
+    "de": "Gesättigte Fettsäuren",
+    "en": "Saturated Fat",
+    "ar": "الدهون المشبعة",
+    "es": "Grasa saturada",
+    "fr": "Graisse saturée",
+    "ru": "Насыщенные жиры",
+    "tr": "Doymuş Yağ",
+    "zh": "饱和脂肪"
+  },
+  "environmental_impact_co2": {
+    "de": "CO₂-Ausstoß",
+    "en": "CO₂ Emissions",
+    "ar": "انبعاثات ثاني أكسيد الكربون",
+    "es": "Emisiones de CO₂",
+    "fr": "Émissions de CO₂",
+    "ru": "Выбросы CO₂",
+    "tr": "CO₂ Emisyonları",
+    "zh": "CO₂ 排放"
+  },
+  "environmental_impact_co2_saving_percentage": {
+    "de": "CO₂-Einsparung",
+    "en": "CO₂ Saving",
+    "ar": "توفير ثاني أكسيد الكربون",
+    "es": "Ahorro de CO₂",
+    "fr": "Économie de CO₂",
+    "ru": "Сбережение CO₂",
+    "tr": "CO₂ Tasarrufu",
+    "zh": "CO₂ 节约"
+  },
+  "environmental_impact_co2_rating": {
+    "de": "CO₂-Bewertung",
+    "en": "CO₂ Rating",
+    "ar": "تقييم ثاني أكسيد الكربون",
+    "es": "Calificación de CO₂",
+    "fr": "Évaluation du CO₂",
+    "ru": "Рейтинг CO₂",
+    "tr": "CO₂ Derecelendirme",
+    "zh": "CO₂ 评级"
+  },
+  "about_us": {
+    "de": "Über uns",
+    "en": "About Us",
+    "ar": "معلومات عنا",
+    "es": "Sobre nosotros",
+    "fr": "À propos de nous",
+    "ru": "О нас",
+    "tr": "Hakkımızda",
+    "zh": "关于我们"
+  },
+  "license": {
+    "de": "Lizenz",
+    "en": "License",
+    "ar": "رخصة",
+    "es": "Licencia",
+    "fr": "Licence",
+    "ru": "Лицензия",
+    "tr": "Lisans",
+    "zh": "许可证"
+  },
+  "license_information": {
+    "de": "Lizenzhinweise",
+    "en": "License Information",
+    "ar": "معلومات الترخيص",
+    "es": "Información de licencia",
+    "fr": "Informations de licence",
+    "ru": "Информация о лицензии",
+    "tr": "Lisans Bilgileri",
+    "zh": "许可信息"
+  },
+  "accessibility": {
+    "de": "Barrierefreiheit",
+    "en": "Accessibility",
+    "ar": "إمكانية الوصول",
+    "es": "Accesibilidad",
+    "fr": "Accessibilité",
+    "ru": "Доступность",
+    "tr": "Erişilebilirlik",
+    "zh": "无障碍"
+  },
+  "cookie_policy": {
+    "de": "Cookie-Richtlinie",
+    "en": "Cookie Policy",
+    "ar": "سياسة ملفات تعريف الارتباط",
+    "es": "Política de cookies",
+    "fr": "Politique de cookies",
+    "ru": "Политика использования файлов cookie",
+    "tr": "Çerez Politikası",
+    "zh": "Cookie 政策"
+  },
+  "privacy_policy": {
+    "de": "Datenschutzrichtlinie",
+    "en": "Privacy Policy",
+    "ar": "سياسة الخصوصية",
+    "es": "Política de privacidad",
+    "fr": "Politique de confidentialité",
+    "ru": "Политика конфиденциальности",
+    "tr": "Gizlilik Politikası",
+    "zh": "隐私政策"
+  },
+  "okay": {
+    "de": "Okay",
+    "en": "Okay",
+    "ar": "حسنا",
+    "es": "Está bien",
+    "fr": "D",
+    "ru": "Окей",
+    "tr": "Tamam",
+    "zh": "好的"
+  },
+  "currently_logged_in_as": {
+    "de": "Derzeit angemeldet als",
+    "en": "Currently logged in as",
+    "ar": "مسجل الدخول حاليًا كـ",
+    "es": "Actualmente registrado como",
+    "fr": "Actuellement connecté en tant que",
+    "ru": "В данный момент вы вошли как",
+    "tr": "Şu anda olarak giriş yaptınız",
+    "zh": "当前登录身份是"
+  },
+  "if_you_want_to_login_with_this_account_please_press": {
+    "de": "Wenn Sie sich mit diesem Konto anmelden möchten, drücken Sie bitte",
+    "en": "If you want to log in with this account, please press",
+    "ar": "إذا كنت تريد تسجيل الدخول بهذا الحساب ، يرجى الضغط",
+    "es": "Si desea iniciar sesión con esta cuenta, por favor presione",
+    "fr": "Si vous voulez vous connecter avec ce compte, veuillez appuyer sur",
+    "ru": "Если вы хотите войти в систему с этой учетной записью, нажмите, пожалуйста",
+    "tr": "Bu hesapla giriş yapmak istiyorsanız, lütfen basın",
+    "zh": "如果您想使用此帐户登录，请按"
+  },
+  "logout": {
+    "de": "Abmelden",
+    "en": "Logout",
+    "ar": "تسجيل خروج",
+    "es": "Cerrar sesión",
+    "fr": "Se déconnecter",
+    "ru": "Выйти",
+    "tr": "Çıkış Yap",
+    "zh": "登出"
+  },
+  "register": {
+    "de": "Registrieren",
+    "en": "Register",
+    "ar": "تسجيل",
+    "es": "Registrar",
+    "fr": "S",
+    "ru": "Регистрация",
+    "tr": "Kayıt Ol",
+    "zh": "注册"
+  },
+  "sign_in": {
+    "de": "Anmelden",
+    "en": "Sign In",
+    "ar": "تسجيل الدخول",
+    "es": "Iniciar sesión",
+    "fr": "Se connecter",
+    "ru": "Войти",
+    "tr": "Giriş Yap",
+    "zh": "登录"
+  },
+  "continue": {
+    "de": "Fortsetzen",
+    "en": "Continue",
+    "ar": "استمر",
+    "es": "Continuar",
+    "fr": "Continuer",
+    "ru": "Продолжить",
+    "tr": "Devam et",
+    "zh": "继续"
+  },
+  "navigate_to": {
+    "de": "Navigieren zu",
+    "en": "Navigate to",
+    "ar": "التنقل إلى",
+    "es": "Navegar a",
+    "fr": "Aller à",
+    "ru": "Перейти к",
+    "tr": "Gezinmek için",
+    "zh": "导航到"
+  },
+  "open_drawer": {
+    "de": "Seitenmenü öffnen",
+    "en": "Open side menu",
+    "ar": "افتح القائمة الجانبية",
+    "es": "Abrir menú lateral",
+    "fr": "Ouvrir le menu latéral",
+    "ru": "Открыть боковое меню",
+    "tr": "Yan menüyü aç",
+    "zh": "打开侧边菜单"
+  },
+  "navigate_back": {
+    "de": "Zurück navigieren",
+    "en": "Navigate back",
+    "ar": "انتقل إلى الوراء",
+    "es": "Navegar hacia atrás",
+    "fr": "Naviguer en arrière",
+    "ru": "Навигация назад",
+    "tr": "Geriye git",
+    "zh": "导航回"
+  },
+  "canteen": {
+    "de": "Mensa",
+    "en": "Canteen",
+    "ar": "مقصف",
+    "es": "Cantina",
+    "fr": "Cantine",
+    "ru": "Столовая",
+    "tr": "Yemekhane",
+    "zh": "食堂"
+  },
+  "please_select_your_canteen": {
+    "de": "Bitte wählen Sie Ihre Kantine",
+    "en": "Please Select Your Canteen",
+    "ar": "يرجى اختيار مقصفك",
+    "es": "Por favor, seleccione su cantina",
+    "fr": "Veuillez sélectionner votre cantine",
+    "ru": "Пожалуйста, выберите свою столовую",
+    "tr": "Lütfen kantininizi seçin",
+    "zh": "请选择您的食堂"
+  },
+  "map": {
+    "de": "Karte",
+    "en": "Map",
+    "ar": "خريطة",
+    "es": "Mapa",
+    "fr": "Carte",
+    "ru": "Карта",
+    "tr": "Harita",
+    "zh": "地图"
+  },
+  "news": {
+    "de": "News",
+    "en": "News",
+    "ar": "أخبار",
+    "es": "Noticias",
+    "fr": "Nouvelles",
+    "ru": "Новости",
+    "tr": "Haberler",
+    "zh": "新闻"
+  },
+  "read_more": {
+    "de": "Weiterlesen",
+    "en": "Read more",
+    "ar": "اقرأ أكثر",
+    "es": "Leer más",
+    "fr": "Lire la suite",
+    "ru": "Читать далее",
+    "tr": "Daha fazla oku",
+    "zh": "阅读更多"
+  },
+  "read_less": {
+    "de": "Weniger lesen",
+    "en": "Read less",
+    "ar": "اقرأ أقل",
+    "es": "Leer menos",
+    "fr": "Lire moins",
+    "ru": "Читать меньше",
+    "tr": "Daha az oku",
+    "zh": "阅读更少"
+  },
+  "show_more_information": {
+    "de": "Mehr Informationen anzeigen",
+    "en": "Show more information",
+    "ar": "عرض المزيد من المعلومات",
+    "es": "Mostrar más información",
+    "fr": "Afficher plus d",
+    "ru": "Показать больше информации",
+    "tr": "Daha fazla bilgi göster",
+    "zh": "显示更多信息"
+  },
+  "course_timetable": {
+    "de": "Stundenplan",
+    "en": "Course Timetable",
+    "ar": "الجدول الدراسي",
+    "es": "Horario del curso",
+    "fr": "Emploi du temps",
+    "ru": "Расписание курса",
+    "tr": "Ders Programı",
+    "zh": "课程时间表"
+  },
+  "eating_habits": {
+    "de": "Essgewohnheiten",
+    "en": "Eating Habits",
+    "ar": "عادات الأكل",
+    "es": "Hábitos alimenticios",
+    "fr": "Habitudes alimentaires",
+    "ru": "Пищевые привычки",
+    "tr": "Yeme Alışkanlıkları",
+    "zh": "饮食习惯"
+  },
+  "markings": {
+    "de": "Kennzeichnungen",
+    "en": "Labels",
+    "ar": "علامات",
+    "es": "Etiquetas",
+    "fr": "Étiquettes",
+    "ru": "Метки",
+    "tr": "Etiketler",
+    "zh": "标签"
+  },
+  "category": {
+    "de": "Kategorie",
+    "en": "Category",
+    "ar": "الفئة",
+    "es": "Categoría",
+    "fr": "Catégorie",
+    "ru": "Категория",
+    "tr": "Kategori",
+    "zh": "类别"
+  },
+  "form_categories": {
+    "de": "Formkategorien",
+    "en": "Form Categories",
+    "ar": "فئات النموذج",
+    "es": "Categorías de formulario",
+    "fr": "Catégories de formulaire",
+    "ru": "Категории форм",
+    "tr": "Form Kategorileri",
+    "zh": "表单类别"
+  },
+  "monitore": {
+    "de": "Monitore",
+    "en": "Monitors",
+    "ar": "شاشات",
+    "es": "Monitores",
+    "fr": "Moniteurs",
+    "ru": "Мониторы",
+    "tr": "Monitörler",
+    "zh": "显示器"
+  },
+  "test_statistik": {
+    "de": "Test Statistik",
+    "en": "Statistical Tests",
+    "ar": "الاختبارات الإحصائية",
+    "es": "Pruebas estadísticas",
+    "fr": "Tests statistiques",
+    "ru": "Статистические тесты",
+    "tr": "İstatistiksel Testler",
+    "zh": "统计测试"
+  },
+  "statistiken": {
+    "de": "Statistiken",
+    "en": "Statistics",
+    "ar": "إحصائيات",
+    "es": "Estadísticas",
+    "fr": "Statistiques",
+    "ru": "Статистика",
+    "tr": "İstatistikler",
+    "zh": "统计数据"
+  },
+  "foodname": {
+    "de": "Name",
+    "en": "Name",
+    "ar": "اسم",
+    "es": "Nombre",
+    "fr": "Nom",
+    "ru": "Имя",
+    "tr": "Ad",
+    "zh": "名称"
+  },
+  "forecast": {
+    "de": "Vorhersage",
+    "en": "Forecast",
+    "ar": "توقعات",
+    "es": "Pronóstico",
+    "fr": "Prévision",
+    "ru": "Прогноз",
+    "tr": "Tahmin",
+    "zh": "预报"
+  },
+  "utilization": {
+    "de": "Auslastung",
+    "en": "Occupancy",
+    "ar": "الإشغال",
+    "es": "Ocupación",
+    "fr": "Occupation",
+    "ru": "Заполнение",
+    "tr": "Doluluk",
+    "zh": "占用"
+  },
+  "time_of_day": {
+    "de": "Uhrzeit",
+    "en": "Time of Day",
+    "ar": "وقت اليوم",
+    "es": "Hora del día",
+    "fr": "Heure de la journée",
+    "ru": "Время дня",
+    "tr": "Günün saati",
+    "zh": "一天中的时间"
+  },
+  "opens_at": {
+    "de": "Öffnet um",
+    "en": "Opens at",
+    "ar": "يفتح عند",
+    "es": "Abre a las",
+    "fr": "Ouvre à",
+    "ru": "Открывается в",
+    "tr": "Şu saatte açılıyor",
+    "zh": "开放时间"
+  },
+  "closed_after": {
+    "de": "Schließt um",
+    "en": "Closed after",
+    "ar": "مغلق بعد",
+    "es": "Cerrado después de",
+    "fr": "Fermé après",
+    "ru": "Закрыто после",
+    "tr": "Sonra kapalı",
+    "zh": "关闭时间"
+  },
+  "food_details": {
+    "de": "Essensdetails",
+    "en": "Food Details",
+    "ar": "تفاصيل الطعام",
+    "es": "Detalles de la comida",
+    "fr": "Détails des aliments",
+    "ru": "Детали еды",
+    "tr": "Yemek Detayları",
+    "zh": "食物详情"
+  },
+  "food_attributes": {
+    "de": "Lebensmitteleigenschaften",
+    "en": "Food Attributes",
+    "ar": "سمات الطعام",
+    "es": "Atributos de los alimentos",
+    "fr": "Attributs des aliments",
+    "ru": "Атрибуты еды",
+    "tr": "Yemek Nitelikleri",
+    "zh": "食物属性"
+  },
+  "i_like_that": {
+    "de": "Das gefällt mir",
+    "en": "I like that",
+    "ar": "أنا أحب ذلك",
+    "es": "Me gusta eso",
+    "fr": "J",
+    "ru": "Мне это нравится",
+    "tr": "Bunu beğendim",
+    "zh": "我喜欢那个"
+  },
+  "i_dislike_that": {
+    "de": "Das gefällt mir nicht",
+    "en": "I dislike that",
+    "ar": "أنا لا أحب ذلك",
+    "es": "No me gusta eso",
+    "fr": "Je n",
+    "ru": "Мне это не нравится",
+    "tr": "Bunu beğenmedim",
+    "zh": "我不喜欢那个"
+  },
+  "like_status": {
+    "de": "Gefällt mir Status",
+    "en": "Like Status",
+    "ar": "أحب الحالة",
+    "es": "Estado de gusto",
+    "fr": "Statut J",
+    "ru": "Статус ",
+    "tr": "Beğenme Durumu",
+    "zh": "喜欢状态"
+  },
+  "show_login_for_management_with_email_and_password": {
+    "de": "Verwaltungs-Login",
+    "en": "Management Login",
+    "ar": "تسجيل الدخول للإدارة",
+    "es": "Inicio de sesión de administración",
+    "fr": "Connexion de gestion",
+    "ru": "Вход в систему управления",
+    "tr": "Yönetim Girişi",
+    "zh": "管理登录"
+  },
+  "email": {
+    "de": "E-Mail",
+    "en": "Email",
+    "ar": "البريد الإلكتروني",
+    "es": "Correo electrónico",
+    "fr": "E-mail",
+    "ru": "Эл. адрес",
+    "tr": "E-posta",
+    "zh": "电子邮件"
+  },
+  "password": {
+    "de": "Passwort",
+    "en": "Password",
+    "ar": "كلمة المرور",
+    "es": "Contraseña",
+    "fr": "Mot de passe",
+    "ru": "Пароль",
+    "tr": "Şifre",
+    "zh": "密码"
+  },
+  "show": {
+    "de": "Anzeigen",
+    "en": "Show",
+    "ar": "إظهار",
+    "es": "Mostrar",
+    "fr": "Afficher",
+    "ru": "Показать",
+    "tr": "Göster",
+    "zh": "显示"
+  },
+  "hide": {
+    "de": "Verbergen",
+    "en": "Hide",
+    "ar": "إخفاء",
+    "es": "Ocultar",
+    "fr": "Cacher",
+    "ru": "Скрыть",
+    "tr": "Gizle",
+    "zh": "隐藏"
+  },
+  "continue_without_account": {
+    "de": "Ohne Account fortfahren",
+    "en": "Continue without account",
+    "ar": "المتابعة بدون حساب",
+    "es": "Continuar sin cuenta",
+    "fr": "Continuer sans compte",
+    "ru": "Продолжить без аккаунта",
+    "tr": "Hesap olmadan devam et",
+    "zh": "无需账户继续"
+  },
+  "sign_in_with": {
+    "de": "Anmelden mit",
+    "en": "Sign in with",
+    "ar": "تسجيل الدخول مع",
+    "es": "Iniciar sesión con",
+    "fr": "Se connecter avec",
+    "ru": "Войти с помощью",
+    "tr": "İle giriş yap",
+    "zh": "使用登录"
+  },
+  "home": {
+    "de": "Startseite",
+    "en": "Home",
+    "ar": "الصفحة الرئيسية",
+    "es": "Inicio",
+    "fr": "Accueil",
+    "ru": "Главная",
+    "tr": "Ana Sayfa",
+    "zh": "主页"
+  },
+  "canteens": {
+    "de": "Mensen",
+    "en": "Canteens",
+    "ar": "مقاصف",
+    "es": "Cantinas",
+    "fr": "Cantines",
+    "ru": "Столовые",
+    "tr": "Yemekhaneler",
+    "zh": "食堂"
+  },
+  "buildings": {
+    "de": "Gebäude",
+    "en": "Buildings",
+    "ar": "المباني",
+    "es": "Edificios",
+    "fr": "Bâtiments",
+    "ru": "Здания",
+    "tr": "Binalar",
+    "zh": "建筑物"
+  },
+  "campus": {
+    "de": "Campus",
+    "en": "Campus",
+    "ar": "حرم الجامعة",
+    "es": "Instalaciones",
+    "fr": "Campus",
+    "ru": "Кампус",
+    "tr": "Yerleşke",
+    "zh": "校园"
+  },
+  "housing": {
+    "de": "Wohnen",
+    "en": "Housing",
+    "ar": "إسكان",
+    "es": "Vivienda",
+    "fr": "Logement",
+    "ru": "Жилье",
+    "tr": "Barınma",
+    "zh": "住房"
+  },
+  "settings": {
+    "de": "Einstellungen",
+    "en": "Settings",
+    "ar": "الإعدادات",
+    "es": "Configuraciones",
+    "fr": "Paramètres",
+    "ru": "Настройки",
+    "tr": "Ayarlar",
+    "zh": "设置"
+  },
+  "switch": {
+    "de": "Wechseln",
+    "en": "Switch",
+    "ar": "تبديل",
+    "es": "Cambiar",
+    "fr": "Changer",
+    "ru": "Переключить",
+    "tr": "Değiştir",
+    "zh": "切换"
+  },
+  "edit": {
+    "de": "Bearbeiten",
+    "en": "Edit",
+    "ar": "تحرير",
+    "es": "Editar",
+    "fr": "Éditer",
+    "ru": "Редактировать",
+    "tr": "Düzenle",
+    "zh": "编辑"
+  },
+  "save": {
+    "de": "Speichern",
+    "en": "Save",
+    "ar": "حفظ",
+    "es": "Guardar",
+    "fr": "Enregistrer",
+    "ru": "Сохранить",
+    "tr": "Kaydet",
+    "zh": "保存"
+  },
+  "clear": {
+    "de": "Löschen",
+    "en": "Clear",
+    "ar": "مسح",
+    "es": "Borrar",
+    "fr": "Effacer",
+    "ru": "Очистить",
+    "tr": "Temizle",
+    "zh": "清除"
+  },
+  "to_update": {
+    "de": "Aktualisieren",
+    "en": "To Update",
+    "ar": "لتحديث",
+    "es": "Actualizar",
+    "fr": "Mettre à jour",
+    "ru": "Обновить",
+    "tr": "Güncelle",
+    "zh": "更新"
+  },
+  "send": {
+    "de": "Senden",
+    "en": "Send",
+    "ar": "إرسال",
+    "es": "Enviar",
+    "fr": "Envoyer",
+    "ru": "Отправить",
+    "tr": "Gönder",
+    "zh": "发送"
+  },
+  "button_disabled": {
+    "de": "Schaltfläche deaktiviert",
+    "en": "Button Disabled",
+    "ar": "الزر معطل",
+    "es": "Botón desactivado",
+    "fr": "Bouton désactivé",
+    "ru": "Кнопка отключена",
+    "tr": "Düğme Devre Dışı",
+    "zh": "按钮已禁用"
+  },
+  "select": {
+    "de": "Auswählen",
+    "en": "Select",
+    "ar": "اختار",
+    "es": "Seleccionar",
+    "fr": "Sélectionner",
+    "ru": "Выбрать",
+    "tr": "Seç",
+    "zh": "选择"
+  },
+  "upload": {
+    "de": "Hochladen",
+    "en": "Upload",
+    "ar": "رفع",
+    "es": "Subir",
+    "fr": "Téléverser",
+    "ru": "Загрузить",
+    "tr": "Yükle",
+    "zh": "上传"
+  },
+  "upload_file": {
+    "de": "Datei hochladen",
+    "en": "Upload File",
+    "ar": "رفع ملف",
+    "es": "Subir archivo",
+    "fr": "Téléverser un fichier",
+    "ru": "Загрузить файл",
+    "tr": "Dosya Yükle",
+    "zh": "上传文件"
+  },
+  "upload_image": {
+    "de": "Bild hochladen",
+    "en": "Upload Image",
+    "ar": "رفع صورة",
+    "es": "Subir imagen",
+    "fr": "Téléverser une image",
+    "ru": "Загрузить изображение",
+    "tr": "Resim Yükle",
+    "zh": "上传图片"
+  },
+  "is_loading": {
+    "de": "Lädt",
+    "en": "Is Loading",
+    "ar": "جاري التحميل",
+    "es": "Cargando",
+    "fr": "Chargement",
+    "ru": "Загрузка",
+    "tr": "Yükleniyor",
+    "zh": "正在加载"
+  },
+  "camera": {
+    "de": "Kamera",
+    "en": "Camera",
+    "ar": "كاميرا",
+    "es": "Cámara",
+    "fr": "Caméra",
+    "ru": "Камера",
+    "tr": "Kamera",
+    "zh": "相机"
+  },
+  "gallery": {
+    "de": "Galerie",
+    "en": "Gallery",
+    "ar": "معرض الصور",
+    "es": "Galería",
+    "fr": "Galerie",
+    "ru": "Галерея",
+    "tr": "Galeri",
+    "zh": "画廊"
+  },
+  "image": {
+    "de": "Bild",
+    "en": "Image",
+    "ar": "صورة",
+    "es": "Imagen",
+    "fr": "Image",
+    "ru": "Изображение",
+    "tr": "Görüntü",
+    "zh": "图片"
+  },
+  "language": {
+    "de": "Sprache",
+    "en": "Language",
+    "ar": "لغة",
+    "es": "Idioma",
+    "fr": "Langue",
+    "ru": "Язык",
+    "tr": "Dil",
+    "zh": "语言"
+  },
+  "language_system": {
+    "de": "Systemsprache",
+    "en": "System Language",
+    "ar": "لغة النظام",
+    "es": "Idioma del sistema",
+    "fr": "Langue du système",
+    "ru": "Язык системы",
+    "tr": "Sistem Dili",
+    "zh": "系统语言"
+  },
+  "drawer_config_position": {
+    "de": "Menüposition",
+    "en": "Drawer Position",
+    "ar": "موقف القائمة",
+    "es": "Posición del cajón",
+    "fr": "Position du tiroir",
+    "ru": "Положение ящика",
+    "tr": "Çekmece Konumu",
+    "zh": "抽屉位置"
+  },
+  "drawer_config_position_left": {
+    "de": "Links",
+    "en": "Left",
+    "ar": "يسار",
+    "es": "Izquierda",
+    "fr": "Gauche",
+    "ru": "Слева",
+    "tr": "Sol",
+    "zh": "左"
+  },
+  "drawer_config_position_right": {
+    "de": "Rechts",
+    "en": "Right",
+    "ar": "حق",
+    "es": "Derecha",
+    "fr": "Droite",
+    "ru": "Справа",
+    "tr": "Sağ",
+    "zh": "右"
+  },
+  "drawer_config_position_system": {
+    "de": "System",
+    "en": "System",
+    "ar": "نظام",
+    "es": "Sistema",
+    "fr": "Système",
+    "ru": "Система",
+    "tr": "Sistem",
+    "zh": "系统"
+  },
+  "first_day_of_week": {
+    "de": "Erster Tag der Woche",
+    "en": "First Day of Week",
+    "ar": "أول يوم في الأسبوع",
+    "es": "Primer día de la semana",
+    "fr": "Premier jour de la semaine",
+    "ru": "Первый день недели",
+    "tr": "Haftanın İlk Günü",
+    "zh": "一周的第一天"
+  },
+  "first_day_of_week_system": {
+    "de": "System",
+    "en": "System",
+    "ar": "نظام",
+    "es": "Sistema",
+    "fr": "Système",
+    "ru": "Система",
+    "tr": "Sistem",
+    "zh": "系统"
+  },
+  "color_scheme": {
+    "de": "Farbschema",
+    "en": "Color Scheme",
+    "ar": "نظام الألوان",
+    "es": "Esquema de color",
+    "fr": "Schéma de couleurs",
+    "ru": "Цветовая схема",
+    "tr": "Renk Şeması",
+    "zh": "颜色方案"
+  },
+  "color_scheme_light": {
+    "de": "Hell",
+    "en": "Light",
+    "ar": "فاتح",
+    "es": "Claro",
+    "fr": "Clair",
+    "ru": "Светлый",
+    "tr": "Açık",
+    "zh": "浅色"
+  },
+  "color_scheme_dark": {
+    "de": "Dunkel",
+    "en": "Dark",
+    "ar": "داكن",
+    "es": "Oscuro",
+    "fr": "Sombre",
+    "ru": "Темный",
+    "tr": "Koyu",
+    "zh": "深色"
+  },
+  "color_scheme_system": {
+    "de": "System",
+    "en": "System",
+    "ar": "نظام",
+    "es": "Sistema",
+    "fr": "Système",
+    "ru": "Система",
+    "tr": "Sistem",
+    "zh": "系统"
+  },
+  "i_accept_privacy_policy_and_terms_of_service": {
+    "de": "Ich stimme den Allgemeinen Geschäftsbedingungen zu und erkläre, die Datenschutzerklärung zur Kenntnis genommen zu haben.",
+    "en": "I agree to the General Terms and Conditions and declare that I have taken note of the Privacy Policy.",
+    "ar": "أوافق على الشروط والأحكام العامة وأعلن أنني لاحظت سياسة الخصوصية.",
+    "es": "Acepto los Términos y Condiciones Generales y declaro que he tomado nota de la Política de Privacidad.",
+    "fr": "J ccepte les Conditions Générales et déclare avoir pris connaissance de la Politique de Confidentialité.",
+    "ru": "Я соглашаюсь с Общими условиями и заявляю, что ознакомился с Политикой конфиденциальности.",
+    "tr": "Genel Şartlar ve Koşulları kabul ediyorum ve Gizlilik Politikasını okuduğumu beyan ediyorum.",
+    "zh": "我同意一般条款和条件，并声明我已注意到隐私政策。"
+  },
+  "to_proceed_you_have_to_accept_privacy_policy_and_terms_of_service": {
+    "de": "Um fortzufahren, müssen Sie den Allgemeinen Geschäftsbedingungen zustimmen und erklären, die Datenschutzerklärung zur Kenntnis genommen zu haben.",
+    "en": "To proceed, you have to agree to the General Terms and Conditions and declare that you have taken note of the Privacy Policy.",
+    "ar": "للمتابعة، يجب عليك الموافقة على الشروط والأحكام العامة والإعلان بأنك لاحظت سياسة الخصوصية.",
+    "es": "Para continuar, debe aceptar los Términos y Condiciones Generales y declarar que ha tomado nota de la Política de Privacidad.",
+    "fr": "Pour continuer, vous devez accepter les Conditions Générales et déclarer avoir pris connaissance de la Politique de Confidentialité.",
+    "ru": "Для продолжения вы должны согласиться с Общими условиями и заявить, что вы ознакомились с Политикой конфиденциальности.",
+    "tr": "Devam etmek için Genel Şartlar ve Koşulları kabul etmeniz ve Gizlilik Politikasını okuduğunuzu beyan etmeniz gerekmektedir.",
+    "zh": "要继续，您必须同意一般条款和条件，并声明您已注意到隐私政策。"
+  },
+  "terms_and_conditions_accepted_and_privacy_policy_read_at_date": {
+    "de": "AGB akzeptiert und Datenschutzerklärung gelesen am",
+    "en": "Terms and Conditions accepted and Privacy Policy read at date",
+    "ar": "تم قبول الشروط والأحكام وقراءة سياسة الخصوصية في التاريخ",
+    "es": "Términos y Condiciones aceptados y Política de Privacidad leída en la fecha",
+    "fr": "Conditions Générales acceptées et Politique de Confidentialité lue à la date",
+    "ru": "Условия и положения приняты, а Политика конфиденциальности прочитана на дату",
+    "tr": "Şartlar ve Koşullar kabul edildi ve Gizlilik Politikası tarihte okundu",
+    "zh": "条款和条件已接受，隐私政策已于日期阅读"
+  },
+  "cookies": {
+    "de": "Cookies",
+    "en": "Cookies",
+    "ar": "ملفات تعريف الارتباط",
+    "es": "Cookies",
+    "fr": "Cookies",
+    "ru": "Cookies",
+    "tr": "Çerezler",
+    "zh": "Cookies"
+  },
+  "feedback": {
+    "de": "Feedback",
+    "en": "Feedback",
+    "ar": "ردود الفعل",
+    "es": "Retroalimentación",
+    "fr": "Retour d",
+    "ru": "Обратная связь",
+    "tr": "Geri bildirim",
+    "zh": "反馈"
+  },
+  "feedback_support_faq": {
+    "de": "Support & FAQ",
+    "en": "Support & FAQ",
+    "ar": "الدعم والأسئلة الشائعة",
+    "es": "Soporte y preguntas frecuentes",
+    "fr": "Support et FAQ",
+    "ru": "Поддержка и часто задаваемые вопросы",
+    "tr": "Destek ve SSS",
+    "zh": "支持和常见问题解答"
+  },
+  "optional": {
+    "de": "Optional",
+    "en": "Optional",
+    "ar": "اختياري",
+    "es": "Opcional",
+    "fr": "Optionnel",
+    "ru": "По желанию",
+    "tr": "İsteğe bağlı",
+    "zh": "可选"
+  },
+  "date_created": {
+    "de": "Erstellungsdatum",
+    "en": "Date Created",
+    "ar": "تاريخ الإنشاء",
+    "es": "Fecha de creación",
+    "fr": "Date de création",
+    "ru": "Дата создания",
+    "tr": "Oluşturulma Tarihi",
+    "zh": "创建日期"
+  },
+  "date_updated": {
+    "de": "Aktualisierungsdatum",
+    "en": "Date Updated",
+    "ar": "تاريخ التحديث",
+    "es": "Fecha de actualización",
+    "fr": "Date de mise à jour",
+    "ru": "Дата обновления",
+    "tr": "Güncelleme Tarihi",
+    "zh": "更新日期"
+  },
+  "general_terms_and_conditions": {
+    "en": "General Terms and Conditions",
+    "de": "Allgemeine Geschäftsbedingungen",
+    "ar": "الشروط والأحكام العامة",
+    "es": "Términos y condiciones generales",
+    "fr": "Termes et conditions générales",
+    "ru": "Общие условия",
+    "tr": "Genel Şartlar ve Koşullar",
+    "zh": "一般条款和条件"
+  },
+  "Mon_S": {
+    "de": "Mo",
+    "en": "Mon",
+    "ar": "اثن",
+    "es": "Lun",
+    "fr": "Lun",
+    "ru": "Пн",
+    "tr": "Pts",
+    "zh": "周一"
+  },
+  "Tue_S": {
+    "de": "Di",
+    "en": "Tue",
+    "ar": "ثل",
+    "es": "Mar",
+    "fr": "Mar",
+    "ru": "Вт",
+    "tr": "Sal",
+    "zh": "周二"
+  },
+  "Wed_S": {
+    "de": "Mi",
+    "en": "Wed",
+    "ar": "أر",
+    "es": "Mié",
+    "fr": "Mer",
+    "ru": "Ср",
+    "tr": "Çar",
+    "zh": "周三"
+  },
+  "Thu_S": {
+    "de": "Do",
+    "en": "Thu",
+    "ar": "خم",
+    "es": "Jue",
+    "fr": "Jeu",
+    "ru": "Чт",
+    "tr": "Per",
+    "zh": "周四"
+  },
+  "Fri_S": {
+    "de": "Fr",
+    "en": "Fri",
+    "ar": "جم",
+    "es": "Vie",
+    "fr": "Ven",
+    "ru": "Пт",
+    "tr": "Cum",
+    "zh": "周五"
+  },
+  "Sat_S": {
+    "de": "Sa",
+    "en": "Sat",
+    "ar": "سب",
+    "es": "Sáb",
+    "fr": "Sam",
+    "ru": "Сб",
+    "tr": "Cmt",
+    "zh": "周六"
+  },
+  "Sun_S": {
+    "de": "So",
+    "en": "Sun",
+    "ar": "أحد",
+    "es": "Dom",
+    "fr": "Dim",
+    "ru": "Вс",
+    "tr": "Paz",
+    "zh": "周日"
+  },
+  "Mon": {
+    "de": "Montag",
+    "en": "Monday",
+    "ar": "الإثنين",
+    "es": "Lunes",
+    "fr": "Lundi",
+    "ru": "Понедельник",
+    "tr": "Pazartesi",
+    "zh": "星期一"
+  },
+  "Tue": {
+    "de": "Dienstag",
+    "en": "Tuesday",
+    "ar": "الثلاثاء",
+    "es": "Martes",
+    "fr": "Mardi",
+    "ru": "Вторник",
+    "tr": "Salı",
+    "zh": "星期二"
+  },
+  "Wed": {
+    "de": "Mittwoch",
+    "en": "Wednesday",
+    "ar": "الأربعاء",
+    "es": "Miércoles",
+    "fr": "Mercredi",
+    "ru": "Среда",
+    "tr": "Çarşamba",
+    "zh": "星期三"
+  },
+  "Thu": {
+    "de": "Donnerstag",
+    "en": "Thursday",
+    "ar": "الخميس",
+    "es": "Jueves",
+    "fr": "Jeudi",
+    "ru": "Четверг",
+    "tr": "Perşembe",
+    "zh": "星期四"
+  },
+  "Fri": {
+    "de": "Freitag",
+    "en": "Friday",
+    "ar": "الجمعة",
+    "es": "Viernes",
+    "fr": "Vendredi",
+    "ru": "Пятница",
+    "tr": "Cuma",
+    "zh": "星期五"
+  },
+  "Sat": {
+    "de": "Samstag",
+    "en": "Saturday",
+    "ar": "السبت",
+    "es": "Sábado",
+    "fr": "Samedi",
+    "ru": "Суббота",
+    "tr": "Cumartesi",
+    "zh": "星期六"
+  },
+  "Sun": {
+    "de": "Sonntag",
+    "en": "Sunday",
+    "ar": "الأحد",
+    "es": "Domingo",
+    "fr": "Dimanche",
+    "ru": "Воскресенье",
+    "tr": "Pazar",
+    "zh": "星期日"
+  },
+  "RATE_US": {
+    "de": "Bewerten Sie uns",
+    "en": "Rate Us",
+    "ar": "قيّمنا",
+    "es": "Califícanos",
+    "fr": "Évaluez-nous",
+    "ru": "Оцените нас",
+    "tr": "Bizi değerlendirin",
+    "zh": "评价"
+  },
+  "GET_NOTIFICATION_ON_AVAILABILITY": {
+    "de": "Benachrichtigung bei Verfügbarkeit erhalten",
+    "en": "Get Notification on Availability",
+    "ar": "احصل على إشعار عند التوفر",
+    "es": "Recibir notificación cuando esté disponible",
+    "fr": "Recevez une notification de disponibilité",
+    "ru": "Получить уведомление о доступности",
+    "tr": "Mevcut olduğunda bildirim alın",
+    "zh": "获取可用性通知"
+  },
+  "FOOD_LABELING_INFO": {
+    "de": "Die Lebensmittelkennzeichnungsdaten basieren auf verfügbaren Informationen und können variieren. Wir bemühen uns um einen korrekten Filter in der App, aber technische Probleme können nicht ausgeschlossen werden. Die Auszeichnungen vor Ort gelten. Weitere Informationen zu den Daten finden Sie hier:",
+    "en": "The food labeling data is based on available information and may vary. We strive for a correct filter in the app, but technical problems cannot be ruled out. The awards on site apply. Further information on the data can be found here:",
+    "ar": "تستند بيانات وضع العلامات الغذائية إلى المعلومات المتاحة وقد تختلف. نحن نسعى للحصول على فلتر صحيح في التطبيق، لكن لا يمكن استبعاد المشاكل التقنية. الجوائز في الموقع تنطبق. يمكن العثور على مزيد من المعلومات حول البيانات هنا:",
+    "es": "Los datos de etiquetado de alimentos se basan en información disponible y pueden variar. Nos esforzamos por un filtro correcto en la aplicación, pero no se pueden descartar problemas técnicos. Los premios en el sitio se aplican. Más información sobre los datos se puede encontrar aquí:",
+    "fr": "Les données d'étiquetage des aliments sont basées sur des informations disponibles et peuvent varier. Nous nous efforçons d'avoir un filtre correct dans l'application, mais les problèmes techniques ne peuvent pas être exclus. Les récompenses sur place s'appliquent. Vous pouvez trouver plus d'informations sur les données ici :",
+    "ru": "Данные о маркировке продуктов основаны на доступной информации и могут отличаться. Мы стремимся к правильной фильтрации в приложении, но технические проблемы не исключены. Действуют награды на месте. Дополнительную информацию о данных можно найти здесь:",
+    "tr": "Gıda etiketleme verileri mevcut bilgilere dayanır ve değişebilir. Uygulamada doğru bir filtre için çabalıyoruz, ancak teknik sorunlar göz ardı edilemez. Yerinde verilen ödüller geçerlidir. Verilerle ilgili daha fazla bilgiye buradan ulaşabilirsiniz:",
+    "zh": "食品标签数据基于可用信息，可能会有所不同。我们努力在应用中提供正确的过滤器，但无法排除技术问题。现场的奖项适用。有关数据的更多信息，请参见此处："
+  },
+  "ENVIRONMENTAL_IMPACT": {
+    "de": "Umweltauswirkung",
+    "en": "Environmental Impact",
+    "ar": "الأثر البيئي",
+    "es": "Impacto ambiental",
+    "fr": "Impact environnemental",
+    "ru": "Экологическое воздействие",
+    "tr": "Çevresel Etki",
+    "zh": "环境影响"
+  },
+  "EMISSIONS": {
+    "de": "Emissionen",
+    "en": "Emissions",
+    "ar": "الانبعاثات",
+    "es": "Emisiones",
+    "fr": "Émissions",
+    "ru": "Выбросы",
+    "tr": "Emisyonlar",
+    "zh": "排放"
+  },
+  "select_a_form_category": {
+    "de": "Wählen Sie eine Formkategorie",
+    "en": "Select a Form Category",
+    "ar": "اختر فئة نموذج",
+    "es": "Seleccione una categoría de formulario",
+    "fr": "Sélectionnez une catégorie de formulaire",
+    "ru": "Выберите категорию формы",
+    "tr": "Bir Form Kategorisi Seçin",
+    "zh": "选择一个表单类别"
+  },
+  "select_a_form": {
+    "de": "Wählen Sie ein Formular",
+    "en": "Select a Form",
+    "ar": "اختر نموذجًا",
+    "es": "Seleccione un formulario",
+    "fr": "Sélectionnez un formulaire",
+    "ru": "Выберите форму",
+    "tr": "Bir Form Seçin",
+    "zh": "选择一个表单"
+  },
+  "select_a_form_submission": {
+    "de": "Wählen Sie eine Formulareinreichung",
+    "en": "Select a Form Submission",
+    "ar": "اختر إرسال نموذج",
+    "es": "Seleccione un envío de formulario",
+    "fr": "Sélectionnez une soumission de formulaire",
+    "ru": "Выберите отправку формы",
+    "tr": "Bir Form Gönderimi Seçin",
+    "zh": "选择一个表单提交"
+  }
+}
