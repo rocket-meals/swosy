@@ -170,7 +170,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
     const getElement = (id: string) => {
       const element = appElements?.find((el: any) => el.id === id);
-      if (!element.translations) return null;
+      if (!element || !element.translations) return null;
       const { content, popup_button_text, popup_content } =
         getAppElementTranslation(element.translations, languageCode);
 
@@ -1120,7 +1120,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             {/* <View style={styles.elementContainer}>
               {afterElement && getContent(afterElement?.content)}
             </View> */}
-            {!feedbackLabelsLoading && (
+            {!feedbackLabelsLoading && canteenFeedbackLabels?.length>0 && (
               <View style={styles.feebackContainer}>
                 <View>
                   <Text
