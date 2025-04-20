@@ -236,14 +236,14 @@ export default ({config}: {config?: any}) => {
                         "android": {
                             "compileSdkVersion": 34,
                             "targetSdkVersion": 34,
-                            "buildToolsVersion": "34.0.0"
+                            "buildToolsVersion": "34.0.0",
+                            "kotlinVersion": "1.9.25" // https://github.com/expo/expo/issues/32844
                         },
                         "ios": {
                             "deploymentTarget": "15.1"
                         }
                     }
                 ],
-                "expo-build-properties",
                 "expo-localization",
                 "expo-asset",
                 "expo-font"
