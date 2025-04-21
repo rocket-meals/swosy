@@ -20,6 +20,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 import { UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
 import { format } from 'date-fns';
+import {myContrastColor} from "@/helper/colorHelper";
 
 const LoginForm: React.FC<FormProps> = ({
   setIsVisible,
@@ -34,6 +35,12 @@ const LoginForm: React.FC<FormProps> = ({
   const { isWeb } = usePlatformHelper();
   const { t } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
+  const mode = useSelector((state: any) => state.settings.theme);
+  const contrastColor = myContrastColor(
+      primaryColor || theme.login.linkButton,
+      theme,
+      mode === 'dark'
+  );
 
   const getToken = async (codeVerifier: string, code: string) => {
     try {
@@ -146,7 +153,7 @@ const LoginForm: React.FC<FormProps> = ({
                   <MaterialCommunityIcons
                     name={provider?.icon}
                     size={22}
-                    color={theme.screen.icon}
+                    color={contrastColor}
                   />
                 </View>
                 <Text
@@ -174,7 +181,7 @@ const LoginForm: React.FC<FormProps> = ({
             <MaterialCommunityIcons
               name='incognito'
               size={28}
-              color={theme.login.icon}
+              color={contrastColor}
             />
           </View>
           <Text style={{ ...styles.buttonLabel, color: theme.login.text }}>
