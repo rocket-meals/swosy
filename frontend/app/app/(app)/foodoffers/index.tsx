@@ -144,8 +144,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const { profile } = useSelector((state: any) => state.authReducer);
   const { appElements } = useSelector((state: any) => state.appElements);
   // console.log('appElements', appElements);
-  // console.log('beforeElement', beforeElement);
-  // console.log('afterElement', afterElement);
+  //console.log('beforeElement', beforeElement);
+  //console.log('afterElement', afterElement);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
     useSelector((state: any) => state.canteenReducer);
   const foods_area_color = appSettings?.foods_area_color
@@ -1083,9 +1083,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
           >
-            {/* <View style={styles.elementContainer}>
+            <View style={styles.elementContainer}>
               {beforeElement && getContent(beforeElement?.content)}
-            </View> */}
+            </View>
             <View
               style={{
                 ...styles.foodContainer,
@@ -1117,9 +1117,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 ))
               )}
             </View>
-            {/* <View style={styles.elementContainer}>
+            <View style={styles.elementContainer}>
               {afterElement && getContent(afterElement?.content)}
-            </View> */}
+            </View>
             {!feedbackLabelsLoading && canteenFeedbackLabels?.length>0 && (
               <View style={styles.feebackContainer}>
                 <View>
