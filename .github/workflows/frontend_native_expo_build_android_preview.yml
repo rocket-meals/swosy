@@ -33,7 +33,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📦 Install dependencies with Yarn
-        run: cd ./frontend/app && yarn install
+        run: cd ./frontend/app && yarn install --frozen-lockfile
 
       - name: 🚀 Build Android app - previewApk
         run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
