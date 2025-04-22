@@ -49,6 +49,10 @@ export class ProfileHelper extends CollectionHelper<any> {
 
   async updateProfile(profileData: any) {
     // Update profile data
+    // remove "foods_feedbacks" so that it doesn't get updated/overwritten
+    delete profileData.foods_feedbacks;
+
+
     await this.updateItem(profileData?.id, profileData);
 
     // Fetch the updated profile with the required fields
