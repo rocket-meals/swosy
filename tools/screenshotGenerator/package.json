@@ -7,7 +7,7 @@
     "build": "tsc",
     "test": "jest",
     "start": "node dist/index.js",
-    "debug": "npm run build && npm run start -- --repositoryOwner rocket-meals --repositoryName rocket-meals --screenshotDir ./screenshots"
+    "debug": "yarn run build && yarn run start -- --repositoryOwner rocket-meals --repositoryName rocket-meals --screenshotDir ./screenshots"
   },
   "author": "",
   "license": "ISC",
