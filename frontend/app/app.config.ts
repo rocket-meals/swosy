@@ -14,7 +14,7 @@ function getVersion() {
 }
 
 function getBuildNumber() {
-    return 122;
+    return 123;
 }
 
 function getIosBuildNumber() { // "ios.buildNumber" must be a string
