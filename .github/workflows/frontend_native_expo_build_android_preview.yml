@@ -1,4 +1,4 @@
-name: Expo Build Android Preview
+name: Expo Build - Android - Preview
 on:
   workflow_dispatch: # Allow manual triggering
 
