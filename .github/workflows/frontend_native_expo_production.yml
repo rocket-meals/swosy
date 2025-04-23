@@ -1,0 +1,42 @@
+name: Expo Update Production
+on:
+  push:
+    branches:
+      - 'master'
+      - 'master_*' # Match branches like 'master_1', 'master_2', etc. for specific legacy releases
+    paths:
+      - 'frontend/app/**'
+      - ".github/workflows/frontend_native_expo_production.yml"
+
+jobs:
+  update:
+    name: EAS Update Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: 🏗 Setup repository
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.19.1'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies with Yarn
+        run: cd ./frontend/app && yarn install --frozen-lockfile
+
+      - name: 🚀 Publish update to channel 'production'
+        run: cd ./frontend/app && eas update --auto --platform all --non-interactive --channel production
