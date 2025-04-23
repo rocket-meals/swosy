@@ -35,15 +35,10 @@ jobs:
       - name: 📦 Install dependencies with Yarn
         run: cd ./frontend/app && yarn install --frozen-lockfile
 
-      - name: 🚀 Build app - all platforms
-        run: cd ./frontend/app && eas build --platform all --non-interactive
+      - name: 🚀 Build app - iOS
+        run: cd ./frontend/app && eas build --platform ios --non-interactive
 
       - name: 📤 Submit iOS build
         run: cd ./frontend/app && eas submit --platform ios --non-interactive --latest
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      - name: 📤 Submit Android build
-        run: cd ./frontend/app && eas submit --platform android --non-interactive --latest
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
