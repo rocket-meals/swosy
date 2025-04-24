@@ -27,7 +27,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
         this.apiContext = myDatabaseHelper.apiContext;
         this.tablename = tablename;
         this.eventContext = myDatabaseHelper.eventContext;
-        this.knex = myDatabaseHelper.apiContext.database;
+        this.knex = myDatabaseHelper.apiContext.database as unknown as Knex;
     }
 
     protected async getItemsService(): Promise<ItemsService<T>> {

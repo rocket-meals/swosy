@@ -16,6 +16,7 @@ export type Apartments = {
 };
 
 export type AppElements = {
+  color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
   id: string;
@@ -77,6 +78,7 @@ export type AppSettings = {
   balance_settings: string;
   balance_translations: any[] | AppSettingsBalanceTranslations[];
   campus_area_color?: string | null;
+  campus_before_element?: string | AppElements | null;
   campus_enabled?: boolean | null;
   campus_settings: string;
   company_image?: string | DirectusFiles | null;
@@ -104,6 +106,7 @@ export type AppSettings = {
   foods_ratings_type?: string | null;
   foods_settings: string;
   housing_area_color?: string | null;
+  housing_before_element?: string | AppElements | null;
   housing_enabled?: boolean | null;
   housing_settings: string;
   housing_translations: any[] | AppSettingsHousingTranslations[];
@@ -116,6 +119,7 @@ export type AppSettings = {
   map_enabled?: boolean | null;
   map_settings: string;
   news_area_color?: string | null;
+  news_before_element?: string | AppElements | null;
   news_enabled?: boolean | null;
   news_settings: string;
   notifications_android_enabled?: boolean | null;
@@ -449,6 +453,8 @@ export type CollectibleEvents = {
   date_updated?: string | null;
   id: string;
   monitor_background_image?: string | DirectusFiles | null;
+  monitor_display_number_of_collected_items?: boolean | null;
+  monitor_display_number_of_participants?: boolean | null;
   monitor_settings: string;
   participants: any[] | CollectibleEventParticipants[];
   points_maximum?: string | null;
@@ -1613,6 +1619,7 @@ export type PushNotifications = {
   expo_access_token?: string | null;
   expo_push_tokens?: unknown | null;
   id: string;
+  image_url?: string | null;
   ios: string;
   ios_badge_count?: number | null;
   ios_message_subtitle?: string | null;
@@ -1622,6 +1629,7 @@ export type PushNotifications = {
   message_data?: unknown | null;
   message_title?: string | null;
   message_ttl?: number | null;
+  richContent?: string | null;
   sort?: number | null;
   status?: string | null;
   status_log?: string | null;

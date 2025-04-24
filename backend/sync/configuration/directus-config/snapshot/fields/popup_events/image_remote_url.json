@@ -1,7 +1,7 @@
 {
   "collection": "popup_events",
   "field": "image_remote_url",
-  "type": "string",
+  "type": "text",
   "meta": {
     "collection": "popup_events",
     "conditions": null,
@@ -11,18 +11,13 @@
     "group": null,
     "hidden": false,
     "interface": "input",
-    "note": "Alternativ angezeigt, falls kein Bild verwendet hochgeladen wurde",
+    "note": null,
     "options": null,
     "readonly": false,
     "required": false,
     "sort": 10,
     "special": null,
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Bild URL"
-      }
-    ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
     "width": "half"
@@ -30,9 +25,9 @@
   "schema": {
     "name": "image_remote_url",
     "table": "popup_events",
-    "data_type": "character varying",
+    "data_type": "text",
     "default_value": null,
-    "max_length": 255,
+    "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
