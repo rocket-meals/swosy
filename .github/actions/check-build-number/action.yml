@@ -4,29 +4,22 @@ description: Vergleicht, ob sich die Buildnummer in app.config.ts geändert hat
 inputs:
   working-directory:
     required: false
+    description: 'Das Verzeichnis, in dem sich die app.config.ts befindet'
     default: frontend/app
-
-outputs:
-  changed:
-    description: 'true, wenn die Buildnummer sich geändert hat'
 
 runs:
   using: "composite"
   steps:
     - name: 🔄 Checkout repository
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 2
 
     - name: 🔍 Vergleiche Buildnummer
       id: check
       run: |
         old=$(git show HEAD^:${{ inputs.working-directory }}/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         new=$(cat ${{ inputs.working-directory }}/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
-
         echo "📦 Old build number: $old"
         echo "📦 New build number: $new"
-
         if [ "$old" != "$new" ]; then
           echo "✅ Build number changed"
           echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -35,3 +28,8 @@ runs:
           echo "changed=false" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
+
+outputs:
+  changed:
+    description: 'true, wenn die Buildnummer sich geändert hat'
+    value: ${{ steps.check.outputs.changed }}
