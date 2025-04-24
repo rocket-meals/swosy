@@ -12,9 +12,14 @@ jobs:
     name: 🍏 iOS Build & Submit
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup-and-install
+      - name: 🔄 Checkout
+        uses: actions/checkout@v3
 
-      - run: |
+      - name: 🧩 Setup
+        uses: ./.github/actions/setup-and-install
+
+      - name: 🍏 Build & Submit
+        run: |
           eas build --platform ios --non-interactive
           eas submit --platform ios --non-interactive --latest
         working-directory: ./frontend/app

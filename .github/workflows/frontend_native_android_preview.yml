@@ -12,8 +12,8 @@ jobs:
     name: 🧪 Android Preview Build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-and-install
-
       - run: eas build --platform android --non-interactive --profile previewApk
         working-directory: ./frontend/app
         env:

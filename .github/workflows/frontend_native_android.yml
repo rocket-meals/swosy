@@ -12,8 +12,8 @@ jobs:
     name: 🤖 Android Build & Submit
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-and-install
-
       - run: |
           eas build --platform android --non-interactive
           eas submit --platform android --non-interactive --latest
