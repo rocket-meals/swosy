@@ -1,0 +1,22 @@
+name: Build & Submit iOS
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/app/**'
+      - '.github/workflows/frontend_native_ios.yml'
+
+jobs:
+  build-ios:
+    name: 🍏 iOS Build & Submit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup-and-install
+
+      - run: |
+          eas build --platform ios --non-interactive
+          eas submit --platform ios --non-interactive --latest
+        working-directory: ./frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

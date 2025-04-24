@@ -1,0 +1,22 @@
+name: Build & Submit Android
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/app/**'
+      - '.github/workflows/frontend_native_android.yml'
+
+jobs:
+  build-android:
+    name: 🤖 Android Build & Submit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup-and-install
+
+      - run: |
+          eas build --platform android --non-interactive
+          eas submit --platform android --non-interactive --latest
+        working-directory: ./frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

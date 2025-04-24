@@ -1,0 +1,20 @@
+name: Android Preview Build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/app/**'
+      - '.github/workflows/frontend_native_android_preview.yml'
+
+jobs:
+  preview-android:
+    name: 🧪 Android Preview Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup-and-install
+
+      - run: eas build --platform android --non-interactive --profile previewApk
+        working-directory: ./frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

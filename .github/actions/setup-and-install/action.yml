@@ -1,0 +1,17 @@
+name: Setup and Install
+description: Gemeinsamer Setup-Schritt für Frontend-Projekte
+runs:
+  using: "composite"
+  steps:
+    - name: 🧾 Checkout repository
+      uses: actions/checkout@v3
+
+    - name: ⚙️ Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.19.1'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: 📦 Install dependencies
+      run: yarn install --frozen-lockfile
+      working-directory: ./frontend/app
