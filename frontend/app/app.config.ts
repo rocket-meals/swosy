@@ -26,7 +26,7 @@ export function getCustomerConfig(): CustomerConfig {
 }
 
 const devConfig: CustomerConfig = {
-    projectName: "Rocket Meals Demo",
+    projectName: "Rocket Meals",
     projectSlug: "rocket-meals-dev",
     easUpdateId: "36f72583-5997-4602-8609-05f39444f2e7",
     easProjectId: "36f72583-5997-4602-8609-05f39444f2e7",

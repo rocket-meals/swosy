@@ -34,11 +34,9 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: tools/screenshotGenerator
 
-      - name: 📦 Debug Environment Variables
-        run: |
-          echo "REPOSITORY_OWNER=${{ github.repository_owner }}"
-          echo "REPOSITORY_NAME=${{ github.event.repository.name }}"
-          echo "SCREENSHOT_DIR=${{ github.workspace }}/screenshots"
+      - name: 🛠 Compile TypeScript
+        run: yarn build
+        working-directory: tools/screenshotGenerator
 
       - name: 🚀 Generate Screenshots
         run: yarn start
