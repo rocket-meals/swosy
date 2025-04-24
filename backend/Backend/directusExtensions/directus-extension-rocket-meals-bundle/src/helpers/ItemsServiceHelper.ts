@@ -266,6 +266,10 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
         return json;
     }
 
+    static isStatusUndefined(json: any) {
+        return json[ItemsServiceHelper.FIELD_STATUS] === undefined || json[ItemsServiceHelper.FIELD_STATUS] === null;
+    }
+
     static isStatusPublished(json: any) {
         return json[ItemsServiceHelper.FIELD_STATUS] === ItemsServiceHelper.FIELD_STATUS_PUBLISHED;
     }

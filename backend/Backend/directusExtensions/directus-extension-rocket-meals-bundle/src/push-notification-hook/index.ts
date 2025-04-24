@@ -22,10 +22,13 @@ export default defineHook(async ({filter}, apiContext) => {
 	filter(collectionName+'.items.create', async (input: any, {collection}) => {
 		//console.log("items.create")
 		//console.log("input")
-		//console.log(input)
-		if (input.status === 'published') {
+		//console.log(input)#
+
+		if(ItemsServiceHelper.isStatusUndefined(input)) {
+			input = ItemsServiceHelper.setStatusPublished(input);
+		}
+		if (ItemsServiceHelper.isStatusPublished(input)) {
 			await sendNotification(input, input);
-			input.status = 'published';
 		}
 		return input;
 	});
@@ -124,7 +127,8 @@ export default defineHook(async ({filter}, apiContext) => {
 		console.log(messages)
 
 		try {
-			await axios.post('https://exp.host/--/api/v2/push/send', messages);
+			let answer = await axios.post('https://exp.host/--/api/v2/push/send', messages);
+			input.status = 'success';
 		} catch (e: any) {
 			console.log(`Failed to send notification: ${e.message}`)
 			input.status = 'failed';
