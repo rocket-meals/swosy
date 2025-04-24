@@ -33,6 +33,8 @@ jobs:
 
       - name: 🧰 Setup Node.js, Yarn & Dependencies
         uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🧪 Build with previewApk profile
         run: eas build --platform android --non-interactive --profile previewApk
