@@ -21,14 +21,14 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.19.1'
+          node-version: '20.9.0'
           registry-url: 'https://registry.npmjs.org'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: 🚀 Build the extension
-        run: npm run build
+        run: yarn run build
 
       - name: 🔍 Check if api.js has changed
         id: check_changes

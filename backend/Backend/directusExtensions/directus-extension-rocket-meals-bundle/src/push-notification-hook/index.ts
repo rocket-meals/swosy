@@ -1,7 +1,7 @@
 import { defineHook } from '@directus/extensions-sdk';
 import axios from "axios";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {PushNotifications} from "../databaseTypes/types";
+import {CanteenFoodFeedbackReportSchedules, PushNotifications} from "../databaseTypes/types";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
@@ -19,18 +19,21 @@ export default defineHook(async ({filter}, apiContext) => {
 	const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
 	// Trigger before the item is created or updated
-	filter(collectionName+'.items.create', async (input: any, {collection}) => {
+	filter<Partial<PushNotifications>>(collectionName+'.items.create', async (input: any, {collection}) => {
 		//console.log("items.create")
 		//console.log("input")
-		//console.log(input)
-		if (input.status === 'published') {
+		//console.log(input)#
+
+		if(ItemsServiceHelper.isStatusUndefined(input)) {
+			input = ItemsServiceHelper.setStatusPublished(input);
+		}
+		if (ItemsServiceHelper.isStatusPublished(input)) {
 			await sendNotification(input, input);
-			input.status = 'published';
 		}
 		return input;
 	});
 
-	filter(collectionName+'.items.update', async (input: any, {keys, collection}) => {
+	filter<Partial<PushNotifications>>(collectionName+'.items.update', async (input: Partial<PushNotifications>, {keys, collection}) => {
 		let itemService = myDatabaseHelper.getPushNotificationsHelper();
 
 		// Fetch the current item from the database
@@ -54,7 +57,9 @@ export default defineHook(async ({filter}, apiContext) => {
 			// Selectively merge the current item with the updated fields
 			if(!!currentItem){
 				for (const key in input) {
+					// @ts-ignore - we want to copy the value from input to currentItem
 					if (input[key] !== undefined) {
+						// @ts-ignore - we want to copy the value from input to currentItem
 						currentItem[key] = input[key];
 					}
 				}
@@ -112,19 +117,41 @@ export default defineHook(async ({filter}, apiContext) => {
 
 		// Every token should be: "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]" (with the ExponentPushToken prefix and square brackets)
 
+		// https://github.com/expo/expo/discussions/27980
+		let richContent: any | undefined = undefined // https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
+
+		let payload_image_url = payload.image_url;
+		if(payload_image_url) { // check if image_url is set
+			// check if image_url is a string and a url
+			if (typeof payload_image_url === 'string' && payload_image_url.startsWith('http')) {
+				richContent = {
+					"image": payload_image_url
+				}
+			}
+		}
+		if(payload.richContent) { // check if richContent is set
+			if (typeof payload.richContent === 'string') {
+				richContent = JSON.parse(payload.richContent);
+			} else if (typeof payload.richContent === 'object') {
+				richContent = payload.richContent;
+			}
+		}
+
 		const messages = expoPushTokens.map(token => ({
 			to: token,
 			sound: 'default',
 			title: title, // Replace with the actual field name
 			body: body, // Replace with the actual field name
 			data: data, // Replace with the actual field name
+			richContent: richContent, // https://github.com/expo/expo/discussions/27980#discussioncomment-12934879
 		}));
 
 		console.log("Messages:")
 		console.log(messages)
 
 		try {
-			await axios.post('https://exp.host/--/api/v2/push/send', messages);
+			let answer = await axios.post('https://exp.host/--/api/v2/push/send', messages);
+			input.status = 'success';
 		} catch (e: any) {
 			console.log(`Failed to send notification: ${e.message}`)
 			input.status = 'failed';

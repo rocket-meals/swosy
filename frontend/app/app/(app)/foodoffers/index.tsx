@@ -26,7 +26,7 @@ import {
 } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
-import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import {useFocusEffect, useGlobalSearchParams, useNavigation, useRouter} from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
@@ -114,6 +114,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const { kioskMode } = useGlobalSearchParams();
   const [refreshing, setRefreshing] = useState(false);
   const [beforeElement, setBeforeElement] = useState<any>(null);
   const [afterElement, setAfterElement] = useState<any>(null);
@@ -190,11 +191,15 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      setIsActive(true);
+      let shouldBeActive = true;
+      if (kioskMode) {
+          shouldBeActive = false;
+      }
+      setIsActive(shouldBeActive);
       return () => {
         setIsActive(false);
       };
-    }, [])
+    }, [kioskMode])
   );
 
   useEffect(() => {

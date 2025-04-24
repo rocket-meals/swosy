@@ -58,26 +58,28 @@ const screenshotDirWithSlash = screenshotDir.endsWith('/') ? screenshotDir : scr
 console.log(`Generating screenshots for ${repositoryOwner}/${repositoryName}`);
 
 const screens = [
-    'housing',
+    "login",
     'foodoffers',
-    'map',
-    'accountbalance',
-    'campus',
-    'news',
-    'course-timetable',
-    'settings',
-    'settings/eatinghabits',
-    'settings/price-group',
-    'data-access',
-    'login',
-    "foodoffers/monitor/markings?fullscreen=true&kiosk_mode=true",
-
+    "eating-habits",
+    "account-balance",
+    "campus",
+    'housing',
+    "news",
+    "course-timetable",
+    "settings",
+    "price-group",
+    "data-access",
+    "support-FAQ",
+    "licenseInformation",
+    "management",
+    "statistics",
+    "labels",
 ]; // Add your screens here
 
 const baseUrl = 'https://' + repositoryOwner + '.github.io/' + repositoryName + '/';
 
 const urls = screens.map(screen =>
-    baseUrl + screen + '?kiosk_mode=true&deviceMock=iphone'
+    baseUrl + screen + '?kioskMode=true&deviceMock=iphone'
 );
 
 type Device = {

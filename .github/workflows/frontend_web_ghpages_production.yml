@@ -1,32 +1,27 @@
-name: GH-Pages Publish
+name: 🌐 GH-Pages Deploy
+
 on:
   push:
-    branches:
-      - master
+    branches: [master]
     paths:
       - 'frontend/app/**'
-      - ".github/workflows/frontend_web_ghpages_production.yml"
+      - '.github/workflows/**'
 
 jobs:
-  gh-pages:
-    defaults:
-      run:
-        working-directory: ./frontend/app
+  deploy-gh-pages:
+    name: 🌍 Deploy to GitHub Pages
     runs-on: ubuntu-latest
+
     steps:
-      - name: 🏗 Setup repository
+      - name: 🔄 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v3
+      - name: 🧰 Setup Node.js, Yarn & Dependencies
+        uses: ./.github/actions/setup-and-install
         with:
-          node-version: '18.19.1'
-          registry-url: 'https://registry.npmjs.org'
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies with Yarn
-        run: yarn install --frozen-lockfile
-
-      - name: 📛 Git user config
+      - name: 👤 Git User Configuration
         run: |
           git config --global user.name 'Rocket Meals'
           git config --global user.email 'nils@baumgartner-software.de'
@@ -35,5 +30,6 @@ jobs:
         run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           CI=false yarn deploy:gh:pages
+        working-directory: ./frontend/app
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

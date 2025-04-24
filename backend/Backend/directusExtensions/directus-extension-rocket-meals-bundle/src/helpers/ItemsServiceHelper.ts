@@ -27,7 +27,7 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
         this.apiContext = myDatabaseHelper.apiContext;
         this.tablename = tablename;
         this.eventContext = myDatabaseHelper.eventContext;
-        this.knex = myDatabaseHelper.apiContext.database;
+        this.knex = myDatabaseHelper.apiContext.database as unknown as Knex;
     }
 
     protected async getItemsService(): Promise<ItemsService<T>> {
@@ -264,6 +264,10 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     static setStatusPublished(json: any) {
         json[ItemsServiceHelper.FIELD_STATUS] = ItemsServiceHelper.FIELD_STATUS_PUBLISHED;
         return json;
+    }
+
+    static isStatusUndefined(json: any) {
+        return json[ItemsServiceHelper.FIELD_STATUS] === undefined || json[ItemsServiceHelper.FIELD_STATUS] === null;
     }
 
     static isStatusPublished(json: any) {
