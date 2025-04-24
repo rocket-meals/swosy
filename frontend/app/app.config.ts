@@ -26,7 +26,7 @@ export function getCustomerConfig(): CustomerConfig {
 }
 
 const devConfig: CustomerConfig = {
-    projectName: "Rocket Meals Demo",
+    projectName: "Rocket Meals",
     projectSlug: "rocket-meals-dev",
     easUpdateId: "36f72583-5997-4602-8609-05f39444f2e7",
     easProjectId: "36f72583-5997-4602-8609-05f39444f2e7",
@@ -36,7 +36,7 @@ const devConfig: CustomerConfig = {
     baseUrl: "/rocket-meals"
 }
 const swosyConfig: CustomerConfig = {
-    projectName: "SWOSY 2.0",
+    projectName: "SWOSY",
     projectSlug: "rocket-meals-swosy",
     easUpdateId: "4147159f-d7b5-4db5-b6eb-f9988519950c",
     easProjectId: "4147159f-d7b5-4db5-b6eb-f9988519950c",
