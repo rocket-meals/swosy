@@ -212,7 +212,7 @@ services:
       PGPASSWORD: "directus"
       PGDB: "directus"
       PGHOST: "rocket-meals-database"
-      BACKUP_FILE: "dump-20240821_113701.sql.gz"  # Set this dynamically as needed
+      BACKUP_FILE: ${BACKUP_FILE}
     networks:
       - directus_network
     depends_on:

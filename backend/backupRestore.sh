@@ -56,6 +56,7 @@ select_backup() {
     select choice in "${options[@]}"; do
         if [ -n "$choice" ]; then
             BACKUP_FILE="${backups[$REPLY-1]}"
+            BACKUP_FILE_NAME=$(basename "$BACKUP_FILE")
             echo "Selected backup file: $BACKUP_FILE"
             break
         else
@@ -71,6 +72,7 @@ if [ "$1" == "--restore-backup-file" ]; then
         exit 1
     fi
     BACKUP_FILE="$2"
+    BACKUP_FILE_NAME=$(basename "$BACKUP_FILE")
     echo "Selected backup file: $BACKUP_FILE"
 else
     echo "No backup file provided. Listing available backups..."
@@ -83,7 +85,7 @@ docker-compose build rocket-meals-database-restore
 
 # Start the restore process using docker-compose with the specified profile
 echo "Starting the restore process..."
-BACKUP_FILE=$(realpath "$BACKUP_FILE") docker-compose --profile restore up rocket-meals-database-restore
+BACKUP_FILE="$BACKUP_FILE_NAME" docker-compose --profile restore up rocket-meals-database-restore
 
 # Optional: Stop the restore service after completion
 echo "Stopping the restore service..."
