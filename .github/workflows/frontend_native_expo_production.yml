@@ -22,16 +22,21 @@ jobs:
       - name: 🔍 Check if build number changed
         id: check
         run: |
-          set -e
-          git diff HEAD^ HEAD frontend/app/app.config.ts > diff.txt
-          echo "Checking for build number changes..."
-          if grep -E '^\+.*getBuildNumber' diff.txt; then
-            echo "Build number changed"
+          old=$(git show HEAD^:frontend/app/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+          new=$(cat frontend/app/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+
+          echo "📦 Old build number: $old"
+          echo "📦 New build number: $new"
+
+          if [ "$old" != "$new" ]; then
+            echo "✅ Build number changed"
             echo "changed=true" >> $GITHUB_OUTPUT
           else
-            echo "Build number unchanged"
+            echo "🚫 Build number unchanged"
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
+  
+  
 
   update-production:
     name: 🚀 EAS Update - Production
