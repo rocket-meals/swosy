@@ -1,42 +1,177 @@
-name: Expo Update Production
+name: Expo Combined - Update & Build
+
 on:
   push:
     branches:
       - 'master'
-      - 'master_*' # Match branches like 'master_1', 'master_2', etc. for specific legacy releases
     paths:
       - 'frontend/app/**'
       - ".github/workflows/frontend_native_expo_production.yml"
 
 jobs:
-  update:
-    name: EAS Update Production
+  check-build-number-change:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: 🧾 Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: 🔍 Check if build number changed
+        id: check
+        run: |
+          set -e
+          git diff HEAD^ HEAD frontend/app/app.config.ts > diff.txt
+          echo "Checking for build number changes..."
+          if grep -E '^\+.*return [0-9]+;' diff.txt | grep -q 'getBuildNumber'; then
+            echo "Build number changed"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Build number unchanged"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+  update-production:
+    name: 🚀 EAS Update - Production
     runs-on: ubuntu-latest
     steps:
-      - name: Check for EXPO_TOKEN
+      - name: ✅ Check for EXPO_TOKEN
         run: |
           if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            echo "You must provide an EXPO_TOKEN"
             exit 1
           fi
 
-      - name: 🏗 Setup repository
+      - name: 🧾 Setup repository
         uses: actions/checkout@v3
 
-      - name: 🏗 Setup Node
+      - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.19.1'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: 🏗 Setup EAS
+      - name: ⚙️ Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies with Yarn
+      - name: 📦 Install dependencies
         run: cd ./frontend/app && yarn install --frozen-lockfile
 
       - name: 🚀 Publish update to channel 'production'
         run: cd ./frontend/app && eas update --auto --platform all --non-interactive --channel production
+
+  build-ios:
+    name: 🍏 Build & Submit iOS (if build changed)
+    needs: check-build-number-change
+    if: needs.check-build-number-change.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✅ Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN"
+            exit 1
+          fi
+
+      - name: 🧾 Setup repo
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.19.1'
+
+      - name: ⚙️ Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: cd ./frontend/app && yarn install --frozen-lockfile
+
+      - name: 🍏 Build iOS
+        run: cd ./frontend/app && eas build --platform ios --non-interactive
+
+      - name: 📤 Submit iOS build
+        run: cd ./frontend/app && eas submit --platform ios --non-interactive --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-android:
+    name: 🤖 Build & Submit Android (if build changed)
+    needs: check-build-number-change
+    if: needs.check-build-number-change.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✅ Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN"
+            exit 1
+          fi
+
+      - name: 🧾 Setup repo
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.19.1'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: ⚙️ Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: cd ./frontend/app && yarn install --frozen-lockfile
+
+      - name: 🤖 Build Android
+        run: cd ./frontend/app && eas build --platform android --non-interactive
+
+      - name: 📤 Submit Android build
+        run: cd ./frontend/app && eas submit --platform android --non-interactive --latest
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  build-android-preview:
+    name: 🧪 Build Android Preview (if build changed)
+    needs: check-build-number-change
+    if: needs.check-build-number-change.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✅ Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN"
+            exit 1
+          fi
+
+      - name: 🧾 Setup repo
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.19.1'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: ⚙️ Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: cd ./frontend/app && yarn install --frozen-lockfile
+
+      - name: 🧪 Build Android previewApk
+        run: cd ./frontend/app && eas build --platform android --non-interactive --profile previewApk
