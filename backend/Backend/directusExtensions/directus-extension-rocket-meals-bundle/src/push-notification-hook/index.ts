@@ -151,7 +151,7 @@ export default defineHook(async ({filter}, apiContext) => {
 
 		try {
 			let answer = await axios.post('https://exp.host/--/api/v2/push/send', messages);
-			input.status = 'success';
+			input.status_log = 'success';
 		} catch (e: any) {
 			console.log(`Failed to send notification: ${e.message}`)
 			input.status = 'failed';
