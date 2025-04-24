@@ -184,12 +184,13 @@
 		"jest": "^29.7.0",
 		"liquidjs": "^10.19.0",
 		"patch-package": "^8.0.0",
-		"rimraf": "^5.0.10",
+		"rimraf": "^6.0.1",
 		"ts-jest": "^29.1.3",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
+		"@directus/memory": "2.0.1",
 		"@types/moment": "^2.13.0",
 		"@types/object-hash": "^3.0.6",
 		"base-x": "^5.0.1",
@@ -197,11 +198,13 @@
 		"cheerio": "^1.0.0-rc.12",
 		"deepl-node": "^1.13.1",
 		"iconv-lite": "^0.6.3",
+		"ioredis": "^5.6.1",
 		"js-yaml": "^4.1.0",
 		"jsonwebtoken": "^9.0.2",
 		"markdown-it": "^14.1.0",
 		"moment": "^2.30.1",
 		"moment-timezone": "^0.5.47",
+		"ms": "^2.1.3",
 		"object-hash": "^3.0.0",
 		"p-limit": "^6.1.0",
 		"p-queue": "^8.0.1",
@@ -210,10 +213,5 @@
 		"short-unique-id": "^5.2.2",
 		"ts-morph": "^25.0.1",
 		"uuid": "^11.1.0"
-	},
-	"peerDependencies": {
-		"@directus/memory": "2.0.1",
-		"ioredis": "^5.4.1",
-		"ms": "^2.1.3"
 	}
 }
