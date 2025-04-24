@@ -67,6 +67,37 @@ calculate_splash_logo_width() {
     SPLASH_LOGO_WIDTH=$(echo "$splash_width * 0.9" | bc)
 }
 
+generate_splash_icon() {
+    local splash_icon_size="1024x1024"
+    local splash_icon_path="$OUTPUT_FOLDER/splash-icon.png"
+
+    # Resize company.png to fit within 90% of splash icon size (921px max)
+    local icon_max_size=921
+    convert "$OUTPUT_FOLDER/company.png" -resize ${icon_max_size}x${icon_max_size} \
+        -gravity center -background none -extent $splash_icon_size "$splash_icon_path"
+}
+
+generate_adaptive_icon() {
+    local icon_path=$1
+    local output_path="$OUTPUT_FOLDER/adaptive-icon.png"
+
+    # Berechne Zielgröße für das Icon: 1024 * 0.84 = ca. 860px (um etwas Abstand zu lassen)
+    # 680 # aka 66% von 1024
+    local icon_size=$(echo "1024 / 100 * 69" | bc)
+
+    convert "$icon_path" -resize ${icon_size}x${icon_size} \
+        -gravity center -background none -extent $ADAPTIVE_ICON_SIZE "$output_path"
+}
+
+generate_adaptive_icon_background() {
+    local output_path="$OUTPUT_FOLDER/adaptive-icon-background.png"
+
+    # Erzeuge weißes (nicht transparentes) Bild
+    convert -size $ADAPTIVE_ICON_SIZE xc:white "$output_path"
+}
+
+
+
 # Function to generate images
 generate_images() {
     local icon_path=$1
@@ -90,14 +121,11 @@ generate_images() {
     # Copy the logo_path image to the output folder
     cp "$logo_path" "$OUTPUT_FOLDER/company.png"
 
-    # Generate splash.png with $logo_path
-    # 1. Copy the logo_path image to the output folder but with 90% width of the splash image size and a white background
-    calculate_splash_logo_width
-    # convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH}x "$OUTPUT_FOLDER/splash-logo.png" # has transparent background
-    convert "$logo_path" -resize ${SPLASH_LOGO_WIDTH}x -background white -alpha remove -alpha off "$OUTPUT_FOLDER/splash.png"
-    # Extend the splash-logo height to match the splash image height
-    convert "$OUTPUT_FOLDER/splash.png" -gravity center -background white -extent ${SPLASH_SIZE} "$OUTPUT_FOLDER/splash.png"
+    generate_adaptive_icon "$icon_path"
+    generate_adaptive_icon_background
 
+    # Generate splash-icon.png
+    generate_splash_icon
 }
 
 # Main script execution

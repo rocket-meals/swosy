@@ -627,7 +627,7 @@ const Index = () => {
         <View style={styles.emptyContainer}>
           <View style={{ flex: 1 }}>
             <Image
-              source={require('@/assets/logo/LabelLogo.png')}
+              source={require('@/assets/images/icon.png')}
               resizeMode='cover'
             />
           </View>
