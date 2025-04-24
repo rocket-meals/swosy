@@ -25,7 +25,7 @@ jobs:
           set -e
           git diff HEAD^ HEAD frontend/app/app.config.ts > diff.txt
           echo "Checking for build number changes..."
-          if grep -E '^\+.*return [0-9]+;' diff.txt | grep -q 'getBuildNumber'; then
+          if grep -E '^\+.*getBuildNumber' diff.txt; then
             echo "Build number changed"
             echo "changed=true" >> $GITHUB_OUTPUT
           else
