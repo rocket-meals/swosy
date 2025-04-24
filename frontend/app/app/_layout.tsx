@@ -84,7 +84,7 @@ export default function Layout() {
         }}
       >
         <Image
-          source={require('@/assets/logo/customers/swosy.png')}
+          source={require('@/assets/images/company.png')}
           style={{ width: 150, height: 150 }}
         />
       </View>
