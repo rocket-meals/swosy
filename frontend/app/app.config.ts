@@ -36,7 +36,7 @@ const devConfig: CustomerConfig = {
     baseUrl: "/rocket-meals"
 }
 const swosyConfig: CustomerConfig = {
-    projectName: "SWOSY",
+    projectName: "SWOSY 2.0",
     projectSlug: "rocket-meals-swosy",
     easUpdateId: "4147159f-d7b5-4db5-b6eb-f9988519950c",
     easProjectId: "4147159f-d7b5-4db5-b6eb-f9988519950c",
