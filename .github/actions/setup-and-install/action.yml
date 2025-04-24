@@ -1,5 +1,6 @@
 name: Setup and Install
 description: Gemeinsamer Setup-Schritt für Frontend-Projekte
+
 runs:
   using: "composite"
   steps:
@@ -14,4 +15,5 @@ runs:
 
     - name: 📦 Install dependencies
       run: yarn install --frozen-lockfile
+      shell: bash
       working-directory: ./frontend/app
