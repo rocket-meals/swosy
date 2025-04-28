@@ -196,12 +196,10 @@ const FeedbackScreen = () => {
       if (result) {
         setLoading(false);
         fetchDeviceInfo();
-        /**
         toast(
           'Feedback updated successfully! Thank you for your input.',
           'success'
         );
-            */
         router.navigate('/support-ticket');
       }
     }
