@@ -12,6 +12,9 @@ runs:
   steps:
     - name: 🔄 Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+        # Get the last 2 commits to compare the build number
 
     - name: 🔍 Vergleiche Buildnummer
       id: check
