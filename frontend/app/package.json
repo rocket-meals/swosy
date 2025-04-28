@@ -105,6 +105,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^3.1.0",
     "reselect": "^5.1.1",
+    "setimmediate": "^1.0.5",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
