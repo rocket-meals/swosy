@@ -20,6 +20,13 @@ runs:
         new=$(cat ${{ inputs.working-directory }}/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         echo "📦 Old build number: $old"
         echo "📦 New build number: $new"
+
+        if [ "$old" = "not-found" ]; then
+          echo "⚠️ Old build number not found, skipping comparison"
+          echo "changed=skip" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         if [ "$old" != "$new" ]; then
           echo "✅ Build number changed"
           echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -28,6 +35,7 @@ runs:
           echo "changed=false" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
+
 
 outputs:
   changed:
