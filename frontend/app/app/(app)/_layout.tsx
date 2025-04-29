@@ -61,10 +61,11 @@ import { BusinessHoursGroupsHelper } from '@/redux/actions/BusinessHours/Busines
 import { PopupEventsHelper } from '@/redux/actions/PopupEvents/PopupEvents';
 import { Platform } from 'react-native';
 import { AppElementsHelper } from '@/redux/actions/AppElements/AppElements';
+import { TranslationKeys } from '@/locales/keys';
 
 export default function Layout() {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { deviceMock } = useGlobalSearchParams();
   const dispatch = useDispatch();
   const wikisHelper = new WikisHelper();
@@ -479,7 +480,7 @@ export default function Layout() {
         <Drawer.Screen
           name='index'
           options={{
-            title: t('please_select_your_canteen'),
+            title: translate(TranslationKeys.please_select_your_canteen),
             headerLeft: () => null,
           }}
         />
@@ -495,11 +496,11 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('accountbalance')}
+                label={translate(TranslationKeys.accountbalance)}
                 key={'Account-Balance'}
               />
             ),
-            title: t('accountbalance'),
+            title: translate(TranslationKeys.accountbalance),
           }}
         />
         <Drawer.Screen
@@ -520,7 +521,7 @@ export default function Layout() {
           name='news/index'
           options={{
             title: 'News',
-            header: () => <CustomMenuHeader label={t('news')} key={'News'} />,
+            header: () => <CustomMenuHeader label={translate(TranslationKeys.news)} key={'News'} />,
           }}
         />
         <Drawer.Screen
@@ -528,7 +529,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('course_timetable')}
+                label={translate(TranslationKeys.course_timetable)}
                 key={'course_timetable'}
               />
             ),
@@ -540,7 +541,7 @@ export default function Layout() {
           options={{
             title: 'Settings',
             header: () => (
-              <CustomMenuHeader label={t('settings')} key={'settings'} />
+              <CustomMenuHeader label={translate(TranslationKeys.settings)} key={'settings'} />
             ),
           }}
         />
@@ -562,7 +563,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('role_management')}
+                label={translate(TranslationKeys.role_management)}
                 key={'Management'}
               />
             ),
@@ -575,20 +576,20 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomStackHeader
-                label={t('notification')}
+                label={translate(TranslationKeys.notification)}
                 key={'notification'}
               />
             ),
-            title: t('notification'),
+            title: translate(TranslationKeys.notification),
           }}
         />
         <Drawer.Screen
           name='support-FAQ/index'
           options={{
-            title: t('feedback_support_faq'),
+            title: translate(TranslationKeys.feedback_support_faq),
             header: () => (
               <CustomStackHeader
-                label={t('feedback_support_faq')}
+                label={translate(TranslationKeys.feedback_support_faq)}
                 key={'Feedback Support Faq'}
               />
             ),
@@ -601,7 +602,7 @@ export default function Layout() {
             title: 'Feedback & Support',
             header: () => (
               <CustomStackHeader
-                label={`${t('feedback')} & ${t('support')}`}
+                label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`}
                 key={'Feedback & Support'}
               />
             ),
@@ -621,7 +622,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomStackHeader
-                label={t('license_information')}
+                label={translate(TranslationKeys.license_information)}
                 key={'license_information'}
               />
             ),
@@ -634,7 +635,7 @@ export default function Layout() {
           options={{
             title: 'Data Access',
             header: () => (
-              <CustomStackHeader label={t('dataAccess')} key={'Data Access'} />
+              <CustomStackHeader label={translate(TranslationKeys.dataAccess)} key={'Data Access'} />
             ),
           }}
         />
@@ -645,7 +646,7 @@ export default function Layout() {
             title: 'Eating Habits',
             header: () => (
               <CustomStackHeader
-                label={t('eating_habits')}
+                label={translate(TranslationKeys.eating_habits)}
                 key={'Eating Habits'}
               />
             ),
@@ -656,7 +657,7 @@ export default function Layout() {
           options={{
             title: 'Price Group',
             header: () => (
-              <CustomStackHeader label={t('price_group')} key={'Price Group'} />
+              <CustomStackHeader label={translate(TranslationKeys.price_group)} key={'Price Group'} />
             ),
           }}
         />
@@ -665,14 +666,14 @@ export default function Layout() {
           name='form-categories/index'
           options={{
             header: () => (
-              <CustomStackHeader label={t('select_a_form_category')} />
+              <CustomStackHeader label={translate(TranslationKeys.select_a_form_category)} />
             ),
           }}
         />
         <Drawer.Screen
           name='forms/index'
           options={{
-            header: () => <CustomStackHeader label={t('select_a_form')} />,
+            header: () => <CustomStackHeader label={translate(TranslationKeys.select_a_form)} />,
           }}
         />
         <Drawer.Screen

@@ -10,6 +10,7 @@ import { studentUnionUrl } from '@/constants/Constants';
 import { FoodoffersMarkings, Markings } from '@/constants/types';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 interface LabelsProps {
   foodDetails: any;
@@ -33,7 +34,7 @@ const Labels: React.FC<LabelsProps> = ({
   color
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const {primaryColor,appSettings} = useSelector((state: any) => state.settings);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -61,7 +62,7 @@ const Labels: React.FC<LabelsProps> = ({
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {t('markings')}
+        {translate(TranslationKeys.markings)}
       </Text>
 
       {foodMarkings?.map((marking: Markings) => (
@@ -79,7 +80,7 @@ const Labels: React.FC<LabelsProps> = ({
           fontStyle: 'italic',
         }}
       >
-        {t('FOOD_LABELING_INFO')}
+        {translate(TranslationKeys.FOOD_LABELING_INFO)}
       </Text>
       <RedirectButton
         type='link'

@@ -14,8 +14,9 @@ import { DetailsProps } from './types';
 import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor, appSettings, language, mode } = useSelector(
     (state: any) => state.settings
@@ -28,7 +29,7 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {t('food_data')}
+        {translate(TranslationKeys.food_data)}
       </Text>
 
       {loading ? (
@@ -146,7 +147,7 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
                                     fontSize='$sm'
                                     color={theme.tooltip.text}
                                   >
-                                    {`${t(label)}`}
+                                    {`${translate(label)}`}
                                   </TooltipText>
                                 </TooltipContent>
                               </Tooltip>
@@ -225,7 +226,7 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
           fontStyle: 'italic',
         }}
       >
-        {t('FOOD_LABELING_INFO')}
+        {translate(TranslationKeys.FOOD_LABELING_INFO)}
       </Text>
       <RedirectButton
         type={'link'}

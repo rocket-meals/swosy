@@ -13,9 +13,10 @@ import { useSelector } from 'react-redux';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { TranslationKeys } from '@/locales/keys';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const [washingMachines, setWashingMachines] = useState<Apartments | null>();
   const [loading, setLoading] = useState(false);
@@ -157,7 +158,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {t('washing_machines')}
+        {translate(TranslationKeys.washing_machines)}
       </Text>
       <View style={styles.washingMachines}>
         {loading ? (

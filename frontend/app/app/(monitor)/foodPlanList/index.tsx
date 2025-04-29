@@ -13,7 +13,6 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-
 import { useTheme } from '@/hooks/useTheme';
 import { router, useFocusEffect } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,7 +35,8 @@ import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible'
 import { isWeb } from '@/constants/Constants';
 import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/colorHelper';
-import { Platform } from 'react-native';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 type FoodAttribute = {
   id: string;
@@ -46,8 +46,9 @@ type FoodAttribute = {
 };
 
 const Index = () => {
+  useSetPageTitle(TranslationKeys.food_plan_list);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { foodAttributes: initialFoodAttributes } = useSelector(
     (state: any) => state.foodAttributes
@@ -83,13 +84,6 @@ const Index = () => {
     key: '',
     label: '',
   });
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'foodPlan:List';
-      document.title = title;
-    }
-  }, []);
 
   useEffect(() => {
     if (initialFoodAttributes) {
@@ -219,7 +213,7 @@ const Index = () => {
               color={theme.screen.icon}
             />
             <Text style={{ ...styles.label, color: theme.screen.text }}>
-              {t('canteen')}
+              {translate(TranslationKeys.canteen)}
             </Text>
           </View>
           <View style={styles.col2}>
@@ -323,7 +317,7 @@ const Index = () => {
 
         <View style={{ width: '100%' }}>
           <CustomCollapsible
-            headerText={t('food_attributes')}
+            headerText={translate(TranslationKeys.food_attributes)}
             customColor={theme.screen.iconBg}
           >
             <ScrollView

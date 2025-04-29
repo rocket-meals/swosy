@@ -699,6 +699,46 @@
     "tr": "Yemek Planı: Gün: Resimli Tek Görünüm",
     "zh": "食品计划：天：单视图与图片"
   },
+  "big_screen": {
+    "de": "Großer Bildschirm",
+    "en": "Big Screen",
+    "ar": "شاشة كبيرة",
+    "es": "Pantalla grande",
+    "fr": "Grand écran",
+    "ru": "Большой экран",
+    "tr": "Büyük Ekran",
+    "zh": "大屏幕"
+  },
+  "food_plan_day": {
+    "de": "Ernährungsplantag",
+    "en": "Food Plan Day",
+    "ar": "يوم خطة الطعام",
+    "es": "Día del plan alimenticio",
+    "fr": "Jour du plan alimentaire",
+    "ru": "День плана питания",
+    "tr": "Yemek Planı Günü",
+    "zh": "饮食计划日"
+  },
+  "food_plan_list": {
+    "de": "Liste des Ernährungsplans",
+    "en": "Food Plan List",
+    "ar": "قائمة خطة الطعام",
+    "es": "Lista del plan alimenticio",
+    "fr": "Liste du plan alimentaire",
+    "ru": "Список плана питания",
+    "tr": "Yemek Planı Listesi",
+    "zh": "饮食计划列表"
+  },
+  "food_plan_week": {
+    "de": "Ernährungsplanwoche",
+    "en": "Food Plan Week",
+    "ar": "أسبوع خطة الطعام",
+    "es": "Semana del plan alimenticio",
+    "fr": "Semaine du plan alimentaire",
+    "ru": "Неделя плана питания",
+    "tr": "Yemek Planı Haftası",
+    "zh": "饮食计划周"
+  },
   "data_access_introduction": {
     "de": "## 🌟 Deine Daten - Dein Recht\n\nWir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format.\n\n### 🛠 Hilfe Benötigt?\nKeine Sorge, falls du mit JSON nicht vertraut bist! Unser Team steht bereit, um jede Frage zu klären und dir bei der Dateninterpretation zur Seite zu stehen.\n\nFühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.",
     "en": "## 🌟 Your Data - Your Right\n\nWe believe in transparency and the right of our users to fully access their data. That's why we allow you to access your information, usually in machine-readable JSON format.\n\n### 🛠 Need Help?\nDon't worry if you're not familiar with JSON! Our team is ready to answer any questions and assist you in interpreting your data.\n\nFeel free to contact us at any time. Your data, your control.",
@@ -898,6 +938,16 @@
     "ru": "Не пригоден для использования",
     "tr": "Kullanılamaz",
     "zh": "不可用"
+  },
+  "food_offers": {
+    "de": "Essensangebote",
+    "en": "Food Offers",
+    "ar": "عروض الطعام",
+    "es": "Ofertas de comida",
+    "fr": "Offres de nourriture",
+    "ru": "Предложения еды",
+    "tr": "Yemek Teklifleri",
+    "zh": "食品优惠"
   },
   "no_foodoffers_found_for_selection": {
     "de": "Keine Angebote gefunden.",
@@ -2523,6 +2573,26 @@
     "tr": "Binalar",
     "zh": "建筑物"
   },
+  "building_details": {
+    "de": "Gebäudedetails",
+    "en": "Building Details",
+    "ar": "تفاصيل المبنى",
+    "es": "Detalles del edificio",
+    "fr": "Détails du bâtiment",
+    "ru": "Детали здания",
+    "tr": "Bina Detayları",
+    "zh": "建筑细节"
+  },
+  "apartment_details": {
+    "de": "Wohnungsdetails",
+    "en": "Apartment Details",
+    "ar": "تفاصيل الشقة",
+    "es": "Detalles del apartamento",
+    "fr": "Détails de l'appartement",
+    "ru": "Детали квартиры",
+    "tr": "Daire Detayları",
+    "zh": "公寓详情"
+  },
   "campus": {
     "de": "Campus",
     "en": "Campus",
@@ -3112,6 +3182,16 @@
     "ru": "Выбросы",
     "tr": "Emisyonlar",
     "zh": "排放"
+  },
+  "form_submission": {
+    "de": "Formularübermittlung",
+    "en": "Form Submission",
+    "ar": "إرسال النموذج",
+    "es": "Envío del formulario",
+    "fr": "Soumission du formulaire",
+    "ru": "Отправка формы",
+    "tr": "Form Gönderimi",
+    "zh": "表单提交"
   },
   "select_a_form_category": {
     "de": "Wählen Sie eine Formkategorie",

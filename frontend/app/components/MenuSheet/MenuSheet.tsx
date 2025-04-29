@@ -87,6 +87,8 @@ return (
       <Text
         style={{
           ...styles.sheetHeading,
+          maxWidth: '70%',
+          textAlign: 'center',
           color: theme.sheet.text,
         }}
       >

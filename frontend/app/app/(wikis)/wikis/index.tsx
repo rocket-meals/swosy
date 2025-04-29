@@ -1,12 +1,11 @@
 import {
   ActivityIndicator,
-  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
@@ -19,13 +18,13 @@ import { Linking } from 'react-native';
 import RedirectButton from '@/components/RedirectButton';
 import {
   router,
-  useFocusEffect,
   useGlobalSearchParams,
   useLocalSearchParams,
 } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import DeviceMock from '@/components/DeviceMock/DeviceMock';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
   const { theme } = useTheme();
@@ -34,17 +33,11 @@ const index = () => {
   const { wikis, language } = useSelector((state: any) => state.settings);
   const { deviceMock } = useGlobalSearchParams();
   const { custom_id, id } = useLocalSearchParams();
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = wiki?.translations
-          ? getTitleFromTranslation(wiki?.translations, language)
-          : 'Wikis';
-        document.title = title;
-      }
-    }, [wiki])
-  );
+  //Set Page Title
+  const title = wiki?.translations
+    ? getTitleFromTranslation(wiki?.translations, language)
+    : 'Wikis';
+  useSetPageTitle(title);
 
   const filterWiki = () => {
     setLoading(true);

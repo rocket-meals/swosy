@@ -41,9 +41,10 @@ import {
   CLEAR_SETTINGS,
   ON_LOGOUT,
 } from '@/redux/Types/types';
+import { TranslationKeys } from '@/locales/keys';
 
 const index = () => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -175,7 +176,7 @@ const index = () => {
           <View style={styles.imageContainer}>{renderLottie}</View>
           <View style={{ width: windowWidth > 600 ? '85%' : '95%' }}>
             <Text style={{ ...styles.deleteInfo, color: theme.screen.text }}>
-              {t('account_deletion_info')}
+              {translate(TranslationKeys.account_deletion_info)}
             </Text>
           </View>
           <View
@@ -198,7 +199,7 @@ const index = () => {
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  {t('account')}
+                  {translate(TranslationKeys.account)}
                 </Text>
               </View>
               <View style={{ ...styles.col, maxWidth: '60%' }}>
@@ -210,7 +211,7 @@ const index = () => {
                     textAlign: 'right',
                   }}
                 >
-                  {user?.id ? user?.id : t('without_account')}
+                  {user?.id ? user?.id : translate(TranslationKeys.without_account)}
                 </Text>
               </View>
             </View>
@@ -237,7 +238,7 @@ const index = () => {
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  {t('account_delete')}
+                  {translate(TranslationKeys.account_delete)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -262,7 +263,7 @@ const index = () => {
                     },
                   ]}
                 >
-                  {t('project_name')}
+                  {translate(TranslationKeys.project_name)}
                 </Text>
               </View>
               <View style={styles.textIcon}>
@@ -281,7 +282,7 @@ const index = () => {
             </View>
 
             <SupportFAQ
-              label={t('developer')}
+              label={translate(TranslationKeys.developer)}
               isArrowRight={false}
               text='Baumgartner Software UG'
               onPress={() => {
@@ -289,7 +290,7 @@ const index = () => {
               }}
             />
             <SupportFAQ
-              label={t('software_name')}
+              label={translate(TranslationKeys.software_name)}
               text='Rocket Meals'
               isArrowRight={false}
               onPress={() => {
@@ -302,7 +303,7 @@ const index = () => {
       <ModalComponent
         isVisible={isDeleteAccount}
         onClose={closeDeleteAccountModal}
-        title={t('attention')}
+        title={translate(TranslationKeys.attention)}
         onSave={() => {}}
         showButtons={false}
       >
@@ -315,7 +316,7 @@ const index = () => {
               color: theme.screen.text,
             }}
           >
-            {t('are_you_sure_to_delete_your_account')}
+            {translate(TranslationKeys.are_you_sure_to_delete_your_account)}
           </Text>
           <View style={styles.attentionActions}>
             <TouchableOpacity
@@ -326,7 +327,7 @@ const index = () => {
                 <ActivityIndicator size={24} color={theme.screen.text} />
               ) : (
                 <Text style={[styles.confirmLabel, { color: theme.light }]}>
-                  {t('confirm')}
+                  {translate(TranslationKeys.confirm)}
                 </Text>
               )}
             </TouchableOpacity>
@@ -334,7 +335,7 @@ const index = () => {
               style={styles.cancleButton}
               onPress={closeDeleteAccountModal}
             >
-              <Text style={styles.confirmLabel}>{t('cancel')}</Text>
+              <Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
             </TouchableOpacity>
           </View>
         </View>

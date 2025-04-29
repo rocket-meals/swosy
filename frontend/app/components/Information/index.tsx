@@ -12,10 +12,11 @@ import {
 } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 const Information: React.FC<any> = ({ campusDetails }) => {
   const { theme } = useTheme();
   const toast = useToast();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
 
   console.log('campusDetails', campusDetails);
 
@@ -68,7 +69,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {t('information')}
+        {translate(TranslationKeys.information)}
       </Text>
       {/* Open Navigation */}
       <Tooltip
@@ -95,7 +96,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
       >
         <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
           <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-            {`${t('open_navitation_to_location')}`}
+            {`${translate(TranslationKeys.open_navitation_to_location)}`}
           </TooltipText>
         </TooltipContent>
       </Tooltip>
@@ -134,7 +135,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
       >
         <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
           <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-            {`${t('coordinates')}`}
+            {`${translate(TranslationKeys.coordinates)}`}
           </TooltipText>
         </TooltipContent>
       </Tooltip>
@@ -189,7 +190,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('copy_url')}`}
+              {`${translate(TranslationKeys.copy_url)}`}
             </TooltipText>
           </TooltipContent>
         </Tooltip>

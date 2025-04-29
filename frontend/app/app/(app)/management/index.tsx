@@ -1,11 +1,5 @@
-import {
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, { useCallback } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -22,21 +16,15 @@ import {
   SET_WEEK_PLAN,
 } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useFocusEffect } from 'expo-router';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  const { t } = useLanguage();
+  useSetPageTitle(TranslationKeys.role_management);
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = 'Management';
-        document.title = title;
-      }
-    }, [])
-  );
   return (
     <ScrollView
       style={{
@@ -50,7 +38,7 @@ const index = () => {
     >
       <View style={{ ...styles.content }}>
         <Text style={{ ...styles.heading, color: theme.screen.text }}>
-          {t('statistiken')}
+          {translate(TranslationKeys.statistiken)}
         </Text>
         <TouchableOpacity
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
@@ -65,7 +53,7 @@ const index = () => {
               size={24}
             />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('test_statistik')}
+              {translate(TranslationKeys.test_statistik)}
             </Text>
           </View>
           <Entypo
@@ -75,7 +63,7 @@ const index = () => {
           />
         </TouchableOpacity>
         <Text style={{ ...styles.heading, color: theme.screen.text }}>
-          {t('monitore')}
+          {translate(TranslationKeys.monitore)}
         </Text>
         <TouchableOpacity
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
@@ -97,7 +85,7 @@ const index = () => {
               size={24}
             />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('foodweekplan')}
+              {translate(TranslationKeys.foodweekplan)}
             </Text>
           </View>
           <Entypo
@@ -132,7 +120,7 @@ const index = () => {
               size={24}
             />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('foodBigScreen')}
+              {translate(TranslationKeys.foodBigScreen)}
             </Text>
           </View>
           <Entypo
@@ -163,7 +151,7 @@ const index = () => {
               size={24}
             />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('monitorDayPlan')}
+              {translate(TranslationKeys.monitorDayPlan)}
             </Text>
           </View>
           <Entypo
@@ -181,7 +169,7 @@ const index = () => {
           <View style={styles.col}>
             <Ionicons name='bag-add' size={24} color={theme.screen.icon} />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('markings')}
+              {translate(TranslationKeys.markings)}
             </Text>
           </View>
           <Entypo
@@ -199,7 +187,7 @@ const index = () => {
           <View style={styles.col}>
             <FontAwesome name='list-alt' color={theme.screen.icon} size={22} />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
-              {t('form_categories')}
+              {translate(TranslationKeys.form_categories)}
             </Text>
           </View>
           <Entypo

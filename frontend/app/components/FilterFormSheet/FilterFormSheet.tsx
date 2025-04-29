@@ -14,6 +14,7 @@ import Checkbox from 'expo-checkbox';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FORM_FILTER } from '@/redux/Types/types';
+import { TranslationKeys } from '@/locales/keys';
 
 const iconLibraries: any = {
   MaterialIcons,
@@ -29,7 +30,7 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({
   isEditMode = false,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { primaryColor } = useSelector((state: any) => state.settings);
 
@@ -61,7 +62,7 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {t('filter')}
+          {translate(TranslationKeys.filter)}
         </Text>
         <TouchableOpacity
           style={{
@@ -119,7 +120,7 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({
                       : { color: theme.screen.text },
                   ]}
                 >
-                  {t(option.label)}
+                  {translate(option.label)}
                 </Text>
               </View>
               <Checkbox

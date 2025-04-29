@@ -30,7 +30,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
   inputValues,
   setInputValues,
 }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
 
   const IconSelector: React.FC<{
@@ -78,7 +78,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
             fontSize: windowWidth > 600 ? 18 : 14,
           }}
         >
-          {t(title)}
+          {translate(title)}
         </Text>
       </View>
       <View style={styles.iconTextContainer}>

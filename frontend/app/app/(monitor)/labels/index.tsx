@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Platform } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import styles from './styles';
 import { useSelector } from 'react-redux';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -9,22 +9,18 @@ import { useMyContrastColor } from '@/helper/colorHelper';
 import { useTheme } from '@/hooks/useTheme';
 import LabelHeader from '@/components/LabelHeader/LabelHeader';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
   const { theme } = useTheme();
+  useSetPageTitle(TranslationKeys.markings);
 
   const [currentTime, setCurrentTime] = useState('');
 
   const { markings } = useSelector((state: any) => state.food);
   const mode = useSelector((state: any) => state.settings.theme);
   const { language } = useSelector((state: any) => state.settings);
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Labels';
-      document.title = title;
-    }
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
