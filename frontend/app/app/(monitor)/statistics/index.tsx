@@ -1,4 +1,4 @@
-import { Dimensions, Platform, ScrollView, Text, View } from 'react-native';
+import { Dimensions, ScrollView, Text, View } from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -19,8 +19,11 @@ import { Foods } from '@/constants/types';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import { useFocusEffect } from 'expo-router';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { TranslationKeys } from '@/locales/keys';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.statistiken);
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
@@ -42,13 +45,6 @@ const index = () => {
   const closeImageManagementSheet = () => {
     imageManagementSheetRef?.current?.close();
   };
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Statistics';
-      document.title = title;
-    }
-  }, []);
 
   const fetchMostLikedFoods = async () => {
     const mostLikedFoods = await loadMostLikedOrDislikedFoods(

@@ -9,12 +9,13 @@ import { EatingHabitsSheetProps } from './types';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({
   closeSheet,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { selectedFoodMarkings } = useSelector((state: any) => state.food);
   return (
     <BottomSheetScrollView
@@ -36,7 +37,7 @@ const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {t('eating_habits')}
+          {translate(TranslationKeys.eating_habits)}
         </Text>
         <TouchableOpacity
           style={{

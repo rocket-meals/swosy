@@ -1,7 +1,6 @@
 import {
   ActivityIndicator,
   Dimensions,
-  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -14,25 +13,17 @@ import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { router, useFocusEffect } from 'expo-router';
-import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.my_support_tickets);
   const { theme } = useTheme();
-  const { t } = useLanguage();
   const appFeedback = new AppFeedback();
   const [loading, setLoading] = useState(false);
   const [allTickets, setAllTickets] = useState<any>(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('my_support_tickets');
-        document.title = title;
-      }
-    }, [])
   );
 
   const getAllTickets = async () => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import {
   View,
@@ -12,25 +12,15 @@ import packages from '../../../constants/LicenseData';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { Entypo } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
-import { Platform } from 'react-native';
-import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const LicenseInformation = () => {
+  useSetPageTitle(TranslationKeys.license_information);
   const { theme } = useTheme();
-  const { t } = useLanguage();
   const [expanded, setExpanded] = useState(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('license_information');
-        document.title = title;
-      }
-    }, [])
   );
 
   const toggleDropdown = (index: any) => {

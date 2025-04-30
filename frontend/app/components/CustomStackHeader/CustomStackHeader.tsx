@@ -11,9 +11,10 @@ import { useSelector } from 'react-redux';
 import { excerpt } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const { loggedIn } = useSelector((state: any) => state.authReducer);
@@ -97,7 +98,7 @@ const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
           >
             <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
               <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                {`${t('navigate_back')}`}
+                {`${translate(TranslationKeys.navigate_back)}`}
               </TooltipText>
             </TooltipContent>
           </Tooltip>

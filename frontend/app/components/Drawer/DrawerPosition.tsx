@@ -27,7 +27,7 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
 }) => {
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
-  const { t } = useLanguage()
+  const { translate } = useLanguage()
   return (
     <TouchableOpacity
       style={{
@@ -53,7 +53,7 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
           color: isSelected ? theme.activeText : theme.header.text,
         }}
       >
-        {t(position.name)}
+        {translate(position.name)}
       </Text>
 
       {/* Radio Button */}

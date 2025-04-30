@@ -17,7 +17,7 @@ export const useLanguage = () => {
         configureStore.dispatch(changeLanguage(language));
     };
 
-    const t = useMemo(() => {
+    const translate = useMemo(() => {
         return (key: string) => translations[key]?.[language] || key;
     }, [language]);
 
@@ -29,5 +29,5 @@ export const useLanguage = () => {
         return () => unsubscribe();
     }, []);
 
-    return { language, setLanguageMode, t };
+    return { language, setLanguageMode, translate };
 };
