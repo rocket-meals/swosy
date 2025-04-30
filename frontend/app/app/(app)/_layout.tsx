@@ -8,6 +8,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {
   Buildings,
   Canteens,
+  CollectionsDatesLastUpdate,
   Markings,
   MarkingsGroups,
   PopupEvents,
@@ -21,6 +22,7 @@ import {
   SET_BUSINESS_HOURS,
   SET_BUSINESS_HOURS_GROUPS,
   SET_CANTEENS,
+  SET_COLLECTION_DATES_LAST_UPDATED,
   SET_FOOD_ATTRIBUTE_GROUPS,
   SET_FOOD_ATTRIBUTES,
   SET_FOOD_CATEGORIES,
@@ -62,6 +64,10 @@ import { PopupEventsHelper } from '@/redux/actions/PopupEvents/PopupEvents';
 import { Platform } from 'react-native';
 import { AppElementsHelper } from '@/redux/actions/AppElements/AppElements';
 import { TranslationKeys } from '@/locales/keys';
+import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
+import { transformUpdateDatesToMap } from '@/helper/dateMap';
+import { shouldFetch } from '@/helper/shouldFetch';
+import { CollectionKeys } from '@/constants/collectionKeys';
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -85,13 +91,13 @@ export default function Layout() {
   const foodAttributeGroupHelper = new FoodAttributeGroupHelper();
   const businessHoursGroupsHelper = new BusinessHoursGroupsHelper();
   const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
+  const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
-  const { loggedIn, user, profile } = useSelector(
-    (state: any) => state.authReducer
-  );
   const { popupEvents } = useSelector((state: any) => state.food);
+  const { lastUpdatedMap } = useSelector((state: any) => state.lastUpdated);
   const { drawerPosition } = useSelector((state: any) => state.settings);
+  const { loggedIn, user } = useSelector((state: any) => state.authReducer);
 
   if (!loggedIn) {
     return <Redirect href='/(auth)/login' />;
@@ -112,7 +118,7 @@ export default function Layout() {
   useEffect(() => {
     fetchFields();
   }, []);
-  // Fetch food feedback labels
+
   const getFoodFeedBackLabels = async () => {
     try {
       const foodFeedbackLabels =
@@ -130,7 +136,6 @@ export default function Layout() {
     }
   };
 
-  // Fetch profile function
   const fetchProfile = async () => {
     try {
       const profile = (await profileHelper.fetchProfileById(
@@ -308,6 +313,7 @@ export default function Layout() {
       console.error('Error fetching Food attribute groups', error);
     }
   };
+
   const getAllBusinessHoursGroups = async () => {
     try {
       const result = await businessHoursGroupsHelper.fetchBusinessHoursGroups(
@@ -444,23 +450,67 @@ export default function Layout() {
     }
   };
 
+  const fetchConfig: { key: string; action: () => Promise<void> }[] = [
+    { key: CollectionKeys.POPUP_EVENTS, action: getAllEvents },
+    { key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
+    { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
+    { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
+    {
+      key: CollectionKeys.FOODOFFERS_CATEGORIES,
+      action: getFoodOffersCategories,
+    },
+    {
+      key: CollectionKeys.FOODS_FEEDBACKS_LABELS,
+      action: getFoodFeedBackLabels,
+    },
+    { key: CollectionKeys.BUSINESSHOURS, action: getBusinessHours },
+    {
+      key: CollectionKeys.BUSINESSHOURS_GROUPS,
+      action: getAllBusinessHoursGroups,
+    },
+    { key: CollectionKeys.WIKIS, action: getWikis },
+    { key: CollectionKeys.BUILDINGS, action: fetchAllCanteens },
+    { key: CollectionKeys.APP_SETTINGS, action: getAppSettings },
+    {
+      key: CollectionKeys.FOODS_ATTRIBUTES_GROUPS,
+      action: getAllFoodAttributesGroups,
+    },
+    { key: CollectionKeys.FOODS_ATTRIBUTES, action: getAllFoodAttributes },
+  ];
+
+  const getAllCollectionDatesLastUpdate = async () => {
+    try {
+      const result =
+        (await collectionLastUpdateHelper.fetchCollectionDatesLastUpdate(
+          {}
+        )) as CollectionsDatesLastUpdate[];
+      if (result) {
+        const serverMap = transformUpdateDatesToMap(result);
+
+        await Promise.all(
+          fetchConfig.map(({ key, action }) => {
+            if (shouldFetch(key, serverMap, lastUpdatedMap)) {
+              return action();
+            }
+            return Promise.resolve();
+          })
+        );
+
+        dispatch({
+          type: SET_COLLECTION_DATES_LAST_UPDATED,
+          payload: serverMap,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching app elements:', error);
+    }
+  };
+
   useEffect(() => {
     if (user?.id) {
       fetchProfile();
     }
-    getAllAppElements();
-    getAllEvents();
-    getMarkings();
-    getFoodCategories();
-    getFoodOffersCategories();
-    getFoodFeedBackLabels();
-    getBusinessHours();
-    getAllBusinessHoursGroups();
-    getWikis();
-    fetchAllCanteens();
-    getAppSettings();
-    getAllFoodAttributesGroups();
-    getAllFoodAttributes();
+    getAllCollectionDatesLastUpdate();
   }, [user]);
 
   return (
@@ -521,7 +571,12 @@ export default function Layout() {
           name='news/index'
           options={{
             title: 'News',
-            header: () => <CustomMenuHeader label={translate(TranslationKeys.news)} key={'News'} />,
+            header: () => (
+              <CustomMenuHeader
+                label={translate(TranslationKeys.news)}
+                key={'News'}
+              />
+            ),
           }}
         />
         <Drawer.Screen
@@ -541,7 +596,10 @@ export default function Layout() {
           options={{
             title: 'Settings',
             header: () => (
-              <CustomMenuHeader label={translate(TranslationKeys.settings)} key={'settings'} />
+              <CustomMenuHeader
+                label={translate(TranslationKeys.settings)}
+                key={'settings'}
+              />
             ),
           }}
         />
@@ -602,7 +660,9 @@ export default function Layout() {
             title: 'Feedback & Support',
             header: () => (
               <CustomStackHeader
-                label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`}
+                label={`${translate(TranslationKeys.feedback)} & ${translate(
+                  TranslationKeys.support
+                )}`}
                 key={'Feedback & Support'}
               />
             ),
@@ -635,7 +695,10 @@ export default function Layout() {
           options={{
             title: 'Data Access',
             header: () => (
-              <CustomStackHeader label={translate(TranslationKeys.dataAccess)} key={'Data Access'} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.dataAccess)}
+                key={'Data Access'}
+              />
             ),
           }}
         />
@@ -657,7 +720,10 @@ export default function Layout() {
           options={{
             title: 'Price Group',
             header: () => (
-              <CustomStackHeader label={translate(TranslationKeys.price_group)} key={'Price Group'} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.price_group)}
+                key={'Price Group'}
+              />
             ),
           }}
         />
@@ -666,14 +732,20 @@ export default function Layout() {
           name='form-categories/index'
           options={{
             header: () => (
-              <CustomStackHeader label={translate(TranslationKeys.select_a_form_category)} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.select_a_form_category)}
+              />
             ),
           }}
         />
         <Drawer.Screen
           name='forms/index'
           options={{
-            header: () => <CustomStackHeader label={translate(TranslationKeys.select_a_form)} />,
+            header: () => (
+              <CustomStackHeader
+                label={translate(TranslationKeys.select_a_form)}
+              />
+            ),
           }}
         />
         <Drawer.Screen

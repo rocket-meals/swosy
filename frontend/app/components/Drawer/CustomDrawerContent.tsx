@@ -23,6 +23,7 @@ import {
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
+  CLEAR_COLLECTION_DATES_LAST_UPDATED,
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
@@ -176,6 +177,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } catch (error) {
       console.error('Error during logout:', error);

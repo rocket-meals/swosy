@@ -35,6 +35,7 @@ import {
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
+  CLEAR_COLLECTION_DATES_LAST_UPDATED,
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
@@ -157,6 +158,7 @@ const index = () => {
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       setLoading(false);
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } else {
@@ -211,7 +213,9 @@ const index = () => {
                     textAlign: 'right',
                   }}
                 >
-                  {user?.id ? user?.id : translate(TranslationKeys.without_account)}
+                  {user?.id
+                    ? user?.id
+                    : translate(TranslationKeys.without_account)}
                 </Text>
               </View>
             </View>
@@ -335,7 +339,9 @@ const index = () => {
               style={styles.cancleButton}
               onPress={closeDeleteAccountModal}
             >
-              <Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
+              <Text style={styles.confirmLabel}>
+                {translate(TranslationKeys.cancel)}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
