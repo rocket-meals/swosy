@@ -15,12 +15,14 @@ import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor, appSettings, language, mode } = useSelector(
     (state: any) => state.settings
   );
+  console.log('groupedAttributes', groupedAttributes);
 
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -69,6 +71,7 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
                     const prefix = attr?.food_attribute?.prefix;
                     const suffix = attr?.food_attribute?.suffix;
                     const status = attr?.food_attribute?.status;
+                    const full_width = attr?.food_attribute?.full_width;
                     const background_color =
                       attr?.food_attribute?.background_color || '';
                     const image = attr?.food_attribute?.image_remote_url
@@ -114,7 +117,13 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
 
                     if ((label || value) && status === 'published') {
                       return (
-                        <View style={styles.averageNutrition} key={attr?.id}>
+                        <View
+                          style={{
+                            ...styles.averageNutrition,
+                            minWidth: full_width ? '100%' : 120,
+                          }}
+                          key={attr?.id}
+                        >
                           <View style={styles.iconContainer}>
                             {attr?.food_attribute?.icon_expo ? (
                               <Tooltip
