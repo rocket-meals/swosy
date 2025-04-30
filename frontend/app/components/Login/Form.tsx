@@ -132,15 +132,18 @@ const LoginForm: React.FC<FormProps> = ({
               width: isWeb() ? '100%' : '90%',
             }}
           >
-            {translate(TranslationKeys.i_accept_privacy_policy_and_terms_of_service)}
+            {translate(
+              TranslationKeys.i_accept_privacy_policy_and_terms_of_service
+            )}
           </Text>
         </TouchableOpacity>
       </View>
       <View style={{ width: '100%', opacity: isChecked ? 1 : 0.3 }}>
         <View style={styles.firstRow}>
           {providers &&
-            providers?.map((provider: any) => (
+            providers?.map((provider: any, index: number) => (
               <TouchableOpacity
+                key={index}
                 style={{
                   ...styles.button,
                   borderColor: theme.login.border,
