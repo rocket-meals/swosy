@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import styles from './styles';
@@ -14,10 +15,8 @@ import moment from 'moment';
 import { useRouter } from 'expo-router';
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
 import { myContrastColor } from '@/helper/colorHelper';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  useSetPageTitle('FoodPlan:Week');
   const currentYear: number = moment().year();
   const { theme } = useTheme();
   const router = useRouter();
@@ -47,6 +46,13 @@ const index = () => {
     theme,
     mode === 'dark'
   );
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'FoodPlan:Week';
+      document.title = title;
+    }
+  }, []);
 
   function generateWeeks(
     year: number

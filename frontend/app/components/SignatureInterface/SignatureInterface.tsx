@@ -15,7 +15,6 @@ import SignatureScreen from 'react-native-signature-canvas';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as FileSystem from 'expo-file-system';
-import { TranslationKeys } from '@/locales/keys';
 
 // Import libraries based on platform
 const SignatureCanvas =
@@ -40,7 +39,7 @@ const SignatureInterface = ({
   custom_type: string;
   scrollViewRef?: any;
 }) => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const signatureRef = useRef<any>(null);
@@ -181,7 +180,7 @@ const SignatureInterface = ({
         >
           <MaterialIcons name='clear' size={24} color={theme.screen.text} />
           <Text style={{ ...styles.buttonText, color: theme.screen.text }}>
-            {translate(TranslationKeys.clear)}
+            {t('clear')}
           </Text>
         </TouchableOpacity>
       </View>

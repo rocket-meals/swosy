@@ -25,7 +25,6 @@ import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
-import { TranslationKeys } from '@/locales/keys';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({
   closeSheet,
@@ -33,7 +32,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   foodDetails,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const foodfeedbackHelper = new FoodFeedbackHelper();
   const { primaryColor, appSettings } = useSelector(
@@ -161,7 +160,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {translate(TranslationKeys.notification)}
+          {t('notification')}
         </Text>
         <TouchableOpacity
           style={{
@@ -182,8 +181,8 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
             fontSize: isWeb() ? (screenWidth > 800 ? 18 : 16) : 16,
           }}
         >
-          {translate(
-            TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified
+          {t(
+            'notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified'
           )}
         </Text>
         <TouchableOpacity
@@ -191,7 +190,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
           onPress={updateFoodFeedbackNotification}
         >
           <Text style={{ ...styles.buttonLabel, color: contrastColor }}>
-            {translate(TranslationKeys.confirm)}
+            {t('confirm')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -199,7 +198,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
           onPress={closeSheet}
         >
           <Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>
-            {translate(TranslationKeys.cancel)}
+            {t('cancel')}
           </Text>
         </TouchableOpacity>
       </View>

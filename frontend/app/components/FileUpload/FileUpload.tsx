@@ -10,7 +10,6 @@ import { isWeb } from '@/constants/Constants';
 import * as ImagePicker from 'expo-image-picker';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FileRelation, FormAnswer } from './types';
-import { TranslationKeys } from '@/locales/keys';
 
 const FileUpload = ({
   id,
@@ -27,7 +26,7 @@ const FileUpload = ({
   isDisabled: boolean;
   custom_type: string;
 }) => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const formAnswersHelper = new FormAnswersHelper();
@@ -188,7 +187,7 @@ const FileUpload = ({
           >
             <MaterialIcons name='image' size={24} color={theme.screen.text} />
             <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-              {translate(TranslationKeys.upload_image)}
+              {t('upload_image')}
             </Text>
           </TouchableOpacity>
         )}
@@ -200,7 +199,7 @@ const FileUpload = ({
           >
             <Ionicons name='camera' size={24} color={theme.screen.text} />
             <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-              {translate(TranslationKeys.camera)}
+              {t('camera')}
             </Text>
           </TouchableOpacity>
         )}
@@ -219,7 +218,7 @@ const FileUpload = ({
             color={theme.screen.text}
           />
           <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-            {translate(TranslationKeys.upload_file)}
+            {t('upload_file')}
           </Text>
         </TouchableOpacity>
       </View>

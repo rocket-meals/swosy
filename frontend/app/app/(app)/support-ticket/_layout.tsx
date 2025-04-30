@@ -3,11 +3,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 export default function Layout() {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   return (
     <Stack
       screenOptions={{
@@ -21,7 +20,7 @@ export default function Layout() {
           title: 'Support Ticket',
           header: () => (
             <CustomStackHeader
-              label={translate(TranslationKeys.my_support_tickets)}
+              label={t('my_support_tickets')}
               key={'Support Ticket'}
             />
           ),

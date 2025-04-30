@@ -3,7 +3,6 @@ import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 const MultiLineInput = ({
   id,
@@ -21,7 +20,7 @@ const MultiLineInput = ({
   custom_type: string;
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <View style={styles.container}>
@@ -32,7 +31,7 @@ const MultiLineInput = ({
           placeholderTextColor={theme.screen.placeholder}
           onChangeText={(text) => onChange(id, text, custom_type)}
           value={value}
-          placeholder={translate(TranslationKeys.type_here)}
+          placeholder={t('type_here')}
           multiline
           editable={!isDisabled}
           numberOfLines={3}

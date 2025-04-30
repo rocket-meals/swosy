@@ -16,7 +16,6 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
-import { TranslationKeys } from '@/locales/keys';
 
 const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
   isVisible,
@@ -24,7 +23,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
   id,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -87,7 +86,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
               fontSize: Dimensions.get('window').width < 500 ? 26 : 36,
             }}
           >
-            {translate(TranslationKeys.warning)}
+            {t('warning')}
           </Text>
           <TouchableOpacity
             style={{
@@ -110,7 +109,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
             fontSize: Dimensions.get('window').width < 500 ? 14 : 18,
           }}
         >
-          {translate(TranslationKeys.form_edit_warning)}
+          {t('form_edit_warning')}
         </Text>
         <View style={styles.actionContainer}>
           <TouchableOpacity
@@ -125,7 +124,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
           >
             {
               <Text style={{ ...styles.loginLabel, color: theme.screen.text }}>
-                {translate(TranslationKeys.cancel)}
+                {t('cancel')}
               </Text>
             }
           </TouchableOpacity>
@@ -141,7 +140,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
               <ActivityIndicator size={22} color={theme.background} />
             ) : (
               <Text style={{ ...styles.loginLabel, color: theme.activeText }}>
-                {translate(TranslationKeys.proceed)}
+                {t('proceed')}
               </Text>
             )}
           </TouchableOpacity>

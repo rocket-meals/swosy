@@ -56,24 +56,6 @@ export default StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Poppins_700Bold',
   },
-  elementContainer: {
-    width: '100%',
-    marginTop: 20,
-  },
-  noFoodContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  animationContainer: {
-    width: 250,
-    height: 250,
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noFoodOffer: {
-    fontSize: 18,
-    fontFamily: 'Poppins_400Regular',
-  },
+  elementContainer: { width: '100%', marginTop: 20 },
+  dummy: {},
 });

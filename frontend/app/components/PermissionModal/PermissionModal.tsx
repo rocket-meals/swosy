@@ -17,14 +17,13 @@ import { ON_LOGOUT } from '@/redux/Types/types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { persistor } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
-import { TranslationKeys } from '@/locales/keys';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({
   isVisible,
   setIsVisible,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage()
+  const { t } = useLanguage()
   const { primaryColor } = useSelector((state: any) => state.settings);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -126,7 +125,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
           ) : (
             <Text style={{ ...styles.loginLabel, color: theme.light }}>
               {/* Sign In / Create Account */}
-              {translate(TranslationKeys.sign_in)} / {translate(TranslationKeys.create_account)}
+              {t('sign_in')} / {t('create_account')}
             </Text>
           )}
         </TouchableOpacity>

@@ -1,11 +1,4 @@
-import {
-  Dimensions,
-  Image,
-  Linking,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
@@ -46,8 +39,6 @@ import { router } from 'expo-router';
 import { createSelector } from 'reselect';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
-import useToast from '@/hooks/useToast';
 const selectAuthState = (state: any) => state.authReducer;
 const selectFoodState = (state: any) => state.food;
 
@@ -69,7 +60,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     setSelectedFoodId,
     handleEatingHabitsSheet,
   }) => {
-    const toast = useToast();
     const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [screenWidth, setScreenWidth] = useState(
       Dimensions.get('window').width
@@ -77,7 +67,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const [warning, setWarning] = useState(false);
     const dispatch = useDispatch();
     const { theme } = useTheme();
-    const { translate } = useLanguage();
+    const { t } = useLanguage();
     const { food } = item;
     const foodItem = food as Foods;
     const markings = useSelector(selectMarkings);
@@ -112,24 +102,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
         pathname: '/(app)/foodoffers/details',
         params: { id, foodId },
       });
-    };
-
-    const openInBrowser = async (url: string) => {
-      try {
-        if (isWeb) {
-          window.open(url, '_blank');
-        } else {
-          const supported = await Linking.canOpenURL(url);
-
-          if (supported) {
-            await Linking.openURL(url);
-          } else {
-            toast(`Cannot open URL: ${url}`, 'error');
-          }
-        }
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
     };
 
     const dislikedMarkings = useMemo(
@@ -255,16 +227,12 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 borderColor: '#FF000095',
               }}
               onPress={() => {
-                if (item.redirect_url) {
-                  openInBrowser(item.redirect_url);
-                } else {
-                  const foodId =
-                    item?.food && typeof item.food !== 'string'
-                      ? item.food.id
-                      : '';
+                const foodId =
+                  item?.food && typeof item.food !== 'string'
+                    ? item.food.id
+                    : '';
 
-                  handleNavigation(item?.id, foodId);
-                }
+                handleNavigation(item?.id, foodId);
               }}
             >
               <View
@@ -317,9 +285,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${translate(TranslationKeys.edit)}: ${translate(
-                          TranslationKeys.image
-                        )}`}
+                        {`${t('edit')}: ${t('image')}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -347,7 +313,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         px='$2'
                       >
                         <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                          {translate(TranslationKeys.set_rate_as_not_favorite)}
+                          {t('set_rate_as_not_favorite')}
                         </TooltipText>
                       </TooltipContent>
                     </Tooltip>
@@ -369,7 +335,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                         px='$2'
                       >
                         <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                          {translate(TranslationKeys.set_rate_as_favorite)}
+                          {t('set_rate_as_favorite')}
                         </TooltipText>
                       </TooltipContent>
                     </Tooltip>
@@ -400,9 +366,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${translate(TranslationKeys.attention)} ${translate(
-                          TranslationKeys.eating_habits
-                        )}`}
+                        {`${t('attention')} ${t('eating_habits')}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -461,11 +425,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${showFormatedPrice(
-                        showPrice(item, profile)
-                      )} - ${translate(TranslationKeys.edit)}: ${translate(
-                        TranslationKeys.price_group
-                      )} ${translate(
+                      {`${showFormatedPrice(showPrice(item, profile))} - ${t(
+                        'edit'
+                      )}: ${t('price_group')} ${t(
                         profile?.price_group
                           ? getPriceGroup(profile?.price_group)
                           : ''

@@ -2,6 +2,7 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
@@ -27,12 +28,9 @@ import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { filterOptions } from './constants';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  useSetPageTitle(TranslationKeys.select_a_form_submission);
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const { form_id } = useLocalSearchParams();
   const sheetRef = useRef<BottomSheet>(null);
@@ -55,6 +53,15 @@ const index = () => {
   const closeFilterSheet = () => {
     sheetRef?.current?.close();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = t('select_a_form_submission');
+        document.title = title;
+      }
+    }, [])
+  );
 
   const loadFormSubmissions = async (
     pageNumber: number,
@@ -194,7 +201,7 @@ const index = () => {
             </TouchableOpacity>
             <Text style={{ ...styles.heading, color: theme.header.text }}>
               {excerpt(
-                translate(TranslationKeys.select_a_form_submission),
+                t('select_a_form_submission'),
                 screenWidth > 900 ? 100 : screenWidth > 700 ? 80 : 22
               )}
             </Text>
@@ -216,9 +223,7 @@ const index = () => {
               marginBottom: screenWidth > 600 ? 0 : 10,
             }}
           >
-            {`${translate(TranslationKeys.state)}: ${translate(
-              selectedOption
-            )}`}
+            {`${t('state')}: ${t(selectedOption)}`}
           </Text>
         </View>
         <View
@@ -239,7 +244,7 @@ const index = () => {
             placeholderTextColor={theme.screen.placeholder}
             onChangeText={setQuery}
             value={query}
-            placeholder={translate(TranslationKeys.search_with_alias)}
+            placeholder={t('search_with_alias')}
           />
           <TouchableOpacity
             style={{
@@ -283,7 +288,7 @@ const index = () => {
           ) : (
             <View style={{ padding: 20, alignItems: 'center' }}>
               <Text style={{ color: theme.screen.text, fontSize: 16 }}>
-                {translate(TranslationKeys.no_data_found)}
+                {t('no_data_found')}
               </Text>
             </View>
           )}

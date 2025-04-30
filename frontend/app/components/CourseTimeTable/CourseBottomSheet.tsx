@@ -28,7 +28,6 @@ import useToast from '@/hooks/useToast';
 import { isBefore, isEqual, parse } from 'date-fns';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
-import { TranslationKeys } from '@/locales/keys';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   timeTableData,
@@ -39,7 +38,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   const { theme } = useTheme();
   const toast = useToast();
   const dispatch = useDispatch();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const profileHelper = new ProfileHelper();
   const { profile } = useSelector((state: any) => state.authReducer);
   const [loading, setLoading] = useState(false);
@@ -343,8 +342,8 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
           {selectedItem
             ? selectedItem.label
             : isUpdate
-            ? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`
-            : `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`}
+            ? `${t('event')}: ${t('edit')}`
+            : `${t('event')}: ${t('create')}`}
         </Text>
         <TouchableOpacity
           style={{
@@ -419,7 +418,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                   <Text
                     style={[styles.buttonText, { color: theme.screen.text }]}
                   >
-                    {translate(TranslationKeys.cancel)}
+                    {t('cancel')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -432,7 +431,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                   <Text
                     style={[styles.buttonText, { color: contrastColor }]}
                   >
-                    {translate(TranslationKeys.save)}
+                    {t('save')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -461,7 +460,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                       marginTop: isWeb ? 0 : 2,
                     }}
                   >
-                    {translate(item.label)}
+                    {t(item.label)}
                   </Text>
                 </View>
                 <View
@@ -482,7 +481,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                       }}
                     >
                       {item.label === 'weekday'
-                        ? translate(item?.value?.name)
+                        ? t(item?.value?.name)
                         : item.value}
                     </Text>
                   )}
@@ -517,7 +516,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                             color: theme.activeText,
                           }}
                         >
-                          {translate(TranslationKeys.delete)}
+                          {t('delete')}
                         </Text>
                       </View>
                     </>
@@ -547,7 +546,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                           color: contrastColor,
                         }}
                       >
-                        {translate(TranslationKeys.save)}
+                        {t('save')}
                       </Text>
                     </View>
                   </>

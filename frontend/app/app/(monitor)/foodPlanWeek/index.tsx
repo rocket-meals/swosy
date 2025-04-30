@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   Dimensions,
   Text,
+  Platform,
 } from 'react-native';
+
 import { useTheme } from '@/hooks/useTheme';
 import { router, useFocusEffect } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,13 +25,10 @@ import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/Manage
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
 import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { Switch } from '@gluestack-ui/themed';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
-
+import { isWeb } from '@/constants/Constants';
 const Index = () => {
-  useSetPageTitle(TranslationKeys.food_plan_week);
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { primaryColor: projectColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -52,6 +51,13 @@ const Index = () => {
   const closeCanteenSheet = () => {
     canteenSheetRef?.current?.close();
   };
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'FoodPlan:Week';
+      document.title = title;
+    }
+  }, []);
 
   const toggleMenuSwitch = () => {
     dispatch({
@@ -120,7 +126,7 @@ const Index = () => {
               </Text>
             ) : (
               <Text style={{ ...styles.label, color: theme.screen.text }}>
-                {translate(TranslationKeys.canteen)}
+                {t('canteen')}
               </Text>
             )}
           </View>

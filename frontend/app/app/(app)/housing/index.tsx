@@ -49,13 +49,11 @@ import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible'
 import { myContrastColor } from '@/helper/colorHelper';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import RedirectButton from '@/components/RedirectButton';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Platform } from 'react-native';
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
-  useSetPageTitle(TranslationKeys.housing);
   const toast = useToast();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const apartmentsHelper = new ApartmentsHelper();
@@ -115,6 +113,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const closeImageManagementSheet = () => {
     imageManagementSheetRef?.current?.close();
   };
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'Housing';
+      document.title = title;
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -645,13 +650,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.open_drawer)}`}
+                    {`${t('open_drawer')}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
 
               <Text style={{ ...styles.heading, color: theme.header.text }}>
-                {translate(TranslationKeys.housing)}
+                {t('housing')}
               </Text>
             </View>
             <View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
@@ -673,9 +678,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.sort)}: ${translate(
-                      TranslationKeys.apartments
-                    )}`}
+                    {`${t('sort')}: ${t('apartments')}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>

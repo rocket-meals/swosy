@@ -10,7 +10,6 @@ import { isWeb } from '@/constants/Constants';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FormAnswers } from '@/constants/types';
 import { deleteDirectusFile } from '@/constants/HelperFunctions';
-import { TranslationKeys } from '@/locales/keys';
 
 const ImageUpload = ({
   id,
@@ -27,7 +26,7 @@ const ImageUpload = ({
   isDisabled: boolean;
   custom_type: string;
 }) => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const formAnswersHelper = new FormAnswersHelper();
   const { primaryColor } = useSelector((state: any) => state.settings);
@@ -133,7 +132,7 @@ const ImageUpload = ({
         >
           <MaterialIcons name='image' size={24} color={theme.screen.text} />
           <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-            {translate(TranslationKeys.upload_image)}
+            {t('upload_image')}
           </Text>
         </TouchableOpacity>
         {!isWeb && (
@@ -144,7 +143,7 @@ const ImageUpload = ({
           >
             <Ionicons name='camera' size={24} color={theme.screen.text} />
             <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-              {translate(TranslationKeys.camera)}
+              {t('camera')}
             </Text>
           </TouchableOpacity>
         )}

@@ -3,11 +3,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 export default function FoodOfferLayout() {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <Stack
@@ -21,7 +20,7 @@ export default function FoodOfferLayout() {
         options={{
           header: () => (
             <CustomStackHeader
-              label={translate(TranslationKeys.account_delete)}
+              label={t('account_delete')}
               key={'account_delete'}
             />
           ),

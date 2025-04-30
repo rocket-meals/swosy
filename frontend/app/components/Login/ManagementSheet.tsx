@@ -7,10 +7,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { SheetProps } from './types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSelector } from 'react-redux';
-import { TranslationKeys } from '@/locales/keys';
 
 const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const [formState, setFormState] = useState({
@@ -56,7 +55,7 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
         </TouchableOpacity>
       </View>
       <Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>
-        {translate(TranslationKeys.show_login_for_management_with_email_and_password)}
+        {t('show_login_for_management_with_email_and_password')}
       </Text>
       <Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>
         Sign in with open account
@@ -112,7 +111,7 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
             color: isFormValid ? theme.activeText : theme.screen.text,
           }}
         >
-          {translate(TranslationKeys.sign_in)}
+          {t('sign_in')}
         </Text>
       </TouchableOpacity>
     </BottomSheetView>

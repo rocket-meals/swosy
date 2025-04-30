@@ -17,11 +17,10 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
 import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
-import { TranslationKeys } from '@/locales/keys';
 
 const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { formSubmission } = useSelector((state: any) => state.form);
   const [alias, setAlias] = useState(
@@ -71,7 +70,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
             color: theme.sheet.text,
           }}
         >
-          {translate(TranslationKeys.edit)}
+          {t('edit')}
         </Text>
         <TouchableOpacity
           style={{
@@ -108,7 +107,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
             onPress={closeSheet}
           >
             <Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>
-              {translate(TranslationKeys.cancel)}
+              {t('cancel')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -123,7 +122,7 @@ const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
               <ActivityIndicator size={22} color={theme.screen.text} />
             ) : (
               <Text style={{ ...styles.buttonLabel, color: theme.activeText }}>
-                {translate(TranslationKeys.save)}
+                {t('save')}
               </Text>
             )}
           </TouchableOpacity>
