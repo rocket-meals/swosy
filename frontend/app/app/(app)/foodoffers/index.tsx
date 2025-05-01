@@ -1054,12 +1054,12 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 </Tooltip>
 
                 <Text style={{ ...styles.heading, color: theme.header.text }}>
-                  {translate(getDayLabel(selectedDate))}
+                  {selectedDate ? translate(getDayLabel(selectedDate)) : ''}
                 </Text>
               </View>
               <View style={{ ...styles.col2, gap: 10 }}>
                 {/* ForeCast */}
-                {appSettings.utilization_display_enabled && (
+                {appSettings?.utilization_display_enabled && (
                   <Tooltip
                     placement='top'
                     trigger={(triggerProps) => (
