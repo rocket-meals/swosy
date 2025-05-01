@@ -261,7 +261,6 @@ export default function FoodDetailsScreen() {
   };
 
   const getFoodDetails = async () => {
-    // Fetch food details
     try {
       const foodData = await fetchFoodDetailsById(id.toString());
       if (foodData && foodData.data) {
@@ -277,14 +276,7 @@ export default function FoodDetailsScreen() {
         });
         if (attribute_values) {
           setFoodAttributesLoading(true);
-          const foodAttributes = await Promise.all(
-            attribute_values.map(async (attributeId: string) => {
-              const foodAttributeById =
-                await foodAttributesHelper.fetchFoodAttributeById(attributeId);
-              return foodAttributeById;
-            })
-          );
-          setFoodAttributes(foodAttributes);
+          setFoodAttributes(attribute_values);
         }
       } else {
         console.log('No food data found');
