@@ -6,8 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {
-  Buildings,
-  Canteens,
   CollectionsDatesLastUpdate,
   Markings,
   MarkingsGroups,
@@ -18,10 +16,8 @@ import {
 import {
   SET_APP_ELEMENTS,
   SET_APP_SETTINGS,
-  SET_BUILDINGS,
   SET_BUSINESS_HOURS,
   SET_BUSINESS_HOURS_GROUPS,
-  SET_CANTEENS,
   SET_COLLECTION_DATES_LAST_UPDATED,
   SET_FOOD_ATTRIBUTE_GROUPS,
   SET_FOOD_ATTRIBUTES,
@@ -50,9 +46,6 @@ import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader'
 import { useLanguage } from '@/hooks/useLanguage';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
-import { CanteenHelper } from '@/redux/actions';
-import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import { getImageUrl } from '@/constants/HelperFunctions';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { FoodAttributeGroupHelper } from '@/redux/actions/FoodAttributes/FoodAttributeGroup';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
@@ -76,9 +69,7 @@ export default function Layout() {
   const dispatch = useDispatch();
   const wikisHelper = new WikisHelper();
   const markingHelper = new MarkingHelper();
-  const canteenHelper = new CanteenHelper();
   const profileHelper = new ProfileHelper();
-  const buildingsHelper = new BuildingsHelper();
   const popupEventsHelper = new PopupEventsHelper();
   const appSettingsHelper = new AppSettingsHelper();
   const appElementsHelper = new AppElementsHelper();
