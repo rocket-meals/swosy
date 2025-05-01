@@ -18,12 +18,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { intelligentSort, sortByEatingHabits, sortByFoodName, sortByOwnFavorite, sortByPublicFavorite } from '@/helper/sortingHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
-import { TranslationKeys } from '@/locales/keys';
 
 
 const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage()
+  const { t } = useLanguage()
   
   const dispatch = useDispatch();
   const { canteenFoodOffers } = useSelector(
@@ -140,7 +139,7 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
             color: theme.screen.text,
           }}
         >
-          {translate(TranslationKeys.sort)}
+          {t('sort')}
         </Text>
         <TouchableOpacity
           style={{
@@ -187,7 +186,7 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
                     : { color: theme.screen.text },
                 ]}
               >
-                {translate(option.label)}
+                {t(option.label)}
               </Text>
             </View>
             <Checkbox

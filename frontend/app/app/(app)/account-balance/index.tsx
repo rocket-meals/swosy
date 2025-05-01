@@ -42,8 +42,6 @@ import moneyConfused from '@/assets/animations/accountBalance/moneyConfused.json
 import moneyFitness from '@/assets/animations/accountBalance/moneyFitness.json';
 import moneySad from '@/assets/animations/accountBalance/moneySad.json';
 import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 enum BalanceStateLowerBound {
   CONFIDENT = 10,
@@ -53,15 +51,15 @@ enum BalanceStateLowerBound {
 }
 
 const AccountBalanceScreen = () => {
-  useSetPageTitle(TranslationKeys.accountbalance);
   const toast = useToast();
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { profile } = useSelector((state: any) => state.authReducer);
   const { appSettings, language, primaryColor } = useSelector(
     (state: any) => state.settings
   );
+  const mode = useSelector((state: any) => state.settings.theme);
   const balance_area_color = appSettings?.balance_area_color
     ? appSettings?.balance_area_color
     : primaryColor;
@@ -76,6 +74,13 @@ const AccountBalanceScreen = () => {
     Dimensions.get('window').width
   );
   const [animationJson, setAmimationJson] = useState<any>(null);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'Account Balance';
+      document.title = title;
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -150,7 +155,7 @@ const AccountBalanceScreen = () => {
       callBack,
       showInstruction,
       hideInstruction,
-      translate(TranslationKeys.nfcInstructionRead)
+      t('nfcInstructionRead')
     );
   };
 
@@ -499,7 +504,7 @@ const AccountBalanceScreen = () => {
       {/* Account Balance Info */}
 
       <Text style={{ ...styles.balanceTitle, color: theme.header.text }}>
-        {translate(TranslationKeys.accountbalance)}
+        {t('accountbalance')}
       </Text>
       <Text style={{ ...styles.balance, color: theme.header.text }}>
         {profile?.credit_balance
@@ -508,7 +513,7 @@ const AccountBalanceScreen = () => {
       </Text>
       {(isWeb || !isNfcSupported) && (
         <Text style={{ ...styles.subText, color: theme.header.text }}>
-          {translate(TranslationKeys.nfcNotSupported)}
+          {t('nfcNotSupported')}
         </Text>
       )}
       {!isWeb && isNfcEnabled && isNfcSupported && (
@@ -529,7 +534,7 @@ const AccountBalanceScreen = () => {
             color={theme.screen.icon}
           />
           <Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>
-            {translate(TranslationKeys.nfcReadCard)}
+            {t('nfcReadCard')}
           </Text>
         </TouchableOpacity>
       )}
@@ -544,7 +549,7 @@ const AccountBalanceScreen = () => {
             color={theme.screen.icon}
           />
           <Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>
-            {translate(TranslationKeys.pleaseEnableNFC)}
+            {t('pleaseEnableNFC')}
           </Text>
         </TouchableOpacity>
       )}
@@ -565,7 +570,7 @@ const AccountBalanceScreen = () => {
               style={styles.icon}
             />
             <Text style={{ ...styles.label, color: theme.header.text }}>
-              {translate(TranslationKeys.accountbalance)}
+              {t('accountbalance')}
             </Text>
           </View>
 
@@ -584,7 +589,7 @@ const AccountBalanceScreen = () => {
               style={styles.icon}
             />
             <Text style={{ ...styles.label, color: theme.header.text }}>
-              {translate(TranslationKeys.accountbalanceLastTransaction)}
+              {t('accountbalanceLastTransaction')}
             </Text>
           </View>
           <Text style={{ ...styles.value, color: theme.header.text }}>
@@ -604,7 +609,7 @@ const AccountBalanceScreen = () => {
               style={styles.icon}
             />
             <Text style={{ ...styles.label, color: theme.header.text }}>
-              {translate(TranslationKeys.accountbalanceDateUpdated)}
+              {t('accountbalanceDateUpdated')}
             </Text>
           </View>
           <Text style={{ ...styles.value, color: theme.header.text }}>
@@ -665,7 +670,7 @@ const AccountBalanceScreen = () => {
                   color: theme.screen.text,
                 }}
               >
-                {translate(TranslationKeys.nfcInstructionRead)}
+                {t('nfcInstructionRead')}
               </Text>
               <View
                 style={{

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, Text, Dimensions, Image } from 'react-native';
+import { View, Text, Dimensions, Image, Platform } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import Form from '@/components/Login/Form';
@@ -31,12 +31,11 @@ import {
   getDetailedDescriptionTranslation,
   getIntroDescriptionTranslation,
 } from '@/helper/resourceHelper';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useLanguage } from '@/hooks/useLanguage';
 
 export default function Login() {
-  useSetPageTitle(TranslationKeys.sign_in);
   const toast = useToast();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { deviceMock } = useGlobalSearchParams();
@@ -75,6 +74,14 @@ export default function Login() {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = t('sign_in');
+        document.title = title;
+      }
+    }, [])
+  );
   const getAppSettings = async () => {
     try {
       const result = await appSettingsHelper.fetchAppSettings({});

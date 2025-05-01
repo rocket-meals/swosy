@@ -7,30 +7,29 @@ import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { AntDesign } from '@expo/vector-icons';
 import { Calendar } from 'react-native-calendars';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
-import { SET_SELECTED_DATE } from '@/redux/Types/types';
-import { TranslationKeys } from '@/locales/keys';
-const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
+const CalendarSheet: React.FC<CalendarSheetProps> = ({
+  closeSheet,
+  selected,
+  setSelected,
+}) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
-  const dispatch = useDispatch();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
+  const { t } = useLanguage()
+  const { primaryColor,appSettings} = useSelector((state: any) => state.settings);
   const mode = useSelector((state: any) => state.settings.theme);
-  const { selectedDate } = useSelector((state: any) => state.food);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;
-  const contrastColor = myContrastColor(
-    foods_area_color,
-    theme,
-    mode === 'dark'
-  );
+    const contrastColor = myContrastColor(
+      foods_area_color,
+      theme,
+      mode === 'dark'
+    );
+ 
 
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const navigateMonth = (direction: 'next' | 'prev') => {
     const newMonth = new Date(currentMonth);
     newMonth.setMonth(
@@ -58,7 +57,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
             color: theme.sheet.text,
           }}
         >
-          {translate(TranslationKeys.select)} : {translate(TranslationKeys.date)}
+          {t('select')} : {t('date')}
         </Text>
         <TouchableOpacity
           style={{
@@ -83,14 +82,10 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
           style={styles.calendar}
           current={currentMonth.toISOString().split('T')[0]}
           onDayPress={(day: any) => {
-            dispatch({
-              type: SET_SELECTED_DATE,
-              payload: day.dateString,
-            });
-            closeSheet();
+            setSelected(day.dateString);
           }}
           markedDates={{
-            [selectedDate]: {
+            [selected]: {
               selected: true,
               disableTouchEvent: true,
               selectedDotColor: foods_area_color,

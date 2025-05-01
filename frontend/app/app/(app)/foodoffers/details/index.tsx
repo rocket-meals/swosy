@@ -58,8 +58,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { FoodAttributesValuesHelper } from '@/redux/actions/FoodAttributes/FoodAttributesValues';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Platform } from 'react-native';
 const selectAuthState = (state: any) => state.authReducer;
 const selectSettingsState = (state: any) => state.settings;
 const selectFoodState = (state: any) => state.food;
@@ -80,10 +79,9 @@ const selectLanguage = createSelector(
 );
 
 export default function FoodDetailsScreen() {
-  useSetPageTitle(TranslationKeys.food_details);
   const { id, foodId } = useLocalSearchParams();
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const menuSheetRef = useRef<BottomSheet>(null);
   const { appSettings, serverInfo } = useSelector(
@@ -147,6 +145,13 @@ export default function FoodDetailsScreen() {
   const closeMenuSheet = () => {
     menuSheetRef?.current?.close();
   };
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'Food Details';
+      document.title = title;
+    }
+  }, []);
 
   const filterAttributes = () => {
     const groupedAttributes = foodAttributeGroups?.map((group: any) => {
@@ -545,7 +550,7 @@ export default function FoodDetailsScreen() {
                     <Text
                       style={{ ...styles.rateUs, color: theme.screen.text }}
                     >
-                      {translate(TranslationKeys.RATE_US)}
+                      {t('RATE_US')}
                     </Text>
                     <View style={styles.stars}>
                       {Array.from({ length: 5 }).map((_, index) => (
@@ -579,9 +584,7 @@ export default function FoodDetailsScreen() {
                               fontSize='$sm'
                               color={theme.tooltip.text}
                             >
-                              {`${translate(TranslationKeys.set_rating_to)} ${
-                                index + 1
-                              }`}
+                              {`${t('set_rating_to')} ${index + 1}`}
                             </TooltipText>
                           </TooltipContent>
                         </Tooltip>
@@ -679,7 +682,7 @@ export default function FoodDetailsScreen() {
                     color: theme.screen.text,
                   }}
                 >
-                  {translate(TranslationKeys.RATE_US)}
+                  {t('RATE_US')}
                 </Text>
                 <View style={styles.mobileStars}>
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -715,7 +718,7 @@ export default function FoodDetailsScreen() {
                 fontSize: isWeb ? 18 : 12,
               }}
             >
-              {translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
+              {t('GET_NOTIFICATION_ON_AVAILABILITY')}
             </Text>
             {previousFeedback?.notify ? (
               <Tooltip
@@ -740,9 +743,10 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.notification)}: ${translate(
-                      TranslationKeys.active
-                    )}: ${excerpt(foodDetails?.name, 90)}`}
+                    {`${t('notification')}: ${t('active')}: ${excerpt(
+                      foodDetails?.name,
+                      90
+                    )}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -769,9 +773,10 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.notification)}: ${translate(
-                      TranslationKeys.inactive
-                    )}: ${excerpt(foodDetails?.name, 90)}`}
+                    {`${t('notification')}: ${t('inactive')}: ${excerpt(
+                      foodDetails?.name,
+                      90
+                    )}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -817,7 +822,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.food_feedbacks)}`}
+                    {`${t('food_feedbacks')}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -848,7 +853,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.food_data)}`}
+                    {`${t('food_data')}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -880,7 +885,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.markings)}`}
+                    {`${t('markings')}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>

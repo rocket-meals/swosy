@@ -26,7 +26,7 @@ import {
 } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
-import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
+import {useFocusEffect, useGlobalSearchParams, useNavigation, useRouter} from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
@@ -35,7 +35,6 @@ import {
   SET_POPUP_EVENTS,
   SET_SELECTED_CANTEEN_FOOD_OFFERS,
   SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
-  SET_SELECTED_DATE,
 } from '@/redux/Types/types';
 import { CanteensFeedbacksLabels, Foodoffers } from '@/constants/types';
 import {
@@ -71,15 +70,13 @@ import {
 import { format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
-import { getAppElementTranslation } from '@/helper/resourceHelper';
+import {
+  getAppElementTranslation,
+  getTextFromTranslation,
+} from '@/helper/resourceHelper';
 import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
 import RedirectButton from '@/components/RedirectButton';
 import { myContrastColor } from '@/helper/colorHelper';
-import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
-import LottieView from 'lottie-react-native';
-import { replaceLottieColors } from '@/helper/animationHelper';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 export const SHEET_COMPONENTS = {
   canteen: CanteenSelectionSheet,
@@ -106,7 +103,7 @@ const SHEET_POINTS = {
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
@@ -117,13 +114,16 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const { kioskMode } = useGlobalSearchParams();
   const [refreshing, setRefreshing] = useState(false);
   const [beforeElement, setBeforeElement] = useState<any>(null);
   const [afterElement, setAfterElement] = useState<any>(null);
   const [selectedFoodId, setSelectedFoodId] = useState('');
   const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
   const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
-
+  const [selected, setSelected] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -139,14 +139,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     appSettings,
     primaryColor,
   } = useSelector((state: any) => state.settings);
-  const { ownFoodFeedbacks, popupEvents, selectedDate } = useSelector(
+  const { ownFoodFeedbacks, popupEvents } = useSelector(
     (state: any) => state.food
   );
-  const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
-  const animationRef = useRef<LottieView>(null);
-  const [animationJson, setAmimationJson] = useState<any>(null);
   const { profile } = useSelector((state: any) => state.authReducer);
   const { appElements } = useSelector((state: any) => state.appElements);
+  // console.log('appElements', appElements);
+  //console.log('beforeElement', beforeElement);
+  //console.log('afterElement', afterElement);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
     useSelector((state: any) => state.canteenReducer);
   const foods_area_color = appSettings?.foods_area_color
@@ -159,51 +159,12 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     mode === 'dark'
   );
 
-  // Set Page Title
-  useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
-
-  useFocusEffect(
-    useCallback(() => {
-      setAmimationJson(
-        replaceLottieColors(noFoodOffersFound, foods_area_color)
-      );
-      return () => {
-        setAmimationJson(null);
-      };
-    }, [])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      setAutoPlay(appSettings?.animations_auto_start); // Enable when entering
-
-      return () => {
-        setAutoPlay(false); // Reset when leaving
-        setAmimationJson(null);
-      };
-    }, [appSettings?.animations_auto_start])
-  );
-
   useEffect(() => {
-    if (animationJson && autoPlay && animationRef.current) {
-      animationRef?.current?.play(); // Reset animation to ensure it starts fresh
+    if (Platform.OS === 'web') {
+      const title = selectedCanteen?.alias || 'FoodOffers';
+      document.title = title;
     }
-  }, [animationJson, autoPlay]);
-
-  const renderLottie = useMemo(() => {
-    if (animationJson) {
-      return (
-        <LottieView
-          ref={animationRef}
-          source={animationJson}
-          resizeMode='contain'
-          style={{ width: '100%', height: '100%' }}
-          autoPlay={autoPlay}
-          loop={false}
-        />
-      );
-    }
-  }, [autoPlay, animationJson]);
+  }, []);
 
   useEffect(() => {
     if (!appElements || !appSettings) return;
@@ -230,11 +191,15 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      setIsActive(true);
+      let shouldBeActive = true;
+      if (kioskMode) {
+          shouldBeActive = false;
+      }
+      setIsActive(shouldBeActive);
       return () => {
         setIsActive(false);
       };
-    }, [])
+    }, [kioskMode])
   );
 
   useEffect(() => {
@@ -335,16 +300,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   }, []);
 
   const handleDateChange = (direction: 'prev' | 'next') => {
-    const currentDate = new Date(selectedDate);
+    const currentDate = new Date(selected);
     if (direction === 'prev') {
       currentDate.setDate(currentDate.getDate() - 1);
     } else {
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    dispatch({
-      type: SET_SELECTED_DATE,
-      payload: currentDate.toISOString().split('T')[0],
-    });
+    setSelected(currentDate.toISOString().split('T')[0]);
   };
 
   const getDayLabel = (date: string) => {
@@ -440,7 +402,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       setLoading(true);
       const foodData = await fetchFoodOffersByCanteen(
         selectedCanteen?.id,
-        selectedDate
+        selected
       );
       const foodOffers = foodData?.data || [];
 
@@ -476,7 +438,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   useEffect(() => {
     fetchFoods();
-  }, [selectedCanteen, selectedDate]);
+  }, [selectedCanteen, selected]);
 
   useEffect(() => {
     fetchCanteenLabels();
@@ -496,11 +458,11 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           <CanteenFeedbackLabels
             key={label?.id || `feedback-label-${index}`}
             label={label}
-            date={selectedDate}
+            date={selected}
           />
         )
       ),
-    [canteenFeedbackLabels, selectedDate]
+    [canteenFeedbackLabels, selected]
   );
 
   const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
@@ -827,7 +789,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${translate(TranslationKeys.open_drawer)}`}
+                      {`${t('open_drawer')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -869,9 +831,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${translate(TranslationKeys.sort)}: ${translate(
-                        TranslationKeys.foods
-                      )}`}
+                      {`${t('sort')}: ${t('foods')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -899,9 +859,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${translate(TranslationKeys.edit)}: ${translate(
-                        TranslationKeys.price_group
-                      )} ${translate(getPriceGroup(profile?.price_group))}`}
+                      {`${t('edit')}: ${t('price_group')} ${t(
+                        getPriceGroup(profile?.price_group)
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -930,9 +890,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(
-                        TranslationKeys.eating_habits
-                      )}: ${translate(TranslationKeys.edit)}`}
+                      {` ${t('eating_habits')}: ${t('edit')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -958,9 +916,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(TranslationKeys.canteen)}: ${translate(
-                        TranslationKeys.select
-                      )}`}
+                      {` ${t('canteen')}: ${t('select')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -994,9 +950,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(TranslationKeys.day)}: ${translate(
-                        TranslationKeys.previous
-                      )}`}
+                      {` ${t('day')}: ${t('previous')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -1005,7 +959,12 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                   trigger={(triggerProps) => (
                     <TouchableOpacity
                       {...triggerProps}
-                      onPress={() => openSheet('calendar')}
+                      onPress={() =>
+                        openSheet('calendar', {
+                          selected: selected,
+                          setSelected: setSelected,
+                        })
+                      }
                       style={{
                         padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
                       }}
@@ -1020,9 +979,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(TranslationKeys.edit)}: ${translate(
-                        TranslationKeys.date
-                      )}: ${selectedDate}`}
+                      {` ${t('edit')}: ${t('date')}: ${selected}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -1046,9 +1003,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(TranslationKeys.day)}: ${translate(
-                        TranslationKeys.proceed
-                      )}`}
+                      {` ${t('day')}: ${t('proceed')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -1066,7 +1021,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                       <TouchableOpacity
                         {...triggerProps}
                         onPress={() =>
-                          openSheet('forecast', { forDate: selectedDate })
+                          openSheet('forecast', { forDate: selected })
                         }
                         style={{
                           padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
@@ -1086,9 +1041,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {` ${translate(TranslationKeys.forecast)}: ${translate(
-                          TranslationKeys.utilization
-                        )}`}
+                        {` ${t('forecast')}: ${t('utilization')}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -1115,7 +1068,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {` ${translate(TranslationKeys.businesshours)}`}
+                      {` ${t('businesshours')}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -1155,7 +1108,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <ActivityIndicator size={'large'} color={theme.screen.icon} />
                 </View>
-              ) : selectedCanteenFoodOffers ? (
+              ) : (
+                selectedCanteenFoodOffers &&
                 selectedCanteenFoodOffers?.map((item: Foodoffers) => (
                   <FoodItem
                     item={item}
@@ -1166,23 +1120,12 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                     setSelectedFoodId={setSelectedFoodId}
                   />
                 ))
-              ) : (
-                <View style={styles.noFoodContainer}>
-                  <Text
-                    style={{ ...styles.noFoodOffer, color: theme.screen.text }}
-                  >
-                    {translate(
-                      TranslationKeys.no_foodoffers_found_for_selection
-                    )}
-                  </Text>
-                  <View style={styles.animationContainer}>{renderLottie}</View>
-                </View>
               )}
             </View>
             <View style={styles.elementContainer}>
               {afterElement && getContent(afterElement?.content)}
             </View>
-            {!feedbackLabelsLoading && (
+            {!feedbackLabelsLoading && canteenFeedbackLabels?.length>0 && (
               <View style={styles.feebackContainer}>
                 <View>
                   <Text
@@ -1191,7 +1134,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                       color: theme.screen.text,
                     }}
                   >
-                    {translate(TranslationKeys.feedback_labels)}
+                    {t('feedback_labels')}
                   </Text>
                 </View>
                 {memoizedCanteenFeedbackLabels}

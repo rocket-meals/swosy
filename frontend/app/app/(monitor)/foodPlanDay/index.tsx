@@ -35,12 +35,10 @@ import ManagementFoodCategorySheet from '@/components/ManagementFoodCategoryShee
 import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { Switch } from '@gluestack-ui/themed';
 import { myContrastColor } from '@/helper/colorHelper';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Platform } from 'react-native';
 const Index = () => {
-  useSetPageTitle(TranslationKeys.food_plan_day);
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { primaryColor: projectColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -90,6 +88,13 @@ const Index = () => {
   const closeFoodCategorySheet = () => {
     foodCategorySheetRef?.current?.close();
   };
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'foodPlanDay';
+      document.title = title;
+    }
+  }, []);
 
   const openIntervalSheet = (intervalKey: string, intervalLabel: string) => {
     setSelectedInterval({ key: intervalKey, label: intervalLabel });
@@ -186,7 +191,7 @@ const Index = () => {
               color={theme.screen.icon}
             />
             <Text style={{ ...styles.label, color: theme.screen.text }}>
-              {translate(TranslationKeys.canteen)}
+              {t('canteen')}
             </Text>
           </View>
           <View style={styles.col2}>

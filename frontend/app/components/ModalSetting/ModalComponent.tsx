@@ -6,7 +6,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
-import { TranslationKeys } from '@/locales/keys';
 
 interface ModalComponentProps {
   isVisible: boolean;
@@ -29,7 +28,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
 }) => {
   const { primaryColor } = useSelector((state: any) => state.settings);
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const [isLargeScreen, setIsLargeScreen] = useState(
     Dimensions.get('window').width
   );
@@ -75,7 +74,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
               fontSize: isLargeScreen < 500 ? 23 : 28,
             }}
           >
-            {translate(title)}
+            {t(title)}
           </Text>
           <TouchableOpacity
             style={{
@@ -105,7 +104,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
               style={{ ...styles.cancelButton, borderColor: primaryColor }}
             >
               <Text style={[styles.buttonText, { color: theme.screen.text }]}>
-                {translate(TranslationKeys.cancel)}
+                {t('cancel')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -114,7 +113,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
               style={{ ...styles.saveButton, backgroundColor: primaryColor }}
             >
               <Text style={[styles.buttonText, { color: theme.activeText }]}>
-                {translate(TranslationKeys.save)}
+                {t('save')}
               </Text>
             </TouchableOpacity>
           </View>

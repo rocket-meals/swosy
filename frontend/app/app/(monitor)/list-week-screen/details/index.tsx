@@ -25,17 +25,18 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { useLanguage } from '@/hooks/useLanguage';
+import * as Print from 'expo-print';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import useToast from '@/hooks/useToast';
 import { Markings, MarkingsGroups } from '@/constants/types';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
+  const toast = useToast();
   const printRef = useRef<HTMLElement | null>(null);
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -56,10 +57,6 @@ const index = () => {
     Dimensions.get('window').width
   );
   const { weekPlan } = useSelector((state: any) => state.management);
-  useSetPageTitle(
-    weekPlan?.selectedCanteen?.alias +
-      ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
-  );
   const isMobile = screenWidth < 800;
   const {
     primaryColor: projectColor,
@@ -81,6 +78,15 @@ const index = () => {
   const weekDays = Array.from({ length: 7 }, (_, i) =>
     startDate.clone().add(i, 'days').format('YYYY-MM-DD')
   );
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title =
+        weekPlan?.selectedCanteen?.alias +
+        ` - ${t('week')} ${weekPlan?.selectedWeek?.week}`;
+      document.title = title;
+    }
+  }, []);
 
   const fetchFoods = async () => {
     try {
@@ -433,7 +439,7 @@ const index = () => {
                   ]}
                 >
                   <Text style={{ ...styles.headerText, color: contrastColor }}>
-                    {col.key === 'day' ? translate(col.key) : col.title}
+                    {col.key === 'day' ? t(col.key) : col.title}
                   </Text>
                 </View>
               ))}
@@ -610,7 +616,7 @@ const index = () => {
                                 },
                               ]}
                             >
-                              {translate(shortDayName)}
+                              {t(shortDayName)}
                             </Text>
                             <Text
                               style={[

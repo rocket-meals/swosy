@@ -4,7 +4,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
-import { TranslationKeys } from '@/locales/keys';
 
 const NumberInput = ({
   id,
@@ -26,7 +25,7 @@ const NumberInput = ({
   suffix: string | null | undefined;
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
     const flag = !suffix && !prefix;
 
     const handleTextChange = (text: string) => {
@@ -75,7 +74,7 @@ const NumberInput = ({
             onChangeText={handleTextChange}
             value={value}
             editable={!isDisabled}
-            placeholder={translate(TranslationKeys.enter_number)}
+            placeholder={t('enter_number')}
             keyboardType='decimal-pad'
             enterKeyHint='next'
           />

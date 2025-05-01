@@ -21,7 +21,6 @@ import { useSelector } from 'react-redux';
 import { daysData } from '@/constants/SettingData';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { TranslationKeys } from '@/locales/keys';
 const CourseTimetable: React.FC<CourseTimetableProps> = ({
   events,
   openSheet,
@@ -30,7 +29,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
   setSelectedEventId,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -290,7 +289,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
                       color: theme.screen.text,
                     }}
                   >
-                    {translate(day.name)}
+                    {t(day.name)}
                   </Text>
                 </View>
               ))}
@@ -380,7 +379,7 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
                               fontSize='$sm'
                               color={theme.tooltip.text}
                             >
-                              {`${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`}
+                              {`${t('event')}: ${t('edit')}`}
                             </TooltipText>
                           </TooltipContent>
                         </Tooltip>
