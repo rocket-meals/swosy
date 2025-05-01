@@ -137,7 +137,7 @@ export const fetchFoodDetailsById = async (id: string) => {
     const response = await axios.get(`/items/foodoffers/${id}`, {
       params: {
         fields:
-          '*, markings.*,feedbacks.*,food.*,food.translations.*, foods_attributes_values.*',
+          '*, markings.*,feedbacks.*,food.*,food.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
         limit: -1,
         deep: {
           feedbacks: {
