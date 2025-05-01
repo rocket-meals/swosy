@@ -353,7 +353,6 @@ export default function Layout() {
     try {
       const response =
         (await popupEventsHelper.fetchAllPopupEvents()) as PopupEvents[];
-
       if (response) {
         const currentDate = new Date();
 
@@ -405,7 +404,6 @@ export default function Layout() {
   };
 
   const fetchConfig: { key: string; action: () => Promise<void> }[] = [
-    { key: CollectionKeys.POPUP_EVENTS, action: getAllEvents },
     { key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
     { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
     { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
@@ -439,7 +437,16 @@ export default function Layout() {
         )) as CollectionsDatesLastUpdate[];
       if (result) {
         const serverMap = transformUpdateDatesToMap(result);
-
+        if (
+          shouldFetch(CollectionKeys.POPUP_EVENTS, serverMap, lastUpdatedMap) ||
+          shouldFetch(
+            CollectionKeys.POPUP_EVENTS_TRANSLATIONS,
+            serverMap,
+            lastUpdatedMap
+          )
+        ) {
+          getAllEvents();
+        }
         await Promise.all(
           fetchConfig.map(({ key, action }) => {
             if (shouldFetch(key, serverMap, lastUpdatedMap)) {
