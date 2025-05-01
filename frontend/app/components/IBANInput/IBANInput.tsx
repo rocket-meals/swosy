@@ -4,6 +4,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
+import { TranslationKeys } from '@/locales/keys';
 
 const IBANInput = ({
   id,
@@ -27,7 +28,7 @@ const IBANInput = ({
   suffix: string | null | undefined;
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
     const flag = !suffix && !prefix;
 
     const formatIBAN = (text: string) => {
@@ -79,7 +80,7 @@ const IBANInput = ({
             placeholderTextColor={theme.screen.placeholder}
             onChangeText={handleChangeText}
             value={value}
-            placeholder={t('iban_format')}
+            placeholder={translate(TranslationKeys.iban_format)}
             keyboardType='default'
             enterKeyHint='next'
             autoCapitalize='characters'

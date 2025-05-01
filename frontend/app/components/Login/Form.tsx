@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
 import { format } from 'date-fns';
 import {myContrastColor} from "@/helper/colorHelper";
+import { TranslationKeys } from '@/locales/keys';
 
 const LoginForm: React.FC<FormProps> = ({
   setIsVisible,
@@ -33,7 +34,7 @@ const LoginForm: React.FC<FormProps> = ({
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { isWeb } = usePlatformHelper();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const mode = useSelector((state: any) => state.settings.theme);
   const contrastColor = myContrastColor(
@@ -109,7 +110,7 @@ const LoginForm: React.FC<FormProps> = ({
       }}
     >
       <Text style={{ ...styles.heading, color: theme.login.text }}>
-        {t('sign_in')}
+        {translate(TranslationKeys.sign_in)}
       </Text>
       <View>
         <TouchableOpacity
@@ -131,15 +132,18 @@ const LoginForm: React.FC<FormProps> = ({
               width: isWeb() ? '100%' : '90%',
             }}
           >
-            {t('i_accept_privacy_policy_and_terms_of_service')}
+            {translate(
+              TranslationKeys.i_accept_privacy_policy_and_terms_of_service
+            )}
           </Text>
         </TouchableOpacity>
       </View>
       <View style={{ width: '100%', opacity: isChecked ? 1 : 0.3 }}>
         <View style={styles.firstRow}>
           {providers &&
-            providers?.map((provider: any) => (
+            providers?.map((provider: any, index: number) => (
               <TouchableOpacity
+                key={index}
                 style={{
                   ...styles.button,
                   borderColor: theme.login.border,
@@ -159,7 +163,7 @@ const LoginForm: React.FC<FormProps> = ({
                 <Text
                   style={{ ...styles.buttonLabel, color: theme.login.text }}
                 >
-                  {`${t('sign_in_with')}: ${
+                  {`${translate(TranslationKeys.sign_in_with)}: ${
                     provider?.name?.charAt(0)?.toUpperCase() +
                     provider?.name?.slice(1)?.toLowerCase()
                   }`}
@@ -185,7 +189,7 @@ const LoginForm: React.FC<FormProps> = ({
             />
           </View>
           <Text style={{ ...styles.buttonLabel, color: theme.login.text }}>
-            {t('continue_without_account')}
+            {translate(TranslationKeys.continue_without_account)}
           </Text>
           <View style={{ width: 58 }} />
         </TouchableOpacity>
@@ -193,7 +197,7 @@ const LoginForm: React.FC<FormProps> = ({
 
       <View style={styles.managementLogin}>
         <Text style={{ ...styles.fromManagement, color: theme.login.text }}>
-          {`${t('for_management')}?`}
+          {`${translate(TranslationKeys.for_management)}?`}
         </Text>
         <TouchableOpacity
           onPress={() => {
@@ -205,7 +209,7 @@ const LoginForm: React.FC<FormProps> = ({
           }}
         >
           <Text style={{ ...styles.loginText, color: theme.screen.text }}>
-            {t('sign_in')}
+            {translate(TranslationKeys.sign_in)}
           </Text>
         </TouchableOpacity>
       </View>

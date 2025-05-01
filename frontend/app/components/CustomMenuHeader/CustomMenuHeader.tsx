@@ -10,9 +10,10 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { drawerPosition } = useSelector((state: any) => state.settings);
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
 
@@ -50,7 +51,7 @@ const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
           >
             <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
               <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                {`${t('open_drawer')}`}
+                {`${translate(TranslationKeys.open_drawer)}`}
               </TooltipText>
             </TooltipContent>
           </Tooltip>

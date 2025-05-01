@@ -10,7 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   console.log('Content Value', content?.value);
   return (
     <BottomSheetScrollView
@@ -34,7 +34,7 @@ const DataSheet: React.FC<DataSheetProps> = ({ closeSheet, content }) => {
             color: theme.sheet.text,
           }}
         >
-          {t(content?.label)}
+          {translate(content?.label)}
         </Text>
         <TouchableOpacity
           style={{

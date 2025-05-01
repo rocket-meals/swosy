@@ -26,7 +26,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
 }) => {
   const { theme: themes } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   return (
     <TouchableOpacity
       style={{
@@ -51,7 +51,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
           color: isSelected ? themes.activeText : themes.header.text,
         }}
       >
-        {t(theme.name)}
+        {translate(theme.name)}
       </Text>
 
       {/* Radio Button */}

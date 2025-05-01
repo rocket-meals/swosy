@@ -13,13 +13,14 @@ import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { Buildings, Canteens } from '@/constants/types';
 import { SET_BUILDINGS, SET_CANTEENS } from '@/redux/Types/types';
+import { TranslationKeys } from '@/locales/keys';
 
 const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
   closeSheet,
   handleSelectCanteen,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
@@ -136,7 +137,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
           color: theme.sheet.text,
         }}
       >
-        {t('canteen')}
+        {translate(TranslationKeys.canteen)}
       </Text>
       <View
         style={{

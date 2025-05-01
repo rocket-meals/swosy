@@ -1,7 +1,5 @@
 import {
   Dimensions,
-  Image,
-  Platform,
   SafeAreaView,
   ScrollView,
   Text,
@@ -28,10 +26,13 @@ import animation from '@/assets/animations/allergist.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.eating_habits);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { markings } = useSelector((state: any) => state.food);
   const { primaryColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -42,15 +43,6 @@ const index = () => {
   const [animationJson, setAmimationJson] = useState<any>(null);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('eating_habits');
-        document.title = title;
-      }
-    }, [])
   );
 
   useFocusEffect(
@@ -127,12 +119,15 @@ const index = () => {
           >
             <Text style={{ ...styles.body1, color: theme.screen.text }}>
               {readMore
-                ? t('eatinghabits_introduction')
-                : excerpt(t('eatinghabits_introduction'), 120)}
+                ? translate(TranslationKeys.eatinghabits_introduction)
+                : excerpt(
+                    translate(TranslationKeys.eatinghabits_introduction),
+                    120
+                  )}
             </Text>
             {readMore && (
               <Text style={{ ...styles.body2, color: theme.screen.text }}>
-                {t('FOOD_LABELING_INFO')}
+                {translate(TranslationKeys.FOOD_LABELING_INFO)}
               </Text>
             )}
             {screenWidth < 600 && (
@@ -145,7 +140,9 @@ const index = () => {
                   }}
                 >
                   <Text style={{ ...styles.readMore, color: theme.activeText }}>
-                    {readMore ? t('read_less') : t('read_more')}
+                    {readMore
+                      ? translate(TranslationKeys.read_less)
+                      : translate(TranslationKeys.read_more)}
                   </Text>
                 </TouchableOpacity>
               </View>

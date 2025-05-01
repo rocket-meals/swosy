@@ -23,8 +23,10 @@ import { getImageUrl } from '@/constants/HelperFunctions';
 import { createSelector } from 'reselect';
 import WashingMachines from '@/components/WashingMachines';
 import { myContrastColor } from '@/helper/colorHelper';
-import { useLanguage } from '@/hooks/useLanguage';
+import { useLanguage } from '@/hooks/useLanguage';0
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 const selectSettingsState = (state: any) => state.settings;
 
 const selectPrimaryColor = createSelector(
@@ -33,8 +35,9 @@ const selectPrimaryColor = createSelector(
 );
 
 const details = () => {
+  useSetPageTitle(TranslationKeys.apartment_details);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const primaryColor = useSelector(selectPrimaryColor);
   const { appSettings, serverInfo } = useSelector(
     (state: any) => state.settings
@@ -59,13 +62,6 @@ const details = () => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Apartment Details';
-      document.title = title;
-    }
-  }, []);
 
   const fetchApartmentById = async () => {
     setLoading(true);
@@ -247,7 +243,9 @@ const details = () => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('open_navitation_to_location')}`}
+                      {`${translate(
+                        TranslationKeys.open_navitation_to_location
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -296,7 +294,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('information')}`}
+                        {`${translate(TranslationKeys.information)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -331,7 +329,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('description')}`}
+                        {`${translate(TranslationKeys.description)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -368,7 +366,7 @@ const details = () => {
                         px='$2'
                       >
                         <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                          {`${t('washing_machine')}`}
+                          {`${translate(TranslationKeys.washing_machine)}`}
                         </TooltipText>
                       </TooltipContent>
                     </Tooltip>

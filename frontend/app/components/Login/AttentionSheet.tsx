@@ -12,13 +12,14 @@ import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import animationJson from '@/assets/animations/astronaut-computer.json';
 import { useFocusEffect } from 'expo-router';
+import { TranslationKeys } from '@/locales/keys';
 
 const AttentionSheet: React.FC<AttentionSheetProps> = ({
   closeSheet,
   handleLogin,
   isBottomSheetVisible,
 }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -72,13 +73,13 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
       <Text
         style={{ ...styles.attentionSheetHeading, color: theme.sheet.text }}
       >
-        {t('attention')}
+        {translate(TranslationKeys.attention)}
       </Text>
       <View
         style={{ ...styles.attentionContent, width: isWeb ? '80%' : '100%' }}
       >
         <Text style={{ ...styles.attentionBody, color: theme.sheet.text }}>
-          {t('without_account_limitations')}
+          {translate(TranslationKeys.without_account_limitations)}
         </Text>
         <View
           style={{ ...styles.attentionActions, width: isWeb ? '60%' : '100%' }}
@@ -90,11 +91,11 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
             }}
           >
             <Text style={[styles.confirmLabel, { color: theme.light }]}>
-              {t('confirm')}
+              {translate(TranslationKeys.confirm)}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancleButton} onPress={closeSheet}>
-            <Text style={styles.confirmLabel}>{t('cancel')}</Text>
+            <Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
           </TouchableOpacity>
         </View>
       </View>

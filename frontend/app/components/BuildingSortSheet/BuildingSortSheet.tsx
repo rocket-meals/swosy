@@ -19,13 +19,14 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
+import { TranslationKeys } from '@/locales/keys';
 
 const BuildingSortSheet: React.FC<BuildingSortSheetProps> = ({
   closeSheet,
   freeRooms,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const {
     campusesSortBy,
@@ -118,7 +119,7 @@ const BuildingSortSheet: React.FC<BuildingSortSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {t('sort')}
+          {translate(TranslationKeys.sort)}
         </Text>
         <TouchableOpacity
           style={{
@@ -168,7 +169,7 @@ const BuildingSortSheet: React.FC<BuildingSortSheetProps> = ({
                       : { color: theme.screen.text },
                   ]}
                 >
-                  {t(option.label)}
+                  {translate(option.label)}
                 </Text>
               </View>
               <Checkbox

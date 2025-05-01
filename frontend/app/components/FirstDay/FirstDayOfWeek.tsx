@@ -26,7 +26,7 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
   onPress,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
   return (
     <TouchableOpacity
@@ -44,7 +44,7 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
           color: isSelected ? theme.activeText : theme.header.text,
         }}
       >
-        {t(position.name)}
+        {translate(position.name)}
       </Text>
 
       {/* Radio Button */}

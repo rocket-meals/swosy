@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import authReducer from './authReducer';
 import canteenReducer from './canteenReducer';
 import settingReducer from './settingsReducer';
@@ -10,6 +10,7 @@ import managementReducer from './managementReducer';
 import formReducer from './formReducer';
 import foodAttributesReducer from './FoodAttributes';
 import appElementsReducer from './appElementsReducer';
+import lastUpdatedReducer from './lastUpdatedReducer';
 
 export const reducer = combineReducers({
   state: (state = {}) => state,
@@ -24,4 +25,5 @@ export const reducer = combineReducers({
   form: formReducer,
   foodAttributes: foodAttributesReducer,
   appElements: appElementsReducer,
+  lastUpdated: lastUpdatedReducer,
 });

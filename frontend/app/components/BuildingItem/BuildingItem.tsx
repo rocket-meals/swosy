@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const BuildingItem: React.FC<BuildingItemProps> = ({
   campus,
@@ -18,7 +19,7 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
   setSelectedApartementId,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor, serverInfo } = useSelector(
     (state: any) => state.settings
   );
@@ -140,7 +141,7 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('edit')}: ${t('image')}`}
+                      {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
