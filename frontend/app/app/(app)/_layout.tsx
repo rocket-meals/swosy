@@ -358,43 +358,6 @@ export default function Layout() {
     }
   };
 
-  const fetchAllCanteens = async () => {
-    try {
-      const buildingsData = (await buildingsHelper.fetchBuildings(
-        {}
-      )) as Buildings[];
-      const buildings = buildingsData || [];
-      const buildingsDict = buildings.reduce(
-        (acc: Record<string, any>, building: any) => {
-          acc[building.id] = building;
-          return acc;
-        },
-        {}
-      );
-
-      dispatch({ type: SET_BUILDINGS, payload: buildings });
-
-      const canteensData = (await canteenHelper.fetchCanteens(
-        {}
-      )) as Canteens[];
-      const canteens = canteensData || [];
-
-      const updatedCanteens = canteens.map((canteen: any) => {
-        const building = buildingsDict[canteen?.building as string];
-        return {
-          ...canteen,
-          imageAssetId: building?.image,
-          thumbHash: building?.image_thumb_hash,
-          image_url: building?.image_remote_url || getImageUrl(building?.image),
-        };
-      });
-
-      dispatch({ type: SET_CANTEENS, payload: updatedCanteens });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
   const getAllEvents = async () => {
     try {
       const response =
@@ -469,7 +432,6 @@ export default function Layout() {
       action: getAllBusinessHoursGroups,
     },
     { key: CollectionKeys.WIKIS, action: getWikis },
-    { key: CollectionKeys.BUILDINGS, action: fetchAllCanteens },
     { key: CollectionKeys.APP_SETTINGS, action: getAppSettings },
     {
       key: CollectionKeys.FOODS_ATTRIBUTES_GROUPS,
