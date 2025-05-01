@@ -13,7 +13,6 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useTheme } from '@/hooks/useTheme';
@@ -51,6 +50,7 @@ import {
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
+  CLEAR_COLLECTION_DATES_LAST_UPDATED,
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
@@ -74,14 +74,17 @@ import {
   showFormatedPrice,
 } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const Settings = () => {
+  useSetPageTitle(TranslationKeys.settings);
   const { theme, setThemeMode } = useTheme();
   const dispatch = useDispatch();
   const canteenSheetRef = useRef<BottomSheet>(null);
   const canteenPoints = useMemo(() => ['100%'], []);
   const [isActive, setIsActive] = useState(false);
-  const { t, setLanguageMode, language } = useLanguage();
+  const { translate, setLanguageMode, language } = useLanguage();
   const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
   const [isNicknameModalVisible, setIsNicknameModalVisible] = useState(false);
   const [nickname, setNickname] = useState<string>('');
@@ -120,13 +123,6 @@ const Settings = () => {
   const languageCode = language;
 
   const languageName = Languages[languageCode as keyof typeof Languages];
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Settings';
-      document.title = title;
-    }
-  }, []);
 
   const saveNickname = async () => {
     if (user?.id) {
@@ -274,6 +270,7 @@ const Settings = () => {
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } catch (error) {
       console.error('Error during logout:', error);
@@ -289,6 +286,7 @@ const Settings = () => {
     dispatch({ type: CLEAR_FOODS });
     dispatch({ type: CLEAR_NEWS });
     dispatch({ type: CLEAR_SETTINGS });
+    dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
     router.push({
       pathname: '/(auth)/login',
       params: { logout: 'true' },
@@ -309,13 +307,13 @@ const Settings = () => {
 
   const priceGroups: Record<PriceGroupKey, { label: string }> = {
     student: {
-      label: t('price_group_student'),
+      label: translate(TranslationKeys.price_group_student),
     },
     employee: {
-      label: t('price_group_employee'),
+      label: translate(TranslationKeys.price_group_employee),
     },
     guest: {
-      label: t('price_group_guest'),
+      label: translate(TranslationKeys.price_group_guest),
     },
   };
 
@@ -350,7 +348,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
               <Text style={{ ...styles.label, color: theme.screen.text }}>
-                {t('account')}
+                {translate(TranslationKeys.account)}
               </Text>
             </View>
             <View style={{ ...styles.col, maxWidth: '60%' }}>
@@ -362,7 +360,9 @@ const Settings = () => {
                   textAlign: 'right',
                 }}
               >
-                {user?.id ? user?.id : t('without_account')}
+                {user?.id
+                  ? user?.id
+                  : translate(TranslationKeys.without_account)}
               </Text>
             </View>
           </View>
@@ -372,7 +372,7 @@ const Settings = () => {
             onClose={closeModal}
             onSave={saveNickname}
             disableSave={disabled}
-            title={t('nickname')}
+            title={translate(TranslationKeys.nickname)}
           >
             {/* Custom Content */}
             <TextInput
@@ -382,7 +382,7 @@ const Settings = () => {
                 backgroundColor: '#fff',
                 borderWidth: 1,
               }}
-              placeholder={t('nickname')}
+              placeholder={translate(TranslationKeys.nickname)}
               value={nickname?.trim()}
               onChangeText={(text) => {
                 setNickname(text);
@@ -403,7 +403,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('nickname')}
+            label={translate(TranslationKeys.nickname)}
             value={profile?.id ? profile?.nickname : nickNameLocal}
             rightIcon={
               <MaterialCommunityIcons
@@ -426,7 +426,7 @@ const Settings = () => {
           <ModalComponent
             isVisible={isLanguageModalVisible}
             onClose={closeLanguageModal}
-            title={t('language')}
+            title={translate(TranslationKeys.language)}
             onSave={saveLanguage}
             showButtons={false}
           >
@@ -489,7 +489,7 @@ const Settings = () => {
             leftIcon={
               <Ionicons name='language' size={24} color={theme.screen.icon} />
             }
-            label={t('language')}
+            label={translate(TranslationKeys.language)}
             value={languageName}
             rightIcon={
               <MaterialCommunityIcons
@@ -509,7 +509,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('canteen')}
+            label={translate(TranslationKeys.canteen)}
             value={excerpt(String(selectedCanteen?.alias), 30)}
             rightIcon={
               <MaterialCommunityIcons
@@ -528,7 +528,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('eating_habits')}
+            label={translate(TranslationKeys.eating_habits)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -542,7 +542,7 @@ const Settings = () => {
             leftIcon={
               <MaterialIcons name='euro' size={24} color={theme.screen.icon} />
             }
-            label={t('price_group')}
+            label={translate(TranslationKeys.price_group)}
             value={
               profile?.price_group &&
               priceGroups[profile.price_group as PriceGroupKey]
@@ -562,7 +562,7 @@ const Settings = () => {
             leftIcon={
               <Ionicons name='card' size={24} color={theme.screen.icon} />
             }
-            label={t('accountbalance')}
+            label={translate(TranslationKeys.accountbalance)}
             value={
               profile?.credit_balance
                 ? showFormatedPrice(formatPrice(profile?.credit_balance))
@@ -585,7 +585,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('notification')}
+            label={translate(TranslationKeys.notification)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -599,7 +599,7 @@ const Settings = () => {
           <ModalComponent
             isVisible={isColorSchemeModalVisible}
             onClose={closeColorschemeModal}
-            title={t('color_scheme')}
+            title={translate(TranslationKeys.color_scheme)}
             onSave={saveColorSheme}
             showButtons={false}
           >
@@ -625,13 +625,13 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('color_scheme')}
+            label={translate(TranslationKeys.color_scheme)}
             value={
               selectedTheme === 'systematic'
-                ? t('color_scheme_system')
+                ? translate(TranslationKeys.color_scheme_system)
                 : selectedTheme === 'dark'
-                ? t('color_scheme_dark')
-                : t('color_scheme_light')
+                ? translate(TranslationKeys.color_scheme_dark)
+                : translate(TranslationKeys.color_scheme_light)
             }
             rightIcon={
               <Octicons
@@ -646,7 +646,7 @@ const Settings = () => {
           <ModalComponent
             isVisible={isDrawerModalVisible}
             onClose={closeDrawerModal}
-            title={t('drawer_config_position')}
+            title={translate(TranslationKeys.drawer_config_position)}
             onSave={saveDrawer}
             showButtons={false}
           >
@@ -668,8 +668,8 @@ const Settings = () => {
             leftIcon={
               <Entypo name='menu' size={24} color={theme.screen.icon} />
             }
-            label={t('drawer_config_position')}
-            value={t('drawer_config_position_system')}
+            label={translate(TranslationKeys.drawer_config_position)}
+            value={translate(TranslationKeys.drawer_config_position_system)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -683,7 +683,7 @@ const Settings = () => {
           <ModalComponent
             isVisible={isAmountColumnModal}
             onClose={closeAmountColumnModal}
-            title={t('amount_columns_for_cards')}
+            title={translate(TranslationKeys.amount_columns_for_cards)}
             onSave={saveAmount}
             showButtons={false}
           >
@@ -712,9 +712,11 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('amount_columns_for_cards')}
+            label={translate(TranslationKeys.amount_columns_for_cards)}
             value={
-              amountColumnsForcard === 0 ? t('automatic') : amountColumnsForcard
+              amountColumnsForcard === 0
+                ? translate(TranslationKeys.automatic)
+                : amountColumnsForcard
             }
             rightIcon={
               <Octicons
@@ -728,7 +730,7 @@ const Settings = () => {
           <ModalComponent
             isVisible={isFirstDayModalVisible}
             onClose={closeFirstDayModal}
-            title={t('first_day_of_week')}
+            title={translate(TranslationKeys.first_day_of_week)}
             onSave={saveFirstDay}
             showButtons={false}
           >
@@ -753,8 +755,8 @@ const Settings = () => {
             leftIcon={
               <Feather name='calendar' size={24} color={theme.screen.icon} />
             }
-            label={t('first_day_of_week')}
-            value={t(firstDayOfTheWeek?.name)}
+            label={translate(TranslationKeys.first_day_of_week)}
+            value={translate(firstDayOfTheWeek?.name)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -769,7 +771,7 @@ const Settings = () => {
               leftIcon={
                 <Entypo name='login' size={24} color={theme.screen.icon} />
               }
-              label={t('logout')}
+              label={translate(TranslationKeys.logout)}
               rightIcon={
                 <Entypo name='login' size={24} color={theme.screen.icon} />
               }
@@ -780,7 +782,7 @@ const Settings = () => {
               leftIcon={
                 <Entypo name='login' size={24} color={theme.screen.icon} />
               }
-              label={t('sign_in')}
+              label={translate(TranslationKeys.sign_in)}
               rightIcon={
                 <Entypo name='login' size={24} color={theme.screen.icon} />
               }
@@ -796,7 +798,7 @@ const Settings = () => {
                   color={theme.screen.icon}
                 />
               }
-              label={`${t('account_delete')}`}
+              label={`${translate(TranslationKeys.account_delete)}`}
               rightIcon={
                 <Octicons
                   name='chevron-right'
@@ -815,7 +817,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('dataAccess')}
+            label={translate(TranslationKeys.dataAccess)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -833,7 +835,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('feedback_support_faq')}
+            label={translate(TranslationKeys.feedback_support_faq)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -851,7 +853,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            label={t('license_information')}
+            label={translate(TranslationKeys.license_information)}
             rightIcon={
               <Octicons
                 name='chevron-right'
@@ -882,8 +884,8 @@ const Settings = () => {
                   fontSize: isWeb ? 16 : 14,
                 }}
               >
-                {t(
-                  'terms_and_conditions_accepted_and_privacy_policy_read_at_date'
+                {translate(
+                  TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date
                 )}
               </Text>
             </View>
@@ -925,7 +927,7 @@ const Settings = () => {
           </TouchableOpacity>
           {isManagement && isDevMode && (
             <Text style={{ ...styles.devModeText, color: theme.screen.text }}>
-              {t('developerModeActive')}
+              {translate(TranslationKeys.developerModeActive)}
             </Text>
           )}
         </View>

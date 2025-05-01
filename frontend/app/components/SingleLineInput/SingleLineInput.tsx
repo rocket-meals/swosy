@@ -5,6 +5,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
+import { TranslationKeys } from '@/locales/keys';
 
 const SingleLineInput = ({
   id,
@@ -26,7 +27,7 @@ const SingleLineInput = ({
   suffix: string | null | undefined;
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
     const flag = !suffix && !prefix;
 
     return (
@@ -68,7 +69,7 @@ const SingleLineInput = ({
             value={value}
             editable={!isDisabled}
             enterKeyHint='next'
-            placeholder={t('type_here')}
+            placeholder={translate(TranslationKeys.type_here)}
           />
           {suffix && (
             <View

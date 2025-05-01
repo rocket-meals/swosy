@@ -18,11 +18,12 @@ import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 
 const NewsItem: React.FC<any> = ({ news }) => {
   const { theme } = useTheme();
   const toast = useToast();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor, language } = useSelector(
     (state: any) => state.settings
   );
@@ -158,7 +159,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
                 onPress={handleNewsDetails}
               >
                 <Text style={{ ...styles.readMore, color: contrastColor }}>
-                  {t('read_more')}
+                  {translate(TranslationKeys.read_more)}
                 </Text>
                 <FontAwesome6
                   name='arrow-up-right-from-square'
@@ -170,7 +171,7 @@ const NewsItem: React.FC<any> = ({ news }) => {
           >
             <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
               <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                {t('read_more')}
+                {translate(TranslationKeys.read_more)}
               </TooltipText>
             </TooltipContent>
           </Tooltip>

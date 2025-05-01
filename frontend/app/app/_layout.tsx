@@ -85,7 +85,8 @@ export default function Layout() {
       >
         <Image
           source={require('@/assets/images/company.png')}
-          style={{ width: 150, height: 150 }}
+          style={{ width: 250, height: 250 }}
+          resizeMode='contain'
         />
       </View>
     );

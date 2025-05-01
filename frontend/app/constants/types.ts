@@ -911,6 +911,7 @@ export type Foodoffers = {
   sort?: number | null;
   status?: string | null;
   sugar_g?: number | null;
+  redirect_url?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };

@@ -25,6 +25,7 @@ import { isSameDay } from 'date-fns';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
   label,
@@ -32,7 +33,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
 }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
   const [warning, setWarning] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -208,8 +209,8 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_like_that')}: ${t(
-                labelData?.like ? 'active' : 'inactive'
+              {`${translate(TranslationKeys.i_like_that)}: ${translate(
+                labelData?.like ? TranslationKeys.active : TranslationKeys.inactive
               )}: ${getTextFromTranslation(label?.translations, language)}`}
             </TooltipText>
           </TooltipContent>
@@ -249,8 +250,8 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_dislike_that')}: ${t(
-                labelData?.like === false ? 'active' : 'inactive'
+              {`${translate(TranslationKeys.i_dislike_that)}: ${translate(
+                labelData?.like === false ? TranslationKeys.active : TranslationKeys.inactive
               )}: ${getTextFromTranslation(label?.translations, language)}`}
             </TooltipText>
           </TooltipContent>
