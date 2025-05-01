@@ -6,12 +6,13 @@ import { CalendarSheetProps, Direction } from './types';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { AntDesign } from '@expo/vector-icons';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+
 const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
@@ -39,6 +40,58 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
     setCurrentMonth(newMonth);
   };
 
+  LocaleConfig.locales['custom'] = {
+    monthNames: [
+      translate(TranslationKeys.January),
+      translate(TranslationKeys.February),
+      translate(TranslationKeys.March),
+      translate(TranslationKeys.April),
+      translate(TranslationKeys.May),
+      translate(TranslationKeys.June),
+      translate(TranslationKeys.July),
+      translate(TranslationKeys.August),
+      translate(TranslationKeys.September),
+      translate(TranslationKeys.October),
+      translate(TranslationKeys.November),
+      translate(TranslationKeys.December),
+    ],
+    monthNamesShort: [
+      translate(TranslationKeys.Jan),
+      translate(TranslationKeys.Feb),
+      translate(TranslationKeys.Mar),
+      translate(TranslationKeys.Apr),
+      translate(TranslationKeys.MayShort),
+      translate(TranslationKeys.Jun),
+      translate(TranslationKeys.Jul),
+      translate(TranslationKeys.Aug),
+      translate(TranslationKeys.Sep),
+      translate(TranslationKeys.Oct),
+      translate(TranslationKeys.Nov),
+      translate(TranslationKeys.Dec),
+    ],
+    dayNames: [
+      translate(TranslationKeys.Sun),
+      translate(TranslationKeys.Mon),
+      translate(TranslationKeys.Tue),
+      translate(TranslationKeys.Wed),
+      translate(TranslationKeys.Thu),
+      translate(TranslationKeys.Fri),
+      translate(TranslationKeys.Sat),
+    ],
+    dayNamesShort: [
+      translate(TranslationKeys.Sun_S),
+      translate(TranslationKeys.Mon_S),
+      translate(TranslationKeys.Tue_S),
+      translate(TranslationKeys.Wed_S),
+      translate(TranslationKeys.Thu_S),
+      translate(TranslationKeys.Fri_S),
+      translate(TranslationKeys.Sat_S),
+    ],
+    today: translate(TranslationKeys.today),
+  };
+
+  LocaleConfig.defaultLocale = 'custom';
+
   return (
     <BottomSheetView
       style={{ ...styles.container, backgroundColor: theme.sheet.sheetBg }}
@@ -58,7 +111,8 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
             color: theme.sheet.text,
           }}
         >
-          {translate(TranslationKeys.select)} : {translate(TranslationKeys.date)}
+          {translate(TranslationKeys.select)} :{' '}
+          {translate(TranslationKeys.date)}
         </Text>
         <TouchableOpacity
           style={{
