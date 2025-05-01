@@ -1,9 +1,20 @@
-import { ActivityIndicator, Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+} from '@expo/vector-icons';
 import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import { useTheme } from '@/hooks/useTheme';
@@ -11,8 +22,10 @@ import { ImageManagementSheetProps } from './types';
 import { ServerAPI } from '@/redux/actions';
 import { uploadFiles } from '@directus/sdk';
 import { CollectionHelper } from '@/helper/collectionHelper';
-import { fetchSpecificField } from '@/redux/actions/Fields/Fields';
 import { useSelector } from 'react-redux';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
   closeSheet,
@@ -21,11 +34,18 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
   fileName,
 }) => {
   const { theme } = useTheme();
-  const [loading, setLoading] = useState({ image: false, delete: false });
+  const { translate } = useLanguage();
+  const [loading, setLoading] = useState({
+    camera: false,
+    image: false,
+    delete: false,
+  });
   const [isDelete, setIsDelete] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get('window').width
+  );
   const MAX_IMAGE_DIMENSION = 6000;
   const { foodCollection } = useSelector((state: any) => state.food);
-  console.log('Food Collection', foodCollection);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
@@ -36,6 +56,15 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
       return id || '';
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
+
+    const subscription = Dimensions.addEventListener('change', handleResize);
+
+    return () => subscription?.remove();
+  }, []);
 
   const handleImagePick = async (useCamera: boolean) => {
     try {
@@ -98,7 +127,11 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
 
         finalUri = resizedImage.uri;
       }
-      setLoading({ ...loading, image: true });
+      if (useCamera) {
+        setLoading({ ...loading, camera: true });
+      } else {
+        setLoading({ ...loading, image: true });
+      }
       const formData = new FormData();
       const file_name = fileName + '_' + selectedFoodId;
       let storage = '';
@@ -162,12 +195,11 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
         }
       );
       handleFetch();
-      setLoading({ ...loading, image: false });
+      setLoading({ ...loading, camera: false, image: false });
       closeSheet();
     } catch (error) {
       console.error('Error selecting image:', error);
-      setLoading({ ...loading, image: false });
-      // Alert.alert('Error', 'An error occurred while selecting the image.');
+      setLoading({ ...loading, camera: false, image: false });
     }
   };
 
@@ -189,9 +221,8 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
   };
 
   return (
-    <BottomSheetScrollView
+    <BottomSheetView
       style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
-      contentContainerStyle={styles.contentContainer}
     >
       <View
         style={{
@@ -227,10 +258,12 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
         style={{
           ...styles.mainContentContainer,
           width: isWeb ? '90%' : '100%',
+          paddingHorizontal: screenWidth > 600 ? 20 : 0,
+          marginTop: screenWidth > 600 ? 40 : 20,
         }}
       >
         {isDelete ? (
-          <>
+          <View>
             <TouchableOpacity
               style={{ ...styles.row, backgroundColor: theme.background }}
               onPress={handleDeleteImage}
@@ -242,7 +275,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Delete
+                  {translate(TranslationKeys.delete)}
                 </Text>
               </View>
               {loading?.delete ? (
@@ -269,7 +302,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Cancel
+                  {translate(TranslationKeys.cancel)}
                 </Text>
               </View>
               <MaterialCommunityIcons
@@ -289,13 +322,35 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Navigate back
+                  {translate(TranslationKeys.navigate_back)}
                 </Text>
               </View>
             </TouchableOpacity>
-          </>
+          </View>
         ) : (
           <>
+            {!isWeb && (
+              <TouchableOpacity
+                style={{ ...styles.row, backgroundColor: theme.background }}
+                onPress={() => handleImagePick(true)}
+              >
+                <View style={styles.col}>
+                  <Ionicons name='camera' size={24} color={theme.screen.icon} />
+                  <Text style={{ ...styles.label, color: theme.screen.text }}>
+                    {translate(TranslationKeys.camera)}
+                  </Text>
+                </View>
+                {loading?.camera ? (
+                  <ActivityIndicator size='small' color={theme.screen.icon} />
+                ) : (
+                  <MaterialCommunityIcons
+                    name='checkbox-blank-circle-outline'
+                    size={24}
+                    color={theme.screen.icon}
+                  />
+                )}
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={{ ...styles.row, backgroundColor: theme.background }}
               onPress={() => handleImagePick(false)}
@@ -307,7 +362,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Gallery
+                  {translate(TranslationKeys.gallery)}
                 </Text>
               </View>
               {loading?.image ? (
@@ -331,7 +386,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Delete
+                  {translate(TranslationKeys.delete)}
                 </Text>
               </View>
               <MaterialCommunityIcons
@@ -351,14 +406,14 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  Cancel
+                  {translate(TranslationKeys.cancel)}
                 </Text>
               </View>
             </TouchableOpacity>
           </>
         )}
       </View>
-    </BottomSheetScrollView>
+    </BottomSheetView>
   );
 };
 

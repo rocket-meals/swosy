@@ -99,7 +99,7 @@ const SHEET_POINTS = {
   calendar: ['80%'],
   forecast: ['80%'],
   menu: ['90%'],
-  imageManagement: ['70%'],
+  imageManagement: ['80%'],
   eatingHabits: ['90%'],
 };
 
@@ -1203,7 +1203,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           <BottomSheet
             key={selectedSheet}
             ref={bottomSheetRef}
-            snapPoints={['40%']}
+            // snapPoints={['40%']}
             backgroundStyle={{
               ...styles.sheetBackground,
               backgroundColor: theme.sheet.sheetBg,
