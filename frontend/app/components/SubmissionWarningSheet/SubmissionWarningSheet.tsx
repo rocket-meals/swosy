@@ -17,10 +17,11 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { router } from 'expo-router';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
+import { TranslationKeys } from '@/locales/keys';
 
 const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const [loading, setLoading] = useState(false);
   const formsSubmissionsHelper = new FormsSubmissionsHelper();
@@ -60,7 +61,7 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
             color: theme.sheet.text,
           }}
         >
-          {t('warning')}
+          {translate(TranslationKeys.warning)}
         </Text>
         <TouchableOpacity
           style={{
@@ -94,7 +95,7 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
             <ActivityIndicator size={22} color={theme.background} />
           ) : (
             <Text style={{ ...styles.loginLabel, color: theme.activeText }}>
-              {t('proceed')}
+              {translate(TranslationKeys.proceed)}
             </Text>
           )}
         </TouchableOpacity>
@@ -110,7 +111,7 @@ const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
         >
           {
             <Text style={{ ...styles.loginLabel, color: theme.screen.text }}>
-              {t('cancel')}
+              {translate(TranslationKeys.cancel)}
             </Text>
           }
         </TouchableOpacity>

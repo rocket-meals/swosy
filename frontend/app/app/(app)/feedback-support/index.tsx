@@ -28,9 +28,12 @@ import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { FeedbackResponse } from './types';
 import useToast from '@/hooks/useToast';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const FeedbackScreen = () => {
-  const { t } = useLanguage();
+  useSetPageTitle(TranslationKeys.feedback_and_support);
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
   const appFeedback = new AppFeedback();
@@ -46,15 +49,6 @@ const FeedbackScreen = () => {
   }>({});
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('Feedback & Support');
-        document.title = title;
-      }
-    }, [])
   );
 
   useFocusEffect(
@@ -228,7 +222,7 @@ const FeedbackScreen = () => {
                 padding: 15,
               }}
             >
-              {t('your_request')}
+              {translate(TranslationKeys.your_request)}
             </Text>
             {feedbackData.map((item, index) => (
               <FeedbackItem
@@ -257,8 +251,8 @@ const FeedbackScreen = () => {
                   padding: 15,
                 }}
               >
-                {t(
-                  'support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request'
+                {translate(
+                  TranslationKeys.support_warning_no_account_or_mail_provided_therefore_we_cannot_answer_your_request
                 )}
               </Text>
             )}
@@ -312,7 +306,9 @@ const FeedbackScreen = () => {
                         },
                       ]}
                     >
-                      {app_feedbacks_id ? t('to_update') : t('send')}
+                      {app_feedbacks_id
+                        ? translate(TranslationKeys.to_update)
+                        : translate(TranslationKeys.send)}
                     </Text>
                   </View>
                   <View>
@@ -427,7 +423,7 @@ const FeedbackScreen = () => {
                     item?.key === 'device_brand'
                       ? inputValues[item.key]
                         ? inputValues[item.key]
-                        : t('unknown')
+                        : translate(TranslationKeys.unknown)
                       : inputValues[item.key] || ''
                   }
                   theme={theme}

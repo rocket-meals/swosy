@@ -14,6 +14,7 @@ import { ManagementModalProps } from './types';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
+import { TranslationKeys } from '@/locales/keys';
 
 const ManagementModal: React.FC<ManagementModalProps> = ({
   isVisible,
@@ -22,7 +23,7 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
   loading,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
 
   const [formState, setFormState] = useState({
@@ -122,7 +123,7 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
             fontSize: Dimensions.get('window').width < 500 ? 23 : 28,
           }}
         >
-          {t('show_login_for_management_with_email_and_password')}
+          {translate(TranslationKeys.show_login_for_management_with_email_and_password)}
         </Text>
         <Text
           style={{
@@ -166,7 +167,7 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
           placeholderTextColor={theme.modal.placeholder}
           value={formState.password}
           secureTextEntry
-          placeholder={t('password')}
+          placeholder={translate(TranslationKeys.password)}
         />
         <TouchableOpacity
           style={{
@@ -191,7 +192,7 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
                 color: isFormValid ? theme.activeText : theme.screen.text,
               }}
             >
-              {t('sign_in')}
+              {translate(TranslationKeys.sign_in)}
             </Text>
           )}
         </TouchableOpacity>

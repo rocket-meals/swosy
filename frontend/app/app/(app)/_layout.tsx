@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {
-  Buildings,
-  Canteens,
+  CollectionsDatesLastUpdate,
   Markings,
   MarkingsGroups,
   PopupEvents,
@@ -17,10 +16,9 @@ import {
 import {
   SET_APP_ELEMENTS,
   SET_APP_SETTINGS,
-  SET_BUILDINGS,
   SET_BUSINESS_HOURS,
   SET_BUSINESS_HOURS_GROUPS,
-  SET_CANTEENS,
+  SET_COLLECTION_DATES_LAST_UPDATED,
   SET_FOOD_ATTRIBUTE_GROUPS,
   SET_FOOD_ATTRIBUTES,
   SET_FOOD_CATEGORIES,
@@ -48,9 +46,6 @@ import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader'
 import { useLanguage } from '@/hooks/useLanguage';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
-import { CanteenHelper } from '@/redux/actions';
-import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import { getImageUrl } from '@/constants/HelperFunctions';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { FoodAttributeGroupHelper } from '@/redux/actions/FoodAttributes/FoodAttributeGroup';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
@@ -61,17 +56,20 @@ import { BusinessHoursGroupsHelper } from '@/redux/actions/BusinessHours/Busines
 import { PopupEventsHelper } from '@/redux/actions/PopupEvents/PopupEvents';
 import { Platform } from 'react-native';
 import { AppElementsHelper } from '@/redux/actions/AppElements/AppElements';
+import { TranslationKeys } from '@/locales/keys';
+import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
+import { transformUpdateDatesToMap } from '@/helper/dateMap';
+import { shouldFetch } from '@/helper/shouldFetch';
+import { CollectionKeys } from '@/constants/collectionKeys';
 
 export default function Layout() {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { deviceMock } = useGlobalSearchParams();
   const dispatch = useDispatch();
   const wikisHelper = new WikisHelper();
   const markingHelper = new MarkingHelper();
-  const canteenHelper = new CanteenHelper();
   const profileHelper = new ProfileHelper();
-  const buildingsHelper = new BuildingsHelper();
   const popupEventsHelper = new PopupEventsHelper();
   const appSettingsHelper = new AppSettingsHelper();
   const appElementsHelper = new AppElementsHelper();
@@ -84,13 +82,13 @@ export default function Layout() {
   const foodAttributeGroupHelper = new FoodAttributeGroupHelper();
   const businessHoursGroupsHelper = new BusinessHoursGroupsHelper();
   const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
+  const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
-  const { loggedIn, user, profile } = useSelector(
-    (state: any) => state.authReducer
-  );
   const { popupEvents } = useSelector((state: any) => state.food);
+  const { lastUpdatedMap } = useSelector((state: any) => state.lastUpdated);
   const { drawerPosition } = useSelector((state: any) => state.settings);
+  const { loggedIn, user } = useSelector((state: any) => state.authReducer);
 
   if (!loggedIn) {
     return <Redirect href='/(auth)/login' />;
@@ -111,7 +109,7 @@ export default function Layout() {
   useEffect(() => {
     fetchFields();
   }, []);
-  // Fetch food feedback labels
+
   const getFoodFeedBackLabels = async () => {
     try {
       const foodFeedbackLabels =
@@ -129,7 +127,6 @@ export default function Layout() {
     }
   };
 
-  // Fetch profile function
   const fetchProfile = async () => {
     try {
       const profile = (await profileHelper.fetchProfileById(
@@ -307,6 +304,7 @@ export default function Layout() {
       console.error('Error fetching Food attribute groups', error);
     }
   };
+
   const getAllBusinessHoursGroups = async () => {
     try {
       const result = await businessHoursGroupsHelper.fetchBusinessHoursGroups(
@@ -348,43 +346,6 @@ export default function Layout() {
       }
     } catch (error) {
       console.error('Error fetching app settings:', error);
-    }
-  };
-
-  const fetchAllCanteens = async () => {
-    try {
-      const buildingsData = (await buildingsHelper.fetchBuildings(
-        {}
-      )) as Buildings[];
-      const buildings = buildingsData || [];
-      const buildingsDict = buildings.reduce(
-        (acc: Record<string, any>, building: any) => {
-          acc[building.id] = building;
-          return acc;
-        },
-        {}
-      );
-
-      dispatch({ type: SET_BUILDINGS, payload: buildings });
-
-      const canteensData = (await canteenHelper.fetchCanteens(
-        {}
-      )) as Canteens[];
-      const canteens = canteensData || [];
-
-      const updatedCanteens = canteens.map((canteen: any) => {
-        const building = buildingsDict[canteen?.building as string];
-        return {
-          ...canteen,
-          imageAssetId: building?.image,
-          thumbHash: building?.image_thumb_hash,
-          image_url: building?.image_remote_url || getImageUrl(building?.image),
-        };
-      });
-
-      dispatch({ type: SET_CANTEENS, payload: updatedCanteens });
-    } catch (error) {
-      console.error('Error fetching data:', error);
     }
   };
 
@@ -443,23 +404,66 @@ export default function Layout() {
     }
   };
 
+  const fetchConfig: { key: string; action: () => Promise<void> }[] = [
+    { key: CollectionKeys.POPUP_EVENTS, action: getAllEvents },
+    { key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
+    { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
+    { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
+    {
+      key: CollectionKeys.FOODOFFERS_CATEGORIES,
+      action: getFoodOffersCategories,
+    },
+    {
+      key: CollectionKeys.FOODS_FEEDBACKS_LABELS,
+      action: getFoodFeedBackLabels,
+    },
+    { key: CollectionKeys.BUSINESSHOURS, action: getBusinessHours },
+    {
+      key: CollectionKeys.BUSINESSHOURS_GROUPS,
+      action: getAllBusinessHoursGroups,
+    },
+    { key: CollectionKeys.WIKIS, action: getWikis },
+    { key: CollectionKeys.APP_SETTINGS, action: getAppSettings },
+    {
+      key: CollectionKeys.FOODS_ATTRIBUTES_GROUPS,
+      action: getAllFoodAttributesGroups,
+    },
+    { key: CollectionKeys.FOODS_ATTRIBUTES, action: getAllFoodAttributes },
+  ];
+
+  const getAllCollectionDatesLastUpdate = async () => {
+    try {
+      const result =
+        (await collectionLastUpdateHelper.fetchCollectionDatesLastUpdate(
+          {}
+        )) as CollectionsDatesLastUpdate[];
+      if (result) {
+        const serverMap = transformUpdateDatesToMap(result);
+
+        await Promise.all(
+          fetchConfig.map(({ key, action }) => {
+            if (shouldFetch(key, serverMap, lastUpdatedMap)) {
+              return action();
+            }
+            return Promise.resolve();
+          })
+        );
+
+        dispatch({
+          type: SET_COLLECTION_DATES_LAST_UPDATED,
+          payload: serverMap,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching app elements:', error);
+    }
+  };
+
   useEffect(() => {
     if (user?.id) {
       fetchProfile();
     }
-    getAllAppElements();
-    getAllEvents();
-    getMarkings();
-    getFoodCategories();
-    getFoodOffersCategories();
-    getFoodFeedBackLabels();
-    getBusinessHours();
-    getAllBusinessHoursGroups();
-    getWikis();
-    fetchAllCanteens();
-    getAppSettings();
-    getAllFoodAttributesGroups();
-    getAllFoodAttributes();
+    getAllCollectionDatesLastUpdate();
   }, [user]);
 
   return (
@@ -479,7 +483,7 @@ export default function Layout() {
         <Drawer.Screen
           name='index'
           options={{
-            title: t('please_select_your_canteen'),
+            title: translate(TranslationKeys.please_select_your_canteen),
             headerLeft: () => null,
           }}
         />
@@ -495,11 +499,11 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('accountbalance')}
+                label={translate(TranslationKeys.accountbalance)}
                 key={'Account-Balance'}
               />
             ),
-            title: t('accountbalance'),
+            title: translate(TranslationKeys.accountbalance),
           }}
         />
         <Drawer.Screen
@@ -520,7 +524,12 @@ export default function Layout() {
           name='news/index'
           options={{
             title: 'News',
-            header: () => <CustomMenuHeader label={t('news')} key={'News'} />,
+            header: () => (
+              <CustomMenuHeader
+                label={translate(TranslationKeys.news)}
+                key={'News'}
+              />
+            ),
           }}
         />
         <Drawer.Screen
@@ -528,7 +537,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('course_timetable')}
+                label={translate(TranslationKeys.course_timetable)}
                 key={'course_timetable'}
               />
             ),
@@ -540,7 +549,10 @@ export default function Layout() {
           options={{
             title: 'Settings',
             header: () => (
-              <CustomMenuHeader label={t('settings')} key={'settings'} />
+              <CustomMenuHeader
+                label={translate(TranslationKeys.settings)}
+                key={'settings'}
+              />
             ),
           }}
         />
@@ -562,7 +574,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomMenuHeader
-                label={t('role_management')}
+                label={translate(TranslationKeys.role_management)}
                 key={'Management'}
               />
             ),
@@ -575,20 +587,20 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomStackHeader
-                label={t('notification')}
+                label={translate(TranslationKeys.notification)}
                 key={'notification'}
               />
             ),
-            title: t('notification'),
+            title: translate(TranslationKeys.notification),
           }}
         />
         <Drawer.Screen
           name='support-FAQ/index'
           options={{
-            title: t('feedback_support_faq'),
+            title: translate(TranslationKeys.feedback_support_faq),
             header: () => (
               <CustomStackHeader
-                label={t('feedback_support_faq')}
+                label={translate(TranslationKeys.feedback_support_faq)}
                 key={'Feedback Support Faq'}
               />
             ),
@@ -601,7 +613,9 @@ export default function Layout() {
             title: 'Feedback & Support',
             header: () => (
               <CustomStackHeader
-                label={`${t('feedback')} & ${t('support')}`}
+                label={`${translate(TranslationKeys.feedback)} & ${translate(
+                  TranslationKeys.support
+                )}`}
                 key={'Feedback & Support'}
               />
             ),
@@ -621,7 +635,7 @@ export default function Layout() {
           options={{
             header: () => (
               <CustomStackHeader
-                label={t('license_information')}
+                label={translate(TranslationKeys.license_information)}
                 key={'license_information'}
               />
             ),
@@ -634,7 +648,10 @@ export default function Layout() {
           options={{
             title: 'Data Access',
             header: () => (
-              <CustomStackHeader label={t('dataAccess')} key={'Data Access'} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.dataAccess)}
+                key={'Data Access'}
+              />
             ),
           }}
         />
@@ -645,7 +662,7 @@ export default function Layout() {
             title: 'Eating Habits',
             header: () => (
               <CustomStackHeader
-                label={t('eating_habits')}
+                label={translate(TranslationKeys.eating_habits)}
                 key={'Eating Habits'}
               />
             ),
@@ -656,7 +673,10 @@ export default function Layout() {
           options={{
             title: 'Price Group',
             header: () => (
-              <CustomStackHeader label={t('price_group')} key={'Price Group'} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.price_group)}
+                key={'Price Group'}
+              />
             ),
           }}
         />
@@ -665,14 +685,20 @@ export default function Layout() {
           name='form-categories/index'
           options={{
             header: () => (
-              <CustomStackHeader label={t('select_a_form_category')} />
+              <CustomStackHeader
+                label={translate(TranslationKeys.select_a_form_category)}
+              />
             ),
           }}
         />
         <Drawer.Screen
           name='forms/index'
           options={{
-            header: () => <CustomStackHeader label={t('select_a_form')} />,
+            header: () => (
+              <CustomStackHeader
+                label={translate(TranslationKeys.select_a_form)}
+              />
+            ),
           }}
         />
         <Drawer.Screen

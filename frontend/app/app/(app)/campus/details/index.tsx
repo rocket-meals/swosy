@@ -22,9 +22,10 @@ import { useSelector } from 'react-redux';
 import { Buildings } from '@/constants/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { createSelector } from 'reselect';
-import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 const selectSettingsState = (state: any) => state.settings;
 
 const selectPrimaryColor = createSelector(
@@ -37,11 +38,11 @@ const selectAppSettings = createSelector(
 );
 
 const details = () => {
+  useSetPageTitle(TranslationKeys.building_details);
   const { theme } = useTheme();
-  const { t } = useLanguage()
+  const { translate } = useLanguage();
   const primaryColor = useSelector(selectPrimaryColor);
   const appSettings = useSelector(selectAppSettings);
-  const mode = useSelector((state: any) => state.settings.theme);
   const { serverInfo } = useSelector((state: any) => state.settings);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const { id } = useLocalSearchParams();
@@ -55,18 +56,6 @@ const details = () => {
   const campus_area_color = appSettings?.campus_area_color
     ? appSettings?.campus_area_color
     : primaryColor;
-  const contrastColor = myContrastColor(
-    campus_area_color,
-    theme,
-    mode === 'dark'
-  );
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Building Details';
-      document.title = title;
-    }
-  }, []);
 
   const fetchCampusById = async () => {
     setLoading(true);
@@ -238,7 +227,9 @@ const details = () => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('open_navitation_to_location')}`}
+                      {`${translate(
+                        TranslationKeys.open_navitation_to_location
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -287,7 +278,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('information')}`}
+                        {`${translate(TranslationKeys.information)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -323,7 +314,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('description')}`}
+                        {`${translate(TranslationKeys.description)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>

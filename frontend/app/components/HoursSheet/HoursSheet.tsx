@@ -18,10 +18,11 @@ import { Buildings } from '@/constants/types';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import { HourSheetProps } from './types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
+import { TranslationKeys } from '@/locales/keys';
 
 const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const [hours, setHours] = useState<Record<
     string,
     { day: string[]; time_start: string | null; time_end: string | null }[]
@@ -424,19 +425,19 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
     if (!hoursData.length) {
       return (
         <Text style={{ ...styles.body, color: theme.screen.text }}>
-          {t('no_business_hours_available')}
+          {translate(TranslationKeys.no_business_hours_available)}
         </Text>
       );
     }
 
     const daysOfWeek = [
-      { name: t('Mon'), key: 'monday' },
-      { name: t('Tue'), key: 'tuesday' },
-      { name: t('Wed'), key: 'wednesday' },
-      { name: t('Thu'), key: 'thursday' },
-      { name: t('Fri'), key: 'friday' },
-      { name: t('Sat'), key: 'saturday' },
-      { name: t('Sun'), key: 'sunday' },
+      { name: translate(TranslationKeys.Mon), key: 'monday' },
+      { name: translate(TranslationKeys.Tue), key: 'tuesday' },
+      { name: translate(TranslationKeys.Wed), key: 'wednesday' },
+      { name: translate(TranslationKeys.Thu), key: 'thursday' },
+      { name: translate(TranslationKeys.Fri), key: 'friday' },
+      { name: translate(TranslationKeys.Sat), key: 'saturday' },
+      { name: translate(TranslationKeys.Sun), key: 'sunday' },
     ];
 
     let renderedOuput: React.ReactNode[] = [];
@@ -452,7 +453,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
       let hoursDataKey =
         groupName + range.day.join('-') + range.time_start + range.time_end;
 
-      let timeText = t('closed_hours');
+      let timeText = translate(TranslationKeys.closed_hours);
       if (range.time_start && range.time_end) {
         timeText = `${formatTime(range.time_start)} - ${formatTime(
           range.time_end
@@ -497,7 +498,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
             color: theme.sheet.text,
           }}
         >
-          {t('businesshours')}
+          {translate(TranslationKeys.businesshours)}
         </Text>
         <TouchableOpacity
           style={{
@@ -556,7 +557,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
               }}
             >
               <Text style={{ ...styles.empty, color: theme.screen.text }}>
-                {t('no_business_hours_available')}
+                {translate(TranslationKeys.no_business_hours_available)}
               </Text>
             </View>
           )}
