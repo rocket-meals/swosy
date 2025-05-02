@@ -1,7 +1,8 @@
+import { Buildings } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class BuildingsHelper extends CollectionHelper<any> {
+export class BuildingsHelper extends CollectionHelper<Buildings> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('buildings', client || ServerAPI.getClient());

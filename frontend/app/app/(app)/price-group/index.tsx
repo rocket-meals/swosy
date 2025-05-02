@@ -22,6 +22,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Profiles } from '@/constants/types';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.price_group);
@@ -101,7 +102,7 @@ const index = () => {
       setLoading(true);
       setSelectedOption(option);
       const payload = { ...profile, price_group: option };
-      const result = await profileHelper.updateProfile(payload);
+      const result = (await profileHelper.updateProfile(payload)) as Profiles;
       if (result) {
         dispatch({ type: UPDATE_PROFILE, payload });
       }

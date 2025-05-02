@@ -1,7 +1,8 @@
+import { Canteens } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class CanteenHelper extends CollectionHelper<any> {
+export class CanteenHelper extends CollectionHelper<Canteens> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('canteens', client || ServerAPI.getClient());

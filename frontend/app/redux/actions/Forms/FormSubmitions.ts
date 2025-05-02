@@ -2,7 +2,7 @@ import { FormSubmissions } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FormsSubmissionsHelper extends CollectionHelper<any> {
+export class FormsSubmissionsHelper extends CollectionHelper<FormSubmissions> {
   constructor(client?: any) {
     super('form_submissions', client || ServerAPI.getClient());
   }

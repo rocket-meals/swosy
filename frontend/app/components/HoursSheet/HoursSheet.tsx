@@ -16,7 +16,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { Buildings } from '@/constants/types';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
-import { HourSheetProps } from './types';
+import { BusinessHour, HourSheetProps } from './types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -75,9 +75,9 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
 
       const hoursPromises = buildingData.businesshours.map(async (bh) => {
         try {
-          return await businessHoursHelper.fetchBusinessHoursById(
+          return (await businessHoursHelper.fetchBusinessHoursById(
             bh.businesshours_id
-          );
+          )) as BusinessHour;
         } catch (error) {
           console.error(
             `Error fetching business hour ID ${bh.businesshours_id}`,

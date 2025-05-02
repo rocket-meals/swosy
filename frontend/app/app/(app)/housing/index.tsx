@@ -138,14 +138,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       // Fetch all apartments
       const apartmentData = (await apartmentsHelper.fetchApartments(
         {}
-      )) as Buildings[];
+      )) as Apartments[];
       const apartments = apartmentData || [];
 
       if (apartments && apartments?.length > 0) {
         const apartmentWithBuilding = await Promise.all(
           apartments.map(async (apartment) => {
             const buildingData = (await buildingsHelper.fetchBuildingById(
-              apartment?.building
+              String(apartment?.building)
             )) as Buildings;
 
             return {

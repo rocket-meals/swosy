@@ -140,10 +140,10 @@ const FileUpload = ({
           return;
         }
 
-        const response = await formAnswersHelper.updateFormAnswers(id, {
+        const response = (await formAnswersHelper.updateFormAnswers(id, {
           id: id,
           value_files: { delete: [relation.id] },
-        });
+        })) as FormAnswer;
 
         if (response) {
           onChange(

@@ -15,20 +15,21 @@ import { format } from 'date-fns';
 import { router, useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { AppFeedbacks } from '@/constants/types';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.my_support_tickets);
   const { theme } = useTheme();
   const appFeedback = new AppFeedback();
   const [loading, setLoading] = useState(false);
-  const [allTickets, setAllTickets] = useState<any>(null);
+  const [allTickets, setAllTickets] = useState<AppFeedbacks[] | null>(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
 
   const getAllTickets = async () => {
     setLoading(true);
-    const allTickets = await appFeedback.fetchAppFeedback();
+    const allTickets = (await appFeedback.fetchAppFeedback()) as AppFeedbacks[];
     if (allTickets) {
       setAllTickets(allTickets);
       setLoading(false);
@@ -73,7 +74,7 @@ const index = () => {
           style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}
         >
           {allTickets &&
-            allTickets?.map((item: any, index: number) => (
+            allTickets?.map((item, index: number) => (
               <TouchableOpacity
                 style={{ ...styles.row, backgroundColor: theme.screen.iconBg }}
                 onPress={() => {

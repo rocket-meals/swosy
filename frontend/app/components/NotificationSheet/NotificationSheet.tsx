@@ -1,4 +1,4 @@
-import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -13,7 +13,6 @@ import styles from './styles';
 import { NotificationSheetProps } from './types';
 import { useDispatch, useSelector } from 'react-redux';
 import usePlatformHelper from '@/helper/platformHelper';
-import { NotificationHelper } from '@/helper/NotificationHelper';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import {
   DELETE_FOOD_FEEDBACK_LOCAL,
@@ -26,6 +25,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { FoodsFeedbacks } from '@/constants/types';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({
   closeSheet,
@@ -41,12 +41,6 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   );
   const mode = useSelector((state: any) => state.settings.theme);
   const { profile } = useSelector((state: any) => state.authReducer);
-  const [
-    notificationGranted,
-    pushTokenObj,
-    updateDeviceInformationAndRegisterIfNotFound,
-    requestDeviceNotificationPermission,
-  ] = NotificationHelper.useNotificationPermission(profile);
   const { isWeb } = usePlatformHelper();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
@@ -55,9 +49,9 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
   const foods_area_color = appSettings?.foods_area_color
-  ? appSettings?.foods_area_color
-  : primaryColor;
-     const contrastColor = myContrastColor(
+    ? appSettings?.foods_area_color
+    : primaryColor;
+  const contrastColor = myContrastColor(
     foods_area_color,
     theme,
     mode === 'dark'
@@ -109,11 +103,11 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
         ...previousFeedback,
         notify: !previousFeedback?.notify,
       };
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         payload
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,

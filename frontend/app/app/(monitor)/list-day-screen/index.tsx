@@ -32,6 +32,7 @@ import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { FoodsAttributes, FoodsCategories } from '@/constants/types';
 const index = () => {
   useSetPageTitle('list-day-screen');
   const {
@@ -165,7 +166,7 @@ const index = () => {
             attributeIds.map(async (id: string) => {
               const attr = (await foodAttributesHelper.fetchFoodAttributeById(
                 id
-              )) as any;
+              )) as FoodsAttributes;
               const title = attr?.translations
                 ? getFoodAttributesTranslation(attr.translations, language)
                 : '';
@@ -389,9 +390,9 @@ const index = () => {
 
     for (const food of foodList) {
       try {
-        const result: any = await foodCategoriesHelper.fetchFoodCategoriesById(
+        const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
           food?.food?.food_category
-        );
+        )) as FoodsCategories;
         if (result) {
           newCategories[food.id] = result;
         }

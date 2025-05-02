@@ -19,7 +19,7 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import { Foods } from '@/constants/types';
+import { Foods, FoodsFeedbacks } from '@/constants/types';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import useToast from '@/hooks/useToast';
 import { DateHelper } from '@/helper/dateHelper';
@@ -103,11 +103,11 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
     }));
 
     try {
-      const result: any = await foodFeedbackHelper.updateFoodFeedback(
+      const result = (await foodFeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         { ...previousFeedback, comment: string }
-      );
+      )) as FoodsFeedbacks;
       // Dispatch the correct action
       dispatch({
         type: result?.id

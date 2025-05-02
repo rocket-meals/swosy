@@ -6,7 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import {
+  AppElements,
+  AppSettings,
+  Businesshours,
+  BusinesshoursGroups,
+  CanteensFeedbacksLabelsEntries,
   CollectionsDatesLastUpdate,
+  FoodoffersCategories,
+  FoodsAttributes,
+  FoodsAttributesGroups,
+  FoodsCategories,
+  FoodsFeedbacks,
+  FoodsFeedbacksLabels,
+  FoodsFeedbacksLabelsEntries,
   Markings,
   MarkingsGroups,
   PopupEvents,
@@ -113,7 +125,9 @@ export default function Layout() {
   const getFoodFeedBackLabels = async () => {
     try {
       const foodFeedbackLabels =
-        await foodfeedbackLabelHelper.fetchFoodFeedbackLabels({});
+        (await foodfeedbackLabelHelper.fetchFoodFeedbackLabels(
+          {}
+        )) as FoodsFeedbacksLabels[];
       if (foodFeedbackLabels) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LABELS,
@@ -147,7 +161,9 @@ export default function Layout() {
   const getOwnFeedback = async (id: string) => {
     try {
       // Fetch own feedback
-      const result = await foodFeedbackHelper.fetchFoodFeedbackByProfileId(id);
+      const result = (await foodFeedbackHelper.fetchFoodFeedbackByProfileId(
+        id
+      )) as FoodsFeedbacks[];
       if (result) {
         dispatch({ type: UPDATE_OWN_FOOD_FEEDBACK, payload: result });
       }
@@ -159,9 +175,9 @@ export default function Layout() {
   const getFeedbackEntries = async (id: string) => {
     try {
       const result =
-        await foodFeedbackLabelEntryHelper.fetchFoodFeedbackLabelEntriesByProfile(
+        (await foodFeedbackLabelEntryHelper.fetchFoodFeedbackLabelEntriesByProfile(
           id
-        );
+        )) as FoodsFeedbacksLabelsEntries[];
       if (result) {
         dispatch({
           type: UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES,
@@ -176,9 +192,9 @@ export default function Layout() {
   const getCanteenFeedbackEntries = async (id: string) => {
     try {
       const result =
-        await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntriesByProfile(
+        (await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntriesByProfile(
           id
-        );
+        )) as CanteensFeedbacksLabelsEntries[];
       if (result) {
         dispatch({
           type: SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
@@ -259,7 +275,9 @@ export default function Layout() {
 
   const getFoodCategories = async () => {
     try {
-      const result = await foodCategoriesHelper.fetchFoodCategories({});
+      const result = (await foodCategoriesHelper.fetchFoodCategories(
+        {}
+      )) as FoodsCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
       }
@@ -270,9 +288,10 @@ export default function Layout() {
 
   const getFoodOffersCategories = async () => {
     try {
-      const result = await foodOffersCategoriesHelper.fetchFoodOffersCategories(
-        {}
-      );
+      const result =
+        (await foodOffersCategoriesHelper.fetchFoodOffersCategories(
+          {}
+        )) as FoodoffersCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
       }
@@ -283,7 +302,8 @@ export default function Layout() {
 
   const getAllFoodAttributes = async () => {
     try {
-      const result = await foodAttributesHelper.fetchAllFoodAttributes();
+      const result =
+        (await foodAttributesHelper.fetchAllFoodAttributes()) as FoodsAttributes[];
       if (result) {
         dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
       }
@@ -294,9 +314,10 @@ export default function Layout() {
 
   const getAllFoodAttributesGroups = async () => {
     try {
-      const result = await foodAttributeGroupHelper.fetchAllFoodAttributeGroups(
-        {}
-      );
+      const result =
+        (await foodAttributeGroupHelper.fetchAllFoodAttributeGroups(
+          {}
+        )) as FoodsAttributesGroups[];
       if (result) {
         dispatch({ type: SET_FOOD_ATTRIBUTE_GROUPS, payload: result });
       }
@@ -307,9 +328,9 @@ export default function Layout() {
 
   const getAllBusinessHoursGroups = async () => {
     try {
-      const result = await businessHoursGroupsHelper.fetchBusinessHoursGroups(
+      const result = (await businessHoursGroupsHelper.fetchBusinessHoursGroups(
         {}
-      );
+      )) as BusinesshoursGroups[];
       if (result) {
         dispatch({ type: SET_BUSINESS_HOURS_GROUPS, payload: result });
       }
@@ -320,7 +341,9 @@ export default function Layout() {
 
   const getBusinessHours = async () => {
     try {
-      const businessHours = await businessHoursHelper.fetchBusinessHours({});
+      const businessHours = (await businessHoursHelper.fetchBusinessHours(
+        {}
+      )) as Businesshours[];
       dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
     } catch (error) {
       console.error('Error fetching business hours:', error);
@@ -340,7 +363,9 @@ export default function Layout() {
 
   const getAppSettings = async () => {
     try {
-      const result = await appSettingsHelper.fetchAppSettings({});
+      const result = (await appSettingsHelper.fetchAppSettings(
+        {}
+      )) as AppSettings;
       if (result) {
         dispatch({ type: SET_APP_SETTINGS, payload: result });
       }
@@ -394,7 +419,9 @@ export default function Layout() {
 
   const getAllAppElements = async () => {
     try {
-      const result = await appElementsHelper.fetchAllAppElements({});
+      const result = (await appElementsHelper.fetchAllAppElements(
+        {}
+      )) as AppElements;
       if (result) {
         dispatch({ type: SET_APP_ELEMENTS, payload: result });
       }

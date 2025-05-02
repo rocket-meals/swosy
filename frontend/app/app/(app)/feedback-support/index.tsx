@@ -30,6 +30,7 @@ import { FeedbackResponse } from './types';
 import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { AppFeedbacks } from '@/constants/types';
 
 const FeedbackScreen = () => {
   useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -58,8 +59,9 @@ const FeedbackScreen = () => {
   );
 
   const fetchFeedbackById = async () => {
-    const response: FeedbackResponse | undefined | any =
-      await appFeedback.fetchAppFeedbackById(String(app_feedbacks_id));
+    const response = (await appFeedback.fetchAppFeedbackById(
+      String(app_feedbacks_id)
+    )) as AppFeedbacks;
     if (response) {
       setInputValues({
         title: response?.title,
@@ -162,7 +164,9 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = await appFeedback.createAppFeedback(filteredInputValues);
+      const result = (await appFeedback.createAppFeedback(
+        filteredInputValues
+      )) as AppFeedbacks;
       if (result) {
         setLoading(false);
         fetchDeviceInfo();
@@ -183,10 +187,10 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = await appFeedback.updateAppFeedback(
+      const result = (await appFeedback.updateAppFeedback(
         String(app_feedbacks_id),
         filteredInputValues
-      );
+      )) as AppFeedbacks;
       if (result) {
         setLoading(false);
         fetchDeviceInfo();

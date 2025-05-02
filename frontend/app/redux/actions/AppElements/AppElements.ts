@@ -1,7 +1,8 @@
+import { AppElements } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class AppElementsHelper extends CollectionHelper<any> {
+export class AppElementsHelper extends CollectionHelper<AppElements> {
   constructor(client?: any) {
     super('app_elements', client || ServerAPI.getClient());
   }

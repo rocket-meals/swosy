@@ -33,7 +33,12 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import { Foods, FoodsTranslations } from '@/constants/types';
+import {
+  Foods,
+  FoodsFeedbacks,
+  FoodsTranslations,
+  Profiles,
+} from '@/constants/types';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -100,7 +105,6 @@ export default function FoodDetailsScreen() {
   );
   const profileHelper = useMemo(() => new ProfileHelper(), []);
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-  const foodAttributesHelper = new FoodAttributesValuesHelper();
   const { foodAttributeGroups } = useSelector(
     (state: any) => state.foodAttributes
   );
@@ -209,14 +213,14 @@ export default function FoodDetailsScreen() {
       return;
     }
     try {
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         {
           ...previousFeedback,
           rating: previousFeedback?.rating === rating ? null : rating,
         }
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -239,11 +243,11 @@ export default function FoodDetailsScreen() {
         ...previousFeedback,
         notify: !previousFeedback?.notify,
       };
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         payload
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -352,10 +356,10 @@ export default function FoodDetailsScreen() {
         newDevices = [...newDevices];
         newDevices[index] = deviceInformationsForUpdate;
       }
-      const result = await profileHelper.updateProfile({
+      const result = (await profileHelper.updateProfile({
         ...profile,
         devices: newDevices,
-      });
+      })) as Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,

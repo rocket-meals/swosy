@@ -22,7 +22,7 @@ import {
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
-import { DirectusUsers, Wikis } from '@/constants/types';
+import { AppSettings, DirectusUsers, Wikis } from '@/constants/types';
 import { format } from 'date-fns';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
@@ -77,7 +77,9 @@ export default function Login() {
 
   const getAppSettings = async () => {
     try {
-      const result = await appSettingsHelper.fetchAppSettings({});
+      const result = (await appSettingsHelper.fetchAppSettings(
+        {}
+      )) as AppSettings;
       if (result) {
         dispatch({ type: SET_APP_SETTINGS, payload: result });
       }

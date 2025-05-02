@@ -1,7 +1,8 @@
+import { Forms } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FormsHelper extends CollectionHelper<any> {
+export class FormsHelper extends CollectionHelper<Forms> {
   constructor(client?: any) {
     super('forms', client || ServerAPI.getClient());
   }

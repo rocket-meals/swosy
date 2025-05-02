@@ -157,7 +157,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
         dispatch({ type: UPDATE_PROFILE, payload: profileData });
 
         // Update profile on the server
-        const result = await profileHelper.updateProfile(profileData);
+        const result = (await profileHelper.updateProfile(
+          profileData
+        )) as Profiles;
         if (result) {
           fetchProfile();
           if (like) {
