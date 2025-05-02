@@ -1161,7 +1161,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <ActivityIndicator size={'large'} color={theme.screen.icon} />
                 </View>
-              ) : selectedCanteenFoodOffers ? (
+              ) : selectedCanteenFoodOffers &&
+                selectedCanteenFoodOffers?.length > 0 ? (
                 selectedCanteenFoodOffers?.map((item: Foodoffers) => (
                   <FoodItem
                     item={item}
