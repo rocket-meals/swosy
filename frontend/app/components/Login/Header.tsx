@@ -12,10 +12,9 @@ import { languages } from '../../constants/SettingData';
 import { Image } from 'expo-image';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { TranslationKeys } from '@/locales/keys';
 
 const LoginHeader = () => {
-  const { translate, setLanguageMode, language } = useLanguage();
+  const { t, setLanguageMode, language } = useLanguage();
   const locales = useLocales();
   const dispatch = useDispatch();
   const { theme } = useTheme();
@@ -134,7 +133,7 @@ const LoginHeader = () => {
       <ModalComponent
         isVisible={isLanguageModalVisible}
         onClose={closeLanguageModal}
-        title={translate(TranslationKeys.language)}
+        title={t('language')}
         onSave={saveLanguage}
         showButtons={false}
       >

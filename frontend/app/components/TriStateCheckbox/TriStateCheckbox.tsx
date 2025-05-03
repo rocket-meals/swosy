@@ -4,7 +4,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 const TriStateCheckbox = ({
   id,
@@ -20,7 +19,7 @@ const TriStateCheckbox = ({
   custom_type: string;
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
 
   const toggleState = () => {
     onChange(id, (value + 1) % 3, custom_type);
@@ -44,10 +43,10 @@ const TriStateCheckbox = ({
       <MaterialIcons name={getIcon()} size={24} color={theme.screen.text} />
       <Text style={{ ...styles.checkboxLabel, color: theme.screen.text }}>
         {value === 0
-          ? translate(TranslationKeys.unchecked)
+          ? t('unchecked')
           : value === 1
-          ? translate(TranslationKeys.checked)
-          : translate(TranslationKeys.indeterminate)}
+          ? t('checked')
+          : t('indeterminate')}
       </Text>
     </TouchableOpacity>
   );

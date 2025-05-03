@@ -35,17 +35,15 @@ import {
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
-  CLEAR_COLLECTION_DATES_LAST_UPDATED,
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
   ON_LOGOUT,
 } from '@/redux/Types/types';
-import { TranslationKeys } from '@/locales/keys';
 
 const index = () => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -158,7 +156,6 @@ const index = () => {
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
-      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       setLoading(false);
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } else {
@@ -178,7 +175,7 @@ const index = () => {
           <View style={styles.imageContainer}>{renderLottie}</View>
           <View style={{ width: windowWidth > 600 ? '85%' : '95%' }}>
             <Text style={{ ...styles.deleteInfo, color: theme.screen.text }}>
-              {translate(TranslationKeys.account_deletion_info)}
+              {t('account_deletion_info')}
             </Text>
           </View>
           <View
@@ -201,7 +198,7 @@ const index = () => {
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  {translate(TranslationKeys.account)}
+                  {t('account')}
                 </Text>
               </View>
               <View style={{ ...styles.col, maxWidth: '60%' }}>
@@ -213,9 +210,7 @@ const index = () => {
                     textAlign: 'right',
                   }}
                 >
-                  {user?.id
-                    ? user?.id
-                    : translate(TranslationKeys.without_account)}
+                  {user?.id ? user?.id : t('without_account')}
                 </Text>
               </View>
             </View>
@@ -242,7 +237,7 @@ const index = () => {
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.label, color: theme.screen.text }}>
-                  {translate(TranslationKeys.account_delete)}
+                  {t('account_delete')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -267,7 +262,7 @@ const index = () => {
                     },
                   ]}
                 >
-                  {translate(TranslationKeys.project_name)}
+                  {t('project_name')}
                 </Text>
               </View>
               <View style={styles.textIcon}>
@@ -286,7 +281,7 @@ const index = () => {
             </View>
 
             <SupportFAQ
-              label={translate(TranslationKeys.developer)}
+              label={t('developer')}
               isArrowRight={false}
               text='Baumgartner Software UG'
               onPress={() => {
@@ -294,7 +289,7 @@ const index = () => {
               }}
             />
             <SupportFAQ
-              label={translate(TranslationKeys.software_name)}
+              label={t('software_name')}
               text='Rocket Meals'
               isArrowRight={false}
               onPress={() => {
@@ -307,7 +302,7 @@ const index = () => {
       <ModalComponent
         isVisible={isDeleteAccount}
         onClose={closeDeleteAccountModal}
-        title={translate(TranslationKeys.attention)}
+        title={t('attention')}
         onSave={() => {}}
         showButtons={false}
       >
@@ -320,7 +315,7 @@ const index = () => {
               color: theme.screen.text,
             }}
           >
-            {translate(TranslationKeys.are_you_sure_to_delete_your_account)}
+            {t('are_you_sure_to_delete_your_account')}
           </Text>
           <View style={styles.attentionActions}>
             <TouchableOpacity
@@ -331,7 +326,7 @@ const index = () => {
                 <ActivityIndicator size={24} color={theme.screen.text} />
               ) : (
                 <Text style={[styles.confirmLabel, { color: theme.light }]}>
-                  {translate(TranslationKeys.confirm)}
+                  {t('confirm')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -339,9 +334,7 @@ const index = () => {
               style={styles.cancleButton}
               onPress={closeDeleteAccountModal}
             >
-              <Text style={styles.confirmLabel}>
-                {translate(TranslationKeys.cancel)}
-              </Text>
+              <Text style={styles.confirmLabel}>{t('cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>

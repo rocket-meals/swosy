@@ -3,11 +3,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 export default function MonitorLayout() {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <Stack
@@ -31,7 +30,7 @@ export default function MonitorLayout() {
           title: 'FoodPlan:Week',
           header: () => (
             <CustomStackHeader
-              label={translate(TranslationKeys.Food_Plan_Week)}
+              label={t('FoodPlan:Week')}
               key={'foodPlanWeek'}
             />
           ),
@@ -48,7 +47,7 @@ export default function MonitorLayout() {
         name='foodPlanDay/index'
         options={{
           header: () => (
-            <CustomStackHeader label={translate(TranslationKeys.food_Plan_Day)} key={'foodPlanDay'} />
+            <CustomStackHeader label={t('foodPlanDay')} key={'foodPlanDay'} />
           ),
         }}
       />
@@ -64,7 +63,7 @@ export default function MonitorLayout() {
           title: 'foodPlan:List',
           header: () => (
             <CustomStackHeader
-              label={translate(TranslationKeys.Food_Plan_List)}
+              label={t('foodPlan:List')}
               key={'foodPlanList'}
             />
           ),

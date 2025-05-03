@@ -19,14 +19,13 @@ import { UtilizationEntryHelper } from '@/redux/actions/UtilizationEntries/Utili
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 const ForecastSheet: React.FC<ForecastSheetProps> = ({
   closeSheet,
   forDate,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const utilizationEntryHelper = new UtilizationEntryHelper();
   const [loading, setLoading] = useState(false);
   const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
@@ -164,7 +163,7 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {translate(TranslationKeys.forecast)}
+          {t('forecast')}
         </Text>
         <TouchableOpacity
           style={{

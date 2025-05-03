@@ -23,7 +23,6 @@ import {
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
-  CLEAR_COLLECTION_DATES_LAST_UPDATED,
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
@@ -48,7 +47,6 @@ import { Foundation } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { Zocial } from '@expo/vector-icons';
 import { myContrastColor } from '@/helper/colorHelper';
-import { TranslationKeys } from '@/locales/keys';
 
 export const iconLibraries: Record<string, any> = {
   Ionicons,
@@ -80,7 +78,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   navigation,
   state,
 }) => {
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const toast = useToast();
   const { theme } = useTheme();
   const dispatch = useDispatch();
@@ -177,7 +175,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
-      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } catch (error) {
       console.error('Error during logout:', error);
@@ -223,7 +220,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     // Static menu items with positions
     if (appSettings?.foods_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.canteens),
+        label: t('canteens'),
         iconName: 'restaurant-sharp',
         iconLibName: Ionicons,
         activeKey: 'foodoffers',
@@ -234,7 +231,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (appSettings?.balance_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.accountbalance),
+        label: t('accountbalance'),
         iconName: 'credit-card',
         iconLibName: Octicons,
         activeKey: 'account-balance/index',
@@ -245,7 +242,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (appSettings?.campus_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.campus),
+        label: t('campus'),
         iconName: 'mortar-board',
         iconLibName: Octicons,
         activeKey: 'campus',
@@ -256,7 +253,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (appSettings?.housing_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.housing),
+        label: t('housing'),
         iconName: 'home',
         iconLibName: Octicons,
         activeKey: 'housing',
@@ -267,7 +264,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (appSettings?.news_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.news),
+        label: t('news'),
         iconName: 'newspaper',
         iconLibName: FontAwesome6,
         activeKey: 'news/index',
@@ -278,7 +275,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (appSettings?.course_timetable_enabled) {
       menuItems.push({
-        label: translate(TranslationKeys.course_timetable),
+        label: t('course_timetable'),
         iconName: 'calendar-clock-outline',
         iconLibName: MaterialCommunityIcons,
         activeKey: 'course-timetable/index',
@@ -289,7 +286,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (isManagement) {
       menuItems.push({
-        label: translate(TranslationKeys.role_management),
+        label: t('role_management'),
         iconName: 'bag',
         iconLibName: Ionicons,
         activeKey: 'management/index',
@@ -402,7 +399,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                 }
               />
               <Text style={getMenuLabelStyle('settings/index')}>
-                {translate(TranslationKeys.settings)}
+                {t('settings')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -432,7 +429,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                 color={theme.inactiveIcon}
               />
               <Text style={getMenuLabelStyle('faq-living/index')}>
-                {translate(TranslationKeys.logout)}
+                {t('logout')}
               </Text>
             </TouchableOpacity>
           </View>

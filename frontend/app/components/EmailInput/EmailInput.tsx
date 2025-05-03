@@ -4,7 +4,6 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
-import { TranslationKeys } from '@/locales/keys';
 
 const EmailInput = ({
   id,
@@ -28,7 +27,7 @@ const EmailInput = ({
   suffix: string | null | undefined;
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const flag = !suffix && !prefix;
 
   const validateEmail = (text: string) => {
@@ -75,7 +74,7 @@ const EmailInput = ({
           onChangeText={validateEmail}
           value={value}
           editable={!isDisabled}
-          placeholder={translate(TranslationKeys.enter_email)}
+          placeholder={t('enter_email')}
           keyboardType='email-address'
           autoCapitalize='none'
           enterKeyHint='next'

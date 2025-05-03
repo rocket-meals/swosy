@@ -8,6 +8,7 @@ import {
   Easing,
   Dimensions,
   DimensionValue,
+  Platform,
 } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
@@ -30,10 +31,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 const index = () => {
-  useSetPageTitle('list-day-screen');
   const {
     canteens_id,
     refreshDataIntervalInSeconds,
@@ -41,7 +39,7 @@ const index = () => {
     monitor_additional_canteens_id,
     foodAttributesData,
   } = useLocalSearchParams();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const rowHeight = 80;
   const foodCategoriesHelper = new FoodCategoriesHelper();
@@ -99,6 +97,12 @@ const index = () => {
     price: string;
     attributes: string;
   }
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'list-day-screen';
+      document.title = title;
+    }
+  }, []);
 
   const totalWidth = 1792;
   const columnPercentages: ColumnPercentages = {
@@ -543,7 +547,7 @@ const index = () => {
                 },
               ]}
             >
-              {translate(TranslationKeys.category)}
+              {t('category')}
             </Text>
             <Text
               style={[
@@ -552,7 +556,7 @@ const index = () => {
                 { width: (columnPercentages.name + '%') as DimensionValue },
               ]}
             >
-              {translate(TranslationKeys.foodname)}
+              {t('foodname')}
             </Text>
             <Text
               style={[
@@ -561,7 +565,7 @@ const index = () => {
                 { width: (columnPercentages.markings + '%') as DimensionValue },
               ]}
             >
-              {translate(TranslationKeys.markings)}
+              {t('markings')}
             </Text>
             {foodAttributesColumn &&
               foodAttributesColumn.map((column: any) => {
@@ -589,11 +593,9 @@ const index = () => {
                 { width: (columnPercentages.price + '%') as DimensionValue },
               ]}
             >
-              {` ${translate(
-                TranslationKeys.price_group_student
-              )} / ${translate(
-                TranslationKeys.price_group_employee
-              )} / ${translate(TranslationKeys.price_group_guest)}`}
+              {` ${t('price_group_student')} / ${t(
+                'price_group_employee'
+              )} / ${t('price_group_guest')}`}
             </Text>
           </View>
           <View
@@ -613,9 +615,7 @@ const index = () => {
                 style={{ ...styles.row, backgroundColor: foods_area_color }}
               >
                 <Text style={{ ...styles.body, color: contrastColor }}>
-                  {`${translate(TranslationKeys.foods)}: ${foods.length}/ ${
-                    foods?.length
-                  }`}
+                  {`${t('foods')}: ${foods.length}/ ${foods?.length}`}
                 </Text>
               </View>
             )}
@@ -836,9 +836,9 @@ const index = () => {
                 style={{ ...styles.row, backgroundColor: foods_area_color }}
               >
                 <Text style={{ ...styles.body, color: contrastColor }}>
-                  {`${translate(TranslationKeys.foods)}: ${
+                  {`${t('foods')}: ${optionalFoods?.length} / ${
                     optionalFoods?.length
-                  } / ${optionalFoods?.length}`}
+                  }`}
                 </Text>
               </View>
             )}

@@ -23,13 +23,11 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useLocalSearchParams } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Platform } from 'react-native';
 
 const Index = () => {
-  useSetPageTitle(TranslationKeys.big_screen);
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const params = useLocalSearchParams();
   const { width, height } = Dimensions.get('window');
   const imageSize = width / 2;
@@ -71,6 +69,13 @@ const Index = () => {
     getImageUrl(appSettings.foods_placeholder_image) ||
     appSettings.foods_placeholder_image_remote_url ||
     getImageUrl(serverInfo?.info?.project?.project_logo);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const title = 'bigScreen';
+      document.title = title;
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -382,9 +387,7 @@ const Index = () => {
                   }}
                 >
                   {foods?.length > 0
-                    ? `${currentFoodIndex + 1} / ${foods?.length} ${translate(
-                        TranslationKeys.foods
-                      )}`
+                    ? `${currentFoodIndex + 1} / ${foods?.length} ${t('foods')}`
                     : ''}
                 </Text>
               </View>
@@ -492,7 +495,7 @@ const Index = () => {
                     fontSize: screenWidth > 600 ? 24 : 16,
                   }}
                 >
-                  {`${translate(TranslationKeys.price_group_student)}:`}
+                  {`${t('price_group_student')}:`}
                 </Text>
                 <Text
                   style={{
@@ -510,7 +513,7 @@ const Index = () => {
                     fontSize: screenWidth > 600 ? 24 : 16,
                   }}
                 >
-                  {`${translate(TranslationKeys.price_group_employee)}: `}
+                  {`${t('price_group_employee')}: `}
                   {showFormatedPrice(showDayPlanPrice(currentFood, 'employee'))}
                 </Text>
                 <Text
@@ -520,7 +523,7 @@ const Index = () => {
                     fontSize: screenWidth > 600 ? 24 : 16,
                   }}
                 >
-                  {`${translate(TranslationKeys.price_group_guest)}: `}
+                  {`${t('price_group_guest')}: `}
                   {showFormatedPrice(showDayPlanPrice(currentFood, 'guest'))}
                 </Text>
                 <Text
@@ -530,7 +533,7 @@ const Index = () => {
                     fontSize: screenWidth > 600 ? 24 : 16,
                   }}
                 >
-                  {`${translate(TranslationKeys.markings)}:`}
+                  {`${t('markings')}:`}
                 </Text>
                 <View style={styles.labelsContainer}>
                   {currentMarking &&

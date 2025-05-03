@@ -13,7 +13,6 @@ import { isWeb } from '@/constants/Constants';
 import { useSelector } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 const parseMarkdown = (text, theme) => {
   return text.split('\n').map((line, index) => {
@@ -47,7 +46,7 @@ const parseMarkdown = (text, theme) => {
 
 const DataAccess = ({ onOpenBottomSheet }: any) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { user, profile } = useSelector((state: any) => state.authReducer);
   const {
     canteens,
@@ -86,7 +85,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
     };
   }, []);
 
-  const dataAccessText = translate(TranslationKeys.data_access_introduction);
+  const dataAccessText = t('data_access_introduction');
 
   const infoItems = [
     { label: 'account', value: user },
@@ -151,7 +150,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
               <Text
                 style={{ ...styles.labelParagraph, color: theme.header.text }}
               >
-                {translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}
+                {t('your_data_which_we_know_if_you_have_a_profile')}
               </Text>
             </View>
             {/* Info Items List */}
@@ -177,7 +176,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                         fontSize: windowWidth < 500 ? 16 : 18,
                       }}
                     >
-                      {translate(item.label)}
+                      {t(item.label)}
                     </Text>
                   </View>
                   <Entypo
@@ -199,7 +198,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                     color: theme.header.text,
                   }}
                 >
-                  {translate(TranslationKeys.translation_all_on_device_saved_data)}
+                  {t('translation_all_on_device_saved_data')}
                 </Text>
               </View>
               {dataDevice.map((data, index) => {

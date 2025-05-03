@@ -1,0 +1,32 @@
+{
+  "CHECK_FOR_APP_UPDATES": {
+    "de_DE": "Nach App-Updates suchen",
+    "en_US": "Check for App Updates",
+    "ar_SA": "تحقق من تحديثات التطبيق",
+    "es_ES": "Buscar actualizaciones de la aplicación",
+    "fr_FR": "Vérifier les mises à jour de l'application",
+    "ru_RU": "Проверить обновления приложения",
+    "tr_TR": "Uygulama güncellemelerini kontrol et",
+    "zh_CN": "检查应用更新"
+  },
+  "DOWNLOAD_NEW_APP_UPDATE": {
+    "de_DE": "Neues App-Update herunterladen",
+    "en_US": "Download New App Update",
+    "ar_SA": "تحميل تحديث التطبيق الجديد",
+    "es_ES": "Descargar nueva actualización de la aplicación",
+    "fr_FR": "Télécharger la nouvelle mise à jour de l'application",
+    "ru_RU": "Скачать новое обновление приложения",
+    "tr_TR": "Yeni uygulama güncellemesini indir",
+    "zh_CN": "下载新的应用更新"
+  },
+  "SYNC_SERVER_SETTINGS": {
+    "de_DE": "Servereinstellungen synchronisieren",
+    "en_US": "Sync Server Settings",
+    "ar_SA": "مزامنة إعدادات الخادم",
+    "es_ES": "Sincronizar configuración del servidor",
+    "fr_FR": "Synchroniser les paramètres du serveur",
+    "ru_RU": "Синхронизировать настройки сервера",
+    "tr_TR": "Sunucu ayarlarını senkronize et",
+    "zh_CN": "同步服务器设置"
+  }
+}

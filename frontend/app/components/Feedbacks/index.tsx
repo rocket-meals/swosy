@@ -32,7 +32,6 @@ import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { TranslationKeys } from '@/locales/keys';
 interface FeedbacksProps {
   foodDetails: Foods;
   offerId: string;
@@ -57,7 +56,7 @@ const selectFeedbackData = createSelector(
 const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
   const toast = useToast();
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const primaryColor = useSelector(selectPrimaryColor);
   const { user, profile } = useSelector(selectUserProfile);
@@ -165,7 +164,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
               fontSize: isWeb ? 26 : 24,
             }}
           >
-            {translate(TranslationKeys.food_feedbacks)}
+            {t('food_feedbacks')}
           </Text>
         ))}
       {appSettings?.foods_ratings_amount_display && (
@@ -189,7 +188,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     fontSize: isWeb ? 18 : 14,
                   }}
                 >
-                  {translate(TranslationKeys.amount_ratings)}
+                  {t('amount_ratings')}
                 </Text>
               </View>
               <Text
@@ -207,7 +206,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {translate(TranslationKeys.amount_ratings)}
+              {t('amount_ratings')}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -234,7 +233,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     marginTop: 2,
                   }}
                 >
-                  {translate(TranslationKeys.average_rating)}
+                  {t('average_rating')}
                 </Text>
               </View>
               <Text
@@ -254,7 +253,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {translate(TranslationKeys.average_rating)}
+              {t('average_rating')}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -267,7 +266,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
           fontSize: isWeb ? 26 : 24,
         }}
       >
-        {translate(TranslationKeys.feedback_labels)}
+        {t('feedback_labels')}
       </Text>
       {labels.map((label: any) => (
         <FeedbackLabel
@@ -300,7 +299,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
             placeholderTextColor={theme.modal.placeholder}
             onChangeText={handleTextChange}
             value={comment}
-            placeholder={translate(TranslationKeys.your_comment)}
+            placeholder={t('your_comment')}
             editable={
               commentType === 'disabled' || commentType === 'read'
                 ? false
@@ -323,7 +322,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
               <ActivityIndicator color={theme.background} size={22} />
             ) : (
               <Text style={[styles.commentLabel, { color: contrastColor }]}>
-                {translate(TranslationKeys.save_comment)}
+                {t('save_comment')}
               </Text>
             )}
           </TouchableOpacity>
@@ -348,7 +347,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     fontSize: 24,
                   }}
                 >
-                  {translate(TranslationKeys.your_comment)}
+                  {t('your_comment')}
                 </Text>
                 <TouchableOpacity
                   style={{
@@ -398,7 +397,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                       fontSize: 24,
                     }}
                   >
-                    {translate(TranslationKeys.others_comments)}
+                    {t('others_comments')}
                   </Text>
                   {otherComments.map((feedback) => (
                     <View key={feedback.id} style={styles.comment}>

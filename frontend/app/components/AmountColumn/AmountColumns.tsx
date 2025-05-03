@@ -5,7 +5,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 // Define the type for the theme prop
 type Position = {
@@ -27,7 +26,7 @@ const AmountColumns: React.FC<AmountColumnsProps> = ({
   onPress,
 }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { primaryColor } = useSelector((state: any) => state.settings);
   return (
     <TouchableOpacity
@@ -46,7 +45,7 @@ const AmountColumns: React.FC<AmountColumnsProps> = ({
           color: isSelected ? theme.activeText : theme.header.text,
         }}
       >
-        {position?.id === 0 ? translate(TranslationKeys.automatic) : position.name}
+        {position?.id === 0 ? t('automatic') : position.name}
       </Text>
 
       {/* Radio Button */}

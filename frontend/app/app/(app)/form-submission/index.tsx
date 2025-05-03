@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Dimensions,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -68,13 +69,11 @@ import SubmissionWarningSheet from '@/components/SubmissionWarningSheet/Submissi
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
   const toast = useToast();
   const scrollViewRef = useRef(null);
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { form_submission_id } = useLocalSearchParams();
@@ -106,8 +105,14 @@ const index = () => {
     (state: any) => state.settings
   );
 
-  // Set Page Title
-  useSetPageTitle(formSubmission?.alias || TranslationKeys.form_submission);
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = formSubmission?.alias || 'form-submission';
+        document.title = title;
+      }
+    }, [])
+  );
 
   const isEditMode = useMemo(() => {
     if (!formData || typeof formData !== 'object') return false;
@@ -970,7 +975,7 @@ const index = () => {
             >
               <MaterialIcons name='edit' size={20} color={theme.screen.text} />
               <Text style={{ ...styles.state, color: theme.screen.text }}>
-                {translate(selectedState)}
+                {t(selectedState)}
               </Text>
             </View>
           </TouchableOpacity>
@@ -983,7 +988,7 @@ const index = () => {
             <ActivityIndicator size={22} color={theme.screen.text} />
           ) : (
             <Text style={{ ...styles.buttonLabel, color: theme.activeText }}>
-              {translate(TranslationKeys.save)}
+              {t('save')}
             </Text>
           )}
         </TouchableOpacity>

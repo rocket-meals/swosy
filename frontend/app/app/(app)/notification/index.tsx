@@ -11,6 +11,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -31,15 +32,12 @@ import animation from '@/assets/animations/notificationBell.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const selectAuthState = (state: any) => state.authReducer;
 
 const NotificationScreen = () => {
-  useSetPageTitle(TranslationKeys.notification);
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useDispatch();
   const { language, primaryColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -55,6 +53,15 @@ const NotificationScreen = () => {
   );
   const foodFeedbacks = useSelector(
     (state: any) => state.food.ownFoodFeedbacks
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = t('notification');
+        document.title = title;
+      }
+    }, [])
   );
 
   useFocusEffect(
@@ -182,7 +189,7 @@ const NotificationScreen = () => {
               fontSize: windowWidth < 500 ? 16 : 18,
             }}
           >
-            {translate(TranslationKeys.notification_index_introduction)}
+            {t('notification_index_introduction')}
           </Text>
           <View style={styles.infoRow}></View>
           <Text
@@ -192,7 +199,7 @@ const NotificationScreen = () => {
               fontSize: windowWidth < 500 ? 16 : 18,
             }}
           >
-            {translate(TranslationKeys.foods)}
+            {t('foods')}
           </Text>
           {foodWithFeedback.map((item, index) => (
             <View

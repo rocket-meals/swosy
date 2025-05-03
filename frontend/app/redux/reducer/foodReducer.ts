@@ -9,7 +9,6 @@ import {
   SET_MOST_DISLIKED_FOODS,
   SET_MOST_LIKED_FOODS,
   SET_POPUP_EVENTS,
-  SET_SELECTED_DATE,
   SET_SELECTED_FOOD_MARKINGS,
   UPDATE_FOOD_FEEDBACK_LABELS,
   UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -32,7 +31,6 @@ const initialState = {
   mostDislikedFoods: [],
   foodCollection: {},
   popupEvents: [],
-  selectedDate: new Date().toISOString().split('T')[0],
 };
 
 const foodReducer = (state = initialState, actions: any) => {
@@ -159,12 +157,6 @@ const foodReducer = (state = initialState, actions: any) => {
       return {
         ...state,
         mostDislikedFoods: actions.payload,
-      };
-    }
-    case SET_SELECTED_DATE: {
-      return {
-        ...state,
-        selectedDate: actions.payload,
       };
     }
     case CLEAR_FOODS: {

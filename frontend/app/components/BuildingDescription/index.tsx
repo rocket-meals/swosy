@@ -5,17 +5,16 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { getBuildingTranslationByLanguageCode } from '@/helper/resourceHelper';
 import { useLanguage } from '@/hooks/useLanguage';
-import { TranslationKeys } from '@/locales/keys';
 
 const BuildingDescription: React.FC<any> = ({ campusDetails }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage();
+  const { t } = useLanguage();
   const { language } = useSelector((state: any) => state.settings);
 
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {translate(TranslationKeys.description)}
+        {t('description')}
       </Text>
       {campusDetails && campusDetails?.translations?.length > 0 ? (
         <Text style={{ ...styles.body, color: theme.screen.text }}>

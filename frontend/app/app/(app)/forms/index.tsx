@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Dimensions,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -10,17 +11,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo } from '@expo/vector-icons';
+import { useLanguage } from '@/hooks/useLanguage';
 import { Forms } from '@/constants/types';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FormsHelper } from '@/redux/actions/Forms/Forms';
-import { TranslationKeys } from '@/locales/keys';
-import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  useSetPageTitle(TranslationKeys.select_a_form);
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const { category_id } = useLocalSearchParams();
@@ -29,6 +29,15 @@ const index = () => {
   const formsHelper = new FormsHelper();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'web') {
+        const title = t('select_a_form');
+        document.title = title;
+      }
+    }, [])
   );
 
   const getAllForms = async () => {

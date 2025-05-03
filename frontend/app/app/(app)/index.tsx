@@ -33,6 +33,7 @@ const Home = () => {
   const { serverInfo } = useSelector((state: any) => state.settings);
   const { isManagement } = useSelector((state: any) => state.authReducer);
   const [loading, setLoading] = useState(false);
+  console.log('isManagement', isManagement);
   const { canteens, selectedCanteen } = useSelector(
     (state: any) => state.canteenReducer
   );
