@@ -33,6 +33,7 @@ import {
   SET_COLLECTION_DATES_LAST_UPDATED,
   SET_FOOD_ATTRIBUTE_GROUPS,
   SET_FOOD_ATTRIBUTES,
+  SET_FOOD_ATTRIBUTES_DICT,
   SET_FOOD_CATEGORIES,
   SET_FOOD_COLLECTION,
   SET_FOOD_OFFERS_CATEGORIES,
@@ -305,7 +306,14 @@ export default function Layout() {
       const result =
         (await foodAttributesHelper.fetchAllFoodAttributes()) as FoodsAttributes[];
       if (result) {
+        const attributesDict = result.reduce((acc, attr) => {
+          if (attr.id) {
+            acc[attr.id] = attr;
+          }
+          return acc;
+        }, {} as Record<string, any>);
         dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
+        dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
       }
     } catch (error) {
       console.error('Error fetching Food attribute', error);

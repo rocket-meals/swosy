@@ -33,6 +33,7 @@ import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttribu
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { FoodsAttributes, FoodsCategories } from '@/constants/types';
+import { ColumnPercentages } from './types';
 const index = () => {
   useSetPageTitle('list-day-screen');
   const {
@@ -63,7 +64,7 @@ const index = () => {
     language,
     appSettings,
   } = useSelector((state: any) => state.settings);
-  const { foodAttributes: foodAttributesLocal } = useSelector(
+  const { foodAttributesDict } = useSelector(
     (state: any) => state.foodAttributes
   );
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -77,13 +78,14 @@ const index = () => {
   const footerRef = useRef<View>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState<boolean | null>(true);
   const [foodAttributesColumn, setFoodAttributesColumn] = useState<any>([]);
   const [foodAttributes, setFoodAttributes] = useState<any>(null);
   const [foodAttributesDataFull, setFoodAttributesDataFull] =
     useState<any>(null);
   const [optionalFoodAttributes, setOptionalFoodAttributes] =
     useState<any>(null);
+
   const foodsScrollRef = useRef<ScrollView>(null);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -93,13 +95,6 @@ const index = () => {
     theme,
     mode === 'dark'
   );
-  interface ColumnPercentages {
-    categorie: string;
-    name: string;
-    markings: string;
-    price: string;
-    attributes: string;
-  }
 
   const totalWidth = 1792;
   const columnPercentages: ColumnPercentages = {
@@ -149,18 +144,17 @@ const index = () => {
 
         let attributeDataCopy: any[] = [];
 
-        if (foodAttributesLocal && Array.isArray(foodAttributesLocal)) {
-          attributeDataCopy = foodAttributesLocal
-            .filter((attr: any) => attributeIds.includes(attr.id))
-            .map((attr: any) => {
-              const title = attr?.translations
-                ? getFoodAttributesTranslation(attr.translations, language)
-                : '';
-              return {
-                id: attr.id,
-                alias: title || attr?.alias || '-',
-              };
-            });
+        if (foodAttributesDict) {
+          attributeDataCopy = attributeIds.map((id: string) => {
+            const attr = foodAttributesDict[id];
+            const title = attr?.translations
+              ? getFoodAttributesTranslation(attr.translations, language)
+              : '';
+            return {
+              id: id,
+              alias: title || attr?.alias || '-',
+            };
+          });
         } else {
           attributeDataCopy = await Promise.all(
             attributeIds.map(async (id: string) => {
@@ -190,7 +184,7 @@ const index = () => {
     };
 
     fetchAliases();
-  }, [foodAttributesData, foodAttributesLocal, language]);
+  }, [foodAttributesData, foodAttributesDict, language]);
 
   const fetchSelectedCanteen = useCallback(() => {
     if (!canteens_id || !canteens || canteens.length === 0) return;
