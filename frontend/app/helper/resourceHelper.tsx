@@ -8,6 +8,7 @@ import {
   FormFieldsTranslations,
   FormsTranslations,
   NewsTranslations,
+  WikisTranslations,
 } from '@/constants/types';
 import { StringHelper } from './stringHelper';
 
@@ -117,7 +118,7 @@ export const getFromDescriptionTranslation = (
 };
 
 export const getTitleFromTranslation = (
-  translations: Array<Translation>,
+  translations: Array<Translation | WikisTranslations>,
   languageCode: string
 ): string => {
   if (!translations || translations.length === 0) return '';
