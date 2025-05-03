@@ -39,6 +39,7 @@ import {
   SET_FOOD_OFFERS_CATEGORIES,
   SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
   SET_POPUP_EVENTS,
+  SET_SELECTED_DATE,
   SET_WIKIS,
   UPDATE_FOOD_FEEDBACK_LABELS,
   UPDATE_MARKINGS,
@@ -501,10 +502,18 @@ export default function Layout() {
     }
   };
 
+  const resetCalendarSelectedDate = () => {
+    dispatch({
+      type: SET_SELECTED_DATE,
+      payload: new Date().toISOString().split('T')[0],
+    });
+  };
+
   useEffect(() => {
     if (user?.id) {
       fetchProfile();
     }
+    resetCalendarSelectedDate();
     getAllCollectionDatesLastUpdate();
   }, [user]);
 
