@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Linking,
-  Platform,
 } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -214,11 +213,11 @@ const AccountBalanceScreen = () => {
 
       // Function to process content into hierarchical structure
       const processContent = (lines: any) => {
-        const result = [];
+        const result: any[] = [];
         let stack = [{ level: 0, items: result }];
         let currentContent = '';
 
-        lines.forEach((line) => {
+        lines.forEach((line: any) => {
           const level = getHeadingLevel(line);
           if (level > 0) {
             if (currentContent.trim()) {
@@ -384,7 +383,7 @@ const AccountBalanceScreen = () => {
       };
 
       const renderContent = (items: any, level = 0) => {
-        return items.map((item, index) => {
+        return items.map((item: any, index: number) => {
           if (item.type === 'text') {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
 

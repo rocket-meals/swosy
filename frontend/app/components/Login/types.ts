@@ -19,7 +19,12 @@ export interface FormProps {
 
 export interface SheetProps {
   closeSheet: () => void;
-  handleLogin: (token: string | undefined, email: string, password: string) => void;
+  handleLogin: (
+    token: string | undefined,
+    email: string,
+    password: string
+  ) => void;
+  loading: Boolean;
 }
 
 export interface AttentionSheetProps {

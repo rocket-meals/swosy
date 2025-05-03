@@ -1,9 +1,9 @@
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { FoodsFeedbacks, FoodsFeedbacksLabels, CanteensFeedbacksLabelsEntries } from '@/constants/types';
+import { CanteensFeedbacksLabelsEntries } from '@/constants/types';
 import { itemStatus } from '@/constants/Constants';
 
-export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<any> {
+export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<CanteensFeedbacksLabelsEntries> {
   constructor(client?: any) {
     super('canteens_feedbacks_labels_entries', client || ServerAPI.getClient());
   }
@@ -12,55 +12,72 @@ export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<any> {
   private buildQuery(queryOverride: any, defaultQuery: any) {
     return { ...defaultQuery, ...queryOverride };
   }
-// Fetch canteen feedback label entries with query overrides
-async fetchCanteenFeedbackLabelEntries(queryOverride: any = {}, date: string, canteenId: string, labelId: string) {
+  // Fetch canteen feedback label entries with query overrides
+  async fetchCanteenFeedbackLabelEntries(
+    queryOverride: any = {},
+    date: string,
+    canteenId: string,
+    labelId: string
+  ) {
     const defaultQuery = {
       filter: {
         _and: [
           { like: { _nnull: true } }, // Ensure 'like' is not null
           { date: { _eq: date } }, // Specific date
           { canteen: { _eq: canteenId } }, // Specific canteen ID
-          { label: { _eq: labelId } } // Specific label ID
-        ]
+          { label: { _eq: labelId } }, // Specific label ID
+        ],
       },
       aggregate: { count: '*' }, // Count all entries
-      groupBy: ['like'] // Group by 'like' field
+      groupBy: ['like'], // Group by 'like' field
     };
-  
+
     // Combine the default query with any overrides
     const finalQuery = { ...defaultQuery, ...queryOverride };
-  
+
     // Execute the query using the SDK method
     return await this.readItems(finalQuery);
   }
-  
+
   // Fetch canteen feedback label entries by profile
-  async fetchCanteenFeedbackLabelEntriesByProfile(profileId: string, queryOverride: any = {}) {
+  async fetchCanteenFeedbackLabelEntriesByProfile(
+    profileId: string,
+    queryOverride: any = {}
+  ) {
     const defaultQuery = {
       filter: {
         _and: [
           { profile: { _eq: profileId } },
-          { status: { _eq: itemStatus } }
-        ]
-      }
+          { status: { _eq: itemStatus } },
+        ],
+      },
     };
     return await this.readItems(this.buildQuery(queryOverride, defaultQuery));
   }
 
   // Fetch a specific Canteen feedback label entry by ID
-  async fetchCanteenFeedbackLabelEntryById(id: string, queryOverride: any = {}) {
+  async fetchCanteenFeedbackLabelEntryById(
+    id: string,
+    queryOverride: any = {}
+  ) {
     const defaultQuery = { fields: ['*'] };
-    return await this.readItem(id, this.buildQuery(queryOverride, defaultQuery));
+    return await this.readItem(
+      id,
+      this.buildQuery(queryOverride, defaultQuery)
+    );
   }
 
   // Update or create food feedback label entry
   async updateCanteenFeedbackLabelEntry(
     profile_id: string,
-    canteenFeedbackLabelEntriesData: CanteensFeedbacksLabelsEntries[] | null | undefined,
+    canteenFeedbackLabelEntriesData:
+      | CanteensFeedbacksLabelsEntries[]
+      | null
+      | undefined,
     canteenFeedbackLabelId: string,
     like: boolean | null,
     canteen_id: string | null | undefined,
-    date: string,
+    date: string
   ) {
     // Default to empty array if no entries provided
     let canteenFeedbackLabelEntries = canteenFeedbackLabelEntriesData ?? [];
@@ -68,7 +85,10 @@ async fetchCanteenFeedbackLabelEntries(queryOverride: any = {}, date: string, ca
     // Check for existing entry
     // let existingEntry = foodFeedbackLabelEntries.find(x => x.label === canteenFeedbackLabelId && x.food === foodId);
     let existingEntry = canteenFeedbackLabelEntries?.find(
-      (x) => x.label === canteenFeedbackLabelId && x.canteen === canteen_id && x.date === date
+      (x) =>
+        x.label === canteenFeedbackLabelId &&
+        x.canteen === canteen_id &&
+        x.date === date
     );
     let isNewEntry = !existingEntry;
 
@@ -84,12 +104,16 @@ async fetchCanteenFeedbackLabelEntries(queryOverride: any = {}, date: string, ca
 
     // Create a new entry if not found
     if (isNewEntry) {
-      existingEntry = await this.createItem(newFoodFeedbackLabelEntry) as CanteensFeedbacksLabelsEntries;
+      existingEntry = (await this.createItem(
+        newFoodFeedbackLabelEntry
+      )) as CanteensFeedbacksLabelsEntries;
     }
 
     // Handle missing entry
     if (!existingEntry) {
-      console.error('updateCanteenFeedbackRemote: existingCanteenFeedbackLabelEntry is undefined');
+      console.error(
+        'updateCanteenFeedbackRemote: existingCanteenFeedbackLabelEntry is undefined'
+      );
       return;
     }
 
@@ -98,7 +122,8 @@ async fetchCanteenFeedbackLabelEntries(queryOverride: any = {}, date: string, ca
     if (canteen_id) existingEntry.canteen = canteen_id;
 
     // If 'like' is null or undefined, delete the entry
-    const shouldDelete = existingEntry.like === null || existingEntry.like === undefined;
+    const shouldDelete =
+      existingEntry.like === null || existingEntry.like === undefined;
     if (shouldDelete && existingEntry.id) {
       await this.deleteItem(existingEntry.id);
       return null;

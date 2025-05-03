@@ -1,15 +1,20 @@
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { DateHelper } from '@/helper/dateHelper';
+import { UtilizationsEntries } from '@/constants/types';
 
-export class UtilizationEntryHelper extends CollectionHelper<any> {
+export class UtilizationEntryHelper extends CollectionHelper<UtilizationsEntries> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('utilizations_entries', client || ServerAPI.getClient());
   }
 
   // Fetch utilization entries with query overrides
-  async fetchUtilizationEntries(queryOverride: any = {}, utilizationGroupId: string, dateToGet: string) {
+  async fetchUtilizationEntries(
+    queryOverride: any = {},
+    utilizationGroupId: string,
+    dateToGet: string
+  ) {
     // Default query structure
     const defaultQuery = {
       fields: ['*, utilization_group.*'],
@@ -21,22 +26,32 @@ export class UtilizationEntryHelper extends CollectionHelper<any> {
 
     let date = new Date(dateToGet);
     const date_start = new Date(date);
-    date_start.setHours(0,0,0,0);
+    date_start.setHours(0, 0, 0, 0);
 
     const date_end = new Date(date_start);
     date_end.setDate(date_end.getDate() + 1);
 
     // Add default filters if utilizationGroupId, dateStart, and dateEnd are provided
     if (utilizationGroupId) {
-      defaultQuery.filter._and.push({ utilization_group: { _eq: utilizationGroupId } });
+      defaultQuery.filter._and.push({
+        utilization_group: { _eq: utilizationGroupId },
+      });
     }
 
     if (date_start) {
-      defaultQuery.filter._and.push({ date_start: { _gte: DateHelper.formatDateToIso8601WithoutTimezone(date_start) } });
+      defaultQuery.filter._and.push({
+        date_start: {
+          _gte: DateHelper.formatDateToIso8601WithoutTimezone(date_start),
+        },
+      });
     }
 
     if (date_end) {
-      defaultQuery.filter._and.push({ date_end: { _lte:  DateHelper.formatDateToIso8601WithoutTimezone(date_end) } });
+      defaultQuery.filter._and.push({
+        date_end: {
+          _lte: DateHelper.formatDateToIso8601WithoutTimezone(date_end),
+        },
+      });
     }
 
     // Merge the dynamic query override with the default query

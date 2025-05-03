@@ -1,7 +1,9 @@
+import { itemStatus } from '@/constants/Constants';
+import { PopupEvents } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class PopupEventsHelper extends CollectionHelper<any> {
+export class PopupEventsHelper extends CollectionHelper<PopupEvents> {
   constructor(client?: any) {
     super('popup_events', client || ServerAPI.getClient());
   }
@@ -10,6 +12,15 @@ export class PopupEventsHelper extends CollectionHelper<any> {
     const defaultQuery = {
       fields: ['* , translations.*, canteens.*'],
       limit: -1,
+      filter: {
+        _and: [
+          {
+            status: {
+              _eq: itemStatus,
+            },
+          },
+        ],
+      },
     };
 
     const query = { ...defaultQuery, ...queryOverride };

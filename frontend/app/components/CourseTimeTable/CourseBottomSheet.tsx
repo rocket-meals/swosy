@@ -29,6 +29,7 @@ import { isBefore, isEqual, parse } from 'date-fns';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { Profiles } from '@/constants/types';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   timeTableData,
@@ -44,8 +45,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   const { profile } = useSelector((state: any) => state.authReducer);
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { primaryColor,appSettings } = useSelector((state: any) => state.settings);
-    const mode = useSelector((state: any) => state.settings.theme);
+  const { primaryColor, appSettings } = useSelector(
+    (state: any) => state.settings
+  );
+  const mode = useSelector((state: any) => state.settings.theme);
 
   const [selectedFirstDay, setSelectedFirstDay] = useState({
     id: 'Monday',
@@ -77,8 +80,8 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   }, []);
 
   const course_timetable_area_color = appSettings?.course_timetable_area_color
-  ? appSettings?.course_timetable_area_color
-  : primaryColor;
+    ? appSettings?.course_timetable_area_color
+    : primaryColor;
   const contrastColor = myContrastColor(
     course_timetable_area_color,
     theme,
@@ -95,7 +98,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
 
   const handleSavePress = () => {
     // Function to validate HH:MM format
-    const validateTime = (time) => {
+    const validateTime = (time: string) => {
       const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // Regex for HH:MM format
       return regex.test(time);
     };
@@ -162,7 +165,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
     const endTime = data?.find((item) => item.label === 'endTime')?.value || '';
 
     // Function to validate and parse time
-    const parseTime = (time) => {
+    const parseTime = (time: string) => {
       return parse(time, 'HH:mm', new Date());
     };
 
@@ -201,10 +204,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
     const updatedTimetableString = courseTimetable;
 
     if (profile?.id) {
-      const result = await profileHelper.updateProfile({
+      const result = (await profileHelper.updateProfile({
         ...profile,
         course_timetable: updatedTimetableString,
-      });
+      })) as Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,
@@ -229,10 +232,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
     if (courseTimetable) {
       delete courseTimetable[Number(selectedEventId)];
       if (profile?.id) {
-        const result = await profileHelper.updateProfile({
+        const result = (await profileHelper.updateProfile({
           ...profile,
           course_timetable: courseTimetable,
-        });
+        })) as Profiles;
         if (result) {
           dispatch({
             type: UPDATE_PROFILE,
@@ -264,7 +267,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
     const endTime = data?.find((item) => item.label === 'endTime')?.value || '';
 
     // Function to validate and parse time
-    const parseTime = (time) => {
+    const parseTime = (time: string) => {
       return parse(time, 'HH:mm', new Date());
     };
 
@@ -296,10 +299,10 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
         };
         courseTimetable[Number(selectedEventId)] = newEvent;
         if (profile?.id) {
-          const result = await profileHelper.updateProfile({
+          const result = (await profileHelper.updateProfile({
             ...profile,
             course_timetable: courseTimetable,
-          });
+          })) as Profiles;
           if (result) {
             dispatch({
               type: UPDATE_PROFILE,
@@ -343,8 +346,12 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
           {selectedItem
             ? selectedItem.label
             : isUpdate
-            ? `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`
-            : `${translate(TranslationKeys.event)}: ${translate(TranslationKeys.create)}`}
+            ? `${translate(TranslationKeys.event)}: ${translate(
+                TranslationKeys.edit
+              )}`
+            : `${translate(TranslationKeys.event)}: ${translate(
+                TranslationKeys.create
+              )}`}
         </Text>
         <TouchableOpacity
           style={{
@@ -429,9 +436,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                     backgroundColor: course_timetable_area_color,
                   }}
                 >
-                  <Text
-                    style={[styles.buttonText, { color: contrastColor }]}
-                  >
+                  <Text style={[styles.buttonText, { color: contrastColor }]}>
                     {translate(TranslationKeys.save)}
                   </Text>
                 </TouchableOpacity>
@@ -535,11 +540,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
                   <ActivityIndicator size='small' color={theme.screen.text} />
                 ) : (
                   <>
-                    <FontAwesome5
-                      name='save'
-                      size={20}
-                      color={contrastColor}
-                    />
+                    <FontAwesome5 name='save' size={20} color={contrastColor} />
                     <View>
                       <Text
                         style={{

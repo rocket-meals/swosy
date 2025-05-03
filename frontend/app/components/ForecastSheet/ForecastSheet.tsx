@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { useFocusEffect } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { UtilizationsEntries } from '@/constants/types';
 
 const ForecastSheet: React.FC<ForecastSheetProps> = ({
   closeSheet,
@@ -94,11 +95,11 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
     try {
       setLoading(true);
       const utilizationData =
-        await utilizationEntryHelper.fetchUtilizationEntries(
+        (await utilizationEntryHelper.fetchUtilizationEntries(
           {},
           selectedCanteen?.utilization_group,
           forDate
-        );
+        )) as UtilizationsEntries[];
       if (utilizationData) {
         const processedData = processData(utilizationData);
         setChartData(processedData);

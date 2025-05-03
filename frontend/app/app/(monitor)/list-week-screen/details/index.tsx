@@ -26,7 +26,7 @@ import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { useLanguage } from '@/hooks/useLanguage';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
-import { Markings, MarkingsGroups } from '@/constants/types';
+import { FoodsCategories, Markings, MarkingsGroups } from '@/constants/types';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
@@ -130,8 +130,9 @@ const index = () => {
 
           // Fetch category only if it's new (not in newCategories)
           if (!newCategories[categoryId]) {
-            const result: any =
-              await foodCategoriesHelper.fetchFoodCategoriesById(categoryId);
+            const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
+              categoryId
+            )) as FoodsCategories;
             if (result) {
               newCategories[categoryId] = result?.alias; // Save unique category
             }

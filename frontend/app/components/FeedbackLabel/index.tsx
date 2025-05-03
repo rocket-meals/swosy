@@ -77,15 +77,15 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
     }
     // Update the entry
     const result =
-      await foodFeedbackLabelEntryHelper.updateFoodFeedbackLabelEntry(
+      (await foodFeedbackLabelEntryHelper.updateFoodFeedbackLabelEntry(
         foodId,
         profile.id,
         labelEntries,
-        label[0]?.foods_feedbacks_labels_id,
+        String(label[0]?.foods_feedbacks_labels_id),
         likeStats,
         selectedCanteen.id,
         offerId
-      );
+      )) as FoodsFeedbacksLabelsEntries;
     dispatch({
       type: result
         ? UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL

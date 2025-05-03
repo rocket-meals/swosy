@@ -3133,6 +3133,246 @@
     "tr": "Pazar",
     "zh": "星期日"
   },
+"January": {
+  "en": "January",
+  "de": "Januar",
+  "ar": "يناير",
+  "es": "Enero",
+  "fr": "Janvier",
+  "ru": "Январь",
+  "tr": "Ocak",
+  "zh": "一月"
+},
+"February": {
+  "en": "February",
+  "de": "Februar",
+  "ar": "فبراير",
+  "es": "Febrero",
+  "fr": "Février",
+  "ru": "Февраль",
+  "tr": "Şubat",
+  "zh": "二月"
+},
+"March": {
+  "en": "March",
+  "de": "März",
+  "ar": "مارس",
+  "es": "Marzo",
+  "fr": "Mars",
+  "ru": "Март",
+  "tr": "Mart",
+  "zh": "三月"
+},
+"April": {
+  "en": "April",
+  "de": "April",
+  "ar": "أبريل",
+  "es": "Abril",
+  "fr": "Avril",
+  "ru": "Апрель",
+  "tr": "Nisan",
+  "zh": "四月"
+},
+"May": {
+  "en": "May",
+  "de": "Mai",
+  "ar": "مايو",
+  "es": "Mayo",
+  "fr": "Mai",
+  "ru": "Май",
+  "tr": "Mayıs",
+  "zh": "五月"
+},
+"June": {
+  "en": "June",
+  "de": "Juni",
+  "ar": "يونيو",
+  "es": "Junio",
+  "fr": "Juin",
+  "ru": "Июнь",
+  "tr": "Haziran",
+  "zh": "六月"
+},
+"July": {
+  "en": "July",
+  "de": "Juli",
+  "ar": "يوليو",
+  "es": "Julio",
+  "fr": "Juillet",
+  "ru": "Июль",
+  "tr": "Temmuz",
+  "zh": "七月"
+},
+"August": {
+  "en": "August",
+  "de": "August",
+  "ar": "أغسطس",
+  "es": "Agosto",
+  "fr": "Août",
+  "ru": "Август",
+  "tr": "Ağustos",
+  "zh": "八月"
+},
+"September": {
+  "en": "September",
+  "de": "September",
+  "ar": "سبتمبر",
+  "es": "Septiembre",
+  "fr": "Septembre",
+  "ru": "Сентябрь",
+  "tr": "Eylül",
+  "zh": "九月"
+},
+"October": {
+  "en": "October",
+  "de": "Oktober",
+  "ar": "أكتوبر",
+  "es": "Octubre",
+  "fr": "Octobre",
+  "ru": "Октябрь",
+  "tr": "Ekim",
+  "zh": "十月"
+},
+"November": {
+  "en": "November",
+  "de": "November",
+  "ar": "نوفمبر",
+  "es": "Noviembre",
+  "fr": "Novembre",
+  "ru": "Ноябрь",
+  "tr": "Kasım",
+  "zh": "十一月"
+},
+"December": {
+  "en": "December",
+  "de": "Dezember",
+  "ar": "ديسمبر",
+  "es": "Diciembre",
+  "fr": "Décembre",
+  "ru": "Декабрь",
+  "tr": "Aralık",
+  "zh": "十二月"
+},
+"Jan": {
+  "en": "Jan",
+  "de": "Jan",
+  "ar": "ينا",
+  "es": "Ene",
+  "fr": "Janv",
+  "ru": "Янв",
+  "tr": "Oca",
+  "zh": "1月"
+},
+"Feb": {
+  "en": "Feb",
+  "de": "Feb",
+  "ar": "فبر",
+  "es": "Feb",
+  "fr": "Févr",
+  "ru": "Фев",
+  "tr": "Şub",
+  "zh": "2月"
+},
+"Mar": {
+  "en": "Mar",
+  "de": "Mär",
+  "ar": "مار",
+  "es": "Mar",
+  "fr": "Mars",
+  "ru": "Мар",
+  "tr": "Mar",
+  "zh": "3月"
+},
+"Apr": {
+  "en": "Apr",
+  "de": "Apr",
+  "ar": "أبر",
+  "es": "Abr",
+  "fr": "Avr",
+  "ru": "Апр",
+  "tr": "Nis",
+  "zh": "4月"
+},
+"MayShort": {
+  "en": "May",
+  "de": "Mai",
+  "ar": "ماي",
+  "es": "May",
+  "fr": "Mai",
+  "ru": "Май",
+  "tr": "May",
+  "zh": "5月"
+},
+"Jun": {
+  "en": "Jun",
+  "de": "Jun",
+  "ar": "يون",
+  "es": "Jun",
+  "fr": "Juin",
+  "ru": "Июн",
+  "tr": "Haz",
+  "zh": "6月"
+},
+"Jul": {
+  "en": "Jul",
+  "de": "Jul",
+  "ar": "يول",
+  "es": "Jul",
+  "fr": "Juil",
+  "ru": "Июл",
+  "tr": "Tem",
+  "zh": "7月"
+},
+"Aug": {
+  "en": "Aug",
+  "de": "Aug",
+  "ar": "أغس",
+  "es": "Ago",
+  "fr": "Août",
+  "ru": "Авг",
+  "tr": "Ağu",
+  "zh": "8月"
+},
+"Sep": {
+  "en": "Sep",
+  "de": "Sep",
+  "ar": "سبت",
+  "es": "Sep",
+  "fr": "Sept",
+  "ru": "Сен",
+  "tr": "Eyl",
+  "zh": "9月"
+},
+"Oct": {
+  "en": "Oct",
+  "de": "Okt",
+  "ar": "أكت",
+  "es": "Oct",
+  "fr": "Oct",
+  "ru": "Окт",
+  "tr": "Eki",
+  "zh": "10月"
+},
+"Nov": {
+  "en": "Nov",
+  "de": "Nov",
+  "ar": "نوف",
+  "es": "Nov",
+  "fr": "Nov",
+  "ru": "Ноя",
+  "tr": "Kas",
+  "zh": "11月"
+},
+"Dec": {
+  "en": "Dec",
+  "de": "Dez",
+  "ar": "ديس",
+  "es": "Dic",
+  "fr": "Déc",
+  "ru": "Дек",
+  "tr": "Ara",
+  "zh": "12月"
+},
   "RATE_US": {
     "de": "Bewerten Sie uns",
     "en": "Rate Us",

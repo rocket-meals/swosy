@@ -15,6 +15,32 @@ export type Apartments = {
   washingmachines: any[] | Washingmachines[];
 };
 
+export type AppElements = {
+  color?: string | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  translations: any[] | AppElementsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type AppElementsTranslations = {
+  app_elements_id?: string | AppElements | null;
+  be_source_for_translations?: boolean | null;
+  content?: string | null;
+  content_settings: string;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  popup_button_text?: string | null;
+  popup_content?: string | null;
+  popup_settings: string;
+  translation_settings: string;
+};
+
 export type AppFeedbacks = {
   contact_email?: string | null;
   content?: string | null;
@@ -52,6 +78,7 @@ export type AppSettings = {
   balance_settings: string;
   balance_translations: any[] | AppSettingsBalanceTranslations[];
   campus_area_color?: string | null;
+  campus_before_element?: string | AppElements | null;
   campus_enabled?: boolean | null;
   campus_settings: string;
   company_image?: string | DirectusFiles | null;
@@ -64,6 +91,8 @@ export type AppSettings = {
   food_responsible_organization_link?: string | null;
   food_responsible_organization_name?: string | null;
   food_responsible_settings: string;
+  foodoffers_list_after_element?: string | AppElements | null;
+  foodoffers_list_before_element?: string | AppElements | null;
   foods_area_color?: string | null;
   foods_enabled?: boolean | null;
   foods_feedbacks_comments_type?: string | null;
@@ -77,6 +106,7 @@ export type AppSettings = {
   foods_ratings_type?: string | null;
   foods_settings: string;
   housing_area_color?: string | null;
+  housing_before_element?: string | AppElements | null;
   housing_enabled?: boolean | null;
   housing_settings: string;
   housing_translations: any[] | AppSettingsHousingTranslations[];
@@ -89,6 +119,7 @@ export type AppSettings = {
   map_enabled?: boolean | null;
   map_settings: string;
   news_area_color?: string | null;
+  news_before_element?: string | AppElements | null;
   news_enabled?: boolean | null;
   news_settings: string;
   notifications_android_enabled?: boolean | null;
@@ -312,10 +343,6 @@ export type Canteens = {
   external_identifier?: string | null;
   foodoffers_import_delete_all_without_dates?: boolean | null;
   foodoffers_import_without_date?: boolean | null;
-  foodservice_hours: any[] | CanteensFoodserviceHours[];
-  foodservice_hours_during_semester_break:
-    | any[]
-    | CanteensFoodserviceHoursDuringSemesterBreak[];
   id: string;
   sort?: number | null;
   status?: string | null;
@@ -407,6 +434,55 @@ export type CashregistersTransactions = {
   weekday_index_calculated?: number | null;
 };
 
+export type CollectibleEventParticipants = {
+  collectible_event?: string | CollectibleEvents | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  email?: string | null;
+  id: string;
+  phone_number?: string | null;
+  points?: string | null;
+  profile?: string | Profiles | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CollectibleEvents = {
+  alias?: string | null;
+  collectible_image?: string | DirectusFiles | null;
+  collectible_settings: string;
+  date_created?: string | null;
+  date_end?: string | null;
+  date_start?: string | null;
+  date_updated?: string | null;
+  id: string;
+  monitor_background_image?: string | DirectusFiles | null;
+  monitor_display_number_of_collected_items?: boolean | null;
+  monitor_display_number_of_participants?: boolean | null;
+  monitor_settings: string;
+  participants: any[] | CollectibleEventParticipants[];
+  points_maximum?: string | null;
+  points_minimum?: string | null;
+  sort?: number | null;
+  status: string;
+  translations: any[] | CollectibleEventsTranslations[];
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type CollectibleEventsTranslations = {
+  be_source_for_translations?: boolean | null;
+  collectible_events_id?: string | CollectibleEvents | null;
+  description?: string | null;
+  id: number;
+  languages_code?: string | Languages | null;
+  let_be_translated?: boolean | null;
+  title?: string | null;
+  translation_settings: string;
+};
+
 export type CollectionsDatesLastUpdate = {
   date_created?: string | null;
   date_updated?: string | null;
@@ -415,28 +491,6 @@ export type CollectionsDatesLastUpdate = {
   status?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
-};
-
-export type DerivedForms = {
-  date_created?: string | null;
-  date_updated?: string | null;
-  fields: any[] | DerivedFormsFormFields[];
-  id: string;
-  internal_identifier?: string | null;
-  name?: string | null;
-  parent_form?: string | Forms | null;
-  recipient_email_field?: string | FormFields | null;
-  recipient_email_static?: string | null;
-  sort?: number | null;
-  status: string;
-  user_created?: string | DirectusUsers | null;
-  user_updated?: string | DirectusUsers | null;
-};
-
-export type DerivedFormsFormFields = {
-  derived_forms_id?: string | DerivedForms | null;
-  form_fields_id?: string | FormFields | null;
-  id: number;
 };
 
 export type Devices = {
@@ -578,6 +632,7 @@ export type DirectusFiles = {
   folder?: string | DirectusFolders | null;
   height?: number | null;
   id: string;
+  is_unreferenced?: boolean | null;
   location?: string | null;
   metadata?: unknown | null;
   modified_by?: string | DirectusUsers | null;
@@ -880,6 +935,18 @@ export type DirectusWebhooks = {
   was_active_before_deprecation: boolean;
 };
 
+export type FilesShares = {
+  date_created?: string | null;
+  date_exires_at?: string | null;
+  date_updated?: string | null;
+  file?: string | DirectusFiles | null;
+  id: string;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
 export type Foodoffers = {
   alias?: string | null;
   attribute_values: any[] | FoodsAttributesValues[];
@@ -906,12 +973,12 @@ export type Foodoffers = {
   price_student?: number | null;
   prices: string;
   protein_g?: number | null;
+  redirect_url?: string | null;
   salt_g?: number | null;
   saturated_fat_g?: number | null;
   sort?: number | null;
   status?: string | null;
   sugar_g?: number | null;
-  redirect_url?: string | null;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
 };
@@ -991,8 +1058,8 @@ export type FoodsAttributes = {
   date_created?: string | null;
   date_updated?: string | null;
   external_identifier?: string | null;
+  full_width?: boolean | null;
   group?: string | FoodsAttributesGroups | null;
-  icon?: string | null;
   icon_expo?: string | null;
   id: string;
   image?: string | DirectusFiles | null;
@@ -1014,6 +1081,7 @@ export type FoodsAttributesGroups = {
   background_color?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  food_attributes: any[] | FoodsAttributes[];
   icon?: string | null;
   icon_expo?: string | null;
   id: string;
@@ -1169,7 +1237,7 @@ export type FoodsTranslations = {
 export type FormAnswers = {
   date_created?: string | null;
   date_updated?: string | null;
-  form_field?: FormFields | null;
+  form_field?: string | FormFields | null;
   form_submission?: string | FormSubmissions | null;
   id: string;
   sort?: number | null;
@@ -1196,6 +1264,7 @@ export type FormCategories = {
   alias?: string | null;
   date_created?: string | null;
   date_updated?: string | null;
+  forms: any[] | Forms[];
   icon_expo?: string | null;
   id: string;
   sort?: number | null;
@@ -1213,6 +1282,31 @@ export type FormCategoriesTranslations = {
   let_be_translated?: boolean | null;
   name?: string | null;
   translation_settings: string;
+};
+
+export type FormExtracts = {
+  alias?: string | null;
+  all_fields?: boolean | null;
+  date_created?: string | null;
+  date_updated?: string | null;
+  field_settings: string;
+  fields: any[] | FormExtractsFormFields[];
+  form?: string | Forms | null;
+  id: string;
+  internal_custom_id?: string | null;
+  recipient_email_field?: string | FormFields | null;
+  recipient_email_static?: string | null;
+  recipient_user?: string | DirectusUsers | null;
+  sort?: number | null;
+  status: string;
+  user_created?: string | DirectusUsers | null;
+  user_updated?: string | DirectusUsers | null;
+};
+
+export type FormExtractsFormFields = {
+  form_extracts_id?: string | FormExtracts | null;
+  form_fields_id?: string | FormFields | null;
+  id: number;
 };
 
 export type FormFields = {
@@ -1241,7 +1335,7 @@ export type FormFields = {
   is_visible_in_form?: boolean | null;
   sort?: number | null;
   status: string;
-  translations: any[] | FormFieldsTranslations[] | any;
+  translations: any[] | FormFieldsTranslations[];
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
   value_prefix?: string | null;
@@ -1266,10 +1360,11 @@ export type FormSubmissions = {
   date_started?: string | null;
   date_submitted?: string | null;
   date_updated?: string | null;
-  external_identifier?: string | null;
   form?: string | Forms | null;
   form_answers: any[] | FormAnswers[];
   id: string;
+  internal_custom_id?: string | null;
+  mails: any[] | Mails[];
   sort?: number | null;
   state?: string | null;
   status: string;
@@ -1283,7 +1378,6 @@ export type Forms = {
   category?: string | FormCategories | null;
   date_created?: string | null;
   date_updated?: string | null;
-  derived_forms: any[] | DerivedForms[];
   form_fields: any[] | FormFields[];
   form_submissions: any[] | FormSubmissions[];
   icon_expo?: string | null;
@@ -1315,12 +1409,16 @@ export type Languages = {
 };
 
 export type Mails = {
-  content?: string | null;
+  attachments: any[] | MailsFiles[];
   date_created?: string | null;
   date_updated?: string | null;
+  form_submission?: string | FormSubmissions | null;
   id: string;
+  log?: string | null;
   mail_information: string;
+  markdown_content?: string | null;
   recipient?: string | null;
+  send_attachments_as_links?: boolean | null;
   send_status: string;
   sort?: number | null;
   status: string;
@@ -1330,6 +1428,12 @@ export type Mails = {
   template_settings: string;
   user_created?: string | DirectusUsers | null;
   user_updated?: string | DirectusUsers | null;
+};
+
+export type MailsFiles = {
+  directus_files_id?: string | DirectusFiles | null;
+  id: number;
+  mails_id?: string | Mails | null;
 };
 
 export type Markings = {
@@ -1521,6 +1625,7 @@ export type PushNotifications = {
   expo_access_token?: string | null;
   expo_push_tokens?: unknown | null;
   id: string;
+  image_url?: string | null;
   ios: string;
   ios_badge_count?: number | null;
   ios_message_subtitle?: string | null;
@@ -1530,6 +1635,7 @@ export type PushNotifications = {
   message_data?: unknown | null;
   message_title?: string | null;
   message_ttl?: number | null;
+  richContent?: string | null;
   sort?: number | null;
   status?: string | null;
   status_log?: string | null;
@@ -1689,6 +1795,8 @@ export type WorkflowsRuns = {
 
 export type CustomDirectusTypes = {
   apartments: Apartments[];
+  app_elements: AppElements[];
+  app_elements_translations: AppElementsTranslations[];
   app_feedbacks: AppFeedbacks[];
   app_settings: AppSettings;
   app_settings_balance_translations: AppSettingsBalanceTranslations[];
@@ -1713,9 +1821,10 @@ export type CustomDirectusTypes = {
   canteens_foodservice_hours_during_semester_break: CanteensFoodserviceHoursDuringSemesterBreak[];
   cashregisters: Cashregisters[];
   cashregisters_transactions: CashregistersTransactions[];
+  collectible_event_participants: CollectibleEventParticipants[];
+  collectible_events: CollectibleEvents[];
+  collectible_events_translations: CollectibleEventsTranslations[];
   collections_dates_last_update: CollectionsDatesLastUpdate[];
-  derived_forms: DerivedForms[];
-  derived_forms_form_fields: DerivedFormsFormFields[];
   devices: Devices[];
   directus_access: DirectusAccess[];
   directus_activity: DirectusActivity[];
@@ -1745,6 +1854,7 @@ export type CustomDirectusTypes = {
   directus_users: DirectusUsers[];
   directus_versions: DirectusVersions[];
   directus_webhooks: DirectusWebhooks[];
+  files_shares: FilesShares[];
   foodoffers: Foodoffers[];
   foodoffers_categories: FoodoffersCategories[];
   foodoffers_categories_translations: FoodoffersCategoriesTranslations[];
@@ -1768,6 +1878,8 @@ export type CustomDirectusTypes = {
   form_answers_files: FormAnswersFiles[];
   form_categories: FormCategories[];
   form_categories_translations: FormCategoriesTranslations[];
+  form_extracts: FormExtracts[];
+  form_extracts_form_fields: FormExtractsFormFields[];
   form_fields: FormFields[];
   form_fields_translations: FormFieldsTranslations[];
   form_submissions: FormSubmissions[];
@@ -1775,6 +1887,7 @@ export type CustomDirectusTypes = {
   forms_translations: FormsTranslations[];
   languages: Languages[];
   mails: Mails[];
+  mails_files: MailsFiles[];
   markings: Markings[];
   markings_exclusions: MarkingsExclusions[];
   markings_groups: MarkingsGroups[];

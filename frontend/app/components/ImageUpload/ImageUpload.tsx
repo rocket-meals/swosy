@@ -94,12 +94,12 @@ const ImageUpload = ({
             String(formAnswer.value_image)
           );
           if (isFileDeleted) {
-            const deleteResponse = await formAnswersHelper.updateFormAnswers(
+            const deleteResponse = (await formAnswersHelper.updateFormAnswers(
               id,
               {
                 value_image: null,
               }
-            );
+            )) as FormAnswers;
 
             if (deleteResponse) {
               onChange(id, null, custom_type);

@@ -126,7 +126,7 @@ const NotificationScreen = () => {
         notify: feedbackData?.notify ? null : true,
       };
       const updateFeedbackResult = (await foodFeedbackHelper.updateFoodFeedback(
-        feedbackData?.food,
+        String(feedbackData?.food),
         profile?.id,
         payload
       )) as FoodsFeedbacks;

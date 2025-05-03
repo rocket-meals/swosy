@@ -37,7 +37,11 @@ import {
   SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
   SET_SELECTED_DATE,
 } from '@/redux/Types/types';
-import { CanteensFeedbacksLabels, Foodoffers } from '@/constants/types';
+import {
+  Businesshours,
+  CanteensFeedbacksLabels,
+  Foodoffers,
+} from '@/constants/types';
 import {
   Entypo,
   FontAwesome6,
@@ -99,7 +103,7 @@ const SHEET_POINTS = {
   calendar: ['80%'],
   forecast: ['80%'],
   menu: ['90%'],
-  imageManagement: ['70%'],
+  imageManagement: ['80%'],
   eatingHabits: ['90%'],
 };
 
@@ -310,7 +314,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   const getBusinessHours = async () => {
     try {
-      const businessHours = await businessHoursHelper.fetchBusinessHours({});
+      const businessHours = (await businessHoursHelper.fetchBusinessHours(
+        {}
+      )) as Businesshours[];
       dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
     } catch (error) {
       console.error('Error fetching business hours:', error);
@@ -462,7 +468,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       setFeedbackLabelsLoading(true);
       // Fetch Canteen Feedback Labels
       const canteenFeedbackLabels =
-        await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels();
+        (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as CanteensFeedbacksLabels[];
       dispatch({
         type: SET_CANTEEN_FEEDBACK_LABELS,
         payload: canteenFeedbackLabels,
@@ -1155,7 +1161,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <ActivityIndicator size={'large'} color={theme.screen.icon} />
                 </View>
-              ) : selectedCanteenFoodOffers ? (
+              ) : selectedCanteenFoodOffers &&
+                selectedCanteenFoodOffers?.length > 0 ? (
                 selectedCanteenFoodOffers?.map((item: Foodoffers) => (
                   <FoodItem
                     item={item}
@@ -1203,7 +1210,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           <BottomSheet
             key={selectedSheet}
             ref={bottomSheetRef}
-            snapPoints={['40%']}
+            // snapPoints={['40%']}
             backgroundStyle={{
               ...styles.sheetBackground,
               backgroundColor: theme.sheet.sheetBg,

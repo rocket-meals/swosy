@@ -76,6 +76,7 @@ import {
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Profiles } from '@/constants/types';
 
 const Settings = () => {
   useSetPageTitle(TranslationKeys.settings);
@@ -126,10 +127,10 @@ const Settings = () => {
 
   const saveNickname = async () => {
     if (user?.id) {
-      const result = await profileHelper.updateProfile({
+      const result = (await profileHelper.updateProfile({
         ...profile,
         nickname: nickname?.trim(),
-      });
+      })) as Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,

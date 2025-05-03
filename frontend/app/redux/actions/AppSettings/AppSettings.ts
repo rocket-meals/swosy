@@ -1,7 +1,8 @@
+import { AppSettings } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class AppSettingsHelper extends CollectionHelper<any> {
+export class AppSettingsHelper extends CollectionHelper<AppSettings> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('app_settings', client || ServerAPI.getClient());

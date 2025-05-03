@@ -32,6 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Apartments, Buildings } from '@/constants/types';
 import {
   SET_APARTMENTS,
+  SET_APARTMENTS_DICT,
   SET_APARTMENTS_LOCAL,
   SET_UNSORTED_APARTMENTS,
 } from '@/redux/Types/types';
@@ -138,14 +139,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       // Fetch all apartments
       const apartmentData = (await apartmentsHelper.fetchApartments(
         {}
-      )) as Buildings[];
+      )) as Apartments[];
       const apartments = apartmentData || [];
 
       if (apartments && apartments?.length > 0) {
         const apartmentWithBuilding = await Promise.all(
           apartments.map(async (apartment) => {
             const buildingData = (await buildingsHelper.fetchBuildingById(
-              apartment?.building
+              String(apartment?.building)
             )) as Buildings;
 
             return {
@@ -172,6 +173,16 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       setLoading(true);
       const apartmentsWithDistance = addDistance(apartments);
       if (apartmentsWithDistance) {
+        const apartmentsDict = apartmentsWithDistance.reduce(
+          (acc, apartment) => {
+            if (apartment.id) {
+              acc[apartment.id] = apartment;
+            }
+            return acc;
+          },
+          {} as Record<string, any>
+        );
+        dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
         dispatch({
           type: SET_APARTMENTS,
           payload: apartmentsWithDistance,

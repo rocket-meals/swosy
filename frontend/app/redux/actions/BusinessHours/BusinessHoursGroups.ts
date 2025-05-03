@@ -1,7 +1,8 @@
+import { BusinesshoursGroups } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class BusinessHoursGroupsHelper extends CollectionHelper<any> {
+export class BusinessHoursGroupsHelper extends CollectionHelper<BusinesshoursGroups> {
   constructor(client?: any) {
     super('businesshours_groups', client || ServerAPI.getClient());
   }

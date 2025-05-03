@@ -32,6 +32,7 @@ import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { Buildings } from '@/constants/types';
 import {
   SET_CAMPUSES,
+  SET_CAMPUSES_DICT,
   SET_CAMPUSES_LOCAL,
   SET_UNSORTED_CAMPUSES,
 } from '@/redux/Types/types';
@@ -118,7 +119,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     const campusData = (await campusHelper.fetchCampus({})) as Buildings[];
     const campuses = campusData || [];
     if (campuses) {
+      const attributesDict = campuses.reduce((acc, campus) => {
+        if (campus.id) {
+          acc[campus.id] = campus;
+        }
+        return acc;
+      }, {} as Record<string, any>);
       dispatch({ type: SET_CAMPUSES, payload: campuses });
+      dispatch({ type: SET_CAMPUSES_DICT, payload: attributesDict });
       setCampusesDispatched(true);
     }
   };

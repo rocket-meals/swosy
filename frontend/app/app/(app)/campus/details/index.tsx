@@ -17,36 +17,24 @@ import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import Information from '@/components/Information';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
-import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { useSelector } from 'react-redux';
 import { Buildings } from '@/constants/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { createSelector } from 'reselect';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-const selectSettingsState = (state: any) => state.settings;
-
-const selectPrimaryColor = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.primaryColor
-);
-const selectAppSettings = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.appSettings
-);
 
 const details = () => {
   useSetPageTitle(TranslationKeys.building_details);
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const primaryColor = useSelector(selectPrimaryColor);
-  const appSettings = useSelector(selectAppSettings);
-  const { serverInfo } = useSelector((state: any) => state.settings);
-  const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const { id } = useLocalSearchParams();
-  const campusHelper = new CampusHelper();
+  const { serverInfo, appSettings, primaryColor } = useSelector(
+    (state: any) => state.settings
+  );
+  const { campusesDict } = useSelector((state: any) => state.campus);
+  const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);
   const [campusDetails, setCampusDetails] = useState<Buildings | null>(null);
@@ -59,17 +47,17 @@ const details = () => {
 
   const fetchCampusById = async () => {
     setLoading(true);
-    const campusData = (await campusHelper.fetchCampusById(
-      String(id)
-    )) as Buildings;
+    const campusData = campusesDict[String(id)];
     const campusDetails = campusData || {};
     setCampusDetails(campusDetails);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchCampusById();
-  }, []);
+    if (id) {
+      fetchCampusById();
+    }
+  }, [id]);
 
   useEffect(() => {
     const handleResize = () => {

@@ -1,6 +1,7 @@
 import {
   CLEAR_APARTMENTS,
   SET_APARTMENTS,
+  SET_APARTMENTS_DICT,
   SET_APARTMENTS_LOCAL,
   SET_UNSORTED_APARTMENTS,
 } from '../Types/types';
@@ -9,6 +10,7 @@ const initialState = {
   apartments: [],
   apartmentsLocal: [],
   unSortedApartments: [],
+  apartmentsDict: {},
 };
 
 const apartmentsReducer = (state = initialState, actions: any) => {
@@ -17,6 +19,12 @@ const apartmentsReducer = (state = initialState, actions: any) => {
       return {
         ...state,
         apartments: actions.payload,
+      };
+    }
+    case SET_APARTMENTS_DICT: {
+      return {
+        ...state,
+        apartmentsDict: actions.payload,
       };
     }
     case SET_APARTMENTS_LOCAL: {

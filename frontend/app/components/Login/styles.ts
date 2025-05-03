@@ -116,7 +116,6 @@ export const styles = StyleSheet.create({
     margin: 20,
   },
   modalView: {
-    // height: 450,
     borderRadius: 40,
     padding: 20,
     alignItems: 'center',
@@ -148,8 +147,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderWidth: 0,
     borderColor: 'transparent',
-    // outline: 'none',
-    // outlineColor: 'transparent',
     marginTop: 20,
     fontFamily: 'Poppins_400Regular',
     fontSize: 18,
@@ -278,7 +275,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
   },
-  // --------------------------
   languageContainer: {
     marginTop: 10,
     paddingHorizontal: 10,
