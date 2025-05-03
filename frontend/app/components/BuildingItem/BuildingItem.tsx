@@ -24,11 +24,12 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
     (state: any) => state.settings
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-
+  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
   const { isManagement } = useSelector((state: any) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
+
   const handleNavigation = (id: string) => {
     router.push({
       pathname: '/(app)/campus/details',
@@ -63,7 +64,6 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
     else if (screenWidth > 280) return 130;
     else return 120;
   };
-  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
 
   const getCardWidth = () => {
     if (screenWidth < 500) {
@@ -73,7 +73,7 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
       const width = screenWidth / amountColumnsForcard - 25;
       return width;
     } else {
-      const width = screenWidth / amountColumnsForcard - 35; // Adjust as needed for larger screens
+      const width = screenWidth / amountColumnsForcard - 35;
       return width;
     }
   };

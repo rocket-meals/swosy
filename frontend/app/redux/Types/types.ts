@@ -93,6 +93,7 @@ export const SET_NEWS = 'SET_NEWS';
 // Campus
 
 export const SET_CAMPUSES = 'SET_CAMPUSES';
+export const SET_CAMPUSES_DICT = 'SET_CAMPUSES_DICT';
 export const SET_CAMPUSES_LOCAL = 'SET_CAMPUSES_LOCAL';
 export const SET_UNSORTED_CAMPUSES = 'SET_UNSORTED_CAMPUSES';
 
