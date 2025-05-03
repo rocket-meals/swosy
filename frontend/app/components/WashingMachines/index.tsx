@@ -126,7 +126,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   };
 
   useEffect(() => {
-    if (washingMachines?.length > 0) {
+    if (washingMachines && washingMachines?.length > 0) {
       if (Platform.OS !== 'web') {
         checkPermissions().then(scheduleNotifications);
       }
@@ -197,7 +197,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
                         primaryColor
                       )}
                       autoPlay={autoPlay}
-                      loop={!isWashingFinished} // Stop animation if washing is finished
+                      loop={!isWashingFinished}
                       resizeMode='contain'
                       style={{ width: '100%', height: '100%' }}
                     />
