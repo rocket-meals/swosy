@@ -1165,6 +1165,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 selectedCanteenFoodOffers?.length > 0 ? (
                 selectedCanteenFoodOffers?.map((item: Foodoffers) => (
                   <FoodItem
+                    canteen={selectedCanteen}
                     item={item}
                     key={item?.id || `food-item-${index}`}
                     handleMenuSheet={openSheet}

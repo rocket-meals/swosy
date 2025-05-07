@@ -21,7 +21,7 @@ interface LabelsProps {
 
 const selectMarkings = (state: any) => state.food.markings;
 
-const selectFoodOffer = (offerId: string) =>
+export const selectFoodOffer = (offerId: string) =>
   createSelector(
     [(state: any) => state.canteenReducer.selectedCanteenFoodOffers],
     (foodOffers) => getFoodOffer(foodOffers, offerId)
