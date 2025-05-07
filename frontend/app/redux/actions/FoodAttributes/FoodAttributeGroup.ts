@@ -1,7 +1,8 @@
+import { FoodsAttributesGroups } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FoodAttributeGroupHelper extends CollectionHelper<any> {
+export class FoodAttributeGroupHelper extends CollectionHelper<FoodsAttributesGroups> {
   constructor(client?: any) {
     super('foods_attributes_groups', client || ServerAPI.getClient());
   }

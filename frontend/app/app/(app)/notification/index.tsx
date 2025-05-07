@@ -11,7 +11,6 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
-  Platform,
 } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -32,12 +31,15 @@ import animation from '@/assets/animations/notificationBell.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const selectAuthState = (state: any) => state.authReducer;
 
 const NotificationScreen = () => {
+  useSetPageTitle(TranslationKeys.notification);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { language, primaryColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -53,15 +55,6 @@ const NotificationScreen = () => {
   );
   const foodFeedbacks = useSelector(
     (state: any) => state.food.ownFoodFeedbacks
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('notification');
-        document.title = title;
-      }
-    }, [])
   );
 
   useFocusEffect(
@@ -133,7 +126,7 @@ const NotificationScreen = () => {
         notify: feedbackData?.notify ? null : true,
       };
       const updateFeedbackResult = (await foodFeedbackHelper.updateFoodFeedback(
-        feedbackData?.food,
+        String(feedbackData?.food),
         profile?.id,
         payload
       )) as FoodsFeedbacks;
@@ -189,7 +182,7 @@ const NotificationScreen = () => {
               fontSize: windowWidth < 500 ? 16 : 18,
             }}
           >
-            {t('notification_index_introduction')}
+            {translate(TranslationKeys.notification_index_introduction)}
           </Text>
           <View style={styles.infoRow}></View>
           <Text
@@ -199,7 +192,7 @@ const NotificationScreen = () => {
               fontSize: windowWidth < 500 ? 16 : 18,
             }}
           >
-            {t('foods')}
+            {translate(TranslationKeys.foods)}
           </Text>
           {foodWithFeedback.map((item, index) => (
             <View

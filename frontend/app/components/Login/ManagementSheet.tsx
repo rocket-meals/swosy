@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { styles } from './styles';
 import { AntDesign } from '@expo/vector-icons';
@@ -7,9 +13,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { SheetProps } from './types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSelector } from 'react-redux';
+import { TranslationKeys } from '@/locales/keys';
 
-const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
-  const { t } = useLanguage();
+const ManagementSheet: React.FC<SheetProps> = ({
+  closeSheet,
+  handleLogin,
+  loading,
+}) => {
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const [formState, setFormState] = useState({
@@ -18,7 +29,6 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
     isEmailValid: false,
     isPasswordValid: false,
   });
-
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,7 +65,9 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
         </TouchableOpacity>
       </View>
       <Text style={{ ...styles.sheetHeading, color: theme.sheet.text }}>
-        {t('show_login_for_management_with_email_and_password')}
+        {translate(
+          TranslationKeys.show_login_for_management_with_email_and_password
+        )}
       </Text>
       <Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>
         Sign in with open account
@@ -105,14 +117,18 @@ const ManagementSheet: React.FC<SheetProps> = ({ closeSheet, handleLogin }) => {
           handleLogin(undefined, formState.email, formState.password)
         }
       >
-        <Text
-          style={{
-            ...styles.sheetLoginLabel,
-            color: isFormValid ? theme.activeText : theme.screen.text,
-          }}
-        >
-          {t('sign_in')}
-        </Text>
+        {loading ? (
+          <ActivityIndicator size={'small'} color={theme.screen.text} />
+        ) : (
+          <Text
+            style={{
+              ...styles.sheetLoginLabel,
+              color: isFormValid ? theme.activeText : theme.screen.text,
+            }}
+          >
+            {translate(TranslationKeys.sign_in)}
+          </Text>
+        )}
       </TouchableOpacity>
     </BottomSheetView>
   );

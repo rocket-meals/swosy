@@ -3,7 +3,15 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   mainContainer: {
     flex: 1,
+  },
+  contentContainer: {
+    width: '100%',
+    minHeight: '100%',
     flexDirection: 'row',
+  },
+  loginContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   webContainer: {
     width: '60%',
@@ -26,6 +34,7 @@ export default StyleSheet.create({
     fontSize: 34,
     fontFamily: 'Poppins_700Bold',
     letterSpacing: 2,
+    textAlign: 'center',
   },
   subTitle: {
     width: '80%',
@@ -39,9 +48,5 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins_400Regular',
     letterSpacing: 1,
-  },
-  loginContainer: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
 });

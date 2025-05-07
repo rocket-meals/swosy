@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const BuildingItem: React.FC<BuildingItemProps> = ({
   campus,
@@ -18,16 +19,17 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
   setSelectedApartementId,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor, serverInfo } = useSelector(
     (state: any) => state.settings
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-
+  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
   const { isManagement } = useSelector((state: any) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
+
   const handleNavigation = (id: string) => {
     router.push({
       pathname: '/(app)/campus/details',
@@ -62,7 +64,6 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
     else if (screenWidth > 280) return 130;
     else return 120;
   };
-  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
 
   const getCardWidth = () => {
     if (screenWidth < 500) {
@@ -72,7 +73,7 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
       const width = screenWidth / amountColumnsForcard - 25;
       return width;
     } else {
-      const width = screenWidth / amountColumnsForcard - 35; // Adjust as needed for larger screens
+      const width = screenWidth / amountColumnsForcard - 35;
       return width;
     }
   };
@@ -140,7 +141,7 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('edit')}: ${t('image')}`}
+                      {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>

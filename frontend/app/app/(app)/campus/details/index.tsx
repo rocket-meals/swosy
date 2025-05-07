@@ -17,35 +17,24 @@ import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import Information from '@/components/Information';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
-import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { useSelector } from 'react-redux';
 import { Buildings } from '@/constants/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { createSelector } from 'reselect';
-import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
-const selectSettingsState = (state: any) => state.settings;
-
-const selectPrimaryColor = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.primaryColor
-);
-const selectAppSettings = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.appSettings
-);
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const details = () => {
+  useSetPageTitle(TranslationKeys.building_details);
   const { theme } = useTheme();
-  const { t } = useLanguage()
-  const primaryColor = useSelector(selectPrimaryColor);
-  const appSettings = useSelector(selectAppSettings);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { serverInfo } = useSelector((state: any) => state.settings);
-  const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
+  const { translate } = useLanguage();
   const { id } = useLocalSearchParams();
-  const campusHelper = new CampusHelper();
+  const { serverInfo, appSettings, primaryColor } = useSelector(
+    (state: any) => state.settings
+  );
+  const { campusesDict } = useSelector((state: any) => state.campus);
+  const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);
   const [campusDetails, setCampusDetails] = useState<Buildings | null>(null);
@@ -55,32 +44,20 @@ const details = () => {
   const campus_area_color = appSettings?.campus_area_color
     ? appSettings?.campus_area_color
     : primaryColor;
-  const contrastColor = myContrastColor(
-    campus_area_color,
-    theme,
-    mode === 'dark'
-  );
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Building Details';
-      document.title = title;
-    }
-  }, []);
 
   const fetchCampusById = async () => {
     setLoading(true);
-    const campusData = (await campusHelper.fetchCampusById(
-      String(id)
-    )) as Buildings;
+    const campusData = campusesDict[String(id)];
     const campusDetails = campusData || {};
     setCampusDetails(campusDetails);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchCampusById();
-  }, []);
+    if (id) {
+      fetchCampusById();
+    }
+  }, [id]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -238,7 +215,9 @@ const details = () => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('open_navitation_to_location')}`}
+                      {`${translate(
+                        TranslationKeys.open_navitation_to_location
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -287,7 +266,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('information')}`}
+                        {`${translate(TranslationKeys.information)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -323,7 +302,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('description')}`}
+                        {`${translate(TranslationKeys.description)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>

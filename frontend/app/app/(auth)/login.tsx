@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, Text, Dimensions, Image, Platform } from 'react-native';
+import { View, Text, Dimensions, Image, ScrollView } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import Form from '@/components/Login/Form';
@@ -22,7 +22,7 @@ import {
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
-import { DirectusUsers, Wikis } from '@/constants/types';
+import { AppSettings, DirectusUsers, Wikis } from '@/constants/types';
 import { format } from 'date-fns';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
@@ -31,11 +31,12 @@ import {
   getDetailedDescriptionTranslation,
   getIntroDescriptionTranslation,
 } from '@/helper/resourceHelper';
-import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 export default function Login() {
+  useSetPageTitle(TranslationKeys.sign_in);
   const toast = useToast();
-  const { t } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { deviceMock } = useGlobalSearchParams();
@@ -74,17 +75,11 @@ export default function Login() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('sign_in');
-        document.title = title;
-      }
-    }, [])
-  );
   const getAppSettings = async () => {
     try {
-      const result = await appSettingsHelper.fetchAppSettings({});
+      const result = (await appSettingsHelper.fetchAppSettings(
+        {}
+      )) as AppSettings;
       if (result) {
         dispatch({ type: SET_APP_SETTINGS, payload: result });
       }
@@ -232,10 +227,10 @@ export default function Login() {
             source={{ uri: imageUrl }}
             style={{
               width: '95%',
-              height: 450,
               resizeMode: 'cover',
               marginBottom: 10,
               borderRadius: 8,
+              aspectRatio: 16 / 10,
             }}
           />
         )}
@@ -251,9 +246,13 @@ export default function Login() {
   return (
     <>
       {deviceMock && deviceMock === 'iphone' && isWeb && <DeviceMock />}
-      <View
+      <ScrollView
         style={{
           ...styles.mainContainer,
+          backgroundColor: theme.login.background,
+        }}
+        contentContainerStyle={{
+          ...styles.contentContainer,
           backgroundColor: theme.login.background,
           padding: isWebVisible ? 20 : 20,
           justifyContent: isWeb ? 'space-between' : 'flex-start',
@@ -318,6 +317,7 @@ export default function Login() {
             <ManagementSheet
               closeSheet={closeSheet}
               handleLogin={handleUserLogin}
+              loading={loading}
             />
           </BottomSheet>
         )}
@@ -339,7 +339,7 @@ export default function Login() {
             />
           </BottomSheet>
         )}
-      </View>
+      </ScrollView>
     </>
   );
 }

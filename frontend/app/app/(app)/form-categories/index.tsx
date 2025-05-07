@@ -1,7 +1,6 @@
 import {
   ActivityIndicator,
   Dimensions,
-  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -17,11 +16,12 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
-import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.select_a_form_category);
   const { theme } = useTheme();
-  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const { language } = useSelector((state: any) => state.settings);
   const [formCategories, setFormCategories] = useState<FormCategories[]>([]);
@@ -30,14 +30,6 @@ const index = () => {
   );
   const formCategoriesHelper = new FormCategoriesHelper();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('select_a_form_category');
-        document.title = title;
-      }
-    }, [])
-  );
   const getAllCategories = async () => {
     setLoading(true);
     const result = (await formCategoriesHelper.fetchFormCategories({

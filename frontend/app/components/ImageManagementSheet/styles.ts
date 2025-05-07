@@ -2,15 +2,13 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   sheetView: {
-    width: '100%',
+    flex: 1,
     height: '100%',
     borderTopRightRadius: 28,
     borderTopLeftRadius: 28,
+    alignItems: 'center',
     padding: 10,
     paddingBottom: 0,
-  },
-  contentContainer: {
-    alignItems: 'center',
   },
   sheetHeader: {
     width: '100%',
@@ -34,8 +32,7 @@ export default StyleSheet.create({
     textAlign: 'center',
   },
   mainContentContainer: {
-    paddingHorizontal: 20,
-    marginTop: 40,
+    width: '100%',
   },
   menuHeading: {
     fontSize: 24,

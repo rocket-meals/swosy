@@ -7,7 +7,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     paddingTop: 50,
   },
-
   imageContainer: {
     width: 250,
     height: 250,

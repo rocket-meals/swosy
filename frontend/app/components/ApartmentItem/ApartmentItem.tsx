@@ -12,6 +12,7 @@ import styles from './styles';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 
 const ApartmentItem: React.FC<BuildingItemProps> = ({
   apartment,
@@ -19,7 +20,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
   openImageManagementSheet,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const {
     primaryColor: projectColor,
     appSettings,
@@ -153,7 +154,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('edit')}: ${t('image')}`}
+                      {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>

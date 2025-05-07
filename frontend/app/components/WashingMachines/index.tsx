@@ -3,8 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
-import { CollectionHelper } from '@/helper/collectionHelper';
-import { Apartments } from '@/constants/types';
+import { Apartments, Washingmachines } from '@/constants/types';
 import { differenceInSeconds, format, isAfter, isBefore } from 'date-fns';
 import washingmachine from '@/assets/animations/washingmachine/washingmachine.json';
 import washingmachineEmpty from '@/assets/animations/washingmachine/washingmachineEmpty.json';
@@ -13,11 +12,16 @@ import { useSelector } from 'react-redux';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { TranslationKeys } from '@/locales/keys';
+import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
-  const [washingMachines, setWashingMachines] = useState<Apartments | null>();
+  const apartmentsHelper = new ApartmentsHelper();
+  const [washingMachines, setWashingMachines] = useState<
+    Washingmachines[] | any[]
+  >();
   const [loading, setLoading] = useState(false);
   const { primaryColor, appSettings } = useSelector(
     (state: any) => state.settings
@@ -52,26 +56,19 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
     }
   }, [animationJson, autoPlay]);
 
-  async function loadApartmentWithWashingMachinesFromServer(
+  const loadApartmentWithWashingMachinesFromServer = async (
     apartmentId: string
-  ): Promise<any> {
+  ) => {
     setLoading(true);
-    const collectionHelper = new CollectionHelper<any>('apartments');
 
-    const fields = ['*', 'washingmachines.*'];
-
-    const query = {
-      limit: -1,
-      fields: fields,
-      filter: {
-        id: apartmentId,
-      },
-    };
-
-    const response = await collectionHelper.readItem(apartmentId, query);
-    setWashingMachines(response?.washingmachines);
+    const response = (await apartmentsHelper.fetchApartmentWithWashingMachines(
+      apartmentId
+    )) as Apartments;
+    if (response.washingmachines) {
+      setWashingMachines(response?.washingmachines);
+    }
     setLoading(false);
-  }
+  };
 
   useEffect(() => {
     if (campusDetails) {
@@ -129,7 +126,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   };
 
   useEffect(() => {
-    if (washingMachines?.length > 0) {
+    if (washingMachines && washingMachines?.length > 0) {
       if (Platform.OS !== 'web') {
         checkPermissions().then(scheduleNotifications);
       }
@@ -157,7 +154,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   return (
     <View style={styles.container}>
       <Text style={{ ...styles.heading, color: theme.screen.text }}>
-        {t('washing_machines')}
+        {translate(TranslationKeys.washing_machines)}
       </Text>
       <View style={styles.washingMachines}>
         {loading ? (
@@ -200,7 +197,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
                         primaryColor
                       )}
                       autoPlay={autoPlay}
-                      loop={!isWashingFinished} // Stop animation if washing is finished
+                      loop={!isWashingFinished}
                       resizeMode='contain'
                       style={{ width: '100%', height: '100%' }}
                     />

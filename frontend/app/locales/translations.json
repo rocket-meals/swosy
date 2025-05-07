@@ -699,6 +699,46 @@
     "tr": "Yemek Planı: Gün: Resimli Tek Görünüm",
     "zh": "食品计划：天：单视图与图片"
   },
+  "big_screen": {
+    "de": "Großer Bildschirm",
+    "en": "Big Screen",
+    "ar": "شاشة كبيرة",
+    "es": "Pantalla grande",
+    "fr": "Grand écran",
+    "ru": "Большой экран",
+    "tr": "Büyük Ekran",
+    "zh": "大屏幕"
+  },
+  "food_plan_day": {
+    "de": "Ernährungsplantag",
+    "en": "Food Plan Day",
+    "ar": "يوم خطة الطعام",
+    "es": "Día del plan alimenticio",
+    "fr": "Jour du plan alimentaire",
+    "ru": "День плана питания",
+    "tr": "Yemek Planı Günü",
+    "zh": "饮食计划日"
+  },
+  "food_plan_list": {
+    "de": "Liste des Ernährungsplans",
+    "en": "Food Plan List",
+    "ar": "قائمة خطة الطعام",
+    "es": "Lista del plan alimenticio",
+    "fr": "Liste du plan alimentaire",
+    "ru": "Список плана питания",
+    "tr": "Yemek Planı Listesi",
+    "zh": "饮食计划列表"
+  },
+  "food_plan_week": {
+    "de": "Ernährungsplanwoche",
+    "en": "Food Plan Week",
+    "ar": "أسبوع خطة الطعام",
+    "es": "Semana del plan alimenticio",
+    "fr": "Semaine du plan alimentaire",
+    "ru": "Неделя плана питания",
+    "tr": "Yemek Planı Haftası",
+    "zh": "饮食计划周"
+  },
   "data_access_introduction": {
     "de": "## 🌟 Deine Daten - Dein Recht\n\nWir glauben an Transparenz und das Recht unserer Nutzer, ihre Daten vollständig einzusehen. Deshalb ermöglichen wir dir den Zugang zu deinen Informationen, meist im maschinenlesbaren JSON-Format.\n\n### 🛠 Hilfe Benötigt?\nKeine Sorge, falls du mit JSON nicht vertraut bist! Unser Team steht bereit, um jede Frage zu klären und dir bei der Dateninterpretation zur Seite zu stehen.\n\nFühl dich frei, uns jederzeit zu kontaktieren. Deine Daten, deine Kontrolle.",
     "en": "## 🌟 Your Data - Your Right\n\nWe believe in transparency and the right of our users to fully access their data. That's why we allow you to access your information, usually in machine-readable JSON format.\n\n### 🛠 Need Help?\nDon't worry if you're not familiar with JSON! Our team is ready to answer any questions and assist you in interpreting your data.\n\nFeel free to contact us at any time. Your data, your control.",
@@ -898,6 +938,16 @@
     "ru": "Не пригоден для использования",
     "tr": "Kullanılamaz",
     "zh": "不可用"
+  },
+  "food_offers": {
+    "de": "Essensangebote",
+    "en": "Food Offers",
+    "ar": "عروض الطعام",
+    "es": "Ofertas de comida",
+    "fr": "Offres de nourriture",
+    "ru": "Предложения еды",
+    "tr": "Yemek Teklifleri",
+    "zh": "食品优惠"
   },
   "no_foodoffers_found_for_selection": {
     "de": "Keine Angebote gefunden.",
@@ -2523,6 +2573,26 @@
     "tr": "Binalar",
     "zh": "建筑物"
   },
+  "building_details": {
+    "de": "Gebäudedetails",
+    "en": "Building Details",
+    "ar": "تفاصيل المبنى",
+    "es": "Detalles del edificio",
+    "fr": "Détails du bâtiment",
+    "ru": "Детали здания",
+    "tr": "Bina Detayları",
+    "zh": "建筑细节"
+  },
+  "apartment_details": {
+    "de": "Wohnungsdetails",
+    "en": "Apartment Details",
+    "ar": "تفاصيل الشقة",
+    "es": "Detalles del apartamento",
+    "fr": "Détails de l'appartement",
+    "ru": "Детали квартиры",
+    "tr": "Daire Detayları",
+    "zh": "公寓详情"
+  },
   "campus": {
     "de": "Campus",
     "en": "Campus",
@@ -3063,6 +3133,246 @@
     "tr": "Pazar",
     "zh": "星期日"
   },
+"January": {
+  "en": "January",
+  "de": "Januar",
+  "ar": "يناير",
+  "es": "Enero",
+  "fr": "Janvier",
+  "ru": "Январь",
+  "tr": "Ocak",
+  "zh": "一月"
+},
+"February": {
+  "en": "February",
+  "de": "Februar",
+  "ar": "فبراير",
+  "es": "Febrero",
+  "fr": "Février",
+  "ru": "Февраль",
+  "tr": "Şubat",
+  "zh": "二月"
+},
+"March": {
+  "en": "March",
+  "de": "März",
+  "ar": "مارس",
+  "es": "Marzo",
+  "fr": "Mars",
+  "ru": "Март",
+  "tr": "Mart",
+  "zh": "三月"
+},
+"April": {
+  "en": "April",
+  "de": "April",
+  "ar": "أبريل",
+  "es": "Abril",
+  "fr": "Avril",
+  "ru": "Апрель",
+  "tr": "Nisan",
+  "zh": "四月"
+},
+"May": {
+  "en": "May",
+  "de": "Mai",
+  "ar": "مايو",
+  "es": "Mayo",
+  "fr": "Mai",
+  "ru": "Май",
+  "tr": "Mayıs",
+  "zh": "五月"
+},
+"June": {
+  "en": "June",
+  "de": "Juni",
+  "ar": "يونيو",
+  "es": "Junio",
+  "fr": "Juin",
+  "ru": "Июнь",
+  "tr": "Haziran",
+  "zh": "六月"
+},
+"July": {
+  "en": "July",
+  "de": "Juli",
+  "ar": "يوليو",
+  "es": "Julio",
+  "fr": "Juillet",
+  "ru": "Июль",
+  "tr": "Temmuz",
+  "zh": "七月"
+},
+"August": {
+  "en": "August",
+  "de": "August",
+  "ar": "أغسطس",
+  "es": "Agosto",
+  "fr": "Août",
+  "ru": "Август",
+  "tr": "Ağustos",
+  "zh": "八月"
+},
+"September": {
+  "en": "September",
+  "de": "September",
+  "ar": "سبتمبر",
+  "es": "Septiembre",
+  "fr": "Septembre",
+  "ru": "Сентябрь",
+  "tr": "Eylül",
+  "zh": "九月"
+},
+"October": {
+  "en": "October",
+  "de": "Oktober",
+  "ar": "أكتوبر",
+  "es": "Octubre",
+  "fr": "Octobre",
+  "ru": "Октябрь",
+  "tr": "Ekim",
+  "zh": "十月"
+},
+"November": {
+  "en": "November",
+  "de": "November",
+  "ar": "نوفمبر",
+  "es": "Noviembre",
+  "fr": "Novembre",
+  "ru": "Ноябрь",
+  "tr": "Kasım",
+  "zh": "十一月"
+},
+"December": {
+  "en": "December",
+  "de": "Dezember",
+  "ar": "ديسمبر",
+  "es": "Diciembre",
+  "fr": "Décembre",
+  "ru": "Декабрь",
+  "tr": "Aralık",
+  "zh": "十二月"
+},
+"Jan": {
+  "en": "Jan",
+  "de": "Jan",
+  "ar": "ينا",
+  "es": "Ene",
+  "fr": "Janv",
+  "ru": "Янв",
+  "tr": "Oca",
+  "zh": "1月"
+},
+"Feb": {
+  "en": "Feb",
+  "de": "Feb",
+  "ar": "فبر",
+  "es": "Feb",
+  "fr": "Févr",
+  "ru": "Фев",
+  "tr": "Şub",
+  "zh": "2月"
+},
+"Mar": {
+  "en": "Mar",
+  "de": "Mär",
+  "ar": "مار",
+  "es": "Mar",
+  "fr": "Mars",
+  "ru": "Мар",
+  "tr": "Mar",
+  "zh": "3月"
+},
+"Apr": {
+  "en": "Apr",
+  "de": "Apr",
+  "ar": "أبر",
+  "es": "Abr",
+  "fr": "Avr",
+  "ru": "Апр",
+  "tr": "Nis",
+  "zh": "4月"
+},
+"MayShort": {
+  "en": "May",
+  "de": "Mai",
+  "ar": "ماي",
+  "es": "May",
+  "fr": "Mai",
+  "ru": "Май",
+  "tr": "May",
+  "zh": "5月"
+},
+"Jun": {
+  "en": "Jun",
+  "de": "Jun",
+  "ar": "يون",
+  "es": "Jun",
+  "fr": "Juin",
+  "ru": "Июн",
+  "tr": "Haz",
+  "zh": "6月"
+},
+"Jul": {
+  "en": "Jul",
+  "de": "Jul",
+  "ar": "يول",
+  "es": "Jul",
+  "fr": "Juil",
+  "ru": "Июл",
+  "tr": "Tem",
+  "zh": "7月"
+},
+"Aug": {
+  "en": "Aug",
+  "de": "Aug",
+  "ar": "أغس",
+  "es": "Ago",
+  "fr": "Août",
+  "ru": "Авг",
+  "tr": "Ağu",
+  "zh": "8月"
+},
+"Sep": {
+  "en": "Sep",
+  "de": "Sep",
+  "ar": "سبت",
+  "es": "Sep",
+  "fr": "Sept",
+  "ru": "Сен",
+  "tr": "Eyl",
+  "zh": "9月"
+},
+"Oct": {
+  "en": "Oct",
+  "de": "Okt",
+  "ar": "أكت",
+  "es": "Oct",
+  "fr": "Oct",
+  "ru": "Окт",
+  "tr": "Eki",
+  "zh": "10月"
+},
+"Nov": {
+  "en": "Nov",
+  "de": "Nov",
+  "ar": "نوف",
+  "es": "Nov",
+  "fr": "Nov",
+  "ru": "Ноя",
+  "tr": "Kas",
+  "zh": "11月"
+},
+"Dec": {
+  "en": "Dec",
+  "de": "Dez",
+  "ar": "ديس",
+  "es": "Dic",
+  "fr": "Déc",
+  "ru": "Дек",
+  "tr": "Ara",
+  "zh": "12月"
+},
   "RATE_US": {
     "de": "Bewerten Sie uns",
     "en": "Rate Us",
@@ -3112,6 +3422,16 @@
     "ru": "Выбросы",
     "tr": "Emisyonlar",
     "zh": "排放"
+  },
+  "form_submission": {
+    "de": "Formularübermittlung",
+    "en": "Form Submission",
+    "ar": "إرسال النموذج",
+    "es": "Envío del formulario",
+    "fr": "Soumission du formulaire",
+    "ru": "Отправка формы",
+    "tr": "Form Gönderimi",
+    "zh": "表单提交"
   },
   "select_a_form_category": {
     "de": "Wählen Sie eine Formkategorie",

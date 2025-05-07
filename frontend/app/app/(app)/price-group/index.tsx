@@ -1,4 +1,4 @@
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import React, {
   cloneElement,
   useCallback,
@@ -20,10 +20,14 @@ import animation from '@/assets/animations/priceGroup.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { Profiles } from '@/constants/types';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.price_group);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const profileHelper = new ProfileHelper();
   const [loading, setLoading] = useState(false);
@@ -38,28 +42,21 @@ const index = () => {
   const sortingOptions = [
     {
       id: 'student',
-      label: t('price_group_student'),
+      label: translate(TranslationKeys.price_group_student),
       icon: <FontAwesome name='graduation-cap' size={24} />,
     },
     {
       id: 'employee',
-      label: t('price_group_employee'),
+      label: translate(TranslationKeys.price_group_employee),
       icon: <Ionicons name='bag' size={24} />,
     },
     {
       id: 'guest',
-      label: t('price_group_guest'),
+      label: translate(TranslationKeys.price_group_guest),
       icon: <FontAwesome5 name='users' size={24} />,
     },
   ];
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('price_group');
-        document.title = title;
-      }
-    }, [])
-  );
+
   useFocusEffect(
     useCallback(() => {
       setAmimationJson(replaceLottieColors(animation, primaryColor));
@@ -105,7 +102,7 @@ const index = () => {
       setLoading(true);
       setSelectedOption(option);
       const payload = { ...profile, price_group: option };
-      const result = await profileHelper.updateProfile(payload);
+      const result = (await profileHelper.updateProfile(payload)) as Profiles;
       if (result) {
         dispatch({ type: UPDATE_PROFILE, payload });
       }

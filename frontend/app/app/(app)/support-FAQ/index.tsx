@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   Dimensions,
@@ -10,15 +10,17 @@ import {
 } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
-import SupportFAQ from '../../../components/SupportFAQ/SupportFAQ'; // Import the child component
+import SupportFAQ from '../../../components/SupportFAQ/SupportFAQ';
 import styles from './styles';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
 import { useSelector } from 'react-redux';
-import { useFocusEffect } from 'expo-router';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const supportfaq = () => {
-  const { t } = useLanguage();
+  useSetPageTitle(TranslationKeys.feedback_support_faq);
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
   const { profile } = useSelector((state: any) => state.authReducer);
@@ -29,14 +31,7 @@ const supportfaq = () => {
   const { serverInfo, appSettings } = useSelector(
     (state: any) => state.settings
   );
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('feedback_support_faq');
-        document.title = title;
-      }
-    }, [])
-  );
+
   useEffect(() => {
     if (serverInfo && serverInfo?.info) {
       setProjectName(serverInfo?.info?.project?.project_name);
@@ -95,7 +90,9 @@ const supportfaq = () => {
           >
             <SupportFAQ
               icon='feedback'
-              label={`${t('feedback')} & ${t('support')}`}
+              label={`${translate(TranslationKeys.feedback)} & ${translate(
+                TranslationKeys.support
+              )}`}
               text=''
               onPress={() => router.navigate('/feedback-support')}
               isArrowRight={true}
@@ -104,7 +101,7 @@ const supportfaq = () => {
             {profile?.id && (
               <SupportFAQ
                 icon='email'
-                label={t('my_support_tickets')}
+                label={translate(TranslationKeys.my_support_tickets)}
                 redirectIcon={false}
                 text=''
                 onPress={() => {
@@ -151,7 +148,7 @@ const supportfaq = () => {
             />
             <SupportFAQ
               icon='email'
-              label={t('email')}
+              label={translate(TranslationKeys.email)}
               isArrowRight={false}
               text='info@rocket-meals.de'
               onPress={() => {
@@ -179,7 +176,7 @@ const supportfaq = () => {
                     },
                   ]}
                 >
-                  {t('project_name')}
+                  {translate(TranslationKeys.project_name)}
                 </Text>
               </View>
               <View style={styles.textIcon}>
@@ -198,7 +195,7 @@ const supportfaq = () => {
             </View>
 
             <SupportFAQ
-              label={t('developer')}
+              label={translate(TranslationKeys.developer)}
               isArrowRight={false}
               text='Baumgartner Software UG'
               onPress={() => {
@@ -206,7 +203,7 @@ const supportfaq = () => {
               }}
             />
             <SupportFAQ
-              label={t('software_name')}
+              label={translate(TranslationKeys.software_name)}
               text='Rocket Meals'
               isArrowRight={false}
               onPress={() => {

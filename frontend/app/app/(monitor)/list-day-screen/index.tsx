@@ -8,7 +8,6 @@ import {
   Easing,
   Dimensions,
   DimensionValue,
-  Platform,
 } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
@@ -31,7 +30,12 @@ import { useLanguage } from '@/hooks/useLanguage';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { FoodsAttributes, FoodsCategories } from '@/constants/types';
+import { ColumnPercentages } from './types';
 const index = () => {
+  useSetPageTitle('list-day-screen');
   const {
     canteens_id,
     refreshDataIntervalInSeconds,
@@ -39,7 +43,7 @@ const index = () => {
     monitor_additional_canteens_id,
     foodAttributesData,
   } = useLocalSearchParams();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const rowHeight = 80;
   const foodCategoriesHelper = new FoodCategoriesHelper();
@@ -60,7 +64,7 @@ const index = () => {
     language,
     appSettings,
   } = useSelector((state: any) => state.settings);
-  const { foodAttributes: foodAttributesLocal } = useSelector(
+  const { foodAttributesDict } = useSelector(
     (state: any) => state.foodAttributes
   );
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -74,13 +78,14 @@ const index = () => {
   const footerRef = useRef<View>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState<boolean | null>(true);
   const [foodAttributesColumn, setFoodAttributesColumn] = useState<any>([]);
   const [foodAttributes, setFoodAttributes] = useState<any>(null);
   const [foodAttributesDataFull, setFoodAttributesDataFull] =
     useState<any>(null);
   const [optionalFoodAttributes, setOptionalFoodAttributes] =
     useState<any>(null);
+
   const foodsScrollRef = useRef<ScrollView>(null);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -90,19 +95,6 @@ const index = () => {
     theme,
     mode === 'dark'
   );
-  interface ColumnPercentages {
-    categorie: string;
-    name: string;
-    markings: string;
-    price: string;
-    attributes: string;
-  }
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'list-day-screen';
-      document.title = title;
-    }
-  }, []);
 
   const totalWidth = 1792;
   const columnPercentages: ColumnPercentages = {
@@ -152,24 +144,23 @@ const index = () => {
 
         let attributeDataCopy: any[] = [];
 
-        if (foodAttributesLocal && Array.isArray(foodAttributesLocal)) {
-          attributeDataCopy = foodAttributesLocal
-            .filter((attr: any) => attributeIds.includes(attr.id))
-            .map((attr: any) => {
-              const title = attr?.translations
-                ? getFoodAttributesTranslation(attr.translations, language)
-                : '';
-              return {
-                id: attr.id,
-                alias: title || attr?.alias || '-',
-              };
-            });
+        if (foodAttributesDict) {
+          attributeDataCopy = attributeIds.map((id: string) => {
+            const attr = foodAttributesDict[id];
+            const title = attr?.translations
+              ? getFoodAttributesTranslation(attr.translations, language)
+              : '';
+            return {
+              id: id,
+              alias: title || attr?.alias || '-',
+            };
+          });
         } else {
           attributeDataCopy = await Promise.all(
             attributeIds.map(async (id: string) => {
               const attr = (await foodAttributesHelper.fetchFoodAttributeById(
                 id
-              )) as any;
+              )) as FoodsAttributes;
               const title = attr?.translations
                 ? getFoodAttributesTranslation(attr.translations, language)
                 : '';
@@ -193,7 +184,7 @@ const index = () => {
     };
 
     fetchAliases();
-  }, [foodAttributesData, foodAttributesLocal, language]);
+  }, [foodAttributesData, foodAttributesDict, language]);
 
   const fetchSelectedCanteen = useCallback(() => {
     if (!canteens_id || !canteens || canteens.length === 0) return;
@@ -393,9 +384,9 @@ const index = () => {
 
     for (const food of foodList) {
       try {
-        const result: any = await foodCategoriesHelper.fetchFoodCategoriesById(
+        const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
           food?.food?.food_category
-        );
+        )) as FoodsCategories;
         if (result) {
           newCategories[food.id] = result;
         }
@@ -547,7 +538,7 @@ const index = () => {
                 },
               ]}
             >
-              {t('category')}
+              {translate(TranslationKeys.category)}
             </Text>
             <Text
               style={[
@@ -556,7 +547,7 @@ const index = () => {
                 { width: (columnPercentages.name + '%') as DimensionValue },
               ]}
             >
-              {t('foodname')}
+              {translate(TranslationKeys.foodname)}
             </Text>
             <Text
               style={[
@@ -565,7 +556,7 @@ const index = () => {
                 { width: (columnPercentages.markings + '%') as DimensionValue },
               ]}
             >
-              {t('markings')}
+              {translate(TranslationKeys.markings)}
             </Text>
             {foodAttributesColumn &&
               foodAttributesColumn.map((column: any) => {
@@ -593,9 +584,11 @@ const index = () => {
                 { width: (columnPercentages.price + '%') as DimensionValue },
               ]}
             >
-              {` ${t('price_group_student')} / ${t(
-                'price_group_employee'
-              )} / ${t('price_group_guest')}`}
+              {` ${translate(
+                TranslationKeys.price_group_student
+              )} / ${translate(
+                TranslationKeys.price_group_employee
+              )} / ${translate(TranslationKeys.price_group_guest)}`}
             </Text>
           </View>
           <View
@@ -615,7 +608,9 @@ const index = () => {
                 style={{ ...styles.row, backgroundColor: foods_area_color }}
               >
                 <Text style={{ ...styles.body, color: contrastColor }}>
-                  {`${t('foods')}: ${foods.length}/ ${foods?.length}`}
+                  {`${translate(TranslationKeys.foods)}: ${foods.length}/ ${
+                    foods?.length
+                  }`}
                 </Text>
               </View>
             )}
@@ -836,9 +831,9 @@ const index = () => {
                 style={{ ...styles.row, backgroundColor: foods_area_color }}
               >
                 <Text style={{ ...styles.body, color: contrastColor }}>
-                  {`${t('foods')}: ${optionalFoods?.length} / ${
+                  {`${translate(TranslationKeys.foods)}: ${
                     optionalFoods?.length
-                  }`}
+                  } / ${optionalFoods?.length}`}
                 </Text>
               </View>
             )}

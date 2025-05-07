@@ -20,25 +20,22 @@ import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { Apartments } from '@/constants/types';
 import { getImageUrl } from '@/constants/HelperFunctions';
-import { createSelector } from 'reselect';
 import WashingMachines from '@/components/WashingMachines';
 import { myContrastColor } from '@/helper/colorHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-const selectSettingsState = (state: any) => state.settings;
-
-const selectPrimaryColor = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.primaryColor
-);
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const details = () => {
+  useSetPageTitle(TranslationKeys.apartment_details);
   const { theme } = useTheme();
-  const { t } = useLanguage();
-  const primaryColor = useSelector(selectPrimaryColor);
-  const { appSettings, serverInfo } = useSelector(
+  const { translate } = useLanguage();
+  const { id } = useLocalSearchParams();
+  const { appSettings, serverInfo, primaryColor } = useSelector(
     (state: any) => state.settings
   );
+  const { apartmentsDict } = useSelector((state: any) => state.apartment);
   const mode = useSelector((state: any) => state.settings.theme);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const housing_area_color = appSettings?.housing_area_color
@@ -49,31 +46,20 @@ const details = () => {
     theme,
     mode === 'dark'
   );
-  const { id } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);
   const [apartmentDetails, setApartmentDetails] = useState<Apartments | null>(
     null
   );
-  const { unSortedApartments } = useSelector((state: any) => state.apartment);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
 
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Apartment Details';
-      document.title = title;
-    }
-  }, []);
-
   const fetchApartmentById = async () => {
     setLoading(true);
-    const apartmentDetails = unSortedApartments?.filter(
-      (item: any) => item.id === id
-    );
+    const apartmentDetails = apartmentsDict[String(id)];
     if (apartmentDetails) {
-      setApartmentDetails(apartmentDetails[0]);
+      setApartmentDetails(apartmentDetails);
     }
     setLoading(false);
   };
@@ -81,9 +67,7 @@ const details = () => {
   useFocusEffect(
     useCallback(() => {
       if (id) {
-        if (id && unSortedApartments?.length > 0) {
-          fetchApartmentById();
-        }
+        fetchApartmentById();
       }
       return () => {};
     }, [id])
@@ -247,7 +231,9 @@ const details = () => {
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${t('open_navitation_to_location')}`}
+                      {`${translate(
+                        TranslationKeys.open_navitation_to_location
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>
@@ -296,7 +282,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('information')}`}
+                        {`${translate(TranslationKeys.information)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -331,7 +317,7 @@ const details = () => {
                       px='$2'
                     >
                       <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                        {`${t('description')}`}
+                        {`${translate(TranslationKeys.description)}`}
                       </TooltipText>
                     </TooltipContent>
                   </Tooltip>
@@ -368,7 +354,7 @@ const details = () => {
                         px='$2'
                       >
                         <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                          {`${t('washing_machine')}`}
+                          {`${translate(TranslationKeys.washing_machine)}`}
                         </TooltipText>
                       </TooltipContent>
                     </Tooltip>

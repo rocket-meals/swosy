@@ -25,18 +25,17 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { useLanguage } from '@/hooks/useLanguage';
-import * as Print from 'expo-print';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
-import useToast from '@/hooks/useToast';
-import { Markings, MarkingsGroups } from '@/constants/types';
+import { FoodsCategories, Markings, MarkingsGroups } from '@/constants/types';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  const toast = useToast();
   const printRef = useRef<HTMLElement | null>(null);
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const {
@@ -57,6 +56,10 @@ const index = () => {
     Dimensions.get('window').width
   );
   const { weekPlan } = useSelector((state: any) => state.management);
+  useSetPageTitle(
+    weekPlan?.selectedCanteen?.alias +
+      ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
+  );
   const isMobile = screenWidth < 800;
   const {
     primaryColor: projectColor,
@@ -78,15 +81,6 @@ const index = () => {
   const weekDays = Array.from({ length: 7 }, (_, i) =>
     startDate.clone().add(i, 'days').format('YYYY-MM-DD')
   );
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title =
-        weekPlan?.selectedCanteen?.alias +
-        ` - ${t('week')} ${weekPlan?.selectedWeek?.week}`;
-      document.title = title;
-    }
-  }, []);
 
   const fetchFoods = async () => {
     try {
@@ -136,8 +130,9 @@ const index = () => {
 
           // Fetch category only if it's new (not in newCategories)
           if (!newCategories[categoryId]) {
-            const result: any =
-              await foodCategoriesHelper.fetchFoodCategoriesById(categoryId);
+            const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
+              categoryId
+            )) as FoodsCategories;
             if (result) {
               newCategories[categoryId] = result?.alias; // Save unique category
             }
@@ -439,7 +434,7 @@ const index = () => {
                   ]}
                 >
                   <Text style={{ ...styles.headerText, color: contrastColor }}>
-                    {col.key === 'day' ? t(col.key) : col.title}
+                    {col.key === 'day' ? translate(col.key) : col.title}
                   </Text>
                 </View>
               ))}
@@ -616,7 +611,7 @@ const index = () => {
                                 },
                               ]}
                             >
-                              {t(shortDayName)}
+                              {translate(shortDayName)}
                             </Text>
                             <Text
                               style={[

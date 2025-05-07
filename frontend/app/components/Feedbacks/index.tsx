@@ -19,7 +19,7 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import { Foods } from '@/constants/types';
+import { Foods, FoodsFeedbacks } from '@/constants/types';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import useToast from '@/hooks/useToast';
 import { DateHelper } from '@/helper/dateHelper';
@@ -32,8 +32,10 @@ import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 interface FeedbacksProps {
   foodDetails: Foods;
+  canteenId?: string;
   offerId: string;
 }
 
@@ -53,11 +55,14 @@ const selectFeedbackData = createSelector(
   })
 );
 
-const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
+const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
   const toast = useToast();
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
+  const foodOfferCanteenId = canteenId;
+  console.log("Feedbacks");
+  console.log('foodOfferCanteenId', foodOfferCanteenId);
   const primaryColor = useSelector(selectPrimaryColor);
   const { user, profile } = useSelector(selectUserProfile);
   const { appSettings } = useSelector((state: any) => state.settings);
@@ -102,11 +107,12 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
     }));
 
     try {
-      const result: any = await foodFeedbackHelper.updateFoodFeedback(
+      const result = (await foodFeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
-        { ...previousFeedback, comment: string }
-      );
+        { ...previousFeedback, comment: string,
+          canteen: foodOfferCanteenId }
+      )) as FoodsFeedbacks;
       // Dispatch the correct action
       dispatch({
         type: result?.id
@@ -164,7 +170,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
               fontSize: isWeb ? 26 : 24,
             }}
           >
-            {t('food_feedbacks')}
+            {translate(TranslationKeys.food_feedbacks)}
           </Text>
         ))}
       {appSettings?.foods_ratings_amount_display && (
@@ -188,7 +194,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     fontSize: isWeb ? 18 : 14,
                   }}
                 >
-                  {t('amount_ratings')}
+                  {translate(TranslationKeys.amount_ratings)}
                 </Text>
               </View>
               <Text
@@ -206,7 +212,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {t('amount_ratings')}
+              {translate(TranslationKeys.amount_ratings)}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -233,7 +239,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     marginTop: 2,
                   }}
                 >
-                  {t('average_rating')}
+                  {translate(TranslationKeys.average_rating)}
                 </Text>
               </View>
               <Text
@@ -253,7 +259,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {t('average_rating')}
+              {translate(TranslationKeys.average_rating)}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -266,7 +272,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
           fontSize: isWeb ? 26 : 24,
         }}
       >
-        {t('feedback_labels')}
+        {translate(TranslationKeys.feedback_labels)}
       </Text>
       {labels.map((label: any) => (
         <FeedbackLabel
@@ -299,7 +305,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
             placeholderTextColor={theme.modal.placeholder}
             onChangeText={handleTextChange}
             value={comment}
-            placeholder={t('your_comment')}
+            placeholder={translate(TranslationKeys.your_comment)}
             editable={
               commentType === 'disabled' || commentType === 'read'
                 ? false
@@ -322,7 +328,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
               <ActivityIndicator color={theme.background} size={22} />
             ) : (
               <Text style={[styles.commentLabel, { color: contrastColor }]}>
-                {t('save_comment')}
+                {translate(TranslationKeys.save_comment)}
               </Text>
             )}
           </TouchableOpacity>
@@ -347,7 +353,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                     fontSize: 24,
                   }}
                 >
-                  {t('your_comment')}
+                  {translate(TranslationKeys.your_comment)}
                 </Text>
                 <TouchableOpacity
                   style={{
@@ -397,7 +403,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
                       fontSize: 24,
                     }}
                   >
-                    {t('others_comments')}
+                    {translate(TranslationKeys.others_comments)}
                   </Text>
                   {otherComments.map((feedback) => (
                     <View key={feedback.id} style={styles.comment}>

@@ -20,6 +20,7 @@ import PermissionModal from '../PermissionModal/PermissionModal';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
   label,
   icon,
@@ -30,7 +31,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
 }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { primaryColor, language, appSettings } = useSelector(
     (state: any) => state.settings
   );
@@ -76,15 +77,15 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
     }
     // Update the entry
     const result =
-      await foodFeedbackLabelEntryHelper.updateFoodFeedbackLabelEntry(
+      (await foodFeedbackLabelEntryHelper.updateFoodFeedbackLabelEntry(
         foodId,
         profile.id,
         labelEntries,
-        label[0]?.foods_feedbacks_labels_id,
+        String(label[0]?.foods_feedbacks_labels_id),
         likeStats,
         selectedCanteen.id,
         offerId
-      );
+      )) as FoodsFeedbacksLabelsEntries;
     dispatch({
       type: result
         ? UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL
@@ -164,8 +165,8 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_like_that')}: ${t(
-                like ? 'active' : 'inactive'
+              {`${translate(TranslationKeys.i_like_that)}: ${translate(
+                like ? TranslationKeys.active : TranslationKeys.inactive
               )}: ${getTextFromTranslation(label, language)}`}
             </TooltipText>
           </TooltipContent>
@@ -193,8 +194,8 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_dislike_that')}: ${t(
-                like === false ? 'active' : 'inactive'
+              {`${translate(TranslationKeys.i_dislike_that)}: ${translate(
+                like === false ? TranslationKeys.active : TranslationKeys.inactive
               )}: ${getTextFromTranslation(label, language)}`}
             </TooltipText>
           </TooltipContent>

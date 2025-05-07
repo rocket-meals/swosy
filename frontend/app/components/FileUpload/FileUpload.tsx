@@ -10,6 +10,7 @@ import { isWeb } from '@/constants/Constants';
 import * as ImagePicker from 'expo-image-picker';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FileRelation, FormAnswer } from './types';
+import { TranslationKeys } from '@/locales/keys';
 
 const FileUpload = ({
   id,
@@ -26,7 +27,7 @@ const FileUpload = ({
   isDisabled: boolean;
   custom_type: string;
 }) => {
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor } = useSelector((state: any) => state.settings);
   const formAnswersHelper = new FormAnswersHelper();
@@ -139,10 +140,10 @@ const FileUpload = ({
           return;
         }
 
-        const response = await formAnswersHelper.updateFormAnswers(id, {
+        const response = (await formAnswersHelper.updateFormAnswers(id, {
           id: id,
           value_files: { delete: [relation.id] },
-        });
+        })) as FormAnswer;
 
         if (response) {
           onChange(
@@ -187,7 +188,7 @@ const FileUpload = ({
           >
             <MaterialIcons name='image' size={24} color={theme.screen.text} />
             <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-              {t('upload_image')}
+              {translate(TranslationKeys.upload_image)}
             </Text>
           </TouchableOpacity>
         )}
@@ -199,7 +200,7 @@ const FileUpload = ({
           >
             <Ionicons name='camera' size={24} color={theme.screen.text} />
             <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-              {t('camera')}
+              {translate(TranslationKeys.camera)}
             </Text>
           </TouchableOpacity>
         )}
@@ -218,7 +219,7 @@ const FileUpload = ({
             color={theme.screen.text}
           />
           <Text style={{ ...styles.uploadText, color: theme.screen.text }}>
-            {t('upload_file')}
+            {translate(TranslationKeys.upload_file)}
           </Text>
         </TouchableOpacity>
       </View>

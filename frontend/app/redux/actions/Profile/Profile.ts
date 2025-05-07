@@ -1,8 +1,8 @@
-import { Profiles, ProfilesMarkings } from '@/constants/types';
+import { Profiles } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Your helper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // Your API client
 
-export class ProfileHelper extends CollectionHelper<any> {
+export class ProfileHelper extends CollectionHelper<Profiles> {
   constructor(client?: any) {
     super('profiles', client || ServerAPI.getClient());
   }
@@ -51,7 +51,6 @@ export class ProfileHelper extends CollectionHelper<any> {
     // Update profile data
     // remove "foods_feedbacks" so that it doesn't get updated/overwritten
     delete profileData.foods_feedbacks;
-
 
     await this.updateItem(profileData?.id, profileData);
 

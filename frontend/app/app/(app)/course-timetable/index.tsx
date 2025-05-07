@@ -21,6 +21,8 @@ import RedirectButton from '@/components/RedirectButton';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const extractTextAndLink = (description: string) => {
   // Remove unintended spaces between `]` and `(`
@@ -42,10 +44,11 @@ const extractTextAndLink = (description: string) => {
 };
 
 const TimetableScreen = () => {
+  useSetPageTitle(TranslationKeys.course_timetable);
   const { theme } = useTheme();
   const toast = useToast();
-  const { t } = useLanguage();
-  const { primaryColor, language ,appSettings} = useSelector(
+  const { translate } = useLanguage();
+  const { primaryColor, language, appSettings } = useSelector(
     (state: any) => state.settings
   );
   const mode = useSelector((state: any) => state.settings.theme);
@@ -60,8 +63,8 @@ const TimetableScreen = () => {
     TimeTableData(theme).map((item) => ({ ...item }))
   );
   const course_timetable_area_color = appSettings?.course_timetable_area_color
-  ? appSettings?.course_timetable_area_color
-  : primaryColor;
+    ? appSettings?.course_timetable_area_color
+    : primaryColor;
   const contrastColor = myContrastColor(
     course_timetable_area_color,
     theme,
@@ -79,13 +82,6 @@ const TimetableScreen = () => {
     bottomSheetRef?.current?.close();
     setIsUpdate(false);
   };
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Course Timetable';
-      document.title = title;
-    }
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -166,17 +162,18 @@ const TimetableScreen = () => {
       style={{ ...styles.container, backgroundColor: theme.screen.background }}
     >
       <TouchableOpacity
-        style={{ ...styles.createButton, backgroundColor: course_timetable_area_color }}
+        style={{
+          ...styles.createButton,
+          backgroundColor: course_timetable_area_color,
+        }}
         onPress={openSheet}
       >
-        <FontAwesome
-          name='calendar-plus-o'
-          size={20}
-          color={contrastColor}
-        />
+        <FontAwesome name='calendar-plus-o' size={20} color={contrastColor} />
         <View>
           <Text style={{ ...styles.createButtonText, color: contrastColor }}>
-            {`${t('event')} ${t('create')}`}
+            {`${translate(TranslationKeys.event)} ${translate(
+              TranslationKeys.create
+            )}`}
           </Text>
         </View>
       </TouchableOpacity>

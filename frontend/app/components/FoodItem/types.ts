@@ -1,8 +1,9 @@
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
-import { Foodoffers, Foods, FoodoffersMarkings } from '@/constants/types';
+import {Foodoffers, Foods, FoodoffersMarkings, Canteens} from '@/constants/types';
 
 export interface FoodItemProps {
   item: Foodoffers;
+  canteen: Canteens;
   // handleNavigation: (id: string, foodId: string) => void;
   handleMenuSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
   handleImageSheet: (id: string) => void;

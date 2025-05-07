@@ -1,4 +1,4 @@
-import { Dimensions, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -13,7 +13,6 @@ import styles from './styles';
 import { NotificationSheetProps } from './types';
 import { useDispatch, useSelector } from 'react-redux';
 import usePlatformHelper from '@/helper/platformHelper';
-import { NotificationHelper } from '@/helper/NotificationHelper';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import {
   DELETE_FOOD_FEEDBACK_LOCAL,
@@ -25,6 +24,8 @@ import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
+import { TranslationKeys } from '@/locales/keys';
+import { FoodsFeedbacks } from '@/constants/types';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({
   closeSheet,
@@ -32,7 +33,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   foodDetails,
 }) => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const foodfeedbackHelper = new FoodFeedbackHelper();
   const { primaryColor, appSettings } = useSelector(
@@ -40,12 +41,6 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   );
   const mode = useSelector((state: any) => state.settings.theme);
   const { profile } = useSelector((state: any) => state.authReducer);
-  const [
-    notificationGranted,
-    pushTokenObj,
-    updateDeviceInformationAndRegisterIfNotFound,
-    requestDeviceNotificationPermission,
-  ] = NotificationHelper.useNotificationPermission(profile);
   const { isWeb } = usePlatformHelper();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
@@ -54,9 +49,9 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
   const foods_area_color = appSettings?.foods_area_color
-  ? appSettings?.foods_area_color
-  : primaryColor;
-     const contrastColor = myContrastColor(
+    ? appSettings?.foods_area_color
+    : primaryColor;
+  const contrastColor = myContrastColor(
     foods_area_color,
     theme,
     mode === 'dark'
@@ -108,11 +103,11 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
         ...previousFeedback,
         notify: !previousFeedback?.notify,
       };
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         payload
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -160,7 +155,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
             color: theme.sheet.text,
           }}
         >
-          {t('notification')}
+          {translate(TranslationKeys.notification)}
         </Text>
         <TouchableOpacity
           style={{
@@ -181,8 +176,8 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
             fontSize: isWeb() ? (screenWidth > 800 ? 18 : 16) : 16,
           }}
         >
-          {t(
-            'notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified'
+          {translate(
+            TranslationKeys.notification_please_notify_me_on_my_smartphones_if_they_allow_to_be_notified
           )}
         </Text>
         <TouchableOpacity
@@ -190,7 +185,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
           onPress={updateFoodFeedbackNotification}
         >
           <Text style={{ ...styles.buttonLabel, color: contrastColor }}>
-            {t('confirm')}
+            {translate(TranslationKeys.confirm)}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -198,7 +193,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
           onPress={closeSheet}
         >
           <Text style={{ ...styles.buttonLabel, color: theme.screen.text }}>
-            {t('cancel')}
+            {translate(TranslationKeys.cancel)}
           </Text>
         </TouchableOpacity>
       </View>

@@ -1,8 +1,9 @@
 import { itemStatus } from '@/constants/Constants';
+import { CanteensFeedbacksLabels } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class CanteenFeedbackLabelHelper extends CollectionHelper<any> {
+export class CanteenFeedbackLabelHelper extends CollectionHelper<CanteensFeedbacksLabels> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('canteens_feedbacks_labels', client || ServerAPI.getClient());
@@ -23,7 +24,6 @@ export class CanteenFeedbackLabelHelper extends CollectionHelper<any> {
         ],
       },
     };
-    
 
     const query = { ...defaultQuery, ...queryOverride };
     return await this.readItems(query);

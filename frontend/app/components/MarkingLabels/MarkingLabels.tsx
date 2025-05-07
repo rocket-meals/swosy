@@ -24,13 +24,14 @@ import { useMyContrastColor } from '@/helper/colorHelper';
 import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
 const MarkingLabels: React.FC<MarkingLabelProps> = ({
   markingId,
   handleMenuSheet,
 }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const profileHelper = new ProfileHelper();
   const [warning, setWarning] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -156,7 +157,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
         dispatch({ type: UPDATE_PROFILE, payload: profileData });
 
         // Update profile on the server
-        const result = await profileHelper.updateProfile(profileData);
+        const result = (await profileHelper.updateProfile(
+          profileData
+        )) as Profiles;
         if (result) {
           fetchProfile();
           if (like) {
@@ -378,7 +381,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
             transform={[{ translateX: -50 }]} // Adjust to truly center it
           >
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('markings')}: ${markingText}`}
+              {`${translate(TranslationKeys.markings)}: ${markingText}`}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -412,9 +415,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_like_that')}: ${t(
-                ownMarking?.like ? 'active' : 'inactive'
-              )}: ${t('markings')}: ${markingText}`}
+              {`${translate(TranslationKeys.i_like_that)}: ${translate(
+                ownMarking?.like ? TranslationKeys.active : TranslationKeys.inactive
+              )}: ${translate(TranslationKeys.markings)}: ${markingText}`}
             </TooltipText>
           </TooltipContent>
         </Tooltip>
@@ -451,9 +454,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
         >
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-              {`${t('i_dislike_that')}: ${t(
-                ownMarking?.like === false ? 'active' : 'inactive'
-              )}: ${t('markings')}: ${markingText}`}
+              {`${translate(TranslationKeys.i_dislike_that)}: ${translate(
+                ownMarking?.like === false ? TranslationKeys.active : TranslationKeys.inactive
+              )}: ${translate(TranslationKeys.markings)}: ${markingText}`}
             </TooltipText>
           </TooltipContent>
         </Tooltip>

@@ -1,7 +1,8 @@
+import { News } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class NewsHelper extends CollectionHelper<any> {
+export class NewsHelper extends CollectionHelper<News> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('news', client || ServerAPI.getClient());

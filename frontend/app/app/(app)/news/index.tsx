@@ -4,7 +4,6 @@ import {
   View,
   RefreshControl,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
@@ -15,21 +14,17 @@ import { NewsHelper } from '@/redux/actions/News/News';
 import { News } from '@/constants/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_NEWS } from '@/redux/Types/types';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { TranslationKeys } from '@/locales/keys';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.news);
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const newsHelper = new NewsHelper();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const { news } = useSelector((state: any) => state.news);
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'News';
-      document.title = title;
-    }
-  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

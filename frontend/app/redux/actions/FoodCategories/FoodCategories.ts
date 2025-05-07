@@ -1,8 +1,9 @@
 import { itemStatus } from '@/constants/Constants';
+import { FoodsCategories } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class FoodCategoriesHelper extends CollectionHelper<any> {
+export class FoodCategoriesHelper extends CollectionHelper<FoodsCategories> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('foods_categories', client || ServerAPI.getClient());
@@ -11,12 +12,10 @@ export class FoodCategoriesHelper extends CollectionHelper<any> {
   // Fetch all food categories with optional query overrides
   async fetchFoodCategories(queryOverride: any = {}) {
     const defaultQuery = {
-      fields: ['*', "translations.*"],
+      fields: ['*', 'translations.*'],
       limit: -1, // Fetch all
       filter: {
-        _and: [
-          { status: { _eq: itemStatus } } 
-        ],
+        _and: [{ status: { _eq: itemStatus } }],
       },
     };
 

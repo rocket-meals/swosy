@@ -32,6 +32,7 @@ import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { Buildings } from '@/constants/types';
 import {
   SET_CAMPUSES,
+  SET_CAMPUSES_DICT,
   SET_CAMPUSES_LOCAL,
   SET_UNSORTED_CAMPUSES,
 } from '@/redux/Types/types';
@@ -43,12 +44,15 @@ import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { Platform } from 'react-native';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
+  useSetPageTitle(TranslationKeys.campus);
   const { theme } = useTheme();
   const toast = useToast();
   const dispatch = useDispatch();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const campusHelper = new CampusHelper();
   const buildingsHelper = new BuildingsHelper();
 
@@ -94,13 +98,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     imageManagementSheetRef?.current?.close();
   };
 
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Campus';
-      document.title = title;
-    }
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       setIsActive(true);
@@ -122,7 +119,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     const campusData = (await campusHelper.fetchCampus({})) as Buildings[];
     const campuses = campusData || [];
     if (campuses) {
+      const attributesDict = campuses.reduce((acc, campus) => {
+        if (campus.id) {
+          acc[campus.id] = campus;
+        }
+        return acc;
+      }, {} as Record<string, any>);
       dispatch({ type: SET_CAMPUSES, payload: campuses });
+      dispatch({ type: SET_CAMPUSES_DICT, payload: attributesDict });
       setCampusesDispatched(true);
     }
   };
@@ -305,13 +309,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('open_drawer')}`}
+                    {`${translate(TranslationKeys.open_drawer)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
 
               <Text style={{ ...styles.heading, color: theme.header.text }}>
-                {t('campus')}
+                {translate(TranslationKeys.campus)}
               </Text>
             </View>
             <View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
@@ -333,7 +337,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('sort')}: ${t('buildings')}`}
+                    {`${translate(TranslationKeys.sort)}: ${translate(
+                      TranslationKeys.buildings
+                    )}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>

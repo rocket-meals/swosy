@@ -1,7 +1,7 @@
 const DEFAULT_SERVER_URL = 'https://swosy.rocket-meals.de/rocket-meals/api';
 const LOCALHOST = 'https://127.0.0.1/rocket-meals/api';
 // const REAL_TEST_SERVER_URL = "https://swosy.rocket-meals.de/rocket-meals/api";
-const REAL_TEST_SERVER_URL = "https://test.rocket-meals.de/rocket-meals/api";
+const REAL_TEST_SERVER_URL = "https://swosy.rocket-meals.de/rocket-meals/api";
 const isDev = process.env.NODE_ENV === 'development';
 let DEV_SERVER_URL = REAL_TEST_SERVER_URL
 

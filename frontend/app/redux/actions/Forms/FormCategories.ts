@@ -1,7 +1,8 @@
+import { FormCategories } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FormCategoriesHelper extends CollectionHelper<any> {
+export class FormCategoriesHelper extends CollectionHelper<FormCategories> {
   constructor(client?: any) {
     super('form_categories', client || ServerAPI.getClient());
   }

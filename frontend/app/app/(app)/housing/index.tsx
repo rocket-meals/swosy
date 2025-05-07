@@ -32,6 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Apartments, Buildings } from '@/constants/types';
 import {
   SET_APARTMENTS,
+  SET_APARTMENTS_DICT,
   SET_APARTMENTS_LOCAL,
   SET_UNSORTED_APARTMENTS,
 } from '@/redux/Types/types';
@@ -49,11 +50,13 @@ import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible'
 import { myContrastColor } from '@/helper/colorHelper';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import RedirectButton from '@/components/RedirectButton';
-import { Platform } from 'react-native';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
+  useSetPageTitle(TranslationKeys.housing);
   const toast = useToast();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const apartmentsHelper = new ApartmentsHelper();
@@ -114,13 +117,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     imageManagementSheetRef?.current?.close();
   };
 
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Housing';
-      document.title = title;
-    }
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       setIsActive(true);
@@ -143,14 +139,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       // Fetch all apartments
       const apartmentData = (await apartmentsHelper.fetchApartments(
         {}
-      )) as Buildings[];
+      )) as Apartments[];
       const apartments = apartmentData || [];
 
       if (apartments && apartments?.length > 0) {
         const apartmentWithBuilding = await Promise.all(
           apartments.map(async (apartment) => {
             const buildingData = (await buildingsHelper.fetchBuildingById(
-              apartment?.building
+              String(apartment?.building)
             )) as Buildings;
 
             return {
@@ -177,6 +173,16 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       setLoading(true);
       const apartmentsWithDistance = addDistance(apartments);
       if (apartmentsWithDistance) {
+        const apartmentsDict = apartmentsWithDistance.reduce(
+          (acc, apartment) => {
+            if (apartment.id) {
+              acc[apartment.id] = apartment;
+            }
+            return acc;
+          },
+          {} as Record<string, any>
+        );
+        dispatch({ type: SET_APARTMENTS_DICT, payload: apartmentsDict });
         dispatch({
           type: SET_APARTMENTS,
           payload: apartmentsWithDistance,
@@ -650,13 +656,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('open_drawer')}`}
+                    {`${translate(TranslationKeys.open_drawer)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
 
               <Text style={{ ...styles.heading, color: theme.header.text }}>
-                {t('housing')}
+                {translate(TranslationKeys.housing)}
               </Text>
             </View>
             <View style={{ ...styles.col2, gap: isWeb ? 30 : 15 }}>
@@ -678,7 +684,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('sort')}: ${t('apartments')}`}
+                    {`${translate(TranslationKeys.sort)}: ${translate(
+                      TranslationKeys.apartments
+                    )}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>

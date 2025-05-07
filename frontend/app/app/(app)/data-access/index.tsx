@@ -1,29 +1,21 @@
 import React, { useRef, useState, useCallback, useMemo } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import DataAcess from '../../../components/DataAcces/DataAccess';
 import DataSheet from '../../../components/DataAccesheet/DataSheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useFocusEffect } from 'expo-router';
-import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKeys } from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
+  useSetPageTitle(TranslationKeys.dataAccess);
   const { theme } = useTheme();
-  const { t } = useLanguage();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['90%'], []);
   const [isActive, setIsActive] = useState(false);
   const [content, setContent] = useState([]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (Platform.OS === 'web') {
-        const title = t('dataAccess');
-        document.title = title;
-      }
-    }, [])
-  );
 
   const handleOpenBottomSheet = useCallback((data: any) => {
     setContent(data);

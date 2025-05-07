@@ -1,64 +1,34 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  SafeAreaView,
-  Image,
-} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState,} from 'react';
+import {useFocusEffect, useLocalSearchParams} from 'expo-router';
+import {Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
 import styles from './styles';
-import { useTheme } from '@/hooks/useTheme';
-import {
-  AntDesign,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from '@expo/vector-icons';
-import { isWeb } from '@/constants/Constants';
+import {useTheme} from '@/hooks/useTheme';
+import {AntDesign, MaterialCommunityIcons, MaterialIcons,} from '@expo/vector-icons';
+import {isWeb} from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
-import Labels from '@/components/Labels';
-import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
-import {
-  excerpt,
-  getImageUrl,
-  getpreviousFeedback,
-  numToOneDecimal,
-} from '@/constants/HelperFunctions';
-import { Foods, FoodsTranslations } from '@/constants/types';
-import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  DELETE_FOOD_FEEDBACK_LOCAL,
-  UPDATE_FOOD_FEEDBACK_LOCAL,
-  UPDATE_PROFILE,
-} from '@/redux/Types/types';
+import Labels, {selectFoodOffer} from '@/components/Labels';
+import {fetchFoodDetailsById} from '@/redux/actions/FoodOffers/FoodOffers';
+import {excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal,} from '@/constants/HelperFunctions';
+import {Foodoffers, Foods, FoodsFeedbacks, FoodsTranslations, Profiles,} from '@/constants/types';
+import {FoodFeedbackHelper} from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
+import {useDispatch, useSelector} from 'react-redux';
+import {DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE,} from '@/redux/Types/types';
 import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
-import { NotificationHelper } from '@/helper/NotificationHelper';
-import {
-  getCurrentDevice,
-  getDeviceIdentifier,
-  getDeviceInformationWithoutPushToken,
-} from '@/helper/DeviceHelper';
-import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { createSelector } from 'reselect';
-import { useLanguage } from '@/hooks/useLanguage';
-import { myContrastColor } from '@/helper/colorHelper';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import { FoodAttributesValuesHelper } from '@/redux/actions/FoodAttributes/FoodAttributesValues';
-import { Platform } from 'react-native';
+import {NotificationHelper} from '@/helper/NotificationHelper';
+import {getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken,} from '@/helper/DeviceHelper';
+import {ProfileHelper} from '@/redux/actions/Profile/Profile';
+import {createSelector} from 'reselect';
+import {useLanguage} from '@/hooks/useLanguage';
+import {myContrastColor} from '@/helper/colorHelper';
+import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
+import {TranslationKeys} from '@/locales/keys';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+
 const selectAuthState = (state: any) => state.authReducer;
 const selectSettingsState = (state: any) => state.settings;
 const selectFoodState = (state: any) => state.food;
@@ -79,9 +49,13 @@ const selectLanguage = createSelector(
 );
 
 export default function FoodDetailsScreen() {
+  useSetPageTitle(TranslationKeys.food_details);
+  console.log("Food Details Screen")
+
   const { id, foodId } = useLocalSearchParams();
+
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { translate } = useLanguage();
   const dispatch = useDispatch();
   const menuSheetRef = useRef<BottomSheet>(null);
   const { appSettings, serverInfo } = useSelector(
@@ -98,7 +72,6 @@ export default function FoodDetailsScreen() {
   );
   const profileHelper = useMemo(() => new ProfileHelper(), []);
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
-  const foodAttributesHelper = new FoodAttributesValuesHelper();
   const { foodAttributeGroups } = useSelector(
     (state: any) => state.foodAttributes
   );
@@ -118,7 +91,10 @@ export default function FoodDetailsScreen() {
     getImageUrl(serverInfo?.info?.project?.project_logo);
 
   const [warning, setWarning] = useState(false);
+  const [foodoffer, setFoodoffer] = useState<Foodoffers | null>(null);
+  const foodOfferCanteenId = foodoffer?.canteen as string | undefined;
   const [foodDetails, setFoodDetails] = useState<any>(null);
+
   const [activeTab, setActiveTab] = useState('feedbacks');
   const [isActive, setIsActive] = useState(false);
   const [foodAttributes, setFoodAttributes] = useState<any>([]);
@@ -145,13 +121,6 @@ export default function FoodDetailsScreen() {
   const closeMenuSheet = () => {
     menuSheetRef?.current?.close();
   };
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const title = 'Food Details';
-      document.title = title;
-    }
-  }, []);
 
   const filterAttributes = () => {
     const groupedAttributes = foodAttributeGroups?.map((group: any) => {
@@ -183,7 +152,7 @@ export default function FoodDetailsScreen() {
       switch (activeTab) {
         case 'feedbacks':
           return (
-            <Feedbacks foodDetails={foodDetails} offerId={id.toString()} />
+            <Feedbacks foodDetails={foodDetails} offerId={id.toString()} canteenId={foodOfferCanteenId} />
           );
         case 'details':
           return (
@@ -205,7 +174,7 @@ export default function FoodDetailsScreen() {
           return null;
       }
     },
-    [activeTab, id]
+    [activeTab, id, foodOfferCanteenId]
   );
 
   const rateFood = async (rating: number) => {
@@ -214,14 +183,15 @@ export default function FoodDetailsScreen() {
       return;
     }
     try {
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         {
           ...previousFeedback,
           rating: previousFeedback?.rating === rating ? null : rating,
+          canteen: foodOfferCanteenId,
         }
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -242,13 +212,14 @@ export default function FoodDetailsScreen() {
     try {
       const payload = {
         ...previousFeedback,
+        canteen: foodOfferCanteenId,
         notify: !previousFeedback?.notify,
       };
-      const updateFeedbackResult = await foodfeedbackHelper.updateFoodFeedback(
+      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
         payload
-      );
+      )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -266,30 +237,24 @@ export default function FoodDetailsScreen() {
   };
 
   const getFoodDetails = async () => {
-    // Fetch food details
     try {
       const foodData = await fetchFoodDetailsById(id.toString());
       if (foodData && foodData.data) {
+        const foodoffer = foodData?.data;
         const { food, attribute_values } = foodData?.data;
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
             val?.languages_code?.split('-')[0] === languageCode
         );
+        setFoodoffer(foodoffer);
         setFoodDetails({
           ...food,
           name: translation ? translation.name : null,
         });
         if (attribute_values) {
           setFoodAttributesLoading(true);
-          const foodAttributes = await Promise.all(
-            attribute_values.map(async (attributeId: string) => {
-              const foodAttributeById =
-                await foodAttributesHelper.fetchFoodAttributeById(attributeId);
-              return foodAttributeById;
-            })
-          );
-          setFoodAttributes(foodAttributes);
+          setFoodAttributes(attribute_values);
         }
       } else {
         console.log('No food data found');
@@ -365,10 +330,10 @@ export default function FoodDetailsScreen() {
         newDevices = [...newDevices];
         newDevices[index] = deviceInformationsForUpdate;
       }
-      const result = await profileHelper.updateProfile({
+      const result = (await profileHelper.updateProfile({
         ...profile,
         devices: newDevices,
-      });
+      })) as Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,
@@ -550,7 +515,7 @@ export default function FoodDetailsScreen() {
                     <Text
                       style={{ ...styles.rateUs, color: theme.screen.text }}
                     >
-                      {t('RATE_US')}
+                      {translate(TranslationKeys.RATE_US)}
                     </Text>
                     <View style={styles.stars}>
                       {Array.from({ length: 5 }).map((_, index) => (
@@ -584,7 +549,9 @@ export default function FoodDetailsScreen() {
                               fontSize='$sm'
                               color={theme.tooltip.text}
                             >
-                              {`${t('set_rating_to')} ${index + 1}`}
+                              {`${translate(TranslationKeys.set_rating_to)} ${
+                                index + 1
+                              }`}
                             </TooltipText>
                           </TooltipContent>
                         </Tooltip>
@@ -682,7 +649,7 @@ export default function FoodDetailsScreen() {
                     color: theme.screen.text,
                   }}
                 >
-                  {t('RATE_US')}
+                  {translate(TranslationKeys.RATE_US)}
                 </Text>
                 <View style={styles.mobileStars}>
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -718,7 +685,7 @@ export default function FoodDetailsScreen() {
                 fontSize: isWeb ? 18 : 12,
               }}
             >
-              {t('GET_NOTIFICATION_ON_AVAILABILITY')}
+              {translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
             </Text>
             {previousFeedback?.notify ? (
               <Tooltip
@@ -743,10 +710,9 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('notification')}: ${t('active')}: ${excerpt(
-                      foodDetails?.name,
-                      90
-                    )}`}
+                    {`${translate(TranslationKeys.notification)}: ${translate(
+                      TranslationKeys.active
+                    )}: ${excerpt(foodDetails?.name, 90)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -773,10 +739,9 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('notification')}: ${t('inactive')}: ${excerpt(
-                      foodDetails?.name,
-                      90
-                    )}`}
+                    {`${translate(TranslationKeys.notification)}: ${translate(
+                      TranslationKeys.inactive
+                    )}: ${excerpt(foodDetails?.name, 90)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -822,7 +787,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('food_feedbacks')}`}
+                    {`${translate(TranslationKeys.food_feedbacks)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -853,7 +818,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('food_data')}`}
+                    {`${translate(TranslationKeys.food_data)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>
@@ -885,7 +850,7 @@ export default function FoodDetailsScreen() {
               >
                 <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                   <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${t('markings')}`}
+                    {`${translate(TranslationKeys.markings)}`}
                   </TooltipText>
                 </TooltipContent>
               </Tooltip>

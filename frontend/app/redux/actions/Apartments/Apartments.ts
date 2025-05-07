@@ -1,7 +1,8 @@
+import { Apartments } from '@/constants/types';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class ApartmentsHelper extends CollectionHelper<any> {
+export class ApartmentsHelper extends CollectionHelper<Apartments> {
   constructor(client?: any) {
     super('apartments', client || ServerAPI.getClient());
   }
@@ -15,6 +16,20 @@ export class ApartmentsHelper extends CollectionHelper<any> {
 
     const query = { ...defaultQuery, ...queryOverride };
     return await this.readItems(query);
+  }
+
+  async fetchApartmentWithWashingMachines(id: string, queryOverride: any = {}) {
+    const defaultQuery = {
+      limit: -1,
+      fields: ['*', 'washingmachines.*'],
+      filter: {
+        id,
+      },
+    };
+
+    const query = { ...defaultQuery, ...queryOverride };
+
+    return await this.readItem(id, query);
   }
 
   // Fetch a specific apartment by ID
