@@ -102,8 +102,12 @@ const index = () => {
       setLoading(true);
       setSelectedOption(option);
       const payload = { ...profile, price_group: option };
-      const result = (await profileHelper.updateProfile(payload)) as Profiles;
-      if (result) {
+      if (profile.id) {
+        const result = (await profileHelper.updateProfile(payload)) as Profiles;
+        if (result) {
+          dispatch({ type: UPDATE_PROFILE, payload });
+        }
+      } else {
         dispatch({ type: UPDATE_PROFILE, payload });
       }
       setLoading(false);

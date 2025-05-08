@@ -34,6 +34,7 @@ import {
   SET_SELECTED_CANTEEN_FOOD_OFFERS,
   SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
   SET_SELECTED_DATE,
+  UPDATE_PROFILE,
 } from '@/redux/Types/types';
 import {
   Businesshours,
@@ -143,7 +144,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile, user } = useSelector((state: any) => state.authReducer);
   const { appElements } = useSelector((state: any) => state.appElements);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
     useSelector((state: any) => state.canteenReducer);
@@ -196,6 +197,19 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       );
     }
   }, [autoPlay, animationJson]);
+
+  const setDefaultPriceGroupForAnonymousUser = () => {
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: { ...profile, price_group: 'student' },
+    });
+  };
+
+  useEffect(() => {
+    if (!user.id) {
+      setDefaultPriceGroupForAnonymousUser();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!appElements || !appSettings) return;
