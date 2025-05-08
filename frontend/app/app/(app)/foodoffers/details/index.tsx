@@ -8,7 +8,7 @@ import {isWeb} from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
 import Labels from '@/components/Labels';
-import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import { fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
   excerpt,
   getImageUrl,
@@ -259,7 +259,7 @@ export default function FoodDetailsScreen() {
 
   const getFoodDetails = async () => {
     try {
-      const foodData = await fetchFoodDetailsById(id.toString());
+      const foodData = await fetchFoodOffersDetailsById(id.toString());
       if (foodData && foodData.data) {
         const { food, attribute_values } = foodData?.data;
 

@@ -194,61 +194,66 @@ const NotificationScreen = () => {
           >
             {translate(TranslationKeys.foods)}
           </Text>
-          {foodWithFeedback.map((item, index) => (
-            <View
-              style={{
-                ...styles.infoRow,
-                backgroundColor: theme.screen.iconBg,
-              }}
-              key={index}
-            >
-              <View style={styles.iconLabelContainer}>
-                <Text
-                  style={{
-                    ...styles.label,
-                    color: theme.screen.text,
-                    fontSize: windowWidth < 500 ? 16 : 18,
-                  }}
-                >
-                  {excerpt(
-                    getTextFromTranslation(item.data?.translations, language),
-                    90
-                  )}
-                </Text>
+          {foodWithFeedback &&
+            foodWithFeedback?.map((item, index) => (
+              <View
+                style={{
+                  ...styles.infoRow,
+                  backgroundColor: theme.screen.iconBg,
+                }}
+                key={index}
+              >
+                <View style={styles.iconLabelContainer}>
+                  <Text
+                    style={{
+                      ...styles.label,
+                      color: theme.screen.text,
+                      fontSize: windowWidth < 500 ? 16 : 18,
+                    }}
+                  >
+                    {excerpt(
+                      getTextFromTranslation(item.data?.translations, language),
+                      90
+                    )}
+                  </Text>
+                </View>
+                {item?.feedback?.notify ? (
+                  <TouchableOpacity
+                    style={{
+                      ...styles.bellIconAtiveContainer,
+                      backgroundColor: primaryColor,
+                      padding: isWeb ? 12 : 8,
+                    }}
+                    onPress={() =>
+                      updateFoodFeedbackNotification(item.feedback)
+                    }
+                  >
+                    <MaterialIcons
+                      name='notifications-active'
+                      size={24}
+                      color={theme.light}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      ...styles.bellIconContainer,
+                      borderColor: primaryColor,
+                      padding: isWeb ? 12 : 8,
+                    }}
+                    onPress={() =>
+                      updateFoodFeedbackNotification(item.feedback)
+                    }
+                  >
+                    <MaterialIcons
+                      name='notifications'
+                      size={24}
+                      color={theme.screen.icon}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
-              {item?.feedback?.notify ? (
-                <TouchableOpacity
-                  style={{
-                    ...styles.bellIconAtiveContainer,
-                    backgroundColor: primaryColor,
-                    padding: isWeb ? 12 : 8,
-                  }}
-                  onPress={() => updateFoodFeedbackNotification(item.feedback)}
-                >
-                  <MaterialIcons
-                    name='notifications-active'
-                    size={24}
-                    color={theme.light}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={{
-                    ...styles.bellIconContainer,
-                    borderColor: primaryColor,
-                    padding: isWeb ? 12 : 8,
-                  }}
-                  onPress={() => updateFoodFeedbackNotification(item.feedback)}
-                >
-                  <MaterialIcons
-                    name='notifications'
-                    size={24}
-                    color={theme.screen.icon}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
+            ))}
         </View>
       </View>
     </ScrollView>
