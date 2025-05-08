@@ -7,6 +7,7 @@ type CustomerConfig = {
     bundleIdIos: string;
     bundleIdAndroid: string;
     baseUrl: string;
+    server_url: string;
 }
 
 function getVersion() {
@@ -33,7 +34,8 @@ const devConfig: CustomerConfig = {
     appScheme: "app-rocket-meals",
     bundleIdIos: "de.baumgartner-software.rocket-meals-demo",
     bundleIdAndroid: "com.baumgartnersoftware.rocketmealsdev",
-    baseUrl: "/rocket-meals"
+    baseUrl: "/rocket-meals",
+    server_url: "https://test.rocket-meals.de/rocket-meals/api"
 }
 const swosyConfig: CustomerConfig = {
     projectName: "SWOSY 2.0",
@@ -43,7 +45,8 @@ const swosyConfig: CustomerConfig = {
     appScheme: "app-rocket-meals-swosy",
     bundleIdIos: "de.baumgartner-software.swosy",
     bundleIdAndroid: "de.baumgartnersoftware.swosy",
-    baseUrl: "/swosy"
+    baseUrl: "/swosy",
+    server_url: "https://swosy.rocket-meals.de/rocket-meals/api"
 }
 const studiFutterConfig: CustomerConfig = {
     projectName: "Studi|Futter",
@@ -53,7 +56,8 @@ const studiFutterConfig: CustomerConfig = {
     appScheme: "app-rocket-meals-studi-futter",
     bundleIdIos: "de.stwh.app",
     bundleIdAndroid: "de.baumgartnersoftware.studifutter",
-    baseUrl: "/studi-futter"
+    baseUrl: "/studi-futter",
+    server_url: "https://studi-futter.rocket-meals.de/rocket-meals/api"
 }
 
 export default ({config}: {config?: any}) => {

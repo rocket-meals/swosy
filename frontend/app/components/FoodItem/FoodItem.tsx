@@ -64,6 +64,7 @@ const selectMarkings = createSelector(
 const FoodItem: React.FC<FoodItemProps> = memo(
   ({
     item,
+    canteen,
     handleMenuSheet,
     handleImageSheet,
     setSelectedFoodId,
@@ -160,7 +161,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
             (await foodFeedbackHelper.updateFoodFeedback(
               foodItem?.id,
               profile?.id,
-              { ...previousFeedback, rating }
+              { ...previousFeedback, rating, canteen: canteen?.id },
             )) as FoodsFeedbacks;
           dispatch({
             type: updateFeedbackResult?.id
@@ -172,7 +173,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
           console.error('Error creating feedback:', e);
         }
       },
-      [user?.id, profile?.id, foodItem?.id, previousFeedback]
+      [user?.id, profile?.id, foodItem?.id, previousFeedback, canteen?.id]
     );
 
     const markingsData = useMemo(

@@ -35,6 +35,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 interface FeedbacksProps {
   foodDetails: Foods;
+  canteenId?: string;
   offerId: string;
 }
 
@@ -54,11 +55,14 @@ const selectFeedbackData = createSelector(
   })
 );
 
-const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
+const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
   const toast = useToast();
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
+  const foodOfferCanteenId = canteenId;
+  console.log("Feedbacks");
+  console.log('foodOfferCanteenId', foodOfferCanteenId);
   const primaryColor = useSelector(selectPrimaryColor);
   const { user, profile } = useSelector(selectUserProfile);
   const { appSettings } = useSelector((state: any) => state.settings);
@@ -106,7 +110,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId }) => {
       const result = (await foodFeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
-        { ...previousFeedback, comment: string }
+        { ...previousFeedback, comment: string,
+          canteen: foodOfferCanteenId }
       )) as FoodsFeedbacks;
       // Dispatch the correct action
       dispatch({

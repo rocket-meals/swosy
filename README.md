@@ -1,7 +1,7 @@
-[![Expo Build - Android - Preview](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_android_preview.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_android_preview.yml)
-[![Expo Build - Android - Production](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_android.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_android.yml)
-[![Expo Build - iOS - Production](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_ios.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_build_ios.yml)
-[![Expo Update Production](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_production.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_expo_production.yml)
+[![🤖 Build & Submit Android](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android.yml)
+[![🧪 Android Preview Build](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android_preview.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android_preview.yml)
+[![🍏 Build & Submit iOS](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_ios.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_ios.yml)
+[![🤖 Expo Update](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_expo_update.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_expo_update.yml)
 [![GH-Pages Publish](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_web_ghpages_production.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_web_ghpages_production.yml)
 [![Screenshots CI Action](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml)
 
