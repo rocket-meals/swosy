@@ -7,26 +7,44 @@ import {AntDesign, MaterialCommunityIcons, MaterialIcons,} from '@expo/vector-ic
 import {isWeb} from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
-import Labels, {selectFoodOffer} from '@/components/Labels';
-import {fetchFoodDetailsById} from '@/redux/actions/FoodOffers/FoodOffers';
-import {excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal,} from '@/constants/HelperFunctions';
-import {Foodoffers, Foods, FoodsFeedbacks, FoodsTranslations, Profiles,} from '@/constants/types';
-import {FoodFeedbackHelper} from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import {useDispatch, useSelector} from 'react-redux';
-import {DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE,} from '@/redux/Types/types';
+import Labels from '@/components/Labels';
+import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import {
+  excerpt,
+  getImageUrl,
+  getpreviousFeedback,
+  numToOneDecimal,
+} from '@/constants/HelperFunctions';
+import {
+  Foods,
+  FoodsFeedbacks,
+  FoodsTranslations,
+  Profiles,
+} from '@/constants/types';
+import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  DELETE_FOOD_FEEDBACK_LOCAL,
+  UPDATE_FOOD_FEEDBACK_LOCAL,
+  UPDATE_PROFILE,
+} from '@/redux/Types/types';
 import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
-import {NotificationHelper} from '@/helper/NotificationHelper';
-import {getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken,} from '@/helper/DeviceHelper';
-import {ProfileHelper} from '@/redux/actions/Profile/Profile';
-import {createSelector} from 'reselect';
-import {useLanguage} from '@/hooks/useLanguage';
-import {myContrastColor} from '@/helper/colorHelper';
-import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
-import {TranslationKeys} from '@/locales/keys';
+import { NotificationHelper } from '@/helper/NotificationHelper';
+import {
+  getCurrentDevice,
+  getDeviceIdentifier,
+  getDeviceInformationWithoutPushToken,
+} from '@/helper/DeviceHelper';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { createSelector } from 'reselect';
+import { useLanguage } from '@/hooks/useLanguage';
+import { myContrastColor } from '@/helper/colorHelper';
+import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const selectAuthState = (state: any) => state.authReducer;
@@ -50,7 +68,6 @@ const selectLanguage = createSelector(
 
 export default function FoodDetailsScreen() {
   useSetPageTitle(TranslationKeys.food_details);
-  console.log("Food Details Screen")
 
   const { id, foodId } = useLocalSearchParams();
 
@@ -91,8 +108,8 @@ export default function FoodDetailsScreen() {
     getImageUrl(serverInfo?.info?.project?.project_logo);
 
   const [warning, setWarning] = useState(false);
-  const [foodoffer, setFoodoffer] = useState<Foodoffers | null>(null);
-  const foodOfferCanteenId = foodoffer?.canteen as string | undefined;
+  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
   const [foodDetails, setFoodDetails] = useState<any>(null);
 
   const [activeTab, setActiveTab] = useState('feedbacks');
@@ -152,7 +169,11 @@ export default function FoodDetailsScreen() {
       switch (activeTab) {
         case 'feedbacks':
           return (
-            <Feedbacks foodDetails={foodDetails} offerId={id.toString()} canteenId={foodOfferCanteenId} />
+            <Feedbacks
+              foodDetails={foodDetails}
+              offerId={id.toString()}
+              canteenId={foodOfferCanteenId}
+            />
           );
         case 'details':
           return (
@@ -240,14 +261,12 @@ export default function FoodDetailsScreen() {
     try {
       const foodData = await fetchFoodDetailsById(id.toString());
       if (foodData && foodData.data) {
-        const foodoffer = foodData?.data;
         const { food, attribute_values } = foodData?.data;
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
             val?.languages_code?.split('-')[0] === languageCode
         );
-        setFoodoffer(foodoffer);
         setFoodDetails({
           ...food,
           name: translation ? translation.name : null,

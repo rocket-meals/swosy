@@ -48,6 +48,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
+
 const selectAuthState = (state: any) => state.authReducer;
 const selectFoodState = (state: any) => state.food;
 

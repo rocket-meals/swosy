@@ -4,7 +4,6 @@ import {
   Platform,
   Text,
   TextInput,
-  Touchable,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -19,7 +18,7 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import { Foods, FoodsFeedbacks } from '@/constants/types';
+import { FoodsFeedbacks } from '@/constants/types';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import useToast from '@/hooks/useToast';
 import { DateHelper } from '@/helper/dateHelper';
@@ -33,11 +32,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
-interface FeedbacksProps {
-  foodDetails: Foods;
-  canteenId?: string;
-  offerId: string;
-}
+import { FeedbacksProps } from './types';
 
 const loadingState = {
   submitLoading: false,
@@ -55,14 +50,16 @@ const selectFeedbackData = createSelector(
   })
 );
 
-const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }) => {
+const Feedbacks: React.FC<FeedbacksProps> = ({
+  foodDetails,
+  offerId,
+  canteenId,
+}) => {
   const toast = useToast();
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const foodOfferCanteenId = canteenId;
-  console.log("Feedbacks");
-  console.log('foodOfferCanteenId', foodOfferCanteenId);
   const primaryColor = useSelector(selectPrimaryColor);
   const { user, profile } = useSelector(selectUserProfile);
   const { appSettings } = useSelector((state: any) => state.settings);
@@ -110,8 +107,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
       const result = (await foodFeedbackHelper.updateFoodFeedback(
         foodDetails?.id,
         profile?.id,
-        { ...previousFeedback, comment: string,
-          canteen: foodOfferCanteenId }
+        { ...previousFeedback, comment: string, canteen: foodOfferCanteenId }
       )) as FoodsFeedbacks;
       // Dispatch the correct action
       dispatch({
