@@ -322,43 +322,47 @@ const details = () => {
                     </TooltipContent>
                   </Tooltip>
 
-                  {apartmentDetails?.washingmachines?.length > 0 && (
-                    <Tooltip
-                      placement='top'
-                      trigger={(triggerProps) => (
-                        <TouchableOpacity
-                          {...triggerProps}
-                          style={[
-                            styles.tab,
-                            activeTab === 'washing-machine'
-                              ? themeStyles
-                              : { backgroundColor: theme.screen.iconBg },
-                          ]}
-                          onPress={() => setActiveTab('washing-machine')}
-                        >
-                          <MaterialCommunityIcons
-                            name='washing-machine'
-                            size={26}
-                            color={
+                  {apartmentDetails &&
+                    apartmentDetails?.washingmachines?.length > 0 && (
+                      <Tooltip
+                        placement='top'
+                        trigger={(triggerProps) => (
+                          <TouchableOpacity
+                            {...triggerProps}
+                            style={[
+                              styles.tab,
                               activeTab === 'washing-machine'
-                                ? contrastColor
-                                : theme.screen.icon
-                            }
-                          />
-                        </TouchableOpacity>
-                      )}
-                    >
-                      <TooltipContent
-                        bg={theme.tooltip.background}
-                        py='$1'
-                        px='$2'
+                                ? themeStyles
+                                : { backgroundColor: theme.screen.iconBg },
+                            ]}
+                            onPress={() => setActiveTab('washing-machine')}
+                          >
+                            <MaterialCommunityIcons
+                              name='washing-machine'
+                              size={26}
+                              color={
+                                activeTab === 'washing-machine'
+                                  ? contrastColor
+                                  : theme.screen.icon
+                              }
+                            />
+                          </TouchableOpacity>
+                        )}
                       >
-                        <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                          {`${translate(TranslationKeys.washing_machine)}`}
-                        </TooltipText>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
+                        <TooltipContent
+                          bg={theme.tooltip.background}
+                          py='$1'
+                          px='$2'
+                        >
+                          <TooltipText
+                            fontSize='$sm'
+                            color={theme.tooltip.text}
+                          >
+                            {`${translate(TranslationKeys.washing_machine)}`}
+                          </TooltipText>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                 </View>
                 <View
                   style={{
