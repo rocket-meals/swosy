@@ -41,9 +41,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
 import { handleFoodRating } from '@/helper/feedback';
+import { RootState } from '@/redux/reducer';
 
-const selectAuthState = (state: any) => state.authReducer;
-const selectFoodState = (state: any) => state.food;
+const selectFoodState = (state: RootState) => state.food;
 
 const selectPreviousFeedback = createSelector(
   [selectFoodState, (_, foodId) => foodId],
@@ -75,7 +75,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const { food } = item;
     const foodItem = food as Foods;
     const markings = useSelector(selectMarkings);
-    const { user, profile, isManagement } = useSelector(selectAuthState);
+    const { user, profile, isManagement } = useSelector(
+      (state: RootState) => state.authReducer
+    );
     const previousFeedback = useSelector((state) =>
       selectPreviousFeedback(state, foodItem.id)
     );
@@ -85,12 +87,12 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       serverInfo,
       appSettings,
       primaryColor,
-    } = useSelector((state: any) => state.settings);
+    } = useSelector((state: RootState) => state.settings);
     const foods_area_color = appSettings?.foods_area_color
       ? appSettings?.foods_area_color
       : primaryColor;
     const defaultImage =
-      getImageUrl(appSettings.foods_placeholder_image) ||
+      getImageUrl(String(appSettings.foods_placeholder_image)) ||
       appSettings.foods_placeholder_image_remote_url ||
       getImageUrl(serverInfo?.info?.project?.project_logo);
 

@@ -23,6 +23,7 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Profiles } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.price_group);
@@ -31,9 +32,9 @@ const index = () => {
   const dispatch = useDispatch();
   const profileHelper = new ProfileHelper();
   const [loading, setLoading] = useState(false);
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);

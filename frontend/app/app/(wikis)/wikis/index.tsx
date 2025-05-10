@@ -24,13 +24,14 @@ import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Wikis } from '@/constants/types';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const { theme } = useTheme();
   const [wiki, setWiki] = useState<Wikis>();
   const [loading, setLoading] = useState(false);
   const { wikis, language, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const { deviceMock } = useGlobalSearchParams();
   const { custom_id, id } = useLocalSearchParams();

@@ -81,6 +81,7 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 export const SHEET_COMPONENTS = {
   canteen: CanteenSelectionSheet,
@@ -137,17 +138,19 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     drawerPosition,
     appSettings,
     primaryColor,
-  } = useSelector((state: any) => state.settings);
+  } = useSelector((state: RootState) => state.settings);
   const { ownFoodFeedbacks, popupEvents, selectedDate } = useSelector(
-    (state: any) => state.food
+    (state: RootState) => state.food
   );
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
-  const { profile, user } = useSelector((state: any) => state.authReducer);
-  const { appElements } = useSelector((state: any) => state.appElements);
+  const { profile, user } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const { appElements } = useSelector((state: RootState) => state.appElements);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
-    useSelector((state: any) => state.canteenReducer);
+    useSelector((state: RootState) => state.canteenReducer);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;
@@ -191,7 +194,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           source={animationJson}
           resizeMode='contain'
           style={{ width: '100%', height: '100%' }}
-          autoPlay={autoPlay}
+          autoPlay={autoPlay || false}
           loop={false}
         />
       );
@@ -227,8 +230,10 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       };
     };
 
-    const before = getElement(appSettings.foodoffers_list_before_element);
-    const after = getElement(appSettings.foodoffers_list_after_element);
+    const before = getElement(
+      String(appSettings.foodoffers_list_before_element)
+    );
+    const after = getElement(String(appSettings.foodoffers_list_after_element));
 
     setBeforeElement(before);
     setAfterElement(after);

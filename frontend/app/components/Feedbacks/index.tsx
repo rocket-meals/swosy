@@ -33,16 +33,15 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
+import { RootState } from '@/redux/reducer';
 
 const loadingState = {
   submitLoading: false,
   deleteLoading: false,
 };
 
-const selectPrimaryColor = (state: any) => state.settings.primaryColor;
-const selectUserProfile = (state: any) => state.authReducer;
 const selectFeedbackData = createSelector(
-  [(state: any) => state.food, (state: any, foodId: string) => foodId],
+  [(state: RootState) => state.food, (state: any, foodId: string) => foodId],
   (food, foodId) => ({
     labels: food.foodFeedbackLabels,
     labelEntries: food.ownfoodFeedbackLabelEntries,
@@ -60,9 +59,14 @@ const Feedbacks: React.FC<FeedbacksProps> = ({
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const foodOfferCanteenId = canteenId;
-  const primaryColor = useSelector(selectPrimaryColor);
-  const { user, profile } = useSelector(selectUserProfile);
-  const { appSettings } = useSelector((state: any) => state.settings);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const {
+    appSettings,
+    primaryColor,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [commentType, setCommentType] = useState('');
   const [loading, setLoading] = useState(loadingState);
   const [warning, setWarning] = useState(false);
@@ -71,7 +75,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({
   const { labels, labelEntries, previousFeedback } = useSelector((state: any) =>
     selectFeedbackData(state, foodDetails?.id)
   );
-  const mode = useSelector((state: any) => state.settings.theme);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;

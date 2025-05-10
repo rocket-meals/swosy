@@ -33,8 +33,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-
-const selectAuthState = (state: any) => state.authReducer;
+import { RootState } from '@/redux/reducer';
 
 const NotificationScreen = () => {
   useSetPageTitle(TranslationKeys.notification);
@@ -42,9 +41,9 @@ const NotificationScreen = () => {
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { language, primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
-  const { profile } = useSelector(selectAuthState);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
   const [foodWithFeedback, setFoodWithFeedback] = useState<any[]>([]);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
@@ -54,7 +53,7 @@ const NotificationScreen = () => {
     Dimensions.get('window').width
   );
   const foodFeedbacks = useSelector(
-    (state: any) => state.food.ownFoodFeedbacks
+    (state: RootState) => state.food.ownFoodFeedbacks
   );
 
   useFocusEffect(
@@ -91,7 +90,7 @@ const NotificationScreen = () => {
           source={animationJson}
           resizeMode='contain'
           style={{ width: '100%', height: '100%' }}
-          autoPlay={autoPlay}
+          autoPlay={autoPlay || false}
           loop={false}
         />
       );

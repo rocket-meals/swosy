@@ -47,24 +47,14 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { handleFoodRating } from '@/helper/feedback';
+import { RootState } from '@/redux/reducer';
 
-const selectAuthState = (state: any) => state.authReducer;
-const selectSettingsState = (state: any) => state.settings;
-const selectFoodState = (state: any) => state.food;
+const selectFoodState = (state: RootState) => state.food;
 
 const selectPreviousFeedback = createSelector(
   [selectFoodState, (_, foodId) => foodId],
   (foodState, foodId) =>
     getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString())
-);
-
-const selectPrimaryColor = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.primaryColor
-);
-const selectLanguage = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.language
 );
 
 export default function FoodDetailsScreen() {
@@ -76,22 +66,25 @@ export default function FoodDetailsScreen() {
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const menuSheetRef = useRef<BottomSheet>(null);
-  const { appSettings, serverInfo } = useSelector(
-    (state: any) => state.settings
-  );
   const menuPoints = useMemo(() => ['90%'], []);
   const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-  const { user, profile } = useSelector(selectAuthState);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const primaryColor = useSelector(selectPrimaryColor);
-  const languageCode = useSelector(selectLanguage);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const {
+    primaryColor,
+    language: languageCode,
+    appSettings,
+    serverInfo,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const previousFeedback = useSelector((state) =>
     selectPreviousFeedback(state, foodId)
   );
   const profileHelper = useMemo(() => new ProfileHelper(), []);
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
   const { foodAttributeGroups } = useSelector(
-    (state: any) => state.foodAttributes
+    (state: RootState) => state.foodAttributes
   );
   const [pushTokenObj, requestDeviceNotificationPermission] =
     NotificationHelper.useNotificationPermission(profile);
@@ -104,12 +97,14 @@ export default function FoodDetailsScreen() {
     mode === 'dark'
   );
   const defaultImage =
-    getImageUrl(appSettings.foods_placeholder_image) ||
+    getImageUrl(String(appSettings.foods_placeholder_image)) ||
     appSettings.foods_placeholder_image_remote_url ||
     getImageUrl(serverInfo?.info?.project?.project_logo);
 
   const [warning, setWarning] = useState(false);
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
   const [foodDetails, setFoodDetails] = useState<any>(null);
 
@@ -205,7 +200,7 @@ export default function FoodDetailsScreen() {
     handleFoodRating({
       foodId: foodDetails?.id,
       profileId: profile?.id,
-      userId: user.id,
+      userId: user?.id || '',
       rating: newRating,
       canteenId: foodOfferCanteenId,
       previousFeedback,
@@ -250,7 +245,7 @@ export default function FoodDetailsScreen() {
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
-            val?.languages_code?.split('-')[0] === languageCode
+            String(val?.languages_code)?.split('-')[0] === languageCode
         );
         setFoodDetails({
           ...food,

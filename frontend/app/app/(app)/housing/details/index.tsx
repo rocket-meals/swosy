@@ -26,17 +26,20 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const details = () => {
   useSetPageTitle(TranslationKeys.apartment_details);
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const { id } = useLocalSearchParams();
-  const { appSettings, serverInfo, primaryColor } = useSelector(
-    (state: any) => state.settings
-  );
-  const { apartmentsDict } = useSelector((state: any) => state.apartment);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    appSettings,
+    serverInfo,
+    primaryColor,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { apartmentsDict } = useSelector((state: RootState) => state.apartment);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const housing_area_color = appSettings?.housing_area_color
     ? appSettings?.housing_area_color
@@ -58,6 +61,7 @@ const details = () => {
   const fetchApartmentById = async () => {
     setLoading(true);
     const apartmentDetails = apartmentsDict[String(id)];
+
     if (apartmentDetails) {
       setApartmentDetails(apartmentDetails);
     }

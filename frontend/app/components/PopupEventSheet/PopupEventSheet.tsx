@@ -15,16 +15,20 @@ import {
   getTitleFromTranslation,
 } from '@/helper/resourceHelper';
 import RedirectButton from '../RedirectButton';
+import { RootState } from '@/redux/reducer';
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
   closeSheet,
   eventData,
 }) => {
   const { theme } = useTheme();
-  const { primaryColor, language, appSettings, serverInfo } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    serverInfo,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const title = eventData?.translations
     ? getTitleFromTranslation(eventData?.translations, language)

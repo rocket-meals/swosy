@@ -48,6 +48,7 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   useSetPageTitle(TranslationKeys.housing);
@@ -72,16 +73,18 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const {
     drawerPosition,
     apartmentsSortBy,
     primaryColor: projectColor,
     appSettings,
     language,
-  } = useSelector((state: any) => state.settings);
+  } = useSelector((state: RootState) => state.settings);
   const { apartments, apartmentsLocal, unSortedApartments } = useSelector(
-    (state: any) => state.apartment
+    (state: RootState) => state.apartment
   );
 
   const housing_area_color = appSettings?.housing_area_color

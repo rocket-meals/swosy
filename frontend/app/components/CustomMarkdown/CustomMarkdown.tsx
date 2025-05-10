@@ -8,6 +8,7 @@ import { CustomMarkdownProps } from './types';
 import { myContrastColor } from '@/helper/colorHelper';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
+import { RootState } from '@/redux/reducer';
 
 const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
   content,
@@ -16,8 +17,9 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
   imageHeight,
 }) => {
   const { theme } = useTheme();
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
 
   const getContent = () => {
     // Regex patterns for different content types
@@ -29,7 +31,6 @@ const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
     };
 
     if (content) {
-      console.log('content', content);
       const rawText = content;
       const lines = rawText
         .split('\n')

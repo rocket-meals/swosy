@@ -42,6 +42,7 @@ import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.js
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 enum BalanceStateLowerBound {
   CONFIDENT = 10,
@@ -56,9 +57,9 @@ const AccountBalanceScreen = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const { appSettings, language, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const balance_area_color = appSettings?.balance_area_color
     ? appSettings?.balance_area_color
