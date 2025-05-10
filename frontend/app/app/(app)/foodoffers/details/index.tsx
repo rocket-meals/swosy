@@ -46,6 +46,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { handleFoodRating } from '@/helper/feedback';
 
 const selectAuthState = (state: any) => state.authReducer;
 const selectSettingsState = (state: any) => state.settings;
@@ -198,35 +199,19 @@ export default function FoodDetailsScreen() {
     [activeTab, id, foodOfferCanteenId]
   );
 
-  const rateFood = async (rating: number) => {
-    if (!user?.id) {
-      setWarning(true);
-      return;
-    }
-    try {
-      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
-        foodDetails?.id,
-        profile?.id,
-        {
-          ...previousFeedback,
-          rating: previousFeedback?.rating === rating ? null : rating,
-          canteen: foodOfferCanteenId,
-        }
-      )) as FoodsFeedbacks;
-      if (updateFeedbackResult?.id) {
-        dispatch({
-          type: UPDATE_FOOD_FEEDBACK_LOCAL,
-          payload: updateFeedbackResult,
-        });
-      } else {
-        dispatch({
-          type: DELETE_FOOD_FEEDBACK_LOCAL,
-          payload: previousFeedback?.id,
-        });
-      }
-    } catch (e) {
-      console.error('Error creating feedback:', e);
-    }
+  const rateFood = (rating: number) => {
+    const newRating = previousFeedback?.rating === rating ? null : rating;
+
+    handleFoodRating({
+      foodId: foodDetails?.id,
+      profileId: profile?.id,
+      userId: user.id,
+      rating: newRating,
+      canteenId: foodOfferCanteenId,
+      previousFeedback,
+      dispatch,
+      setWarning,
+    });
   };
 
   const updateFoodFeedbackNotification = async () => {

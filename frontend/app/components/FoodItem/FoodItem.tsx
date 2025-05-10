@@ -27,19 +27,11 @@ import {
   getDescriptionFromTranslation,
   getTextFromTranslation,
 } from '@/helper/resourceHelper';
-import {
-  Foods,
-  FoodsFeedbacks,
-  Markings,
-  ProfilesMarkings,
-} from '@/constants/types';
+import { Foods, Markings, ProfilesMarkings } from '@/constants/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import {
-  DELETE_FOOD_FEEDBACK_LOCAL,
   SET_MARKING_DETAILS,
   SET_SELECTED_FOOD_MARKINGS,
-  UPDATE_FOOD_FEEDBACK_LOCAL,
 } from '@/redux/Types/types';
 import PermissionModal from '../PermissionModal/PermissionModal';
 import { router } from 'expo-router';
@@ -48,6 +40,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
+import { handleFoodRating } from '@/helper/feedback';
 
 const selectAuthState = (state: any) => state.authReducer;
 const selectFoodState = (state: any) => state.food;
@@ -72,7 +65,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     handleEatingHabitsSheet,
   }) => {
     const toast = useToast();
-    const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
     const [screenWidth, setScreenWidth] = useState(
       Dimensions.get('window').width
     );
@@ -152,29 +144,19 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     }, [dispatch, dislikedMarkings, handleEatingHabitsSheet]);
 
     const updateRating = useCallback(
-      async (rating: number | null) => {
-        if (!user?.id) {
-          setWarning(true);
-          return;
-        }
-        try {
-          const updateFeedbackResult =
-            (await foodFeedbackHelper.updateFoodFeedback(
-              foodItem?.id,
-              profile?.id,
-              { ...previousFeedback, rating, canteen: canteen?.id },
-            )) as FoodsFeedbacks;
-          dispatch({
-            type: updateFeedbackResult?.id
-              ? UPDATE_FOOD_FEEDBACK_LOCAL
-              : DELETE_FOOD_FEEDBACK_LOCAL,
-            payload: updateFeedbackResult || previousFeedback?.id,
-          });
-        } catch (e) {
-          console.error('Error creating feedback:', e);
-        }
+      (rating: number | null) => {
+        handleFoodRating({
+          foodId: foodItem?.id,
+          profileId: profile?.id,
+          userId: user.id,
+          rating,
+          canteenId: canteen?.id,
+          previousFeedback,
+          dispatch,
+          setWarning,
+        });
       },
-      [user?.id, profile?.id, foodItem?.id, previousFeedback, canteen?.id]
+      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch]
     );
 
     const markingsData = useMemo(
