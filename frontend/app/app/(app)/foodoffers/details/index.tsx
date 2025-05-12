@@ -30,7 +30,7 @@ import {
 } from '@/redux/Types/types';
 import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
@@ -241,12 +241,14 @@ export default function FoodDetailsScreen() {
     try {
       const foodData = await fetchFoodOffersDetailsById(id.toString());
       if (foodData && foodData.data) {
+        const foodoffer = foodData?.data;
         const { food, attribute_values } = foodData?.data;
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
             String(val?.languages_code)?.split('-')[0] === languageCode
         );
+        setFoodoffer(foodoffer);
         setFoodDetails({
           ...food,
           name: translation ? translation.name : null,
