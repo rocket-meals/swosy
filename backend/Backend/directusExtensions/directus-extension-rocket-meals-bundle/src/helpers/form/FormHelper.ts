@@ -13,6 +13,10 @@ import {PdfGeneratorHelper, PdfGeneratorOptions, RequestOptions} from "../pdf/Pd
 import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 import {MarkdownHelper} from "../html/MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
+import {TranslationBackendKeys, TranslationsBackend} from "../TranslationsBackend";
+import {DateHelper, DateHelperTimezone} from "../DateHelper";
+import {EnvVariableHelper} from "../EnvVariableHelper";
+import {HashHelper} from "../HashHelper";
 
 export class FormHelper {
 
@@ -105,10 +109,22 @@ export class FormHelper {
             markdownContent += `### ${fieldName}\n`;
             let value = formExtractRelevantInformationSingle.form_answer.value_string ||
                 formExtractRelevantInformationSingle.form_answer.value_number ||
-                formExtractRelevantInformationSingle.form_answer.value_date ||
-                formExtractRelevantInformationSingle.form_answer.value_boolean;
+                formExtractRelevantInformationSingle.form_answer.value_date
+                //formExtractRelevantInformationSingle.form_answer.value_boolean;
             if(value){
                 markdownContent += `${value}\n`;
+            }
+
+            let date_value = formExtractRelevantInformationSingle.form_answer.value_date;
+            if(date_value){
+                let dateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(date_value, EnvVariableHelper.getTimeZoneString());
+                markdownContent += `${dateString}\n`;
+            }
+
+            let boolean_value = formExtractRelevantInformationSingle.form_answer.value_boolean;
+            if(boolean_value===true || boolean_value===false){
+                let booleanValueString = boolean_value ? TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE) : TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE);
+                markdownContent += `${booleanValueString}\n`;
             }
 
             let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
@@ -117,7 +133,7 @@ export class FormHelper {
                 markdownContent += `![${fieldName}](${imageUrl})`;
                 markdownContent += `
                 `
-                markdownContent += `imageUrl: ${imageUrl}`;
+                //markdownContent += `imageUrl: ${imageUrl}`;
             }
 
             let formAnswerValueFiles = formExtractRelevantInformationSingle.form_answer.value_files;
@@ -137,6 +153,19 @@ export class FormHelper {
         //console.log("generateMarkdownContentFromForm end")
         //console.log("markdownContent")
         //console.log(markdownContent)
+
+        // add a line break at the end
+        markdownContent += `
+        -----------------
+        `;
+
+        // add a generated at date
+        let generatedAtDate = new Date();
+        let generatedAtDateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(generatedAtDate.toString(), EnvVariableHelper.getTimeZoneString());
+        markdownContent += `Generiert am ${generatedAtDateString}\n`;
+
+        let hashValue = HashHelper.getHashFromObject(formExtractRelevantInformation);
+        markdownContent += `Hash: ${hashValue}\n`;
 
         return markdownContent;
     }
