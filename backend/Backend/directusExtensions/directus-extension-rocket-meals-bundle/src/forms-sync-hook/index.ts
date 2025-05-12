@@ -344,7 +344,7 @@ async function sendFormExtractMail(
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name+" \n\n"+pdfMarkdown,
+            markdown_content: "Anbei finden Sie die Daten des Formulars zum download: " + form_name,
             subject: subject,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments
