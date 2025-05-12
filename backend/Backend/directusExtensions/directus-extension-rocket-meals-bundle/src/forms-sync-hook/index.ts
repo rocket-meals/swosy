@@ -37,10 +37,12 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
         for(let form_submission_id of form_submission_ids){
             let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
             if(formSubmission.state === FormSubmissionState.SYNCING){
-                if(input.state !== FormSubmissionState.CLOSED){
-                    // Only allow to set the state to closed
-                } else {
-                    throw new Error("Form submission is in state syncing. It is not allowed to update the form submission. Please set the state to closed.");
+                if(!!input.state){
+                    if(input.state === FormSubmissionState.CLOSED || input.state === FormSubmissionState.FAILED){
+                        // Only allow to set the state to closed or failed
+                    } else {
+                        throw new Error("Form submission is in state syncing. It is not allowed to update the form submission. Please set the state to closed.");
+                    }
                 }
             }
         }
