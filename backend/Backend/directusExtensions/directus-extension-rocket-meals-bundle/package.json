@@ -190,6 +190,7 @@
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
+		"@directus/sdk": "^18.0.0",
 		"@directus/memory": "2.0.1",
 		"@types/moment": "^2.13.0",
 		"@types/object-hash": "^3.0.6",

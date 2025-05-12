@@ -3,8 +3,13 @@ import {
     FormExtractRelevantInformation,
     FormExtractRelevantInformationSingle
 } from "../../forms-sync-hook";
-import {BaseGermanMarkdownTemplateHelper, DEFAULT_HTML_TEMPLATE, HtmlGenerator} from "../html/HtmlGenerator";
-import {PdfGeneratorHelper} from "../pdf/PdfGeneratorHelper";
+import {
+    BaseGermanMarkdownTemplateHelper,
+    DEFAULT_HTML_TEMPLATE,
+    HtmlGenerator,
+    HtmlGeneratorOptions
+} from "../html/HtmlGenerator";
+import {PdfGeneratorHelper, PdfGeneratorOptions, RequestOptions} from "../pdf/PdfGeneratorHelper";
 import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 import {MarkdownHelper} from "../html/MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
@@ -87,18 +92,12 @@ export class FormHelper {
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
         let markdownContent = "";
 
-        // access the resource without authentication, by using the internal asset URL, since we are at the backend
-        let options = DirectusFilesAssetHelper.getOptionsInternal() // use internal server URL
-
         //console.log("generateMarkdownContentFromForm start")
 
         //console.log("formExtractRelevantInformation")
         //console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
 
-        markdownContent += MarkdownHelper.EXAMPLE_MARKDOWN+`
-        
-        
-        `;
+        markdownContent += ``;
 
         // export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormAnswers }
         for(let formExtractRelevantInformationSingle of formExtractRelevantInformation){
@@ -114,7 +113,7 @@ export class FormHelper {
 
             let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
             if(formAnswerValueImage){
-                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface, options);
+                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
                 markdownContent += `![${fieldName}](${imageUrl})`;
                 markdownContent += `
                 `
@@ -125,7 +124,7 @@ export class FormHelper {
             if(formAnswerValueFiles){
                 for(let formAnswerValueFile of formAnswerValueFiles){
                     // access the resource without authentication, by using the internal asset URL, since we are at the backend
-                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface, options);
+                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface);
                     markdownContent += `![${fieldName}](${imageUrl})`;
                     markdownContent += `
                     `
@@ -145,12 +144,17 @@ export class FormHelper {
     public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
         let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
         let template = DEFAULT_HTML_TEMPLATE;
-        let options = HtmlGenerator.getHtmlGeneratorOptionsInternal();
-        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, options, template);
+        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
 
-        let requestOptions = {
-            bearerToken: await myDatabaseHelperInterface.getAdminBearerToken()
+        let requestOptions: RequestOptions = {
+            bearerToken: null
         }
+
+        let adminBearerToken = await myDatabaseHelperInterface.getAdminBearerToken();
+        if(adminBearerToken){
+            requestOptions.bearerToken = adminBearerToken;
+        }
+
 
         let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
         return pdfBuffer;
