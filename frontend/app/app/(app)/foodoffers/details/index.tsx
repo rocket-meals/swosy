@@ -30,7 +30,7 @@ import {
 } from '@/redux/Types/types';
 import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
@@ -52,9 +52,9 @@ import { RootState } from '@/redux/reducer';
 const selectFoodState = (state: RootState) => state.food;
 
 const selectPreviousFeedback = createSelector(
-  [selectFoodState, (_, foodId) => foodId],
-  (foodState, foodId) =>
-    getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString())
+    [selectFoodState, (_, foodId) => foodId],
+    (foodState, foodId) =>
+        getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString())
 );
 
 export default function FoodDetailsScreen() {
@@ -69,7 +69,7 @@ export default function FoodDetailsScreen() {
   const menuPoints = useMemo(() => ['90%'], []);
   const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
   const { user, profile } = useSelector(
-    (state: RootState) => state.authReducer
+      (state: RootState) => state.authReducer
   );
   const {
     primaryColor,
@@ -79,31 +79,31 @@ export default function FoodDetailsScreen() {
     selectedTheme: mode,
   } = useSelector((state: RootState) => state.settings);
   const previousFeedback = useSelector((state) =>
-    selectPreviousFeedback(state, foodId)
+      selectPreviousFeedback(state, foodId)
   );
   const profileHelper = useMemo(() => new ProfileHelper(), []);
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
   const { foodAttributeGroups } = useSelector(
-    (state: RootState) => state.foodAttributes
+      (state: RootState) => state.foodAttributes
   );
   const [pushTokenObj, requestDeviceNotificationPermission] =
-    NotificationHelper.useNotificationPermission(profile);
+      NotificationHelper.useNotificationPermission(profile);
   const foods_area_color = appSettings?.foods_area_color
-    ? appSettings?.foods_area_color
-    : primaryColor;
+      ? appSettings?.foods_area_color
+      : primaryColor;
   const contrastColor = myContrastColor(
-    foods_area_color,
-    theme,
-    mode === 'dark'
+      foods_area_color,
+      theme,
+      mode === 'dark'
   );
   const defaultImage =
-    getImageUrl(String(appSettings.foods_placeholder_image)) ||
-    appSettings.foods_placeholder_image_remote_url ||
-    getImageUrl(serverInfo?.info?.project?.project_logo);
+      getImageUrl(String(appSettings.foods_placeholder_image)) ||
+      appSettings.foods_placeholder_image_remote_url ||
+      getImageUrl(serverInfo?.info?.project?.project_logo);
 
   const [warning, setWarning] = useState(false);
   const { selectedCanteen } = useSelector(
-    (state: RootState) => state.canteenReducer
+      (state: RootState) => state.canteenReducer
   );
   const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
   const [foodDetails, setFoodDetails] = useState<any>(null);
@@ -114,7 +114,7 @@ export default function FoodDetailsScreen() {
   const [groupedAttributes, setGroupedAttributes] = useState<any>([]);
   const [foodAttributesLoading, setFoodAttributesLoading] = useState(false);
   const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get('window').width
+      Dimensions.get('window').width
   );
   const notificationSheetRef = useRef<BottomSheet>(null);
   const notificationPoints = useMemo(() => ['90%'], []);
@@ -138,12 +138,12 @@ export default function FoodDetailsScreen() {
   const filterAttributes = () => {
     const groupedAttributes = foodAttributeGroups?.map((group: any) => {
       const attributes = foodAttributes
-        ?.filter((attr: any) => attr?.food_attribute?.group === group?.id)
-        ?.sort((a: any, b: any) => {
-          const sortA = a?.food_attribute?.sort || 0;
-          const sortB = b?.food_attribute?.sort || 0;
-          return sortA - sortB;
-        });
+          ?.filter((attr: any) => attr?.food_attribute?.group === group?.id)
+          ?.sort((a: any, b: any) => {
+            const sortA = a?.food_attribute?.sort || 0;
+            const sortB = b?.food_attribute?.sort || 0;
+            return sortA - sortB;
+          });
 
       return {
         ...group,
@@ -161,37 +161,37 @@ export default function FoodDetailsScreen() {
   }, [foodAttributes, foodAttributeGroups]);
 
   const renderContent = useCallback(
-    (foodDetails: Foods) => {
-      switch (activeTab) {
-        case 'feedbacks':
-          return (
-            <Feedbacks
-              foodDetails={foodDetails}
-              offerId={id.toString()}
-              canteenId={foodOfferCanteenId}
-            />
-          );
-        case 'details':
-          return (
-            <Details
-              groupedAttributes={groupedAttributes}
-              loading={foodAttributesLoading}
-            />
-          );
-        case 'labels':
-          return (
-            <Labels
-              foodDetails={foodDetails}
-              offerId={id.toString()}
-              handleMenuSheet={openMenuSheet}
-              color={foods_area_color}
-            />
-          );
-        default:
-          return null;
-      }
-    },
-    [activeTab, id, foodOfferCanteenId]
+      (foodDetails: Foods) => {
+        switch (activeTab) {
+          case 'feedbacks':
+            return (
+                <Feedbacks
+                    foodDetails={foodDetails}
+                    offerId={id.toString()}
+                    canteenId={foodOfferCanteenId}
+                />
+            );
+          case 'details':
+            return (
+                <Details
+                    groupedAttributes={groupedAttributes}
+                    loading={foodAttributesLoading}
+                />
+            );
+          case 'labels':
+            return (
+                <Labels
+                    foodDetails={foodDetails}
+                    offerId={id.toString()}
+                    handleMenuSheet={openMenuSheet}
+                    color={foods_area_color}
+                />
+            );
+          default:
+            return null;
+        }
+      },
+      [activeTab, id, foodOfferCanteenId]
   );
 
   const rateFood = (rating: number) => {
@@ -217,9 +217,9 @@ export default function FoodDetailsScreen() {
         notify: !previousFeedback?.notify,
       };
       const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
-        foodDetails?.id,
-        profile?.id,
-        payload
+          foodDetails?.id,
+          profile?.id,
+          payload
       )) as FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
@@ -241,14 +241,12 @@ export default function FoodDetailsScreen() {
     try {
       const foodData = await fetchFoodOffersDetailsById(id.toString());
       if (foodData && foodData.data) {
-        const foodoffer = foodData?.data;
         const { food, attribute_values } = foodData?.data;
 
         const translation = food?.translations?.find(
-          (val: FoodsTranslations) =>
-            String(val?.languages_code)?.split('-')[0] === languageCode
+            (val: FoodsTranslations) =>
+                String(val?.languages_code)?.split('-')[0] === languageCode
         );
-        setFoodoffer(foodoffer);
         setFoodDetails({
           ...food,
           name: translation ? translation.name : null,
@@ -296,23 +294,23 @@ export default function FoodDetailsScreen() {
   }, []);
 
   useFocusEffect(
-    useCallback(() => {
-      setIsActive(true);
-      return () => {
-        setIsActive(false);
-      };
-    }, [])
+      useCallback(() => {
+        setIsActive(true);
+        return () => {
+          setIsActive(false);
+        };
+      }, [])
   );
 
   const updateDeviceInfo = async () => {
     try {
       const deviceInformationsWithoutPushToken =
-        getDeviceInformationWithoutPushToken();
+          getDeviceInformationWithoutPushToken();
       const deviceInformationsId = getDeviceIdentifier(
-        deviceInformationsWithoutPushToken
+          deviceInformationsWithoutPushToken
       );
       const pushTokenObj =
-        await NotificationHelper.loadDeviceNotificationPermission();
+          await NotificationHelper.loadDeviceNotificationPermission();
       let deviceInformationsWithPushToken = {
         ...deviceInformationsWithoutPushToken,
         pushTokenObj: pushTokenObj,
@@ -365,9 +363,9 @@ export default function FoodDetailsScreen() {
           updateFoodFeedbackNotification();
         } else {
           if (
-            NotificationHelper.isDeviceNotificationPermissionUndetermined(
-              pushTokenObj
-            )
+              NotificationHelper.isDeviceNotificationPermissionUndetermined(
+                  pushTokenObj
+              )
           ) {
             requestDeviceNotificationPermission();
           }
@@ -375,15 +373,15 @@ export default function FoodDetailsScreen() {
       }
       if (isIOS()) {
         const result =
-          await NotificationHelper.requestDeviceNotificationPermission();
+            await NotificationHelper.requestDeviceNotificationPermission();
         console.log('Result.grantedios', result);
         if (result?.granted) {
           updateFoodFeedbackNotification();
         } else {
           if (
-            NotificationHelper.isDeviceNotificationPermissionUndetermined(
-              pushTokenObj
-            )
+              NotificationHelper.isDeviceNotificationPermissionUndetermined(
+                  pushTokenObj
+              )
           ) {
             requestDeviceNotificationPermission();
           }
@@ -400,515 +398,515 @@ export default function FoodDetailsScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: theme.screen.background,
-      }}
-    >
-      <ScrollView
-        style={{
-          backgroundColor: theme.screen.background,
-          padding: isWeb ? 20 : 10,
-        }}
-        contentContainerStyle={{
-          ...styles.contentContainer,
-          width: '100%',
-          backgroundColor: theme.screen.background,
-        }}
-      >
-        <View
+      <SafeAreaView
           style={{
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
+            flex: 1,
+            backgroundColor: theme.screen.background,
           }}
+      >
+        <ScrollView
+            style={{
+              backgroundColor: theme.screen.background,
+              padding: isWeb ? 20 : 10,
+            }}
+            contentContainerStyle={{
+              ...styles.contentContainer,
+              width: '100%',
+              backgroundColor: theme.screen.background,
+            }}
         >
-          {isWeb ? (
-            <>
-              <View
-                style={{
-                  ...styles.featuredContainer,
-                  width: screenWidth > 1000 ? '80%' : '100%',
-                  flexDirection: screenWidth > 1000 ? 'row' : 'column',
-                }}
-              >
-                <View
-                  style={{
-                    ...styles.foodDetail,
-                    width: screenWidth > 1000 ? '50%' : '100%',
-                    alignItems: screenWidth > 1000 ? 'flex-start' : 'center',
-                  }}
-                >
+          <View
+              style={{
+                width: '100%',
+                height: '100%',
+                alignItems: 'center',
+              }}
+          >
+            {isWeb ? (
+                <>
                   <View
-                    style={{
-                      ...styles.imageContainer,
-                      width:
-                        screenWidth > 1000
-                          ? 400
-                          : Dimensions.get('window').width - 40,
-                      height:
-                        screenWidth > 1000
-                          ? 400
-                          : Dimensions.get('window').width - 40,
-                    }}
+                      style={{
+                        ...styles.featuredContainer,
+                        width: screenWidth > 1000 ? '80%' : '100%',
+                        flexDirection: screenWidth > 1000 ? 'row' : 'column',
+                      }}
                   >
-                    <Image
-                      style={styles.featuredImage}
-                      source={
-                        foodDetails?.image_remote_url || foodDetails?.image
-                          ? {
-                              uri:
-                                foodDetails?.image_remote_url ||
-                                getImageUrl(foodDetails?.image),
-                            }
-                          : { uri: defaultImage }
-                      }
-                    />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    ...styles.detailsContainer,
-                    width: screenWidth > 1000 ? '50%' : '100%',
-                    justifyContent:
-                      screenWidth > 1000 ? 'space-between' : 'flex-start',
-                    height: screenWidth > 1000 ? 400 : 'auto',
-                    paddingHorizontal: screenWidth > 800 ? 20 : 0,
-                  }}
-                >
-                  <View style={{ width: '100%', alignItems: 'flex-end' }}>
-                    {appSettings?.foods_ratings_average_display && (
-                      <View
+                    <View
                         style={{
-                          ...styles.ratingView,
-                          borderColor: theme.screen.text,
+                          ...styles.foodDetail,
+                          width: screenWidth > 1000 ? '50%' : '100%',
+                          alignItems: screenWidth > 1000 ? 'flex-start' : 'center',
                         }}
-                      >
-                        <AntDesign
-                          name='star'
-                          size={22}
-                          color={foods_area_color}
-                        />
-                        <Text
+                    >
+                      <View
                           style={{
-                            ...styles.totalRating,
-                            color: theme.screen.text,
+                            ...styles.imageContainer,
+                            width:
+                                screenWidth > 1000
+                                    ? 400
+                                    : Dimensions.get('window').width - 40,
+                            height:
+                                screenWidth > 1000
+                                    ? 400
+                                    : Dimensions.get('window').width - 40,
                           }}
-                        >
-                          {(foodDetails?.rating_average ||
-                            foodDetails?.rating_average_legacy) &&
-                            numToOneDecimal(
-                              foodDetails.rating_average ||
-                                foodDetails?.rating_average_legacy
-                            )}
-                        </Text>
+                      >
+                        <Image
+                            style={styles.featuredImage}
+                            source={
+                              foodDetails?.image_remote_url || foodDetails?.image
+                                  ? {
+                                    uri:
+                                        foodDetails?.image_remote_url ||
+                                        getImageUrl(foodDetails?.image),
+                                  }
+                                  : { uri: defaultImage }
+                            }
+                        />
                       </View>
-                    )}
+                    </View>
+                    <View
+                        style={{
+                          ...styles.detailsContainer,
+                          width: screenWidth > 1000 ? '50%' : '100%',
+                          justifyContent:
+                              screenWidth > 1000 ? 'space-between' : 'flex-start',
+                          height: screenWidth > 1000 ? 400 : 'auto',
+                          paddingHorizontal: screenWidth > 800 ? 20 : 0,
+                        }}
+                    >
+                      <View style={{ width: '100%', alignItems: 'flex-end' }}>
+                        {appSettings?.foods_ratings_average_display && (
+                            <View
+                                style={{
+                                  ...styles.ratingView,
+                                  borderColor: theme.screen.text,
+                                }}
+                            >
+                              <AntDesign
+                                  name='star'
+                                  size={22}
+                                  color={foods_area_color}
+                              />
+                              <Text
+                                  style={{
+                                    ...styles.totalRating,
+                                    color: theme.screen.text,
+                                  }}
+                              >
+                                {(foodDetails?.rating_average ||
+                                        foodDetails?.rating_average_legacy) &&
+                                    numToOneDecimal(
+                                        foodDetails.rating_average ||
+                                        foodDetails?.rating_average_legacy
+                                    )}
+                              </Text>
+                            </View>
+                        )}
+                      </View>
+                      <View
+                          style={{
+                            ...styles.ratingContainer,
+                            backgroundColor: theme.screen.iconBg,
+                            marginTop: screenWidth > 1000 ? 0 : 20,
+                          }}
+                      >
+                        <Text
+                            style={{ ...styles.rateUs, color: theme.screen.text }}
+                        >
+                          {translate(TranslationKeys.RATE_US)}
+                        </Text>
+                        <View style={styles.stars}>
+                          {Array.from({ length: 5 }).map((_, index) => (
+                              <Tooltip
+                                  placement='top'
+                                  trigger={(triggerProps) => (
+                                      <TouchableOpacity
+                                          key={index}
+                                          {...triggerProps}
+                                          onPress={() => rateFood(index + 1)}
+                                          style={{ padding: 5 }}
+                                      >
+                                        <AntDesign
+                                            name={
+                                              previousFeedback?.rating > index
+                                                  ? 'star'
+                                                  : 'staro'
+                                            }
+                                            size={22}
+                                            color={foods_area_color}
+                                        />
+                                      </TouchableOpacity>
+                                  )}
+                              >
+                                <TooltipContent
+                                    bg={theme.tooltip.background}
+                                    py='$1'
+                                    px='$2'
+                                >
+                                  <TooltipText
+                                      fontSize='$sm'
+                                      color={theme.tooltip.text}
+                                  >
+                                    {`${translate(TranslationKeys.set_rating_to)} ${
+                                        index + 1
+                                    }`}
+                                  </TooltipText>
+                                </TooltipContent>
+                              </Tooltip>
+                          ))}
+                        </View>
+                      </View>
+                    </View>
                   </View>
                   <View
-                    style={{
-                      ...styles.ratingContainer,
-                      backgroundColor: theme.screen.iconBg,
-                      marginTop: screenWidth > 1000 ? 0 : 20,
-                    }}
+                      style={{
+                        ...styles.featuredContainer,
+                        width: screenWidth > 1000 ? '80%' : '100%',
+                      }}
                   >
                     <Text
-                      style={{ ...styles.rateUs, color: theme.screen.text }}
+                        style={{
+                          ...styles.foodHeading,
+                          width: '100%',
+                          color: theme.screen.text,
+                          textAlign: screenWidth > 1000 ? 'left' : 'center',
+                          flexDirection: 'column',
+                          fontSize: screenWidth > 800 ? 24 : 20,
+                        }}
+                    >
+                      {foodDetails?.name}
+                    </Text>
+                  </View>
+                </>
+            ) : (
+                <View style={styles.mobileImageContainer}>
+                  <Image
+                      source={
+                        foodDetails?.image_remote_url || foodDetails?.image
+                            ? {
+                              uri:
+                                  foodDetails?.image_remote_url ||
+                                  getImageUrl(foodDetails?.image),
+                            }
+                            : { uri: defaultImage }
+                      }
+                      style={styles.mobileFeaturedImage}
+                  />
+                  <View style={styles.overlay}>
+                    <View style={styles.mobileDetailsHeader}>
+                      <View style={styles.row}>
+                        <View />
+                        {appSettings?.foods_ratings_average_display && (
+                            <View
+                                style={{
+                                  ...styles.mobileRatingView,
+                                  borderColor: theme.screen.text,
+                                }}
+                            >
+                              <AntDesign
+                                  name='star'
+                                  size={18}
+                                  color={foods_area_color}
+                              />
+                              <Text
+                                  style={{
+                                    ...styles.mobileTotalRating,
+                                    color: theme.screen.text,
+                                  }}
+                              >
+                                {(foodDetails?.rating_average ||
+                                        foodDetails?.rating_average_legacy) &&
+                                    numToOneDecimal(
+                                        foodDetails.rating_average ||
+                                        foodDetails?.rating_average_legacy
+                                    )}
+                              </Text>
+                            </View>
+                        )}
+                      </View>
+                    </View>
+                    <View style={styles.mobileDetailsFooter}></View>
+                  </View>
+                  <Text
+                      style={{
+                        ...styles.mobileFoodHeading,
+                        color: theme.screen.text,
+                      }}
+                  >
+                    {excerpt(foodDetails?.name, 90)}
+                  </Text>
+                  <View
+                      style={{
+                        ...styles.mobileRatingContainer,
+                        backgroundColor: theme.screen.iconBg,
+                      }}
+                  >
+                    <Text
+                        style={{
+                          ...styles.mobileRateUs,
+                          color: theme.screen.text,
+                        }}
                     >
                       {translate(TranslationKeys.RATE_US)}
                     </Text>
-                    <View style={styles.stars}>
+                    <View style={styles.mobileStars}>
                       {Array.from({ length: 5 }).map((_, index) => (
-                        <Tooltip
-                          placement='top'
-                          trigger={(triggerProps) => (
-                            <TouchableOpacity
+                          <TouchableOpacity
                               key={index}
-                              {...triggerProps}
                               onPress={() => rateFood(index + 1)}
-                              style={{ padding: 5 }}
-                            >
-                              <AntDesign
-                                name={
-                                  previousFeedback?.rating > index
-                                    ? 'star'
-                                    : 'staro'
-                                }
-                                size={22}
-                                color={foods_area_color}
-                              />
-                            </TouchableOpacity>
-                          )}
-                        >
-                          <TooltipContent
-                            bg={theme.tooltip.background}
-                            py='$1'
-                            px='$2'
                           >
-                            <TooltipText
-                              fontSize='$sm'
-                              color={theme.tooltip.text}
-                            >
-                              {`${translate(TranslationKeys.set_rating_to)} ${
-                                index + 1
-                              }`}
-                            </TooltipText>
-                          </TooltipContent>
-                        </Tooltip>
+                            <AntDesign
+                                name={
+                                  previousFeedback?.rating > index ? 'star' : 'staro'
+                                }
+                                size={20}
+                                color={foods_area_color}
+                            />
+                          </TouchableOpacity>
                       ))}
                     </View>
                   </View>
                 </View>
-              </View>
-              <View
-                style={{
-                  ...styles.featuredContainer,
-                  width: screenWidth > 1000 ? '80%' : '100%',
-                }}
-              >
-                <Text
-                  style={{
-                    ...styles.foodHeading,
-                    width: '100%',
-                    color: theme.screen.text,
-                    textAlign: screenWidth > 1000 ? 'left' : 'center',
-                    flexDirection: 'column',
-                    fontSize: screenWidth > 800 ? 24 : 20,
-                  }}
-                >
-                  {foodDetails?.name}
-                </Text>
-              </View>
-            </>
-          ) : (
-            <View style={styles.mobileImageContainer}>
-              <Image
-                source={
-                  foodDetails?.image_remote_url || foodDetails?.image
-                    ? {
-                        uri:
-                          foodDetails?.image_remote_url ||
-                          getImageUrl(foodDetails?.image),
-                      }
-                    : { uri: defaultImage }
-                }
-                style={styles.mobileFeaturedImage}
-              />
-              <View style={styles.overlay}>
-                <View style={styles.mobileDetailsHeader}>
-                  <View style={styles.row}>
-                    <View />
-                    {appSettings?.foods_ratings_average_display && (
-                      <View
-                        style={{
-                          ...styles.mobileRatingView,
-                          borderColor: theme.screen.text,
-                        }}
-                      >
-                        <AntDesign
-                          name='star'
-                          size={18}
-                          color={foods_area_color}
-                        />
-                        <Text
-                          style={{
-                            ...styles.mobileTotalRating,
-                            color: theme.screen.text,
-                          }}
-                        >
-                          {(foodDetails?.rating_average ||
-                            foodDetails?.rating_average_legacy) &&
-                            numToOneDecimal(
-                              foodDetails.rating_average ||
-                                foodDetails?.rating_average_legacy
-                            )}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.mobileDetailsFooter}></View>
-              </View>
-              <Text
-                style={{
-                  ...styles.mobileFoodHeading,
-                  color: theme.screen.text,
-                }}
-              >
-                {excerpt(foodDetails?.name, 90)}
-              </Text>
-              <View
-                style={{
-                  ...styles.mobileRatingContainer,
-                  backgroundColor: theme.screen.iconBg,
-                }}
-              >
-                <Text
-                  style={{
-                    ...styles.mobileRateUs,
-                    color: theme.screen.text,
-                  }}
-                >
-                  {translate(TranslationKeys.RATE_US)}
-                </Text>
-                <View style={styles.mobileStars}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => rateFood(index + 1)}
-                    >
-                      <AntDesign
-                        name={
-                          previousFeedback?.rating > index ? 'star' : 'staro'
-                        }
-                        size={20}
-                        color={foods_area_color}
-                      />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            </View>
-          )}
-          <View
-            style={{
-              ...styles.notificationContainer,
-              backgroundColor: theme.drawerBg,
-              width: getContainerWidth() || '100%',
-            }}
-          >
-            <Text
-              style={{
-                ...styles.notificationBody,
-                color: theme.screen.text,
-                maxWidth: '80%',
-                fontSize: isWeb ? 18 : 12,
-              }}
-            >
-              {translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
-            </Text>
-            {previousFeedback?.notify ? (
-              <Tooltip
-                placement='top'
-                trigger={(triggerProps) => (
-                  <TouchableOpacity
-                    {...triggerProps}
-                    style={{
-                      ...styles.bellIconAtiveContainer,
-                      backgroundColor: foods_area_color,
-                      padding: isWeb ? 12 : 8,
-                    }}
-                    onPress={updateNotification}
-                  >
-                    <MaterialIcons
-                      name='notifications-active'
-                      size={32}
-                      color={theme.screen.text}
-                    />
-                  </TouchableOpacity>
-                )}
-              >
-                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.notification)}: ${translate(
-                      TranslationKeys.active
-                    )}: ${excerpt(foodDetails?.name, 90)}`}
-                  </TooltipText>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip
-                placement='top'
-                trigger={(triggerProps) => (
-                  <TouchableOpacity
-                    style={{
-                      ...styles.bellIconContainer,
-                      borderColor: foods_area_color,
-                      padding: isWeb ? 12 : 8,
-                    }}
-                    {...triggerProps}
-                    onPress={updateNotification}
-                  >
-                    <MaterialIcons
-                      name='notifications'
-                      size={32}
-                      color={theme.screen.text}
-                    />
-                  </TouchableOpacity>
-                )}
-              >
-                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.notification)}: ${translate(
-                      TranslationKeys.inactive
-                    )}: ${excerpt(foodDetails?.name, 90)}`}
-                  </TooltipText>
-                </TooltipContent>
-              </Tooltip>
             )}
-          </View>
-          <View
-            style={{
-              ...styles.tabViewContainer,
-              width: getContainerWidth(),
-            }}
-          >
             <View
-              style={{
-                ...styles.tabs,
-                width: isWeb ? '95%' : '100%',
-                gap: isWeb ? 20 : 0,
-              }}
+                style={{
+                  ...styles.notificationContainer,
+                  backgroundColor: theme.drawerBg,
+                  width: getContainerWidth() || '100%',
+                }}
             >
-              <Tooltip
-                placement='top'
-                trigger={(triggerProps) => (
-                  <TouchableOpacity
-                    {...triggerProps}
-                    style={[
-                      styles.tab,
-                      activeTab === 'feedbacks'
-                        ? themeStyles
-                        : { backgroundColor: theme.screen.iconBg },
-                    ]}
-                    onPress={() => setActiveTab('feedbacks')}
-                  >
-                    <MaterialCommunityIcons
-                      name='chat'
-                      size={26}
-                      color={
-                        activeTab === 'feedbacks'
-                          ? contrastColor
-                          : theme.screen.icon
-                      }
-                    />
-                  </TouchableOpacity>
-                )}
+              <Text
+                  style={{
+                    ...styles.notificationBody,
+                    color: theme.screen.text,
+                    maxWidth: '80%',
+                    fontSize: isWeb ? 18 : 12,
+                  }}
               >
-                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.food_feedbacks)}`}
-                  </TooltipText>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip
-                placement='top'
-                trigger={(triggerProps) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.tab,
-                      activeTab === 'details'
-                        ? themeStyles
-                        : { backgroundColor: theme.screen.iconBg },
-                    ]}
-                    {...triggerProps}
-                    onPress={() => setActiveTab('details')}
+                {translate(TranslationKeys.GET_NOTIFICATION_ON_AVAILABILITY)}
+              </Text>
+              {previousFeedback?.notify ? (
+                  <Tooltip
+                      placement='top'
+                      trigger={(triggerProps) => (
+                          <TouchableOpacity
+                              {...triggerProps}
+                              style={{
+                                ...styles.bellIconAtiveContainer,
+                                backgroundColor: foods_area_color,
+                                padding: isWeb ? 12 : 8,
+                              }}
+                              onPress={updateNotification}
+                          >
+                            <MaterialIcons
+                                name='notifications-active'
+                                size={32}
+                                color={theme.screen.text}
+                            />
+                          </TouchableOpacity>
+                      )}
                   >
-                    <MaterialCommunityIcons
-                      name='nutrition'
-                      size={26}
-                      color={
-                        activeTab === 'details'
-                          ? contrastColor
-                          : theme.screen.icon
-                      }
-                    />
-                  </TouchableOpacity>
-                )}
-              >
-                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.food_data)}`}
-                  </TooltipText>
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip
-                placement='top'
-                trigger={(triggerProps) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.tab,
-                      activeTab === 'labels'
-                        ? themeStyles
-                        : { backgroundColor: theme.screen.iconBg },
-                    ]}
-                    {...triggerProps}
-                    onPress={() => setActiveTab('labels')}
+                    <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                      <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                        {`${translate(TranslationKeys.notification)}: ${translate(
+                            TranslationKeys.active
+                        )}: ${excerpt(foodDetails?.name, 90)}`}
+                      </TooltipText>
+                    </TooltipContent>
+                  </Tooltip>
+              ) : (
+                  <Tooltip
+                      placement='top'
+                      trigger={(triggerProps) => (
+                          <TouchableOpacity
+                              style={{
+                                ...styles.bellIconContainer,
+                                borderColor: foods_area_color,
+                                padding: isWeb ? 12 : 8,
+                              }}
+                              {...triggerProps}
+                              onPress={updateNotification}
+                          >
+                            <MaterialIcons
+                                name='notifications'
+                                size={32}
+                                color={theme.screen.text}
+                            />
+                          </TouchableOpacity>
+                      )}
                   >
-                    <MaterialCommunityIcons
-                      name='medical-bag'
-                      size={26}
-                      color={
-                        activeTab === 'labels'
-                          ? contrastColor
-                          : theme.screen.icon
-                      }
-                    />
-                  </TouchableOpacity>
-                )}
-              >
-                <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                  <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                    {`${translate(TranslationKeys.markings)}`}
-                  </TooltipText>
-                </TooltipContent>
-              </Tooltip>
+                    <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                      <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                        {`${translate(TranslationKeys.notification)}: ${translate(
+                            TranslationKeys.inactive
+                        )}: ${excerpt(foodDetails?.name, 90)}`}
+                      </TooltipText>
+                    </TooltipContent>
+                  </Tooltip>
+              )}
             </View>
             <View
-              style={{
-                ...styles.pagerView,
-                width: isWeb ? '95%' : '100%',
-                paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
-              }}
+                style={{
+                  ...styles.tabViewContainer,
+                  width: getContainerWidth(),
+                }}
             >
-              {foodDetails?.id && renderContent(foodDetails)}
-            </View>
-          </View>
-          <PermissionModal isVisible={warning} setIsVisible={setWarning} />
-        </View>
-      </ScrollView>
-      {isActive && (
-        <BottomSheet
-          ref={notificationSheetRef}
-          index={-1}
-          snapPoints={notificationPoints}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
-        >
-          <NotificationSheet
-            closeSheet={closeNotificationSheet}
-            previousFeedback={previousFeedback}
-            foodDetails={foodDetails}
-          />
-        </BottomSheet>
-      )}
-      {/* Menu sheet */}
+              <View
+                  style={{
+                    ...styles.tabs,
+                    width: isWeb ? '95%' : '100%',
+                    gap: isWeb ? 20 : 0,
+                  }}
+              >
+                <Tooltip
+                    placement='top'
+                    trigger={(triggerProps) => (
+                        <TouchableOpacity
+                            {...triggerProps}
+                            style={[
+                              styles.tab,
+                              activeTab === 'feedbacks'
+                                  ? themeStyles
+                                  : { backgroundColor: theme.screen.iconBg },
+                            ]}
+                            onPress={() => setActiveTab('feedbacks')}
+                        >
+                          <MaterialCommunityIcons
+                              name='chat'
+                              size={26}
+                              color={
+                                activeTab === 'feedbacks'
+                                    ? contrastColor
+                                    : theme.screen.icon
+                              }
+                          />
+                        </TouchableOpacity>
+                    )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${translate(TranslationKeys.food_feedbacks)}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip
+                    placement='top'
+                    trigger={(triggerProps) => (
+                        <TouchableOpacity
+                            style={[
+                              styles.tab,
+                              activeTab === 'details'
+                                  ? themeStyles
+                                  : { backgroundColor: theme.screen.iconBg },
+                            ]}
+                            {...triggerProps}
+                            onPress={() => setActiveTab('details')}
+                        >
+                          <MaterialCommunityIcons
+                              name='nutrition'
+                              size={26}
+                              color={
+                                activeTab === 'details'
+                                    ? contrastColor
+                                    : theme.screen.icon
+                              }
+                          />
+                        </TouchableOpacity>
+                    )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${translate(TranslationKeys.food_data)}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
 
-      {isActive && (
-        <BottomSheet
-          ref={menuSheetRef}
-          index={-1}
-          snapPoints={menuPoints}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          enableHandlePanningGesture={false}
-          enableContentPanningGesture={false}
-          backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
-        >
-          <MenuSheet closeSheet={closeMenuSheet} />
-        </BottomSheet>
-      )}
-    </SafeAreaView>
+                <Tooltip
+                    placement='top'
+                    trigger={(triggerProps) => (
+                        <TouchableOpacity
+                            style={[
+                              styles.tab,
+                              activeTab === 'labels'
+                                  ? themeStyles
+                                  : { backgroundColor: theme.screen.iconBg },
+                            ]}
+                            {...triggerProps}
+                            onPress={() => setActiveTab('labels')}
+                        >
+                          <MaterialCommunityIcons
+                              name='medical-bag'
+                              size={26}
+                              color={
+                                activeTab === 'labels'
+                                    ? contrastColor
+                                    : theme.screen.icon
+                              }
+                          />
+                        </TouchableOpacity>
+                    )}
+                >
+                  <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
+                    <TooltipText fontSize='$sm' color={theme.tooltip.text}>
+                      {`${translate(TranslationKeys.markings)}`}
+                    </TooltipText>
+                  </TooltipContent>
+                </Tooltip>
+              </View>
+              <View
+                  style={{
+                    ...styles.pagerView,
+                    width: isWeb ? '95%' : '100%',
+                    paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
+                  }}
+              >
+                {foodDetails?.id && renderContent(foodDetails)}
+              </View>
+            </View>
+            <PermissionModal isVisible={warning} setIsVisible={setWarning} />
+          </View>
+        </ScrollView>
+        {isActive && (
+            <BottomSheet
+                ref={notificationSheetRef}
+                index={-1}
+                snapPoints={notificationPoints}
+                backgroundStyle={{
+                  ...styles.sheetBackground,
+                  backgroundColor: theme.sheet.sheetBg,
+                }}
+                enablePanDownToClose
+                handleComponent={null}
+                backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+            >
+              <NotificationSheet
+                  closeSheet={closeNotificationSheet}
+                  previousFeedback={previousFeedback}
+                  foodDetails={foodDetails}
+              />
+            </BottomSheet>
+        )}
+        {/* Menu sheet */}
+
+        {isActive && (
+            <BottomSheet
+                ref={menuSheetRef}
+                index={-1}
+                snapPoints={menuPoints}
+                backgroundStyle={{
+                  ...styles.sheetBackground,
+                  backgroundColor: theme.sheet.sheetBg,
+                }}
+                enablePanDownToClose
+                handleComponent={null}
+                enableHandlePanningGesture={false}
+                enableContentPanningGesture={false}
+                backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
+            >
+              <MenuSheet closeSheet={closeMenuSheet} />
+            </BottomSheet>
+        )}
+      </SafeAreaView>
   );
 }
