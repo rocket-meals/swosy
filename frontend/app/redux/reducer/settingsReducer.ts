@@ -18,7 +18,7 @@ import {
 } from '@/redux/Types/types';
 
 const initialState = {
-  selectedTheme: 'dark',
+  selectedTheme: 'systematic',
   isWarning: false,
   sortBy: 'intelligent',
   campusesSortBy: 'intelligent',
