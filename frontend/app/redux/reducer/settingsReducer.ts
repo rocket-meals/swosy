@@ -26,7 +26,7 @@ const initialState = {
   serverInfo: {},
   primaryColor: '#FCDE31',
   appSettings: {},
-  language: 'en',
+  language: 'de',
   firstDayOfTheWeek: { id: 'monday', name: 'Mon' },
   drawerPosition: 'left',
   wikisPages: [],
