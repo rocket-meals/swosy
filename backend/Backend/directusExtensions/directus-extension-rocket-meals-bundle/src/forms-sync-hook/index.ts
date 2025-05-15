@@ -1,5 +1,4 @@
 import {defineHook} from "@directus/extensions-sdk";
-import {FormsSyncInterface} from "./FormsSyncInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {FormSyncHannover} from "./customers/hannover/FormSyncHannover";
 import {registerHookToCreateFormAnswersForFormSubmission} from "./RegisterHookCreateFormSubmissionsFormAnswers";
@@ -20,10 +19,7 @@ import {PrimaryKey} from "@directus/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {FormHelper} from "../helpers/form/FormHelper";
-
-function getFormSync(): FormsSyncInterface | null {
-    return null;
-}
+import {MyFileTypes} from "../helpers/FilesServiceHelper";
 
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
@@ -41,7 +37,13 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
         for(let form_submission_id of form_submission_ids){
             let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
             if(formSubmission.state === FormSubmissionState.SYNCING){
-                throw new Error("Form submission is in state syncing. It is not allowed to update the form submission.");
+                if(!!input.state){
+                    if(input.state === FormSubmissionState.CLOSED || input.state === FormSubmissionState.FAILED){
+                        // Only allow to set the state to closed or failed
+                    } else {
+                        throw new Error("Form submission is in state syncing. It is not allowed to update the form submission. Please set the state to closed.");
+                    }
+                }
             }
         }
         return input;
@@ -114,7 +116,30 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
     });
 }
 
-export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: DirectusFiles[]}
+function registerHookSetStateToSynchingAfterFormSubmission(registerFunctions: RegisterFunctions, apiContext: ApiContext){
+    registerFunctions.action(CollectionNames.FORM_SUBMISSIONS+".items.update", async (meta, context) => {
+        console.log("Set state to syncing after form submission");
+        let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
+        let form_submission_ids = meta.keys as PrimaryKey[];
+        for(let form_submission_id of form_submission_ids){
+            let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+            if(formSubmission.state === FormSubmissionState.SUBMITTED){
+                console.log("Set state to syncing for form submission id: " + form_submission_id);
+                await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, {
+                    state: FormSubmissionState.SYNCING
+                });
+            }
+        }
+    })
+}
+
+export type FormExtractFormAnswerValueFileSingle = {
+    directus_files_id: string,
+    form_answers_id: string,
+    id: number
+}
+export type FormExtractFormAnswerValueFileSingleOrString = FormExtractFormAnswerValueFileSingle | string
+export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: FormExtractFormAnswerValueFileSingleOrString[]}
 export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormExtractFormAnswer }
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[]
 
@@ -154,6 +179,57 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                         fields: ["*", "value_image.*", "value_files.*"] // this allows us to parse as FormExtractFormAnswer
                     })
                     let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
+
+                    //console.log("Form answers: ");
+                    //console.log(JSON.stringify(form_answers, null, 2));
+
+                    /**
+                     *  Form answers:
+                     *  [
+                     *    {
+                     *      "date_created": "2025-05-13T15:42:17.078Z",
+                     *      "date_updated": "2025-05-13T15:42:42.560Z",
+                     *      "form_field": "5aa6c42e-9316-4e19-b012-33e6d3a6a3c4",
+                     *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+                     *      "id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+                     *      "sort": null,
+                     *      "status": "published",
+                     *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "value_boolean": null,
+                     *      "value_custom": null,
+                     *      "value_date": null,
+                     *      "value_number": null,
+                     *      "value_string": null,
+                     *      "value_files": [
+                     *        {
+                     *          "directus_files_id": "24794e32-0db9-4e76-9a35-27545b99e4dd",
+                     *          "form_answers_id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+                     *          "id": 10
+                     *        }
+                     *      ],
+                     *      "value_image": null
+                     *    },
+                     *    {
+                     *      "date_created": "2025-05-13T15:42:17.071Z",
+                     *      "date_updated": "2025-05-13T15:42:42.568Z",
+                     *      "form_field": "d5cda419-7a66-4208-b528-b293ead52844",
+                     *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+                     *      "id": "32ab94fc-1273-405e-a9a7-0f0c2149ebdd",
+                     *      "sort": null,
+                     *      "status": "published",
+                     *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "value_boolean": null,
+                     *      "value_custom": null,
+                     *      "value_date": null,
+                     *      "value_number": null,
+                     *      "value_string": "Test",
+                     *      "value_files": [],
+                     *      "value_image": null
+                     *    }
+                     *  ]
+                     */
 
                     // Get the form fields of the form
                     console.log("Get form fields");
@@ -305,14 +381,16 @@ async function sendFormExtractMail(
     }
     console.log("Subject: " + subject);
 
-    let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, myDatabaseHelper);
-    let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
+    let internalMyDatabaseHelper = myDatabaseHelper.cloneWithInternalServerMode();
+    // we need the internal server mode to generate the pdf, as traefik does not route the request correctly
+    // TODO: Fix traefik configuration or add server to extra_hosts in docker-compose
+    let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, internalMyDatabaseHelper);
 
     console.log("recipient_emails: ");
     console.log(recipient_emails);
     for(let recipient_email of recipient_emails){
         console.log("Send mail to: " + recipient_email);
-        let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", myDatabaseHelper);
+        let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", MyFileTypes.PDF, myDatabaseHelper);
         let attachments = {
           "create": [
             {
@@ -328,7 +406,7 @@ async function sendFormExtractMail(
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name+" \n\n"+pdfMarkdown,
+            markdown_content: "Anbei finden Sie eine Kopie des Formulars: " + form_name+"\n\n",
             subject: subject,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments
@@ -342,12 +420,27 @@ async function sendFormExtractMail(
 
 export default defineHook(async (registerFunctions, apiContext) => {
 
+    // Allow only drafts to be created
     registerHookToCreateFormAnswersForFormSubmission(registerFunctions, apiContext);
+
+    // Allow only drafts to be created
     registerHookPresentCreateFormSubmissionIllegalState(registerFunctions, apiContext);
+
+    // Set the date_submitted to now
     registerHookHandleFormSubmissionDateSubmitted(registerFunctions, apiContext);
-    registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions, apiContext);
-    registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
+
+    // Check if all required fields are filled
     registerHookCheckAllRequiredFieldsAreFilled(registerFunctions, apiContext);
+
+    // Prevent update of form submission if state is syncing, only allow to set state to closed
+    registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions, apiContext);
+
+    // Set the state to syncing after form submission
+    registerHookSetStateToSynchingAfterFormSubmission(registerFunctions, apiContext);
+
+    // Send mail after form submission state syncing
+    registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
+
 
 
     switch(EnvVariableHelper.getSyncForCustomer()){

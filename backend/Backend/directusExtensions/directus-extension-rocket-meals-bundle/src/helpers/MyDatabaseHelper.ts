@@ -58,12 +58,22 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
 
     public apiContext: ApiContext;
     public eventContext: ExtentContextDirectusTypes | undefined;
+    public useLocalServerMode: boolean = false;
 
-    constructor(apiContext: ApiContext, eventContext?: EventContextForFlows) {
+    constructor(apiContext: ApiContext, eventContext?: EventContextForFlows | ExtentContextDirectusTypes) {
         this.apiContext = apiContext;
         // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
-        this.eventContext = eventContext as ExtentContextDirectusTypes; // stupid typescript error, because of the import
+        this.eventContext = eventContext as any as ExtentContextDirectusTypes; // stupid typescript error, because of the import
         // its better to use the eventContext, because of reusing the database connection instead of creating a new one
+    }
+
+    /**
+     * Should be used for downloading files, as traefik does not support the public external url
+     */
+    public cloneWithInternalServerMode(): MyDatabaseHelper {
+        let newInstance = new MyDatabaseHelper(this.apiContext, this.eventContext as any as EventContextForFlows);
+        newInstance.useLocalServerMode = true;
+        return newInstance;
     }
 
     async getSchema(): Promise<SchemaOverview> {
@@ -113,6 +123,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
         };
 
         // Sign JWT with Directus secret
+        // @ts-ignore - this is a workaround for the typescript error
         const accessToken = jwt.sign(tokenPayload, secret, {
             expiresIn: EnvVariableHelper.getAccessTokenTTL(),
             issuer: 'directus',
@@ -128,8 +139,18 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     }
 
     getServerUrl(): string {
-        let defaultServerUrl = 'http://127.0.0.1:8055'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
-        // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/app/vite.config.js#L64
+        let defaultServerUrl = 'http://127.0.0.1'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
+        // could be also: http://rocket-meals-directus:8055/server/info but we stick to the default localhost
+        // TODO: Fix traefik and use the public url support
+
+        let defaultServerPort = this.getServerPort();
+        if (defaultServerPort) {
+            defaultServerUrl += `:${defaultServerPort}`;
+        }
+
+        if(this.useLocalServerMode){
+            return defaultServerUrl;
+        }
 
         return EnvVariableHelper.getEnvVariable("PUBLIC_URL") || defaultServerUrl;
     }

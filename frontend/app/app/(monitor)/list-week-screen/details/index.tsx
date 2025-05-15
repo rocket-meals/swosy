@@ -39,7 +39,7 @@ const fontSize = 10;
 const index = () => {
   const printRef = useRef<HTMLElement | null>(null);
   const { translate } = useLanguage();
-  const { theme } = useTheme();
+  const { theme, setThemeMode } = useTheme();
   const dispatch = useDispatch();
   const {
     canteens_id,
@@ -50,7 +50,7 @@ const index = () => {
   const markingGroupsHelper = new MarkingGroupsHelper();
   const foodCategoriesHelper = new FoodCategoriesHelper();
   const [foods, setFoods] = useState<any>({});
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState<Record<string, { alias: string; sort: number }>>({});
   const [foodMarkings, setFoodMarkings] = useState<any>({});
   const { markings } = useSelector((state: RootState) => state.food);
   const [loading, setLoading] = useState(true);
@@ -58,6 +58,8 @@ const index = () => {
     Dimensions.get('window').width
   );
   const { weekPlan } = useSelector((state: RootState) => state.management);
+
+
   useSetPageTitle(
     weekPlan?.selectedCanteen?.alias +
       ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
@@ -115,6 +117,7 @@ const index = () => {
 
   useEffect(() => {
     fetchFoods();
+    setThemeMode("light");
   }, [canteens_id, date_iso]);
 
   const fetchCurrentFoodCategory = async (foodData: Record<string, any[]>) => {
@@ -137,7 +140,10 @@ const index = () => {
               categoryId
             )) as FoodsCategories;
             if (result) {
-              newCategories[categoryId] = result?.alias; // Save unique category
+              newCategories[categoryId] = {
+                alias: result?.alias,
+                sort: result?.sort ?? Infinity,
+              };
             }
           }
         }
@@ -149,23 +155,81 @@ const index = () => {
     }
   };
 
-  const getColumns = (): {
+  const getColumns = useCallback((): {
     key: string;
     title: string;
     isFixed?: boolean;
+    flex: number; // <-- Added: Flex property is now part of the column definition
   }[] => {
+    const dayFlexDesign = 0.25;
+    let flexCategoriesDesign = 5;
+
+    // If no categories are found, just return the day column
     if (!categories || Object.keys(categories).length === 0) {
-      return [{ key: 'day', title: 'Day', isFixed: true }];
+      return [{ key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDesign : dayFlexDesign }]; // <-- Added flex for day column
     }
 
+    // --- START: NEW Logic to calculate max food count per category across all days ---
+    const maxFoodCounts: Record<string, number> = {}; // Object to store max counts for each category
+
+    // Iterate over each day of the week
+    weekDayNames.forEach(dayName => {
+      const dayFoods = foods[dayName] || []; // Get foods for the current day
+      const dailyCounts: Record<string, number> = {}; // Count foods per category for THIS day
+
+      // Count foods per category for the current day
+      dayFoods.forEach(food => {
+        const categoryId = food?.food?.food_category;
+        // Only count if the category exists in our fetched categories list
+        if (categoryId && categories[categoryId]) {
+          dailyCounts[categoryId] = (dailyCounts[categoryId] || 0) + 1;
+        }
+      });
+
+      // Update the overall maximum count for each category found this day
+      Object.entries(dailyCounts).forEach(([categoryId, count]) => {
+        // Keep the maximum count seen so far for this category
+        maxFoodCounts[categoryId] = Math.max(maxFoodCounts[categoryId] || 0, count);
+      });
+    });
+    // --- END: NEW Logic ---
+
+
+    // Transform categories into an array, sort, and calculate flex for each
+    const categoryArray = Object.entries(categories)
+        .map(([categoryId, catData]) => {
+          // Calculate flex: minimum is 1, otherwise use the max count for this category
+          const flex = Math.max(1, maxFoodCounts[categoryId] || 0);
+          return {
+            key: categoryId,
+            title: catData.alias || 'Unknown',
+            sort: catData.sort ?? Infinity,
+            flex: flex, // <-- Added: Include the calculated flex value
+          };
+        })
+        // Sort categories by their defined sort order
+        .sort((a, b) => a.sort - b.sort);
+
+    let flexSumOfCategories = 0;
+    categoryArray.forEach((category) => {
+      flexSumOfCategories += category.flex;
+    });
+
+    let dayFlexDynamic = flexSumOfCategories * (dayFlexDesign / flexCategoriesDesign);
+
+
+    // Return the array of column definitions
     return [
-      { key: 'day', title: 'Day', isFixed: true },
-      ...Object.entries(categories).map(([categoryId, alias]) => ({
-        key: categoryId,
-        title: typeof alias === 'string' ? alias : 'Unknown',
+      // Day column with fixed flex
+      { key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDynamic : dayFlexDynamic }, // <-- Ensure day column has its fixed flex
+      // Category columns with their dynamically calculated flex
+      ...categoryArray.map(({ key, title, flex }) => ({ // <-- Destructure flex here
+        key,
+        title,
+        flex, // <-- Include the flex property in the final column object
       })),
     ];
-  };
+  }, [foods, categories, isMobile, weekDayNames]); // <-- Dependencies for useCallback
 
   const getPriceText = (food: any) => {
     return `${showFormatedPrice(
@@ -428,15 +492,36 @@ const index = () => {
                 ref={printRef}
             >
               <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 2,
+                  }}
+              >
+                <View>
+                  <Text style={[styles.title, { color: theme.header.text }]}>
+                    {weekPlan?.selectedCanteen?.alias}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={[styles.title, { color: theme.header.text }]}>
+                    {`${translate(TranslationKeys.week)} ${
+                        weekPlan?.selectedWeek?.week
+                    }`}
+                  </Text>
+                </View>
+              </View>
+              <View
 
                   style={[styles.headerRow, { backgroundColor: foods_area_color }]}
               >
                 {getColumns()?.map((col, index) => (
                     <View
                         key={col.key}
+                        // Apply the calculated flex
                         style={[
                           styles.cell,
-                          { flex: index === 0 ? (isMobile ? 0.2 : 0.2) : 1 },
+                          { flex: col.flex }, // Use col.flex here
                         ]}
                     >
                       <Text style={{ ...styles.headerText, color: contrastColor }}>
@@ -465,6 +550,7 @@ const index = () => {
                 return (
                     <View style={{
                       width: '100%',
+                      // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
                       pageBreakInside: 'avoid', // Avoid the page break
                       breakInside: 'avoid', // Avoid the page break
                     }}>
@@ -599,7 +685,7 @@ const index = () => {
                                   style={[
                                     styles.cell,
                                     {
-                                      flex: colIndex === 0 ? (isMobile ? 0.2 : 0.2) : 1,
+                                      flex: col.flex,
                                       borderRightWidth: 1,
                                       borderBottomWidth: 1,
                                       borderLeftWidth: colIndex === 0 ? 1 : 0,
