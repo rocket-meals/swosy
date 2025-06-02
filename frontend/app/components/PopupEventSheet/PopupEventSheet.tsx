@@ -313,7 +313,6 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
       <View
         style={{
           ...styles.sheetHeaderText,
-          paddingRight: isWeb ? 10 : 0,
         }}
       >
         <View />
