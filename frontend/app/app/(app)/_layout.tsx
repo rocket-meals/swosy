@@ -74,9 +74,14 @@ import { TranslationKeys } from '@/locales/keys';
 import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
+import { setValue, getValue } from '@/constants/AsyncStorageHelper';
+// TODO: replace HashHelper with expo-crypto once packages can be installed
+import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
 import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+
+const POPUP_EVENTS_HASH_KEY = 'popup_events_hash';
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -373,9 +378,11 @@ export default function Layout() {
             isOpen: false,
             isCurrent: index === 0,
           }));
-
-        if (filteredEvents.length !== popupEvents.length) {
+        const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));
+        const storedHash = await getValue(POPUP_EVENTS_HASH_KEY);
+        if (eventsHash !== storedHash) {
           dispatch({ type: SET_POPUP_EVENTS, payload: filteredEvents });
+          await setValue(POPUP_EVENTS_HASH_KEY, eventsHash);
         }
       }
     } catch (error) {
