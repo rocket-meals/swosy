@@ -58,7 +58,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await AsyncStorage.clear();
+      await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
       dispatch({ type: ON_LOGOUT });
       dispatch({ type: 'RESET_STORE' });
       persistor.purge();
