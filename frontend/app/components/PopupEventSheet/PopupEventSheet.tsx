@@ -333,7 +333,11 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
                 <View style={styles.imageContainer}>
                   <Image
                       style={styles.image}
-                      source={eventData?.image || eventData?.image_remote_url}
+                      source={{
+                        uri:
+                            eventData?.image_remote_url ||
+                            getImageUrl(String(eventData?.image)),
+                      }}
                   />
                 </View>
             )
