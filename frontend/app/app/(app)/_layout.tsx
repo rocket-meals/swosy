@@ -39,6 +39,7 @@ import {
   SET_FOOD_OFFERS_CATEGORIES,
   SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
   SET_POPUP_EVENTS,
+  SET_POPUP_EVENTS_HASH,
   SET_SELECTED_DATE,
   SET_WIKIS,
   UPDATE_FOOD_FEEDBACK_LABELS,
@@ -74,14 +75,12 @@ import { TranslationKeys } from '@/locales/keys';
 import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
-import { setValue, getValue } from '@/constants/AsyncStorageHelper';
 // TODO: replace HashHelper with expo-crypto once packages can be installed
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
 import { sortMarkingsByGroup } from '@/helper/sortingHelper';
 
-const POPUP_EVENTS_HASH_KEY = 'popup_events_hash';
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -107,6 +106,9 @@ export default function Layout() {
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
   const { popupEvents } = useSelector((state: RootState) => state.food);
+  const { hashValue } = useSelector(
+    (state: RootState) => state.popup_events_hash,
+  );
   const { lastUpdatedMap } = useSelector(
     (state: RootState) => state.lastUpdated
   );
@@ -379,10 +381,9 @@ export default function Layout() {
             isCurrent: index === 0,
           }));
         const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));
-        const storedHash = await getValue(POPUP_EVENTS_HASH_KEY);
-        if (eventsHash !== storedHash) {
+        if (eventsHash !== hashValue) {
           dispatch({ type: SET_POPUP_EVENTS, payload: filteredEvents });
-          await setValue(POPUP_EVENTS_HASH_KEY, eventsHash);
+          dispatch({ type: SET_POPUP_EVENTS_HASH, payload: eventsHash });
         }
       }
     } catch (error) {

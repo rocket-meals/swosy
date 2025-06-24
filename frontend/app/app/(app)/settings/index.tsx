@@ -55,6 +55,7 @@ import {
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
+  CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
   SET_AMOUNT_COLUMNS_FOR_CARDS,
   SET_DRAWER_POSITION,
@@ -274,6 +275,7 @@ const Settings = () => {
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
       dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } catch (error) {
@@ -288,9 +290,10 @@ const Settings = () => {
     dispatch({ type: CLEAR_CAMPUSES });
     dispatch({ type: CLEAR_APARTMENTS });
     dispatch({ type: CLEAR_FOODS });
-    dispatch({ type: CLEAR_NEWS });
-    dispatch({ type: CLEAR_SETTINGS });
-    dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
+      dispatch({ type: CLEAR_NEWS });
+      dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
+      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
     router.push({
       pathname: '/(auth)/login',
       params: { logout: 'true' },

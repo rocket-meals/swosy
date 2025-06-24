@@ -28,6 +28,7 @@ import {
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
+  CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
   SET_WIKIS,
 } from '@/redux/Types/types';
@@ -181,6 +182,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
       dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } catch (error) {
@@ -423,6 +425,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                   dispatch({ type: CLEAR_FOODS });
                   dispatch({ type: CLEAR_NEWS });
                   dispatch({ type: CLEAR_SETTINGS });
+                  dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
                   router.push({
                     pathname: '/(auth)/login',
                     params: { logout: 'true' },

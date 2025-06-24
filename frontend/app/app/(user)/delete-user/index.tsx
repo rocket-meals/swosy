@@ -40,6 +40,7 @@ import {
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
+  CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
 } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
@@ -161,6 +162,7 @@ const index = () => {
       dispatch({ type: CLEAR_MANAGEMENT });
       dispatch({ type: CLEAR_NEWS });
       dispatch({ type: CLEAR_SETTINGS });
+      dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
       dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
       setLoading(false);
       router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
