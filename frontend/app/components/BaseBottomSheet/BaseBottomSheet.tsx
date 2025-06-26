@@ -7,6 +7,9 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { myContrastColor } from '@/helper/colorHelper';
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/redux/reducer';
 import styles from './styles';
 
 export interface BaseBottomSheetProps
@@ -30,9 +33,13 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
       [onClose]
     );
     const { theme } = useTheme();
+    const { selectedTheme: mode } = useSelector(
+      (state: RootState) => state.settings
+    );
     const snapPoints = useMemo(() => ['80%'], []);
 
     const headerBg = backgroundStyle?.backgroundColor || theme.sheet.sheetBg;
+    const handleColor = myContrastColor(headerBg, theme, mode === 'dark');
 
     const handleChange = useCallback(
       (index: number) => {
@@ -57,6 +64,8 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         {...props}
       >
         <View style={[styles.header, { backgroundColor: headerBg }]}>
+          <View style={styles.placeholder} />
+          <View style={[styles.handle, { backgroundColor: handleColor }]} />
           <TouchableOpacity
             style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]}
             onPress={onClose}
