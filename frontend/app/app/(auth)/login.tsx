@@ -7,7 +7,7 @@ import Header from '@/components/Login/Header';
 import Footer from '@/components/Login/Footer';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ManagementSheet from '@/components/Login/ManagementSheet';
-import BaseBottomSheetModal from '@/components/BaseBottomSheetModal';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
@@ -43,8 +43,9 @@ export default function Login() {
   const { deviceMock } = useGlobalSearchParams();
   const appSettingsHelper = new AppSettingsHelper();
   const wikisHelper = new WikisHelper();
-  const [isVisible, setIsVisible] = useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const [loading, setLoading] = useState(false);
+  const snapPoints = useMemo(() => ['50%'], []);
   const [isActive, setIsActive] = useState(false);
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const attentionSheetRef = useRef<BottomSheet>(null);
@@ -93,6 +94,14 @@ export default function Login() {
     getAppSettings();
     getProviders();
   }, []);
+
+  const openSheet = () => {
+    bottomSheetRef.current?.expand();
+  };
+
+  const closeSheet = () => {
+    bottomSheetRef?.current?.close();
+  };
 
 
 
@@ -274,7 +283,7 @@ export default function Login() {
         >
           <Header />
           <Form
-            setIsVisible={setIsVisible}
+            openSheet={openSheet}
             openAttentionSheet={openAttentionSheet}
             onSuccess={handleUserLogin}
             providers={providers}
@@ -303,16 +312,27 @@ export default function Login() {
             {renderContent()}
           </View>
         )}
-        <BaseBottomSheetModal
-          isVisible={isVisible}
-          onClose={() => setIsVisible(false)}
-        >
-          <ManagementSheet
-            closeSheet={() => setIsVisible(false)}
-            handleLogin={handleUserLogin}
-            loading={loading}
-          />
-        </BaseBottomSheetModal>
+        {isActive && (
+          <BaseBottomSheet
+            ref={bottomSheetRef}
+            index={-1}
+            snapPoints={snapPoints}
+            handleComponent={null}
+            backgroundStyle={{
+              borderTopRightRadius: 30,
+              borderTopLeftRadius: 30,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            onClose={closeSheet}
+          >
+            <ManagementSheet
+              closeSheet={closeSheet}
+              handleLogin={handleUserLogin}
+              loading={loading}
+            />
+          </BaseBottomSheet>
+        )}
         {isActive && (
           <BottomSheet
             ref={attentionSheetRef}

@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import BaseBottomSheetModal from '../BaseBottomSheetModal';
+import React, { useEffect, useState, useRef } from 'react';
+import BaseBottomSheet from '../BaseBottomSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { styles } from './styles';
 import { AntDesign } from '@expo/vector-icons';
 import { PermissionModalProps } from './types';
@@ -34,6 +35,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const sheetRef = useRef<BottomSheet>(null);
 
   const getModalWidth = (windowWidth: number) => {
     if (windowWidth < 800) return '100%';
@@ -45,6 +47,14 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     const windowWidth = Dimensions.get('window').width;
     return getModalWidth(windowWidth);
   });
+
+  useEffect(() => {
+    if (isVisible) {
+      sheetRef.current?.expand();
+    } else {
+      sheetRef.current?.close();
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -75,9 +85,12 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   };
 
   return (
-    <BaseBottomSheetModal
-      isVisible={isVisible}
+    <BaseBottomSheet
+      ref={sheetRef}
+      index={-1}
+      enablePanDownToClose
       onClose={() => setIsVisible(false)}
+      backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }}
     >
       <View
         style={{
@@ -133,7 +146,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
           )}
         </TouchableOpacity>
       </View>
-    </BaseBottomSheetModal>
+    </BaseBottomSheet>
   );
 };
 
