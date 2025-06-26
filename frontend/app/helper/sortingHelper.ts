@@ -12,12 +12,24 @@ export const normalizeSort = (value: any): number => {
 };
 
 export const sortBySortField = <T extends { sort?: number | null }>(
-  items: T[]
+    items: T[]
 ): T[] => {
-  return [...items].sort(
-    (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
-  );
+  const withSort: T[] = [];
+  const withoutSort: T[] = [];
+
+  for (const item of items) {
+    if (item.sort === undefined || item.sort === null) {
+      withoutSort.push(item);
+    } else {
+      withSort.push(item);
+    }
+  }
+
+  withSort.sort((a, b) => (a.sort! as number) - (b.sort! as number));
+
+  return [...withSort, ...withoutSort];
 };
+
 import { getFoodName, isRatingNegative, isRatingPositive } from "./resourceHelper";
 
 export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
