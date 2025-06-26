@@ -70,6 +70,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
+import LanguageSheet from '@/components/LanguageSheet/LanguageSheet';
+import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
+import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import {
   excerpt,
   formatPrice,
@@ -89,15 +92,15 @@ const Settings = () => {
   const canteenSheetRef = useRef<BottomSheet>(null);
   const [isActive, setIsActive] = useState(false);
   const { translate, setLanguageMode, language } = useLanguage();
-  const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
   const [isNicknameModalVisible, setIsNicknameModalVisible] = useState(false);
   const [nickname, setNickname] = useState<string>('');
   const openModal = () => setIsNicknameModalVisible(true);
   const closeModal = () => setIsNicknameModalVisible(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const [isDrawerModalVisible, setIsDrawerModalVisible] = useState(false);
-  const [isAmountColumnModal, setIsAmountColumnModal] = useState(false);
-  const [isFirstDayModalVisible, setIsFirstDayModalVisible] = useState(false);
+  const languageSheetRef = useRef<BottomSheet>(null);
+  const amountColumnSheetRef = useRef<BottomSheet>(null);
+  const firstDaySheetRef = useRef<BottomSheet>(null);
   const [disabled, setDisabled] = useState(false);
   const [isColorSchemeModalVisible, setIsColorSchemeModalVisible] =
     useState(false);
@@ -175,16 +178,12 @@ const Settings = () => {
     setSelectedLanguage(language);
   }, [language]);
 
-  const saveLanguage = () => {
-    closeModal();
-  };
-
   const openLanguageModal = () => {
-    setIsLanguageModalVisible(true);
+    languageSheetRef?.current?.expand();
   };
 
   const closeLanguageModal = () => {
-    setIsLanguageModalVisible(false);
+    languageSheetRef?.current?.close();
   };
 
   // ColorScheme
@@ -217,30 +216,22 @@ const Settings = () => {
 
   // Amount Column Card
 
-  const saveAmount = () => {
-    closeModal();
-  };
-
   const openAmountColumnModal = () => {
-    setIsAmountColumnModal(true);
+    amountColumnSheetRef?.current?.expand();
   };
 
   const closeAmountColumnModal = () => {
-    setIsAmountColumnModal(false);
+    amountColumnSheetRef?.current?.close();
   };
 
   // first day of week
 
-  const saveFirstDay = () => {
-    closeModal();
-  };
-
   const openFirstDayModal = () => {
-    setIsFirstDayModalVisible(true);
+    firstDaySheetRef?.current?.expand();
   };
 
   const closeFirstDayModal = () => {
-    setIsFirstDayModalVisible(false);
+    firstDaySheetRef?.current?.close();
   };
 
   const changeLanguage = (language: {
@@ -403,68 +394,6 @@ const Settings = () => {
             }}
           />
           {/* Language */}
-          <ModalComponent
-            isVisible={isLanguageModalVisible}
-            onClose={closeLanguageModal}
-            title={translate(TranslationKeys.language)}
-            onSave={saveLanguage}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {languages.map((language, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={{
-                    ...styles.languageRow,
-                    paddingHorizontal: isWeb ? 20 : 10,
-
-                    backgroundColor:
-                      selectedLanguage === language.value
-                        ? primaryColor
-                        : theme.screen.iconBg,
-                  }}
-                  onPress={() => {
-                    changeLanguage(language);
-                  }}
-                >
-                  <Image
-                    source={language.flag}
-                    style={styles.flagIcon}
-                    cachePolicy={'memory-disk'}
-                    transition={500}
-                    contentFit='cover'
-                  />
-                  <Text
-                    style={{
-                      ...styles.languageText,
-                      color:
-                        selectedLanguage === language.value
-                          ? theme.activeText
-                          : theme.screen.text,
-                    }}
-                  >
-                    {language.label}
-                  </Text>
-
-                  {/* Radio Button */}
-                  <MaterialCommunityIcons
-                    name={
-                      selectedLanguage === language.value
-                        ? 'checkbox-marked'
-                        : 'checkbox-blank'
-                    }
-                    size={24}
-                    color={
-                      selectedLanguage === language.value
-                        ? '#ffffff'
-                        : '#ffffff'
-                    }
-                    style={styles.radioButton}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <Ionicons name='language' size={24} color={theme.screen.icon} />
@@ -660,30 +589,6 @@ const Settings = () => {
             handleFunction={() => openDrawerModal()}
           />
 
-          <ModalComponent
-            isVisible={isAmountColumnModal}
-            onClose={closeAmountColumnModal}
-            title={translate(TranslationKeys.amount_columns_for_cards)}
-            onSave={saveAmount}
-            showButtons={false}
-          >
-            <ScrollView style={styles.amountOfCardContainer}>
-              {AmountColumn.map((column) => (
-                <AmountColumns
-                  key={column.id}
-                  position={column}
-                  isSelected={amountColumnsForcard === column.id}
-                  onPress={() => {
-                    dispatch({
-                      type: SET_AMOUNT_COLUMNS_FOR_CARDS,
-                      payload: column.id,
-                    });
-                    closeAmountColumnModal();
-                  }}
-                />
-              ))}
-            </ScrollView>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <FontAwesome5
@@ -707,30 +612,6 @@ const Settings = () => {
             }
             handleFunction={() => openAmountColumnModal()}
           />
-          <ModalComponent
-            isVisible={isFirstDayModalVisible}
-            onClose={closeFirstDayModal}
-            title={translate(TranslationKeys.first_day_of_week)}
-            onSave={saveFirstDay}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {days.map((firstDay) => (
-                <FirstDayOfWeek
-                  key={firstDay.id}
-                  position={firstDay}
-                  isSelected={firstDayOfTheWeek?.name === firstDay?.name}
-                  onPress={() => {
-                    dispatch({
-                      type: SET_FIRST_DAY_OF_THE_WEEK,
-                      payload: { id: firstDay.id, name: firstDay?.name },
-                    });
-                    closeFirstDayModal();
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <Feather name='calendar' size={24} color={theme.screen.icon} />
@@ -913,19 +794,84 @@ const Settings = () => {
         </View>
       </ScrollView>
       {isActive && (
-        <BaseBottomSheet
-          ref={canteenSheetRef}
-          index={-1}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          onClose={closeCanteenSheet}
-        >
-          <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-        </BaseBottomSheet>
+        <>
+          <BaseBottomSheet
+            ref={canteenSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeCanteenSheet}
+          >
+            <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={languageSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeLanguageModal}
+          >
+            <LanguageSheet
+              closeSheet={closeLanguageModal}
+              selectedLanguage={selectedLanguage}
+              onSelect={(value) => {
+                changeLanguage({ value } as any);
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={amountColumnSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeAmountColumnModal}
+          >
+            <AmountColumnSheet
+              closeSheet={closeAmountColumnModal}
+              selectedAmount={amountColumnsForcard}
+              onSelect={(val) => {
+                dispatch({
+                  type: SET_AMOUNT_COLUMNS_FOR_CARDS,
+                  payload: val,
+                });
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={firstDaySheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeFirstDayModal}
+          >
+            <FirstDaySheet
+              closeSheet={closeFirstDayModal}
+              selectedDay={firstDayOfTheWeek?.name}
+              onSelect={(day) => {
+                dispatch({
+                  type: SET_FIRST_DAY_OF_THE_WEEK,
+                  payload: day,
+                });
+              }}
+            />
+          </BaseBottomSheet>
+        </>
       )}
     </SafeAreaView>
   );
