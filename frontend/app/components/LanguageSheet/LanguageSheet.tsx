@@ -11,6 +11,7 @@ import styles from './styles';
 import { LanguageSheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const LanguageSheet: React.FC<LanguageSheetProps> = ({
   closeSheet,
@@ -19,7 +20,10 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
   return (
     <BottomSheetScrollView
@@ -75,7 +79,7 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({
                 ...styles.languageText,
                 color:
                   selectedLanguage === language.value
-                    ? theme.activeText
+                    ? contrastColor
                     : theme.screen.text,
               }}
             >
@@ -88,7 +92,11 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({
                   : 'checkbox-blank'
               }
               size={24}
-              color={'#ffffff'}
+              color={
+                selectedLanguage === language.value
+                  ? contrastColor
+                  : theme.screen.icon
+              }
               style={styles.radioButton}
             />
           </TouchableOpacity>
