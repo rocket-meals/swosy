@@ -71,6 +71,8 @@ import {
   sortByFoodName,
   sortByOwnFavorite,
   sortByPublicFavorite,
+  sortByFoodCategory,
+  sortByFoodOfferCategory,
 } from '@/helper/sortingHelper';
 import { format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
@@ -129,9 +131,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     appSettings,
     primaryColor,
   } = useSelector((state: RootState) => state.settings);
-  const { ownFoodFeedbacks, popupEvents, selectedDate } = useSelector(
-    (state: RootState) => state.food
-  );
+  const {
+    ownFoodFeedbacks,
+    popupEvents,
+    selectedDate,
+    foodCategories,
+    foodOfferCategories,
+  } = useSelector((state: RootState) => state.food);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
@@ -394,6 +400,18 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           profile.markings
         );
         break;
+      case 'food_category':
+        copiedFoodOffers = sortByFoodCategory(
+          copiedFoodOffers,
+          foodCategories
+        );
+        break;
+      case 'foodoffer_category':
+        copiedFoodOffers = sortByFoodOfferCategory(
+          copiedFoodOffers,
+          foodOfferCategories
+        );
+        break;
       case 'rating':
         copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
         break;
@@ -402,7 +420,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           copiedFoodOffers,
           ownFoodFeedbacks,
           profile.markings,
-          languageCode
+          languageCode,
+          foodCategories,
+          foodOfferCategories
         );
         break;
       default:
