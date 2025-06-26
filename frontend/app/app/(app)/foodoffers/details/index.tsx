@@ -36,6 +36,10 @@ import NotificationSheet from '@/components/NotificationSheet/NotificationSheet'
 import usePlatformHelper from '@/helper/platformHelper';
 import { NotificationHelper } from '@/helper/NotificationHelper';
 import {
+  getFoodCategoryName,
+  getFoodOfferCategoryName,
+} from '@/helper/resourceHelper';
+import {
   getCurrentDevice,
   getDeviceIdentifier,
   getDeviceInformationWithoutPushToken,
@@ -85,6 +89,9 @@ export default function FoodDetailsScreen() {
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
   const { foodAttributeGroups } = useSelector(
     (state: RootState) => state.foodAttributes
+  );
+  const { foodCategories, foodOfferCategories } = useSelector(
+    (state: RootState) => state.food
   );
   const [pushTokenObj, requestDeviceNotificationPermission] =
     NotificationHelper.useNotificationPermission(profile);
@@ -149,6 +156,52 @@ export default function FoodDetailsScreen() {
         attributes: attributes || [],
       };
     });
+
+    const generalAttributes: any[] = [];
+    if (foodDetails && foodCategories.length) {
+      const name = getFoodCategoryName(
+        foodCategories,
+        foodDetails.food_category,
+        languageCode
+      );
+      if (name) {
+        generalAttributes.push({
+          id: 'food_category',
+          string_value: name,
+          food_attribute: {
+            status: 'published',
+            translations: [{ languages_code: languageCode, name: translate(TranslationKeys.food_category_label) }],
+          },
+        });
+      }
+    }
+
+    if (foodDetails && foodOfferCategories.length && foodDetails.foodoffer_category) {
+      const name = getFoodOfferCategoryName(
+        foodOfferCategories,
+        foodDetails.foodoffer_category,
+        languageCode
+      );
+      if (name) {
+        generalAttributes.push({
+          id: 'foodoffer_category',
+          string_value: name,
+          food_attribute: {
+            status: 'published',
+            translations: [{ languages_code: languageCode, name: translate(TranslationKeys.foodoffer_category_label) }],
+          },
+        });
+      }
+    }
+
+    if (generalAttributes.length) {
+      groupedAttributes?.push({
+        id: 'general',
+        translations: [{ languages_code: languageCode, name: translate(TranslationKeys.general) }],
+        attributes: generalAttributes,
+      });
+    }
+
     setGroupedAttributes(groupedAttributes);
     setFoodAttributesLoading(false);
   };
@@ -157,7 +210,7 @@ export default function FoodDetailsScreen() {
     if (foodAttributeGroups && foodAttributes) {
       filterAttributes();
     }
-  }, [foodAttributes, foodAttributeGroups]);
+  }, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories]);
 
   const renderContent = useCallback(
     (foodDetails: Foods) => {
@@ -240,7 +293,7 @@ export default function FoodDetailsScreen() {
     try {
       const foodData = await fetchFoodOffersDetailsById(id.toString());
       if (foodData && foodData.data) {
-        const { food, attribute_values } = foodData?.data;
+        const { food, attribute_values, foodoffer_category } = foodData?.data;
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
@@ -248,6 +301,7 @@ export default function FoodDetailsScreen() {
         );
         setFoodDetails({
           ...food,
+          foodoffer_category,
           name: translation ? translation.name : null,
         });
         if (attribute_values) {

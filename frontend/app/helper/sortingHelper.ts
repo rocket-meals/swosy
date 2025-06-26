@@ -6,6 +6,18 @@ import {
   FoodsCategories,
   FoodoffersCategories,
 } from "@/constants/types";
+
+export const normalizeSort = (value: any): number => {
+  return value === undefined || value === null || value === "" ? Infinity : value;
+};
+
+export const sortBySortField = <T extends { sort?: number | null }>(
+  items: T[]
+): T[] => {
+  return [...items].sort(
+    (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
+  );
+};
 import { getFoodName, isRatingNegative, isRatingPositive } from "./resourceHelper";
 
 export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
@@ -30,7 +42,7 @@ export function sortByFoodCategory(
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
     if (cat.id) {
-      sortMap.set(cat.id, cat.sort ?? Infinity);
+      sortMap.set(cat.id, normalizeSort(cat.sort));
     }
   });
 
@@ -44,8 +56,12 @@ export function sortByFoodCategory(
         ? (b.food as any)?.food_category?.id
         : (b.food as any)?.food_category;
 
-    const aSort = sortMap.get(aId as string) ?? Infinity;
-    const bSort = sortMap.get(bId as string) ?? Infinity;
+    const aSort = sortMap.has(aId as string)
+      ? (sortMap.get(aId as string) as number)
+      : Infinity;
+    const bSort = sortMap.has(bId as string)
+      ? (sortMap.get(bId as string) as number)
+      : Infinity;
     return aSort - bSort;
   });
 }
@@ -57,7 +73,7 @@ export function sortByFoodOfferCategory(
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
     if (cat.id) {
-      sortMap.set(cat.id, cat.sort ?? Infinity);
+      sortMap.set(cat.id, normalizeSort(cat.sort));
     }
   });
 
@@ -71,8 +87,12 @@ export function sortByFoodOfferCategory(
         ? (b.foodoffer_category as any)?.id
         : b.foodoffer_category;
 
-    const aSort = sortMap.get(aId as string) ?? Infinity;
-    const bSort = sortMap.get(bId as string) ?? Infinity;
+    const aSort = sortMap.has(aId as string)
+      ? (sortMap.get(aId as string) as number)
+      : Infinity;
+    const bSort = sortMap.has(bId as string)
+      ? (sortMap.get(bId as string) as number)
+      : Infinity;
     return aSort - bSort;
   });
 }
@@ -169,17 +189,8 @@ export function sortMarkingsByGroup(markings: Markings[], markingGroups: Marking
   if (!markings || !markingGroups) {
     return markings || [];
   }
-
-  // Normalize sort values to ensure undefined, null, or empty values don't break sorting
-  const normalizeSort = (value: any) =>
-    value === undefined || value === null || value === ''
-      ? Infinity
-      : value;
-
   // Sort marking groups by their "sort" field
-  const sortedGroups = [...markingGroups].sort(
-    (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
-  );
+  const sortedGroups = sortBySortField(markingGroups);
 
   // Create a map for quick lookup of each marking's group
   const markingToGroupMap = new Map<string, MarkingsGroups>();
@@ -291,7 +302,7 @@ export function intelligentSort(
 
     // 3. Sort by food categories
     const foodCatMap = new Map(
-      foodCategories.map((cat) => [cat.id, cat.sort ?? Infinity])
+      foodCategories.map((cat) => [cat.id, normalizeSort(cat.sort)])
     );
     const aFoodCat =
       typeof (a.food as any)?.food_category === 'object'
@@ -302,8 +313,12 @@ export function intelligentSort(
         ? (b.food as any)?.food_category?.id
         : (b.food as any)?.food_category;
 
-    const aFoodCatSort = foodCatMap.get(aFoodCat as string) ?? Infinity;
-    const bFoodCatSort = foodCatMap.get(bFoodCat as string) ?? Infinity;
+    const aFoodCatSort = foodCatMap.has(aFoodCat as string)
+      ? (foodCatMap.get(aFoodCat as string) as number)
+      : Infinity;
+    const bFoodCatSort = foodCatMap.has(bFoodCat as string)
+      ? (foodCatMap.get(bFoodCat as string) as number)
+      : Infinity;
 
     if (aFoodCatSort !== bFoodCatSort) {
       return aFoodCatSort - bFoodCatSort;
@@ -311,7 +326,7 @@ export function intelligentSort(
 
     // 4. Sort by foodoffer categories
     const offerCatMap = new Map(
-      foodOfferCategories.map((cat) => [cat.id, cat.sort ?? Infinity])
+      foodOfferCategories.map((cat) => [cat.id, normalizeSort(cat.sort)])
     );
     const aOfferCat =
       typeof a.foodoffer_category === 'object'
@@ -322,8 +337,12 @@ export function intelligentSort(
         ? (b.foodoffer_category as any)?.id
         : b.foodoffer_category;
 
-    const aOfferSort = offerCatMap.get(aOfferCat as string) ?? Infinity;
-    const bOfferSort = offerCatMap.get(bOfferCat as string) ?? Infinity;
+    const aOfferSort = offerCatMap.has(aOfferCat as string)
+      ? (offerCatMap.get(aOfferCat as string) as number)
+      : Infinity;
+    const bOfferSort = offerCatMap.has(bOfferCat as string)
+      ? (offerCatMap.get(bOfferCat as string) as number)
+      : Infinity;
 
     if (aOfferSort !== bOfferSort) {
       return aOfferSort - bOfferSort;

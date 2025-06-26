@@ -79,7 +79,7 @@ import { shouldFetch } from '@/helper/shouldFetch';
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup, sortBySortField } from '@/helper/sortingHelper';
 
 
 export default function Layout() {
@@ -245,7 +245,7 @@ export default function Layout() {
         {}
       )) as FoodsCategories[];
       if (result) {
-        dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
+        dispatch({ type: SET_FOOD_CATEGORIES, payload: sortBySortField(result) });
       }
     } catch (error) {
       console.error('Error fetching food categories:', error);
@@ -259,7 +259,10 @@ export default function Layout() {
           {}
         )) as FoodoffersCategories[];
       if (result) {
-        dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
+        dispatch({
+          type: SET_FOOD_OFFERS_CATEGORIES,
+          payload: sortBySortField(result),
+        });
       }
     } catch (error) {
       console.error('Error fetching food offers categories:', error);
