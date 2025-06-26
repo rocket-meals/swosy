@@ -11,7 +11,6 @@ import {
   Text,
   Dimensions,
   SafeAreaView,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -30,10 +29,9 @@ import {
 } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import SettingList from '@/components/SettingList/SettingList';
-import ModalComponent from '../../../components/ModalSetting/ModalComponent';
-import ColorScheme from '../../../components/ColorScheme/ColorScheme';
-import DrawerPosition from '../../../components/Drawer/DrawerPosition';
-import FirstDayOfWeek from '../../../components/FirstDay/FirstDayOfWeek';
+import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
+import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
+import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import {
   themes,
@@ -92,18 +90,17 @@ const Settings = () => {
   const canteenSheetRef = useRef<BottomSheet>(null);
   const [isActive, setIsActive] = useState(false);
   const { translate, setLanguageMode, language } = useLanguage();
-  const [isNicknameModalVisible, setIsNicknameModalVisible] = useState(false);
   const [nickname, setNickname] = useState<string>('');
-  const openModal = () => setIsNicknameModalVisible(true);
-  const closeModal = () => setIsNicknameModalVisible(false);
+  const nicknameSheetRef = useRef<BottomSheet>(null);
+  const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
+  const closeNicknameSheet = () => nicknameSheetRef?.current?.close();
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-  const [isDrawerModalVisible, setIsDrawerModalVisible] = useState(false);
+  const drawerSheetRef = useRef<BottomSheet>(null);
   const languageSheetRef = useRef<BottomSheet>(null);
   const amountColumnSheetRef = useRef<BottomSheet>(null);
   const firstDaySheetRef = useRef<BottomSheet>(null);
+  const colorSchemeSheetRef = useRef<BottomSheet>(null);
   const [disabled, setDisabled] = useState(false);
-  const [isColorSchemeModalVisible, setIsColorSchemeModalVisible] =
-    useState(false);
   const {
     user,
     profile,
@@ -151,7 +148,7 @@ const Settings = () => {
         payload: nickname?.trim(),
       });
     }
-    closeModal();
+    closeNicknameSheet();
   };
 
   useFocusEffect(
@@ -188,30 +185,22 @@ const Settings = () => {
 
   // ColorScheme
 
-  const saveColorSheme = () => {
-    closeModal();
+  const openColorSchemeSheet = () => {
+    colorSchemeSheetRef?.current?.expand();
   };
 
-  const openColorschemeModal = () => {
-    setIsColorSchemeModalVisible(true);
-  };
-
-  const closeColorschemeModal = () => {
-    setIsColorSchemeModalVisible(false);
+  const closeColorSchemeSheet = () => {
+    colorSchemeSheetRef?.current?.close();
   };
 
   // Drawer Position
 
-  const saveDrawer = () => {
-    closeModal();
+  const openDrawerSheet = () => {
+    drawerSheetRef?.current?.expand();
   };
 
-  const openDrawerModal = () => {
-    setIsDrawerModalVisible(true);
-  };
-
-  const closeDrawerModal = () => {
-    setIsDrawerModalVisible(false);
+  const closeDrawerSheet = () => {
+    drawerSheetRef?.current?.close();
   };
 
   // Amount Column Card
@@ -338,34 +327,6 @@ const Settings = () => {
             </View>
           </View>
           {/* NickName */}
-          <ModalComponent
-            isVisible={isNicknameModalVisible}
-            onClose={closeModal}
-            onSave={saveNickname}
-            disableSave={disabled}
-            title={translate(TranslationKeys.nickname)}
-          >
-            {/* Custom Content */}
-            <TextInput
-              style={{
-                ...styles.input,
-                color: 'black',
-                backgroundColor: '#fff',
-                borderWidth: 1,
-              }}
-              placeholder={translate(TranslationKeys.nickname)}
-              value={nickname?.trim()}
-              onChangeText={(text) => {
-                setNickname(text);
-                if (text === profile?.nickname) {
-                  setDisabled(true);
-                } else {
-                  setDisabled(false);
-                }
-              }}
-            />
-          </ModalComponent>
-          {/* </View> */}
           <SettingList
             leftIcon={
               <MaterialCommunityIcons
@@ -384,7 +345,7 @@ const Settings = () => {
               />
             }
             handleFunction={() => {
-              openModal();
+              openNicknameSheet();
               setNickname(profile?.id ? profile?.nickname : nickNameLocal);
               if (profile?.nickname === nickname) {
                 setDisabled(true);
@@ -505,27 +466,6 @@ const Settings = () => {
             handleFunction={() => router.navigate('/notification')}
           />
           {/* color Scheme */}
-          <ModalComponent
-            isVisible={isColorSchemeModalVisible}
-            onClose={closeColorschemeModal}
-            title={translate(TranslationKeys.color_scheme)}
-            onSave={saveColorSheme}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {themes.map((theme) => (
-                <ColorScheme
-                  key={theme.id}
-                  theme={theme}
-                  isSelected={selectedTheme === theme.id}
-                  onPress={() => {
-                    closeColorschemeModal();
-                    handleTheme(theme.id);
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <MaterialCommunityIcons
@@ -549,29 +489,9 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => openColorschemeModal()}
+            handleFunction={() => openColorSchemeSheet()}
           />
 
-          <ModalComponent
-            isVisible={isDrawerModalVisible}
-            onClose={closeDrawerModal}
-            title={translate(TranslationKeys.drawer_config_position)}
-            onSave={saveDrawer}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {drawers.map((drawer) => (
-                <DrawerPosition
-                  key={drawer.id}
-                  position={drawer}
-                  isSelected={drawerPosition === drawer.id}
-                  onPress={() => {
-                    handleDrawerPosition(drawer.id);
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
 
           <SettingList
             leftIcon={
@@ -586,7 +506,7 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => openDrawerModal()}
+            handleFunction={() => openDrawerSheet()}
           />
 
           <SettingList
@@ -860,14 +780,78 @@ const Settings = () => {
             handleComponent={null}
             onClose={closeFirstDayModal}
           >
-            <FirstDaySheet
-              closeSheet={closeFirstDayModal}
-              selectedDay={firstDayOfTheWeek?.name}
-              onSelect={(day) => {
-                dispatch({
-                  type: SET_FIRST_DAY_OF_THE_WEEK,
-                  payload: day,
-                });
+          <FirstDaySheet
+            closeSheet={closeFirstDayModal}
+            selectedDay={firstDayOfTheWeek?.name}
+            onSelect={(day) => {
+              dispatch({
+                type: SET_FIRST_DAY_OF_THE_WEEK,
+                payload: day,
+              });
+            }}
+          />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={nicknameSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeNicknameSheet}
+          >
+            <NicknameSheet
+              closeSheet={closeNicknameSheet}
+              value={nickname}
+              onChange={(text) => {
+                setNickname(text);
+                if (text === profile?.nickname) {
+                  setDisabled(true);
+                } else {
+                  setDisabled(false);
+                }
+              }}
+              onSave={saveNickname}
+              disableSave={disabled}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={colorSchemeSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeColorSchemeSheet}
+          >
+            <ColorSchemeSheet
+              closeSheet={closeColorSchemeSheet}
+              selectedTheme={selectedTheme}
+              onSelect={(theme) => {
+                handleTheme(theme);
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={drawerSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeDrawerSheet}
+          >
+            <DrawerPositionSheet
+              closeSheet={closeDrawerSheet}
+              selectedPosition={drawerPosition}
+              onSelect={(position) => {
+                handleDrawerPosition(position);
               }}
             />
           </BaseBottomSheet>
