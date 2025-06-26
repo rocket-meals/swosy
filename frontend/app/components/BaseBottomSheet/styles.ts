@@ -18,10 +18,11 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   handle: {
-    flex: 1,
+    width: '30%',
     height: 6,
     borderRadius: 3,
     marginHorizontal: 10,
+    alignSelf: 'center',
   },
   placeholder: {
     width: 45,
