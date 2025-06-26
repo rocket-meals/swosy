@@ -11,7 +11,6 @@ export interface ManagementModalProps {
 
 export interface FormProps {
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  openSheet: () => void;
   openAttentionSheet: () => void;
   onSuccess: (token: string) => void;
   providers: any;

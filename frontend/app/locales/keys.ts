@@ -258,6 +258,8 @@ export enum TranslationKeys {
   show = 'show',
   hide = 'hide',
   continue_without_account = 'continue_without_account',
+  access_limited = 'access_limited',
+  limited_access_description = 'limited_access_description',
   sign_in_with = 'sign_in_with',
   home = 'home',
   canteens = 'canteens',
