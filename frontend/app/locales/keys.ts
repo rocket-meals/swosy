@@ -253,6 +253,7 @@ export enum TranslationKeys {
   i_dislike_that = 'i_dislike_that',
   like_status = 'like_status',
   show_login_for_management_with_email_and_password = 'show_login_for_management_with_email_and_password',
+  management_login_description = 'management_login_description',
   email = 'email',
   password = 'password',
   show = 'show',

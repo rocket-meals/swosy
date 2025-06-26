@@ -49,7 +49,6 @@ export default function Login() {
   const [isActive, setIsActive] = useState(false);
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const attentionSheetRef = useRef<BottomSheet>(null);
-  const attentionSnapPoints = useMemo(() => ['80%'], []);
   const [providers, setProviders] = useState<any>([]);
   const [isWebVisible, setIsWebVisible] = useState(
     Dimensions.get('window').width > 500
@@ -334,22 +333,22 @@ export default function Login() {
           </BaseBottomSheet>
         )}
         {isActive && (
-          <BottomSheet
+          <BaseBottomSheet
             ref={attentionSheetRef}
             index={-1}
-            snapPoints={attentionSnapPoints}
-            handleComponent={null}
             backgroundStyle={{
               borderTopRightRadius: 30,
               borderTopLeftRadius: 30,
+              backgroundColor: theme.sheet.sheetBg,
             }}
+            onClose={closeAttentionSheet}
           >
             <AttentionSheet
               closeSheet={closeAttentionSheet}
               handleLogin={handleAnonymousLogin}
               isBottomSheetVisible={isBottomSheetVisible}
             />
-          </BottomSheet>
+          </BaseBottomSheet>
         )}
       </ScrollView>
     </>
