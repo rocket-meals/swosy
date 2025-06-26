@@ -79,8 +79,8 @@ const handleRedirect = () => {
                 {item?.attributes &&
                   item?.attributes?.map((attr: any) => {
                     let value;
-                    const prefix = attr?.food_attribute?.prefix;
-                    const suffix = attr?.food_attribute?.suffix;
+                    const prefix = attr?.food_attribute?.prefix || '';
+                    const suffix = attr?.food_attribute?.suffix || '';
                     const status = attr?.food_attribute?.status;
                     const full_width = attr?.food_attribute?.full_width;
                     const background_color =
