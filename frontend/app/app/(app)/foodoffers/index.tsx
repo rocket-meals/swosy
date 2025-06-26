@@ -959,6 +959,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             enableHandlePanningGesture={
               selectedSheet === 'forecast' ? false : true
             }
+            enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
             onChange={(index) => {
               if (index === -1) {
                 closeSheet();
