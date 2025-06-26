@@ -121,11 +121,11 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
   }, [selectedCanteen, forDate]);
 
   const chartConfig = {
-    backgroundGradientFrom: '#1E2923',
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientTo: '#08130D',
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => theme.screen.text,
+    backgroundGradientFrom: theme.sheet.sheetBg,
+    backgroundGradientFromOpacity: 1,
+    backgroundGradientTo: theme.sheet.sheetBg,
+    backgroundGradientToOpacity: 1,
+    color: () => theme.sheet.text,
     strokeWidth: 2,
     // barPercentage: 0.5,
     useShadowColorFromDataset: false,
@@ -200,7 +200,7 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
       >
         {!loading && chartData ? (
           <BarChart
-            style={styles.graphStyle}
+            style={{ ...styles.graphStyle, backgroundColor: theme.sheet.sheetBg }}
             data={chartData}
             width={Math.max(
               chartData.labels.length * 100,
