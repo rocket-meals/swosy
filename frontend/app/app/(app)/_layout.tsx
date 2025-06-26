@@ -409,7 +409,15 @@ export default function Layout() {
     { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
     { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
     {
+      key: CollectionKeys.FOODS_CATEGORIES_TRANSLATIONS,
+      action: getFoodCategories,
+    },
+    {
       key: CollectionKeys.FOODOFFERS_CATEGORIES,
+      action: getFoodOffersCategories,
+    },
+    {
+      key: CollectionKeys.FOODOFFERS_CATEGORIES_TRANSLATIONS,
       action: getFoodOffersCategories,
     },
     {

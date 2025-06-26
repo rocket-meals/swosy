@@ -64,6 +64,8 @@ export enum TranslationKeys {
   sort_option_public_rating = 'sort_option_public_rating',
   sort_option_intelligent = 'sort_option_intelligent',
   sort_option_distance = 'sort_option_distance',
+  sort_option_food_category = 'sort_option_food_category',
+  sort_option_foodoffer_category = 'sort_option_foodoffer_category',
   free_rooms = 'free_rooms',
   foodweekplan = 'foodweekplan',
   monitorDayPlan = 'monitorDayPlan',
