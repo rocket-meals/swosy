@@ -253,7 +253,6 @@ const handleRedirect = () => {
         label={food_responsible_organization_name}
         onClick={handleRedirect}
         backgroundColor={foods_area_color}
-        color={theme.light}
       />
     </View>
   );
