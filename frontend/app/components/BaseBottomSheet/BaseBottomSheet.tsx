@@ -30,7 +30,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
       [onClose]
     );
     const { theme } = useTheme();
-    const snapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
+    const snapPoints = useMemo(() => ['80%'], []);
 
     const headerBg = backgroundStyle?.backgroundColor || theme.sheet.sheetBg;
 
