@@ -9,14 +9,15 @@ import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 
-export interface BaseBottomSheetProps extends Omit<BottomSheetProps, 'backdropComponent'> {
+export interface BaseBottomSheetProps
+  extends Omit<BottomSheetProps, 'backdropComponent'> {
   onClose?: () => void;
 }
 
 const MAX_HEIGHT = Dimensions.get('window').height * 0.8;
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
-  ({ onClose, children, backgroundStyle, ...props }, ref) => {
+  ({ onClose, children, backgroundStyle, onChange, ...props }, ref) => {
     const renderBackdrop = useCallback(
       (backdropProps: BottomSheetBackdropProps) => (
         <BottomSheetBackdrop
@@ -29,18 +30,30 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
       [onClose]
     );
     const { theme } = useTheme();
-    const snapPoints = useMemo(() => [MAX_HEIGHT], []);
+    const snapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
 
     const headerBg = backgroundStyle?.backgroundColor || theme.sheet.sheetBg;
+
+    const handleChange = useCallback(
+      (index: number) => {
+        if (index === -1) {
+          onClose?.();
+        }
+        onChange?.(index);
+      },
+      [onClose, onChange]
+    );
 
     return (
       <BottomSheet
         ref={ref}
         snapPoints={snapPoints}
-        style={{ height: MAX_HEIGHT }}
+        enableDynamicSizing
+        maxDynamicContentSize={MAX_HEIGHT}
         backdropComponent={renderBackdrop}
         backgroundStyle={backgroundStyle}
         handleComponent={null}
+        onChange={handleChange}
         {...props}
       >
         <View style={[styles.header, { backgroundColor: headerBg }]}>
