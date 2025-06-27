@@ -66,12 +66,17 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
           percentage = (matchingData.value_real / max) * 100;
         } else if (matchingData.value_forecast_current) {
           percentage = (matchingData.value_forecast_current / max) * 100;
-        } else {
-          percentage = 0;
         }
       }
 
-      return parseFloat(percentage.toFixed(1));
+      // Round to nearest 10 and enforce a minimum of 10 for any value > 0
+      if (percentage > 0) {
+        percentage = Math.max(10, Math.round(percentage / 10) * 10);
+      } else {
+        percentage = 0;
+      }
+
+      return percentage;
     });
 
     const colors = chartData.map((percentage) => {
@@ -135,12 +140,27 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
   useFocusEffect(
     useCallback(() => {
       if (chartData && chartData?.datasets[0]?.data?.length) {
-        const firstNonZeroIndex = chartData.datasets[0].data.findIndex(
-          (value: number) => value > 0
-        );
-        if (firstNonZeroIndex !== -1) {
+        const data = chartData.datasets[0].data;
+        const now = new Date();
+        const currentIndex = now.getHours() * 4 + Math.floor(now.getMinutes() / 15);
+
+        let targetIndex = data.slice(currentIndex).findIndex((value: number) => value > 0);
+
+        if (targetIndex !== -1) {
+          targetIndex += currentIndex;
+        } else {
+          // No values after the current time, find the last entry with data
+          for (let i = data.length - 1; i >= 0; i--) {
+            if (data[i] > 0) {
+              targetIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (targetIndex !== -1 && targetIndex !== undefined) {
           scrollViewRef.current?.scrollTo({
-            x: Math.max(0, firstNonZeroIndex * 101 + 100),
+            x: Math.max(0, targetIndex * 101 + 100),
             animated: true,
           });
         }
