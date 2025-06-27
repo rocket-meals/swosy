@@ -1,5 +1,5 @@
 import {
-  Dimensions, Linking,
+  Dimensions,
   SafeAreaView,
   ScrollView,
   Text,
@@ -16,7 +16,7 @@ import React, {
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
-import RedirectButton from '@/components/RedirectButton';
+import FoodLabelingInfo from '@/components/FoodLabelingInfo';
 import { useSelector } from 'react-redux';
 import MarkingLabels from '@/components/MarkingLabels/MarkingLabels';
 import { FoodoffersMarkings } from '@/constants/types';
@@ -48,8 +48,6 @@ const index = () => {
     Dimensions.get('window').width
   );
 
-  let food_responsible_organization_name = appSettings?.food_responsible_organization_name || "Verantwortliche Organisation";
-  let food_responsible_organization_link = appSettings?.food_responsible_organization_link || "https://www.studentenwerk-osnabrueck.de/";
 
   useFocusEffect(
     useCallback(() => {
@@ -109,11 +107,6 @@ const index = () => {
     setReadMore(!readMore);
   };
 
-  const handleRedirect = () => {
-    Linking.openURL(food_responsible_organization_link).catch((err) =>
-        console.error('Failed to open URL:', err)
-    );
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
@@ -138,9 +131,10 @@ const index = () => {
                   )}
             </Text>
             {readMore && (
-              <Text style={{ ...styles.body2, color: theme.screen.text }}>
-                {translate(TranslationKeys.FOOD_LABELING_INFO)}
-              </Text>
+              <FoodLabelingInfo
+                textStyle={styles.body2}
+                backgroundColor={primaryColor}
+              />
             )}
             <View style={styles.readMoreContainer}>
               <TouchableOpacity
@@ -157,13 +151,6 @@ const index = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <RedirectButton
-              type={'link'}
-              label={food_responsible_organization_name}
-              backgroundColor={primaryColor}
-              onClick={handleRedirect}
-              color={contrastColor}
-            />
             <View style={styles.feedbackLabelsContainer}>
               {markings?.map((marking) => {
                 return (
