@@ -26,6 +26,7 @@ import animation from '@/assets/animations/allergist.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -35,9 +36,10 @@ const index = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const { markings } = useSelector((state: RootState) => state.food);
-  const { primaryColor, appSettings } = useSelector(
+  const { primaryColor, appSettings, selectedTheme: mode } = useSelector(
     (state: RootState) => state.settings
   );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [readMore, setReadMore] = useState(false);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
@@ -148,7 +150,7 @@ const index = () => {
                     backgroundColor: theme.primary,
                   }}
               >
-                <Text style={{ ...styles.readMore, color: theme.activeText }}>
+                <Text style={{ ...styles.readMore, color: contrastColor }}>
                   {readMore
                       ? translate(TranslationKeys.read_less)
                       : translate(TranslationKeys.read_more)}
@@ -160,7 +162,7 @@ const index = () => {
               label={food_responsible_organization_name}
               backgroundColor={primaryColor}
               onClick={handleRedirect}
-              color={theme.activeText}
+              color={contrastColor}
             />
             <View style={styles.feedbackLabelsContainer}>
               {markings?.map((marking) => {
