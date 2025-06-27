@@ -554,7 +554,14 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
           <ActivityIndicator size={30} color={theme.screen.text} />
         </View>
       ) : (
-        <>
+          <View
+              style={{
+                minHeight: 200,
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+          >
           {hours && Object.keys(hours).length > 0 ? (
             <View
               style={{
@@ -596,7 +603,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
               </Text>
             </View>
           )}
-        </>
+        </View>
       )}
     </BottomSheetScrollView>
   );
