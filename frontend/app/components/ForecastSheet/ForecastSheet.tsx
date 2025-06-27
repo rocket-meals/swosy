@@ -135,12 +135,27 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
   useFocusEffect(
     useCallback(() => {
       if (chartData && chartData?.datasets[0]?.data?.length) {
-        const firstNonZeroIndex = chartData.datasets[0].data.findIndex(
-          (value: number) => value > 0
-        );
-        if (firstNonZeroIndex !== -1) {
+        const data = chartData.datasets[0].data;
+        const now = new Date();
+        const currentIndex = now.getHours() * 4 + Math.floor(now.getMinutes() / 15);
+
+        let targetIndex = data.slice(currentIndex).findIndex((value: number) => value > 0);
+
+        if (targetIndex !== -1) {
+          targetIndex += currentIndex;
+        } else {
+          // No values after the current time, find the last entry with data
+          for (let i = data.length - 1; i >= 0; i--) {
+            if (data[i] > 0) {
+              targetIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (targetIndex !== -1 && targetIndex !== undefined) {
           scrollViewRef.current?.scrollTo({
-            x: Math.max(0, firstNonZeroIndex * 101 + 100),
+            x: Math.max(0, targetIndex * 101 + 100),
             animated: true,
           });
         }
