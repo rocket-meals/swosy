@@ -144,15 +144,17 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
         const now = new Date();
         const currentIndex = now.getHours() * 4 + Math.floor(now.getMinutes() / 15);
 
-        let targetIndex = data.slice(currentIndex).findIndex((value: number) => value > 0);
+        let targetIndex = data.slice(currentIndex).findIndex(
+          (value: number) => value > 0
+        );
 
         if (targetIndex !== -1) {
           targetIndex += currentIndex;
         } else {
-          // No values after the current time, find the last entry with data
+          // No values after the current time, jump to two steps before the last value
           for (let i = data.length - 1; i >= 0; i--) {
             if (data[i] > 0) {
-              targetIndex = i;
+              targetIndex = Math.max(0, i - 2);
               break;
             }
           }
