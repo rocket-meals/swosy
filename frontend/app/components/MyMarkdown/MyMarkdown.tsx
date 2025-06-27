@@ -76,7 +76,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
   const defaultTextProps = {
     selectable: true,
     color: textColor,
-    fontSize: fontSize + 'px',
+    fontSize,
     fontStyle: 'normal',
   };
 
