@@ -1,6 +1,9 @@
 import React from 'react';
 import { Linking, Text, View, useWindowDimensions } from 'react-native';
+import { FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import MarkdownIt from 'markdown-it';
+import { lightTheme, darkTheme } from "@/styles/themes";
+import { Appearance } from "react-native";
 import RenderHtml, {
   CustomBlockRenderer,
   CustomMixedRenderer,
@@ -8,10 +11,9 @@ import RenderHtml, {
   HTMLElementModel,
   HTMLContentModel,
 } from 'react-native-render-html';
-import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
-import RedirectButton from '../RedirectButton';
+import ProjectButton from '../ProjectButton';
 import { myContrastColor } from '@/helper/colorHelper';
 
 export interface MyMarkdownProps {
@@ -32,10 +34,19 @@ export const replaceLinebreaks = (sourceContent: string) => {
 };
 
 const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
-  const { theme } = useTheme();
   const { primaryColor, selectedTheme } = useSelector(
     (state: RootState) => state.settings
   );
+
+  const colorScheme = Appearance.getColorScheme();
+  const theme =
+    selectedTheme === "systematic"
+      ? colorScheme === "dark"
+        ? darkTheme
+        : lightTheme
+      : selectedTheme === "dark"
+      ? darkTheme
+      : lightTheme;
 
   const { width } = useWindowDimensions();
   const md = new MarkdownIt({ html: true });
@@ -85,22 +96,35 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
       const { href } = props.tnode.attributes;
       const { data } = props.tnode;
       const text = data || props.children[0]?.data;
-      const type = href?.startsWith('mailto:') ? 'email' : 'link';
 
       const handlePress = () => {
         if (href) {
-          Linking.openURL(href).catch((err) => console.error('Failed to open URL:', err));
+          Linking.openURL(href).catch((err) =>
+            console.error('Failed to open URL:', err)
+          );
         }
       };
 
-      return (
-        <RedirectButton
-          type={type}
-          label={text}
-          onClick={handlePress}
-          backgroundColor={primaryColor}
+      let iconLeft = (
+        <FontAwesome6
+          name='arrow-up-right-from-square'
+          size={20}
           color={contrastColor}
         />
+      );
+
+      if (href?.startsWith('tel:')) {
+        iconLeft = (
+          <FontAwesome6 name='phone' size={20} color={contrastColor} />
+        );
+      } else if (href?.startsWith('mailto:')) {
+        iconLeft = (
+          <MaterialCommunityIcons name='email' size={24} color={contrastColor} />
+        );
+      }
+
+      return (
+        <ProjectButton text={text} onPress={handlePress} iconLeft={iconLeft} />
       );
     },
     sub: (props: any) => {
