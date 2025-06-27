@@ -558,15 +558,13 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
               style={{
                 minHeight: 200,
                 width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
               }}
           >
           {hours && Object.keys(hours).length > 0 ? (
             <View
               style={{
                 ...styles.hoursContainer,
-                width: isWeb ? '90%' : '100%',
+                width: '100%',
               }}
             >
               {getSortedBusinessHoursGroups(businessHoursGroups)
