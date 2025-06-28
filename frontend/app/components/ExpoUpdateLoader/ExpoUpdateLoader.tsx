@@ -9,6 +9,8 @@ interface ExpoUpdateLoaderProps {
 
 const TIMEOUT_MS = 10000; // 10 Sekunden
 
+const CHANGE_NUMBER = 1;
+
 const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
   const { isSmartPhone } = usePlatformHelper();
   const [progress, setProgress] = useState({ received: 0, total: 0 });
@@ -71,7 +73,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
   const receivedMb = progress.received / (1024 * 1024);
   const totalMb = progress.total / (1024 * 1024);
-  const progressRatio = progress.total
+  const progressRatio = progress.total > 0
     ? progress.received / progress.total
     : 0;
 
@@ -82,9 +84,10 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
         <View style={[styles.barFill, { width: `${progressRatio * 100}%` }]} />
       </View>
       <Text style={styles.text}>
-        {receivedMb.toFixed(2)} MB
+        {`${(progressRatio * 100).toFixed(0)}% - ${receivedMb.toFixed(2)} MB`}
         {progress.total ? ` / ${totalMb.toFixed(2)} MB` : ''}
       </Text>
+      <Text style={styles.change}>{`Change ${CHANGE_NUMBER}`}</Text>
     </View>
   );
 };
@@ -114,6 +117,11 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 8,
     fontSize: 14,
+  },
+  change: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#666',
   },
 });
 
