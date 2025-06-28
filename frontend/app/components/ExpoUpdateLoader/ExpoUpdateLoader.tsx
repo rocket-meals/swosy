@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from 'react-native';
 import * as Updates from 'expo-updates';
 import usePlatformHelper from '@/helper/platformHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -87,6 +94,12 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('@/assets/images/company.png')}
+        style={styles.logo}
+        resizeMode='contain'
+      />
+      <ActivityIndicator size='large' style={styles.spinner} />
       <Text style={styles.title}>{translate(status)}</Text>
       {showCancel && (
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
@@ -105,6 +118,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#ffffff',
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
+  spinner: {
+    marginBottom: 15,
   },
   title: {
     fontSize: 18,
