@@ -6,8 +6,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    fontSize: 18,
-    fontFamily: 'Poppins_400Regular',
+  webview: {
+    flex: 1,
+    width: '100%',
   },
 });
