@@ -235,7 +235,7 @@ export enum TranslationKeys {
   read_less = 'read_less',
   show_more_information = 'show_more_information',
   course_timetable = 'course_timetable',
-  new_feature_test = 'new_feature_test',
+  experimentell = "experimentell",
   eating_habits = 'eating_habits',
   markings = 'markings',
   category = 'category',

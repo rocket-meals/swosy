@@ -279,16 +279,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
     }
 
-    if (isDevMode) {
-      menuItems.push({
-        label: translate(TranslationKeys.new_feature_test),
-        iconName: 'flask',
-        iconLibName: FontAwesome5,
-        activeKey: 'new-feature-test',
-        route: 'new-feature-test',
-        position: 8.5,
-      });
-    }
 
     if (isManagement) {
       menuItems.push({
@@ -298,6 +288,14 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         activeKey: 'management/index',
         route: 'management/index',
         position: 9,
+      });
+      menuItems.push({
+        label: translate(TranslationKeys.experimentell),
+        iconName: 'bag',
+        iconLibName: Ionicons,
+        activeKey: 'experimentell/index',
+        route: 'experimentell/index',
+        position: 9.5,
       });
     }
 

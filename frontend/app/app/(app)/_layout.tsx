@@ -614,18 +614,6 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name='new-feature-test'
-          options={{
-            header: () => (
-              <CustomMenuHeader
-                label={translate(TranslationKeys.new_feature_test)}
-                key={'NewFeatureTest'}
-              />
-            ),
-            title: 'New Feature Test',
-          }}
-        />
-        <Drawer.Screen
           name='settings/index'
           options={{
             title: 'Settings',
@@ -660,6 +648,18 @@ export default function Layout() {
               />
             ),
             title: 'Management',
+          }}
+        />
+        <Drawer.Screen
+          name='experimentell/index'
+          options={{
+            header: () => (
+              <CustomMenuHeader
+                label={translate(TranslationKeys.experimentell)}
+                key={'Experimentell'}
+              />
+            ),
+            title: 'experimentell',
           }}
         />
 

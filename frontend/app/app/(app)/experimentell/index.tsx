@@ -20,7 +20,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 
 const index = () => {
-  useSetPageTitle(TranslationKeys.new_feature_test);
+  useSetPageTitle(TranslationKeys.experimentell);
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const dispatch = useDispatch();
