@@ -614,15 +614,15 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name='experimental'
+          name='new-feature-test'
           options={{
             header: () => (
               <CustomMenuHeader
-                label={translate(TranslationKeys.experimental)}
-                key={'Experimental'}
+                label={translate(TranslationKeys.new_feature_test)}
+                key={'NewFeatureTest'}
               />
             ),
-            title: 'Experimental',
+            title: 'New Feature Test',
           }}
         />
         <Drawer.Screen
