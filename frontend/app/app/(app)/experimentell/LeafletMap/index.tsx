@@ -18,6 +18,12 @@ const LeafletMap = () => {
         originWhitelist={['*']}
         source={html}
         style={styles.webview}
+        allowFileAccess
+        allowFileAccessFromFileURLs
+        allowUniversalAccessFromFileURLs
+        domStorageEnabled
+        javaScriptEnabled
+        containerStyle={{ height: '100%', width: '100%' }}
       />
     </View>
   );
