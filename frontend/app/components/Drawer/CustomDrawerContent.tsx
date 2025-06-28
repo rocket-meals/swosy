@@ -90,7 +90,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const router = useRouter();
   const wikisHelper = new WikisHelper();
   const activeIndex = state.index;
-  const { user, isManagement } = useSelector(
+  const { user, isManagement, isDevMode } = useSelector(
     (state: RootState) => state.authReducer
   );
   const {
@@ -279,6 +279,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
     }
 
+    if (isDevMode) {
+      menuItems.push({
+        label: translate(TranslationKeys.experimental),
+        iconName: 'flask',
+        iconLibName: FontAwesome5,
+        activeKey: 'experimental',
+        route: 'experimental',
+        position: 8.5,
+      });
+    }
+
     if (isManagement) {
       menuItems.push({
         label: translate(TranslationKeys.role_management),
@@ -286,7 +297,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         iconLibName: Ionicons,
         activeKey: 'management/index',
         route: 'management/index',
-        position: 8,
+        position: 9,
       });
     }
 
