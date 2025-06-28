@@ -2373,15 +2373,15 @@
     "tr": "Yeme Alışkanlıkları",
     "zh": "饮食习惯"
   },
-  "experimental": {
-    "de": "Experimentell",
-    "en": "Experimental",
-    "ar": "تجريبي",
-    "es": "Experimental",
-    "fr": "Expérimental",
-    "ru": "Экспериментальный",
-    "tr": "Deneysel",
-    "zh": "实验性的"
+  "new_feature_test": {
+    "de": "New Feature Test",
+    "en": "New Feature Test",
+    "ar": "اختبار الميزة الجديدة",
+    "es": "Prueba de nueva función",
+    "fr": "Test de nouvelle fonctionnalité",
+    "ru": "Тест новой функции",
+    "tr": "Yeni Özellik Testi",
+    "zh": "新功能测试"
   },
   "markings": {
     "de": "Kennzeichnungen",

@@ -4,11 +4,18 @@ export default StyleSheet.create({
   container: {
     flex: 1,
   },
-  contentContainer: {},
+  contentContainer: {
+    // flex: 1,
+  },
   content: {
     width: '100%',
     height: '100%',
     padding: 20,
+  },
+  heading: {
+    fontSize: 24,
+    fontFamily: 'Poppins_700Bold',
+    marginVertical: 10,
   },
   listItem: {
     width: '100%',
@@ -29,4 +36,5 @@ export default StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
   },
+  dummy: {},
 });

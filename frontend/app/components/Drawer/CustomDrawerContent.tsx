@@ -281,11 +281,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
     if (isDevMode) {
       menuItems.push({
-        label: translate(TranslationKeys.experimental),
+        label: translate(TranslationKeys.new_feature_test),
         iconName: 'flask',
         iconLibName: FontAwesome5,
-        activeKey: 'experimental',
-        route: 'experimental',
+        activeKey: 'new-feature-test',
+        route: 'new-feature-test',
         position: 8.5,
       });
     }
