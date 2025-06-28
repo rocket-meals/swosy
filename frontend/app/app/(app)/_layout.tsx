@@ -614,7 +614,7 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name='experimental'
+          name='experimental/index'
           options={{
             header: () => (
               <CustomMenuHeader
