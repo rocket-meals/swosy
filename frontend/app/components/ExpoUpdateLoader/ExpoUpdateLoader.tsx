@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as Updates from 'expo-updates';
 import usePlatformHelper from '@/helper/platformHelper';
+import { TranslationKeys } from '@/locales/keys';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface ExpoUpdateLoaderProps {
   children?: React.ReactNode;
@@ -9,12 +11,13 @@ interface ExpoUpdateLoaderProps {
 
 const TIMEOUT_MS = 10000; // 10 Sekunden
 
-const CHANGE_NUMBER = 1;
-
 const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
   const { isSmartPhone } = usePlatformHelper();
-  const [progress, setProgress] = useState({ received: 0, total: 0 });
+  const { translate } = useLanguage();
   const [loading, setLoading] = useState<boolean>(isSmartPhone());
+  const [status, setStatus] = useState<TranslationKeys>(
+    TranslationKeys.CHECK_FOR_APP_UPDATES
+  );
 
   useEffect(() => {
     async function loadUpdates() {
@@ -28,6 +31,7 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
       );
 
       try {
+        setStatus(TranslationKeys.CHECK_FOR_APP_UPDATES);
         const update = (await Promise.race([
           Updates.checkForUpdateAsync(),
           timeoutPromise,
@@ -38,21 +42,11 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
           return;
         }
 
-        const subscription = Updates.addListener((event) => {
-          if (event.type === Updates.UpdateEventType.DOWNLOAD_PROGRESS) {
-            setProgress({
-              received: event.receivedBytes,
-              total: event.totalBytes ?? 0,
-            });
-          }
-        });
-
+        setStatus(TranslationKeys.DOWNLOAD_NEW_APP_UPDATE);
         const fetchResult = await Promise.race([
           Updates.fetchUpdateAsync(),
           timeoutPromise,
         ]);
-
-        subscription.remove();
 
         if (fetchResult) {
           await Updates.reloadAsync();
@@ -71,23 +65,9 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
     return <>{children}</>;
   }
 
-  const receivedMb = progress.received / (1024 * 1024);
-  const totalMb = progress.total / (1024 * 1024);
-  const progressRatio = progress.total > 0
-    ? progress.received / progress.total
-    : 0;
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lade Update...</Text>
-      <View style={styles.barBackground}>
-        <View style={[styles.barFill, { width: `${progressRatio * 100}%` }]} />
-      </View>
-      <Text style={styles.text}>
-        {`${(progressRatio * 100).toFixed(0)}% - ${receivedMb.toFixed(2)} MB`}
-        {progress.total ? ` / ${totalMb.toFixed(2)} MB` : ''}
-      </Text>
-      <Text style={styles.change}>{`Change ${CHANGE_NUMBER}`}</Text>
+      <Text style={styles.title}>{translate(status)}</Text>
     </View>
   );
 };
@@ -102,26 +82,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     marginBottom: 10,
-  },
-  barBackground: {
-    width: '80%',
-    height: 10,
-    backgroundColor: '#eee',
-    borderRadius: 5,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: '100%',
-    backgroundColor: '#3b82f6',
-  },
-  text: {
-    marginTop: 8,
-    fontSize: 14,
-  },
-  change: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#666',
   },
 });
 
