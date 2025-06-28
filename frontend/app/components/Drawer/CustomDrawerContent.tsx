@@ -293,8 +293,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         label: translate(TranslationKeys.experimentell),
         iconName: 'bag',
         iconLibName: Ionicons,
-        activeKey: 'experimentell/index',
-        route: 'experimentell/index',
+        activeKey: 'experimentell',
+        route: 'experimentell',
         position: 9.5,
       });
     }
