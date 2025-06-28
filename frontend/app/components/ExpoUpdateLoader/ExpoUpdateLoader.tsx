@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Updates from 'expo-updates';
 import usePlatformHelper from '@/helper/platformHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -18,6 +18,8 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
   const [status, setStatus] = useState<TranslationKeys>(
     TranslationKeys.CHECK_FOR_APP_UPDATES
   );
+  const [showCancel, setShowCancel] = useState<boolean>(false);
+  const cancelUpdateRef = useRef(false);
 
   useEffect(() => {
     async function loadUpdates() {
@@ -37,6 +39,10 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
           timeoutPromise,
         ])) as Updates.CheckForUpdateResult | null;
 
+        if (cancelUpdateRef.current) {
+          return;
+        }
+
         if (!update || !update.isAvailable) {
           setLoading(false);
           return;
@@ -47,6 +53,10 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
           Updates.fetchUpdateAsync(),
           timeoutPromise,
         ]);
+
+        if (cancelUpdateRef.current) {
+          return;
+        }
 
         if (fetchResult) {
           await Updates.reloadAsync();
@@ -61,6 +71,16 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
     loadUpdates();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShowCancel(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleCancel = () => {
+    cancelUpdateRef.current = true;
+    setLoading(false);
+  };
+
   if (!loading) {
     return <>{children}</>;
   }
@@ -68,6 +88,13 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{translate(status)}</Text>
+      {showCancel && (
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          <Text style={styles.cancelLabel}>
+            {translate(TranslationKeys.cancel)}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -82,6 +109,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     marginBottom: 10,
+  },
+  cancelButton: {
+    width: 200,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  cancelLabel: {
+    fontSize: 16,
   },
 });
 
