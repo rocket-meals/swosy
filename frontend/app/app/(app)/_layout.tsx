@@ -614,6 +614,18 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
+          name='experimental/index'
+          options={{
+            header: () => (
+              <CustomMenuHeader
+                label={translate(TranslationKeys.experimental)}
+                key={'Experimental'}
+              />
+            ),
+            title: 'Experimental',
+          }}
+        />
+        <Drawer.Screen
           name='settings/index'
           options={{
             title: 'Settings',
