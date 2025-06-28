@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { CalendarSheetProps, Direction } from './types';
-import { BottomSheetView } from '@gorhom/bottom-sheet';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { AntDesign } from '@expo/vector-icons';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
@@ -14,7 +15,7 @@ import { SET_SELECTED_DATE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
-const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
+const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet, sheetRef }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
@@ -95,8 +96,15 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
   LocaleConfig.defaultLocale = 'custom';
 
   return (
-    <BottomSheetView
-      style={{ ...styles.container, backgroundColor: theme.sheet.sheetBg }}
+    <BaseBottomSheet
+      ref={sheetRef}
+      index={-1}
+      onClose={closeSheet}
+      handleComponent={null}
+      backgroundStyle={{
+        ...styles.container,
+        backgroundColor: theme.sheet.sheetBg,
+      }}
     >
       <View
         style={{
@@ -176,16 +184,16 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
             textDisabledColor: 'gray',
             arrowColor: foods_area_color,
             disabledArrowColor: 'gray',
-            textDayFontFamily: 'Poppins_400Regular',
-            textMonthFontFamily: 'Poppins_400Regular',
-            textDayHeaderFontFamily: 'Poppins_400Regular',
-            textDayFontSize: 16,
-            textMonthFontSize: 18,
-            textDayHeaderFontSize: 14,
-          }}
+          textDayFontFamily: 'Poppins_400Regular',
+          textMonthFontFamily: 'Poppins_400Regular',
+          textDayHeaderFontFamily: 'Poppins_400Regular',
+          textDayFontSize: 16,
+          textMonthFontSize: 18,
+          textDayHeaderFontSize: 14,
+        }}
         />
       </View>
-    </BottomSheetView>
+    </BaseBottomSheet>
   );
 };
 
