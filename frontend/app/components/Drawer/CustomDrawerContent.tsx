@@ -284,8 +284,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         label: translate(TranslationKeys.experimental),
         iconName: 'flask',
         iconLibName: FontAwesome5,
-        activeKey: 'experimental/index',
-        route: 'experimental/index',
+        activeKey: 'experimental',
+        route: 'experimental',
         position: 8.5,
       });
     }
