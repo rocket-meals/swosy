@@ -290,11 +290,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         position: 9,
       });
       menuItems.push({
-        label: translate(TranslationKeys.leaflet_map),
+        label: translate(TranslationKeys.experimentell),
         iconName: 'bag',
         iconLibName: Ionicons,
-        activeKey: 'experimentell/LeafletMap/index',
-        route: 'experimentell/LeafletMap/index',
+        activeKey: 'experimentell/index',
+        route: 'experimentell/index',
         position: 9.5,
       });
     }
