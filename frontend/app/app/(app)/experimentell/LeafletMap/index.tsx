@@ -5,7 +5,10 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import MyMap from '@/components/MyMap/MyMap';
 
-const DEFAULT_POSITION = { lat: 52.52, lng: 13.405 };
+const POSITION_BUNDESTAG = {
+  lat: 52.518594247456804,
+  lng: 13.376281624711964,
+};
 
 const LeafletMap = () => {
   useSetPageTitle(TranslationKeys.leaflet_map);
@@ -14,7 +17,7 @@ const LeafletMap = () => {
     (state: RootState) => state.canteenReducer
   );
 
-  const position = useMemo(() => {
+  const centerPosition = useMemo(() => {
     if (selectedCanteen?.building) {
       const building = buildings.find((b) => b.id === selectedCanteen.building);
       const coords = (building as any)?.coordinates?.coordinates;
@@ -22,10 +25,14 @@ const LeafletMap = () => {
         return { lat: Number(coords[1]), lng: Number(coords[0]) };
       }
     }
-    return DEFAULT_POSITION;
+    return undefined;
   }, [selectedCanteen, buildings]);
 
-  return <MyMap latitude={position.lat} longitude={position.lng} />;
+  return (
+    <MyMap
+      mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
+    />
+  );
 };
 
 export default LeafletMap;

@@ -4,13 +4,17 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 
+export interface Position {
+  lat: number;
+  lng: number;
+}
+
 export interface MyMapProps {
-  latitude: number;
-  longitude: number;
+  mapCenterPosition: Position;
   zoom?: number;
 }
 
-const MyMap: React.FC<MyMapProps> = ({ latitude, longitude, zoom }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom }) => {
   const { theme } = useTheme();
   const webViewRef = useRef<WebView>(null);
   const html = require('@/assets/leaflet/index.html');
@@ -39,14 +43,14 @@ const MyMap: React.FC<MyMapProps> = ({ latitude, longitude, zoom }) => {
   const sendCoordinates = useCallback(() => {
     if (webViewRef.current) {
       const message = {
-        mapCenterPosition: { lat: latitude, lng: longitude },
+        mapCenterPosition,
         zoom: zoom ?? 13,
         mapLayers: [defaultLayer],
       };
       const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [latitude, longitude, zoom]);
+  }, [mapCenterPosition, zoom]);
 
   useEffect(() => {
     sendCoordinates();
