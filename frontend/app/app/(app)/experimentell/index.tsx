@@ -1,5 +1,5 @@
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -7,11 +7,27 @@ import { router } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.experimentell);
   const { translate } = useLanguage();
   const { theme } = useTheme();
+  const { selectedCanteen, buildings } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
+
+  const buildingPosition = useMemo(() => {
+    if (selectedCanteen?.building) {
+      const building = buildings.find((b) => b.id === selectedCanteen.building);
+      const coords = (building as any)?.coordinates?.coordinates;
+      if (coords && coords.length === 2) {
+        return { lat: Number(coords[1]), lng: Number(coords[0]) };
+      }
+    }
+    return null;
+  }, [selectedCanteen, buildings]);
 
   return (
     <ScrollView
@@ -25,12 +41,22 @@ const index = () => {
         <Text style={{ ...styles.heading, color: theme.screen.text }}>
           {translate(TranslationKeys.experimentell)}
         </Text>
+        {buildingPosition && (
+          <Text style={{ ...styles.body, color: theme.screen.text }}>
+            {translate(TranslationKeys.coordinates)}: {buildingPosition.lat},{' '}
+            {buildingPosition.lng}
+          </Text>
+        )}
         <TouchableOpacity
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
           onPress={() =>
             router.push({
               pathname: '/experimentell/LeafletMap',
-              params: { lat: '52.275', lng: '7.4584', zoom: '16' },
+              params: {
+                lat: String(buildingPosition?.lat ?? '52.275'),
+                lng: String(buildingPosition?.lng ?? '7.4584'),
+                zoom: '16',
+              },
             })
           }
         >
