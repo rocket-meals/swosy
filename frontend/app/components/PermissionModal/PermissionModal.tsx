@@ -18,6 +18,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { persistor } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { myContrastColor } from '@/helper/colorHelper';
 import { RootState } from '@/redux/reducer';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({
@@ -26,7 +27,10 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
                                                          }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -101,7 +105,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
                 fontSize: Dimensions.get('window').width < 500 ? 26 : 36,
               }}
           >
-            Access Limited
+            {translate(TranslationKeys.access_limited)}
           </Text>
           <Text
               style={{
@@ -110,9 +114,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
                 fontSize: Dimensions.get('window').width < 500 ? 14 : 18,
               }}
           >
-            To enjoy a personalized experience, please log in or create an
-            account. Alternatively, you can continue as a guest with limited
-            features.
+            {translate(TranslationKeys.limited_access_description)}
           </Text>
           <TouchableOpacity
               style={{
@@ -125,7 +127,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
             {loading ? (
                 <ActivityIndicator size={22} color={theme.background} />
             ) : (
-                <Text style={{ ...styles.loginLabel, color: theme.light }}>
+                <Text style={{ ...styles.loginLabel, color: contrastColor }}>
                   {/* Sign In / Create Account */}
                   {translate(TranslationKeys.sign_in)} /{' '}
                   {translate(TranslationKeys.create_account)}
