@@ -19,9 +19,13 @@ const VerticalImageScroll = () => {
   const { amountColumnsForcard } = useSelector(
     (state: RootState) => state.settings
   );
-  const numColumns = amountColumnsForcard || 1;
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
+  );
+
+  const numColumns = CardDimensionHelper.getNumColumns(
+    screenWidth,
+    amountColumnsForcard
   );
 
   useEffect(() => {

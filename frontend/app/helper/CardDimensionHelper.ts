@@ -29,4 +29,12 @@ export default class CardDimensionHelper {
     const offset = screenWidth < 500 ? 10 : screenWidth < 900 ? 25 : 35;
     return screenWidth / columns - offset;
   }
+
+  static getNumColumns(screenWidth: number, columnsSetting: number): number {
+    if (columnsSetting === 0) {
+      const size = this.getCardDimension(screenWidth);
+      return Math.max(1, Math.floor(screenWidth / size));
+    }
+    return columnsSetting;
+  }
 }
