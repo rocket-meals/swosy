@@ -27,7 +27,12 @@ const index = () => {
         </Text>
         <TouchableOpacity
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
-          onPress={() => router.navigate('/experimentell/LeafletMap')}
+          onPress={() =>
+            router.push({
+              pathname: '/experimentell/LeafletMap',
+              params: { lat: '52.275', lng: '7.4584', zoom: '16' },
+            })
+          }
         >
           <View style={styles.col}>
             <MaterialCommunityIcons name='map' color={theme.screen.icon} size={24} />
