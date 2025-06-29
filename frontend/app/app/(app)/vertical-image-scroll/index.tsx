@@ -8,13 +8,9 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 
-const IMAGE_BATCH = 15;
-
-const generateImages = (count: number) =>
-  Array.from({ length: count }).map(
-    () =>
-      `https://source.unsplash.com/random/600x600/?food&sig=${Math.random()}`
-  );
+const IMAGE_URLS = Array.from({ length: 20 }).map(
+  (_, i) => `https://picsum.photos/id/${i + 10}/600/600`
+);
 
 const VerticalImageScroll = () => {
   useSetPageTitle(TranslationKeys.vertical_image_scroll);
@@ -64,12 +60,9 @@ const VerticalImageScroll = () => {
   const scrollOffset = useRef(0);
 
   useEffect(() => {
-    setImages(generateImages(IMAGE_BATCH));
+    setImages(IMAGE_URLS);
   }, []);
 
-  const loadMore = () => {
-    setImages((prev) => [...prev, ...generateImages(IMAGE_BATCH)]);
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -89,7 +82,15 @@ const VerticalImageScroll = () => {
       <View style={{ transform: [{ translateY: offset }] }}>
         <Image
           source={{ uri: item }}
-          style={[styles.image, { width: size, height: size }]}
+          style={[
+            styles.image,
+            {
+              width: size,
+              height: size,
+              borderWidth: 2,
+              borderColor: theme.primary,
+            },
+          ]}
           contentFit='cover'
         />
       </View>
@@ -104,8 +105,6 @@ const VerticalImageScroll = () => {
         renderItem={renderItem}
         keyExtractor={(_, idx) => idx.toString()}
         numColumns={amountColumnsForcard || 1}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
       />
