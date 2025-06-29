@@ -76,8 +76,8 @@ const VerticalImageScroll = () => {
   }, []);
 
   const renderItem = ({ item, index }: { item: string; index: number }) => {
-    const rowIndex = Math.floor(index / (amountColumnsForcard || 1));
-    const offset = ((rowIndex + 1) % 3) * (size / 3);
+    const columnIndex = index % numColumns;
+    const offset = (columnIndex % 3) * (size / 3);
     return (
       <View style={{ transform: [{ translateY: offset }] }}>
         <Image
