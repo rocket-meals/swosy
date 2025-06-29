@@ -68,6 +68,18 @@ const index = () => {
           </View>
           <Entypo name='chevron-small-right' color={theme.screen.icon} size={24} />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
+          onPress={() => router.push('/vertical-image-scroll')}
+        >
+          <View style={styles.col}>
+            <MaterialCommunityIcons name='image-multiple' color={theme.screen.icon} size={24} />
+            <Text style={{ ...styles.body, color: theme.screen.text }}>
+              {translate(TranslationKeys.vertical_image_scroll)}
+            </Text>
+          </View>
+          <Entypo name='chevron-small-right' color={theme.screen.icon} size={24} />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

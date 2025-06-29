@@ -2383,6 +2383,16 @@
     "tr": "Experimentell",
     "zh": "Experimentell"
   },
+  "vertical_image_scroll": {
+    "de": "Vertikaler Bildlauf",
+    "en": "Vertical Image Scroll",
+    "ar": "تمرير الصور عمودياً",
+    "es": "Desplazamiento vertical de imágenes",
+    "fr": "Défilement vertical d'images",
+    "ru": "Вертикальная прокрутка изображений",
+    "tr": "Dikey Resim Kaydırma",
+    "zh": "垂直图片滚动"
+  },
   "markings": {
     "de": "Kennzeichnungen",
     "en": "Labels",

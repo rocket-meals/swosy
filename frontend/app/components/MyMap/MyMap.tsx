@@ -12,9 +12,10 @@ export interface Position {
 export interface MyMapProps {
   mapCenterPosition: Position;
   zoom?: number;
+  mapMarkers?: { id: string; position: Position; title?: string; icon?: string; }[];
 }
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom }) => {
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) => {
   const { theme } = useTheme();
   const webViewRef = useRef<WebView>(null);
   const html = require('@/assets/leaflet/index.html');
@@ -46,11 +47,12 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom }) => {
         mapCenterPosition,
         zoom: zoom ?? 13,
         mapLayers: [defaultLayer],
+        mapMarkers: mapMarkers ?? [],
       };
       const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
       webViewRef.current.injectJavaScript(js);
     }
-  }, [mapCenterPosition, zoom]);
+  }, [mapCenterPosition, zoom, mapMarkers]);
 
   useEffect(() => {
     sendCoordinates();

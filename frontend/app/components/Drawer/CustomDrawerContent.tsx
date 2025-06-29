@@ -291,11 +291,19 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
       menuItems.push({
         label: translate(TranslationKeys.experimentell),
-        iconName: 'bottle-soda',
+        iconName: 'flask',
         iconLibName: MaterialCommunityIcons,
         activeKey: 'experimentell/index',
         route: 'experimentell/index',
         position: 9.5,
+      });
+      menuItems.push({
+        label: translate(TranslationKeys.vertical_image_scroll),
+        iconName: 'image-multiple',
+        iconLibName: MaterialCommunityIcons,
+        activeKey: 'vertical-image-scroll/index',
+        route: 'vertical-image-scroll/index',
+        position: 9.6,
       });
     }
 
