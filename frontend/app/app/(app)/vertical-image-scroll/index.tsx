@@ -89,6 +89,7 @@ const VerticalImageScroll = () => {
       </Text>
       <FlatList
         ref={flatListRef}
+        key={numColumns}
         data={images}
         renderItem={renderItem}
         keyExtractor={(_, idx) => idx.toString()}
