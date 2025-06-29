@@ -1,4 +1,4 @@
-import { FlatList, View, Dimensions } from 'react-native';
+import { FlatList, View, Text, Dimensions } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,6 +18,7 @@ const VerticalImageScroll = () => {
   const { amountColumnsForcard } = useSelector(
     (state: RootState) => state.settings
   );
+  const numColumns = amountColumnsForcard || 1;
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -49,11 +50,10 @@ const VerticalImageScroll = () => {
 
   const getCardWidth = () => {
     const offset = screenWidth < 500 ? 10 : screenWidth < 900 ? 25 : 35;
-    return screenWidth / amountColumnsForcard - offset;
+    return screenWidth / numColumns - offset;
   };
 
-  const size =
-    amountColumnsForcard === 0 ? getCardDimension() : getCardWidth();
+  const size = amountColumnsForcard === 0 ? getCardDimension() : getCardWidth();
 
   const [images, setImages] = useState<string[]>([]);
   const flatListRef = useRef<FlatList<string>>(null);
@@ -76,7 +76,7 @@ const VerticalImageScroll = () => {
   }, []);
 
   const renderItem = ({ item, index }: { item: string; index: number }) => {
-    const rowIndex = Math.floor(index / amountColumnsForcard);
+    const rowIndex = Math.floor(index / (amountColumnsForcard || 1));
     const offset = ((rowIndex + 1) % 3) * (size / 3);
     return (
       <View style={{ transform: [{ translateY: offset }] }}>
@@ -99,12 +99,15 @@ const VerticalImageScroll = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+      <Text style={{ textAlign: 'center', marginVertical: 8, color: theme.primary }}>
+        {numColumns} images per row | {Math.round(size)}x{Math.round(size)}px
+      </Text>
       <FlatList
         ref={flatListRef}
         data={images}
         renderItem={renderItem}
         keyExtractor={(_, idx) => idx.toString()}
-        numColumns={amountColumnsForcard || 1}
+        numColumns={numColumns}
         showsVerticalScrollIndicator={false}
         scrollEnabled={false}
       />
