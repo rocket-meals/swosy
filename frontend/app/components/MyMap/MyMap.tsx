@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -15,11 +15,33 @@ const MyMap: React.FC<MyMapProps> = ({ latitude, longitude, zoom }) => {
   const webViewRef = useRef<WebView>(null);
   const html = require('@/assets/leaflet/index.html');
 
+  const defaultLayer = {
+    layerType: 'TileLayer',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    baseLayerName: 'OpenStreetMap',
+    baseLayerIsChecked: true,
+  };
+
+  const handleMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      try {
+        const data = JSON.parse(event.nativeEvent.data);
+        if (data.tag === 'MapComponentMounted') {
+          sendCoordinates();
+        }
+      } catch {
+        // ignore malformed messages
+      }
+    },
+    [sendCoordinates]
+  );
+
   const sendCoordinates = useCallback(() => {
     if (webViewRef.current) {
       const message = {
         mapCenterPosition: { lat: latitude, lng: longitude },
         zoom: zoom ?? 13,
+        mapLayers: [defaultLayer],
       };
       webViewRef.current.postMessage(JSON.stringify(message));
     }
@@ -36,6 +58,7 @@ const MyMap: React.FC<MyMapProps> = ({ latitude, longitude, zoom }) => {
         originWhitelist={['*']}
         source={html}
         style={styles.webview}
+        onMessage={handleMessage}
         allowFileAccess
         allowFileAccessFromFileURLs
         allowUniversalAccessFromFileURLs
