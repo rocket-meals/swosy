@@ -291,10 +291,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
       menuItems.push({
         label: translate(TranslationKeys.experimentell),
-        iconName: 'bag',
-        iconLibName: Ionicons,
-        activeKey: 'experimentell',
-        route: 'experimentell',
+        iconName: 'bottle-soda',
+        iconLibName: MaterialCommunityIcons,
+        activeKey: 'experimentell/index',
+        route: 'experimentell/index',
         position: 9.5,
       });
     }
