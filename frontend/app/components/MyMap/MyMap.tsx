@@ -43,7 +43,8 @@ const MyMap: React.FC<MyMapProps> = ({ latitude, longitude, zoom }) => {
         zoom: zoom ?? 13,
         mapLayers: [defaultLayer],
       };
-      webViewRef.current.postMessage(JSON.stringify(message));
+      const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
+      webViewRef.current.injectJavaScript(js);
     }
   }, [latitude, longitude, zoom]);
 
