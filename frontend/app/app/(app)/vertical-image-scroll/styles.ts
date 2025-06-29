@@ -4,12 +4,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   image: {
     margin: 5,
+    borderRadius: 8,
   },
 });
