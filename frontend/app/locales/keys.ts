@@ -236,6 +236,7 @@ export enum TranslationKeys {
   show_more_information = 'show_more_information',
   course_timetable = 'course_timetable',
   experimentell = "experimentell",
+  vertical_image_scroll = 'vertical_image_scroll',
   eating_habits = 'eating_habits',
   markings = 'markings',
   category = 'category',
