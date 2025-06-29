@@ -51,7 +51,7 @@ const index = () => {
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
           onPress={() =>
             router.push({
-              pathname: '/experimentell/LeafletMap',
+              pathname: '/leaflet-map',
               params: {
                 lat: String(buildingPosition?.lat ?? '52.275'),
                 lng: String(buildingPosition?.lng ?? '7.4584'),

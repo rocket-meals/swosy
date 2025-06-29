@@ -651,7 +651,7 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name='experimentell'
+          name='experimentell/index'
           options={{
             header: () => (
               <CustomMenuHeader
@@ -660,6 +660,19 @@ export default function Layout() {
               />
             ),
             title: translate(TranslationKeys.experimentell),
+          }}
+        />
+
+        <Drawer.Screen
+          name='leaflet-map/index'
+          options={{
+            header: () => (
+              <CustomStackHeader
+                label={translate(TranslationKeys.leaflet_map)}
+                key={'LeafletMap'}
+              />
+            ),
+            title: translate(TranslationKeys.leaflet_map),
           }}
         />
 
