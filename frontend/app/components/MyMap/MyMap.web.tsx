@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import DEFAULT_TILE_LAYER from './defaultTileLayer';
+import type { MapMarker } from './model';
 
 export interface Position {
   lat: number;
@@ -11,7 +13,7 @@ export interface Position {
 export interface MyMapProps {
   mapCenterPosition: Position;
   zoom?: number;
-  mapMarkers?: { id: string; position: Position; title?: string; icon?: string }[];
+  mapMarkers?: MapMarker[];
 }
 
 const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) => {
@@ -19,19 +21,13 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) =>
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const html = require('@/assets/leaflet/index.html');
 
-  const defaultLayer = {
-    layerType: 'TileLayer',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    baseLayerName: 'OpenStreetMap',
-    baseLayerIsChecked: true,
-  };
 
   const sendCoordinates = useCallback(() => {
     if (iframeRef.current && iframeRef.current.contentWindow) {
       const message = {
         mapCenterPosition,
         zoom: zoom ?? 13,
-        mapLayers: [defaultLayer],
+        mapLayers: [DEFAULT_TILE_LAYER],
         mapMarkers: mapMarkers ?? [],
       };
       iframeRef.current.contentWindow.postMessage(message, '*');
