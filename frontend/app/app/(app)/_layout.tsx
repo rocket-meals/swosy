@@ -702,6 +702,18 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
+          name='events/index'
+          options={{
+            header: () => (
+              <CustomStackHeader
+                label={translate(TranslationKeys.events)}
+                key={'events'}
+              />
+            ),
+            title: translate(TranslationKeys.events),
+          }}
+        />
+        <Drawer.Screen
           name='support-FAQ/index'
           options={{
             title: translate(TranslationKeys.feedback_support_faq),

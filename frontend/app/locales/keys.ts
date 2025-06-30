@@ -306,6 +306,8 @@ export enum TranslationKeys {
   cookies = 'cookies',
   feedback = 'feedback',
   feedback_support_faq = 'feedback_support_faq',
+  events = 'events',
+  reset_seen_popup_events = 'reset_seen_popup_events',
   optional = 'optional',
   date_created = 'date_created',
   date_updated = 'date_updated',
