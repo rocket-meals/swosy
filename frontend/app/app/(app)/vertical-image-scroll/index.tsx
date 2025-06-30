@@ -48,7 +48,6 @@ const VerticalImageScroll = () => {
       : CardDimensionHelper.getCardWidth(screenWidth, numColumns);
 
   const [images, setImages] = useState<string[]>([]);
-  const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
     // In future this will load real food image URLs instead of placeholders
@@ -56,7 +55,8 @@ const VerticalImageScroll = () => {
   }, []);
 
 
-  const [speed, setSpeed] = useState(40);
+  // percentage of screen height per second
+  const [speedPercent, setSpeedPercent] = useState(5);
 
   return (
     <View
@@ -64,11 +64,13 @@ const VerticalImageScroll = () => {
       style={[styles.container, { backgroundColor: theme.screen.background }]}
     >
       <View style={styles.controls}>
-        <TouchableOpacity onPress={() => setSpeed((s) => Math.max(10, s - 10))}>
+        <TouchableOpacity
+          onPress={() => setSpeedPercent((s) => Math.max(1, s - 1))}
+        >
           <Ionicons name='remove' size={24} color={theme.primary} />
         </TouchableOpacity>
-        <Text style={{ color: theme.primary }}>{Math.round(speed)} px/s</Text>
-        <TouchableOpacity onPress={() => setSpeed((s) => s + 10)}>
+        <Text style={{ color: theme.primary }}>{Math.round(speedPercent)}%/s</Text>
+        <TouchableOpacity onPress={() => setSpeedPercent((s) => s + 1)}>
           <Ionicons name='add' size={24} color={theme.primary} />
         </TouchableOpacity>
       </View>
@@ -76,7 +78,7 @@ const VerticalImageScroll = () => {
         images={images}
         numColumns={numColumns}
         size={size}
-        speed={speed}
+        speedPercent={speedPercent}
       />
     </View>
   );

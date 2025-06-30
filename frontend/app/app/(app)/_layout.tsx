@@ -676,18 +676,6 @@ export default function Layout() {
           }}
         />
 
-        <Drawer.Screen
-          name='vertical-image-scroll/index'
-          options={{
-            header: () => (
-              <CustomStackHeader
-                label={translate(TranslationKeys.vertical_image_scroll)}
-                key={'VerticalImageScroll'}
-              />
-            ),
-            title: translate(TranslationKeys.vertical_image_scroll),
-          }}
-        />
 
         <Drawer.Screen
           name='notification/index'

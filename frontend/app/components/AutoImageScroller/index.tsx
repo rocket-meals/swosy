@@ -7,22 +7,26 @@ interface AutoImageScrollerProps {
   images: string[];
   numColumns: number;
   size: number;
-  speed: number; // pixels per second
+  speedPercent: number; // percent of screen height per second
 }
 
 const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
   images,
   numColumns,
   size,
-  speed,
+  speedPercent,
 }) => {
   const flatListRef = useRef<FlatList<string>>(null);
   const scrollOffset = useRef(0);
   const screenHeight = Dimensions.get('window').height;
   const frameRef = useRef<number>();
 
+  const extendedImages = React.useMemo(() => [...images, ...images], [images]);
+
   useEffect(() => {
     let lastTime: number | null = null;
+    const pxPerSecond = (speedPercent / 100) * screenHeight;
+    const listHeight = Math.ceil(images.length / numColumns) * size;
 
     const step = (time: number) => {
       if (lastTime === null) {
@@ -30,12 +34,10 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
       }
       const delta = time - lastTime;
       lastTime = time;
-      const distance = (speed * delta) / 1000;
-      const maxOffset =
-        Math.ceil(images.length / numColumns) * size - screenHeight;
+      const distance = (pxPerSecond * delta) / 1000;
       scrollOffset.current += distance;
-      if (scrollOffset.current >= maxOffset) {
-        scrollOffset.current = 0;
+      if (scrollOffset.current >= listHeight) {
+        scrollOffset.current -= listHeight;
       }
       flatListRef.current?.scrollToOffset({
         offset: scrollOffset.current,
@@ -50,7 +52,7 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
         cancelAnimationFrame(frameRef.current);
       }
     };
-  }, [images, numColumns, size, speed, screenHeight]);
+  }, [images, numColumns, size, speedPercent, screenHeight]);
 
   const renderItem = ({ item, index }: { item: string; index: number }) => {
     const columnIndex = index % numColumns;
@@ -70,7 +72,7 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
     <FlatList
       ref={flatListRef}
       key={numColumns}
-      data={images}
+      data={extendedImages}
       renderItem={renderItem}
       keyExtractor={(_, idx) => idx.toString()}
       numColumns={numColumns}
