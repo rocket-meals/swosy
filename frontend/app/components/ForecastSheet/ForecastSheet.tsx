@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -162,10 +163,14 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
         }
 
         if (targetIndex !== -1 && targetIndex !== undefined) {
-          scrollViewRef.current?.scrollTo({
-            x: Math.max(0, targetIndex * 101 + 100),
-            animated: true,
-          });
+          const offsetX = Math.max(0, targetIndex * 101 + 100);
+          if (Platform.OS === 'web') {
+            scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+          } else {
+            setTimeout(() => {
+              scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+            }, 300);
+          }
         }
       }
     }, [chartData])
