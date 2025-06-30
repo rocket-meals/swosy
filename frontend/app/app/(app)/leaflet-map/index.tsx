@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Text } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -71,10 +72,15 @@ const LeafletMap = () => {
   ];
 
   return (
-      <MyMap
-          mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
-          mapMarkers={markers}
-      />
+    <MyMap
+      mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
+      mapMarkers={markers}
+      onMarkerClick={(id) => console.log('marker clicked', id)}
+      onMapEvent={(e) => console.log('map event', e.tag)}
+      renderMarkerModal={(id, onClose) => (
+        <Text onPress={onClose}>{id}</Text>
+      )}
+    />
   );
 };
 
