@@ -27,6 +27,20 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) =>
     baseLayerIsChecked: true,
   };
 
+
+  const sendCoordinates = useCallback(() => {
+    if (webViewRef.current) {
+      const message = {
+        mapCenterPosition,
+        zoom: zoom ?? 13,
+        mapLayers: [defaultLayer],
+        mapMarkers: mapMarkers ?? [],
+      };
+      const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
+      webViewRef.current.injectJavaScript(js);
+    }
+  }, [mapCenterPosition, zoom, mapMarkers]);
+
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
       try {
@@ -41,18 +55,6 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) =>
     [sendCoordinates]
   );
 
-  const sendCoordinates = useCallback(() => {
-    if (webViewRef.current) {
-      const message = {
-        mapCenterPosition,
-        zoom: zoom ?? 13,
-        mapLayers: [defaultLayer],
-        mapMarkers: mapMarkers ?? [],
-      };
-      const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
-      webViewRef.current.injectJavaScript(js);
-    }
-  }, [mapCenterPosition, zoom, mapMarkers]);
 
   useEffect(() => {
     sendCoordinates();
