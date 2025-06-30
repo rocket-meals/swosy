@@ -1,13 +1,19 @@
-import { FlatList, View, Text, Dimensions } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { Image } from 'expo-image';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import AutoImageScroller from '@/components/AutoImageScroller';
+import { Ionicons } from '@expo/vector-icons';
 
 // Placeholder images which will be replaced with food images in the future
 const PLACEHOLDER_IMAGE_URLS = Array.from({ length: 20 }).map(
@@ -42,8 +48,6 @@ const VerticalImageScroll = () => {
       : CardDimensionHelper.getCardWidth(screenWidth, numColumns);
 
   const [images, setImages] = useState<string[]>([]);
-  const flatListRef = useRef<FlatList<string>>(null);
-  const scrollOffset = useRef(0);
   const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
@@ -52,60 +56,27 @@ const VerticalImageScroll = () => {
   }, []);
 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const maxOffset =
-        Math.ceil(images.length / numColumns) * size - screenHeight;
-      if (scrollOffset.current >= maxOffset) {
-        scrollOffset.current = 0;
-      } else {
-        scrollOffset.current += 1;
-      }
-      flatListRef.current?.scrollToOffset({
-        offset: scrollOffset.current,
-        animated: false,
-      });
-    }, 50);
-    return () => clearInterval(interval);
-  }, [images, numColumns, size, screenHeight]);
-
-  const renderItem = ({ item, index }: { item: string; index: number }) => {
-    const columnIndex = index % numColumns;
-    const offset = (columnIndex % 3) * (size / 3);
-    return (
-      <View style={{ transform: [{ translateY: offset }] }}>
-        <Image
-          source={{ uri: item }}
-          style={[
-            styles.image,
-            {
-              width: size,
-              height: size,
-            },
-          ]}
-          contentFit='cover'
-        />
-      </View>
-    );
-  };
+  const [speed, setSpeed] = useState(40);
 
   return (
     <View
       key={amountColumnsForcard}
       style={[styles.container, { backgroundColor: theme.screen.background }]}
     >
-      <Text style={{ textAlign: 'center', marginVertical: 8, color: theme.primary }}>
-        {numColumns} images per row | {Math.round(size)}x{Math.round(size)}px
-      </Text>
-      <FlatList
-        ref={flatListRef}
-        key={numColumns}
-        data={images}
-        renderItem={renderItem}
-        keyExtractor={(_, idx) => idx.toString()}
+      <View style={styles.controls}>
+        <TouchableOpacity onPress={() => setSpeed((s) => Math.max(10, s - 10))}>
+          <Ionicons name='remove' size={24} color={theme.primary} />
+        </TouchableOpacity>
+        <Text style={{ color: theme.primary }}>{Math.round(speed)} px/s</Text>
+        <TouchableOpacity onPress={() => setSpeed((s) => s + 10)}>
+          <Ionicons name='add' size={24} color={theme.primary} />
+        </TouchableOpacity>
+      </View>
+      <AutoImageScroller
+        images={images}
         numColumns={numColumns}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
+        size={size}
+        speed={speed}
       />
     </View>
   );
