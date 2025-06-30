@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -9,6 +9,7 @@ import {
   MyMapMarkerIcons,
   getDefaultIconAnchor,
 } from '@/components/MyMap/markerUtils';
+import { Asset } from 'expo-asset'; // Make sure you import Asset properly
 
 const POSITION_BUNDESTAG = {
   lat: 52.518594247456804,
@@ -19,8 +20,26 @@ const LeafletMap = () => {
   useSetPageTitle(TranslationKeys.leaflet_map);
 
   const { selectedCanteen, buildings } = useSelector(
-    (state: RootState) => state.canteenReducer
+      (state: RootState) => state.canteenReducer
   );
+
+  const [markerIconUri, setMarkerIconUri] = useState<string | null>(null);
+
+  // Load marker asset asynchronously
+  useEffect(() => {
+    const loadMarkerIcon = async () => {
+      try {
+        const mapMarkerIcon = require('@/assets/map/marker-icon-2x.png');
+        const htmlFile = await Asset.fromModule(mapMarkerIcon);
+        await htmlFile.downloadAsync();
+        setMarkerIconUri(htmlFile.uri);
+      } catch (error) {
+        console.error('Error loading marker icon:', error);
+      }
+    };
+
+    loadMarkerIcon();
+  }, []);
 
   const centerPosition = useMemo(() => {
     if (selectedCanteen?.building) {
@@ -33,24 +52,29 @@ const LeafletMap = () => {
     return undefined;
   }, [selectedCanteen, buildings]);
 
+  if (!markerIconUri) {
+    // Optional: Add a loading spinner or placeholder here
+    return null;
+  }
+
   const markers = [
     {
       id: 'example',
       position: POSITION_BUNDESTAG,
-      icon: MyMapMarkerIcons.DEBUG_ICON,
+      icon: MyMapMarkerIcons.getIconForWebByUri(markerIconUri),
       size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
       iconAnchor: getDefaultIconAnchor(
-        MARKER_DEFAULT_SIZE,
-        MARKER_DEFAULT_SIZE,
+          MARKER_DEFAULT_SIZE,
+          MARKER_DEFAULT_SIZE,
       ),
     },
   ];
 
   return (
-    <MyMap
-      mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
-      mapMarkers={markers}
-    />
+      <MyMap
+          mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
+          mapMarkers={markers}
+      />
   );
 };
 
