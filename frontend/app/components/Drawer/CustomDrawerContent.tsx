@@ -322,14 +322,6 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         route: 'experimentell/index',
         position: 9.5,
       });
-      menuItems.push({
-        label: translate(TranslationKeys.vertical_image_scroll),
-        iconName: 'image-multiple',
-        iconLibName: MaterialCommunityIcons,
-        activeKey: 'vertical-image-scroll/index',
-        route: 'vertical-image-scroll/index',
-        position: 9.6,
-      });
     }
 
     // Add Wikis dynamically with position sorting
