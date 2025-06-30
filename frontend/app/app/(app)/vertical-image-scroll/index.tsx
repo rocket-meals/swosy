@@ -9,7 +9,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
-const IMAGE_URLS = Array.from({ length: 20 }).map(
+// Placeholder images which will be replaced with food images in the future
+const PLACEHOLDER_IMAGE_URLS = Array.from({ length: 20 }).map(
   (_, i) => `https://picsum.photos/id/${i + 10}/600/600`
 );
 
@@ -43,22 +44,30 @@ const VerticalImageScroll = () => {
   const [images, setImages] = useState<string[]>([]);
   const flatListRef = useRef<FlatList<string>>(null);
   const scrollOffset = useRef(0);
+  const screenHeight = Dimensions.get('window').height;
 
   useEffect(() => {
-    setImages(IMAGE_URLS);
+    // In future this will load real food image URLs instead of placeholders
+    setImages(PLACEHOLDER_IMAGE_URLS);
   }, []);
 
 
   useEffect(() => {
     const interval = setInterval(() => {
-      scrollOffset.current += 1;
+      const maxOffset =
+        Math.ceil(images.length / numColumns) * size - screenHeight;
+      if (scrollOffset.current >= maxOffset) {
+        scrollOffset.current = 0;
+      } else {
+        scrollOffset.current += 1;
+      }
       flatListRef.current?.scrollToOffset({
         offset: scrollOffset.current,
         animated: false,
       });
     }, 50);
     return () => clearInterval(interval);
-  }, []);
+  }, [images, numColumns, size, screenHeight]);
 
   const renderItem = ({ item, index }: { item: string; index: number }) => {
     const columnIndex = index % numColumns;
@@ -72,8 +81,6 @@ const VerticalImageScroll = () => {
             {
               width: size,
               height: size,
-              borderWidth: 2,
-              borderColor: theme.primary,
             },
           ]}
           contentFit='cover'
@@ -83,7 +90,10 @@ const VerticalImageScroll = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
+    <View
+      key={amountColumnsForcard}
+      style={[styles.container, { backgroundColor: theme.screen.background }]}
+    >
       <Text style={{ textAlign: 'center', marginVertical: 8, color: theme.primary }}>
         {numColumns} images per row | {Math.round(size)}x{Math.round(size)}px
       </Text>
