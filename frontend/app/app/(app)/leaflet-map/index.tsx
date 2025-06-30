@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Text } from 'react-native';
+import { Text, Platform } from 'react-native';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -25,7 +25,7 @@ const LeafletMap = () => {
       (state: RootState) => state.canteenReducer
   );
 
-  const [markerIconBase64, setMarkerIconBase64] = useState<string | null>(null);
+  const [markerIconSrc, setMarkerIconSrc] = useState<string | null>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -37,11 +37,13 @@ const LeafletMap = () => {
         const asset = await Asset.fromModule(mapMarkerIcon);
         await asset.downloadAsync();
 
-        if (asset.localUri) {
+        if (Platform.OS === 'web') {
+          setMarkerIconSrc(asset.uri);
+        } else if (asset.localUri) {
           const content = await FileSystem.readAsStringAsync(asset.localUri, {
             encoding: FileSystem.EncodingType.Base64,
           });
-          setMarkerIconBase64(content);
+          setMarkerIconSrc(content);
         }
       } catch (error) {
         console.error('Error loading marker icon:', error);
@@ -62,7 +64,7 @@ const LeafletMap = () => {
     return undefined;
   }, [selectedCanteen, buildings]);
 
-  if (!markerIconBase64) {
+  if (!markerIconSrc) {
     // Optional: Add a loading spinner or placeholder here
     return null;
   }
@@ -71,7 +73,10 @@ const LeafletMap = () => {
     {
       id: 'example',
       position: POSITION_BUNDESTAG,
-      icon: MyMapMarkerIcons.getIconForWebByBase64(markerIconBase64),
+      icon:
+        Platform.OS === 'web'
+          ? MyMapMarkerIcons.getIconForWebByUri(markerIconSrc)
+          : MyMapMarkerIcons.getIconForWebByBase64(markerIconSrc),
       size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
       iconAnchor: getDefaultIconAnchor(
           MARKER_DEFAULT_SIZE,
