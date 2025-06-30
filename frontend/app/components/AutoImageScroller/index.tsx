@@ -8,6 +8,7 @@ interface AutoImageScrollerProps {
   numColumns: number;
   size: number;
   speedPercent: number; // percent of screen height per second
+  loadMore: () => void;
 }
 
 const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
@@ -15,28 +16,23 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
   numColumns,
   size,
   speedPercent,
+  loadMore,
 }) => {
   const flatListRef = useRef<FlatList<string>>(null);
   const scrollOffset = useRef(0);
   const screenHeight = Dimensions.get('window').height;
   const frameRef = useRef<number>();
+  const loadingRef = useRef(false);
 
-  const extendedImages = React.useMemo(
-    () => [...images, ...images, ...images],
-    [images]
-  );
+  useEffect(() => {
+    loadingRef.current = false;
+  }, [images]);
+
+  const extendedImages = React.useMemo(() => images, [images]);
 
   useEffect(() => {
     let lastTime: number | null = null;
     const pxPerSecond = (speedPercent / 100) * screenHeight;
-    const listHeight = Math.ceil(images.length / numColumns) * size;
-
-    // Start scrolling from the middle set to allow seamless looping
-    scrollOffset.current = listHeight;
-    flatListRef.current?.scrollToOffset({
-      offset: scrollOffset.current,
-      animated: false,
-    });
 
     const step = (time: number) => {
       if (lastTime === null) {
@@ -46,9 +42,16 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
       lastTime = time;
       const distance = (pxPerSecond * delta) / 1000;
       scrollOffset.current += distance;
-      if (scrollOffset.current >= listHeight * 2) {
-        scrollOffset.current -= listHeight;
+
+      const listHeight = Math.ceil(images.length / numColumns) * size;
+      if (
+        !loadingRef.current &&
+        scrollOffset.current + screenHeight >= listHeight - size
+      ) {
+        loadingRef.current = true;
+        loadMore();
       }
+
       flatListRef.current?.scrollToOffset({
         offset: scrollOffset.current,
         animated: false,
@@ -56,6 +59,10 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
       frameRef.current = requestAnimationFrame(step);
     };
 
+    flatListRef.current?.scrollToOffset({
+      offset: scrollOffset.current,
+      animated: false,
+    });
     frameRef.current = requestAnimationFrame(step);
     return () => {
       if (frameRef.current) {
@@ -88,6 +95,8 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
       scrollEnabled={false}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
     />
   );
 };

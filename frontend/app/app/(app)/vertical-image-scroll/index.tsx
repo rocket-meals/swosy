@@ -4,7 +4,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
@@ -16,7 +16,7 @@ import AutoImageScroller from '@/components/AutoImageScroller';
 import { Ionicons } from '@expo/vector-icons';
 
 // Placeholder images which will be replaced with food images in the future
-const PLACEHOLDER_IMAGE_URLS = Array.from({ length: 20 }).map(
+const IMAGE_POOL = Array.from({ length: 50 }).map(
   (_, i) => `https://picsum.photos/id/${i + 10}/600/600`
 );
 
@@ -48,10 +48,23 @@ const VerticalImageScroll = () => {
       : CardDimensionHelper.getCardWidth(screenWidth, numColumns);
 
   const [images, setImages] = useState<string[]>([]);
+  const nextIndex = useRef(0);
+
+  const loadMoreImages = () => {
+    setImages((prev) => {
+      const newImages: string[] = [];
+      for (let i = 0; i < 20; i++) {
+        newImages.push(
+          IMAGE_POOL[nextIndex.current % IMAGE_POOL.length]
+        );
+        nextIndex.current += 1;
+      }
+      return [...prev, ...newImages];
+    });
+  };
 
   useEffect(() => {
-    // In future this will load real food image URLs instead of placeholders
-    setImages(PLACEHOLDER_IMAGE_URLS);
+    loadMoreImages();
   }, []);
 
 
@@ -79,6 +92,7 @@ const VerticalImageScroll = () => {
         numColumns={numColumns}
         size={size}
         speedPercent={speedPercent}
+        loadMore={loadMoreImages}
       />
     </View>
   );
