@@ -3063,6 +3063,26 @@
     "tr": "Destek ve SSS",
     "zh": "支持和常见问题解答"
   },
+  "events": {
+    "de": "Events",
+    "en": "Events",
+    "ar": "الأحداث",
+    "es": "Eventos",
+    "fr": "Événements",
+    "ru": "События",
+    "tr": "Etkinlikler",
+    "zh": "活动"
+  },
+  "reset_seen_popup_events": {
+    "de": "Gesehene Pop-up Events zurücksetzen",
+    "en": "Reset seen pop-up events",
+    "ar": "إعادة تعيين أحداث النوافذ المنبثقة المُشاهدة",
+    "es": "Restablecer eventos emergentes vistos",
+    "fr": "Réinitialiser les pop-up événements vus",
+    "ru": "Сбросить просмотренные всплывающие события",
+    "tr": "Görülen açılır etkinlikleri sıfırla",
+    "zh": "重置已查看的弹窗事件"
+  },
   "optional": {
     "de": "Optional",
     "en": "Optional",
