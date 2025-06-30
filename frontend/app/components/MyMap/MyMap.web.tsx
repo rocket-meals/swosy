@@ -21,6 +21,7 @@ export interface MyMapProps {
     markerId: string,
     onClose: () => void
   ) => React.ReactNode;
+  onMarkerSelectionChange?: (markerId: string | null) => void;
 }
 
 const MyMap: React.FC<MyMapProps> = ({
@@ -30,12 +31,17 @@ const MyMap: React.FC<MyMapProps> = ({
   onMarkerClick,
   onMapEvent,
   renderMarkerModal,
+  onMarkerSelectionChange,
 }) => {
   const { theme } = useTheme();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const html = require('@/assets/leaflet/index.html');
 
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+
+  useEffect(() => {
+    onMarkerSelectionChange?.(selectedMarker);
+  }, [selectedMarker, onMarkerSelectionChange]);
 
 
   const sendCoordinates = useCallback(() => {
@@ -64,6 +70,7 @@ const MyMap: React.FC<MyMapProps> = ({
         }
         if (data.tag === 'onMapMarkerClicked') {
           onMarkerClick?.(data.mapMarkerId);
+          onMarkerSelectionChange?.(data.mapMarkerId);
           if (renderMarkerModal) {
             setSelectedMarker(data.mapMarkerId);
           }
@@ -75,7 +82,7 @@ const MyMap: React.FC<MyMapProps> = ({
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [sendCoordinates, onMarkerClick, onMapEvent, renderMarkerModal]);
+  }, [sendCoordinates, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.screen.background }]}>

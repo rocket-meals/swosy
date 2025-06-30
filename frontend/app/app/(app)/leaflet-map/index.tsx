@@ -10,7 +10,8 @@ import {
   MyMapMarkerIcons,
   getDefaultIconAnchor,
 } from '@/components/MyMap/markerUtils';
-import { Asset } from 'expo-asset'; // Make sure you import Asset properly
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
 
 const POSITION_BUNDESTAG = {
   lat: 52.518594247456804,
@@ -24,16 +25,24 @@ const LeafletMap = () => {
       (state: RootState) => state.canteenReducer
   );
 
-  const [markerIconUri, setMarkerIconUri] = useState<string | null>(null);
+  const [markerIconBase64, setMarkerIconBase64] = useState<string | null>(null);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Load marker asset asynchronously
   useEffect(() => {
     const loadMarkerIcon = async () => {
       try {
         const mapMarkerIcon = require('@/assets/map/marker-icon-2x.png');
-        const htmlFile = await Asset.fromModule(mapMarkerIcon);
-        await htmlFile.downloadAsync();
-        setMarkerIconUri(htmlFile.uri);
+        const asset = await Asset.fromModule(mapMarkerIcon);
+        await asset.downloadAsync();
+
+        if (asset.localUri) {
+          const content = await FileSystem.readAsStringAsync(asset.localUri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          setMarkerIconBase64(content);
+        }
       } catch (error) {
         console.error('Error loading marker icon:', error);
       }
@@ -53,7 +62,7 @@ const LeafletMap = () => {
     return undefined;
   }, [selectedCanteen, buildings]);
 
-  if (!markerIconUri) {
+  if (!markerIconBase64) {
     // Optional: Add a loading spinner or placeholder here
     return null;
   }
@@ -62,7 +71,7 @@ const LeafletMap = () => {
     {
       id: 'example',
       position: POSITION_BUNDESTAG,
-      icon: MyMapMarkerIcons.getIconForWebByUri(markerIconUri),
+      icon: MyMapMarkerIcons.getIconForWebByBase64(markerIconBase64),
       size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
       iconAnchor: getDefaultIconAnchor(
           MARKER_DEFAULT_SIZE,
@@ -71,16 +80,32 @@ const LeafletMap = () => {
     },
   ];
 
+  const handleMarkerClick = (id: string) => {
+    console.log('marker clicked', id);
+    setSelectedMarkerId(id);
+  };
+
+  const handleSelectionChange = (id: string | null) => {
+    setModalVisible(id !== null);
+    setSelectedMarkerId(id);
+  };
+
+  const renderMarkerModal = (id: string, onClose: () => void) => (
+    <Text onPress={onClose}>{id}</Text>
+  );
+
   return (
-    <MyMap
-      mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
-      mapMarkers={markers}
-      onMarkerClick={(id) => console.log('marker clicked', id)}
-      onMapEvent={(e) => console.log('map event', e.tag)}
-      renderMarkerModal={(id, onClose) => (
-        <Text onPress={onClose}>{id}</Text>
-      )}
-    />
+    <>
+      <Text>Selected: {selectedMarkerId ?? 'none'} Visible: {String(modalVisible)}</Text>
+      <MyMap
+        mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
+        mapMarkers={markers}
+        onMarkerClick={handleMarkerClick}
+        onMapEvent={(e) => console.log('map event', e.tag)}
+        renderMarkerModal={renderMarkerModal}
+        onMarkerSelectionChange={handleSelectionChange}
+      />
+    </>
   );
 };
 
