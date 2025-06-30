@@ -21,12 +21,22 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
   const screenHeight = Dimensions.get('window').height;
   const frameRef = useRef<number>();
 
-  const extendedImages = React.useMemo(() => [...images, ...images], [images]);
+  const extendedImages = React.useMemo(
+    () => [...images, ...images, ...images],
+    [images]
+  );
 
   useEffect(() => {
     let lastTime: number | null = null;
     const pxPerSecond = (speedPercent / 100) * screenHeight;
     const listHeight = Math.ceil(images.length / numColumns) * size;
+
+    // Start scrolling from the middle set to allow seamless looping
+    scrollOffset.current = listHeight;
+    flatListRef.current?.scrollToOffset({
+      offset: scrollOffset.current,
+      animated: false,
+    });
 
     const step = (time: number) => {
       if (lastTime === null) {
@@ -36,7 +46,7 @@ const AutoImageScroller: React.FC<AutoImageScrollerProps> = ({
       lastTime = time;
       const distance = (pxPerSecond * delta) / 1000;
       scrollOffset.current += distance;
-      if (scrollOffset.current >= listHeight) {
+      if (scrollOffset.current >= listHeight * 2) {
         scrollOffset.current -= listHeight;
       }
       flatListRef.current?.scrollToOffset({
