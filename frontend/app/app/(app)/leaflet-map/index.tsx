@@ -4,6 +4,11 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import MyMap from '@/components/MyMap/MyMap';
+import {
+  MARKER_DEFAULT_SIZE,
+  MyMapMarkerIcons,
+  getDefaultIconAnchor,
+} from '@/components/MyMap/markerUtils';
 
 const POSITION_BUNDESTAG = {
   lat: 52.518594247456804,
@@ -28,8 +33,24 @@ const LeafletMap = () => {
     return undefined;
   }, [selectedCanteen, buildings]);
 
+  const markers = [
+    {
+      id: 'example',
+      position: POSITION_BUNDESTAG,
+      icon: MyMapMarkerIcons.DEBUG_ICON,
+      size: [MARKER_DEFAULT_SIZE, MARKER_DEFAULT_SIZE],
+      iconAnchor: getDefaultIconAnchor(
+        MARKER_DEFAULT_SIZE,
+        MARKER_DEFAULT_SIZE,
+      ),
+    },
+  ];
+
   return (
-    <MyMap mapCenterPosition={centerPosition || POSITION_BUNDESTAG} />
+    <MyMap
+      mapCenterPosition={centerPosition || POSITION_BUNDESTAG}
+      mapMarkers={markers}
+    />
   );
 };
 
