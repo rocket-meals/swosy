@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import DEFAULT_TILE_LAYER from './defaultTileLayer';
-import type { MapMarker } from './model';
+import type { MapMarker, LeafletWebViewEvent } from './model';
+import BaseModal from '@/components/BaseModal';
 
 export interface Position {
   lat: number;
@@ -14,12 +15,33 @@ export interface MyMapProps {
   mapCenterPosition: Position;
   zoom?: number;
   mapMarkers?: MapMarker[];
+  onMarkerClick?: (id: string) => void;
+  onMapEvent?: (event: LeafletWebViewEvent) => void;
+  renderMarkerModal?: (
+    markerId: string,
+    onClose: () => void
+  ) => React.ReactNode;
+  onMarkerSelectionChange?: (markerId: string | null) => void;
 }
 
-const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) => {
+const MyMap: React.FC<MyMapProps> = ({
+  mapCenterPosition,
+  zoom,
+  mapMarkers,
+  onMarkerClick,
+  onMapEvent,
+  renderMarkerModal,
+  onMarkerSelectionChange,
+}) => {
   const { theme } = useTheme();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const html = require('@/assets/leaflet/index.html');
+
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+
+  useEffect(() => {
+    onMarkerSelectionChange?.(selectedMarker);
+  }, [selectedMarker, onMarkerSelectionChange]);
 
 
   const sendCoordinates = useCallback(() => {
@@ -41,17 +63,26 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) =>
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       try {
-        const data = JSON.parse(event.data);
+        const data: LeafletWebViewEvent = JSON.parse(event.data);
         if (data.tag === 'MapComponentMounted') {
           sendCoordinates();
+          return;
         }
+        if (data.tag === 'onMapMarkerClicked') {
+          onMarkerClick?.(data.mapMarkerId);
+          onMarkerSelectionChange?.(data.mapMarkerId);
+          if (renderMarkerModal) {
+            setSelectedMarker(data.mapMarkerId);
+          }
+        }
+        onMapEvent?.(data);
       } catch {
         // ignore malformed messages
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [sendCoordinates]);
+  }, [sendCoordinates, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
@@ -62,6 +93,11 @@ const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers }) =>
         onLoad={sendCoordinates}
         title="map"
       />
+      {renderMarkerModal && selectedMarker && (
+        <BaseModal isVisible={true} onClose={() => setSelectedMarker(null)}>
+          {renderMarkerModal(selectedMarker, () => setSelectedMarker(null))}
+        </BaseModal>
+      )}
     </View>
   );
 };
