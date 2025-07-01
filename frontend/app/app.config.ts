@@ -1,5 +1,9 @@
+// Ensure TypeScript files imported below are transpiled at runtime
+try {
+    require("ts-node/register");
+} catch {}
+
 import type { CustomerConfig } from "./config";
-// Use require so ts-node can transpile the imported module in CommonJS mode
 const {
     getBuildNumber,
     getCustomerConfig,
