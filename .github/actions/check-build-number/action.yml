@@ -19,8 +19,8 @@ runs:
     - name: 🔍 Vergleiche Buildnummer
       id: check
       run: |
-        old=$(git show HEAD^:${{ inputs.working-directory }}/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
-        new=$(cat ${{ inputs.working-directory }}/app.config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+        old=$(git show HEAD^:${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
+        new=$(cat ${{ inputs.working-directory }}/config.ts | grep -A 5 'function getBuildNumber' | grep 'return' | grep -Eo '[0-9]+' | head -1 || echo "not-found")
         echo "📦 Old build number: $old"
         echo "📦 New build number: $new"
 

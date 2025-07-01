@@ -245,6 +245,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
               {...triggerProps}
               onHoverIn={() => setShowTooltip(true)}
               onHoverOut={() => setShowTooltip(false)}
+              style={styles.labelContainer}
             >
               <Text
                 style={{

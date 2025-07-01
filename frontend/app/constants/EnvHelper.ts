@@ -1,4 +1,4 @@
-import {getCustomerConfig} from "@/app.config";
+import { getCustomerConfig } from "@/config";
 
 export class EnvHelper {
   static isProduction() {
