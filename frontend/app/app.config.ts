@@ -1,15 +1,10 @@
-// Ensure TypeScript files imported below are transpiled at runtime
-try {
-    require("ts-node/register");
-} catch {}
-
 import type { CustomerConfig } from "./config";
 const {
     getBuildNumber,
     getCustomerConfig,
     getIosBuildNumber,
     getVersion,
-} = require("./config.ts");
+} = require("./config.js");
 
 module.exports = function ({ config }: { config: any }) {
     const customerConfig: CustomerConfig = getCustomerConfig();
