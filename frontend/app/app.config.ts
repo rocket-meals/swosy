@@ -4,7 +4,7 @@ import {
     getCustomerConfig,
     getIosBuildNumber,
     getVersion,
-} from "./config";
+} from "./config.ts";
 
 module.exports = function ({ config }: { config: any }) {
     const customerConfig: CustomerConfig = getCustomerConfig();
