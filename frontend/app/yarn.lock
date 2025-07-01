@@ -5510,10 +5510,10 @@ expo-modules-autolinking@2.0.7:
     require-from-string "^2.0.2"
     resolve-from "^5.0.0"
 
-expo-modules-core@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-2.1.4.tgz#f710555c6e0ede0776e8b72a7e2b50d7873542a0"
-  integrity sha512-gfsbTPSaocgcQQDy4Z4ztg1hcOofwODctAA+yoNcrUQr/hRaDc6ndIJQwGPjoGXnEbXVxFfzGGSAkNiqK1I7lQ==
+expo-modules-core@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-2.4.1.tgz#da9774fb7de7da9ef89c09c26a1df4c4ed9c4851"
+  integrity sha512-MghZCBoBPuiGNsq4CPGK/c/pXHiY/VKwxLBzME2YkdE+5EYXPLkZX31lrT7xvFeoJEBhDigw1k3DybMT0SqnOw==
   dependencies:
     invariant "^2.2.4"
 
@@ -5645,7 +5645,7 @@ expo@52.0.27:
     expo-font "~13.0.3"
     expo-keep-awake "~14.0.2"
     expo-modules-autolinking "2.0.7"
-    expo-modules-core "2.1.4"
+    expo-modules-core "2.4.1"
     fbemitter "^3.0.0"
     web-streams-polyfill "^3.3.2"
     whatwg-url-without-unicode "8.0.0-3"

@@ -11,11 +11,11 @@ type CustomerConfig = {
 }
 
 function getVersion() {
-    return "20.0.8";
+    return "20.0.9";
 }
 
 function getBuildNumber() {
-    return 139;
+    return 140;
 }
 
 function getIosBuildNumber() { // "ios.buildNumber" must be a string
