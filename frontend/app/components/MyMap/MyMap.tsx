@@ -54,7 +54,8 @@ const MyMap: React.FC<MyMapProps> = ({
         mapLayers: [DEFAULT_TILE_LAYER],
         mapMarkers: mapMarkers ?? [],
       };
-      webViewRef.current.postMessage(JSON.stringify(message));
+      const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
+      webViewRef.current.injectJavaScript(js);
     }
   }, [mapCenterPosition, zoom, mapMarkers]);
 
