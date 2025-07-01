@@ -21,13 +21,11 @@ import {
   getTextFromTranslation,
 } from '@/helper/resourceHelper';
 import { myContrastColor, useMyContrastColor } from '@/helper/colorHelper';
-import { Image } from 'expo-image';
 import styles from './styles';
 import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import NetInfo from '@react-native-community/netinfo';
-import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import MarkingIcon from '@/components/MarkingIcon';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { TranslationKeys } from '@/locales/keys';
@@ -974,61 +972,23 @@ const index = () => {
                         ]}
                       >
                         {optionalFoodMarkings[item.id] &&
-                          optionalFoodMarkings[item.id]?.map((item: any) => {
-                            if (item?.icon) {
-                              const iconParts = item?.icon?.split(':') || [];
-                              const [library, name] = iconParts;
-                              const Icon = library && iconLibraries[library];
-                              return (
-                                <View
-                                  style={{
-                                    ...styles.iconMarking,
-                                    backgroundColor: item?.bgColor,
-                                    borderWidth: item?.hide_border ? 0 : 1,
-                                    borderColor: item.color,
-                                  }}
-                                >
-                                  <Icon
-                                    name={name}
-                                    size={14}
-                                    color={item.color}
-                                  />
-                                </View>
-                              );
-                            }
-                            if (item?.shortCode && !item?.image?.uri) {
-                              const marking = {
-                                icon: item.icon,
-                                short_code: item.shortCode,
-                                image_remote_url: undefined,
-                                background_color: item.bgColor,
-                                hide_border: item.hide_border,
-                              } as any;
-                              return (
-                                <MarkingIcon
-                                  marking={marking}
-                                  size={24}
-                                  color={item.color}
-                                  compact
-                                />
-                              );
-                            } else if (item?.image?.uri) {
-                              const marking = {
-                                icon: item.icon,
-                                short_code: item.shortCode,
-                                image_remote_url: item.image?.uri,
-                                background_color: item.bgColor,
-                                hide_border: item.hide_border,
-                              } as any;
-                              return (
-                                <MarkingIcon
-                                  marking={marking}
-                                  size={24}
-                                  color={item.color}
-                                  compact
-                                />
-                              );
-                            }
+                          optionalFoodMarkings[item.id]?.map((mark: any, idx: number) => {
+                            const marking = {
+                              icon: mark.icon,
+                              short_code: mark.shortCode,
+                              image_remote_url: mark.image?.uri,
+                              background_color: mark.bgColor,
+                              hide_border: mark.hide_border,
+                            } as any;
+                            return (
+                              <MarkingIcon
+                                key={idx}
+                                marking={marking}
+                                size={24}
+                                color={mark.color}
+                                compact
+                              />
+                            );
                           })}
                       </View>
                       {optionalFoodAttributes[item?.id] &&
@@ -1157,60 +1117,20 @@ const index = () => {
                       theme,
                       mode === 'dark'
                     );
-                    const iconParts = marking?.icon?.split(':') || [];
-                    const [library, name] = iconParts;
-                    const Icon = library && iconLibraries[library];
                     return (
                       <View key={index} style={styles.iconText}>
-                        {markingImage?.uri && (
-                          <Image
-                            source={markingImage}
-                            style={[
-                              styles.logoImage,
-                              markingImage.uri && {
-                                backgroundColor:
-                                  marking?.background_color &&
-                                  marking?.background_color,
-                                borderRadius: marking?.background_color && 8,
-                              },
-                            ]}
-                          />
-                        )}
-
-                        {!markingImage?.uri &&
-                          !marking?.icon &&
-                          marking?.short_code && (
-                            <View
-                              style={{
-                                ...styles.shortCode,
-                                backgroundColor: MarkingBackgroundColor,
-                                borderWidth: marking?.hide_border ? 0 : 1,
-                                borderColor: MarkingColor,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color: MarkingColor,
-                                  fontSize: 10,
-                                  lineHeight: 14,
-                                }}
-                              >
-                                {marking?.short_code}
-                              </Text>
-                            </View>
-                          )}
-                        {marking?.icon && !markingImage?.uri && (
-                          <View
-                            style={{
-                              ...styles.iconMarking,
-                              backgroundColor: MarkingBackgroundColor,
-                              borderWidth: marking?.hide_border ? 0 : 1,
-                              borderColor: MarkingColor,
-                            }}
-                          >
-                            <Icon name={name} size={14} color={MarkingColor} />
-                          </View>
-                        )}
+                        <MarkingIcon
+                          marking={{
+                            icon: marking?.icon,
+                            short_code: marking?.short_code,
+                            image: marking?.image,
+                            image_remote_url: marking?.image_remote_url,
+                            background_color: marking?.background_color,
+                            hide_border: marking?.hide_border,
+                          } as any}
+                          size={30}
+                          color={MarkingColor}
+                        />
                         <Text
                           style={{ ...styles.title, color: theme.screen.text }}
                         >

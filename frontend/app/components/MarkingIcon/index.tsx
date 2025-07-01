@@ -44,6 +44,9 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({
   const isTextOnly =
     !!marking.short_code && !markingImage?.uri && !Icon;
 
+  const hasImage = !!markingImage?.uri;
+  const showBorder = !hasImage && !marking.hide_border;
+
   const containerStyle = [
     styles.container,
     {
@@ -51,8 +54,8 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({
       minWidth: size,
       height: size,
       backgroundColor: bgColor || 'transparent',
-      borderWidth: marking.hide_border ? 0 : 1,
-      borderColor: textColor,
+      borderWidth: showBorder ? 1 : 0,
+      borderColor: showBorder ? textColor : 'transparent',
       borderRadius: bgColor ? 8 : 0,
       paddingHorizontal: isTextOnly ? 4 : undefined,
     },
