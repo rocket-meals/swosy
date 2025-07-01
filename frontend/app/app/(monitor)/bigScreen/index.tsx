@@ -594,7 +594,7 @@ const Index = () => {
                         <MarkingIcon
                           key={idx}
                           marking={marking}
-                          size={20}
+                          size={30}
                           color={item.color}
                         />
                       );

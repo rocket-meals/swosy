@@ -804,7 +804,7 @@ const index = () => {
                                 <MarkingIcon
                                   key={idx}
                                   marking={marking}
-                                  size={14}
+                                  size={24}
                                   color={m.color}
                                 />
                               );
@@ -1006,7 +1006,7 @@ const index = () => {
                               return (
                                 <MarkingIcon
                                   marking={marking}
-                                  size={14}
+                                  size={24}
                                   color={item.color}
                                 />
                               );
@@ -1021,7 +1021,7 @@ const index = () => {
                               return (
                                 <MarkingIcon
                                   marking={marking}
-                                  size={14}
+                                  size={24}
                                   color={item.color}
                                 />
                               );

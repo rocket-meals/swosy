@@ -30,6 +30,7 @@ import { RootState } from '@/redux/reducer';
 const MarkingLabels: React.FC<MarkingLabelProps> = ({
   markingId,
   handleMenuSheet,
+  size = 30,
 }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
@@ -223,7 +224,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                 onHoverIn={() => setShowTooltip(true)}
                 onHoverOut={() => setShowTooltip(false)}
               >
-                <MarkingIcon marking={marking} size={20} />
+                <MarkingIcon marking={marking} size={size} />
               </Pressable>
             )}
           >
@@ -234,7 +235,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
             </TooltipContent>
           </Tooltip>
         ) : (
-          <MarkingIcon marking={marking} size={20} />
+          <MarkingIcon marking={marking} size={size} />
         )}
         <Tooltip
           placement='top'
