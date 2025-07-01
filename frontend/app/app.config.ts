@@ -240,7 +240,7 @@ export default ({config}: {config?: any}) => {
                     {
                         "android": {
                             "compileSdkVersion": 35,
-                            "targetSdkVersion": 34,
+                            "targetSdkVersion": 35,
                             "buildToolsVersion": "35.0.0",
                             //"kotlinVersion": "1.9.25" // https://github.com/expo/expo/issues/32844
                         },
