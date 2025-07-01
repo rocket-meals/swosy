@@ -9,7 +9,7 @@ export default StyleSheet.create({
     marginVertical: 10,
   },
   col: {
-    width: '60%',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -28,6 +28,12 @@ export default StyleSheet.create({
   },
   label: {
     fontFamily: 'Poppins_400Regular',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    flex: 1,
+  },
+  labelContainer: {
+    flexShrink: 1,
   },
   likeButton: {
     padding: 12,
