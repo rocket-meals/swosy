@@ -13,9 +13,15 @@ interface MarkingIconProps {
   marking: Markings;
   size?: number;
   color?: string;
+  compact?: boolean;
 }
 
-const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color }) => {
+const MarkingIcon: React.FC<MarkingIconProps> = ({
+  marking,
+  size = 24,
+  color,
+  compact = false,
+}) => {
   const { theme } = useTheme();
   const { selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 
@@ -52,12 +58,22 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color }) 
     },
   ];
 
+  const iconScale = compact ? 0.6 : 0.8;
+  const textScale = compact ? 0.5 : 0.65;
+  const lineHeightScale = compact ? 0.75 : 0.8;
+  const imageScale = compact ? 0.8 : 1;
+
   if (markingImage?.uri) {
     return (
       <View style={containerStyle}>
         <Image
           source={markingImage}
-          style={{ width: size, height: size, resizeMode: 'contain', borderRadius: bgColor ? 8 : 0 }}
+          style={{
+            width: size * imageScale,
+            height: size * imageScale,
+            resizeMode: 'contain',
+            borderRadius: bgColor ? 8 : 0,
+          }}
         />
       </View>
     );
@@ -66,7 +82,7 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color }) 
   if (Icon) {
     return (
       <View style={containerStyle}>
-        <Icon name={iconName} size={size * 0.8} color={textColor} />
+        <Icon name={iconName} size={size * iconScale} color={textColor} />
       </View>
     );
   }
@@ -74,7 +90,13 @@ const MarkingIcon: React.FC<MarkingIconProps> = ({ marking, size = 24, color }) 
   if (marking.short_code) {
     return (
       <View style={containerStyle}>
-        <Text style={{ color: textColor, fontSize: size * 0.65, lineHeight: size * 0.8 }}>
+        <Text
+          style={{
+            color: textColor,
+            fontSize: size * textScale,
+            lineHeight: size * lineHeightScale,
+          }}
+        >
           {marking.short_code}
         </Text>
       </View>

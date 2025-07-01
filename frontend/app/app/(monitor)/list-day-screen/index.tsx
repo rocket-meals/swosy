@@ -806,6 +806,7 @@ const index = () => {
                                   marking={marking}
                                   size={24}
                                   color={m.color}
+                                  compact
                                 />
                               );
                             })}
@@ -1008,6 +1009,7 @@ const index = () => {
                                   marking={marking}
                                   size={24}
                                   color={item.color}
+                                  compact
                                 />
                               );
                             } else if (item?.image?.uri) {
@@ -1023,6 +1025,7 @@ const index = () => {
                                   marking={marking}
                                   size={24}
                                   color={item.color}
+                                  compact
                                 />
                               );
                             }
