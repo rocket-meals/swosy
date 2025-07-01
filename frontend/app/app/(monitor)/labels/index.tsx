@@ -8,7 +8,7 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { useTheme } from '@/hooks/useTheme';
 import LabelHeader from '@/components/LabelHeader/LabelHeader';
-import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import MarkingIcon from '@/components/MarkingIcon';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -54,9 +54,6 @@ const index = () => {
                   theme,
                   mode === 'dark'
                 );
-                const iconParts = marking?.icon?.split(':') || [];
-                const [library, name] = iconParts;
-                const Icon = library && iconLibraries[library];
                 return (
                   <View key={index} style={styles.iconText}>
                     {markingImage?.uri && (
@@ -73,42 +70,17 @@ const index = () => {
                         ]}
                       />
                     )}
-                    {marking?.short_code &&
-                      !marking?.icon &&
-                      !markingImage?.uri && (
-                        <View
-                          style={{
-                            ...styles.shortCode,
-                            backgroundColor:
-                              MarkingBackgroundColor || 'transparent',
-                            borderWidth: marking?.hide_border ? 0 : 1,
-                            borderColor: MarkingColor,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: MarkingColor,
-                              fontSize: 16,
-                              lineHeight: 18,
-                            }}
-                          >
-                            {marking?.short_code}
-                          </Text>
-                        </View>
-                      )}
-                    {marking?.icon && !markingImage?.uri && (
-                      <View
-                        style={{
-                          ...styles.iconMarking,
-                          backgroundColor:
-                            MarkingBackgroundColor || 'transparent',
-                          borderWidth: marking?.hide_border ? 0 : 1,
-                          borderColor: MarkingColor,
-                        }}
-                      >
-                        <Icon name={name} size={22} color={MarkingColor} />
-                      </View>
-                    )}
+                    <MarkingIcon
+                      marking={{
+                        icon: marking?.icon,
+                        short_code: marking?.short_code,
+                        image_remote_url: marking?.image_remote_url,
+                        background_color: marking?.background_color,
+                        hide_border: marking?.hide_border,
+                      } as any}
+                      size={22}
+                      color={MarkingColor}
+                    />
                     <Text
                       style={{
                         ...styles.title,

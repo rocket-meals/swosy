@@ -28,6 +28,7 @@ import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import MarkingIcon from '@/components/MarkingIcon';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -791,65 +792,22 @@ const index = () => {
                           ]}
                         >
                           {foodMarkings[item.id] &&
-                            foodMarkings[item.id]?.map((item: any) => {
-                              if (item?.icon) {
-                                const iconParts = item?.icon?.split(':') || [];
-                                const [library, name] = iconParts;
-                                const Icon = library && iconLibraries[library];
-                                return (
-                                  <View
-                                    style={{
-                                      ...styles.iconMarking,
-                                      backgroundColor: item?.bgColor,
-                                      borderWidth: item?.hide_border ? 0 : 1,
-                                      borderColor: item.color,
-                                    }}
-                                  >
-                                    <Icon
-                                      name={name}
-                                      size={14}
-                                      color={item.color}
-                                    />
-                                  </View>
-                                );
-                              }
-                              if (item?.shortCode && !item?.image?.uri) {
-                                return (
-                                  <View
-                                    style={{
-                                      ...styles.shortCode,
-                                      backgroundColor: item?.bgColor,
-                                      borderWidth: item?.hide_border ? 0 : 1,
-                                      borderColor: item.color,
-                                    }}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: item.color,
-                                        fontSize: 12,
-                                        lineHeight: 18,
-                                      }}
-                                    >
-                                      {item?.shortCode}
-                                    </Text>
-                                  </View>
-                                );
-                              }
-                              if (item?.image?.uri) {
-                                return (
-                                  <Image
-                                    source={item?.image?.uri}
-                                    style={[
-                                      styles.icon,
-                                      item?.image?.uri && {
-                                        backgroundColor:
-                                          item?.bgColor && item?.bgColor,
-                                        borderRadius: item?.bgColor ? 8 : 0,
-                                      },
-                                    ]}
-                                  />
-                                );
-                              }
+                            foodMarkings[item.id]?.map((m: any, idx: number) => {
+                              const marking = {
+                                icon: m.icon,
+                                short_code: m.shortCode,
+                                image_remote_url: m.image?.uri,
+                                background_color: m.bgColor,
+                                hide_border: m.hide_border,
+                              } as any;
+                              return (
+                                <MarkingIcon
+                                  key={idx}
+                                  marking={marking}
+                                  size={14}
+                                  color={m.color}
+                                />
+                              );
                             })}
                         </View>
                         {foodAttributes[item?.id] &&
@@ -1038,38 +996,33 @@ const index = () => {
                               );
                             }
                             if (item?.shortCode && !item?.image?.uri) {
+                              const marking = {
+                                icon: item.icon,
+                                short_code: item.shortCode,
+                                image_remote_url: undefined,
+                                background_color: item.bgColor,
+                                hide_border: item.hide_border,
+                              } as any;
                               return (
-                                <View
-                                  style={{
-                                    ...styles.shortCode,
-                                    backgroundColor: item?.bgColor,
-                                    borderWidth: item?.hide_border ? 0 : 1,
-                                    borderColor: item.color,
-                                  }}
-                                >
-                                  <Text
-                                    style={{
-                                      color: item.color,
-                                      fontSize: 12,
-                                      lineHeight: 18,
-                                    }}
-                                  >
-                                    {item?.shortCode}
-                                  </Text>
-                                </View>
+                                <MarkingIcon
+                                  marking={marking}
+                                  size={14}
+                                  color={item.color}
+                                />
                               );
                             } else if (item?.image?.uri) {
+                              const marking = {
+                                icon: item.icon,
+                                short_code: item.shortCode,
+                                image_remote_url: item.image?.uri,
+                                background_color: item.bgColor,
+                                hide_border: item.hide_border,
+                              } as any;
                               return (
-                                <Image
-                                  source={item?.image?.uri}
-                                  style={[
-                                    styles.icon,
-                                    item?.image?.uri && {
-                                      backgroundColor:
-                                        item?.bgColor && item?.bgColor,
-                                      borderRadius: item?.bgColor ? 8 : 0,
-                                    },
-                                  ]}
+                                <MarkingIcon
+                                  marking={marking}
+                                  size={14}
+                                  color={item.color}
                                 />
                               );
                             }
