@@ -1,19 +1,35 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import styles from './styles';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { useTheme } from '@/hooks/useTheme';
 import LabelHeader from '@/components/LabelHeader/LabelHeader';
 import MarkingIcon from '@/components/MarkingIcon';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { useLanguage } from '@/hooks/useLanguage';
+import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const { theme } = useTheme();
+  const { translate } = useLanguage();
+  const dispatch = useDispatch();
+  const menuSheetRef = useRef<BottomSheet>(null);
+
   useSetPageTitle(TranslationKeys.markings);
+
+  const openMenuSheet = () => {
+    menuSheetRef.current?.expand();
+  };
+
+  const closeMenuSheet = () => {
+    menuSheetRef.current?.close();
+  };
 
   const { markings } = useSelector((state: RootState) => state.food);
   const { language, selectedTheme: mode } = useSelector(
@@ -32,7 +48,7 @@ const index = () => {
         backgroundColor: theme.screen.background,
       }}
     >
-      <LabelHeader Label={'Labels'} />
+      <LabelHeader Label={translate(TranslationKeys.markings)} />
 
       <View style={styles.gridContainer}>
         {chunkedMarkings &&
@@ -50,7 +66,14 @@ const index = () => {
                   mode === 'dark'
                 );
                 return (
-                  <View key={index} style={styles.iconText}>
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.iconText}
+                    onPress={() => {
+                      dispatch({ type: SET_MARKING_DETAILS, payload: marking });
+                      openMenuSheet();
+                    }}
+                  >
                     <MarkingIcon
                       marking={{
                         icon: marking?.icon,
@@ -72,12 +95,13 @@ const index = () => {
                     >
                       {markingText}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
           ))}
       </View>
+      <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
     </ScrollView>
   );
 };
