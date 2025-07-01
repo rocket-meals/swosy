@@ -30,7 +30,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
-import MenuSheet from '@/components/MenuSheet/MenuSheet';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import { RootState } from '@/redux/reducer';
 
@@ -188,21 +188,7 @@ const index = () => {
         </ScrollView>
       </View>
       {isActive && (
-        <BaseBottomSheet
-          ref={menuSheetRef}
-          index={-1}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          enableHandlePanningGesture={false}
-          enableContentPanningGesture={false}
-          onClose={closeMenuSheet}
-        >
-          <MenuSheet closeSheet={closeMenuSheet} />
-        </BaseBottomSheet>
+        <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
       )}
     </SafeAreaView>
   );
