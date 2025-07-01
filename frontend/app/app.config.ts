@@ -7,7 +7,7 @@ require("ts-node").register({
   compilerOptions: { module: "commonjs" },
 });
 
-const { getFinalConfig } = require("./expo-config.ts");
+const { getFinalConfig } = require("./config.ts");
 
 module.exports = function ({ config }: ConfigContext) {
   return getFinalConfig(config);
