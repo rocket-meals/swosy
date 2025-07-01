@@ -1,4 +1,4 @@
-import {getCustomerConfig} from "@/app.config";
+import { getCustomerConfig } from "@/config";
 const customerConfig = getCustomerConfig();
 
 export default {
