@@ -5,7 +5,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -161,10 +163,14 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
         }
 
         if (targetIndex !== -1 && targetIndex !== undefined) {
-          scrollViewRef.current?.scrollTo({
-            x: Math.max(0, targetIndex * 101 + 100),
-            animated: true,
-          });
+          const offsetX = Math.max(0, targetIndex * 101 + 100);
+          if (Platform.OS === 'web') {
+            scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+          } else {
+            setTimeout(() => {
+              scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+            }, 300);
+          }
         }
       }
     }, [chartData])
@@ -176,12 +182,23 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
     >
       <View
         style={{
-          ...styles.sheetHeader,
+          ...styles.header,
           paddingRight: isWeb ? 10 : 0,
           paddingTop: isWeb ? 10 : 0,
         }}
       >
-        <View />
+        <View style={styles.placeholder} />
+        <View
+          style={[styles.handle, { backgroundColor: theme.sheet.closeBg }]}
+        />
+        <TouchableOpacity
+          style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]}
+          onPress={closeSheet}
+        >
+          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.titleContainer}>
         <Text
           style={{
             ...styles.sheetHeading,
