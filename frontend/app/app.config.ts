@@ -1,10 +1,11 @@
-import {
-    CustomerConfig,
+import type { CustomerConfig } from "./config";
+// Use require so ts-node can transpile the imported module in CommonJS mode
+const {
     getBuildNumber,
     getCustomerConfig,
     getIosBuildNumber,
     getVersion,
-} from "./config.ts";
+} = require("./config.ts");
 
 module.exports = function ({ config }: { config: any }) {
     const customerConfig: CustomerConfig = getCustomerConfig();
