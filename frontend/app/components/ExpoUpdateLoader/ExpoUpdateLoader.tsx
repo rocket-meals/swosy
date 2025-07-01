@@ -99,15 +99,17 @@ const ExpoUpdateLoader: React.FC<ExpoUpdateLoaderProps> = ({ children }) => {
         style={styles.logo}
         resizeMode='contain'
       />
-      <ActivityIndicator size='large' style={styles.spinner} />
-      <Text style={styles.title}>{translate(status)}</Text>
-      {showCancel && (
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-          <Text style={styles.cancelLabel}>
-            {translate(TranslationKeys.cancel)}
-          </Text>
-        </TouchableOpacity>
-      )}
+      <View style={styles.bottomContainer}>
+        {showCancel && (
+          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+            <Text style={styles.cancelLabel}>
+              {translate(TranslationKeys.cancel)}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.title}>{translate(status)}</Text>
+        <ActivityIndicator size='large' style={styles.spinner} />
+      </View>
     </View>
   );
 };
@@ -123,6 +125,14 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginBottom: 20,
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'column-reverse',
+    alignItems: 'center',
   },
   spinner: {
     marginBottom: 15,
