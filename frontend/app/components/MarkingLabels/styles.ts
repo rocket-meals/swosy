@@ -30,6 +30,10 @@ export default StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
     flexShrink: 1,
     flexWrap: 'wrap',
+    flex: 1,
+  },
+  labelContainer: {
+    flexShrink: 1,
   },
   likeButton: {
     padding: 12,
