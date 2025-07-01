@@ -11,11 +11,11 @@ type CustomerConfig = {
 }
 
 function getVersion() {
-    return "20.0.11";
+    return "20.0.13";
 }
 
 function getBuildNumber() {
-    return 142;
+    return 144;
 }
 
 function getIosBuildNumber() { // "ios.buildNumber" must be a string
@@ -60,7 +60,7 @@ const studiFutterConfig: CustomerConfig = {
     server_url: "https://studi-futter.rocket-meals.de/rocket-meals/api"
 }
 
-export default ({config}: {config?: any}) => {
+module.exports = function ({ config }: { config: any }) {
     const customerConfig: CustomerConfig = getCustomerConfig();
 
     return {
