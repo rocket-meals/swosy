@@ -16,10 +16,7 @@ import {
 
 export const performLogout = async (
   dispatch: Dispatch,
-  router: {
-    push?: (args: { pathname: string; params?: Record<string, string> }) => void
-    replace: (args: { pathname: string; params?: Record<string, string> }) => void
-  },
+  router: { push: (args: { pathname: string; params?: Record<string, string> }) => void },
   asGuest: boolean = false,
 ) => {
   try {
@@ -39,7 +36,7 @@ export const performLogout = async (
     } else {
       dispatch({ type: ON_LOGOUT });
     }
-    router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
+    router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
   } catch (error) {
     console.error('Error during logout:', error);
   }
