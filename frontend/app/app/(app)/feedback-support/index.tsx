@@ -49,6 +49,7 @@ const FeedbackScreen = () => {
   const [inputValues, setInputValues] = useState<{
     [key: string]: string | boolean | number | any;
   }>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
@@ -126,6 +127,7 @@ const FeedbackScreen = () => {
       display_pixelratio: PixelRatio?.get(),
       display_scale: windowScale,
     });
+    setErrorMessage(null);
   };
 
   const handleInputChange = (key: string, text: string) => {
@@ -165,19 +167,25 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = (await appFeedback.createAppFeedback(
-        filteredInputValues
-      )) as AppFeedbacks;
-      if (result) {
-        setLoading(false);
-        fetchDeviceInfo();
-        toast(
-          'Feedback submitted successfully! Thank you for your input.',
-          'success'
-        );
-        if (profile?.id) {
-          router.navigate('/support-ticket');
+      try {
+        const result = (await appFeedback.createAppFeedback(
+          filteredInputValues
+        )) as AppFeedbacks;
+        if (result) {
+          setLoading(false);
+          fetchDeviceInfo();
+          toast(
+            'Feedback submitted successfully! Thank you for your input.',
+            'success'
+          );
+          if (profile?.id) {
+            router.navigate('/support-ticket');
+          }
         }
+      } catch (e: any) {
+        setLoading(false);
+        setErrorMessage(e?.message || String(e));
+        toast(`Error: ${e?.message || e}`, 'error');
       }
     }
   };
@@ -188,18 +196,24 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = (await appFeedback.updateAppFeedback(
-        String(app_feedbacks_id),
-        filteredInputValues
-      )) as AppFeedbacks;
-      if (result) {
+      try {
+        const result = (await appFeedback.updateAppFeedback(
+          String(app_feedbacks_id),
+          filteredInputValues
+        )) as AppFeedbacks;
+        if (result) {
+          setLoading(false);
+          fetchDeviceInfo();
+          toast(
+            'Feedback updated successfully! Thank you for your input.',
+            'success'
+          );
+          router.navigate('/support-ticket');
+        }
+      } catch (e: any) {
         setLoading(false);
-        fetchDeviceInfo();
-        toast(
-          'Feedback updated successfully! Thank you for your input.',
-          'success'
-        );
-        router.navigate('/support-ticket');
+        setErrorMessage(e?.message || String(e));
+        toast(`Error: ${e?.message || e}`, 'error');
       }
     }
   };
@@ -437,6 +451,12 @@ const FeedbackScreen = () => {
                 />
               </TouchableOpacity>
             ))}
+
+            {errorMessage && (
+              <Text style={{ color: 'red', marginVertical: 10 }}>
+                {errorMessage}
+              </Text>
+            )}
           </View>
 
           <ModalComponent
