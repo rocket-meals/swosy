@@ -50,6 +50,7 @@ const FeedbackScreen = () => {
     [key: string]: string | boolean | number | any;
   }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorJson, setErrorJson] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
@@ -128,6 +129,7 @@ const FeedbackScreen = () => {
       display_scale: windowScale,
     });
     setErrorMessage(null);
+    setErrorJson(null);
   };
 
   const handleInputChange = (key: string, text: string) => {
@@ -185,6 +187,11 @@ const FeedbackScreen = () => {
       } catch (e: any) {
         setLoading(false);
         setErrorMessage(e?.message || String(e));
+        try {
+          setErrorJson(JSON.stringify(e));
+        } catch (jsonError) {
+          setErrorJson(String(e));
+        }
         toast(`Error: ${e?.message || e}`, 'error');
       }
     }
@@ -213,6 +220,11 @@ const FeedbackScreen = () => {
       } catch (e: any) {
         setLoading(false);
         setErrorMessage(e?.message || String(e));
+        try {
+          setErrorJson(JSON.stringify(e));
+        } catch (jsonError) {
+          setErrorJson(String(e));
+        }
         toast(`Error: ${e?.message || e}`, 'error');
       }
     }
@@ -452,8 +464,13 @@ const FeedbackScreen = () => {
               </TouchableOpacity>
             ))}
 
-            {errorMessage && (
+            {errorJson && (
               <Text style={{ color: 'red', marginVertical: 10 }}>
+                {errorJson}
+              </Text>
+            )}
+            {errorMessage && (
+              <Text style={{ color: 'red', marginBottom: 10 }}>
                 {errorMessage}
               </Text>
             )}
