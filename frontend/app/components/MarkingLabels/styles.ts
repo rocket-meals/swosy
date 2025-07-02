@@ -31,6 +31,7 @@ export default StyleSheet.create({
     flexShrink: 1,
     flexWrap: 'wrap',
     flex: 1,
+    textAlignVertical: 'center',
   },
   labelContainer: {
     flexShrink: 1,

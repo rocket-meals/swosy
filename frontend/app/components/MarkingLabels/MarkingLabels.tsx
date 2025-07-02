@@ -252,7 +252,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                   ...styles.label,
                   color: theme.screen.text,
                   fontSize: isWeb ? 18 : 14,
-                  marginTop: 2,
+                  textAlignVertical: 'center',
                 }}
               >
                 {markingText}
