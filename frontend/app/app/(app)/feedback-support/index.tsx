@@ -32,6 +32,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppFeedbacks } from '@/constants/types';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const FeedbackScreen = () => {
   useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -41,7 +42,10 @@ const FeedbackScreen = () => {
   const appFeedback = new AppFeedback();
   const { app_feedbacks_id } = useLocalSearchParams();
   const { profile } = useSelector((state: RootState) => state.authReducer);
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [selectedKey, setSelectedKey] = useState('');
@@ -49,6 +53,8 @@ const FeedbackScreen = () => {
   const [inputValues, setInputValues] = useState<{
     [key: string]: string | boolean | number | any;
   }>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorJson, setErrorJson] = useState<string | null>(null);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
@@ -84,11 +90,11 @@ const FeedbackScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (app_feedbacks_id) {
+      if (app_feedbacks_id && profile?.id) {
         fetchFeedbackById();
       }
       return () => {};
-    }, [app_feedbacks_id])
+    }, [app_feedbacks_id, profile?.id])
   );
 
   function getIsLandScape(): boolean {
@@ -126,6 +132,8 @@ const FeedbackScreen = () => {
       display_pixelratio: PixelRatio?.get(),
       display_scale: windowScale,
     });
+    setErrorMessage(null);
+    setErrorJson(null);
   };
 
   const handleInputChange = (key: string, text: string) => {
@@ -165,10 +173,17 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = (await appFeedback.createAppFeedback(
-        filteredInputValues
-      )) as AppFeedbacks;
-      if (result) {
+      const sanitizedInput = Object.fromEntries(
+        Object.entries(filteredInputValues).filter(([_, value]) => {
+          if (value === undefined || value === null) return false;
+          if (typeof value === 'string') {
+            return value.trim() !== '';
+          }
+          return true;
+        })
+      );
+      try {
+        await appFeedback.createAppFeedback(sanitizedInput);
         setLoading(false);
         fetchDeviceInfo();
         toast(
@@ -177,7 +192,18 @@ const FeedbackScreen = () => {
         );
         if (profile?.id) {
           router.navigate('/support-ticket');
+        } else {
+          router.navigate('/support-FAQ');
         }
+      } catch (e: any) {
+        setLoading(false);
+        setErrorMessage(e?.message || String(e));
+        try {
+          setErrorJson(JSON.stringify(e));
+        } catch (jsonError) {
+          setErrorJson(String(e));
+        }
+        toast(`Error: ${e?.message || e}`, 'error');
       }
     }
   };
@@ -188,11 +214,20 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      const result = (await appFeedback.updateAppFeedback(
-        String(app_feedbacks_id),
-        filteredInputValues
-      )) as AppFeedbacks;
-      if (result) {
+      const sanitizedInput = Object.fromEntries(
+        Object.entries(filteredInputValues).filter(([_, value]) => {
+          if (value === undefined || value === null) return false;
+          if (typeof value === 'string') {
+            return value.trim() !== '';
+          }
+          return true;
+        })
+      );
+      try {
+        await appFeedback.updateAppFeedback(
+          String(app_feedbacks_id),
+          sanitizedInput
+        );
         setLoading(false);
         fetchDeviceInfo();
         toast(
@@ -200,6 +235,15 @@ const FeedbackScreen = () => {
           'success'
         );
         router.navigate('/support-ticket');
+      } catch (e: any) {
+        setLoading(false);
+        setErrorMessage(e?.message || String(e));
+        try {
+          setErrorJson(JSON.stringify(e));
+        } catch (jsonError) {
+          setErrorJson(String(e));
+        }
+        toast(`Error: ${e?.message || e}`, 'error');
       }
     }
   };
@@ -306,7 +350,7 @@ const FeedbackScreen = () => {
                       style={[
                         styles.linkText,
                         {
-                          color: theme.activeText,
+                          color: contrastColor,
                           fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
                         },
                       ]}
@@ -321,13 +365,13 @@ const FeedbackScreen = () => {
                       <FontAwesome5
                         name='save'
                         size={24}
-                        color={theme.activeText}
+                        color={contrastColor}
                       />
                     ) : (
                       <MaterialCommunityIcons
                         name='plus'
                         size={24}
-                        color={theme.activeText}
+                        color={contrastColor}
                       />
                     )}
                   </View>
@@ -437,6 +481,17 @@ const FeedbackScreen = () => {
                 />
               </TouchableOpacity>
             ))}
+
+            {errorJson && (
+              <Text style={{ color: 'red', marginVertical: 10 }}>
+                {errorJson}
+              </Text>
+            )}
+            {errorMessage && (
+              <Text style={{ color: 'red', marginBottom: 10 }}>
+                {errorMessage}
+              </Text>
+            )}
           </View>
 
           <ModalComponent
