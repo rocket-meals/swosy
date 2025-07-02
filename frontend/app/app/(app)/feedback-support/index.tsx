@@ -86,11 +86,11 @@ const FeedbackScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      if (app_feedbacks_id) {
+      if (app_feedbacks_id && profile?.id) {
         fetchFeedbackById();
       }
       return () => {};
-    }, [app_feedbacks_id])
+    }, [app_feedbacks_id, profile?.id])
   );
 
   function getIsLandScape(): boolean {
@@ -169,20 +169,27 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
-      try {
-        const result = (await appFeedback.createAppFeedback(
-          filteredInputValues
-        )) as AppFeedbacks;
-        if (result) {
-          setLoading(false);
-          fetchDeviceInfo();
-          toast(
-            'Feedback submitted successfully! Thank you for your input.',
-            'success'
-          );
-          if (profile?.id) {
-            router.navigate('/support-ticket');
+      const sanitizedInput = Object.fromEntries(
+        Object.entries(filteredInputValues).filter(([_, value]) => {
+          if (value === undefined || value === null) return false;
+          if (typeof value === 'string') {
+            return value.trim() !== '';
           }
+          return true;
+        })
+      );
+      try {
+        await appFeedback.createAppFeedback(sanitizedInput);
+        setLoading(false);
+        fetchDeviceInfo();
+        toast(
+          'Feedback submitted successfully! Thank you for your input.',
+          'success'
+        );
+        if (profile?.id) {
+          router.navigate('/support-ticket');
+        } else {
+          router.navigate('/support-FAQ');
         }
       } catch (e: any) {
         setLoading(false);
@@ -203,20 +210,27 @@ const FeedbackScreen = () => {
       if (profile?.id) {
         filteredInputValues.profile = profile?.id;
       }
+      const sanitizedInput = Object.fromEntries(
+        Object.entries(filteredInputValues).filter(([_, value]) => {
+          if (value === undefined || value === null) return false;
+          if (typeof value === 'string') {
+            return value.trim() !== '';
+          }
+          return true;
+        })
+      );
       try {
-        const result = (await appFeedback.updateAppFeedback(
+        await appFeedback.updateAppFeedback(
           String(app_feedbacks_id),
-          filteredInputValues
-        )) as AppFeedbacks;
-        if (result) {
-          setLoading(false);
-          fetchDeviceInfo();
-          toast(
-            'Feedback updated successfully! Thank you for your input.',
-            'success'
-          );
-          router.navigate('/support-ticket');
-        }
+          sanitizedInput
+        );
+        setLoading(false);
+        fetchDeviceInfo();
+        toast(
+          'Feedback updated successfully! Thank you for your input.',
+          'success'
+        );
+        router.navigate('/support-ticket');
       } catch (e: any) {
         setLoading(false);
         setErrorMessage(e?.message || String(e));
