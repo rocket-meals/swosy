@@ -32,6 +32,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppFeedbacks } from '@/constants/types';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const FeedbackScreen = () => {
   useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -41,7 +42,10 @@ const FeedbackScreen = () => {
   const appFeedback = new AppFeedback();
   const { app_feedbacks_id } = useLocalSearchParams();
   const { profile } = useSelector((state: RootState) => state.authReducer);
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [selectedKey, setSelectedKey] = useState('');
@@ -346,7 +350,7 @@ const FeedbackScreen = () => {
                       style={[
                         styles.linkText,
                         {
-                          color: theme.activeText,
+                          color: contrastColor,
                           fontSize: windowWidth > 600 ? (isWeb ? 18 : 16) : 16,
                         },
                       ]}
@@ -361,13 +365,13 @@ const FeedbackScreen = () => {
                       <FontAwesome5
                         name='save'
                         size={24}
-                        color={theme.activeText}
+                        color={contrastColor}
                       />
                     ) : (
                       <MaterialCommunityIcons
                         name='plus'
                         size={24}
-                        color={theme.activeText}
+                        color={contrastColor}
                       />
                     )}
                   </View>
