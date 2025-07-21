@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dispatch } from 'redux';
 import {
-  CLEAR_ANONYMOUSLY,
   CLEAR_APARTMENTS,
   CLEAR_CAMPUSES,
   CLEAR_CANTEENS,
@@ -11,12 +10,12 @@ import {
   CLEAR_NEWS,
   CLEAR_SETTINGS,
   CLEAR_POPUP_EVENTS_HASH,
-  ON_LOGOUT,
 } from '@/redux/Types/types';
+import { persistor } from '@/redux/store';
 
 export const performLogout = async (
   dispatch: Dispatch,
-  router: { push: (args: { pathname: string; params?: Record<string, string> }) => void },
+  router: { replace: (args: { pathname: string; params?: Record<string, string> }) => void },
   asGuest: boolean = false,
 ) => {
   try {
@@ -30,13 +29,9 @@ export const performLogout = async (
     dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
     dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
     await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
-    if (asGuest) {
-      dispatch({ type: CLEAR_ANONYMOUSLY });
-      dispatch({ type: CLEAR_ANONYMOUSLY });
-    } else {
-      dispatch({ type: ON_LOGOUT });
-    }
-    router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
+    // legacy parameter kept for compatibility, currently not used
+    persistor.purge();
+    router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
   } catch (error) {
     console.error('Error during logout:', error);
   }
