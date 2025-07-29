@@ -35,6 +35,6 @@ USER node
 RUN corepack enable && \
     corepack prepare pnpm@8.6.12 --activate
 
-RUN pnpm install directus-extension-sync@3.2.3
+RUN pnpm install directus-extension-sync@3.0.3
 
 RUN pnpm install directus-extension-flow-manager@1.4.1
