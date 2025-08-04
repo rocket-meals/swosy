@@ -120,11 +120,11 @@ const index = () => {
   const totalWidth = 1792;
   const columnPercentages: ColumnPercentages = {
     categorie: ((170 / totalWidth) * 100).toFixed(2),
-    name: ((530 / totalWidth) * 100).toFixed(2),
+    name: ((400 / totalWidth) * 100).toFixed(2),
     markings: ((250 / totalWidth) * 100).toFixed(2),
     price: ((170 / totalWidth) * 100).toFixed(2),
     attributes: (
-      ((totalWidth - (170 + 530 + 350 + 170)) / totalWidth) *
+      ((totalWidth - (170 + 400 + 350 + 170)) / totalWidth) *
       100
     ).toFixed(2),
   };
@@ -667,7 +667,7 @@ const index = () => {
       <View
         ref={headerRef}
         onLayout={handleHeaderLayout}
-        style={{ width: '100%', position: 'relative' }}
+        style={{ width: '100%', height: 100, position: 'relative' }}
       >
         <LabelHeader
           Label={selectedCanteen?.alias ? selectedCanteen?.alias : ''}
