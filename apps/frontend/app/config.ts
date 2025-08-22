@@ -65,7 +65,7 @@ export const studiFutterConfig: CustomerConfig = {
 };
 
 export function getCustomerConfig(): CustomerConfig {
-    return swosyConfig;
+	return swosyConfig;
 }
 
 export function getFinalConfig(config?: any) {
