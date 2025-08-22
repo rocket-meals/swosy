@@ -18,7 +18,7 @@ jobs:
           token: ${{ secrets.PRIVATE_ACCESS_TOKEN }}   # PAT mit Repo-Rechten im Secret ablegen
 
       - name: Upstream hinzufügen
-        run: git remote add upstream https://github.com/OriginalOwner/Repo.git
+        run: git remote add upstream https://github.com/rocket-meals/rocket-meals.git
 
       - name: Änderungen holen
         run: git fetch upstream
