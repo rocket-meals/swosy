@@ -8,11 +8,17 @@ on:
       - 'packages/common/**'
       - '.github/workflows/**'
       - 'package.json'
+  workflow_run:
+    workflows: ["🔧 Auto-Linter"]
+    branches: [master]
+    types:
+      - completed
 
 jobs:
   check-build:
     name: 🔍 Check Build Number
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
     outputs:
       changed: ${{ steps.check.outputs.changed }}
     steps:
@@ -39,13 +45,13 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🛠️ Build Android App
-        run: eas build --platform android --non-interactive
+        run: eas build --platform android --non-interactive --profile production
         working-directory: ./apps/frontend/app
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: 📤 Submit Android Build to Play Store
-        run: eas submit --platform android --non-interactive --latest
+        run: eas submit --platform android --non-interactive --latest --profile production
         working-directory: ./apps/frontend/app
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

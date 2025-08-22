@@ -8,11 +8,17 @@ on:
       - 'packages/common/**'
       - '.github/workflows/**'
       - 'package.json'
+  workflow_run:
+    workflows: ["🔧 Auto-Linter"]
+    branches: [master]
+    types:
+      - completed
 
 jobs:
   check-build:
     name: 🔍 Check Build Number
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
     outputs:
       changed: ${{ steps.check.outputs.changed }}
     steps:
