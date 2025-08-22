@@ -1,0 +1,29 @@
+# Datei: .github/workflows/sync.yml
+name: Sync mit Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'            # täglicher Sync
+  workflow_dispatch:               # manuell auslösbar
+  repository_dispatch:             # optional: per Upstream-Webhook triggern
+
+jobs:
+  sync:
+    if: ${{ github.repository != 'rocket-meals/rocket-meals' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PRIVATE_ACCESS_TOKEN }}   # PAT mit Repo-Rechten im Secret ablegen
+
+      - name: Upstream hinzufügen
+        run: git remote add upstream https://github.com/OriginalOwner/Repo.git
+
+      - name: Änderungen holen
+        run: git fetch upstream
+
+      - name: merge + push
+        run: |
+          git merge --ff-only upstream/main
+          git push origin main
