@@ -25,5 +25,5 @@ jobs:
 
       - name: merge + push
         run: |
-          git merge --ff-only upstream/main
-          git push origin main
+          git merge --ff-only upstream/master
+          git push origin master
