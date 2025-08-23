@@ -50,10 +50,10 @@ jobs:
           REPO_FULL_NAME="${{ github.repository }}"
           echo "Syncing fork: $REPO_FULL_NAME"
           echo "Upstream repository: rocket-meals/rocket-meals"
-          echo "Target branch: main"
+          echo "Target branch: master"
           
           # Sync the fork with the upstream repository using --force to handle conflicts
-          gh repo sync "$REPO_FULL_NAME" -b main --force
+          gh repo sync "$REPO_FULL_NAME" -b master --force
           
           echo "✅ Fork synchronization completed successfully!"
 
