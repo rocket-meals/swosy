@@ -21032,7 +21032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^7.1.3":
+"query-string@npm:7.1.3, query-string@npm:^7.1.3":
   version: 7.1.3
   resolution: "query-string@npm:7.1.3"
   dependencies:
@@ -22445,6 +22445,7 @@ __metadata:
     markdown-it: "npm:^14.1.0"
     nanoid: "npm:^5.1.5"
     qrcode: "npm:^1.5.4"
+    query-string: "npm:7.1.3"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
     react-i18next: "npm:^15.1.2"
