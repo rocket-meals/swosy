@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Appearance, StatusBar } from 'react-native';
+import { Appearance, Platform, StatusBar } from 'react-native';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import { configureStore } from '@/redux/store';
 
@@ -48,10 +48,16 @@ export const useTheme = () => {
 	}, [theme]);
 
 	useEffect(() => {
-		const isDarkTheme = computedTheme === darkTheme;
-		StatusBar.setBarStyle(isDarkTheme ? 'light-content' : 'dark-content');
-		StatusBar.setBackgroundColor(computedTheme.header.background);
-	}, [computedTheme]);
+		const isDark = theme === 'systematic'
+			? Appearance.getColorScheme() === 'dark'
+			: theme === 'dark';
+
+		StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content');
+
+		if (Platform.OS === 'android') {
+			StatusBar.setBackgroundColor(computedTheme.header.background);
+		}
+	}, [theme, computedTheme]);
 
 	return { theme: computedTheme, setThemeMode };
 };
