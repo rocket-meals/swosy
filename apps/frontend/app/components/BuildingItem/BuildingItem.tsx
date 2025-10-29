@@ -1,10 +1,9 @@
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
+import { Dimensions, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
 import { myContrastColor } from '@/helper/ColorHelper';
 import styles from './styles';
 import { BuildingItemProps } from './types';
@@ -13,45 +12,55 @@ import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { RootState } from '@/redux/reducer';
 import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
-const BuildingItem: React.FC<BuildingItemProps> = ({ campus, openImageManagementSheet, setSelectedApartementId, openDistanceSheet }) => {
+
+export interface BuildingItemPropsOptimized {
+	campus: any;
+	setSelectedApartementId: React.Dispatch<React.SetStateAction<string>>;
+	openImageManagementSheet?: () => void;
+	openDistanceSheet: () => void;
+	settings: {
+		amountColumnsForcard: number;
+		primaryColor?: string;
+		serverInfo?: any;
+		appSettings?: any;
+		selectedTheme?: string;
+		screenWidth: number;
+		isManagement?: boolean;
+	};
+}
+
+const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistanceSheet, setSelectedApartementId, settings }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
+
+	const { amountColumnsForcard, primaryColor, serverInfo, appSettings, selectedTheme: mode, screenWidth, isManagement = false } = settings;
+
+	const defaultImage = useMemo(() => getImageUrl(serverInfo?.info?.project?.project_logo), [serverInfo]);
 	const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
 	const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
-	const { isManagement } = useSelector((state: RootState) => state.authReducer);
-	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 
-	const handleNavigation = (id: string) => {
-		router.push({
-			pathname: '/(app)/campus/details',
-			params: { id },
-		});
-	};
+	const handleNavigation = useCallback(
+		(id: string) =>
+			router.push({
+				pathname: '/(app)/campus/details',
+				params: { id },
+			}),
+		[]
+	);
 
-	useEffect(() => {
-		const handleResize = () => {
-			setScreenWidth(Dimensions.get('window').width);
-		};
-
-		const subscription = Dimensions.addEventListener('change', handleResize);
-
-		return () => subscription?.remove();
-	}, []);
-
-	const getCardDimension = () => CardDimensionHelper.getCardDimension(screenWidth);
-
-	const getCardWidth = () => CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-
-	useEffect(() => {
-		const cardWidth = CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-		console.log(cardWidth, 'cardWidth');
+	const cardWidth = useMemo(() => {
+		return amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 	}, [amountColumnsForcard, screenWidth]);
+
+	const imageSource = useMemo(() => {
+		if (campus?.image || campus?.image_remote_url) {
+			return { uri: campus?.image_remote_url || getImageUrl(campus?.image) };
+		}
+		return { uri: defaultImage };
+	}, [campus, defaultImage]);
 
 	return (
 		<Tooltip
@@ -60,19 +69,13 @@ const BuildingItem: React.FC<BuildingItemProps> = ({ campus, openImageManagement
 				<CardWithText
 					{...triggerProps}
 					onPress={() => handleNavigation(campus?.id)}
-					imageSource={
-						campus?.image || campus?.image_remote_url
-							? {
-									uri: campus?.image_remote_url || getImageUrl(campus?.image),
-								}
-							: { uri: defaultImage }
-					}
+					imageSource={imageSource}
 					containerStyle={{
-						width: amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard),
+						width: cardWidth,
 						backgroundColor: theme.card.background,
 					}}
 					imageContainerStyle={{
-						height: amountColumnsForcard === 0 ? CardDimensionHelper.getCardDimension(screenWidth) : CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard),
+						height: cardWidth,
 					}}
 					contentStyle={{
 						paddingHorizontal: 5,
@@ -81,30 +84,14 @@ const BuildingItem: React.FC<BuildingItemProps> = ({ campus, openImageManagement
 					imageChildren={
 						<View style={styles.imageActionContainer}>
 							{isManagement ? (
-								<Tooltip
-									placement="top"
-									trigger={triggerProps => (
-										<TouchableOpacity
-											style={styles.editImageButton}
-											{...triggerProps}
-											onPress={() => {
-												setSelectedApartementId(campus.id);
-												openImageManagementSheet();
-											}}
-										>
-											<MaterialCommunityIcons name="image-edit" size={20} color={'white'} />
-										</TouchableOpacity>
-									)}
-								>
-									<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-										<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-											{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
-										</TooltipText>
-									</TooltipContent>
-								</Tooltip>
+								<TouchableOpacity style={styles.editImageButton} onPress={() => {
+								}}>
+									<View />
+								</TouchableOpacity>
 							) : (
 								<View />
 							)}
+
 							<TouchableOpacity
 								style={{
 									...styles.directionButton,
@@ -124,11 +111,36 @@ const BuildingItem: React.FC<BuildingItemProps> = ({ campus, openImageManagement
 		>
 			<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 				<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-					{campus?.alias}
+					{`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
 				</TooltipText>
 			</TooltipContent>
 		</Tooltip>
 	);
 };
 
-export default memo(BuildingItem);
+function areEqual(prev: BuildingItemPropsOptimized, next: BuildingItemPropsOptimized) {
+	const p = prev.campus;
+	const n = next.campus;
+
+	if (String(p?.id ?? '') !== String(n?.id ?? '')) return false;
+	if (String(p?.alias ?? '') !== String(n?.alias ?? '')) return false;
+	const pImg = String(p?.image_remote_url ?? p?.image ?? '');
+	const nImg = String(n?.image_remote_url ?? n?.image ?? '');
+	if (pImg !== nImg) return false;
+	if (Number(p?.distance ?? 0) !== Number(n?.distance ?? 0)) return false;
+
+	if (prev.settings.amountColumnsForcard !== next.settings.amountColumnsForcard) return false;
+	if (prev.settings.screenWidth !== next.settings.screenWidth) return false;
+
+	return true;
+}
+
+export default memo(BuildingItem, areEqual);
+
+const localStyles = StyleSheet.create({
+	placeholder: {
+		width: 1,
+		height: 1,
+		opacity: 0,
+	},
+});
