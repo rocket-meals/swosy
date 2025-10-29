@@ -166,7 +166,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 					trigger={triggerProps => (
 						<TouchableOpacity {...triggerProps} style={{ ...styles.row, cursor: 'default' }}>
 							<View style={styles.col}>
-								<AntDesign name="areachart" size={isWeb ? 24 : 22} color={theme.screen.icon} />
+								<AntDesign name="area-chart" size={isWeb ? 24 : 22} color={theme.screen.icon} />
 								<Text
 									style={{
 										...styles.label,

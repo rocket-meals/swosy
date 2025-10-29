@@ -283,7 +283,7 @@ const Settings = () => {
 						{isRegisteredUser ? (
 							<>
 								<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.logout)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogout} groupPosition="middle" />
-								<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="deleteuser" size={24} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
+								<SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />
 							</>
 						) : (
 							<SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sign_in)} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={handleLogin} groupPosition="middle" />
